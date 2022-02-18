@@ -2,304 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E88C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239408AbiBRSm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:42:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52232 "EHLO
+        id S239419AbiBRSnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:43:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239358AbiBRSmp (ORCPT
+        with ESMTP id S239374AbiBRSmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:42:45 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AC546150;
-        Fri, 18 Feb 2022 10:42:28 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id y5so2988334pfe.4;
-        Fri, 18 Feb 2022 10:42:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EkymO2cXo8u4iSmYrUr7FnoXj72C6tZYNpfdDviMOVo=;
-        b=GD+HH9G1aw2T0H+c9H3Ryk4K4clDEqR6kBgmh+ybYGEhmOg8EZh5Wo4ZxIk4XCSesY
-         cyddMcI04UUPDj/dmgKJqBjBn0Q3JBehRcOikNCsZNvjNJTE8go8QKuVfoEZJF9lcycS
-         pkx0m+YQ8aw+/Pv4z5ztuiaFKZfag2uHbQvWfJZZ+FqJIWFZYiEhLAiv6Ff7A5Mp9Giu
-         yoCU0vnb+2pJMjtwZy2675+dwZm3wGYbiR0nMaGId7bcA3a5PV2ZWecQlJYv3X5cc9Sw
-         3tiY991yvjnkoFQHP17j7Xnk56xfUZvlHhdnj4hrwlN8FVsdfDdHSNS4XOVYZ6YvP8ju
-         lYxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EkymO2cXo8u4iSmYrUr7FnoXj72C6tZYNpfdDviMOVo=;
-        b=UwU1W8GXB8gPmpugraU1UJM4DL0hrmmX+5ns+AVrZUrpyXoZY6vDMkHf2kB149jaq0
-         rCL83VSIs4Yi9mzyOH4vhglFhPBgPsgy2HFqpSw8zZYMwoI0KorJ7nG9tXXTqjPbWHv1
-         dPIoTr59ETQgghk3kAx1Tjr2lilzkURtk7qOTdESGA5Au8dqg+bUtyXG63J4O6uz+/zM
-         PmXLF9zdDGxsQlBOq/e00uR0jRYrfSdOl28jCd3aPCLWxZMjKCtFO6IPah3qx26m+pdG
-         h+lP4eYvwEUDXp2nrzt/9avXk0+ESTolROCminb1AtlcKdtdhnX4epVzLc+EMfezpS5M
-         GCxA==
-X-Gm-Message-State: AOAM5322MeFcp8Kwc9qKd+bKbComYuZFVwB8Bp6mbwepOCzzJv/WrKjA
-        RxCVMxiEUhMx1KHQlGWCV0k=
-X-Google-Smtp-Source: ABdhPJwTQjDu6FOGV6lkRBTSQZVlHD66eEEgjiWe1xEsdqQiVwWV3IclSMUGYua+t+CSo3cPnfNO9Q==
-X-Received: by 2002:a63:445f:0:b0:373:d43f:2b42 with SMTP id t31-20020a63445f000000b00373d43f2b42mr3804983pgk.125.1645209748167;
-        Fri, 18 Feb 2022 10:42:28 -0800 (PST)
-Received: from vm-111.3frfxmc3btcupaqenzdpat1uec.xx.internal.cloudapp.net ([13.77.171.140])
-        by smtp.gmail.com with ESMTPSA id m17-20020a17090ab79100b001b89fd7e298sm130132pjr.4.2022.02.18.10.42.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:42:27 -0800 (PST)
-From:   "Melanie Plageman (Microsoft)" <melanieplageman@gmail.com>
-To:     mikelley@microsoft.com, jejb@linux.ibm.com, kys@microsoft.com,
-        martin.petersen@oracle.com, mst@redhat.com,
-        benh@kernel.crashing.org, decui@microsoft.com,
-        don.brace@microchip.com, R-QLogic-Storage-Upstream@marvell.com,
-        haiyangz@microsoft.com, jasowang@redhat.com, john.garry@huawei.com,
-        kashyap.desai@broadcom.com, mpe@ellerman.id.au,
-        njavali@marvell.com, pbonzini@redhat.com, paulus@samba.org,
-        sathya.prakash@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com,
-        sreekanth.reddy@broadcom.com, stefanha@redhat.com,
-        sthemmin@microsoft.com, suganath-prabu.subramani@broadcom.com,
-        sumit.saxena@broadcom.com, tyreld@linux.ibm.com,
-        wei.liu@kernel.org, linuxppc-dev@lists.ozlabs.org,
-        megaraidlinux.pdl@broadcom.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        storagedev@microchip.com,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com
-Cc:     andres@anarazel.de
-Subject: [PATCH RFC v1 1/5] scsi: core: Rename host_tagset to hctx_share_tags
-Date:   Fri, 18 Feb 2022 18:41:53 +0000
-Message-Id: <20220218184157.176457-2-melanieplageman@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220218184157.176457-1-melanieplageman@gmail.com>
-References: <20220218184157.176457-1-melanieplageman@gmail.com>
+        Fri, 18 Feb 2022 13:42:52 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364FD1833B8;
+        Fri, 18 Feb 2022 10:42:35 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id BF00F1F46EEA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645209753;
+        bh=+6AyqGud0mOdo8VJ0ubLM2SGybUR+8DMpSAenbbvUO8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ABy9GOmtXTNkUXkWmkaTpEthH/4nyreBfV7LkExY0JIzpVzreThZlcDiUvPxQxJhz
+         qIsaD0LsyVutZUd8CS9hHUK8gyOuCLpvuEQVqhwD2Yhuof3OB1y3mmJCW2EpvVPJGd
+         9RJAy1Uyu+WW2g9jftXP8sFcj6bCaiQvk9efKaRumvAQT5J268l9CYYrf2FdYasp0V
+         5L6K2In2n2A4BuafslS/EAqctEXq/DJLkmGJxGP5fXbuThY7GxGfdN0jLJrv/SBwxd
+         ch13HTwv+VAkxhRpAEZZoaN6cJ7Porc0ps5Rh175rfjqiY3Q+GJjw5QDm3cl3g7hjV
+         mFm4K8j/hPcoA==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     kernel@collabora.com, yunfei.dong@mediatek.com,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1] media: v4l2-core: Initialize h264 scaling matrix
+Date:   Fri, 18 Feb 2022 13:42:07 -0500
+Message-Id: <20220218184208.455488-1-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Scsi_Host->host_tagset, which is set by LLD using the
-scsi_host_template, determines whether or not to set the
-BLK_MQ_F_TAG_HCTX_SHARED flag in the blk_mq_tag_set. This then
-determines whether or not hardware contexts share blk_mq_tags.
+In the final H264 API, it is not required to set scaling matrix if
+they are not present in the bitstream. A flag was added in order to let
+the driver know. The downside is that it leaves the default control
+value to 0, which isn't valid. As per the spec (see formulas 7-8/7-9),
+when the scaling matrix are absent from the bitstream, flat values
+of 16 should be used. This improves this control semantic in a way
+that the control value are always valid. Drivers can then use
+the scaling_matrix control values without having to check its presence.
+Same method was employed for MPEG2_QUANTISATION.
 
-The name host_tagset is misleading, as it sounds like it indicates
-whether there is a host-wide blk_mq_tag_set.  Rename it to
-hctx_share_tags to make this more evident, and so it doesn’t sound like
-the opposite of the per_device_tag_set option that is introduced in a
-subsequent patch.  No functional change.
+This fixes issues with MTK VCODEC H264 decoder when using GStreamer.
+GStreamer does not set this control if its not present in the bitstream.
+As MTK VDCODEC was using the initialized to 0 values, the frames ended
+up completely gray.
 
-Signed-off-by: Melanie Plageman <melanieplageman@gmail.com>
+Fixes: 54889c51b833d236 ("media: uapi: h264: Rename and clarify PPS_FLAG_SCALING_MATRIX_PRESENT")
+Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v2_hw.c    |  2 +-
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c    |  2 +-
- drivers/scsi/hosts.c                      |  2 +-
- drivers/scsi/ibmvscsi/ibmvfc.c            |  2 +-
- drivers/scsi/megaraid/megaraid_sas_base.c |  4 ++--
- drivers/scsi/mpt3sas/mpt3sas_base.c       |  6 +++---
- drivers/scsi/mpt3sas/mpt3sas_scsih.c      |  6 +++---
- drivers/scsi/scsi_debug.c                 |  2 +-
- drivers/scsi/scsi_lib.c                   |  2 +-
- drivers/scsi/smartpqi/smartpqi_init.c     |  2 +-
- include/scsi/scsi_host.h                  | 10 ++++------
- 11 files changed, 19 insertions(+), 21 deletions(-)
+ drivers/media/v4l2-core/v4l2-ctrls-core.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-index 64ed3e472e65..a3cf413f6990 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-@@ -3584,7 +3584,7 @@ static struct scsi_host_template sht_v2_hw = {
- 	.shost_groups		= host_v2_hw_groups,
- 	.host_reset		= hisi_sas_host_reset,
- 	.map_queues		= map_queues_v2_hw,
--	.host_tagset		= 1,
-+	.hctx_share_tags	= 1,
- };
+diff --git a/drivers/media/v4l2-core/v4l2-ctrls-core.c b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+index 76e919b71a35..b950675b1db1 100644
+--- a/drivers/media/v4l2-core/v4l2-ctrls-core.c
++++ b/drivers/media/v4l2-core/v4l2-ctrls-core.c
+@@ -114,6 +114,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+ 	struct v4l2_ctrl_vp8_frame *p_vp8_frame;
+ 	struct v4l2_ctrl_vp9_frame *p_vp9_frame;
+ 	struct v4l2_ctrl_fwht_params *p_fwht_params;
++	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
+ 	void *p = ptr.p + idx * ctrl->elem_size;
  
- static const struct hisi_sas_hw hisi_sas_v2_hw = {
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index a01a3a7b706b..169eb5fbecfc 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -3172,7 +3172,7 @@ static struct scsi_host_template sht_v3_hw = {
- 	.shost_groups		= host_v3_hw_groups,
- 	.tag_alloc_policy	= BLK_TAG_ALLOC_RR,
- 	.host_reset             = hisi_sas_host_reset,
--	.host_tagset		= 1,
-+	.hctx_share_tags	= 1,
- };
- 
- static const struct hisi_sas_hw hisi_sas_v3_hw = {
-diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
-index f69b77cbf538..a364243fac7c 100644
---- a/drivers/scsi/hosts.c
-+++ b/drivers/scsi/hosts.c
-@@ -426,7 +426,7 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
- 	shost->sg_prot_tablesize = sht->sg_prot_tablesize;
- 	shost->cmd_per_lun = sht->cmd_per_lun;
- 	shost->no_write_same = sht->no_write_same;
--	shost->host_tagset = sht->host_tagset;
-+	shost->hctx_share_tags = sht->hctx_share_tags;
- 
- 	if (shost_eh_deadline == -1 || !sht->eh_host_reset_handler)
- 		shost->eh_deadline = -1;
-diff --git a/drivers/scsi/ibmvscsi/ibmvfc.c b/drivers/scsi/ibmvscsi/ibmvfc.c
-index d0eab5700dc5..950be46c041f 100644
---- a/drivers/scsi/ibmvscsi/ibmvfc.c
-+++ b/drivers/scsi/ibmvscsi/ibmvfc.c
-@@ -3625,7 +3625,7 @@ static struct scsi_host_template driver_template = {
- 	.max_sectors = IBMVFC_MAX_SECTORS,
- 	.shost_groups = ibmvfc_host_groups,
- 	.track_queue_depth = 1,
--	.host_tagset = 1,
-+	.hctx_share_tags = 1,
- };
- 
- /**
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 82e1e24257bc..05db8f0b1e7e 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -6950,14 +6950,14 @@ static int megasas_io_attach(struct megasas_instance *instance)
- 	 * Single msix_vectors in kdump, so shared host tag is also disabled.
- 	 */
- 
--	host->host_tagset = 0;
-+	host->hctx_share_tags = 0;
- 	host->nr_hw_queues = 1;
- 
- 	if ((instance->adapter_type != MFI_SERIES) &&
- 		(instance->msix_vectors > instance->low_latency_index_start) &&
- 		host_tagset_enable &&
- 		instance->smp_affinity_enable) {
--		host->host_tagset = 1;
-+		host->hctx_share_tags = 1;
- 		host->nr_hw_queues = instance->msix_vectors -
- 			instance->low_latency_index_start + instance->iopoll_q_count;
- 		if (instance->iopoll_q_count)
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 511726f92d9a..eb85d74bd9d8 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -3414,12 +3414,12 @@ _base_enable_msix(struct MPT3SAS_ADAPTER *ioc)
- 		ioc->smp_affinity_enable = 0;
- 
- 	if (!ioc->smp_affinity_enable || ioc->reply_queue_count <= 1)
--		ioc->shost->host_tagset = 0;
-+		ioc->shost->hctx_share_tags = 0;
- 
- 	/*
--	 * Enable io uring poll queues only if host_tagset is enabled.
-+	 * Enable io uring poll queues only if hctx_share_tags is enabled.
- 	 */
--	if (ioc->shost->host_tagset)
-+	if (ioc->shost->hctx_share_tags)
- 		iopoll_q_count = poll_queues;
- 
- 	if (iopoll_q_count) {
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 00792767c620..74cdf72ef837 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12322,10 +12322,10 @@ _scsih_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto out_thread_fail;
+ 	if (ctrl->p_def.p_const)
+@@ -168,6 +169,15 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+ 		p_fwht_params->flags = V4L2_FWHT_FL_PIXENC_YUV |
+ 			(2 << V4L2_FWHT_FL_COMPONENTS_NUM_OFFSET);
+ 		break;
++	case V4L2_CTRL_TYPE_H264_SCALING_MATRIX:
++		p_h264_scaling_matrix = p;
++		/*
++		 * The default (flat) H.264 scaling matrix when none are
++		 * specified in the bitstream, this is according to formulas
++		 *  (7-8) and (7-9) of the specification.
++		 */
++		memset(p_h264_scaling_matrix, 16, sizeof(*p_h264_scaling_matrix));
++		break;
  	}
+ }
  
--	shost->host_tagset = 0;
-+	shost->hctx_share_tags = 0;
- 
- 	if (ioc->is_gen35_ioc && host_tagset_enable)
--		shost->host_tagset = 1;
-+		shost->hctx_share_tags = 1;
- 
- 	ioc->is_driver_loading = 1;
- 	if ((mpt3sas_base_attach(ioc))) {
-@@ -12351,7 +12351,7 @@ _scsih_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	shost->nr_hw_queues = 1;
- 
--	if (shost->host_tagset) {
-+	if (shost->hctx_share_tags) {
- 		shost->nr_hw_queues =
- 		    ioc->reply_queue_count - ioc->high_iops_queues;
- 
-diff --git a/drivers/scsi/scsi_debug.c b/drivers/scsi/scsi_debug.c
-index 2104973a35cd..af7ad912fabc 100644
---- a/drivers/scsi/scsi_debug.c
-+++ b/drivers/scsi/scsi_debug.c
-@@ -7614,7 +7614,7 @@ static int sdebug_driver_probe(struct device *dev)
- 	 */
- 	hpnt->nr_hw_queues = submit_queues;
- 	if (sdebug_host_max_queue)
--		hpnt->host_tagset = 1;
-+		hpnt->hctx_share_tags = 1;
- 
- 	/* poll queues are possible for nr_hw_queues > 1 */
- 	if (hpnt->nr_hw_queues == 1 || (poll_queues < 1)) {
-diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
-index 0a70aa763a96..61795bab83f7 100644
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -1987,7 +1987,7 @@ int scsi_mq_setup_tags(struct Scsi_Host *shost)
- 	tag_set->flags |=
- 		BLK_ALLOC_POLICY_TO_MQ_FLAG(shost->hostt->tag_alloc_policy);
- 	tag_set->driver_data = shost;
--	if (shost->host_tagset)
-+	if (shost->hctx_share_tags)
- 		tag_set->flags |= BLK_MQ_F_TAG_HCTX_SHARED;
- 
- 	return blk_mq_alloc_tag_set(tag_set);
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index f0897d587454..31c0c2054d6a 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -7187,7 +7187,7 @@ static int pqi_register_scsi(struct pqi_ctrl_info *ctrl_info)
- 	shost->irq = pci_irq_vector(ctrl_info->pci_dev, 0);
- 	shost->unique_id = shost->irq;
- 	shost->nr_hw_queues = ctrl_info->num_queue_groups;
--	shost->host_tagset = 1;
-+	shost->hctx_share_tags = 1;
- 	shost->hostdata[0] = (unsigned long)ctrl_info;
- 
- 	rc = scsi_add_host(shost, &ctrl_info->pci_dev->dev);
-diff --git a/include/scsi/scsi_host.h b/include/scsi/scsi_host.h
-index 72e1a347baa6..f7f330f9255b 100644
---- a/include/scsi/scsi_host.h
-+++ b/include/scsi/scsi_host.h
-@@ -456,8 +456,7 @@ struct scsi_host_template {
- 	/* True if the controller does not support WRITE SAME */
- 	unsigned no_write_same:1;
- 
--	/* True if the host uses host-wide tagspace */
--	unsigned host_tagset:1;
-+	unsigned hctx_share_tags:1;
- 
- 	/*
- 	 * Countdown for host blocking with no commands outstanding.
-@@ -617,8 +616,8 @@ struct Scsi_Host {
- 	 * In scsi-mq mode, the number of hardware queues supported by the LLD.
- 	 *
- 	 * Note: it is assumed that each hardware queue has a queue depth of
--	 * can_queue. In other words, the total queue depth per host
--	 * is nr_hw_queues * can_queue. However, for when host_tagset is set,
-+	 * can_queue. In other words, the total queue depth per host is
-+	 * nr_hw_queues * can_queue. However, when hctx_share_tags is set,
- 	 * the total queue depth is can_queue.
- 	 */
- 	unsigned nr_hw_queues;
-@@ -650,8 +649,7 @@ struct Scsi_Host {
- 	/* The controller does not support WRITE SAME */
- 	unsigned no_write_same:1;
- 
--	/* True if the host uses host-wide tagspace */
--	unsigned host_tagset:1;
-+	unsigned hctx_share_tags:1;
- 
- 	/* Host responded with short (<36 bytes) INQUIRY result */
- 	unsigned short_inquiry:1;
 -- 
-2.25.1
+2.35.1
 
