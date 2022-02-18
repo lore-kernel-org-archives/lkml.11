@@ -2,171 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DC2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77931C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235005AbiBRMJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:09:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38722 "EHLO
+        id S235022AbiBRMMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:12:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232329AbiBRMJj (ORCPT
+        with ESMTP id S232329AbiBRMMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:09:39 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF79D185540;
-        Fri, 18 Feb 2022 04:09:22 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IBdEws018520;
-        Fri, 18 Feb 2022 12:09:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=kiZSoymZWrUZ21eL5E5DBr3+lL3dmAn6D++X/+xOH8I=;
- b=PMrydSkxhf8Kx+mBHJdYZFO/tp6QeMvhSVU6wbzlwQ074IvDbJJjiv30hQo2ioEh62mm
- ED2RREd9UH9sdZ0nJ1k98vJVzw0LWD2o9rk/RsOtrJ6+B/oRnkZ6Vv+2qLy7NNPxizrF
- iXYjH/rGYGq7BSi3v9ZlFSzivDwejkIiRghrimrHK/gN6n+ce0/E0zgfce+7qZVCzGv+
- rFAcVAjrBYJBhd+GuwBz/iyQ5YiXFhtcc8gRjpR6FAYB2jfteA9NH8SEr7Y7KGdZkQZv
- b0CSmHtThBGh7u32HHd9vx+nGUdgFIr0gq9hgAiv6lG1B8GJF7LGhaXmvvZ9dGH5ra/e HA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ea94utcrj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:09:21 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IBjv7D007125;
-        Fri, 18 Feb 2022 12:09:20 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ea94utcq9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:09:20 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IC82ex022802;
-        Fri, 18 Feb 2022 12:09:18 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 3e64haf7ay-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:09:18 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IBwlNZ45875568
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 11:58:47 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C8B88A4062;
-        Fri, 18 Feb 2022 12:09:14 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C04CBA4054;
-        Fri, 18 Feb 2022 12:09:13 +0000 (GMT)
-Received: from [9.171.81.151] (unknown [9.171.81.151])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 18 Feb 2022 12:09:13 +0000 (GMT)
-Message-ID: <a1c0e067-cc6a-8edb-1fe9-4aa368aa6518@linux.ibm.com>
-Date:   Fri, 18 Feb 2022 13:09:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] KVM: s390: selftests: Refactor memop test
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Thomas Huth <thuth@redhat.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220211182215.2730017-11-scgl@linux.ibm.com>
- <20220217145336.1794778-1-scgl@linux.ibm.com>
- <20220217145336.1794778-2-scgl@linux.ibm.com>
- <ce27dcb4-c2a3-fad6-8277-f5b86e184892@linuxfoundation.org>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <ce27dcb4-c2a3-fad6-8277-f5b86e184892@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: WKL47Nh10YO_jYeg13qEB_Nw-QQz5Vng
-X-Proofpoint-ORIG-GUID: SlmLjttPh4R2paLaNXGk_FajH913T4JG
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 18 Feb 2022 07:12:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BBE256EEF
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:12:04 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nL276-0001HI-18; Fri, 18 Feb 2022 13:11:52 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nL273-00608q-QA; Fri, 18 Feb 2022 13:11:49 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 1/1] net: dsa: microchip: ksz9477: export HW stats over stats64 interface
+Date:   Fri, 18 Feb 2022 13:11:49 +0100
+Message-Id: <20220218121149.1430145-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_04,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- lowpriorityscore=0 mlxlogscore=999 malwarescore=0 priorityscore=1501
- spamscore=0 suspectscore=0 impostorscore=0 mlxscore=0 bulkscore=0
- clxscore=1011 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180078
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 18:36, Shuah Khan wrote:
-> On 2/17/22 7:53 AM, Janis Schoetterl-Glausch wrote:
->> Introduce macro for performing MEM_OP ioctls in a concise way.
-> 
-> How does this help? What is the value in re-writing existing
-> code and turning it into a macro?
+Provide access to HW offloaded packets over stats64 interface.
+The rx/tx_bytes values needed some fixing since HW is accounting size of
+the Ethernet frame together with FCS.
 
-I want invocations of the ioctl to be independent of each other, so the reader does not
-have to keep track of the state of the struct kvm_s390_mem_op.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v3:
+- move dev->dev_ops->r_mib_stat64 insight of the mutex 
 
-So you have to specify all arguments manually like so, which is rather noisy and makes it
-hard to see what the relevant parameter is:
+changes v2:
+- fix locking issue in in atomic context
+---
+ drivers/net/dsa/microchip/ksz9477.c    | 98 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.c |  4 ++
+ drivers/net/dsa/microchip/ksz_common.h |  3 +
+ 3 files changed, 105 insertions(+)
 
-ksmo.gaddr = guest_mem1;
-ksmo.flags = 0;
-ksmo.size = maxsize;
-ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
-ksmo.buf = (uintptr_t)mem1;
-ksmo.ar = 17;
-rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
-
-Or you introduce an abstraction.
-Previously I used lots of functions with repeated code which got chaotic.
-I decided on the macro because it's more flexible, e.g. you don't have to pass default args.
-For example, there is only one test that passes the access register arg, so you would want
-to default it to 0 for all other test.
-For the access key argument you need to pass both a flag and the key itself, so you'd probably
-get rid of this redundancy also.
-There also might be future extensions of the ioctl that work the same way
-(not 100% but not purely theoretical either).
-
-With the macro all that is orthogonal, you just pass the argument you need or you don't.
-With functions you'd maybe add a memop_key() variant and a _ar() variant and a _key_ar()
-variant if you need it (currently not necessary), doubling the number of functions with
-each additional argument. Another example is GADDR_V and GADDR, the first takes care of
-translating the address to an physical one, but sometimes you need to pass it untranslated,
-and we need to combine that with passing a key or not.
-
-A big improvement was making the target of the ioctl (vm/vcpu) and the operation arguments
-instead of baking it into the function. Since they're mandatory arguments this is independent
-of the macro vs functions question.
-
-In the end there are multiple independent but interacting improvements and it is kinda
-hard to make the call on how far to go along one dimension, e.g. I was unsure if I
-wanted to introduce the DEFAULT_READ macro, but decided for it, since, as a reviewer,
-you can see that it executes the same code with different arguments, instead of trying
-to identify the difference between 5 copy-pasted and modified lines of code. On the other
-hand you have the cost of introducing an indirection.
-> 
-> 
->> Split test cases into multiple host/guest pairs making them independent.
-> 
-> This is a good change.
-> 
->> Make various minor improvements.
->> All in all this lays the groundwork for future extensions.
-> 
-> Also good if these changes make it easier to add test. Would be helpful
-> to know the details of the groundwork.
-
-Yeah I'm not too happy about the commit descriptions.
-I was unsure how to structure the patches, since the new test motivate
-the restructuring, e.g. if I put the _test_errors_common in the first patch
-it's kinda weird since at that stage there is no commonality at all.
-I ended up moving stuff around + since I'm not quite sure about stuff like the DEFAULT_
-macros I left the description kinda vague.
-
-Probably should have linked to the series this is a reply to, since linux-kselftest wasn't on cc:
-https://lore.kernel.org/kvm/20220211182215.2730017-1-scgl@linux.ibm.com/
-
-> 
-> thanks,
-> -- Shuah
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index a85d990896b0..74fb3a6c0baf 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -64,6 +64,101 @@ static const struct {
+ 	{ 0x83, "tx_discards" },
+ };
+ 
++struct ksz9477_stats_raw {
++	u64 rx_hi;
++	u64 rx_undersize;
++	u64 rx_fragments;
++	u64 rx_oversize;
++	u64 rx_jabbers;
++	u64 rx_symbol_err;
++	u64 rx_crc_err;
++	u64 rx_align_err;
++	u64 rx_mac_ctrl;
++	u64 rx_pause;
++	u64 rx_bcast;
++	u64 rx_mcast;
++	u64 rx_ucast;
++	u64 rx_64_or_less;
++	u64 rx_65_127;
++	u64 rx_128_255;
++	u64 rx_256_511;
++	u64 rx_512_1023;
++	u64 rx_1024_1522;
++	u64 rx_1523_2000;
++	u64 rx_2001;
++	u64 tx_hi;
++	u64 tx_late_col;
++	u64 tx_pause;
++	u64 tx_bcast;
++	u64 tx_mcast;
++	u64 tx_ucast;
++	u64 tx_deferred;
++	u64 tx_total_col;
++	u64 tx_exc_col;
++	u64 tx_single_col;
++	u64 tx_mult_col;
++	u64 rx_total;
++	u64 tx_total;
++	u64 rx_discards;
++	u64 tx_discards;
++};
++
++static void ksz9477_r_mib_stats64(struct ksz_device *dev, int port)
++{
++	struct rtnl_link_stats64 *stats;
++	struct ksz9477_stats_raw raw;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++	stats = &mib->stats64;
++
++	memcpy(&raw, mib->counters, sizeof(raw));
++
++	spin_lock(&mib->stats64_lock);
++
++	stats->rx_packets = raw.rx_bcast + raw.rx_mcast + raw.rx_ucast;
++	stats->tx_packets = raw.tx_bcast + raw.tx_mcast + raw.tx_ucast;
++
++	/* HW counters are counting bytes + FCS which is not acceptable
++	 * for rtnl_link_stats64 interface
++	 */
++	stats->rx_bytes = raw.rx_total - stats->rx_packets * ETH_FCS_LEN;
++	stats->tx_bytes = raw.tx_total - stats->tx_packets * ETH_FCS_LEN;
++
++	stats->rx_length_errors = raw.rx_undersize + raw.rx_fragments +
++		raw.rx_oversize;
++
++	stats->rx_crc_errors = raw.rx_crc_err;
++	stats->rx_frame_errors = raw.rx_align_err;
++	stats->rx_dropped = raw.rx_discards;
++	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
++		stats->rx_frame_errors  + stats->rx_dropped;
++
++	stats->tx_window_errors = raw.tx_late_col;
++	stats->tx_fifo_errors = raw.tx_discards;
++	stats->tx_aborted_errors = raw.tx_exc_col;
++	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
++		stats->tx_aborted_errors;
++
++	stats->multicast = raw.rx_mcast;
++	stats->collisions = raw.tx_total_col;
++
++	spin_unlock(&mib->stats64_lock);
++}
++
++static void ksz9477_get_stats64(struct dsa_switch *ds, int port,
++			       struct rtnl_link_stats64 *s)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++
++	spin_lock(&mib->stats64_lock);
++	memcpy(s, &mib->stats64, sizeof(*s));
++	spin_unlock(&mib->stats64_lock);
++}
++
+ static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+ {
+ 	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+@@ -1365,6 +1460,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mdb_del           = ksz9477_port_mdb_del,
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
++	.get_stats64		= ksz9477_get_stats64,
+ };
+ 
+ static u32 ksz9477_get_port_addr(int port, int offset)
+@@ -1524,6 +1620,7 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 	if (!dev->ports)
+ 		return -ENOMEM;
+ 	for (i = 0; i < dev->port_cnt; i++) {
++		spin_lock_init(&dev->ports[i].mib.stats64_lock);
+ 		mutex_init(&dev->ports[i].mib.cnt_mutex);
+ 		dev->ports[i].mib.counters =
+ 			devm_kzalloc(dev->dev,
+@@ -1552,6 +1649,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.port_setup = ksz9477_port_setup,
+ 	.r_mib_cnt = ksz9477_r_mib_cnt,
+ 	.r_mib_pkt = ksz9477_r_mib_pkt,
++	.r_mib_stat64 = ksz9477_r_mib_stats64,
+ 	.freeze_mib = ksz9477_freeze_mib,
+ 	.port_init_cnt = ksz9477_port_init_cnt,
+ 	.shutdown = ksz9477_reset_switch,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 7e33ec73f803..27cae9f04322 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -110,6 +110,10 @@ static void ksz_mib_read_work(struct work_struct *work)
+ 		}
+ 		port_r_cnt(dev, i);
+ 		p->read = false;
++
++		if (dev->dev_ops->r_mib_stat64)
++			dev->dev_ops->r_mib_stat64(dev, i);
++
+ 		mutex_unlock(&mib->cnt_mutex);
+ 	}
+ 
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 3db63f62f0a1..c6fa487fb006 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -22,6 +22,8 @@ struct ksz_port_mib {
+ 	struct mutex cnt_mutex;		/* structure access */
+ 	u8 cnt_ptr;
+ 	u64 *counters;
++	struct rtnl_link_stats64 stats64;
++	struct spinlock stats64_lock;
+ };
+ 
+ struct ksz_port {
+@@ -128,6 +130,7 @@ struct ksz_dev_ops {
+ 			  u64 *cnt);
+ 	void (*r_mib_pkt)(struct ksz_device *dev, int port, u16 addr,
+ 			  u64 *dropped, u64 *cnt);
++	void (*r_mib_stat64)(struct ksz_device *dev, int port);
+ 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
+ 	void (*port_init_cnt)(struct ksz_device *dev, int port);
+ 	int (*shutdown)(struct ksz_device *dev);
+-- 
+2.30.2
 
