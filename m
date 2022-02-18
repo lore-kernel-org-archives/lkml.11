@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23296C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21393C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236099AbiBROdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:33:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58134 "EHLO
+        id S236107AbiBROdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:33:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236084AbiBROdW (ORCPT
+        with ESMTP id S236087AbiBROdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 09:33:22 -0500
+        Fri, 18 Feb 2022 09:33:37 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B522C25AE6D;
-        Fri, 18 Feb 2022 06:33:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4D025B2C7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:33:17 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F401B100002;
-        Fri, 18 Feb 2022 14:33:00 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4241A100007;
+        Fri, 18 Feb 2022 14:33:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645194783;
+        t=1645194793;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IF+bBotb8aWY1Kt+8zVVFsrxJD/Qv2pWkySdFRv0E2A=;
-        b=UUQl85JcyGBt47wLgD57UsAYqU8DebleUhgDNJs5+u1WzG9uV0IxVeUh+eiWFXC7I55332
-        S2HIrAb88CM8z5IqavD0fFygRI2Rb9LeHGB5iYNfztGhJ3zi+0AQkf2sj7sPggw8ZLkEnt
-        UeKWszGs5WzG5ux77IhBoPMVxqn2n1hUwRXi49YUyl1svtg5e/znT5cq0hyGwO5FpasbFp
-        G+DE4ETy+9IpKkQDbyAN8gl9F9RwRYrDfCg2azGWwH6ceRDR2nfLcTzurKYOQp//TgfsDm
-        EP5TFzr34OaXVmBF++UuS/VvPVE2KCytwT/ir2l5PTPqG9JieFbZ/zLNw3W3Sw==
+        bh=T1dnR8Czxi29X/52zcUWqpPxP9yVrLF/lYUdiVn/ts4=;
+        b=ZLE+Fkg+gI1PoYzz8vf27GCg4YYSgXOqSknjTDNKXX/1O839kUa7mUMDfP0HCZYPozDTbK
+        TlpAxL78PbSYMP4YDDymY7GYKDFhMqS/EFn1tTQOhX+xgUA8W1uSyyqRk6sIaYEMYN0rex
+        sEuEzQCADjaXXk8Tmphahrs2fHhbN60KhONrw0TrxkmfPTAtR6HDgB2NBVed2Atmi+8MYL
+        OGXXhC/oLYMUkjIpgRQmuGyZYa84KsTzoi7DBpH4sLYjdT/H7c3V3hlosIMNXyZnAWh/QL
+        uhvOnFzvPIe+uZftzY0j89xqZ/f6Yfmx8Pa+eb9MpCeszA6io1bSoybHh6YRDw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Christophe Kerello <christophe.kerello@foss.st.com>,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        robh+dt@kernel.org, srinivas.kandagatla@linaro.org, p.yadav@ti.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        devicetree@vger.kernel.org, chenshumin86@sina.com
-Subject: Re: [PATCH v3 2/4] mtd: rawnand: stm32_fmc2: Add NAND Write Protect support
-Date:   Fri, 18 Feb 2022 15:33:00 +0100
-Message-Id: <20220218143300.322209-1-miquel.raynal@bootlin.com>
+To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        miquel.raynal@bootlin.com, nagasure@xilinx.com, vigneshr@ti.com
+Cc:     richard@nod.at, git@xilinx.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mtd: rawnand: pl353: Set the nand chip node as the flash node
+Date:   Fri, 18 Feb 2022 15:33:11 +0100
+Message-Id: <20220218143311.322348-1-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220217144755.270679-3-christophe.kerello@foss.st.com>
+In-Reply-To: <20220209053427.27676-1-amit.kumar-mahapatra@xilinx.com>
 References: 
 MIME-Version: 1.0
 X-linux-mtd-patch-notification: thanks
-X-linux-mtd-patch-commit: b'ffb16c1c42670356c579926aabdac0ac7bbc16d8'
+X-linux-mtd-patch-commit: b'a1fe2ace2c39dcdc7c053705459a73b7598b1e4f'
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 14:47:53 UTC, Christophe Kerello wrote:
-> This patch adds the support of the WP# signal. WP will be disabled in
-> probe/resume callbacks and will be enabled in remove/suspend callbacks.
+On Wed, 2022-02-09 at 05:34:27 UTC, Amit Kumar Mahapatra wrote:
+> In devicetree the flash information is embedded within nand chip node,
+> so during nand chip initialization the nand chip node should be passed
+> to nand_set_flash_node() api, instead of nand controller node.
 > 
-> Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
+> Fixes: 08d8c62164a3 ("mtd: rawnand: pl353: Add support for the ARM PL353 SMC NAND controller")
+> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
 
 Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next, thanks.
 
