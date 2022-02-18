@@ -2,142 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C90C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB002C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiBREJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 23:09:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43532 "EHLO
+        id S229765AbiBRETR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 23:19:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiBREJQ (ORCPT
+        with ESMTP id S229478AbiBRETO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 23:09:16 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C69136EC9;
-        Thu, 17 Feb 2022 20:09:00 -0800 (PST)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21I48c9R019411
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 23:08:39 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id A4C4115C34C8; Thu, 17 Feb 2022 23:08:38 -0500 (EST)
-Date:   Thu, 17 Feb 2022 23:08:38 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, linux-ext4@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [REPORT] kernel BUG at fs/ext4/inode.c:2620 - page_buffers()
-Message-ID: <Yg8bxiz02WBGf6qO@mit.edu>
-References: <Yg0m6IjcNmfaSokM@google.com>
- <82d0f4e4-c911-a245-4701-4712453592d9@nvidia.com>
+        Thu, 17 Feb 2022 23:19:14 -0500
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB4113195B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 20:18:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1645157939; x=1676693939;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=NHtkgbMh6NXQ8widMJrekjBEmQlk/5ZVl1GQklUkRAU=;
+  b=SJkgp/PfaRLBB6E7DLex0XQwAl3t8nBb15gyTSWLqqFz+tQirmkbxNdg
+   RwmJG4a5CMzSdmLx4GTSJ01XbVYqbpVRzVfFPgJ3Df5TV45ucRTVTQ8eN
+   gNFOgvMZPjuEHjXi5lkWxgJeT81BPDUduODtrk2/bhn4nkMV06NMiBWei
+   QKD31ml5IWBwYaR162OQSTfXbnm+Dd2AQEeVvT0UyPvhZpJbGaZS/xPGy
+   p8LlW43FuohxjsuQ9gpsv2JSXjp8VwJ+p5QZev0zgdlov8nM6L1HDCUF9
+   doinLHbkTM6mrkkBN5y72pzTACsNAqWUeyWzKCUQxFkloOWn/+XwzPnpR
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,377,1635177600"; 
+   d="scan'208";a="194229786"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 18 Feb 2022 12:18:57 +0800
+IronPort-SDR: H8FLT5K0SXRVq6TjpSzFLsrmit3jAkvMBS0CHc0UWpNVmAOK3mQcFQOt1VtRgkHEnZZAoWuq56
+ p8CyI6ZwqBQQ/ajE/NLD/Tzem97LNHZl6ch9obtC4jZnkWphF3RNfj56x6E3DwiLQbKeiwe2hP
+ /GV8FMh3jcgpbox6uQT9SnkK0q0ptsXNmebV/1rpSsNlBBwXOaYgYkwuoC8egoA9adrBhonoqA
+ hpBHHRm4pSj6EY3DQYO1StX+2MGbWe9cyy5+e+LPN4w4seCIkxz3vPIhUYNscSqnXBY1/3csXM
+ 5cuxzTUCuxZGjQ8OagFScVNs
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 19:50:33 -0800
+IronPort-SDR: MuBRD4N+c1h4bJTlCrZH15QnuMJ9Fs8g326wsJDrsDMKI+CD8tbk7jOcTRD7nFYd1Ztzc2jHdx
+ M3J17G5ncV7rS4PmLEvEP+peksKYAA6DQMTnsYf/7UaiucsTT3xhdFVxoXOkEmSLYWgARuvUyf
+ +ISW9RJ/zPsk6reSWMM90EvuTOc9LIntVQiRomUruWD4GBPKouzxlUP8ZaGBz2bfF3zlsYf7MR
+ T8Vien4ytzfTYYwuQbr3qDs0Fa6kmAYNQ29oVOjZ6JlMNzZBTncwIt3rYnraC9RusxHcmY1m6f
+ A4I=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 20:18:56 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4K0JNb1pQNz1SVp7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 20:18:55 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1645157933; x=1647749934; bh=NHtkgbMh6NXQ8widMJrekjBEmQlk/5ZVl1G
+        QklUkRAU=; b=qtG86AepzypzOHFq4PqMoqkS5YbSGB0RYRLaBHmsDX4yZb1aEKb
+        LPHHgRKPVeUUjaD68MKGugmNlK9gReNg/E13JKTrZCDem5620LTPWX25tyVyKeCP
+        eFy9vSGehdJ+q55/4kuxKLxn1SK+o7QDOe1LLB1MmQfCCOiH9iVG4gwkBgp4chDK
+        2nzP9h3byeo1Umji/RC/mCYm2Wrl+nJkp3vuWueeyhnCXNBMOzn63KPFuCzVjicZ
+        4rDK9hyjxDjmRqM5fn43KapPvAe4B/I6RTcQj+4/n7JxuChpsKOmqVssD3I5I9Z8
+        20tClbD2Zh+uTMsG5Tasn4vzlOT+VqjY4Cw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id GkLBEQxUi1gl for <linux-kernel@vger.kernel.org>;
+        Thu, 17 Feb 2022 20:18:53 -0800 (PST)
+Received: from [10.225.163.78] (unknown [10.225.163.78])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4K0JNV75Syz1Rwrw;
+        Thu, 17 Feb 2022 20:18:50 -0800 (PST)
+Message-ID: <5ecf520e-588c-d756-1cb8-2224535b550e@opensource.wdc.com>
+Date:   Fri, 18 Feb 2022 13:18:49 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <82d0f4e4-c911-a245-4701-4712453592d9@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 00/18] scsi: libsas and users: Factor out LLDD TMF code
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, artur.paszkiewicz@intel.com,
+        jinpu.wang@cloud.ionos.com, chenxiang66@hisilicon.com, hch@lst.de
+Cc:     Ajish.Koshy@microchip.com, yanaijie@huawei.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linuxarm@huawei.com,
+        liuqi115@huawei.com, Viswas.G@microchip.com
+References: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <1645112566-115804-1-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 05:06:45PM -0800, John Hubbard wrote:
-> Yes. And looking at the pair of backtraces below, this looks very much
-> like another aspect of the "get_user_pages problem" [1], originally
-> described in Jan Kara's 2018 email [2].
+On 2/18/22 00:42, John Garry wrote:
+> The LLDD TMF code is almost identical between hisi_sas, pm8001, and mvsas
+> drivers.
+> 
+> This series factors out that code into libsas, thus reducing much
+> duplication and giving a net reduction of ~350 LoC.
+> 
+> There are some subtle differences between the core TMF handler and each
+> of the LLDDs old implementation, so any review and testing is appreciated.
+> 
+> Some other minor patches are thrown in:
+> - Delete unused macro in hisi_sas driver
+> - Delete unused libsas callback
+> - Delete unused SAS_SG_ERR
+> - Add enum for response frame datapres field
+> - Handle unrecognised errors in sas_scsi_find_task()
+> 
+> I have another follow-up series to factor out the internal abort code,
+> which is common to hisi_sas and pm8001 drivers.
+> 
+> Based on mkp-scsi 5.18 staging queue at commit ac2beb4e3bd7
 
-Hmm... I just posted my analysis, which tracks with yours; but I had
-forgotten about Jan's 2018 e-mail on the matter.
+I tested this series with my pm8001 v5 series on top. Everything looks
+good, no problems detected with both SAS and SATA drives tests. So feel
+free to add:
 
-> I'm getting close to posting an RFC for the direct IO conversion to
-> FOLL_PIN, but even after that, various parts of the kernel (reclaim,
-> filesystems/block layer) still need to be changed so as to use
-> page_maybe_dma_pinned() to help avoid this problem. There's a bit
-> more than that, actually.
+Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-The challenge is that fixing this "the right away" is probably not
-something we can backport into an LTS kernel, whether it's 5.15 or
-5.10... or 4.19.
+Martin,
 
-The only thing which can probably survive getting backported is
-something like this.  It won't make the right thing happen if someone
-is trying to RDMA or call process_vm_writev() into a file-backed
-memory region --- but I'm not sure I care.  Certainly if the goal is
-to make Android kernels, I'm pretty sure they are't either using RDMA,
-and I suspect they are probably masking out the process_vm_writev(2)
-system call (at least, for Android O and newer).  So if the goal is to
-just to close some Syzbot bugs, what do folks think about this?
+This series and my pm8001 series have a conflict. When applying the
+pm8001 patches on top of these libsas changes, patch 28 has a fairly
+easy to resolve conflict. Let me know if you want me to send a v6
+rebased on top of this.
 
-     	      	   	  	     	- Ted
+Thanks !
 
-commit 7711b1fda6f7f04274fa1cba6f092410262b0296
-Author: Theodore Ts'o <tytso@mit.edu>
-Date:   Thu Feb 17 22:54:03 2022 -0500
 
-    ext4: work around bugs in mm/gup.c that can cause ext4 to BUG()
-    
-    [un]pin_user_pages_remote is dirtying pages without properly warning
-    the file system in advance (or faulting in the file data if the page
-    is not yet in the page cache).  This was noted by Jan Kara in 2018[1]
-    and more recently has resulted in bug reports by Syzbot in various
-    Android kernels[2].
-    
-    Fixing this for real is non-trivial, and will never be backportable
-    into stable kernels.  So this is a simple workaround that stops the
-    kernel from BUG()'ing.  The changed pages will not be properly written
-    back, but given that the current gup code is missing the "read" in
-    "read-modify-write", the dirty page in the page cache might contain
-    corrupted data anyway.
-    
-    [1] https://www.spinics.net/lists/linux-mm/msg142700.html
-    [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
-    
-    Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
-    Reported-by: Lee Jones <lee.jones@linaro.org>
-    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 01c9e4f743ba..3b2f336a90d1 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1993,6 +1993,15 @@ static int ext4_writepage(struct page *page,
- 	else
- 		len = PAGE_SIZE;
- 
-+	/* Should never happen but for buggy gup code */
-+	if (!page_has_buffers(page)) {
-+		ext4_warning_inode(inode,
-+		   "page %lu does not have buffers attached", page->index);
-+		ClearPageDirty(page);
-+		unlock_page(page);
-+		return 0;
-+	}
-+
- 	page_bufs = page_buffers(page);
- 	/*
- 	 * We cannot do block allocation or other extent handling in this
-@@ -2594,6 +2603,14 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
- 			wait_on_page_writeback(page);
- 			BUG_ON(PageWriteback(page));
- 
-+			/* Should never happen but for buggy gup code */
-+			if (!page_has_buffers(page)) {
-+				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
-+				ClearPageDirty(page);
-+				unlock_page(page);
-+				continue;
-+			}
-+
- 			if (mpd->map.m_len == 0)
- 				mpd->first_page = page->index;
- 			mpd->next_page = page->index + 1;
+-- 
+Damien Le Moal
+Western Digital Research
