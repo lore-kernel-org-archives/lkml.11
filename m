@@ -2,157 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B10D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:38:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E67C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237102AbiBRPid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:38:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44490 "EHLO
+        id S237117AbiBRPjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:39:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236420AbiBRPiY (ORCPT
+        with ESMTP id S237088AbiBRPjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:38:24 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192723B3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:38:06 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IF62Xf017318;
-        Fri, 18 Feb 2022 15:37:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=JfCiWhO+XcDjbEfJHY2uBAlaaKqhg9h4vdzCplg2f+I=;
- b=BaBzleA4hDRVwmAUpw76WSRwvxWEPovYWH3pfrTpjO52VTthU3VgjQROf89RzOj7NGil
- YqWoSOGC4485LISJtKFfBWmIrOkoAFdoy9mU9I4I4H9HermaM7YKAmvzj9HrLht24DMd
- xq6B81/+Mew726z/e/POcLqD+UBs3M+mfSUiH3e9cYg2onS967xtqmbCSODlFqvUpA0G
- 6AsBlrYH0RZ2Gzxh2FSvS2NpisSUJQ0P5NxSnrMNu6jlQNCaYReV5/nIwtGv+8wMvf5e
- NDfhcWZ/lbivIDZjOMvkJpbYURzyjlA99xZ87+mV84YdLy71/CmMQ40sYSBhyoQqLbmf iQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8ncb1w9c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 15:37:57 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21IFUexn081892;
-        Fri, 18 Feb 2022 15:37:57 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2177.outbound.protection.outlook.com [104.47.55.177])
-        by aserp3030.oracle.com with ESMTP id 3e9bre12t5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 15:37:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KWg/Pwz2OU7kXlN7fhV+S1CC3Rp5ro3GpqnPUx+Ky394M5eGUNH4ZPKbjkC5K8bjLsYcf/cNTaAh78bcaFBviXv3qxLcf6aHbjuy7LCdgYUmECLkci2ckhFC2mD2Xxd0UZimFvQZAw/OhYvQuaRUbAbUp8GjLMcI9oVxEKGfQ+NInGdmLd726cnfjSLQfYf/yyh8CgFI5aMJvGiyiKpms70nzzIMyNjuCFzXmN1hs6kyeaHHOXWi49S6aS1M8ExQW6pEkBeT6KEp0GQB4ZVyV372oCkgi/loZ8ZHpzaVr9A/I1urrqn8Sup3xLRgNP9gxobXBSF4A8r020epJTtk5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JfCiWhO+XcDjbEfJHY2uBAlaaKqhg9h4vdzCplg2f+I=;
- b=VSRgVMCSYtZed8ZQcWdu1UH0AFnP84Kz1Ph4ezSIP860GHhHYt/pkSvwfhjvSC6iZpQhSdxUHJMUYyR6kLDN9pUuTEMk5ycMhceDGvvug0CyeIn20Mey2BD8Z7akqnjOpZHFXrJALLU376CUpx6xL0IvQk+pt/pHB+LS/yl68zE+Ba3ttdN5eshdpz/dy9IQM8wv6UMa9GueilNt103gRD9FJoVlO+S29ADQppD44LT+0YrmAw+lDuNjXIx3FHiAhUwH1MyBM9j7gAtDjC+Rz4XCYr9/eGyVLZyNR9J9SQS15cUjc4RrVBWYxdGUszYXST+kr2qA46gSEy2rbfOvvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 18 Feb 2022 10:39:33 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B078B3DA41
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:39:16 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id j5so2197457ila.2
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:39:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JfCiWhO+XcDjbEfJHY2uBAlaaKqhg9h4vdzCplg2f+I=;
- b=ZU2Qg3cWylOquT7XEcizR/W5GY+a32VFqMfvHcghLsRmq7i85fSLdUJ1SLvQ2VHWP/YbFANHpdhA/Ks0KaGgDyLY8MCLJkmZ7btJg6Ta54Wb2zm0Ns8pnZ+PAaovmdo54RDQ28KVhtqfDoD/EYopW2E9ShGBxNZWWVbV7tm85Zs=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR10MB1359.namprd10.prod.outlook.com
- (2603:10b6:300:1f::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.22; Fri, 18 Feb
- 2022 15:37:55 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%3]) with mapi id 15.20.4975.019; Fri, 18 Feb 2022
- 15:37:55 +0000
-Date:   Fri, 18 Feb 2022 18:37:37 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: rtl8192e: use BIT macro instead of left shifting
-Message-ID: <20220218153737.GJ2407@kadam>
-References: <20220218162908.48f83564@cpi>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218162908.48f83564@cpi>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0003.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::15)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VwsaeoUeJ22T2TW4cn8CPvPj+OsxArfVqqwFY08bAhM=;
+        b=iWVaM+KGzRMFJt1OBbMJFdA2FcyOSEQR4LJ7B81mwaESj4YsbaNUwnluUs8nnJkpr9
+         8Y2VZcJOibqh8n6TUaulLniXUAS4QEojAdBYeszkKKO7H2l5YAQ+ne9qiIGDUET5QYYA
+         l95Ad8eQGGduWud19c++DFbRXjBUrq8/lvK0kqknaRTl35e+9xOSWUhcsnou7/pJPVw5
+         ruh2w/+RkhxXCbu7OU06kJYc1vtvJJztX+G85OcEw1TttFno97aN70OiJ44hjDyDtnYv
+         u7Wob04aDWuZxJGP8DprZrJNQuslZEMpZgnYAgvzQ+Cnw6UZHWCFkACU0AfrqQHYAe84
+         yeEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VwsaeoUeJ22T2TW4cn8CPvPj+OsxArfVqqwFY08bAhM=;
+        b=wC64qAN/ELi+j26+DkZXbQLtaQLd6jBMDh+0wNDT4VgcyaOxMeCskoUl07ywUxI95s
+         WPnfwiTGjaEm3z+gUAHU7AUOPI8a3XMp9kYLMd/J1af4lLsZbFpsWimDpeut3L1Kebad
+         k0krOslsYzmcIQYeHEwTyBWDNE02YgMbgxC4xALkzyz+VXjXIls8Kw/gdZkrvPsOqAIw
+         4GKUkMyLwFRPIOrw1srfWfzShy3KxiNHFNHFu/wStukiIGUZddWSa+TRMPzQUxWx7AcJ
+         Vb2w3Zq+4OOgAjFRGLV3x4F39PqWnMVms3MsO/6N0qE2+XUdqqTAJVnQMlIAbLVvbueN
+         6gBg==
+X-Gm-Message-State: AOAM531ZjBf7Dt3WYFb2CU53/ABVFVQ4qTbVOVCmoieg9Wi3N6gbgAGm
+        vZQ6mGY+mxvtGEu4Ug/PUHZFzIpfQt/gyqU7
+X-Google-Smtp-Source: ABdhPJykOdkq3B8Pv6DQ8GuwWzQ7X7zppMZWqePsHUFZupRBGwOfgPOmn3jonMYG9dIRKCQQdlZzEw==
+X-Received: by 2002:a92:2603:0:b0:2bf:86bc:f860 with SMTP id n3-20020a922603000000b002bf86bcf860mr6030831ile.75.1645198755464;
+        Fri, 18 Feb 2022 07:39:15 -0800 (PST)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id g21sm4495723iow.4.2022.02.18.07.39.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 07:39:14 -0800 (PST)
+Message-ID: <7de37015-da47-1f2e-9879-d84021905fed@linaro.org>
+Date:   Fri, 18 Feb 2022 09:39:13 -0600
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c2c61056-89c3-4a0d-f9c0-08d9f2f4a18b
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1359:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB1359092E1819F1D95096DDED8E379@MWHPR10MB1359.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BFSgrlEN0pIlEfT/XiGWqxG9zKFqviKHrs8f5JlC/SrTqu/Mn00YLufyDh/gcR1tEhSEEXbcxj5+vt7AS4/gdoUf8EMkwoT1vTPQNa2pFfRKUxeoq18cB1Ol68Jt0K1IjBj7yWVqcqCKhpnivo0KmInNruSJkt6ygIWBc1tt8RaRzWFs9lA7n4cxViNnOHglJ7MBgoAsHCF8ArbQ4W8IV7OQwz6nIPfHDsV8qf8GyA91OxAROmM1kLI8CKlF3U46bu5sqrfPxAetzZ/aimiCzBslq5KoP4H0u9Ku/m/aGk8bo8H8LuWECrC1chUlfe8Gg+ARdMvC2Z376OHWpxxEhpTLDLQMdKFpja9XoxrKIoQz8Poa+Ui6/NLDSs89fXH9XBK/XGHhaAh2OVelgSvWZpRXRCdmlSRPUqFgYScN1GWgD/5WI+9dJviWZC0RPshWw88b7ihf5tRnajM4iLvNKk8hYXscXilo1gY4kjrUhvN5MFQebs8/0CD2XR1I0mdbisW6XfT74NyOVjSgkWj0Jx8tlqIaMw/y6CD1MgtE3sdTf3rk7EVMNY3Hzh0Sx1FSad/yGy1TkbKzvOMhC/yjhbVSFuOXDSNFn/Lx8Zluw+n/me0GcbjgNU7t62hmn2PR+F3W9m5Ez0zbGG/5X9zbiksJv+yc6s6CSIO/De02XiQ1Ya18S513UbHUGG+4zC6Dq+3ozyl0CsbSaGQ9E9sZcA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(316002)(6916009)(53546011)(52116002)(9686003)(6666004)(6506007)(6512007)(38350700002)(38100700002)(508600001)(6486002)(2906002)(4744005)(86362001)(8676002)(66476007)(4326008)(66556008)(66946007)(5660300002)(33716001)(44832011)(33656002)(1076003)(26005)(186003)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bYTFycLt2tcqTZ/b/GPQdx/DFbkfa1YCwAX6cUZbzJsYsVXQ8QUd0aWLxJ7M?=
- =?us-ascii?Q?kuJny06pcZjKWlLcNt0gfqP0wwsuLu18gRzVUtInEEPKObZs5jZ9E8Rzq2S+?=
- =?us-ascii?Q?kFNT1+553kGGHW49AM4EJDKX2vIoiY6j8x/OUeM2ARrsD69Acwx1R2PsUmci?=
- =?us-ascii?Q?tfS44voDr9KygWl55xTrqiwgkXXz+e53sw9KZ7B1mfD/HtRRuP8qBPfQq9eY?=
- =?us-ascii?Q?vjKT0PBUZT7UXojRMjC4vulYvjb3h685+FJPOdkq/Y9bsgkYZodsmn4nXyIG?=
- =?us-ascii?Q?K9n/kdSVhvgdxMJfzae8Z+SlCRVWhKA4xxqUc22e0CkAt2THLy9yWdOIiUK+?=
- =?us-ascii?Q?V83im1j9Z51qG3cWk7i+cQLfkD03pWUwDkn2o+Cc9uwVYnPz2EG5t0xtRYaH?=
- =?us-ascii?Q?OBLs7riqlhK9EDjdAngHzn4pHg0sGerUrcmDfqdDnzRvwv6/RsaWd90J/suK?=
- =?us-ascii?Q?8blzIUmgp8+f8+F7U2vVCxOgKcCe1tKCd7a+aFVCbvCr/INcnxGYmBsoBw5P?=
- =?us-ascii?Q?qzASdmtPeKJ6y9nIyN6lAB4ER7XQfdXYSrVsch+Rh4Rp9ZOz6Eolc3BrI9J7?=
- =?us-ascii?Q?Tw8+Lrj+NAznxwpQFSLtaBAZV/slCNfCN9gExNLC71vc5ORrF4rDXX85ojtp?=
- =?us-ascii?Q?RWItIftv5eFwv9e15F65IAsZN5Mx67FkDOgQQzv9a2AID1GKd/5kv4kwHkKg?=
- =?us-ascii?Q?Stfnscbs/PsSZuAeuU57ujUtAvMi5JlBUhoe1kQYNogAxWHKzNVX0X8d/9Fh?=
- =?us-ascii?Q?QWHWByz+OA87JoKGuL0YfYgATO2OGdS82ki4hu0R6Ojj/xNC4imxIhazTD5c?=
- =?us-ascii?Q?xkh7rDZaS9kX8SLYFg9Uvdw+Xv8poj7jEN/ddPIVLIUaODpnAdH70xhufJmk?=
- =?us-ascii?Q?awxy38fgYlrHXhQjpiRoNEMDfC/Z4PSGYj1u0CbqyvXfTZI8UhX64Uyf9u+1?=
- =?us-ascii?Q?wrl3enYx9W0D7/BnLxHHi1JHHjQCo1DXHmOzbcIuatOKGN/PGbpa+F9OuHnr?=
- =?us-ascii?Q?knb9Js9/7yek8iAPhqJXxT1fUnaIAHXmPktMWYTqRJHNFlHaf1z337TWvVNM?=
- =?us-ascii?Q?CvN8MoogrNQjLiiCEXTLRG/yZ5A5C7t3ivZyqPRTGl63WnxRSfeELcUHu+HV?=
- =?us-ascii?Q?NgpAoW0IMuuoNBMvdAJX9fUiVWdIT76jbGsBT7X8ndHDZW15ca0CGlviHywi?=
- =?us-ascii?Q?CC/qamOBFsDUFAkY4q8Tutw5/gNB8CGumSfNz++0WSEJkFdImlnIZIEpGlbQ?=
- =?us-ascii?Q?jknVwmPQMBceCN8HRF1E9NUKg1b2cOhDCruPOXEf2cwsSI09rwS5tHDKoukI?=
- =?us-ascii?Q?etSg0ppJQMwO/aRAHdkBjaiF8oMyRK+S75mtXd6luPAMhLSNqmfNSshlYX6U?=
- =?us-ascii?Q?c6UnRzqPvCi/wPZCm0wkfmq9va41jUh8ehWmJoIIsF8DHjL7jPKn+1Gy3kZD?=
- =?us-ascii?Q?IXNjonJ3hXp38x7RaEtfmlonkvHcBqgjkohMItL4gkD+uXyxpRK+nEHJsMCr?=
- =?us-ascii?Q?uUcgqisGJD0VR1XwyL6k1ZWUTI/lp2GSwULQxbx+gw7Vp5EflRDis15ASQRV?=
- =?us-ascii?Q?T4xpB9Tn3W+iG8YAIPBgAZGJB+Y1pqgP6CfYMo1Fd2MF7Bnrv4Eh5F3X+FK8?=
- =?us-ascii?Q?Se6P41rP85uSHSf9BCyclROhj7bdheqx1trAr8ErxytIoxT1TQmuft4UWhDI?=
- =?us-ascii?Q?bkh39w=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2c61056-89c3-4a0d-f9c0-08d9f2f4a18b
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 15:37:55.1038
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rsStKIy3mBHEvwz2mmc4ePxnwKpubSwheQdNzPGg8JJChJLp9SWXvOoSwURi8QJrbg3MIixMk4l3OF5VMFLQbXtJLg2WlLEEFuH/xmw7tjA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1359
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10261 signatures=677564
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202180100
-X-Proofpoint-ORIG-GUID: 8i8ETt7QvX9BKVCW0al7n_M1n1VBonhL
-X-Proofpoint-GUID: 8i8ETt7QvX9BKVCW0al7n_M1n1VBonhL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 12/25] bus: mhi: ep: Add support for ring management
+Content-Language: en-US
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
+        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
+        quic_cang@quicinc.com, quic_skananth@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
+ <20220212182117.49438-13-manivannan.sadhasivam@linaro.org>
+ <20504c14-6df5-83d1-53e9-85c682a5a3c7@linaro.org>
+ <20220218080704.GD11964@workstation>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220218080704.GD11964@workstation>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The subject needs to say "[PATCH] staging: rtl8192e:"
-
-On Fri, Feb 18, 2022 at 04:29:08PM +0100, Moses Christopher Bollavarapu wrote:
-> From eaca0dd8fcbe3ff6daf14ea7a532e53acf840790 Mon Sep 17 00:00:00 2001
-> From: Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
-> Date: Fri, 18 Feb 2022 16:08:16 +0100
-> Subject: [PATCH] drivers: staging: rtl8192e: use BIT macro instead of left shifting
-                   ^^^^^^^^
-Leave out the drivers:
-
+On 2/18/22 2:07 AM, Manivannan Sadhasivam wrote:
+> On Tue, Feb 15, 2022 at 02:03:13PM -0600, Alex Elder wrote:
+>> On 2/12/22 12:21 PM, Manivannan Sadhasivam wrote:
+>>> Add support for managing the MHI ring. The MHI ring is a circular queue
+>>> of data structures used to pass the information between host and the
+>>> endpoint.
+>>>
+>>> MHI support 3 types of rings:
+>>>
+>>> 1. Transfer ring
+>>> 2. Event ring
+>>> 3. Command ring
+>>>
+>>> All rings reside inside the host memory and the MHI EP device maps it to
+>>> the device memory using blocks like PCIe iATU. The mapping is handled in
+>>> the MHI EP controller driver itself.
+>>>
+>>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>>
+>> Great explanation.  One more thing to add, is that the command
+>> and transfer rings are directed from the host to the MHI EP device,
+>> while the event rings are directed from the EP device toward the
+>> host.
+>>
 > 
+> That's correct, will add.
+> 
+>> I notice that you've improved a few things I had notes about,
+>> and I don't recall suggesting them.  I'm very happy about that.
+>>
+>> I have a few more comments here, some worth thinking about
+>> at least.
+>>
+>> 					-Alex
+>>
+>>> ---
+>>>    drivers/bus/mhi/ep/Makefile   |   2 +-
+>>>    drivers/bus/mhi/ep/internal.h |  33 +++++
+>>>    drivers/bus/mhi/ep/main.c     |  59 +++++++-
+>>>    drivers/bus/mhi/ep/ring.c     | 267 ++++++++++++++++++++++++++++++++++
+>>>    include/linux/mhi_ep.h        |  11 ++
+>>>    5 files changed, 370 insertions(+), 2 deletions(-)
+>>>    create mode 100644 drivers/bus/mhi/ep/ring.c
+>>>
+>>> diff --git a/drivers/bus/mhi/ep/Makefile b/drivers/bus/mhi/ep/Makefile
+>>> index a1555ae287ad..7ba0e04801eb 100644
+>>> --- a/drivers/bus/mhi/ep/Makefile
+>>> +++ b/drivers/bus/mhi/ep/Makefile
 
-The patch looks okay but these headers do not belong.
+. . .
 
-regards,
-dan carpenter
+>>> diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+>>> index 950b5bcabe18..2c8045766292 100644
+>>> --- a/drivers/bus/mhi/ep/main.c
+>>> +++ b/drivers/bus/mhi/ep/main.c
+>>> @@ -18,6 +18,48 @@
+>>>    static DEFINE_IDA(mhi_ep_cntrl_ida);
+>>
+>> The following function handles command or channel interrupt work.
+>>
+> 
+> Both
+
+What I meant was to suggest a comment that stated that it
+is used for both of those.  Not really a bit deal though.
+
+>>> +static void mhi_ep_ring_worker(struct work_struct *work)
+>>> +{
+>>> +	struct mhi_ep_cntrl *mhi_cntrl = container_of(work,
+>>> +				struct mhi_ep_cntrl, ring_work);
+>>> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+>>> +	struct mhi_ep_ring_item *itr, *tmp;
+>>> +	struct mhi_ep_ring *ring;
+>>> +	struct mhi_ep_chan *chan;
+>>> +	unsigned long flags;
+>>> +	LIST_HEAD(head);
+>>> +	int ret;
+>>> +
+>>> +	/* Process the command ring first */
+>>> +	ret = mhi_ep_process_ring(&mhi_cntrl->mhi_cmd->ring);
+>>> +	if (ret) {
+>>
+>> At the moment I'm not sure where this work gets scheduled.
+>> But what if there is no command to process?  It looks
+>> like you go update the cached pointer no matter what
+>> to see if there's anything new.  But it seems like you
+>> ought to be able to do this when interrupted for a
+>> command rather than all the time.
+>>
+> 
+> No, ring cache is not getting updated all the time. If you look into
+> process_ring(), first the write pointer is read from MMIO and there is a
+> check to see if there are elements in the ring or not. Only if that
+> check passes, the ring cache will get updated.
+> 
+> Since the same work item is used for both cmd and transfer rings, this
+> check is necessary. The other option would be to use different work items
+> for command and transfer rings. This is something I want to try once
+> this initial version gets merged.
+
+OK.  I accept your explanation (even though I confess I did not
+go back and look at the code again...).
+
+Thanks Mani.
+
+					-Alex
+
+> Thanks,
+> Mani
 
