@@ -2,146 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D96BEC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C91C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiBRBJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 20:09:38 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37242 "EHLO
+        id S231173AbiBRBJv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 20:09:51 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiBRBJg (ORCPT
+        with ESMTP id S230107AbiBRBJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 20:09:36 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2883BA47;
-        Thu, 17 Feb 2022 17:09:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645146561; x=1676682561;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=i/uHlQnpqnYhs2UtoI5OgAOBiOeNbQTVCxOGakFU9Us=;
-  b=WDxa2hw2LT1oLushOA1x/8uZB+xePo/ogmkmdhsTBGzd1DDh4odVYxxO
-   7zB0NHw7aapm/ZlMSRe2xCVU4+am1gWUHJArBxwIfLuKrOCWvzZ14TmsN
-   IkPqxaE4XvzotLDA2AU+KrkT+MP5JIOXqYmKQnZfBzd4+l8YSZ+w8b/KH
-   shkq21xb8dNqsJ4thM5z6eGAFkiU6KBOncXz6LU5NidQJcVAv6CkCjF24
-   /5qNrnUa5BVEHkkd551yJXJJ1FfdSIuDHwu0xypENRWRgoVcgRvJgtRgw
-   7J241EHXwj1S20B2om/hTogaQo6gRw1GiaxUPb751H8moIzRZl3pBB6YC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="238423700"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="238423700"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 17:09:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="682271178"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Feb 2022 17:09:13 -0800
-Message-ID: <cbfa96be-74a7-92f5-620a-2d820c7f55d8@linux.intel.com>
-Date:   Fri, 18 Feb 2022 09:07:51 +0800
+        Thu, 17 Feb 2022 20:09:49 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770433BF8E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 17:09:33 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id bg10so11291925ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 17:09:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YhNqz0TwV7gSLYgP9YWbRspB12calUNnn7qInjIWMb8=;
+        b=kjaQXcd+qDo6HeXDPEWhbFh7itNDJeBgJ0jJRODQBOZ7hs979pzm2WflsUaeHt87yP
+         QfxDMnIRoaJ7eDkvmb/yckwyk9YSdc1FaxiFI9ozai/ESqHRWGC3j6y8tn1v5Pwbp/xi
+         y+HpVyyGh9scpSCcn61WSMOXHDjMnjoadxSfY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YhNqz0TwV7gSLYgP9YWbRspB12calUNnn7qInjIWMb8=;
+        b=8G2HohxHJDWNfppVVOqnbXwqz3ZiCok06L3i5L7Gtk5EbI6ZWoAtTC1CYa3jgWKBTs
+         +ylOvpU36HAOtirMbjBgZMXtxoWL/o59VuR2zMh4lUZnv4BBdr5k760GCSyBJPpv3dGv
+         E5TR0EaM1BJqyFmske1jy/RdBCY69N5bwxukEvfJcjWTk53nzUqmLm+piVi5A82iimUy
+         rhE9G93s8GKQBDPhAIiDh+FySiub0B3VdCCOFgvGQBJ0PlHgeeDEnnGTswu5lMPeQvig
+         GHsAC89UbomUqFgan/5UsEcDqQ7JmU3T2EI04i7ImgoGTaBYIKdq6YTUa86JCJuCo2MU
+         2FUg==
+X-Gm-Message-State: AOAM530jB9fj4eDUxmLJVxQl9UcN0WE43GTfdMD8nqC7JsEn0fOxnTTL
+        rrKauCA4rpPepiNvsYIUx42lMfQzVM/47Tl7bkM=
+X-Google-Smtp-Source: ABdhPJx0FkyMSzC0xVJfJKPa6ZdfNxg4+E4oQspKRjxlr5B1vfKWBCCJPJKHwYMK8vUq7zF97gxFQA==
+X-Received: by 2002:a17:906:c08a:b0:6ce:36f8:bfe8 with SMTP id f10-20020a170906c08a00b006ce36f8bfe8mr4528722ejz.52.1645146571763;
+        Thu, 17 Feb 2022 17:09:31 -0800 (PST)
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com. [209.85.218.48])
+        by smtp.gmail.com with ESMTPSA id q14sm4055398edd.54.2022.02.17.17.09.31
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 17:09:31 -0800 (PST)
+Received: by mail-ej1-f48.google.com with SMTP id hw13so11217224ejc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 17:09:31 -0800 (PST)
+X-Received: by 2002:a5d:64ef:0:b0:1e3:1e05:d042 with SMTP id
+ g15-20020a5d64ef000000b001e31e05d042mr4049131wri.679.1645146213585; Thu, 17
+ Feb 2022 17:03:33 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com> <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 17 Feb 2022 17:03:13 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=VVvcn1VpLXjd+X9Xe50sS_vY5ukKJE8i=eAZf1Phofuw@mail.gmail.com>
+Message-ID: <CAD=FV=VVvcn1VpLXjd+X9Xe50sS_vY5ukKJE8i=eAZf1Phofuw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/5] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 00/14] Fix BUG_ON in vfio_iommu_group_notifier()
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/4/22 9:56 AM, Lu Baolu wrote:
-> Hi folks,
-> 
-> The iommu group is the minimal isolation boundary for DMA. Devices in
-> a group can access each other's MMIO registers via peer to peer DMA
-> and also need share the same I/O address space.
-> 
-> Once the I/O address space is assigned to user control it is no longer
-> available to the dma_map* API, which effectively makes the DMA API
-> non-working.
-> 
-> Second, userspace can use DMA initiated by a device that it controls
-> to access the MMIO spaces of other devices in the group. This allows
-> userspace to indirectly attack any kernel owned device and it's driver.
-> 
-> Therefore groups must either be entirely under kernel control or
-> userspace control, never a mixture. Unfortunately some systems have
-> problems with the granularity of groups and there are a couple of
-> important exceptions:
-> 
->   - pci_stub allows the admin to block driver binding on a device and
->     make it permanently shared with userspace. Since PCI stub does not
->     do DMA it is safe, however the admin must understand that using
->     pci_stub allows userspace to attack whatever device it was bound
->     it.
-> 
->   - PCI bridges are sometimes included in groups. Typically PCI bridges
->     do not use DMA, and generally do not have MMIO regions.
-> 
-> Generally any device that does not have any MMIO registers is a
-> possible candidate for an exception.
-> 
-> Currently vfio adopts a workaround to detect violations of the above
-> restrictions by monitoring the driver core BOUND event, and hardwiring
-> the above exceptions. Since there is no way for vfio to reject driver
-> binding at this point, BUG_ON() is triggered if a violation is
-> captured (kernel driver BOUND event on a group which already has some
-> devices assigned to userspace). Aside from the bad user experience
-> this opens a way for root userspace to crash the kernel, even in high
-> integrity configurations, by manipulating the module binding and
-> triggering the BUG_ON.
-> 
-> This series solves this problem by making the user/kernel ownership a
-> core concept at the IOMMU layer. The driver core enforces kernel
-> ownership while drivers are bound and violations now result in a error
-> codes during probe, not BUG_ON failures.
-> 
-> Patch partitions:
->    [PATCH 1-7]: Detect DMA ownership conflicts during driver binding;
->    [PATCH 8-10]: Add security context management for assigned devices;
->    [PATCH 11-14]: Various cleanups.
-> 
-> This is also part one of three initial series for IOMMUFD:
->   * Move IOMMU Group security into the iommu layer
->   - Generic IOMMUFD implementation
->   - VFIO ability to consume IOMMUFD
+Hi,
 
-Thank you very much for your comments. A new version of this series has
-been posted here:
+On Thu, Feb 10, 2022 at 3:58 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
+>
+> +       backlight_3v3_regulator: backlight-3v3-regulator {
+> +               compatible = "regulator-fixed";
+> +               regulator-name = "backlight_3v3_regulator";
+> +
+> +               regulator-min-microvolt = <3300000>;
+> +               regulator-max-microvolt = <3300000>;
+> +
+> +               gpio = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
+> +               enable-active-high;
+> +
+> +               pinctrl-names = "default";
+> +               pinctrl-0 = <&edp_bl_power>;
+> +       };
 
-https://lore.kernel.org/linux-iommu/20220218005521.172832-1-baolu.lu@linux.intel.com/
+So I'm pretty sure that this is wrong and what you had on a previous
+patch was more correct. Specifically the PMIC's GPIO 7 truly _is_ an
+enable pin for the backlight. In the schematics I see it's named as
+"PMIC_EDP_BL_EN" and is essentially the same net as "EDP_BL_EN". This
+is distinct from the backlight _regulator_ that is named VREG_EDP_BP.
+I believe the VREG_EDP_BP is essentially sourced directly from
+PPVAR_SYS. That's how it works on herobrine and I believe that CRD is
+the same. You currently don't model ppvar_sys, but it's basically just
+a variable-voltage rail that could be provided somewhat directly from
+the battery or could be provided from Type C components. I believe
+that the panel backlight is designed to handle this fairly wide
+voltage range and it's done this way to get the best efficiency.
 
-Best regards,
-baolu
+So personally I'd prefer if you do something like herobrine and model
+PPVAR_SYS. Then the backlight can use ppvar_sys as its regulator and
+you can go back to providing this as an "enable" pin for the
+backlight.
+
+I know, technically it doesn't _really_ matter, but it's nice to model
+it more correctly.
