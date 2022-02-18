@@ -2,187 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233701AbiBRJkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:40:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41220 "EHLO
+        id S233685AbiBRJlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:41:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233670AbiBRJkf (ORCPT
+        with ESMTP id S233676AbiBRJlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:40:35 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60139.outbound.protection.outlook.com [40.107.6.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FB1151C6A;
-        Fri, 18 Feb 2022 01:40:16 -0800 (PST)
+        Fri, 18 Feb 2022 04:41:50 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2107.outbound.protection.outlook.com [40.107.21.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C44C4D;
+        Fri, 18 Feb 2022 01:41:30 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PGUAGRIa6gfPodB1WLDiwDE/WMh4xYQWFzZSoonwrkq4eYo7/rtoXgRGqxBjRYXJeWFxpWSmw2KimtODfFb3tcXoH3C1oAofcISX/y56ghxaH6pzn2RQ0rQf2rI/epOvOTmWWisL5yMJMvqI4Ve+WSycLk5Nsm4d6nWM5pFl03n6yYw1rdQ7MO+ccIzmxBDqFfcOvejUQiV+bXZbgSMKVy4hAoDW9p6qoTv2E5AE2wa6JdXFiemDB/YYJ3vI/2oSdfNdOFXz3z5R5V7V6WGtDuSEMcXVlfWaD4RJcsmNAgEjF65Zz3F/D/7hRekTjp2xbrlfvAJuIWkmwnQnh+wTMA==
+ b=e5aE039+95K3vWAkidg5rucblTAkHLEZlia5ulvi+K+u31UVOWh7OT/XRUTzSSCdV7qx6TNXrRLY3fSUwLE6lh5Kw3CPI/LsMSNzSt5xa5LFf2ZtB9f5qNQp6op/t97vC4kDHAC6DbdIkab58RLLWdgVhffoNBAc+0/gPpNr7wzNf0VmxUEXeHd47NrL3CvhIp7zC2BDz5lln6KERSr9EbAkQDJaYCeZnsmadSuxo8uI6HorHaGD13EqzM0xSEXJC8Q2zfZrau+dI31s2MvJDd8r0/0/wVeUvPGqZUVJ/R4mbxDwII70h6PvRFvvDvxls2cCsOhtYwCjGIl9r2uXOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=g74Od77Be3VMm2wcJ42Ta59A9o9m44sL0dCWnHo2qds=;
- b=BECygGzimZ8p1BBXMOQGRtwu8w8RxUH/7Mfl0fzjyiqIP0daxXi5bWdATgRXS0iO1GKEzsW0I1WEcR7BaYPnLWAx1maB0HXm37wm+ea/zg2mP4k8eVFCkfv7vGg7Dnjn365T+kyhwj+daVf/tHEihg1msr9so20nLDXVcstyiCGgVrNAhBVjjv76DtTGLdooEqgPeTVIlzGZYSH0QdXTpKyp/kuMM/hVmuXbtONLKVeXVteCDo7m8iXSftuiNrjEhNKPQPbE4MPnWtZPWi2i4Y9mJro4o1Vp3PAJ3SWugt+V6m0//75KAeXnUKya0Jz78VKd50gfbWWcgiKa3+mG3g==
+ bh=FiExnOWIywmDhDRGHSmlLJIuI38zGpCwcags1fjZhWs=;
+ b=ZYDB5dpIE5AypZWyqINuAFPggDdVunIzaRbWugf3zW7DqnCCOSVBwkez0d15/bPpgris7Vigx5UVAlYaXPRC3mlmxX+Mkhu3JdLL6ZKnV9an8HitLdlJ/Hz7PW38wLOsWKPaDi97gwBa3CTA/IMx30ZXzMw6oAqsDcjb5Jml4eCLO3Kvfr2KhOCrWhxqVHbsrPqo/2HK0KZaIZsxrxa4sHwEMvp83bAR/EJJTJkx8Ro6ustwI0UMg2UpqMFkuc57FUHCNogi1AaIgjultmpv5tPP2pVshSlZ4e8ydjkGbwv80YP0nbITyJzOg+MqmyMKFm2HiVqgs8Crrp9p30kgHA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g74Od77Be3VMm2wcJ42Ta59A9o9m44sL0dCWnHo2qds=;
- b=jwtexfBjcHkhlCbqjDEfngMUBpA7ugOnp8mRS96m6r6B0bPimYxbg7vQlMXQRD05colzb+PAdmt26cnJ9GdAIDOcX22n+Wdl6qPFff23VctF/bB+iXMgV7yGlhL0LIPscRryFEnW6nKOrDqDiRlkKpC+atsEwIwMlCw/2TfL3LU=
+ bh=FiExnOWIywmDhDRGHSmlLJIuI38zGpCwcags1fjZhWs=;
+ b=s+4hGXH14iZ2NEScZvksaGYhHIwoENpQxSQ0vo2JqoBXzjoHxFPo9QHmWxWh6YCNReYU98qAFhYUyqyAKncriK3Ge8Ukar3Cciva/gszaFq1yfaBTvqecFQk4IN/eRkwVFFUn4G/SJ0vWRkIiZEjraM2Qb47F9B1m6jLZtYJiso=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM (2603:10a6:800:123::23)
- by PAXP190MB1504.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:1c7::17) with
+ header.d=none;dmarc=none action=none header.from=nokia.com;
+Received: from AM7PR07MB6916.eurprd07.prod.outlook.com (2603:10a6:20b:1b4::19)
+ by VI1PR0701MB6960.eurprd07.prod.outlook.com (2603:10a6:800:190::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Fri, 18 Feb
- 2022 09:40:12 +0000
-Received: from VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::f16c:7fde:c692:f911]) by VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- ([fe80::f16c:7fde:c692:f911%6]) with mapi id 15.20.4995.022; Fri, 18 Feb 2022
- 09:40:12 +0000
-From:   Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] net: prestera: flower: fix destroy tmpl in chain
-Date:   Fri, 18 Feb 2022 11:39:49 +0200
-Message-Id: <1645177190-6949-1-git-send-email-volodymyr.mytnyk@plvision.eu>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: FR3P281CA0069.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:4b::16) To VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:800:123::23)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.7; Fri, 18 Feb
+ 2022 09:41:27 +0000
+Received: from AM7PR07MB6916.eurprd07.prod.outlook.com
+ ([fe80::594:fa1f:92c5:e546]) by AM7PR07MB6916.eurprd07.prod.outlook.com
+ ([fe80::594:fa1f:92c5:e546%5]) with mapi id 15.20.5017.012; Fri, 18 Feb 2022
+ 09:41:27 +0000
+Message-ID: <a828b1b2-9e32-57b2-6d60-b1b8de90222a@nokia.com>
+Date:   Fri, 18 Feb 2022 10:41:19 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v4 1/2] dt-bindings: hwmon: add tmp464.yaml
+Content-Language: fr
+To:     Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>
+References: <20220218065856.1899086-1-linux@roeck-us.net>
+From:   Agathe Porte <agathe.porte@nokia.com>
+In-Reply-To: <20220218065856.1899086-1-linux@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: DM5PR06CA0067.namprd06.prod.outlook.com
+ (2603:10b6:3:37::29) To AM7PR07MB6916.eurprd07.prod.outlook.com
+ (2603:10a6:20b:1b4::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0317b954-09e1-47d5-92f3-08d9f2c2a926
-X-MS-TrafficTypeDiagnostic: PAXP190MB1504:EE_
-X-Microsoft-Antispam-PRVS: <PAXP190MB1504886F60DD0834F4847C358F379@PAXP190MB1504.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:298;
+X-MS-Office365-Filtering-Correlation-Id: 341524fb-ce51-42b2-56f1-08d9f2c2d5a3
+X-MS-TrafficTypeDiagnostic: VI1PR0701MB6960:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR0701MB6960337CC450DDDE0367351E9B379@VI1PR0701MB6960.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: acXHomG8LGYSU9tBhepVazS/nL4gMj0xF56my8q9q9T1WfxmUlmhBrKGiL6NuOUU/l2op2SdlVY9AtPg6ps+Hn00qdyMYJu5mfaf7ZlRV+c22JeRrV/HZcRb1QRy7Z1807l9MrlUfgWhZ6gCklgqq5pVVbcdrqwx6UQPz/V9rGGV5acC4WpTeFcVMecPGF15AFWDiqa6vUlegRohFYHlrIqMZUd8W5nnBru0h8/9O9TwT+QpE6TT0mQ+6qozay18qkJ51oDlnemT5NPohDsviE1Rh89pTDflCsBfPCRTGQApZT7j1cIuheW77XktWn+DjPYcwn3RbJ910WLcV+BE6zgSckfKu7XKkZ1TY/tGF8XES6CSeTtfMnEcY3dfLmXGU9k5OlNt0lJC+nNHsNWHaQsQzR5nYmqpdZhAueZvt15k9QJvagkjKLpwNx/gY8hRhoaqlWuyh1iHLNZTFMatIyzKoHm0P5/H7HQKfzYpqsEXkxH+HXmvTnzy3sJgtE5nKKaS01+FstW8DDefvyphZX25jmHNw+si60romqcMNc2wnHDLxC+fZ5+784ZCWt1YkOESvJw2vWprWreFJzWFigaPBybDS4fZ3luCOazvWr9P3j1ROnQv1oELcM5cPbD1BJlkGhP8/aY6WJftB0gwi/28BEm8VHllWsjDKeOhVZ3oGtHjW8bZg6wVLkzPlzSG55DmbAnp7MtVtKsyYIndOA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0734.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(376002)(136003)(346002)(396003)(366004)(39830400003)(6916009)(54906003)(36756003)(66476007)(6506007)(52116002)(6666004)(86362001)(508600001)(316002)(6486002)(6512007)(8936002)(38100700002)(66946007)(38350700002)(2616005)(5660300002)(44832011)(186003)(8676002)(4326008)(2906002)(83380400001)(66556008)(26005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: xaGhAiL49Wqf/FKqOFnHNDRJbEW49BY0qqPUNb6hTCfW4pD80+eu42PldZ7/8C4F24ANiKjXUuOgDbAoS6JaBlOZHzOwsUS4CARZdhb0pio0n/+1NSqAojzjakW+IR3yIV+9Ip4uSf4IUhHTfSm5Tf+mgq4ncz8J9KOmWhIwWleoYYyhkNtyxviclrzoycnIBvmlGLGeLVlnKaKvNiaAz15vMul4HoGmCAU9qdAGs8PI322OMlPO3slwF5iIHz+rwBFOz2mbDagrwXB1DQPwb/EheqR7DFSGiRQNH6NSXCGEBCGtKsyky82pCRZcfgZuQhlsGiJPxPAykb7MofL4m/A7di15FEGnVIgAidsjnvcgNVTHXk3IKqaeW+AwdryueSozHPdyiNbdcLjDwllMb77+gMMTi8AGZ6wPW4FORuWbhsMrh6dpZZ0aH8sLQJzB3wPd1a1pyArCrztR8PFHDvRdLSI07R6aLoKm3cd3gdjoXyu8jkUx9ziLdWU2+8NnzrQZp+ZGoc/8mwMXkwXIO1rPFHI7XFXsSkNLuTJ0++asb0xaxvJJisBldXJLZAswmzJCDEQpxmRDHGDymebtRv6U5KLFj6nfwq8fjBhfdUSCEoBYG6fmocatBSoPwrJ2PFJ/So6vUODQxF9vblfumW+Yw2axBFm49vkDFakdkRPpPaoBCnyoFZJ6UKhZzHMgTVI5sznSXq8LvggC5mGCgJXJhLmy2UYt+NDKZNBa8xs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR07MB6916.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(31686004)(6486002)(6512007)(44832011)(38100700002)(83380400001)(2906002)(82960400001)(107886003)(26005)(86362001)(31696002)(2616005)(186003)(66946007)(5660300002)(508600001)(8676002)(4326008)(66574015)(316002)(6666004)(66476007)(36756003)(6506007)(8936002)(54906003)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8rGxZ81ToOnKicq+32klEgsCvNa0k0Ig+q8RZJYe4634eNR7jjtc314HSTLb?=
- =?us-ascii?Q?uNmOKRxbNLpyJs2MsQHZhlruMGmMAoisdnC6Ikz6ypzu1L5vb4y4a6CUU2B5?=
- =?us-ascii?Q?OULTQBhGsTDDfZPuNOvVjakQaK1U5F3uPWWLneOwbdCG99QqXbyXsI0AALUY?=
- =?us-ascii?Q?INR/INxgeqjqfgJ2+ZceVfqT/g/ZfxtCPijDbzPFN2r/jdsBoSG6xny0BtmZ?=
- =?us-ascii?Q?F1v1VjBfxdTIKw7aImvyFEacHMFglkdHv8BnxAxIsHd9Jb/3v350lUPzhpet?=
- =?us-ascii?Q?In2ThD9MFe8LABl3aX06HUugulVP/nzSobD+jMIv+pICrxnd/hF1I2VN80DM?=
- =?us-ascii?Q?ij6sNm+vKCJ1h5h6OAJ64iYpR3Cw9du3/ecn2Wsf4UpBxlLfIws+ubOdPlyK?=
- =?us-ascii?Q?zYoUCm1Vo64sTg/DMqwdVrLXNxGZnfDam2yNue84k870Lq2fa5z7gOyEE+GR?=
- =?us-ascii?Q?2cQbuBRtyTHjjRHHj5BN+ge4hjsy1i4T027+gebAb5hFnX6vq9XS5dhubR0d?=
- =?us-ascii?Q?UUmBPcf5sEv3aM+SzHbihpdWOynyTYw/in+7wO5nhr1Hy03CPNz1ak9U+1YE?=
- =?us-ascii?Q?UPuYfruU3pk6llJNSK5uY8NEqA3XXvHaJrkUaI+RQr+AcrZEzgZ4fQdbV5rz?=
- =?us-ascii?Q?Gg6mS582uWOsTWGEMiYUY4S9UPyHas2tGZW1Y3SiIA55dyjaevfXDZdop6Zy?=
- =?us-ascii?Q?AucuMdqZOSy2pR2FYW773F2mhUadO3askRp3N22yGIPP0+gbHh4GnvxxUM82?=
- =?us-ascii?Q?MCcNsEiB/6sjy+/Hf4dDwFICT+hy8gyMYgQ8LRPm+ROqGVCyrUu6XgWgq70b?=
- =?us-ascii?Q?azpR7l//DYxqdpwF/taoZTkdUBe05EmInFARSIsqTl51ZhQKfQNbVFgvZkoO?=
- =?us-ascii?Q?S9iQUSfUXEOpivnRUHCHcs/IoO3cDPMakU49mFe4i/bgvv4F2h3uJhbQY77X?=
- =?us-ascii?Q?6yzRVvyJAj1q3A2d6Mr3YcZmlUE1dmX70tdN3l51y6nBap8HY2hK6/eqbdcU?=
- =?us-ascii?Q?1sVqneFpfX9SIwvT2JNY5yVx7NzxPu4MV2w2dz+7g2WVKgnfGEpGdYL1qORY?=
- =?us-ascii?Q?rrURAzt+0Fh8xOaUWhEwu/b48JcxkrVXY+QdpfUw6E5+NG1LjFqT1NNNNFFr?=
- =?us-ascii?Q?0Mp4ebK7tBm32hWgm6vlqPMjwAiDbozkXhqOBUQ+O6RtcdJub9g8kBExArhg?=
- =?us-ascii?Q?MD28QUb+0AgBn8FwYtWiFUAHPiFF+5kt55oF91ZypBQj+JMTG6AGQkoo2eG8?=
- =?us-ascii?Q?+9kII2aEjqfzxz+Xa7sPSLMHjU+pQl6Z30yvJ5x+iXD23xeK6h4mPgfaHgYu?=
- =?us-ascii?Q?WDVjXd77OkVzirhFPbVcJgZh/pfwrSkyvcO+m5k83xWGOieqcUkCKj4Jdj6o?=
- =?us-ascii?Q?C8ReTy3OHSqVtxDb2Ib9jDjKKpf/FTMspfwSpOIOgvEgSSh6cc6UV0dHVY93?=
- =?us-ascii?Q?plVnQSoxOsJUCNbtvK+B/RfEudCv+yQ67VfbT22GV9ESQQFCAFMy+ZCDLHwi?=
- =?us-ascii?Q?SV9Z2zh1lUPEwo5afZOMNu4NOfatE4Z0Hbl00pwTnh1sUzCp1Eec14nq0KaT?=
- =?us-ascii?Q?3rw8x/otMR+OcKVb32CG6r0EtEFC2KcbR6Gwc/tI2D2xIym0HNmH6CfXknb3?=
- =?us-ascii?Q?DU8PtYUqm4cjxQK8Gy2l3sJKrtOl6PSjb/y0txanogHe44DKR5JOiVVkINAs?=
- =?us-ascii?Q?SN7Yiw=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0317b954-09e1-47d5-92f3-08d9f2c2a926
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0734.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?c2JXaXpZOFV6SUl2bTdHS1VrMXdEbW5VaDY4bHIvMThnUGZpMlowZzdpYnBu?=
+ =?utf-8?B?ZytJSmlvaHNoR1VZQVkwWTFYSkZjRnh5aG96TXV5eDBiSGp2Q1pnT3MvK1li?=
+ =?utf-8?B?ajBwVCtJRWEwbEtSd0RKd3dTYm8xMEx3Q2NWTzVDVDJxNFFiNEQ2cWJ1L2pN?=
+ =?utf-8?B?c3B2SjF1ZklWdGRrcm50Z3dha0szRkxXWitIQVVjOU1IbVQ4Yk9XTit1Unln?=
+ =?utf-8?B?VitvNmkvTVF2QXlOb1k0QlBPU2pFUnRIU012dFE3L3U4WkJLbEV3UWRUbXl5?=
+ =?utf-8?B?Y3NrcTE1RndiL0o5Y0l0bTBTbHFENW5SYWZGMHd2RHA2UTcrYVBJL3ZyVWdH?=
+ =?utf-8?B?cHhGdktyYkQzcFlhcVFER3Z0QnRzRE5UdklnZXY2MzlRUHVYZGNBTW14NERj?=
+ =?utf-8?B?ZUFDN1pERDA4Qi93YkhQcWJqeG9WbHJyZHU0NmZqWUMwRWg4R1kvT3NpNmly?=
+ =?utf-8?B?TkkwcFZwTUpNaWZhc3VkZ1JiZ2VuN01aRDExWTVyRmIyRnRVdTRsNzExWHQw?=
+ =?utf-8?B?VmtDdDBCQ3pyU29GSVk0VXlkSW13dVFVUkNWWUxoNmluRjRXYk5Vd0pNYWw0?=
+ =?utf-8?B?MVdtdWNFTkdrTmt2UHJEQTA1VWJ0SVJpUjRqWVRsWlZXeEVNWmhkaDRCVVVo?=
+ =?utf-8?B?K0tqeDZVZTRFSTlUYWU5UlFCV1lHNTUzYUExZ1dwL3ZpVmw1SE5oc3JtbFBB?=
+ =?utf-8?B?N1lMWit1QmNBSEMrNXF2SWQyRVBGNEVGNThQR0JLYWdBdnltRHBLWS92bXJQ?=
+ =?utf-8?B?d0lOaE5CbElOWkJ6cVVkelFXWnF2b3RBS2RzYnI2VzF4V3owRUJoOG5DVzBJ?=
+ =?utf-8?B?QzdFOGJvRlpFN1djaGFPT25SNVorS3UxUlh2aXpIU2ZxN3ZKVUZkWm9IejFS?=
+ =?utf-8?B?dWs0S3pPYm8vejZwYkFVU0lSK0JXN0l5ZVdvQW5FYjkzemNnSFVSQVdYQytN?=
+ =?utf-8?B?MUsyV2lzSWN0dFFsbGxvRnJsOHU0UXRqZVpEc1FLT0ZEellXdlAxWjNIVHl6?=
+ =?utf-8?B?ZWhoLzNZWTdLQjEwRlVabitRaVZubkNaeVliaTdkb0FZWU9mRjJlYjhzbVRu?=
+ =?utf-8?B?cmY5NVp6UFNtcFdBWTdoOGJNQUk4bXluU2dHNzA2SllOSzdwWTVzbVl3OElx?=
+ =?utf-8?B?K01oeDY5RW9Yd0lMUmhsaWZGMkg3cGROdVpjNVpFdURscEVlWE9jSUNsdUh1?=
+ =?utf-8?B?bDNDa1QvWm5GL2VTS0dINll6V2d3UXJBdFJwRVkybUxHUTU1U3B2WkFXeTVj?=
+ =?utf-8?B?ZFZ5QzhaY1ByNVFkRGJZVEV1WGltc0paaGlIMnRvNE44Q05uSUExZzRxUWhR?=
+ =?utf-8?B?VjZZb1ArOW4zcEdyblZmYkZoZnlYRHo5ODZCVUdwbEdVWll4eDBhcUozVzIr?=
+ =?utf-8?B?aUxTSkRBK3MvVk1YSk9ZbkljU1lzUjg2SVdLVEdWbGJSREI3cEVrTzNQUDYw?=
+ =?utf-8?B?ZXZuWWw1Z005dkhSMWxDTDk4V045a0ZjNUNTZkdVTlU2K1M5NDdWVDBaa1h0?=
+ =?utf-8?B?ZWxoODNyeERjL0VXNlBBd3ZaOHF6Q0ErRVdaakpBMzJPS2RPTFJkcXIrMTc5?=
+ =?utf-8?B?aDY5SnNpL2RnZkhLWVVMbm5mVjduY1krWU1XNUkvenM4TjRjRFZyQmt3bjJn?=
+ =?utf-8?B?eXNucTFmajY1OGRCZjVZMWdMTkNhVVc0SWRubElqZjVSOUg0NzFyME9wZzZy?=
+ =?utf-8?B?YXdaMUozTitOUElUVjdLQ3BzMGptOSsybEw1c25QS1pjMGV0bE9vZUZGeGhw?=
+ =?utf-8?B?UUhDQU5kOVQwTzNjS1hPelZYRGhGVXFLVG9ZSHN1bXhFc1VSM2RKVEVOa2Z5?=
+ =?utf-8?B?M0dCYXpGRzV2Z1Y2RHRUbDhDYUNlUEpMSVFUSTV1VkQ0N2VzN3Roc0RFWkZL?=
+ =?utf-8?B?VnpQM1k2bDl1TmU5VHVaMzRmYmZYVm44UEo4dVNaYklYWFUvczNTaFhBa1hF?=
+ =?utf-8?B?VFJOOE5rdFNOVktnaHI3QmxuOUFjcGpWNTBUQzY5Nk9OUFVCRU9RYzVqWFhQ?=
+ =?utf-8?B?eHJXcjd6Y1dTWjlYWVNObkpSN0EvemFkUDdTbVZ2aVVRNjBiS3IvQU5PWklE?=
+ =?utf-8?B?cGhoYm1YSC9GenNPcVp5RDgxWFFibk4yYVBCOE8zTjVYbXFPaDVkcllZTll6?=
+ =?utf-8?B?U3U4UnV2ZEJkWHN1UjFERTBBWndNNkxSclM1MzFCV3BFUStJcC9FMDBrMVRu?=
+ =?utf-8?Q?Ru7SwE5EDpf8SUNts8uUYvw=3D?=
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 341524fb-ce51-42b2-56f1-08d9f2c2d5a3
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR07MB6916.eurprd07.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 09:40:12.7290
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 09:41:27.4276
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x7SVriMvUvKrZeBqNX6/mkxqF7IZtqfamF017vLYXZMIz+kR3i9Y62FOUU/BzOw/LkByR2yMTfuXuFPxrEsDnJNY2EgDFLtbRsWrg5Hon34=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP190MB1504
+X-MS-Exchange-CrossTenant-UserPrincipalName: vbm59Tp6yGrWl3c3XUqbEk+vGvytsbIqL8wFHeUd4yGgvCaX03eQcd36ALfcijtgPY2Qu+xzrfweh+haY57jrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0701MB6960
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+Hi Guenter,
 
-Fix flower destroy template callback to release template
-only for specific tc chain instead of all chain tempaltes.
+Le 18/02/2022 à 07:58, Guenter Roeck a écrit :
+> From: Agathe Porte <agathe.porte@nokia.com>
+>
+> Add basic description of the tmp464 driver DT bindings.
+>
+> Signed-off-by: Agathe Porte <agathe.porte@nokia.com>
+> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+> v4:
+> - No changes
+>
+> +        channel@0 {
+> +          reg = <0x0>;
+> +          ti,n-factor = /bits/ 8 <(-10)>;
+> +          label = "local";
+> +        };
 
-The issue was intruduced by previous commit that introduced
-multi-chain support.
+Setting the n-factor for the local channel is not supported, so we 
+should remove this attribute for this example and move it to another 
+channel.
 
-Fixes: fa5d824ce5dd ("net: prestera: acl: add multi-chain support offload")
-Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
----
+Here is the output on a hardware test:
 
-V1->V2:
-    use list_for_each_entry_safe instead of list_for_each_safe
-    remove empty lines between tags
+[165599.122883] tmp464 16-0049: n-factor can't be set for internal channel
+[165599.123833] tmp464: probe of 16-0049 failed with error -22
 
- .../ethernet/marvell/prestera/prestera_flower.c    | 28 +++++++++++++++-------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+> +
+> +        channel@1 {
+> +          reg = <0x1>;
+> +          ti,n-factor = /bits/ 8 <0x0>;
+> +          label = "somelabel";
+> +        };
+No particular issue when defining a property for channel that is not 
+internal during driver probe.
+> +
+> +        channel@2 {
+> +          reg = <0x2>;
+> +          status = "disabled";
+> +        };
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-index 580fb986496a..921959a980ee 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-@@ -12,18 +12,21 @@ struct prestera_flower_template {
- 	u32 chain_index;
- };
- 
-+static void
-+prestera_flower_template_free(struct prestera_flower_template *template)
-+{
-+	prestera_acl_ruleset_put(template->ruleset);
-+	list_del(&template->list);
-+	kfree(template);
-+}
-+
- void prestera_flower_template_cleanup(struct prestera_flow_block *block)
- {
--	struct prestera_flower_template *template;
--	struct list_head *pos, *n;
-+	struct prestera_flower_template *template, *tmp;
- 
- 	/* put the reference to all rulesets kept in tmpl create */
--	list_for_each_safe(pos, n, &block->template_list) {
--		template = list_entry(pos, typeof(*template), list);
--		prestera_acl_ruleset_put(template->ruleset);
--		list_del(&template->list);
--		kfree(template);
--	}
-+	list_for_each_entry_safe(template, tmp, &block->template_list, list)
-+		prestera_flower_template_free(template);
- }
- 
- static int
-@@ -423,7 +426,14 @@ int prestera_flower_tmplt_create(struct prestera_flow_block *block,
- void prestera_flower_tmplt_destroy(struct prestera_flow_block *block,
- 				   struct flow_cls_offload *f)
- {
--	prestera_flower_template_cleanup(block);
-+	struct prestera_flower_template *template, *tmp;
-+
-+	list_for_each_entry_safe(template, tmp, &block->template_list, list)
-+		if (template->chain_index == f->common.chain_index) {
-+			/* put the reference to the ruleset kept in create */
-+			prestera_flower_template_free(template);
-+			return;
-+		}
- }
- 
- int prestera_flower_stats(struct prestera_flow_block *block,
--- 
-2.7.4
+Works as expected on target:
+
+root@fct-0a:/sys/class/hwmon/hwmon2 >cat temp3_input
+cat: temp3_input: No data available
+
+Best regards,
+
+Agathe.
 
