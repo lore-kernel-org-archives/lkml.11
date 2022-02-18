@@ -2,120 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA03C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236748AbiBRPEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:04:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55248 "EHLO
+        id S236783AbiBRPG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:06:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbiBRPEt (ORCPT
+        with ESMTP id S233904AbiBRPG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:04:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF84B29720E;
-        Fri, 18 Feb 2022 07:04:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D8F561D5A;
-        Fri, 18 Feb 2022 15:04:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B0EC340EF;
-        Fri, 18 Feb 2022 15:04:29 +0000 (UTC)
-Message-ID: <58bfb1fb-431d-a47d-ee9e-fbef89a700a0@xs4all.nl>
-Date:   Fri, 18 Feb 2022 16:04:28 +0100
+        Fri, 18 Feb 2022 10:06:56 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80ECF64F8;
+        Fri, 18 Feb 2022 07:06:39 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id f10so4063729qkg.9;
+        Fri, 18 Feb 2022 07:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p9R4Qbl1+Fke2USVYBHOXtByycRkBlwvs/en1SwU+yY=;
+        b=Tl8dQyBGtTQFt6p3x17y1IbiNg6fWCjxF+z4FvgOb95smC9cy6zRRfEGncEBf1lYHL
+         zgXtBjq+a+eq4McOh7/D0GPSOa320B57fhxQk7/qD2VwfQg1gZymAhgzuUu3tktYfetZ
+         Q5uMe7H9LGJuVFzH8vxZG25AVfHbvJhy23P9YotFMZdvCw7r3eE6Ml9XT8Q7rSq+4Vsl
+         xc6N2PVZg1z20Jw3aPw/nQg1zPz97PSulvHTh+EWqJJf5pq5USbEZZPSWvt7JjJ4MHnl
+         04PMvLEKYBvXPoCjTC5Hm+kcyl5tToPdQTySumYm843NRvBq1Plq/Pd+3cTo+U+tMSnV
+         5LAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p9R4Qbl1+Fke2USVYBHOXtByycRkBlwvs/en1SwU+yY=;
+        b=T0fC/t+qIOU6tuNzfvSco1oSCIk55kAVpfNBQh9H5SpBqlYBtrFeUimAW2xiuL4JLr
+         RTeAEJZ7aPrGTY/yzA/lNi/qxdEnY4PJqE5loPmcBz2lR/vUBlPdURpKqWZJhInVUh4y
+         PhXv+1JtC5B6bZdLc2OJ+EPlGwmE/7szXyazoOKfgij9FHgc3kSleKPkfFrOXIVTBOMV
+         IEN24g7A5clO1vPIraFgiDDOTcVk9WYKv9KHnM04OT+QsvJrsDyb8AGyFg7s2DnaJV41
+         4E42rb01TkCwkHCfeZ0ObWLrn+zX031ihrR0s3Sy6tk9z/SlcrKktmALy81G6vJLRVz6
+         O72g==
+X-Gm-Message-State: AOAM533gFxdXIoiy5dQ1HhrKnpcoi4FPI5tZ2I0TAXJVpBEHyuUNOQgk
+        QxG5X95+JJcxGfglyC8Ptzk=
+X-Google-Smtp-Source: ABdhPJwQkiB/rQP8ZOfhhYoYc1AfwVl+tt/gpiSIQWKLCM2/tgvrrSYLFfQNTnH9ZYJqbTIR8JUlcA==
+X-Received: by 2002:a37:63cf:0:b0:60d:274b:5211 with SMTP id x198-20020a3763cf000000b0060d274b5211mr4801529qkb.725.1645196798491;
+        Fri, 18 Feb 2022 07:06:38 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 10sm1168531qkf.46.2022.02.18.07.06.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 07:06:37 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <1f5236a5-93be-a35e-e86a-450e5e98f9ba@roeck-us.net>
+Date:   Fri, 18 Feb 2022 07:06:35 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v3 0/4] Add V4L stateless video decoder API support to
- NVIDIA Tegra driver
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 1/2] dt-bindings: hwmon: add tmp464.yaml
 Content-Language: en-US
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220207141937.13089-1-digetx@gmail.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220207141937.13089-1-digetx@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Agathe Porte <agathe.porte@nokia.com>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Adamski <krzysztof.adamski@nokia.com>
+References: <20220218065856.1899086-1-linux@roeck-us.net>
+ <a828b1b2-9e32-57b2-6d60-b1b8de90222a@nokia.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <a828b1b2-9e32-57b2-6d60-b1b8de90222a@nokia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dmitry,
+On 2/18/22 01:41, Agathe Porte wrote:
+> Hi Guenter,
+> 
+> Le 18/02/2022 à 07:58, Guenter Roeck a écrit :
+>> From: Agathe Porte <agathe.porte@nokia.com>
+>>
+>> Add basic description of the tmp464 driver DT bindings.
+>>
+>> Signed-off-by: Agathe Porte <agathe.porte@nokia.com>
+>> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
+>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>> ---
+>> v4:
+>> - No changes
+>>
+>> +        channel@0 {
+>> +          reg = <0x0>;
+>> +          ti,n-factor = /bits/ 8 <(-10)>;
+>> +          label = "local";
+>> +        };
+> 
+> Setting the n-factor for the local channel is not supported, so we should remove this attribute for this example and move it to another channel.
+> 
 
-On 07/02/2022 15:19, Dmitry Osipenko wrote:
-> Support V4L stateless video decoder API by NVIDIA Tegra decoder driver.
-> Tested using GStreamer [1] and libvdpau-tegra [2][8].
-> 
-> [1] https://github.com/grate-driver/gstreamer/commit/b8509bdbb69b534e61419ea1798f32f9ad2f3597
-> [2] https://github.com/grate-driver/libvdpau-tegra/commit/f822e95911e5e0c39f8ba19f843ddc1e0138d5ce
-> [8] https://github.com/grate-driver/libvdpau-tegra/commit/80db4d02369f2a984ce3173d6bc305f32e9fdb97
+Done, thanks!
 
-Nice work!
+Guenter
 
-Can you make a v4 that just moves the whole driver to drivers/media/platform? I see no
-reason for keeping this in staging.
-
-Once I have a v4 that does that I plan to make a PR for it.
-
-For the v4 don't forget to update MAINTAINERS with the new path and to drop the TODO
-file in staging.
-
-Regards,
-
-	Hans
-
+> Here is the output on a hardware test:
 > 
-> Changelog:
+> [165599.122883] tmp464 16-0049: n-factor can't be set for internal channel
+> [165599.123833] tmp464: probe of 16-0049 failed with error -22
 > 
-> v3: - Added new decode_params flags [7] instead of V4L2_BUF_FLAG_*FRAME flags,
->       as was suggested by Nicolas Dufresne.
+>> +
+>> +        channel@1 {
+>> +          reg = <0x1>;
+>> +          ti,n-factor = /bits/ 8 <0x0>;
+>> +          label = "somelabel";
+>> +        };
+> No particular issue when defining a property for channel that is not internal during driver probe.
+>> +
+>> +        channel@2 {
+>> +          reg = <0x2>;
+>> +          status = "disabled";
+>> +        };
 > 
->       [7] https://github.com/grate-driver/gstreamer/commit/c5cd847f9c26b7669720ae58f9058de2515f51a2
+> Works as expected on target:
 > 
->     - Added new patch that removes legacy UAPI.
+> root@fct-0a:/sys/class/hwmon/hwmon2 >cat temp3_input
+> cat: temp3_input: No data available
 > 
-> v2: - Made V4L2_BUF_FLAG_*FRAME flags mandatory [3] and dropped reading
->       of raw bitstream from the driver code, as was suggested by
->       Nicolas Dufresne.
+> Best regards,
 > 
->       [3] https://github.com/grate-driver/gstreamer/commit/aee292f0f2e84b7654a314dd7e63f916888ffaa5
-> 
->     - Ran v4l2-compliance [4] and fluster [5][6] tests, like was suggested by
->       Nicolas Dufresne. Fixed minor v4l2-compliance errors that were related
->       to a partial initialization of the coded format and were harmless in
->       practice, but made compliance checker unhappy.
-> 
->       [4] https://gist.github.com/digetx/5d6bcdab633488f1dcc7c141ab90d30e
->       [5] https://gist.github.com/digetx/b06c5d779e9d25afa41d9f46946fe399
->       [6] https://gist.github.com/digetx/ac4198bc340e5065aa8ec3288bb21356
-> 
-> Dmitry Osipenko (4):
->   media: v4l2-ctrls: Add new V4L2_H264_DECODE_PARAM_FLAG_P/BFRAME flags
->   media: staging: tegra-vde: Factor out H.264 code
->   media: staging: tegra-vde: Support V4L stateless video decoder API
->   media: staging: tegra-vde: Remove legacy UAPI support
-> 
->  .../media/v4l/ext-ctrls-codec-stateless.rst   |    6 +
->  drivers/staging/media/tegra-vde/Kconfig       |    7 +
->  drivers/staging/media/tegra-vde/Makefile      |    2 +-
->  .../staging/media/tegra-vde/dmabuf-cache.c    |    2 +-
->  drivers/staging/media/tegra-vde/h264.c        |  946 +++++++++++++++
->  drivers/staging/media/tegra-vde/iommu.c       |    2 +-
->  drivers/staging/media/tegra-vde/uapi.h        |   73 --
->  drivers/staging/media/tegra-vde/v4l2.c        | 1018 +++++++++++++++++
->  drivers/staging/media/tegra-vde/vde.c         |  945 ++-------------
->  drivers/staging/media/tegra-vde/vde.h         |  121 +-
->  include/uapi/linux/v4l2-controls.h            |    2 +
->  11 files changed, 2170 insertions(+), 954 deletions(-)
->  create mode 100644 drivers/staging/media/tegra-vde/h264.c
->  delete mode 100644 drivers/staging/media/tegra-vde/uapi.h
->  create mode 100644 drivers/staging/media/tegra-vde/v4l2.c
+> Agathe.
 > 
 
