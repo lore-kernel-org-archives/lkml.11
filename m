@@ -2,101 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5606C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3755CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239261AbiBRSfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:35:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60422 "EHLO
+        id S239265AbiBRSfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:35:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239233AbiBRSfF (ORCPT
+        with ESMTP id S239263AbiBRSfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:35:05 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66661A4D46
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 10:34:48 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id om7so9293194pjb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 10:34:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6ui+XdqQ+V/acH1rGOlyzDTKLEuaung66NwvBtj6LuE=;
-        b=X8Yel7V2IYImut8lQ0/DhVg5Kkg4WbtG3wN/JWTFXB8siwNd9e/xyeaRYAtT6WZRqQ
-         VM+Vd8LSykDzBvCWff30AJNihA3q3n0MDibbC4Vw0Ag8nJjg0uLvqeKy4EcdZqT3p1Ly
-         8+Dq+n7P0DgbbNzZex+aB8SU6M+ZJ5XeSDzbQrJPlUFMcqJV9UWauyV4i8vG2W5Zes4c
-         DqwTa5sb2uf3y5IE1mWKfTpv0yJvvX+XnRQ04u44SXHSpw+B9U++KYBmqh8FUJPQsjr1
-         cWHWxoSZEIld6gQAdIZ2X2zZENXG6WKvoO7Jn3MdLOtzyINhfbhFi5bqy0gjvzU6E08N
-         mdBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6ui+XdqQ+V/acH1rGOlyzDTKLEuaung66NwvBtj6LuE=;
-        b=Vm81dWl+uvB9QkpjCyiuKRAp9PHln/+zc/gDCp0KIdZGcusKezymQFO5+NwtMGzL6c
-         pF1ABYh6IYFRxn1+89NceLD8f/URN2PzbxTrt7vV6K0Lhyod1WBV2T+5yC8bRb0VKkYk
-         sGYrCQb4PeP41t24Y44Trho7hm0wSFMidHCw6R7ngYQzAZm2zBlknrEUN88MIjtsh2Tu
-         EVDvILZ6F2k/p7SmPRyVdL3g+eGL0C3t3fmGV1Gp8dCOb3aXm4duMLGNbdXVvueWlrJ+
-         5iH77lWmiMxc5D5KnMhrG7j0YqbdLBsOclT/DzEMuZ963YsjSP9BAbVQNBZfI2lTb6ue
-         YDcA==
-X-Gm-Message-State: AOAM532dbiK5LtGv/p1cSax3GrUqUi07rmpoOFIiKWCoFkVdebycQ1P2
-        FGkIoYopp9jOSaeebSFaozfn8A==
-X-Google-Smtp-Source: ABdhPJxVv/mRb2EhPSozftkcIU8eYn58a6qBEj8s0jA/yOkyFR7Djbb4fHuOjFvBLzo8ayCyt0EVlQ==
-X-Received: by 2002:a17:902:9348:b0:14d:8ee9:329f with SMTP id g8-20020a170902934800b0014d8ee9329fmr8484514plp.80.1645209288178;
-        Fri, 18 Feb 2022 10:34:48 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h5sm3519418pfc.118.2022.02.18.10.34.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:34:47 -0800 (PST)
-Date:   Fri, 18 Feb 2022 18:34:44 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     maz@kernel.org, kvm@vger.kernel.org, pbonzini@redhat.com,
-        kevin.tian@intel.com, tglx@linutronix.de,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 5/6] KVM: Rename and move CPUHP_AP_KVM_STARTING to
- ONLINE section
-Message-ID: <Yg/mxKrB5ZoRBIG+@google.com>
-References: <20220216031528.92558-1-chao.gao@intel.com>
- <20220216031528.92558-6-chao.gao@intel.com>
+        Fri, 18 Feb 2022 13:35:20 -0500
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C79224943;
+        Fri, 18 Feb 2022 10:35:03 -0800 (PST)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1nL82Z-0004OI-D8; Fri, 18 Feb 2022 13:31:35 -0500
+From:   Rik van Riel <riel@surriel.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     kernel-team@fb.com, linux-fsdevel@vger.kernel.org,
+        paulmck@kernel.org, gscrivan@redhat.com, viro@zeniv.linux.org.uk,
+        Rik van Riel <riel@surriel.com>
+Subject: [PATCH 2/2] ipc: get rid of free_ipc_work workqueue
+Date:   Fri, 18 Feb 2022 13:31:14 -0500
+Message-Id: <20220218183114.2867528-3-riel@surriel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220218183114.2867528-1-riel@surriel.com>
+References: <20220218183114.2867528-1-riel@surriel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216031528.92558-6-chao.gao@intel.com>
+Content-Transfer-Encoding: 8bit
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022, Chao Gao wrote:
-> The CPU STARTING section doesn't allow callbacks to fail. Move KVM's
-> hotplug callback to ONLINE section so that it can abort onlining a CPU in
-> certain cases to avoid potentially breaking VMs running on existing CPUs.
-> For example, when kvm fails to enable hardware virtualization on the
-> hotplugged CPU.
-> 
-> Place KVM's hotplug state before CPUHP_AP_SCHED_WAIT_EMPTY as it ensures
-> when offlining a CPU, all user tasks and non-pinned kernel tasks have left
-> the CPU, i.e. there cannot be a vCPU task around. So, it is safe for KVM's
-> CPU offline callback to disable hardware virtualization at that point.
-> Likewise, KVM's online callback can enable hardware virtualization before
-> any vCPU task gets a chance to run on hotplugged CPUs.
-> 
-> KVM's CPU hotplug callbacks are renamed as well.
-> 
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Chao Gao <chao.gao@intel.com>
-> ---
+With kern_unmount deferring the freeing of the vfsmount structure
+through queue_rcu_work, we no longer need a separate workqueue for
+freeing up ipc_namespace structures.
 
-For the KVM bits,
+Signed-off-by: Rik van Riel <riel@surriel.com>
+---
+ include/linux/ipc_namespace.h |  2 --
+ ipc/namespace.c               | 21 +--------------------
+ 2 files changed, 1 insertion(+), 22 deletions(-)
 
-  Reviewed-by: Sean Christopherson <seanjc@google.com>
+diff --git a/include/linux/ipc_namespace.h b/include/linux/ipc_namespace.h
+index b75395ec8d52..5a3debde2f3d 100644
+--- a/include/linux/ipc_namespace.h
++++ b/include/linux/ipc_namespace.h
+@@ -67,8 +67,6 @@ struct ipc_namespace {
+ 	struct user_namespace *user_ns;
+ 	struct ucounts *ucounts;
+ 
+-	struct llist_node mnt_llist;
+-
+ 	struct ns_common ns;
+ } __randomize_layout;
+ 
+diff --git a/ipc/namespace.c b/ipc/namespace.c
+index ae83f0f2651b..090a08b17710 100644
+--- a/ipc/namespace.c
++++ b/ipc/namespace.c
+@@ -117,9 +117,6 @@ void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
+ 
+ static void free_ipc_ns(struct ipc_namespace *ns)
+ {
+-	/* mq_put_mnt() waits for a grace period as kern_unmount()
+-	 * uses synchronize_rcu().
+-	 */
+ 	mq_put_mnt(ns);
+ 	sem_exit_ns(ns);
+ 	msg_exit_ns(ns);
+@@ -131,21 +128,6 @@ static void free_ipc_ns(struct ipc_namespace *ns)
+ 	kfree(ns);
+ }
+ 
+-static LLIST_HEAD(free_ipc_list);
+-static void free_ipc(struct work_struct *unused)
+-{
+-	struct llist_node *node = llist_del_all(&free_ipc_list);
+-	struct ipc_namespace *n, *t;
+-
+-	llist_for_each_entry_safe(n, t, node, mnt_llist)
+-		free_ipc_ns(n);
+-}
+-
+-/*
+- * The work queue is used to avoid the cost of synchronize_rcu in kern_unmount.
+- */
+-static DECLARE_WORK(free_ipc_work, free_ipc);
+-
+ /*
+  * put_ipc_ns - drop a reference to an ipc namespace.
+  * @ns: the namespace to put
+@@ -168,8 +150,7 @@ void put_ipc_ns(struct ipc_namespace *ns)
+ 		mq_clear_sbinfo(ns);
+ 		spin_unlock(&mq_lock);
+ 
+-		if (llist_add(&ns->mnt_llist, &free_ipc_list))
+-			schedule_work(&free_ipc_work);
++		free_ipc_ns(ns);
+ 	}
+ }
+ 
+-- 
+2.34.1
 
-Someone with more knowledge of the CPU hotplug sequences should really review this
-too.
