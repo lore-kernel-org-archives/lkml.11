@@ -2,228 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbiBRBcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 20:32:31 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55256 "EHLO
+        id S231277AbiBRBds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 20:33:48 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbiBRBc3 (ORCPT
+        with ESMTP id S231156AbiBRBdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 20:32:29 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A86EDF69
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 17:32:13 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id y4-20020a5b0f44000000b00611862e546dso11954333ybr.7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 17:32:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dTNKukE2OugMPlgBk0kjAWyCH6abjxYQr54aQU93Dsw=;
-        b=ABklzAtjJO6j7LDPYqAAa8FMBHRCVRGQF9PPgv1Ft7BksPe+v0U4UtLqnJsC19Zl+L
-         OiKRmyuEcoTRRKFBp3BTGS3uZg88aOaB1lT9kR2IiFowkyJOhVXcf7+CcmC7GCPrzTCD
-         BITgWHEz7HCVI7Af9B/6LjbgwjLOZjcprbzUH9rdJ9qBQZSTGDRBivNHqM+goHwAdAni
-         X3MZQeaRwo/+/z4gUJPbEHgTpyN0LcZEMshl3fQ1X85XdmQJTmmg0Mz/88iJDSBoE/ga
-         njGfNFJR68AFMP5mfkafiqlun4vwVLWrNo6ZCUKZ7+8pNObKd0TpR4bIPsQZXA4RSrdN
-         kOCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dTNKukE2OugMPlgBk0kjAWyCH6abjxYQr54aQU93Dsw=;
-        b=KkEoCPzmgjJcX+gmDroLML6FxhyscpInR0skr3Z7X+PkI9X9Ty9zgCVHenpJH8X/kV
-         OlEjJS6IcHQxGSw57HY7c0oueQxVrVhXHSqz51FdIDuKjtNBkvpBzRpeBpTBm4jyoX2j
-         /EjdfzPbpFn382PvTTt5o1bc0lsUUBw0bDm+fBKXXfa5i1zGW1Nj/nYgJxmJ9yobzBNg
-         v495RXxqXflwZMGZKUrBDZ0hNdSgGw+i1gb9UWkjacvAIkZIAnc9e82Yp4FDr2sb6jTB
-         Zfgl1TKMncNorK6RdoS9RNmHXQyhY/EtzXNoh2oJHKx5XJMtmCzAIn9O/vb0TQn0zNE+
-         BhcA==
-X-Gm-Message-State: AOAM533IdM6ndbyIflHxCRIT/i7yKmAcj+yZx6y2GrK0QgFTGxHy1MzB
-        4OnKXxOXqkQzmUv8MY5ib7Co1dkd
-X-Google-Smtp-Source: ABdhPJwsJO2Rxv67e92BrTyGx5Y4hnYBxxLRQBfIXOhGoUuxgk+IA4yKbq8A7sv6et2/hsO5I289kysI
-X-Received: from juew-desktop.sea.corp.google.com ([2620:15c:100:202:3126:6c42:fb6:7d09])
- (user=juew job=sendgmr) by 2002:a0d:eb09:0:b0:2d1:e0df:5104 with SMTP id
- u9-20020a0deb09000000b002d1e0df5104mr5703478ywe.250.1645147932575; Thu, 17
- Feb 2022 17:32:12 -0800 (PST)
-Date:   Thu, 17 Feb 2022 17:32:09 -0800
-In-Reply-To: <Yg54nse5qNQO3sbW@zn.tnic>
-Message-Id: <20220218013209.2436006-1-juew@google.com>
-Mime-Version: 1.0
-References: <Yg54nse5qNQO3sbW@zn.tnic>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v2] x86/mce: work around an erratum on fast string copy instructions.
-From:   Jue Wang <juew@google.com>
-To:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, Jue Wang <juew@google.com>,
-        Borislav Petkov <bp@suse.de>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 17 Feb 2022 20:33:44 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63861B2799;
+        Thu, 17 Feb 2022 17:33:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645148009; x=1676684009;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=68iC9cnz+ae05R1FGoesD5y/UbMcqAkHpnWUd6+k1Sc=;
+  b=i8bZya4fC7QqS0Q3v9ZsXM9QyMpcd82z4nidTqgc3Ml9jE15DsSuaPjy
+   518ThgpjNEBIb6Pi31gCVTkpu5SobGZeNE6TB5VRp6LSASKzFkhko080I
+   MhTR+KOeYKT+49lyZoTU0QZ3w1yVdBT8Gie5uQNVhjv+XX+DURXJ7auUM
+   gMTRplpG+MmE81goCYlyM+jcFjYzNkW1EJ+oY78Fxl0KBUnL2mos15849
+   GfChBTVzFEXXRTQmwidw0S/ICuOa2jieFVT5nRUN4d6vof+T18IEH4DgX
+   n7GUpWK9GK2vtTpJjQ8Jm2c9Bgx5+QnKXnwnV3BJnwenT8vpRn21bEiHv
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231662947"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="231662947"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 17:33:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="503791413"
+Received: from zxingrtx.sh.intel.com ([10.239.159.110])
+  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 17:33:26 -0800
+From:   zhengjun.xing@linux.intel.com
+To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@redhat.com
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com,
+        kan.liang@linux.intel.com, zhengjun.xing@linux.intel.com
+Subject: [PATCH] perf tools: fix failed to use cpu list for uncore events
+Date:   Fri, 18 Feb 2022 17:31:27 +0800
+Message-Id: <20220218093127.1844241-1-zhengjun.xing@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A rare kernel panic scenario can happen when the following conditions
-are met due to an erratum on fast string copy instructions:
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-1) An uncorrected error.
-2) That error must be in first cache line of a page.
-3) Kernel must execute page_copy from the page immediately before that
-page.
+The 'perf record' and 'perf stat' commands have supported the option
+'-C/--cpus' to count or collect only on the list of CPUs provided.
+commit 1d3351e631fc ("perf tools: Enable on a list of CPUs for hybrid")
+add it to be supported for hybrid. For hybrid support, it checks the
+cpu list are available on hybrid PMU. But when we test only uncore
+events(or events not in cpu_core and cpu_atom), there is a bug:
 
-The fast string copy instructions ("REP; MOVS*") could consume an
-uncorrectable memory error in the cache line _right after_ the desired
-region to copy and raise an MCE.
+Before:
+ # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
+   failed to use cpu list 0
 
-Bit 0 of MSR_IA32_MISC_ENABLE can be cleared to disable fast string
-copy and will avoid such spurious machine checks. However, that is less
-preferable due to the permanent performance impact. Considering memory
-poison is rare, it's desirable to keep fast string copy enabled until an
-MCE is seen.
+In this case, for uncore event, its pmu_name is not cpu_core or cpu_atom,
+so in evlist__fix_hybrid_cpus, perf_pmu__find_hybrid_pmu should return
+NULL,both events_nr and unmatched_count should be 0 ,then the cpu list
+check function evlist__fix_hybrid_cpus return -1 and the error "failed
+to use cpu list 0" will happen. Bypass "events_nr=0" case then the issue
+is fixed.
 
-Intel has confirmed the following:
-1. The CPU erratum of fast string copy only applies to Skylake,
-Cascade Lake and Cooper Lake generations.
+After:
+ # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
 
-Directly return from the MCE handler:
-2. Will result in complete execution of the "REP; MOVS*" with no data
-loss or corruption.
-3. Will not result in another MCE firing on the next poisoned cache line
-due to "REP; MOVS*".
-4. Will resume execution from a correct point in code.
-5. Will result in the same instruction that triggered the MCE firing a
-second MCE immediately for any other software recoverable data fetch
-errors.
-6. Is not safe without disabling the fast string copy, as the next fast
-string copy of the same buffer on the same CPU would result in a PANIC
-MCE.
+ Performance counter stats for 'CPU(s) 0':
 
-This should mitigate the erratum completely with the only caveat that
-the fast string copy is disabled on the affected hyper thread thus
-performance degradation.
+       195,476,873      uncore_clock/clockticks/
 
-This is still better than the OS crashing on MCEs raised on an
-irrelevant process due to "REP; MOVS*' accesses in a kernel context,
-e.g., copy_page.
+       1.004518677 seconds time elapsed
 
-Tested:
+When testing with at least one core event and uncore events, it has no
+issue.
 
-Injected errors on 1st cache line of 8 anonymous pages of process
-'proc1' and observed MCE consumption from 'proc2' with no panic
-(directly returned).
+ # perf stat -C0  -e cpu_core/cpu-cycles/,uncore_clock/clockticks/ sleep 1
 
-Without the fix, the host panicked within a few minutes on a
-random 'proc2' process due to kernel access from copy_page.
+ Performance counter stats for 'CPU(s) 0':
 
-  [ bp: Fix comment style + touch ups. ]
+         5,993,774      cpu_core/cpu-cycles/
+       301,025,912      uncore_clock/clockticks/
 
-Signed-off-by: Jue Wang <juew@google.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+       1.003964934 seconds time elapsed
+
+Fixes: 1d3351e631fc ("perf tools: Enable on a list of CPUs for hybrid")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 ---
- arch/x86/kernel/cpu/mce/core.c     | 58 ++++++++++++++++++++++++++++++
- arch/x86/kernel/cpu/mce/internal.h |  5 ++-
- 2 files changed, 62 insertions(+), 1 deletion(-)
+ tools/perf/util/evlist-hybrid.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 5818b837fd4d..d2502a6c3516 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -834,6 +834,54 @@ static void quirk_sandybridge_ifu(int bank, struct mce *m, struct pt_regs *regs)
- 	m->cs = regs->cs;
- }
- 
-+/*
-+ * Disable fast string copy and return from the MCE handler upon the first SRAR
-+ * MCE on bank 1 due to a CPU erratum on Intel Skylake/Cascade Lake/Cooper Lake
-+ * CPUs.
-+ * The fast string copy instructions ("REP; MOVS*") could consume an
-+ * uncorrectable memory error in the cache line _right after_ the desired region
-+ * to copy and raise an MCE with RIP pointing to the instruction _after_ the
-+ * "REP; MOVS*".
-+ * This mitigation addresses the issue completely with the caveat of performance
-+ * degradation on the CPU affected. This is still better than the OS crashing on
-+ * MCEs raised on an irrelevant process due to "REP; MOVS*" accesses from a
-+ * kernel context (e.g., copy_page).
-+ *
-+ * Returns true when fast string copy on CPU has been disabled.
-+ */
-+static noinstr bool quirk_skylake_repmov(void)
-+{
-+	u64 mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
-+	u64 misc_enable = __rdmsr(MSR_IA32_MISC_ENABLE);
-+
-+	/*
-+	 * Apply the quirk only to local machine checks, i.e., no broadcast
-+	 * sync is needed.
-+	 */
-+	if ((mcgstatus & MCG_STATUS_LMCES) &&
-+	    unlikely(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
-+		u64 mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
-+
-+		/* Check for a software-recoverable data fetch error. */
-+		if ((mc1_status &
-+		     (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
-+		      MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
-+		      MCI_STATUS_AR | MCI_STATUS_S)) ==
-+		     (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
-+		      MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
-+		      MCI_STATUS_AR | MCI_STATUS_S)) {
-+			misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
-+			__wrmsr(MSR_IA32_MISC_ENABLE,
-+				(u32)misc_enable, (u32)(misc_enable >> 32));
-+			mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
-+			mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
-+			pr_err_once("Errata detected, disable fast string copy instructions.\n");
-+			return true;
-+		}
-+	}
-+	return false;
-+}
-+
- /*
-  * Do a quick check if any of the events requires a panic.
-  * This decides if we keep the events around or clear them.
-@@ -1403,6 +1451,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	else if (unlikely(!mca_cfg.initialized))
- 		return unexpected_machine_check(regs);
- 
-+	if (mce_flags.skx_repmov_quirk && quirk_skylake_repmov())
-+		return;
-+
- 	/*
- 	 * Establish sequential order between the CPUs entering the machine
- 	 * check handler.
-@@ -1858,6 +1909,13 @@ static int __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
- 
- 		if (c->x86 == 6 && c->x86_model == 45)
- 			mce_flags.snb_ifu_quirk = 1;
-+
-+		/*
-+		 * Skylake, Cascacde Lake and Cooper Lake require a quirk on
-+		 * rep movs.
-+		 */
-+		if (c->x86 == 6 && c->x86_model == INTEL_FAM6_SKYLAKE_X)
-+			mce_flags.skx_repmov_quirk = 1;
+diff --git a/tools/perf/util/evlist-hybrid.c b/tools/perf/util/evlist-hybrid.c
+index 7f234215147d..57f02beef023 100644
+--- a/tools/perf/util/evlist-hybrid.c
++++ b/tools/perf/util/evlist-hybrid.c
+@@ -154,8 +154,8 @@ int evlist__fix_hybrid_cpus(struct evlist *evlist, const char *cpu_list)
+ 		perf_cpu_map__put(matched_cpus);
+ 		perf_cpu_map__put(unmatched_cpus);
  	}
- 
- 	if (c->x86_vendor == X86_VENDOR_ZHAOXIN) {
-diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
-index 52c633950b38..24d099e2d2a2 100644
---- a/arch/x86/kernel/cpu/mce/internal.h
-+++ b/arch/x86/kernel/cpu/mce/internal.h
-@@ -170,7 +170,10 @@ struct mce_vendor_flags {
- 	/* SandyBridge IFU quirk */
- 	snb_ifu_quirk		: 1,
- 
--	__reserved_0		: 57;
-+	/* Skylake, Cascade Lake, Cooper Lake REP;MOVS* quirk */
-+	skx_repmov_quirk	: 1,
-+
-+	__reserved_0		: 56;
- };
- 
- extern struct mce_vendor_flags mce_flags;
+-
+-	ret = (unmatched_count == events_nr) ? -1 : 0;
++	if (events_nr)
++		ret = (unmatched_count == events_nr) ? -1 : 0;
+ out:
+ 	perf_cpu_map__put(cpus);
+ 	return ret;
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.25.1
 
