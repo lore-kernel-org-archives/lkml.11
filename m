@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C5CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F731C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238357AbiBRRQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:16:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43216 "EHLO
+        id S238377AbiBRRQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:16:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238218AbiBRRPQ (ORCPT
+        with ESMTP id S238222AbiBRRPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 12:15:16 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616E84C7AA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2784C7B9
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=m82mq3M9M/0ureVNY9wg4hbkAG3mhwa/gVlw0uIZOvw=; b=mcZ8Lo2VAnyt6mPrFaj3lzws3l
-        GfE1aNpqsC53n/ujZiWi5LsXCpPmxZ08NPHx2g4WF+594X2i5Uz9kLQVq5XBlv5WIRXscdjYYQ0Dk
-        M4gXYft3iDZOsH0EoIvJXxONNRxhLaTM6O8HIx8et6pAShZp2/IWp7/l8iDzsqCiuNe7oYaSMYBfA
-        vbw55lbb5vZVoZtXsDtqKQ0riXv52nUbHHtp2aqTJsQVh9aY7yjF7uU7sZtvP0Cwby+rj826o5cHo
-        pp05/E3/5pae5FXfGrL76U3MhV4N4wKkzaA6jN37Xo+13l+sRjXRutLNqc95lJoPxNEvvGoBN260b
-        LTsujGHQ==;
+        bh=y1BqAPopW4amCojJ1jHN1wrCsivM9+TaKLpxGKtH/GM=; b=KKUyyjWyUvOV7Ek39FI/+dLZNo
+        eyZ/yITL8LPIvZxdZPJIq++byqeWX87lvihLv0Nf9kshC8CAXpXiuUDf+vGt7Rm4wEO4A0tmWUACZ
+        jBE4RxEAtB1ica0q97T93r66dGpPpgIkO8VlwKocFKPkW30OzgJB9844fvNXVm+UJrbLd/2vEUm+e
+        Rvb+bX5ABBqleM+ylkMlgqm7/JdmNHvkoU/iGnBcQaOdtgmvl6DxkHjjEKrRjYi9UzjSP4NO/DAPW
+        zva72nkgncY8ozKo/FhmNhIUVinDa0n/lB+7OLkeFlQw4h11kBLNLquYE667XbrSFIZjO3dbyXItz
+        e+Q6+Otg==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nL6qA-00Gl8g-Ej; Fri, 18 Feb 2022 17:14:42 +0000
+        id 1nL6qA-00Gl8i-Gr; Fri, 18 Feb 2022 17:14:42 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C55793010EF;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C940630144C;
         Fri, 18 Feb 2022 18:14:39 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 36D042084B90F; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
-Message-ID: <20220218171409.278238612@infradead.org>
+        id 40F6D2096F3D9; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
+Message-ID: <20220218171409.456054276@infradead.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 17:49:14 +0100
+Date:   Fri, 18 Feb 2022 17:49:17 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -46,7 +46,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         ndesaulniers@google.com, keescook@chromium.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com
-Subject: [PATCH 12/29] x86/ibt,kvm: Add ENDBR to fastops
+Subject: [PATCH 15/29] x86: Disable IBT around firmware
 References: <20220218164902.008644515@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,40 +54,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Assume firmware isn't IBT clean and disable it across calls.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kvm/emulate.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/efi.h   |    9 +++++++--
+ arch/x86/include/asm/ibt.h   |   10 ++++++++++
+ arch/x86/kernel/apm_32.c     |    7 +++++++
+ arch/x86/kernel/cpu/common.c |   28 ++++++++++++++++++++++++++++
+ 4 files changed, 52 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -189,7 +189,7 @@
- #define X16(x...) X8(x), X8(x)
+--- a/arch/x86/include/asm/efi.h
++++ b/arch/x86/include/asm/efi.h
+@@ -7,6 +7,7 @@
+ #include <asm/tlb.h>
+ #include <asm/nospec-branch.h>
+ #include <asm/mmu_context.h>
++#include <asm/ibt.h>
+ #include <linux/build_bug.h>
+ #include <linux/kernel.h>
+ #include <linux/pgtable.h>
+@@ -120,8 +121,12 @@ extern asmlinkage u64 __efi_call(void *f
+ 	efi_enter_mm();							\
+ })
  
- #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
--#define FASTOP_SIZE 8
-+#define FASTOP_SIZE (8 * (1 + IS_ENABLED(CONFIG_X86_IBT)))
+-#define arch_efi_call_virt(p, f, args...)				\
+-	efi_call((void *)p->f, args)					\
++#define arch_efi_call_virt(p, f, args...) ({				\
++	u64 ret, ibt = ibt_save();					\
++	ret = efi_call((void *)p->f, args);				\
++	ibt_restore(ibt);						\
++	ret;								\
++})
  
- struct opcode {
- 	u64 flags;
-@@ -311,7 +311,8 @@ static int fastop(struct x86_emulate_ctx
- #define __FOP_FUNC(name) \
- 	".align " __stringify(FASTOP_SIZE) " \n\t" \
- 	".type " name ", @function \n\t" \
--	name ":\n\t"
-+	name ":\n\t" \
-+	ASM_ENDBR
+ #define arch_efi_call_virt_teardown()					\
+ ({									\
+--- a/arch/x86/include/asm/ibt.h
++++ b/arch/x86/include/asm/ibt.h
+@@ -6,6 +6,8 @@
  
- #define FOP_FUNC(name) \
- 	__FOP_FUNC(#name)
-@@ -433,6 +434,7 @@ static int fastop(struct x86_emulate_ctx
- 	".align 4 \n\t" \
- 	".type " #op ", @function \n\t" \
- 	#op ": \n\t" \
-+	ASM_ENDBR \
- 	#op " %al \n\t" \
- 	__FOP_RET(#op)
+ #ifndef __ASSEMBLY__
  
++#include <linux/types.h>
++
+ #ifdef CONFIG_X86_64
+ #define ASM_ENDBR	"endbr64\n\t"
+ #else
+@@ -25,6 +27,9 @@ static inline bool is_endbr(const void *
+ 	return val == ~0xfa1e0ff3;
+ }
+ 
++extern u64 ibt_save(void);
++extern void ibt_restore(u64 save);
++
+ #else /* __ASSEMBLY__ */
+ 
+ #ifdef CONFIG_X86_64
+@@ -39,10 +44,15 @@ static inline bool is_endbr(const void *
+ 
+ #ifndef __ASSEMBLY__
+ 
++#include <linux/types.h>
++
+ #define ASM_ENDBR
+ 
+ #define __noendbr
+ 
++static inline u64 ibt_save(void) { return 0; }
++static inline void ibt_restore(u64 save) { }
++
+ #else /* __ASSEMBLY__ */
+ 
+ #define ENDBR
+--- a/arch/x86/kernel/apm_32.c
++++ b/arch/x86/kernel/apm_32.c
+@@ -232,6 +232,7 @@
+ #include <asm/paravirt.h>
+ #include <asm/reboot.h>
+ #include <asm/nospec-branch.h>
++#include <asm/ibt.h>
+ 
+ #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
+ extern int (*console_blank_hook)(int);
+@@ -598,6 +599,7 @@ static long __apm_bios_call(void *_call)
+ 	struct desc_struct	save_desc_40;
+ 	struct desc_struct	*gdt;
+ 	struct apm_bios_call	*call = _call;
++	u64			ibt;
+ 
+ 	cpu = get_cpu();
+ 	BUG_ON(cpu != 0);
+@@ -607,11 +609,13 @@ static long __apm_bios_call(void *_call)
+ 
+ 	apm_irq_save(flags);
+ 	firmware_restrict_branch_speculation_start();
++	ibt = ibt_save();
+ 	APM_DO_SAVE_SEGS;
+ 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
+ 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
+ 			  &call->esi);
+ 	APM_DO_RESTORE_SEGS;
++	ibt_restore(ibt);
+ 	firmware_restrict_branch_speculation_end();
+ 	apm_irq_restore(flags);
+ 	gdt[0x40 / 8] = save_desc_40;
+@@ -676,6 +680,7 @@ static long __apm_bios_call_simple(void
+ 	struct desc_struct	save_desc_40;
+ 	struct desc_struct	*gdt;
+ 	struct apm_bios_call	*call = _call;
++	u64			ibt;
+ 
+ 	cpu = get_cpu();
+ 	BUG_ON(cpu != 0);
+@@ -685,10 +690,12 @@ static long __apm_bios_call_simple(void
+ 
+ 	apm_irq_save(flags);
+ 	firmware_restrict_branch_speculation_start();
++	ibt = ibt_save();
+ 	APM_DO_SAVE_SEGS;
+ 	error = apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
+ 					 &call->eax);
+ 	APM_DO_RESTORE_SEGS;
++	ibt_restore(ibt);
+ 	firmware_restrict_branch_speculation_end();
+ 	apm_irq_restore(flags);
+ 	gdt[0x40 / 8] = save_desc_40;
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -592,6 +592,34 @@ static __init int setup_disable_pku(char
+ __setup("nopku", setup_disable_pku);
+ #endif /* CONFIG_X86_64 */
+ 
++#ifdef CONFIG_X86_IBT
++
++u64 ibt_save(void)
++{
++	u64 msr = 0;
++
++	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
++		rdmsrl(MSR_IA32_S_CET, msr);
++		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
++	}
++
++	return msr;
++}
++
++void ibt_restore(u64 save)
++{
++	u64 msr;
++
++	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
++		rdmsrl(MSR_IA32_S_CET, msr);
++		msr &= ~CET_ENDBR_EN;
++		msr |= (save & CET_ENDBR_EN);
++		wrmsrl(MSR_IA32_S_CET, msr);
++	}
++}
++
++#endif
++
+ static __always_inline void setup_cet(struct cpuinfo_x86 *c)
+ {
+ 	u64 msr;
 
 
