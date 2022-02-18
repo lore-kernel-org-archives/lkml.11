@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234757AbiBRLi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:38:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44636 "EHLO
+        id S234906AbiBRLjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:39:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234603AbiBRLgp (ORCPT
+        with ESMTP id S234606AbiBRLgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 06:36:45 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3E32B1A97
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:25 -0800 (PST)
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D562B1A95
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:36:24 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C0ECD22495;
-        Fri, 18 Feb 2022 12:36:21 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id A99FC223F0;
+        Fri, 18 Feb 2022 12:36:22 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645184181;
+        t=1645184182;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vndLg1/tmA+xUIohe+oUi4f1BSBLl5gr6bazRy9aWpE=;
-        b=EiF8GPxXxmc87fQZfUFyHVjlGyR0glWUxqQm9YfOimiE6mykrxPHSjQ1jSJhhm6mWGMjbh
-        TW7xIWRS9PKLzcvY1YRe2pxALIYKyRnGst2HD/3PrJGDfR2TfxPmQG9NlUjkqtbWsQNN1j
-        vvva8N2n29Re+HW9C7f00D3mbRCslto=
+        bh=yvCsGo+Zzlp+j51uBwOYnmVN4vdWTxdhsRo6HA993sA=;
+        b=PPoV1eBaoxAuhA5htcx6fmsEBpxExNTEday1zoGeTC8caJ8NukFw3B15BjliPxoAgzp6mS
+        Z+am6+Wj75t8672UgXPTMW44Sw8D7DNXjRsPQZTh1UamtfljYpp2dQNbseOYqD4+q+X2nh
+        L4fFF0ywtARWPqRYiz40DufhJ2jeJFA=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 23/32] mtd: spi-nor: xilinx: correct the debug message
-Date:   Fri, 18 Feb 2022 12:35:58 +0100
-Message-Id: <20220218113607.1360020-24-michael@walle.cc>
+Subject: [PATCH v2 26/32] mtd: spi-nor: micron-st: rename vendor specific functions and defines
+Date:   Fri, 18 Feb 2022 12:36:01 +0100
+Message-Id: <20220218113607.1360020-27-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218113607.1360020-1-michael@walle.cc>
 References: <20220218113607.1360020-1-michael@walle.cc>
@@ -51,29 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-XRDSR is a combination of xilinx and the RDSR opcode, but the register
-is just the status register. Correct the debug message.
+Drop the generic spi_nor prefix for all the micron-st functions.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/xilinx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/spi-nor/micron-st.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index c098c50379b4..6a8b86861ce2 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -87,7 +87,7 @@ static int xilinx_nor_read_sr(struct spi_nor *nor, u8 *sr)
- 	}
- 
- 	if (ret)
--		dev_dbg(nor->dev, "error %d reading XRDSR\n", ret);
-+		dev_dbg(nor->dev, "error %d reading SR\n", ret);
- 
- 	return ret;
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index f693f8720541..de450495e1ab 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -309,7 +309,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
  }
+ 
+ /**
+- * spi_nor_read_fsr() - Read the Flag Status Register.
++ * micron_st_nor_read_fsr() - Read the Flag Status Register.
+  * @nor:	pointer to 'struct spi_nor'
+  * @fsr:	pointer to a DMA-able buffer where the value of the
+  *              Flag Status Register will be written. Should be at least 2
+@@ -317,7 +317,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+  *
+  * Return: 0 on success, -errno otherwise.
+  */
+-static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
++static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
+ {
+ 	int ret;
+ 
+@@ -353,10 +353,10 @@ static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
+ }
+ 
+ /**
+- * spi_nor_clear_fsr() - Clear the Flag Status Register.
++ * micron_st_nor_clear_fsr() - Clear the Flag Status Register.
+  * @nor:	pointer to 'struct spi_nor'.
+  */
+-static void spi_nor_clear_fsr(struct spi_nor *nor)
++static void micron_st_nor_clear_fsr(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+@@ -380,13 +380,13 @@ static void spi_nor_clear_fsr(struct spi_nor *nor)
+ }
+ 
+ /**
+- * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
+- * ready for new commands.
++ * micron_st_nor_fsr_ready() - Query the Flag Status Register to see if the
++ * flash is ready for new commands.
+  * @nor:	pointer to 'struct spi_nor'.
+  *
+  * Return: 1 if ready, 0 if not ready, -errno on errors.
+  */
+-static int spi_nor_fsr_ready(struct spi_nor *nor)
++static int micron_st_nor_fsr_ready(struct spi_nor *nor)
+ {
+ 	int sr_ready, ret;
+ 
+@@ -394,7 +394,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+ 	if (sr_ready < 0)
+ 		return sr_ready;
+ 
+-	ret = spi_nor_read_fsr(nor, nor->bouncebuf);
++	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -408,7 +408,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+ 			dev_err(nor->dev,
+ 				"Attempted to modify a protected sector.\n");
+ 
+-		spi_nor_clear_fsr(nor);
++		micron_st_nor_clear_fsr(nor);
+ 
+ 		/*
+ 		 * WEL bit remains set to one when an erase or page program
+@@ -437,7 +437,7 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
+ static void micron_st_nor_late_init(struct spi_nor *nor)
+ {
+ 	if (nor->info->mfr_flags & USE_FSR)
+-		nor->params->ready = spi_nor_fsr_ready;
++		nor->params->ready = micron_st_nor_fsr_ready;
+ }
+ 
+ static const struct spi_nor_fixups micron_st_nor_fixups = {
 -- 
 2.30.2
 
