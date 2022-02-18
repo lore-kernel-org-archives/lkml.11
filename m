@@ -2,108 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234339AbiBRLGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:06:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47656 "EHLO
+        id S234346AbiBRLHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:07:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234228AbiBRLGb (ORCPT
+        with ESMTP id S231533AbiBRLHS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:06:31 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777E828881F;
-        Fri, 18 Feb 2022 03:06:14 -0800 (PST)
+        Fri, 18 Feb 2022 06:07:18 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F138829E978;
+        Fri, 18 Feb 2022 03:07:01 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id y9so8275277pjf.1;
+        Fri, 18 Feb 2022 03:07:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1645182375;
-  x=1676718375;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TtCwuTI/iRWtd93Jw/84z0sfqwMlErfgG6nVne3l2O4=;
-  b=iOaC0tRmVWuo4XIL2mEUhQQLo9encK3/GxBIx6RwFCmLlRwU6F9M6bdB
-   jZF5doyFxaIOSVO33C17EHRNFAn5gLRs4xejce5C3IoQi5b4dEHs+zgJ3
-   VzcZBY8BzDv4CQEJC8I4j1NZJBRzfgf1s+fJbEeNocnkdAFwoL+KgWQpX
-   JPcKr9w79QtR0LB4zChTwBZyTYWK/Ixs9tyN0cWpNcnU4iBdZAlALk/Zi
-   MjbEzjFHFGtzv2lcdSeyeHhnZvE29vVrekN6+nsu8PbRlmCNVh5HPoTno
-   3RA5aJqfGC/HKVAC0F1ImsxAwU5kwbyneRT0oZhSNxdBWsuYF0U4wOqmM
-   A==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <kernel@axis.com>, <devicetree@vger.kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] regulator: virtual: add devicetree support
-Date:   Fri, 18 Feb 2022 12:06:03 +0100
-Message-ID: <20220218110604.1329024-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kk580xNqQGxTpD22MSWsv7W+CGpIrgay4WJjxAu0jaw=;
+        b=ItKC/dRUNY28KYQ0/Hq1hnFRx31Xe3t75nNlCjTs2wsgcdTMKJX72rrt+4KbQ0tBvk
+         MrXXT1tLNfbyTcEDKi+VkWmt5JKPwjApBkEgEswUAAMejyqF5p3C5wuawexsVZ3glBzU
+         AQ4roKvRoWVY6nLD+7lr/BW+qWX6TOAptylk1kBRdtlAQAqsnxmpDaPCefFrx+DDMXl+
+         NkF3852s72mMf3CZZjZS5g2nSHI7CSZIXh1r4gSTxB1uLDL03M8ncT82seIP48LZJSav
+         G9qHI2EqVWEmYxptWjOGS9yzdnaCtWVnwgQ1IlK1mr7QVqpVzWfJrOAioeJyZlUfD00j
+         qPXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kk580xNqQGxTpD22MSWsv7W+CGpIrgay4WJjxAu0jaw=;
+        b=x6hAJ2YGuiSe6uZk+UUl46hxEcWa3X8VDI0K8DsLiUduxICsx1wamY3oxidZ5zT2Pa
+         JYYQH6sjONN6XhkrHdGOVYXKWirXiNaYYdC2DkYdB2YyD0NAw5v23dTTsOC5sEL4/nV2
+         7wmhhIDzixziQxTb63HjDS1oOBdguc5JSIVKChy0HUhsaAyGWxcxVmBVHqWVn5Wya6mN
+         werJVpsIEaxASnYTVI59iwS4qpWFBPqasv6HzbjWuIwCOmzS4E6tnLRTbgtPgxFa2/ov
+         HR/jLQVnFnB4l6WlM/kPxHIxmy7ftegMpE+9nyU6edoi467dUtKNj+ZKlafQhAWZ1YLq
+         26Yg==
+X-Gm-Message-State: AOAM53320Tuw8Qfh56yffL1CVMl9B5LDUFd5ZMuCMco2CNzLCQbMbfXM
+        Cpob3bIs2dEvHyoR+gUM6hnFQkTixN1eNoiK
+X-Google-Smtp-Source: ABdhPJyrxinJdlL2+whdKDdaHMSbXHCQ0tMVYHHD3/7YlF4AlmCgtOXDwyB1n34b/8Km9n9HvO0FYA==
+X-Received: by 2002:a17:90b:4c8e:b0:1b9:f99f:1218 with SMTP id my14-20020a17090b4c8e00b001b9f99f1218mr12210904pjb.75.1645182421398;
+        Fri, 18 Feb 2022 03:07:01 -0800 (PST)
+Received: from FLYINGPENG-MB0.tencent.com ([103.7.29.30])
+        by smtp.gmail.com with ESMTPSA id u4sm2881984pfk.220.2022.02.18.03.07.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 03:07:01 -0800 (PST)
+From:   Peng Hao <flyingpenghao@gmail.com>
+X-Google-Original-From: Peng Hao <flyingpeng@tencent.com>
+To:     pbonzini@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH]  kvm: correct comment description issue
+Date:   Fri, 18 Feb 2022 19:05:47 +0800
+Message-Id: <20220218110547.11249-1-flyingpeng@tencent.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reg-virt-consumer is very useful for development and testing of
-regulator drivers since it allows voltages and modes to be set from
-userspace.  However, it currently requires platform data so it cannot be
-used on modern platforms.  Add support for probing it from the
-devicetree to remedy this.
+loaded_vmcs does not have this field 'vcpu', modify this comment.
 
-Since this driver is only meant for testing and is a purely software
-construct, no binding documentation is added.
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Signed-off-by: Peng Hao <flyingpeng@tencent.com>
 ---
- drivers/regulator/virtual.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/x86/kvm/vmx/vmx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/regulator/virtual.c b/drivers/regulator/virtual.c
-index 52c5a0e0acd8..c4d56b484ed5 100644
---- a/drivers/regulator/virtual.c
-+++ b/drivers/regulator/virtual.c
-@@ -13,6 +13,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-+#include <linux/of.h>
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 7dce746c175f..0ffcfe54eea5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -644,10 +644,10 @@ static void __loaded_vmcs_clear(void *arg)
  
- struct virtual_consumer_data {
- 	struct mutex lock;
-@@ -281,6 +282,14 @@ static const struct attribute_group regulator_virtual_attr_group = {
- 	.attrs	= regulator_virtual_attributes,
- };
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id regulator_virtual_consumer_of_match[] = {
-+	{ .compatible = "regulator-virtual-consumer" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, regulator_virtual_consumer_of_match);
-+#endif
-+
- static int regulator_virtual_probe(struct platform_device *pdev)
- {
- 	char *reg_id = dev_get_platdata(&pdev->dev);
-@@ -292,6 +301,9 @@ static int regulator_virtual_probe(struct platform_device *pdev)
- 	if (drvdata == NULL)
- 		return -ENOMEM;
- 
-+	if (!reg_id)
-+		reg_id = "default";
-+
- 	mutex_init(&drvdata->lock);
- 
- 	drvdata->regulator = devm_regulator_get(&pdev->dev, reg_id);
-@@ -334,6 +346,7 @@ static struct platform_driver regulator_virtual_consumer_driver = {
- 	.remove		= regulator_virtual_remove,
- 	.driver		= {
- 		.name		= "reg-virt-consumer",
-+		.of_match_table = of_match_ptr(regulator_virtual_consumer_of_match),
- 	},
- };
+ 	/*
+ 	 * Ensure all writes to loaded_vmcs, including deleting it from its
+-	 * current percpu list, complete before setting loaded_vmcs->vcpu to
+-	 * -1, otherwise a different cpu can see vcpu == -1 first and add
+-	 * loaded_vmcs to its percpu list before it's deleted from this cpu's
+-	 * list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
++	 * current percpu list, complete before setting loaded_vmcs->cpu to
++	 * -1, otherwise a different cpu can see loaded_vmcs->cpu == -1 first
++	 * and add loaded_vmcs to its percpu list before it's deleted from this
++	 * cpu's list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
+ 	 */
+ 	smp_wmb();
  
 -- 
-2.34.1
+2.27.0
 
