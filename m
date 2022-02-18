@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237674AbiBRQSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:18:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42964 "EHLO
+        id S237828AbiBRQSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:18:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237491AbiBRQR5 (ORCPT
+        with ESMTP id S237645AbiBRQR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:17:57 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408AF3A5F1
+        Fri, 18 Feb 2022 11:17:56 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406A03A5EE
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645201047; x=1676737047;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jdM9o9zBsR4IN0AD1gbXWvPs/FzIVVhLyWjbGEJjgl8=;
-  b=AiV4RVbjhWeXZnO2apqNl51h7U8ouJrvQORvCiRQpfOvtykcwpVyHftl
-   YM9yzXJS5FD5Zwk3M8bOI1/5Sw19ojgeSI46fT7T3qS4iPvlIN5lKaxfM
-   PmYBGJDswKiQWR9INaEYyQGDblDHdlfQB/UylIjJqBISobybtvuTKMpu7
-   bqNiLq22aHroJyiT2vck99uEmJsoW7SOhT9lzQuFB0opjEICTIu7f5GWp
-   Jpn3f2EUfRlOdELto4wLpgG28w7LhAmyzpNONy1R+Bl5XvDPe3Xn8klPx
-   HVUdYncj/IBcPN+BrT2ivF5UmYCvhGKILh4JqrgGxIJGvL0qRV7kWb2AL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="248752973"
+  bh=aMt9dMQFnuWJAh9cVzkqMUEeYOnZHiNvm0HEf2p9qHU=;
+  b=hPeLwVdNkRiLdmPxBsIpWST6CNQWEh58GMhWO7r/1IpTds9E4ryW3oU0
+   GIgkqhuWalzD03jWfAJl5m1CN+OobftVheS1weVQFlZhYzRMfX9zQOHHR
+   TZ6kts48rT76mit6zo5cqgiq+PA1rLkAVCHG0i2CDbar/EbPqcrzSy9+f
+   FF7atMWAU+HW0zBzvH/0nAKKSVYCAZwzAWXbckNeiYl6hZmkCUsesr80M
+   yJWCP4jAtzdFLjbvpvEp4xC1s935BMy5soGKDRpYFH06RtoX10bRFV/Z3
+   RzizuDWLAXfZqFJ84icfvjrxSULquAG3gVE9COHRjEC/RePvs3eOsN0WP
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231791737"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="248752973"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
+   d="scan'208";a="231791737"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="506200922"
+   d="scan'208";a="572355147"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
+  by orsmga001.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 05048BAE; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
+        id 9A97210B0; Fri, 18 Feb 2022 18:17:23 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -50,10 +50,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 20/32] x86/tdx: Wire up KVM hypercalls
-Date:   Fri, 18 Feb 2022 19:17:06 +0300
-Message-Id: <20220218161718.67148-21-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 31/32] ACPICA: Avoid cache flush on TDX guest
+Date:   Fri, 18 Feb 2022 19:17:17 +0300
+Message-Id: <20220218161718.67148-32-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,145 +63,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states. It is
+required to prevent data loss.
 
-KVM hypercalls use the VMCALL or VMMCALL instructions. Although the ABI
-is similar, those instructions no longer function for TDX guests.
+While running inside TDX guest, the kernel can bypass cache flushing.
+Changing sleep state in a virtual machine doesn't affect the host system
+sleep state and cannot lead to data loss.
 
-Make vendor-specific TDVMCALLs instead of VMCALL. This enables TDX
-guests to run with KVM acting as the hypervisor.
+The approach can be generalized to all guest kernels, but, to be
+cautious, let's limit it to TDX for now.
 
-Among other things, KVM hypercall is used to send IPIs.
-
-Since the KVM driver can be built as a kernel module, export
-tdx_kvm_hypercall() to make the symbols visible to kvm.ko.
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/coco/tdx.c             | 17 +++++++++++++++++
- arch/x86/include/asm/kvm_para.h | 22 ++++++++++++++++++++++
- arch/x86/include/asm/tdx.h      | 11 +++++++++++
- 3 files changed, 50 insertions(+)
+ arch/x86/include/asm/acenv.h | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index d23d389124a1..f73983f3ffc4 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -48,6 +48,23 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
- 	return __tdx_hypercall(&args, 0);
- }
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f0de7f..d19deca6dd27 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,21 @@
  
-+#ifdef CONFIG_KVM_GUEST
-+long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
-+		       unsigned long p3, unsigned long p4)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = nr,
-+		.r11 = p1,
-+		.r12 = p2,
-+		.r13 = p3,
-+		.r14 = p4,
-+	};
-+
-+	return __tdx_hypercall(&args, 0);
-+}
-+EXPORT_SYMBOL_GPL(tdx_kvm_hypercall);
-+#endif
-+
- static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
- 				   struct tdx_module_output *out)
- {
-diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
-index 56935ebb1dfe..57bc74e112f2 100644
---- a/arch/x86/include/asm/kvm_para.h
-+++ b/arch/x86/include/asm/kvm_para.h
-@@ -7,6 +7,8 @@
- #include <linux/interrupt.h>
- #include <uapi/asm/kvm_para.h>
+ /* Asm macros */
  
-+#include <asm/tdx.h>
-+
- #ifdef CONFIG_KVM_GUEST
- bool kvm_check_and_clear_guest_paused(void);
- #else
-@@ -32,6 +34,10 @@ static inline bool kvm_check_and_clear_guest_paused(void)
- static inline long kvm_hypercall0(unsigned int nr)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, 0, 0, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr)
-@@ -42,6 +48,10 @@ static inline long kvm_hypercall0(unsigned int nr)
- static inline long kvm_hypercall1(unsigned int nr, unsigned long p1)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, 0, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1)
-@@ -53,6 +63,10 @@ static inline long kvm_hypercall2(unsigned int nr, unsigned long p1,
- 				  unsigned long p2)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, 0, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2)
-@@ -64,6 +78,10 @@ static inline long kvm_hypercall3(unsigned int nr, unsigned long p1,
- 				  unsigned long p2, unsigned long p3)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, p3, 0);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
-@@ -76,6 +94,10 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
- 				  unsigned long p4)
- {
- 	long ret;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-+		return tdx_kvm_hypercall(nr, p1, p2, p3, p4);
-+
- 	asm volatile(KVM_HYPERCALL
- 		     : "=a"(ret)
- 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3), "S"(p4)
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index ba0f8c2b185c..6a97d42b0de9 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -67,5 +67,16 @@ static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside TDX guest, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ *
++ * TODO: Is it safe to generalize this from TDX guests to all guest kernels?
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))	\
++		wbinvd();					\
++} while (0)
  
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-+#if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)
-+long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
-+		       unsigned long p3, unsigned long p4);
-+#else
-+static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
-+				     unsigned long p2, unsigned long p3,
-+				     unsigned long p4)
-+{
-+	return -ENODEV;
-+}
-+#endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
- #endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_TDX_H */
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.34.1
 
