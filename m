@@ -2,315 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B48C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbiBRJSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:18:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59374 "EHLO
+        id S233330AbiBRJSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:18:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbiBRJRM (ORCPT
+        with ESMTP id S233238AbiBRJRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:17:12 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D324412748;
-        Fri, 18 Feb 2022 01:16:53 -0800 (PST)
-X-UUID: d720707021ec4b6d8d1a3f6c79e9cba5-20220218
-X-UUID: d720707021ec4b6d8d1a3f6c79e9cba5-20220218
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 15230339; Fri, 18 Feb 2022 17:16:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 18 Feb 2022 17:16:50 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Feb 2022 17:16:50 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 15/23] arm64: dts: mt8192: Add m4u and smi nodes
-Date:   Fri, 18 Feb 2022 17:16:25 +0800
-Message-ID: <20220218091633.9368-16-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
-References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B3810FC3;
+        Fri, 18 Feb 2022 01:16:55 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 35B0D1F41376
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645175813;
+        bh=U7lrWAwexr4OGIHGR/8E7hJ30LUne6rDxFg0tlfKKeE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=dYSoqAoFunE26Zuzip6yj5ZI2T1UyC2GkhrcpgU8ahqnmNZRKgLt6EShgsOUl/E3e
+         wdtmkmqGgFkuNJZjb7HYkmxONjqaGPQ6aPELatm4rp43UcQaZxpbmbOqKijBLuWTpM
+         Hns7vuM1njcewRDBbHn8qJMXE1cxi4XwPt3ERxmtukAqJGHHUipL8TRlqrryqrjqOr
+         cmGZBGwZaRkFOfIEOSwUGyy+HqTQz/zP6/MMxUP7RodX1pyCBQNHNcekgbO7nA14FJ
+         9bYbp6i6mEABn5PQZ2elbyCCv+RmjRb7gTRYcVK/93xrxPJk7WVEucGbqQJhXHkvYz
+         7s1LPBMFEVwFg==
+Message-ID: <ad306275-cd38-e6ad-55cc-0f7c4bdfcecf@collabora.com>
+Date:   Fri, 18 Feb 2022 10:16:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] rpmsg: mtk_rpmsg: Fix circular locking dependency
+Content-Language: en-US
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc:     bjorn.andersson@linaro.org, matthias.bgg@gmail.com,
+        pihsun@chromium.org, linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20220114144737.375621-1-angelogioacchino.delregno@collabora.com>
+ <20220217190349.GA477215@p14s>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220217190349.GA477215@p14s>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add m4u and smi nodes for mt8192 SoC
+Il 17/02/22 20:03, Mathieu Poirier ha scritto:
+> Hi Angelo,
+> 
+> On Fri, Jan 14, 2022 at 03:47:37PM +0100, AngeloGioacchino Del Regno wrote:
+>> During execution of the worker that's used to register rpmsg devices
+>> we are safely locking the channels mutex but, when creating a new
+>> endpoint for such devices, we are registering a IPI on the SCP, which
+>> then makes the SCP to trigger an interrupt, lock its own mutex and in
+>> turn register more subdevices.
+>> This creates a circular locking dependency situation, as the mtk_rpmsg
+>> channels_lock will then depend on the SCP IPI lock.
+>>
+>> [   18.014514]  Possible unsafe locking scenario:
+>> [   18.014515]        CPU0                    CPU1
+>> [   18.014517]        ----                    ----
+>> [   18.045467]   lock(&mtk_subdev->channels_lock);
+>> [   18.045474]                                lock(&scp->ipi_desc[i].lock);
+> 
+> I spent well over an hour tracing through the meanders of the code to end up in
+> scp_ipi_register() which, I think, leads to the above.  But from there I don't
+> see how an IPI can come in and that tells me my assumption is wrong.
+> 
+> Can you give more details on the events that lead to the above?  I'm not saying
+> there is no problem, I just need to understand it.
+> 
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 191 +++++++++++++++++++++++
- 1 file changed, 191 insertions(+)
+Hi Mathieu,
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index f5e5af949f19..40887120fdb3 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -9,6 +9,7 @@
- #include <dt-bindings/gce/mt8192-gce.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/memory/mt8192-larb-port.h>
- #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/power/mt8192-power.h>
-@@ -1210,24 +1211,114 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		smi_common: smi@14002000 {
-+			compatible = "mediatek,mt8192-smi-common";
-+			reg = <0 0x14002000 0 0x1000>;
-+			clocks = <&mmsys CLK_MM_SMI_COMMON>,
-+				 <&mmsys CLK_MM_SMI_INFRA>,
-+				 <&mmsys CLK_MM_SMI_GALS>,
-+				 <&mmsys CLK_MM_SMI_GALS>;
-+			clock-names = "apb", "smi", "gals0", "gals1";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		larb0: larb@14003000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x14003000 0 0x1000>;
-+			mediatek,larb-id = <0>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		larb1: larb@14004000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x14004000 0 0x1000>;
-+			mediatek,larb-id = <1>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+		};
-+
-+		iommu0: m4u@1401d000 {
-+			compatible = "mediatek,mt8192-m4u";
-+			reg = <0 0x1401d000 0 0x1000>;
-+			mediatek,larbs = <&larb0 &larb1 &larb2
-+					  &larb4 &larb5 &larb7
-+					  &larb9 &larb11 &larb13
-+					  &larb14 &larb16 &larb17
-+					  &larb18 &larb19 &larb20>;
-+			interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&mmsys CLK_MM_SMI_IOMMU>;
-+			clock-names = "bclk";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		imgsys: clock-controller@15020000 {
- 			compatible = "mediatek,mt8192-imgsys";
- 			reg = <0 0x15020000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb9: larb@1502e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1502e000 0 0x1000>;
-+			mediatek,larb-id = <9>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&imgsys CLK_IMG_LARB9>,
-+				 <&imgsys CLK_IMG_LARB9>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_ISP>;
-+		};
-+
- 		imgsys2: clock-controller@15820000 {
- 			compatible = "mediatek,mt8192-imgsys2";
- 			reg = <0 0x15820000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb11: larb@1582e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1582e000 0 0x1000>;
-+			mediatek,larb-id = <11>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&imgsys2 CLK_IMG2_LARB11>,
-+				 <&imgsys2 CLK_IMG2_LARB11>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
-+		};
-+
-+		larb5: larb@1600d000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1600d000 0 0x1000>;
-+			mediatek,larb-id = <5>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
-+				 <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
-+		};
-+
- 		vdecsys_soc: clock-controller@1600f000 {
- 			compatible = "mediatek,mt8192-vdecsys_soc";
- 			reg = <0 0x1600f000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb4: larb@1602e000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1602e000 0 0x1000>;
-+			mediatek,larb-id = <4>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vdecsys CLK_VDEC_SOC_LARB1>,
-+				 <&vdecsys CLK_VDEC_SOC_LARB1>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
-+		};
-+
- 		vdecsys: clock-controller@1602f000 {
- 			compatible = "mediatek,mt8192-vdecsys";
- 			reg = <0 0x1602f000 0 0x1000>;
-@@ -1240,12 +1331,79 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		larb7: larb@17010000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x17010000 0 0x1000>;
-+			mediatek,larb-id = <7>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&vencsys CLK_VENC_SET0_LARB>,
-+				 <&vencsys CLK_VENC_SET1_VENC>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_VENC>;
-+		};
-+
- 		camsys: clock-controller@1a000000 {
- 			compatible = "mediatek,mt8192-camsys";
- 			reg = <0 0x1a000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		larb13: larb@1a001000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a001000 0 0x1000>;
-+			mediatek,larb-id = <13>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys CLK_CAM_CAM>,
-+				 <&camsys CLK_CAM_LARB13>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
-+		};
-+
-+		larb14: larb@1a002000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a002000 0 0x1000>;
-+			mediatek,larb-id = <14>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys CLK_CAM_CAM>,
-+				 <&camsys CLK_CAM_LARB14>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM>;
-+		};
-+
-+		larb16: larb@1a00f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a00f000 0 0x1000>;
-+			mediatek,larb-id = <16>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawa CLK_CAM_RAWA_CAM>,
-+				 <&camsys_rawa CLK_CAM_RAWA_LARBX>;
-+			clock-names = "apb", "smi";
-+			mediatek,smi-id = <16>;
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWA>;
-+		};
-+
-+		larb17: larb@1a010000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a010000 0 0x1000>;
-+			mediatek,larb-id = <17>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawb CLK_CAM_RAWB_CAM>,
-+				 <&camsys_rawb CLK_CAM_RAWB_LARBX>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWB>;
-+		};
-+
-+		larb18: larb@1a011000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1a011000 0 0x1000>;
-+			mediatek,larb-id = <18>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&camsys_rawc CLK_CAM_RAWC_LARBX>,
-+				 <&camsys_rawc CLK_CAM_RAWC_CAM>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_CAM_RAWC>;
-+		};
-+
- 		camsys_rawa: clock-controller@1a04f000 {
- 			compatible = "mediatek,mt8192-camsys_rawa";
- 			reg = <0 0x1a04f000 0 0x1000>;
-@@ -1270,10 +1428,43 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		larb20: larb@1b00f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1b00f000 0 0x1000>;
-+			mediatek,larb-id = <20>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
-+				 <&ipesys CLK_IPE_LARB20>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
-+		};
-+
-+		larb19: larb@1b10f000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1b10f000 0 0x1000>;
-+			mediatek,larb-id = <19>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&ipesys CLK_IPE_SMI_SUBCOM>,
-+				 <&ipesys CLK_IPE_LARB19>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_IPE>;
-+		};
-+
- 		mdpsys: clock-controller@1f000000 {
- 			compatible = "mediatek,mt8192-mdpsys";
- 			reg = <0 0x1f000000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
-+
-+		larb2: larb@1f002000 {
-+			compatible = "mediatek,mt8192-smi-larb";
-+			reg = <0 0x1f002000 0 0x1000>;
-+			mediatek,larb-id = <2>;
-+			mediatek,smi = <&smi_common>;
-+			clocks = <&mdpsys CLK_MDP_SMI0>,
-+				 <&mdpsys CLK_MDP_SMI0>;
-+			clock-names = "apb", "smi";
-+			power-domains = <&spm MT8192_POWER_DOMAIN_MDP>;
-+		};
- 	};
- };
--- 
-2.18.0
+I understand that following this flow without the assistance of the actual
+hardware may be a little confusing, so, no worries.
+
+drivers/remoteproc/mtk_scp.c - this driver manages the SCP (obviously, a
+remote processor)
+drivers/remoteproc/mtk_scp_ipi.c - public functions for kernel SCP IPC
+
+Flow:
+- MediaTek SCP gets probed
+- RPMSG starts, we start probing "something", like google,cros-ec-rpmsg
+- mtk_rpmsg: creates endpoint; IPI handler is registered here.
+
+          ( more flow )
+
+- mtk_rpmsg: mtk_rpmsg_ns_cb() -> mtk_rpmsg_create_device(), channel is
+              added to the channels list, worker gets scheduled
+
+
+Now for the part that produces the real issue:
+
+label_a:
+
+*** RPMSG MUTEX LOCK ***
+- mtk_rpmsg: ## Go through multiple channels ##, call mtk_rpmsg_register_device()
+
+- Registered device tries to communicate through RPMSG
+- .send() or .trysend() (depending on the device) is called: send_ipi()
+     *** SCP MUTEX LOCK ***
+    - mtk_scp_ipi: Data written, ACK? ok -> return 0
+     *** SCP MUTEX UNLOCK ***
+
+- mtk_scp_ipi: **** INTERRUPT!!! **** New RPMSG NS available? -> create channel
+           goto label_a;
+
+*** RPMSG MUTEX UNLOCK ***
+
+
+Pardon me for keeping some things in this flow implicit, but that was done to
+simplify it as much as possible as to try to make you understand the situation.
+
+Cheers,
+Angelo
+
+> Thanks,
+> Mathieu
+> 
+>> [   18.228399]                                lock(&mtk_subdev->channels_lock);
+>> [   18.228405]   lock(&scp->ipi_desc[i].lock);
+>> [   18.264405]
+>>
+>> To solve this, simply unlock the channels_lock mutex before calling
+>> mtk_rpmsg_register_device() and relock it right after, as safety is
+>> still ensured by the locking mechanism that happens right after
+>> through SCP.
+>> Notably, mtk_rpmsg_register_device() does not even require locking.
+>>
+>> Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   drivers/rpmsg/mtk_rpmsg.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
+>> index 5b4404b8be4c..d1213c33da20 100644
+>> --- a/drivers/rpmsg/mtk_rpmsg.c
+>> +++ b/drivers/rpmsg/mtk_rpmsg.c
+>> @@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
+>>   		if (info->registered)
+>>   			continue;
+>>   
+>> +		mutex_unlock(&subdev->channels_lock);
+>>   		ret = mtk_rpmsg_register_device(subdev, &info->info);
+>> +		mutex_lock(&subdev->channels_lock);
+>>   		if (ret) {
+>>   			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
+>>   			continue;
+>> -- 
+>> 2.33.1
+>>
+
+
 
