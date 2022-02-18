@@ -2,118 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C977FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238232AbiBRRPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:15:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43066 "EHLO
+        id S238244AbiBRRPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:15:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238174AbiBRRPM (ORCPT
+        with ESMTP id S238202AbiBRRPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:15:12 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAEE4B850
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:55 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so9105727pjh.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xH/IlepHKMPyzwGE0aHvfUnRRSRkxlsVgqDXZENsWF4=;
-        b=CCZJEx6wJo54CRJ1nw52S3756+GgvbkbG4fFiUiKvWxfwo3MAxnvlqtWClKtKtJhBR
-         rAlT6HU9MUCOUOWOB/f+bl21qmDRIi2eShXVQuQB4QooVixEMhz9TMdgMO2+H9q0djig
-         QSzuZrCKSTBBPSM0GNZenFIkkaY9EbveT+FpSAmKoN2B8A3YeTLtptVHTaTz4Zwc4GZ/
-         Bz6MbtsB1jEqlTbzVmeTMH+B8mMJM9A8re+zHSmQGH7YpupplZdGb3VfwbIMf87lBjcA
-         /z0B5whNJpDv3VA31g5ARfkabFqCYKAdZIwjZCZanyTeUF64kKRqOspmZmOvrs2pu/K+
-         uf3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xH/IlepHKMPyzwGE0aHvfUnRRSRkxlsVgqDXZENsWF4=;
-        b=WHgV/YY6VgFzWWoSyxfesnoIZIPd6CVzKwxAkkpaR6VGIHceN51aSP0kr+i/pWrsgY
-         wjr/BFFxkSu05xb4JGIryrJA2tM5+eVGmUtbhDfh0+YckvGX7gp4613YcL+YR/L7R1sw
-         ExH3axUE5F08C5DAkqiZSrsVf3X4inC00jJ3EO9zKPET+GuLngI7gZ/UIdC3BwMKzK6t
-         dRrNtT+WdI/DSgyy0kmvkIX+g8zpbYaUn059vGs+0MiQykDgm5vk7kLzmMM0nnm3OMts
-         /3esQywC5xewY+tZX2ID4VZdFRZtSujKxeIL8y6mWn2r+qPEqUVKEuVcTb1Qt+/TYPey
-         IElw==
-X-Gm-Message-State: AOAM531AYTOxeE+TUpszSQSm435+9vQl491YTtv1DZn7BA5OS36i7r+t
-        VLdHuW+WkwFo+yQV2IbFf3j74qP4QKkMxg==
-X-Google-Smtp-Source: ABdhPJyIt9N0yCc8Xc8p3SzO2o/LXgdOK3B0rha1X07eij+FvPTnQ1VvSItUKF7LOU8F+RELqJdHMg==
-X-Received: by 2002:a17:902:6aca:b0:14d:5b32:eb0e with SMTP id i10-20020a1709026aca00b0014d5b32eb0emr8030672plt.31.1645204494478;
-        Fri, 18 Feb 2022 09:14:54 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 19sm3447140pfz.153.2022.02.18.09.14.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 09:14:53 -0800 (PST)
-Date:   Fri, 18 Feb 2022 17:14:49 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH v2 03/18] KVM: x86/mmu: WARN if PAE roots linger after
- kvm_mmu_unload
-Message-ID: <Yg/UCQggoKQ27pVm@google.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-4-pbonzini@redhat.com>
+        Fri, 18 Feb 2022 12:15:14 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29024C78A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:14:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=cLs5KwDBeXI4YaK2Xyaf/MdILlBcETZiDFFGNwB8et0=; b=R2suKUv3sInwTfAwzo2rVF7yik
+        DNxMroDw+EnwocNFNGwDgOczTatcKEZP7mmcxl0ctMb0MJ70uK5QmSgBvBq7G77lQBba16b4+jHKG
+        F3BZdAEzHjNACldznDRdhdQkaIuIplc3rmfRGShYl1/1360aTHtBRtTPQtxh3AyICAtsSHq2nsnt3
+        HWpDZKbocUdE0/zfcBureATCTbFYJJQjJj7wKnrpI5jB1FbTOx5Q4Wv7S/LRNQNuBlf8CcxwPG+43
+        50GrWBn66tpx7/NSJNeRYJSe+xttUOUtpb1CYmzeGtgFQuN8Hs3s8k3PwdrjVHzMG3FXHhDDSyb3q
+        pvPkMZ+g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nL6qB-00AsBn-2U; Fri, 18 Feb 2022 17:14:43 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D7054302A1E;
+        Fri, 18 Feb 2022 18:14:39 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 69BE72B09FA68; Fri, 18 Feb 2022 18:14:39 +0100 (CET)
+Message-ID: <20220218171409.990016403@infradead.org>
+User-Agent: quilt/0.66
+Date:   Fri, 18 Feb 2022 17:49:26 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com
+Subject: [PATCH 24/29] x86/text-patching: Make text_gen_insn() IBT aware
+References: <20220218164902.008644515@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217210340.312449-4-pbonzini@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022, Paolo Bonzini wrote:
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 296f8723f9ae..a67071ac80f3 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -5086,12 +5086,21 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
->  	return r;
->  }
->  
-> +static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
-> +{
-> +	int i;
-> +	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
-> +	WARN_ON(VALID_PAGE(mmu->root_hpa));
-> +	if (mmu->pae_root) {
-> +		for (i = 0; i < 4; ++i)
-> +			WARN_ON(IS_VALID_PAE_ROOT(mmu->pae_root[i]));
-> +	}
-> +}
-> +
->  void kvm_mmu_unload(struct kvm_vcpu *vcpu)
->  {
-> -	kvm_mmu_free_roots(vcpu, &vcpu->arch.root_mmu, KVM_MMU_ROOTS_ALL);
-> -	WARN_ON(VALID_PAGE(vcpu->arch.root_mmu.root_hpa));
-> -	kvm_mmu_free_roots(vcpu, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
-> -	WARN_ON(VALID_PAGE(vcpu->arch.guest_mmu.root_hpa));
-> +	__kvm_mmu_unload(vcpu, &vcpu->arch.root_mmu);
-> +	__kvm_mmu_unload(vcpu, &vcpu->arch.guest_mmu);
+Make sure we don't generate direct JMP/CALL instructions to an ENDBR
+instruction (which might be poison).
 
-Can we just drop this one?  Checkpatch doesn't like it, and IMO the existing asserts
-are unnecessary.  IIRC you said this one never actually fired?
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ arch/x86/include/asm/text-patching.h |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-WARNING: Missing commit description - Add an appropriate one
-
-WARNING: Missing a blank line after declarations
-#22: FILE: arch/x86/kvm/mmu/mmu.c:5092:
-+	int i;
-+	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
+--- a/arch/x86/include/asm/text-patching.h
++++ b/arch/x86/include/asm/text-patching.h
+@@ -5,6 +5,7 @@
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+ #include <asm/ptrace.h>
++#include <asm/ibt.h>
+ 
+ struct paravirt_patch_site;
+ #ifdef CONFIG_PARAVIRT
+@@ -101,6 +102,11 @@ void *text_gen_insn(u8 opcode, const voi
+ 	static union text_poke_insn insn; /* per instance */
+ 	int size = text_opcode_size(opcode);
+ 
++#ifdef CONFIG_X86_IBT
++	if (is_endbr(dest))
++		dest += 4;
++#endif
++
+ 	insn.opcode = opcode;
+ 
+ 	if (size > 1) {
 
 
->  }
->  
->  static bool need_remote_flush(u64 old, u64 new)
-> -- 
-> 2.31.1
-> 
-> 
