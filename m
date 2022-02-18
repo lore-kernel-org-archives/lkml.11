@@ -2,32 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89589C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D340C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233391AbiBRJRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:17:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59364 "EHLO
+        id S233303AbiBRJRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:17:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233206AbiBRJRJ (ORCPT
+        with ESMTP id S233209AbiBRJRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:17:09 -0500
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF90610FD3;
-        Fri, 18 Feb 2022 01:16:46 -0800 (PST)
-X-UUID: cc8e84ada6ee4ed1b0682d9c0650bae8-20220218
-X-UUID: cc8e84ada6ee4ed1b0682d9c0650bae8-20220218
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0AFF11175;
+        Fri, 18 Feb 2022 01:16:50 -0800 (PST)
+X-UUID: 8c74edc5be4d4c7cbc3def0e3364168e-20220218
+X-UUID: 8c74edc5be4d4c7cbc3def0e3364168e-20220218
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1367642337; Fri, 18 Feb 2022 17:16:43 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 18 Feb 2022 17:16:41 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1013492680; Fri, 18 Feb 2022 17:16:46 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 18 Feb 2022 17:16:45 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Feb
+ 2022 17:16:45 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Feb 2022 17:16:41 +0800
+ Transport; Fri, 18 Feb 2022 17:16:45 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -40,9 +42,9 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         "Chen-Yu Tsai" <wenst@chromium.org>,
         Ryder Lee <ryder.lee@kernel.org>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 05/23] arm64: dts: mt8192: Add SCP node
-Date:   Fri, 18 Feb 2022 17:16:15 +0800
-Message-ID: <20220218091633.9368-6-allen-kh.cheng@mediatek.com>
+Subject: [PATCH v2 09/23] arm64: dts: mt8192: Add infracfg_rst node
+Date:   Fri, 18 Feb 2022 17:16:19 +0800
+Message-ID: <20220218091633.9368-10-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
 References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
@@ -53,36 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add SCP node for mt8192 SoC.
+add infracfg_rst node for mt8192 SoC.
 
 Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index f92d8d7afa5d..61aadd7bd397 100644
+index f93fe3779161..a935a22babbb 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -706,6 +706,18 @@
- 			status = "disabled";
+@@ -12,6 +12,7 @@
+ #include <dt-bindings/pinctrl/mt8192-pinfunc.h>
+ #include <dt-bindings/phy/phy.h>
+ #include <dt-bindings/power/mt8192-power.h>
++#include <dt-bindings/reset/ti-syscon.h>
+ 
+ / {
+ 	compatible = "mediatek,mt8192";
+@@ -267,10 +268,23 @@
+ 			#clock-cells = <1>;
  		};
  
-+		scp: scp@10500000 {
-+			compatible = "mediatek,mt8192-scp";
-+			reg = <0 0x10500000 0 0x100000>,
-+			    <0 0x10700000 0 0x8000>,
-+			    <0 0x10720000 0 0xe0000>;
-+			reg-names = "sram", "l1tcm", "cfg";
-+			interrupts = <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&infracfg CLK_INFRA_SCPSYS>;
-+			clock-names = "main";
-+			status = "disabled";
-+		};
+-		infracfg: syscon@10001000 {
+-			compatible = "mediatek,mt8192-infracfg", "syscon";
++		infracfg: infracfg@10001000 {
++			compatible = "mediatek,mt8192-infracfg", "syscon", "simple-mfd";
+ 			reg = <0 0x10001000 0 0x1000>;
+ 			#clock-cells = <1>;
 +
- 		nor_flash: spi@11234000 {
- 			compatible = "mediatek,mt8192-nor";
- 			reg = <0 0x11234000 0 0xe0>;
++			infracfg_rst: reset-controller {
++				compatible = "ti,syscon-reset";
++				#reset-cells = <1>;
++
++				ti,reset-bits = <
++					0x120 0 0x124 0 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 0: lvts_ap */
++					0x730 12 0x734 12 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 1: lvts_mcu */
++					0x140 15 0x144 15 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 2: pcie phy */
++					0x730 1 0x734 1 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 3: pcie top */
++					0x150 5 0x154 5 0 0	(ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* 4: svs */
++				>;
++			};
+ 		};
+ 
+ 		pericfg: syscon@10003000 {
 -- 
 2.18.0
 
