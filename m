@@ -2,120 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0521C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C36E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiBRE4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 23:56:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60648 "EHLO
+        id S229943AbiBRE54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 23:57:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiBRE4H (ORCPT
+        with ESMTP id S229593AbiBRE5x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 23:56:07 -0500
-X-Greylist: delayed 481 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 20:55:50 PST
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0A84130F;
-        Thu, 17 Feb 2022 20:55:50 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id C7AF15C021B;
-        Thu, 17 Feb 2022 23:47:46 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Thu, 17 Feb 2022 23:47:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=MAx0LbiRQY2/4y
-        fvblXz5g/u+zDEUYP5tuDrUJ8qmwQ=; b=I7ZRQ1BmgnsxTccEzquz5498MFjt54
-        0dJYI+ugMMV8NaSvSuz2sbYtS5IYKRAgu6jR1lQ0Y7Gv/2F8L+ZJHdo0TrYxnNqR
-        GZkfW2HosNfWFjLrcLNbttXIKNOyc5xjL0DbS/I3WJ19aOwaQZ3r2Sv9Ftlrg+SK
-        h+ohCUMKkH9RJQ/AGwPg4SA9prbbV2zQavd6h5YbiRGJ0mTTUe9YCmdWD+xEPQ9A
-        RxSIvFQsG8WVTYhst2AqnUgNweB0wmVr7cF2uEwMGKrCrq4ig1hcsGlDfPyJ6SUZ
-        0oVzXob/M7eQHESEy2LTyFL79o7R4UZwbq0Km7dYjaBrV5D2BAGnFolg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=MAx0LbiRQY2/4yfvblXz5g/u+zDEUYP5tuDrUJ8qm
-        wQ=; b=KAUf4Dx8X7/lwkY78oioZj07RZWfgPCG54ojKLPgb3qHP51tvq/Z/fX34
-        +tCzRQ/vq3J5KJrjqoX1B9vyY/a7C950qWZKZFvjt3Bze2iiZ5K7IitiODqX1/bp
-        ZIz8k6vzor19SGtrTXNZ6F4Zl9QD++ZRMAZmRhrKjk7xCjHEvqZnYbjwKM/tcbis
-        NG0JBvwn62H2WSJNascgg1o2wodJMWlA5RvogzYKElOJ45GawtWgGHPU0AEG71M+
-        iduFCShz2qkyak82rYpq41v5jBmvnWMbsweuLGx8jVnvzF21/bLvW7Kb03rYXkPN
-        B9gE0RpInvEKqrPvrBTk3jjZ7inyg==
-X-ME-Sender: <xms:8SQPYlJjs6whUac1XfFfY3iKqagmwTQ4VIV0543opSBFTHPogf56hg>
-    <xme:8SQPYhISK6fUF14TWPotQhEeAoxxWgvJlHHaBx55sMDoRq5ZErgPNmqirW9g9xCjg
-    fA_9whkszep>
-X-ME-Received: <xmr:8SQPYts1ixs12d6uS7BoyWyAXKrEXZ03NLpm3N2B3lntbb9wcFt4lOZiEm4DT1LNNyeDVqaDCNtgJMRy7i294EM1t8ykX5xGEfVHWPxXXc882DVzj-Nd>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjeelgdejgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkuffhvfffjghftggfggfgsehtjeertddtreejnecuhfhrohhmpefkrghnucfm
-    vghnthcuoehrrghvvghnsehthhgvmhgrfidrnhgvtheqnecuggftrfgrthhtvghrnhepve
-    egfeekgfeiueeujeeigefgueffjeeuvddtheetfeegtdevtdetgedutefhtdfgnecuffho
-    mhgrihhnpehsphhinhhitghsrdhnvghtnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomheprhgrvhgvnhesthhhvghmrgifrdhnvght
-X-ME-Proxy: <xmx:8iQPYmYccKG7iujCzCjDt_WdVh3vETEXUMx_w_ULFmQvE5br-xJjJQ>
-    <xmx:8iQPYsZ_i1QJGDSrDCw_8EI-Y6NpuFJMEGkozygc6QTzPN9C2ATPSw>
-    <xmx:8iQPYqDnn1OEYNLO_D8YIOH_X85TGw5vnxwMRF6GrqrOmLxiq40ceQ>
-    <xmx:8iQPYrl_wLhzA2F0KG3QokhVasTWQsJuMurFv5x207Q28W6vDWZw_g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Feb 2022 23:47:43 -0500 (EST)
-Message-ID: <480248c2fdd2a098fd016aea832f297d711dfdff.camel@themaw.net>
-Subject: Re: [ANNOUNCE] autofs 5.1.8 release
-From:   Ian Kent <raven@themaw.net>
-To:     NeilBrown <neilb@suse.de>, Stanislav Levin <slev@altlinux.org>
-Cc:     autofs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Thu, 17 Feb 2022 23:57:53 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E46DFABD5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 20:57:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645160257; x=1676696257;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=l7ftpFnCb/O18IQbZiuP+YjPFB7WGOV4wq64D8YJp0E=;
+  b=iS/beWCRv+byLKkYVXdk+WIQwULKWky8uydPNHpeGzWUSiBCWZk2++ZW
+   24RuUtYWijwR2pbUVyH0EyzPzYqTSvv0nmx9qN6dAqyJ4NeSw8U0IV4fT
+   tVxq9CPlrH9/zWPpd8ZX+NxEW5K8WZRGvvTFSw+geAc2Wdik/+7VyvMy4
+   NsqrO10tKv+dyGMYY399qKKg/MbY4Hj4SARegKA/h3BVhDFd1FYao54zc
+   MybpBgX8lsnDOknogyoQ7b05cm5fT8yq6mqE0F7WciFT3lCGpUpxs/+L8
+   l9UDp/Co2nYGYTyWRq1cWbNm9IelUnYvVXi+5hd3k/uf1HLqBfNwh4LsK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231034416"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="231034416"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 20:57:37 -0800
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="546104238"
+Received: from bmeland-mobl2.amr.corp.intel.com (HELO localhost) ([10.212.148.192])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 20:57:36 -0800
+From:   Jordan Justen <jordan.l.justen@intel.com>
+To:     Robert Beckett <bob.beckett@collabora.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>,
+        Ramalingam C <ramalingam.c@intel.com>,
+        Robert Beckett <bob.beckett@collabora.com>,
+        Thomas =?utf-8?Q?Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Simon Ser <contact@emersion.fr>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
+        Slawomir Milczarek <slawomir.milczarek@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Date:   Fri, 18 Feb 2022 12:47:37 +0800
-In-Reply-To: <164506664650.10228.15450975168088794628@noble.neil.brown.name>
-References: <b54fb31652a4ba76b39db66b8ae795ee3af6f025.camel@themaw.net>
-        , <164444398868.27779.4643380819577932837@noble.neil.brown.name>
-        , <c1c21e74-85b0-0040-deb7-811a6fa7b312@altlinux.org>
-         <164506664650.10228.15450975168088794628@noble.neil.brown.name>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+Subject: Re: [PATCH v8 5/5] drm/i915/uapi: document behaviour for DG2 64K
+ support
+In-Reply-To: <20220208203419.1094362-6-bob.beckett@collabora.com>
+References: <20220208203419.1094362-1-bob.beckett@collabora.com>
+ <20220208203419.1094362-6-bob.beckett@collabora.com>
+Date:   Thu, 17 Feb 2022 20:57:35 -0800
+Message-ID: <87ee40ojpc.fsf@jljusten-skl>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 13:57 +1100, NeilBrown wrote:
-> On Tue, 15 Feb 2022, Stanislav Levin wrote:
-> > 
-> > 
-> > This seems duplicate of
-> > https://www.spinics.net/lists/autofs/msg02389.html
-> > 
-> 
-> Yes it is - thanks for the link.
-> I wonder why the proposed fix isn't in git ....
+Robert Beckett <bob.beckett@collabora.com> writes:
 
-I think we are refering to commits:
-fc4c067b53f7 autofs-5.1.7 - make NFS version check flags consistent
-26fb6b5408be autofs-5.1.7 - refactor get_nfs_info()
-606795ecfaa1 autofs-5.1.7 - also require TCP_REQUESTED when setting NFS
-port
+> From: Matthew Auld <matthew.auld@intel.com>
+>
+> On discrete platforms like DG2, we need to support a minimum page size
+> of 64K when dealing with device local-memory. This is quite tricky for
+> various reasons, so try to document the new implicit uapi for this.
+>
+> v3: fix typos and less emphasis
+> v2: Fixed suggestions on formatting [Daniel]
+>
+> Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+> Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> Acked-by: Jordan Justen <jordan.l.justen@intel.com>
+> Reviewed-by: Ramalingam C <ramalingam.c@intel.com>
+> Reviewed-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
+> cc: Simon Ser <contact@emersion.fr>
+> cc: Pekka Paalanen <ppaalanen@gmail.com>
+> Cc: Jordan Justen <jordan.l.justen@intel.com>
+> Cc: Kenneth Graunke <kenneth@whitecape.org>
+> Cc: mesa-dev@lists.freedesktop.org
+> Cc: Tony Ye <tony.ye@intel.com>
+> Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
+> ---
+>  include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
+>  1 file changed, 39 insertions(+), 5 deletions(-)
+>
+> diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
+> index 5e678917da70..77e5e74c32c1 100644
+> --- a/include/uapi/drm/i915_drm.h
+> +++ b/include/uapi/drm/i915_drm.h
+> @@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
+>  	/**
+>  	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
+>  	 * the user with the GTT offset at which this object will be pinned.
+> +	 *
+>  	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
+>  	 * presumed_offset of the object.
+> +	 *
+>  	 * During execbuffer2 the kernel populates it with the value of the
+>  	 * current GTT offset of the object, for future presumed_offset writes.
+> +	 *
+> +	 * See struct drm_i915_gem_create_ext for the rules when dealing with
+> +	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
+> +	 * minimum page sizes, like DG2.
+>  	 */
+>  	__u64 offset;
+>=20=20
+> @@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
+>  	 *
+>  	 * The (page-aligned) allocated size for the object will be returned.
+>  	 *
+> -	 * Note that for some devices we have might have further minimum
+> -	 * page-size restrictions(larger than 4K), like for device local-memory.
+> -	 * However in general the final size here should always reflect any
+> -	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REG=
+IONS
+> -	 * extension to place the object in device local-memory.
+> +	 *
+> +	 * DG2 64K min page size implications:
+> +	 *
+> +	 * On discrete platforms, starting from DG2, we have to contend with GTT
+> +	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
+> +	 * objects.  Specifically the hardware only supports 64K or larger GTT
+> +	 * page sizes for such memory. The kernel will already ensure that all
+> +	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
+> +	 * sizes underneath.
+> +	 *
+> +	 * Note that the returned size here will always reflect any required
+> +	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
+> +	 * such as DG2.
+> +	 *
+> +	 * Special DG2 GTT address alignment requirement:
+> +	 *
+> +	 * The GTT alignment will also need to be at least 2M for such objects.
+> +	 *
+> +	 * Note that due to how the hardware implements 64K GTT page support, we
+> +	 * have some further complications:
+> +	 *
+> +	 *   1) The entire PDE (which covers a 2MB virtual address range), must
+> +	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
+> +	 *   PDE is forbidden by the hardware.
+> +	 *
+> +	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
+> +	 *   objects.
+> +	 *
+> +	 * To keep things simple for userland, we mandate that any GTT mappings
+> +	 * must be aligned to and rounded up to 2MB.
 
-> 
-> Also, I cannot see that the new NS4_ONLY_REQUESTED is different from
-> the
-> existing NFS4_VERS_MASK.
-> They are both set/cleared at exactly the same places.
+Could I get a clarification about this "rounded up" part.
 
-Yes they are at the moment.
+Currently Mesa is aligning the start of each and every buffer VMA to be
+2MiB aligned. But, we are *not* taking any steps to "round up" the size
+of buffers to 2MiB alignment.
 
-The aim there is, at some point, to have two seperate cases for NFSv4
-mounts, one that may use rpcbind and one that does not such as when
-traversing a firewall. Although I'm not clear on it myself the RFC
-says, more or less, should (although that might have been must) not
-need to use other than the NFS port, so no rpcbind should need to be
-used.
+Bob's Mesa MR from a while ago,
 
-Clearly the case seperation hasn't happened yet but I'm pretty sure
-the current code did avoid the rpcbind usage for fstype=nfs4 which
-is what was asked for at the time and what had been broken somewhere
-along the line.
+https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/14599
 
-Ian
+was trying to add this "round up" size for buffers. We didn't accept
+this MR because we thought if we have ensured that no other buffer will
+use the same 2MiB VMA range, then it should not be required.
+
+If what we are doing is ok, then maybe this "round up" language should
+be dropped? Or, perhaps the "round up" mentioned here isn't implying we
+must align the size of buffers that we create, and I'm misinterpreting
+this.
+
+-Jordan
+
+> As this only wastes virtual
+> +	 * address space and avoids userland having to copy any needlessly
+> +	 * complicated PDE sharing scheme (coloring) and only affects DG2, this
+> +	 * is deemed to be a good compromise.
+>  	 */
+>  	__u64 size;
+>  	/**
+> --=20
+> 2.25.1
