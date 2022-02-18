@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63747C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C96C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235507AbiBRM4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:56:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34644 "EHLO
+        id S235515AbiBRM4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:56:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235446AbiBRM4B (ORCPT
+        with ESMTP id S235465AbiBRM4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:56:01 -0500
+        Fri, 18 Feb 2022 07:56:08 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F82B4D82;
-        Fri, 18 Feb 2022 04:55:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160882B4DA7;
+        Fri, 18 Feb 2022 04:55:43 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 3E1791F46724
+        with ESMTPSA id 418881F46910
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645188934;
-        bh=BRoYVwJM/U76dTqPgt7FwoL/dGJH6kPyI+rQnHeI2Ns=;
+        s=mail; t=1645188942;
+        bh=TN3M919IJ9QUtb6+HXUHdZ3OZ55D6lSrg++2QxzEocQ=;
         h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=YOD1Epml7xZRQSFKg1pgdV4lJIvl9jIZNmlx1Um3pl/rpbvY/JeAxvQsENpDcEhSu
-         i0Z1aNX/aC317AcMeghwQ13uaP4H4vqXkFLK1DxDfFxZuOk+CJaUNrZURcea2sAFiT
-         n+JVC8kmynuuXjK8LJFGoYQX+h6dH4yL3g50e4X5hdGIL/3KZxsMxqqFX7FCNB4rVY
-         ZyQ6EI3zKnfrXoyj8qo1XmSGXMvvULy55hqpuqOvqfGjRVcM54Hsqku9Hxlwnl8bi9
-         ngvC0pki1a9jFUfht/DbnS69N/tIvvY5XIViFAYorIR2YTvSs9KvvfXqPPMHueq95x
-         HjgubwT7DvmkQ==
-Message-ID: <7ce0bf47-b0c9-b6e6-92f3-b7a11b3adfd5@collabora.com>
-Date:   Fri, 18 Feb 2022 13:55:31 +0100
+        b=LuZZuW+W4xEbsie8WgFAZQ2xmjZtPT8GPiG1fwIVJXs/BS6tt5XUZhzNeBCGAccbI
+         PxVCBzFg2b9b/pOjPiqi7vjQB8Mp56cLXvcylT2qVn5swHxgA5cIJkfr+2O4h5QAsz
+         hHmZWJ0iSWy9gl7DM+iZdQ2neW7o4GjFtqamoK1HPESyOiN9433LGe92dbsjCRWDp8
+         anh16MlpRuGvxTgsEHpT2HDPgvA6d++IGlzBpam3BYnHx9fuOoZukJWMRsrah+CH9G
+         BGmyhn5eu+pO/KTSv+Tgcs0Vw4wEJfdA7W3HmzptSFQhBdo2eFCNJH3P94KcwVsgPC
+         9PeiUztbu7osA==
+Message-ID: <c0f9571b-c336-c568-ce3c-2ce314b0f8e2@collabora.com>
+Date:   Fri, 18 Feb 2022 13:55:38 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v2 06/23] arm64: dts: mt8192: Add usb-phy node
+Subject: Re: [PATCH v2 08/23] arm64: dts: mt8192: Add audio-related nodes
 To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -48,9 +48,9 @@ Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
         =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
         <nfraprado@collabora.com>
 References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-7-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-9-allen-kh.cheng@mediatek.com>
 Content-Language: en-US
-In-Reply-To: <20220218091633.9368-7-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220218091633.9368-9-allen-kh.cheng@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -58,67 +58,10 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
-> Add xhci node for mt8192 SoC.
+> Add audio-related nodes in audsys for mt8192 SoC.
+> Move audsys node in ascending order.
 > 
 > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 25 ++++++++++++++++++++++++
->   1 file changed, 25 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 61aadd7bd397..ce18d692175f 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -875,6 +875,31 @@
->   			#clock-cells = <1>;
->   		};
->   
-> +		u3phy0: usb-phy@11e40000 {
-> +			compatible = "mediatek,mt8192-tphy",
-> +				     "mediatek,generic-tphy-v2";
-> +			#address-cells = <2>;
-> +			#size-cells = <2>;
-> +			ranges;
 
-This can be better:
-			#address-cells = <1>;
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-			#size-cells = <1>;
-			ranges = <0 0 0x11e40000 0x1000>
-
-
-> +			status = "okay";
-> +
-> +			u2port0: usb-phy@11e40000 {
-
-			u2port0: usb-phy@0 {
-
-> +				reg = <0 0x11e40000 0 0x700>;
-
-				reg = <0x0 0x700>;
-
-> +				clocks = <&clk26m>;
-> +				clock-names = "ref";
-> +				#phy-cells = <1>;
-> +				status = "okay";
-> +			};
-> +
-> +			u3port0: usb-phy@11e40700 {
-> +				reg = <0 0x11e40700 0 0x900>;
-
-			u3port0: usb-phy@700 {
-				reg = <0x700 0x900>;
-
-> +				clocks = <&clk26m>;
-> +				clock-names = "ref";
-> +				#phy-cells = <1>;
-> +				status = "okay";
-> +			};
-> +		};
-> +
->   		i2c0: i2c@11f00000 {
->   			compatible = "mediatek,mt8192-i2c";
->   			reg = <0 0x11f00000 0 0x1000>,
-
-Thanks,
-Angelo
