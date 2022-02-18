@@ -2,77 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A159C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9274C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbiBRMv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:51:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40372 "EHLO
+        id S232591AbiBRMwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:52:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiBRMvz (ORCPT
+        with ESMTP id S229732AbiBRMwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:51:55 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE303279930;
-        Fri, 18 Feb 2022 04:51:35 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id m8so4531344ilg.7;
-        Fri, 18 Feb 2022 04:51:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZIUCArmyrbOnhzOdx2kusGExPtu+3+2n2vWCg1y7ftQ=;
-        b=SpY91+zXZbbdxQSOq29eqFEm8LYyu1xekxwyYP/gAQLFqjcvQSITEl6HibLZW2o+8r
-         tgdfMl3g2mB/3npcFEDYPScfJJyZ+MTsCGcH6hEHKqeEJrMZsSEKH/5U1mnl8/Wrq4GN
-         U/atVDEeojOcGerVAMmWbclPolH/Uc/B4Y16ysdC2pZ3OpVxGd1oDi4hFiXUVRGhlyAn
-         NS1utBYMyqZdysSBx+AbyxRO9iCasxNIAI0p6hK6GwT5+Hjl4dtKTvJIWwakqV6FHODz
-         2MdOSFwQWt9QXm0wEKpjlbhvgLRcoQ+yZxF9OaQJ3Y/hAKGH/6+UcfxbsuF8yBw2rpbD
-         ozxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZIUCArmyrbOnhzOdx2kusGExPtu+3+2n2vWCg1y7ftQ=;
-        b=6WJpmuSzw3DlHNgRVDpKOL36rqIKz07diW+xcq6aISHAiwLnaRVNbPwdWg+S45tLUz
-         dghLot/yw1dIwWskpHPHvPCrJsXh9iKn7vH3Wg7ylw6UcDeIdwguphVy1dHpqFmsDh3z
-         Elq8cGn0/2U9sUsf/TAm5FUbtWBcPwL69wImFYUl28yNM8IbqTl280qaQf2GYyKjm5GZ
-         8oJxa4T1HF6TQLWy2zEnt5sXGuqI0zeXx05/tA7+G/TtA6eNefDigIGC5LRIOY0sPnZU
-         fcmeuHaj3LxVSSAdPkORDRsxh7CG/y36k5Qo3DvoRtnJl/SYpxnZCmd8S844pU4Dwf3P
-         B1yg==
-X-Gm-Message-State: AOAM530l981SA3OK/fE83ZW91G37RHoHADVRxcVthPfnfm5QKrFPeriQ
-        RF0+0zhEONojts40+BMoGmiBeiisftc9OlMldwqgHUAUKqY=
-X-Google-Smtp-Source: ABdhPJzx9yDdk1djVWJ/t/ELmKRBWQYPTcCRcWtti0xHQgr6qys8m9hnWhrdwFLsKUPWiVljXswTuQK927v9NxDLwTE=
-X-Received: by 2002:a05:6e02:1bcc:b0:2be:454d:4bf9 with SMTP id
- x12-20020a056e021bcc00b002be454d4bf9mr5505622ilv.5.1645188695228; Fri, 18 Feb
- 2022 04:51:35 -0800 (PST)
+        Fri, 18 Feb 2022 07:52:41 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960955E76E;
+        Fri, 18 Feb 2022 04:52:25 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 281841F46910
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645188744;
+        bh=XVKS75XpYQxb5/TVvYHVixSh4Vl0aBXRGf/YFk8Ta7w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=SIGILJp6htL6o7lcCxedptEr2v14pHNt09Vrw6JNFphmrJAukrVO189Vh24oMXrPI
+         9vWL65qlnN0jlhLfVMM4uHAb3DBCt0Z2vZbg7Li8fDKINWurPLaq7nqi1Fen2h2puJ
+         5hfWkLAuXRZvi37rGQ9UjY6jpHS8g1EpBPPcjBruJ8Kl+j2/3abxB7oDSZp8TpGaZO
+         StC+31dsaX8r+TWfIAL8CkSMdDsvqWJEJTY07p3+ca3fzCqaCf3j/q/CLuP7UOs8Mz
+         +jn4/xLVPwn+lkbm9goa29rrHMv6hsGTeYP6ucU8D9gET5qmbIcow1CCx2a+vGV2mV
+         oTp8lxApvRhtQ==
+Message-ID: <71d7c940-63d5-bf65-527d-b27a8e0e5edc@collabora.com>
+Date:   Fri, 18 Feb 2022 13:52:20 +0100
 MIME-Version: 1.0
-References: <20220218015136.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid>
-In-Reply-To: <20220218015136.1.I5dbf50eb1a7a6734ee727bda4a8573358c6d3ec0@changeid>
-From:   Silvan Jegen <s.jegen@gmail.com>
-Date:   Fri, 18 Feb 2022 13:51:35 +0100
-Message-ID: <CAKvUva-tORYVZrMEiS+pStOvfQEtzBuO+phXG3eY2nAs5ycKOg@mail.gmail.com>
-Subject: Re: [PATCH v2] HID: Add mapping for KEY_DICTATE
-To:     William Mahon <wmahon@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        William Mahon <wmahon@google.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>, linux-input@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v5 19/34] iommu/mediatek: Add a PM_CLK_AO flag for infra
+ iommu
+Content-Language: en-US
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
+        yen-chang.chen@mediatek.com, mingyuan.ma@mediatek.com,
+        yf.wang@mediatek.com, libo.kang@mediatek.com,
+        chengci.xu@mediatek.com
+References: <20220217113453.13658-1-yong.wu@mediatek.com>
+ <20220217113453.13658-20-yong.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220217113453.13658-20-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+Il 17/02/22 12:34, Yong Wu ha scritto:
+> The power/clock of infra iommu is always on, and it doesn't have the
+> device link with the master devices, then the infra iommu device's pm
+> statua is not active, thus we add A PM_CLK_AO flag for infra iommu.
+> 
+> The tlb operation is a bit not clear in this file, Comment them in the
+> code here.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-On Fri, Feb 18, 2022 at 2:55 AM William Mahon <wmahon@chromium.org> wrote:
->
-> Numerous keyboards are adding dictate keys which allows for text
-> messages to be dicated by a microphone.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-You have missed one typo here, s/dicated/dictated/.
-
-
-Cheers,
-
-Silvan
