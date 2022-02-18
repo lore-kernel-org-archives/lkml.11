@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 414A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235173AbiBRSR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:17:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53640 "EHLO
+        id S239151AbiBRSRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:17:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239079AbiBRSRG (ORCPT
+        with ESMTP id S239092AbiBRSRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:17:06 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BB7B32;
-        Fri, 18 Feb 2022 10:16:48 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id d27so15932334wrc.6;
-        Fri, 18 Feb 2022 10:16:48 -0800 (PST)
+        Fri, 18 Feb 2022 13:17:09 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB8A1A387;
+        Fri, 18 Feb 2022 10:16:50 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id u1so15904592wrg.11;
+        Fri, 18 Feb 2022 10:16:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1rWH/BsccXg4cqTVnl88SeuUMSVFDqYiKoq6y7EUDcA=;
-        b=pIq7/7L5LAbPU+GGcDbqzcRpe2RdjLEYz/ApzoAOpU6QIibs0WAHiCmv41nmjZhL5S
-         mQZ2HCEIG6SvhLLB7IfJpsWIjDAe40svARasskZnxMpTkkDGUauSyy+tcSLD7AESPTW4
-         JjBVCXoHf/9qi/6P8rXvY3NdCg/EBgI/NMJWl8H7/Ti0XRFbW8Cfqs+eyLCh86r4JEEo
-         2TIhpF1BjWoysZVgH2ziKkcu1mY8Wpn+Mv3ohBooipI96vcyggHlqDjLZ+a/J7taMgif
-         5RzlamyetYosnHCVhK1wgprKAlr2Vv3Jtez8vEZhSBFKN0gRIBMyTkGq6/agcpGUO2lU
-         hFvA==
+        bh=BKVwInCpVkxcu4QibmqUE+njZypLWjFf62FZiJ7RfDY=;
+        b=idcfe+gYBoodhi/dxSiO7KNkyG85wSPk/fEcAhTr842WEIMqs266rypz/qc0pY0r7w
+         gxvoTs5LE/DJ7w9tMOGgkba5oGTh6brZA4KLOiXKGllY3kC2mX3U0MWhLYBnwY4TkftW
+         i2XKR8WC/vJjhZGSh9KYTOzIueFLw5SZZfv433Kkz6Owx+nQPCfrXF2VoHQMm57ZOKRJ
+         txYAzMcrkanYrZvUWhFYrBJCQDKhM8gBZSrYNBWCA8ARvfX2jsPDnxayJzrAjFtOaxvf
+         gmVmdtS6ILnDiPjHg2vH2XfUWEhBpoAPAzP+XgqCXnrxIHlT8B+Ay44dfhsXggSq1/uN
+         7OuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1rWH/BsccXg4cqTVnl88SeuUMSVFDqYiKoq6y7EUDcA=;
-        b=R3YBam8QwIuY88jD50Vx5n7/NvAihqCogCYSnoZ78jVCB+XubMVeCOotn3Pf3sBhDb
-         vl3INhEHVldHSm1CCUdJZwaEZJCtWFGLRnMnLRHX+IIjJ/R6Eh1eYeAyvIgX/4cYShmX
-         k1ab1dmrJJUmj59gz3vBWkhjgEms4BjQyca7iBzwnatqD/zavqDk8u7ctBJbfDmY0/jK
-         aiv+2ZT6iGCzqNTK0TvtTlY01qGhn6FfvkiU1s/3boRCJzTNjlQ0WFpH6UXFTUR3tRVH
-         btLGOGx7goak0+FwA7ON+I9J+rx48fIaqXD8FBTmybLUHGS/V3lbiW6BPTjTyOJ4ZMDX
-         QmXA==
-X-Gm-Message-State: AOAM533HdCEtVfnKhxXZGX/xJiRJsOaJ5qZ+yXZY/StMmL5KYkH1EIJN
-        3q3MbD6lp3tWzlbXwFwcFHA=
-X-Google-Smtp-Source: ABdhPJy4XiLWgnAAaFNYDRnx8H+L9AOS8cpRcg3UDdflougEBjxkv7xtTrSwDa92rYFTkBwfZowVIg==
-X-Received: by 2002:a5d:44c4:0:b0:1e6:8878:8cb2 with SMTP id z4-20020a5d44c4000000b001e688788cb2mr7021889wrr.434.1645208206841;
-        Fri, 18 Feb 2022 10:16:46 -0800 (PST)
+        bh=BKVwInCpVkxcu4QibmqUE+njZypLWjFf62FZiJ7RfDY=;
+        b=whF1xSq0/nGLQlhZGr5DX2ZNGnDPc3Njh5lZ+hGkDyBpUvca4+Y1Pfgqft1W24R/28
+         +Vnz7EgT+b6wTGyU6TkGPDPkG+lqwQUh5sOymb0NxkQpy7OsOgJOibbFcVRiZrnOpx4i
+         wZ1OG8XayOCbXkoA0d0wDfYN4pFHTZEbEv93XsPI4KbfFkm8eSHZqxG3uWqT3r/YjeZz
+         nYcHbrB5ghb7gXkdeouGUe8yixWAvty84Lrz3JSZBe8I136jaCRkPk5FpnUM1TUarEaD
+         A2QUylpMj1/F+UFrNSoX7tsaFyG8I3B/6DRl+6ywxAZnQWZpTQD27l9fhr/R7Z6eNXzO
+         XpEg==
+X-Gm-Message-State: AOAM533SyqLG0KPis+9sTztMQGWswMFYveUXhsD1e5HI0x6YdQpXiZWI
+        /G0y7NUWlJd90Yzqfb+FFrg=
+X-Google-Smtp-Source: ABdhPJwc1hqz5DkZxJCKnWZoWDp85ZWAwbozBuikgb2fXWlk2vNfr0PYY7Kw/ghPB9JEZnrI+7J2xQ==
+X-Received: by 2002:a05:6000:c9:b0:1e4:bcc1:f806 with SMTP id q9-20020a05600000c900b001e4bcc1f806mr6966527wrx.372.1645208209067;
+        Fri, 18 Feb 2022 10:16:49 -0800 (PST)
 Received: from fuji.fritz.box (ip-89-161-76-237.tel.tkb.net.pl. [89.161.76.237])
-        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.46
+        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:16:46 -0800 (PST)
+        Fri, 18 Feb 2022 10:16:48 -0800 (PST)
 From:   =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>
 To:     corbet@lwn.net
 Cc:     =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 07/11] scripts: kernel-doc: Translate the "Output selection modifiers" subsection of OPTIONS
-Date:   Fri, 18 Feb 2022 19:16:24 +0100
-Message-Id: <20220218181628.1411551-8-tomasz.warniello@gmail.com>
+Subject: [PATCH v4 09/11] scripts: kernel-doc: Replace the usage function
+Date:   Fri, 18 Feb 2022 19:16:26 +0100
+Message-Id: <20220218181628.1411551-10-tomasz.warniello@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
 References: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
@@ -69,69 +69,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Aim: unified POD, user more satisfied, script better structured
 
-A subsection "reStructuredText only" is added for -enable-lineno.
+You can see the results with:
 
-Other notes:
-- paragraphing correction
+$ scripts/kernel-doc -help
 
 Signed-off-by: Tomasz Warniełło <tomasz.warniello@gmail.com>
 ---
- scripts/kernel-doc | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
+
+This ends the fundamental POD transformation.
+---
+ scripts/kernel-doc | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
 diff --git a/scripts/kernel-doc b/scripts/kernel-doc
-index e49cdb307a35..210e7e3b501b 100755
+index 4a26a74318e6..d7ca4877eeda 100755
 --- a/scripts/kernel-doc
 +++ b/scripts/kernel-doc
-@@ -83,14 +83,6 @@ sub usage {
-     my $message = <<"EOF";
- Usage: $0 [OPTION ...] FILE ...
+@@ -79,15 +79,6 @@ See Documentation/doc-guide/kernel-doc.rst for the documentation comment syntax.
+ # 25/07/2012 - Added support for HTML5
+ # -- Dan Luedtke <mail@danrl.de>
  
--Output selection modifiers:
--  -no-doc-sections	Do not output DOC: sections.
--  -enable-lineno        Enable output of #define LINENO lines. Only works with
--                        reStructuredText format.
--  -export-file FILE     Specify an additional FILE in which to look for
--                        EXPORT_SYMBOL() and EXPORT_SYMBOL_GPL(). To be used with
--                        -export or -internal. May be specified multiple times.
+-sub usage {
+-    my $message = <<"EOF";
+-Usage: $0 [OPTION ...] FILE ...
 -
- Other parameters:
-   -v			Verbose output, more warnings and other information.
-   -h			Print this help.
-@@ -2607,4 +2599,33 @@ May be specified multiple times.
- 
- =back
- 
-+=head2 Output selection modifiers:
-+
-+=over 8
-+
-+=item -no-doc-sections
-+
-+Do not output DOC: sections.
-+
-+=item -export-file FILE
-+
-+Specify an additional FILE in which to look for EXPORT_SYMBOL() and
-+EXPORT_SYMBOL_GPL().
-+
-+To be used with -export or -internal.
-+
-+May be specified multiple times.
-+
-+=back
-+
-+=head3 reStructuredText only
-+
-+=over 8
-+
-+=item -enable-lineno
-+
-+Enable output of #define LINENO lines.
-+
-+=back
-+
- =cut
+-EOF
+-    print $message;
+-    exit 1;
+-}
+-
+ #
+ # format of comments.
+ # In the following table, (...)? signifies optional structure.
+@@ -468,7 +459,7 @@ while ($ARGV[0] =~ m/^--?(.*)/) {
+     } elsif ($cmd eq "Werror") {
+ 	$Werror = 1;
+     } elsif (($cmd eq "h") || ($cmd eq "help")) {
+-	usage();
++		pod2usage(-exitval => 0, -verbose => 2);
+     } elsif ($cmd eq 'no-doc-sections') {
+ 	    $no_doc_sections = 1;
+     } elsif ($cmd eq 'enable-lineno') {
 -- 
 2.30.2
 
