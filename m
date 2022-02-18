@@ -2,176 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D00C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3168C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbiBRJCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:02:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55784 "EHLO
+        id S233043AbiBRJCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:02:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiBRJCA (ORCPT
+        with ESMTP id S233051AbiBRJCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:02:00 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73843522FF
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:01:44 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id r7so1338327iot.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:01:44 -0800 (PST)
+        Fri, 18 Feb 2022 04:02:09 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79823541B9;
+        Fri, 18 Feb 2022 01:01:50 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id bg21-20020a05600c3c9500b0035283e7a012so5889744wmb.0;
+        Fri, 18 Feb 2022 01:01:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U8AEdmITUIDJSI02jf8n1UdQu5Z2kTq1rYcS4yrbyjQ=;
-        b=g10Pv4nLzUwZQKqmdv9zn0DbJnh7QDler3SfEmWHSCPPNMePstfRf6EIz8T9g1k3q5
-         Y2fDM52ypuGLRKkJmSK8e8XuD77uA4DFttbqXAc/496wXFtVCXCxiWmyT03EMukXyZBS
-         3Bz6lISNM4D11i14X4GbTJlF6wTstAeoWVTls=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MMooeDrJfD+MSlWbTtjztNE5tCVYFbi09srETvHrxyE=;
+        b=LkyQK1tuBU3F8wwaUsWNOBmumJHGImN2OeDODhK2rl9gWzlbqq+MRRuk70kze8+RM4
+         y2F82bkOwh8y/5TYrnimKoxOotOiukUz7aIUkPEGfOneXK7eWGmREZcMGGXz4skBldDl
+         8xnPVDOdlKmodcUPjOd4kNZp6Cm/H2BDlJj1WncJmAF94Jm9ri/RJWXlQXMRtVwwIZ/x
+         5KKDOXK+WAfsWD81eo+0O32tQUmvLE5svObUd3JYCTuzMpij3XP+O/30GyIHGbcPZgZv
+         lYKxNSjjVvoJyD7gnCjJ6RIGWMtu2Vhx6g4ge0JfyP4Km61yqirkPh7/NruecQI2jssr
+         03mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U8AEdmITUIDJSI02jf8n1UdQu5Z2kTq1rYcS4yrbyjQ=;
-        b=MzGp7D3Q/TFePrF8qYnINQ9McClVHkBvXWRkuesiS5KHJW8sge/o5lV4PpcFL1DP5A
-         rdQwsiPGU2YYfoxp5D80zHyQoUKEOjWeob4iHG+zNWuSE3hJp7SGM2pqLLTp0L5cj1iu
-         I6S89wHCVWmtxFfuhdlqQ2Kx0Di4kMXXJD9T+rRHnhUdWyQcP2NTL3XtMj/AiWJVkeXH
-         U6pb5/7Uz8bxl6IGfv/VEw7dF5ykJ9gR36BeLE5MKNce3Q3SGpVmdhbWGNFhb0xzyllO
-         XcCTrpBHbqj4nUZ1WJZ/G6YOcDWo0X5iCiNIMpimsgmMQEkQWExxm9EZvcJcAvjenwAk
-         tfNw==
-X-Gm-Message-State: AOAM532n9K6WVYXQnprBjiWBQvHLWKGhBWwOBmo6SCvrKmFcjPvHV5e/
-        mKI1nnhVgAeTfFn2D3CQTfXubhb+LOfdioNf2jNNIA==
-X-Google-Smtp-Source: ABdhPJwkHQMn7rS7t8JjEUIDpKt6F6hXh8261rU+mdXf4Nr0q63mzDPdxRNHBcKlGfW12wJ7ty3/ZQUDZVuxWVb6Ol8=
-X-Received: by 2002:a05:6602:29cb:b0:638:d53c:d212 with SMTP id
- z11-20020a05660229cb00b00638d53cd212mr4869652ioq.167.1645174903774; Fri, 18
- Feb 2022 01:01:43 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MMooeDrJfD+MSlWbTtjztNE5tCVYFbi09srETvHrxyE=;
+        b=B+fbK/q1QgMuGTVm8BqlIeL/LRZCVPJduShiOvauzbljKvm2YNG2nQRWw9PIbvZSoD
+         h3BkOJFiNAKoAbPmNJTKyIiUttvWHTwsezXP2vsBzoUCTLlS8rfrbgIe+rZ7/4vUsGlb
+         VH/PsU7IXkZcFLUUTqZSlZhOQgRqscA6C95GxW8PkmvZe175IeQNULhJ4403OG0xmGEl
+         VT1PN8PiwGI+tsQgGCJKbC26wbgmJupvBPfJb+biuqepDMUc9np10fWCBhudlM0Z6k8j
+         fCtEWvpIGfP6I/Jp7JVIf1UQfKFZM4Jik64abExa3ed4x2ajnI2HkeXhlA5s08d3/rdD
+         YMxw==
+X-Gm-Message-State: AOAM532WbWj2QEQDI7xJ/o3IV2gncN078bYBoQHN1LMSxUFgKgq0TMkf
+        OkexTEjjKwWgeSs7qLTrOYM=
+X-Google-Smtp-Source: ABdhPJwP0DNxczzXwHSaFAcN5EVFHM4JR80AWM/uieubehRVv4wiIqUitZAAoIpZr077/IouS4JXpw==
+X-Received: by 2002:a05:600c:22d3:b0:37b:f1a7:ceb5 with SMTP id 19-20020a05600c22d300b0037bf1a7ceb5mr6205842wmg.164.1645174908956;
+        Fri, 18 Feb 2022 01:01:48 -0800 (PST)
+Received: from krava ([2a00:102a:5012:d617:c924:e6ed:1707:a063])
+        by smtp.gmail.com with ESMTPSA id p2sm3658016wmc.33.2022.02.18.01.01.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 01:01:48 -0800 (PST)
+Date:   Fri, 18 Feb 2022 10:01:45 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH 3/3] perf tools: Rework prologue generation code
+Message-ID: <Yg9geQ0LJjhnrc7j@krava>
+References: <20220217131916.50615-1-jolsa@kernel.org>
+ <20220217131916.50615-4-jolsa@kernel.org>
+ <CAEf4BzYP7=JuyuY=xZe71urpxat4ba-JnqeSTcHF=CYmsQbofQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220218063610.1530630-1-rexnie3@gmail.com>
-In-Reply-To: <20220218063610.1530630-1-rexnie3@gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Fri, 18 Feb 2022 17:01:17 +0800
-Message-ID: <CAJMQK-gz5ha232M22+wEY8Bid4oHOESJPk3vRXDU_dzAeiaEQA@mail.gmail.com>
-Subject: Re: [PATCH] drm/panel: Add panel-edp: add lcd innolux,n140hca-eac
-To:     Rex Nie <rexnie3@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, thierry.reding@gmail.com,
-        sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
-        robh+dt@kernel.org, spanda@codeaurora.org, dianders@chromium.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYP7=JuyuY=xZe71urpxat4ba-JnqeSTcHF=CYmsQbofQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 2:36 PM Rex Nie <rexnie3@gmail.com> wrote:
->
-> innolux,n140hca-eac is a eDP-based LCD panel. This panel has 1920x1080
-> resolution in 14-inch TFT panel.
->
-> Signed-off-by: Rex Nie <rexnie3@gmail.com>
-> ---
->  .../display/panel/innolux,n140hca-eac.yaml    | 43 +++++++++++++++++++
->  drivers/gpu/drm/panel/panel-edp.c             | 26 +++++++++++
->  2 files changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
->
-Hi Rex,
+On Thu, Feb 17, 2022 at 01:53:16PM -0800, Andrii Nakryiko wrote:
+> On Thu, Feb 17, 2022 at 5:19 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Some functions we use now for bpf prologue generation are
+> > going to be deprecated, so reworking the current code not
+> > to use them.
+> >
+> > We need to replace following functions/struct:
+> >    bpf_program__set_prep
+> >    bpf_program__nth_fd
+> >    struct bpf_prog_prep_result
+> >
+> > Current code uses bpf_program__set_prep to hook perf callback
+> > before the program is loaded and provide new instructions with
+> > the prologue.
+> >
+> > We workaround this by using objects's 'unloaded' programs instructions
+> > for that specific program and load new ebpf programs with prologue
+> > using separate bpf_prog_load calls.
+> >
+> > We keep new ebpf program instances descriptors in bpf programs
+> > private struct.
+> >
+> > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/perf/util/bpf-loader.c | 122 +++++++++++++++++++++++++++++------
+> >  1 file changed, 104 insertions(+), 18 deletions(-)
+> >
+> 
+> [...]
+> 
+> >  errout:
+> > @@ -696,7 +718,7 @@ static int hook_load_preprocessor(struct bpf_program *prog)
+> >         struct bpf_prog_priv *priv = program_priv(prog);
+> >         struct perf_probe_event *pev;
+> >         bool need_prologue = false;
+> > -       int err, i;
+> > +       int i;
+> >
+> >         if (IS_ERR_OR_NULL(priv)) {
+> >                 pr_debug("Internal error when hook preprocessor\n");
+> > @@ -727,6 +749,12 @@ static int hook_load_preprocessor(struct bpf_program *prog)
+> >                 return 0;
+> >         }
+> >
+> > +       /*
+> > +        * Do not load programs that need prologue, because we need
+> > +        * to add prologue first, check bpf_object__load_prologue.
+> > +        */
+> > +       bpf_program__set_autoload(prog, false);
+> 
+> if you set autoload to false, program instructions might be invalid in
+> the end. Libbpf doesn't apply some (all?) relocations to such
+> programs, doesn't resolve CO-RE, etc, etc. You have to let
+> "prototypal" BPF program to be loaded before you can grab final
+> instructions. It's not great, but in your case it should work, right?
 
-Please split yaml and driver into different patches.
-You don't need to create a new binding for innolux,n140hca-eac.yaml.
-You can add the compatible into panel-simple.yaml. Check
-innolux,n125hce-gn1 for example.
+hum, do we care? it should all be done when the 'new' program with
+the prologue is loaded, right?
 
-> diff --git a/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml b/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
-> new file mode 100644
-> index 000000000000..5493e383c97c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/panel/innolux,n140hca-eac.yaml
-> @@ -0,0 +1,43 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/panel/innolux,n140hca-eac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Innolux N140HCA-EAC 14 inch eDP 1080p display panel
-> +
-> +maintainers:
-> +  - Sandeep Panda <spanda@codeaurora.org>
-> +  - Douglas Anderson <dianders@chromium.org>
-> +
-> +allOf:
-> +  - $ref: panel-common.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: innolux,n140hca-eac
-> +
-> +  enable-gpios: true
-> +  power-supply: true
-> +  backlight: true
-> +  no-hpd: true
-> +
-> +required:
-> +  - compatible
-> +  - power-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    panel_edp: panel-edp {
-> +        compatible = "innolux,n140hca-eac";
-> +        enable-gpios = <&pio 96 GPIO_ACTIVE_HIGH>;
-> +        power-supply = <&pp3300_disp_x>;
-> +        backlight = <&backlight_lcd0>;
-> +        no-hpd;
-> +    };
-> +
-> +...
-> diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-> index f7bfcf63d48e..f5f9c9cb26ba 100644
-> --- a/drivers/gpu/drm/panel/panel-edp.c
-> +++ b/drivers/gpu/drm/panel/panel-edp.c
-> @@ -1330,6 +1330,29 @@ static const struct panel_desc innolux_n125hce_gn1 = {
->         },
->  };
->
-> +static const struct display_timing innolux_n140hca_eac_timing = {
-> +       .pixelclock = { 72600000, 76420000, 80240000 },
-> +       .hactive = { 1920, 1920, 1920 },
-> +       .hfront_porch = { 80, 80, 80 },
-> +       .hback_porch = { 190, 190, 190 },
-> +       .hsync_len = { 60, 60, 60 },
-> +       .vactive = { 1080, 1080, 1080 },
-> +       .vfront_porch = { 6, 6, 6 },
-> +       .vback_porch = { 38, 38, 38 },
-> +       .vsync_len = { 8, 8, 8 },
-> +       .flags = DISPLAY_FLAGS_VSYNC_LOW | DISPLAY_FLAGS_HSYNC_LOW,
-> +};
-> +
-> +static const struct panel_desc innolux_n140hca_eac = {
-> +       .timings = &innolux_n140hca_eac_timing,
-> +       .num_timings = 1,
-> +       .bpc = 6,
-> +       .size = {
-> +               .width = 309,
-> +               .height = 174,
-> +       },
-> +};
-> +
->  static const struct drm_display_mode innolux_p120zdg_bf1_mode = {
->         .clock = 206016,
->         .hdisplay = 2160,
-> @@ -1750,6 +1773,9 @@ static const struct of_device_id platform_of_match[] = {
->         }, {
->                 .compatible = "innolux,n125hce-gn1",
->                 .data = &innolux_n125hce_gn1,
-> +       }, {
-> +               .compatible = "innolux,n140hca-eac",
-> +               .data = &innolux_n140hca_eac,
->         }, {
->                 .compatible = "innolux,p120zdg-bf1",
->                 .data = &innolux_p120zdg_bf1,
-> --
-> 2.25.1
->
+I switched it off because the verifier failed to load the program
+without the prologue.. because in the originaal program there's no
+code to grab the arguments that the rest of the code depends on,
+so the verifier sees invalid access
+
+> 
+> > +
+> >         priv->need_prologue = true;
+> >         priv->insns_buf = malloc(sizeof(struct bpf_insn) * BPF_MAXINSNS);
+> >         if (!priv->insns_buf) {
+> > @@ -734,6 +762,13 @@ static int hook_load_preprocessor(struct bpf_program *prog)
+> >                 return -ENOMEM;
+> >         }
+> >
+> 
+> [...]
+> 
+> > +               /*
+> > +                * For each program that needs prologue we do following:
+> > +                *
+> > +                * - take its current instructions and use them
+> > +                *   to generate the new code with prologue
+> > +                *
+> > +                * - load new instructions with bpf_prog_load
+> > +                *   and keep the fd in proglogue_fds
+> > +                *
+> > +                * - new fd will be used bpf__foreach_event
+> > +                *   to connect this program with perf evsel
+> > +                */
+> > +               orig_insns = bpf_program__insns(prog);
+> > +               orig_insns_cnt = bpf_program__insn_cnt(prog);
+> > +
+> > +               pev = &priv->pev;
+> > +               for (i = 0; i < pev->ntevs; i++) {
+> > +                       err = preproc_gen_prologue(prog, i, orig_insns,
+> > +                                                  orig_insns_cnt, &res);
+> > +                       if (err)
+> > +                               return err;
+> > +
+> > +                       fd = bpf_prog_load(bpf_program__get_type(prog),
+> 
+> nit: bpf_program__type() is preferred (we are deprecating/discouraging
+> "get_" prefixed getters in libbpf 1.0)
+
+ok, will change
+
+> 
+> > +                                          bpf_program__name(prog), "GPL",
+> 
+> would it make sense to give each clone a distinct name?
+
+AFAICS the original code uses same prog name for instances,
+so I'd rather keep it that way
+
+thanks,
+jirka
+
+> 
+> > +                                          res.new_insn_ptr,
+> > +                                          res.new_insn_cnt, NULL);
+> > +                       if (fd < 0) {
+> > +                               char bf[128];
+> > +
+> 
+> [...]
