@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA32C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7760C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbiBRQP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:15:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37906 "EHLO
+        id S237616AbiBRQQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:16:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237574AbiBRQPs (ORCPT
+        with ESMTP id S237588AbiBRQPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:15:48 -0500
+        Fri, 18 Feb 2022 11:15:50 -0500
 Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBF42B2FC7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:31 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E812B2FC0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:33 -0800 (PST)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C107440303
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:15:27 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C9A1A40325
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645200927;
-        bh=zU8PHhdXJ/Ueh121b9Q6oYq5mxpNaWQJcLKghCGJuJg=;
+        s=20210705; t=1645200931;
+        bh=eXTf6CI7XtqvYApoORACvc6rPyUPKkXor1yJtlktlDc=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=M12UUrx2HT3nJUtjmqoggHUbECHNBS82JtAWNw3fzVlA4nCnihIG9D84gJTEbve+B
-         +xvTj7j7TkA+I0cnrJcrtnd2KqO0b8/25c/4gdS/o0pBbhPJIimeqMo7oApxKtI49o
-         fXCatzU9romxxGuxxTrKCt5COkWkjT43ypCij9Ug76/7BSHtKFRa9bdVeRtVxGtYL3
-         Jh8Bt1qqtldmZQALAMxo7t6opcfcg8MYbRcKAFO28e79EITaIwWAebPEBHxpmXhALD
-         YoYTTYBWewTgRpjjKftdspggXvQw1wudiUpGiFhOnHV4BJfGwYFYBqznXCnv0BC9x3
-         TLZ9NG5jgkbzg==
-Received: by mail-ej1-f69.google.com with SMTP id la22-20020a170907781600b006a7884de505so3288452ejc.7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:27 -0800 (PST)
+        b=q8JH+mx0ZEKAm+LT0TpgTdfgGC2f2BsfEF0pdQZ1qiCetFcHX5IUivpa/Qxv1juyj
+         U++5t+kVq4rxgzvsEgsIwiEeWZn9GVqtUoBdtpzOG7s2PwU1NvfR8rb7YWSQXbtUhd
+         5aIYthhwHbyOjS792MqmVLfIKB8rjkt/YQt0PKgLDraUY0tsHjl3+gZyB7voLyaKoQ
+         +VUR2hYY8FLbOBNVyawyHRWyVm5ooD28OfWeLCgq+HhOUhhVj49iQjWJFACCswZ38A
+         06q/SobftYblfoe8Jquphy610SV4FvXjoX4vOlsMJjCyD1loIMKnU7vNE9DMyudivv
+         tnz6VjL0sok8g==
+Received: by mail-ed1-f71.google.com with SMTP id b26-20020a056402139a00b004094fddbbdfso5801916edv.12
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zU8PHhdXJ/Ueh121b9Q6oYq5mxpNaWQJcLKghCGJuJg=;
-        b=vaxPceUCf/dhvAXQQBNnKncJlgH/ZXu3O4wYM7/zutiyQecGvXByfyeGwP/NSutn8g
-         KmAuffKrW2W+lcI3h5QSFIAekgs0JIw2uCZBoB5yvRv7Gtqu7hBSlZSq0qexOEcdsqZD
-         jxLRYQHKP4tguwnnpq4shnTY5MYdAnmoifMBq/ZwCYbvfDqzPNmdFKTlifVElG3518BP
-         bPadmyBjG5j4HpsEeq6x1+wc2cja3uXQQnw4a8ahPKtvQ6x9J20S1KUuNkT6XeT3I511
-         94wGxL7Xzlm7sliCnYGuADFIUszt7iIU1Jysj/zY3aGe/Rdi9KJugoMv9kMvCeWSTNPC
-         AzvQ==
-X-Gm-Message-State: AOAM532uYMRY/xOPGtKi6XktqK3sC+tU++yYNkHJG1hpi/NpTycLDPgc
-        BTH34MDlTd5kjS+C/w5LXzb7EYTBijHU8zPQU6MnkLNw64WuImP6qSJ/SsmMsKKDebnnDUkjFXt
-        NnlehdJ90XIiBkedFlXn/OA/cJ1Haxj42DLB2tqJu3w==
-X-Received: by 2002:a17:906:2ad3:b0:6ce:3662:8d68 with SMTP id m19-20020a1709062ad300b006ce36628d68mr7033230eje.71.1645200927399;
-        Fri, 18 Feb 2022 08:15:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy/wkrF7krrpsgkdvOicdEcCrW3UqlmOyhO7J1hrmzKSDRnQT9+nScW8jsxPc1cVoroQAhx+A==
-X-Received: by 2002:a17:906:2ad3:b0:6ce:3662:8d68 with SMTP id m19-20020a1709062ad300b006ce36628d68mr7033218eje.71.1645200927228;
-        Fri, 18 Feb 2022 08:15:27 -0800 (PST)
+        bh=eXTf6CI7XtqvYApoORACvc6rPyUPKkXor1yJtlktlDc=;
+        b=eDz8nnbiAzA7zWHu80e6H5QT7y7QnapWInfZxNTA9OMsHNSoWNDKB3yt6dvHlz+Flh
+         wmjKcCoLDjC6L/U3yZhqyQ3CrS6pBPypktuK8R6FtnsJ7TYtrnh7Z/9ARiXqmTTrqYis
+         nf9oEYVFIA9qkFIomX7mFN+Hz+plAF2QepGE4ksXnt/Gic8UOtXsOCYrWpVCFNPCfvYa
+         zu9P5/MaZkorHv0l/DYhuJeMm9saBMnX1mTOO8QWe7hh1KUEnuko6FQSKrnaCXyHGaBd
+         1PxL2wInbNC5zsjybKPKoRjdHtCa9Ce7p5oBEv4WuV7Xrd8w3rKFnnhAkf/Jccb5Iml6
+         J/gA==
+X-Gm-Message-State: AOAM530zrcR/HeGEA7HE78E1w7Fw+z91cvD3flOuoTw33+SbHlFdd9Zv
+        E5WJ89tjtpiJ6q+2Z+ulpN+FixMgIcxKMttDjzcDqohQ9xycd+J9LUNUePSvZwwR11kSVwByf3v
+        PyhyHPV/JN49KIxJzbnc871FjsfhJAZNKYKuC8gHrlw==
+X-Received: by 2002:a05:6402:1d8d:b0:408:4a31:9790 with SMTP id dk13-20020a0564021d8d00b004084a319790mr9100874edb.92.1645200930748;
+        Fri, 18 Feb 2022 08:15:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdswzoYMv9GT1AsPyCy429Vy5ZKlXY8hiNZQFBnkjJI6JAvV6mE8WIdoqyTzwBSbyUSRKGRA==
+X-Received: by 2002:a05:6402:1d8d:b0:408:4a31:9790 with SMTP id dk13-20020a0564021d8d00b004084a319790mr9100856edb.92.1645200930559;
+        Fri, 18 Feb 2022 08:15:30 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id y21sm2325572ejq.185.2022.02.18.08.15.25
+        by smtp.gmail.com with ESMTPSA id y21sm2325572ejq.185.2022.02.18.08.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 08:15:26 -0800 (PST)
+        Fri, 18 Feb 2022 08:15:29 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Dinh Nguyen <dinguyen@kernel.org>, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] dt-bindings: usb: dwc2: add iommus
-Date:   Fri, 18 Feb 2022 17:15:20 +0100
-Message-Id: <20220218161522.52044-2-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 4/4] arm64: dts: agilex/stratix10: add clock-names to USB DWC2 node
+Date:   Fri, 18 Feb 2022 17:15:22 +0100
+Message-Id: <20220218161522.52044-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220218161522.52044-1-krzysztof.kozlowski@canonical.com>
 References: <20220218161522.52044-1-krzysztof.kozlowski@canonical.com>
@@ -75,31 +75,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DWC2 node might use IOMMU (e.g. Altera Stratix10), so add "iommus"
-property.  This fixes warnings like:
+USB DWC2 requires clock-names:
 
-  arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml:
-    usb@ffb40000: 'iommus' does not match any of the regexes: 'pinctrl-[0-9]+'
+  arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml:
+    usb@ffb00000: 'clock-names' is a required property
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- Documentation/devicetree/bindings/usb/dwc2.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 1 +
+ arch/arm64/boot/dts/intel/socfpga_agilex.dtsi     | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/usb/dwc2.yaml b/Documentation/devicetree/bindings/usb/dwc2.yaml
-index 048e352c531a..1ba96706bbcb 100644
---- a/Documentation/devicetree/bindings/usb/dwc2.yaml
-+++ b/Documentation/devicetree/bindings/usb/dwc2.yaml
-@@ -68,6 +68,9 @@ properties:
-     items:
-       - const: otg
- 
-+  iommus:
-+    maxItems: 1
-+
-   resets:
-     items:
-       - description: common reset
+diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+index 3ec301bd08a9..d7d1918ae471 100644
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+@@ -484,6 +484,7 @@ usb0: usb@ffb00000 {
+ 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr STRATIX10_USB_CLK>;
++			clock-names = "otg";
+ 			iommus = <&smmu 6>;
+ 			status = "disabled";
+ 		};
+diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi b/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
+index f4270cf18996..984c71b850c9 100644
+--- a/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
++++ b/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
+@@ -510,6 +510,7 @@ usb0: usb@ffb00000 {
+ 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr AGILEX_USB_CLK>;
++			clock-names = "otg";
+ 			iommus = <&smmu 6>;
+ 			status = "disabled";
+ 		};
 -- 
 2.32.0
 
