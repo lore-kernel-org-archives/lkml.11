@@ -2,113 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84389C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 02:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 02:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231649AbiBRCdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 21:33:51 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52104 "EHLO
+        id S231683AbiBRCfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 21:35:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbiBRCdt (ORCPT
+        with ESMTP id S231625AbiBRCfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 21:33:49 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3357F2D5F3F;
-        Thu, 17 Feb 2022 18:33:33 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id p15so11597465ejc.7;
-        Thu, 17 Feb 2022 18:33:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=syBde1rKfM2kggh83qK4r1mfs+ViTeKt0eus0av4hLc=;
-        b=F/Ox4UQM+dq/yuhBQm3Njd09m+KaG3hccZBL9ZGvAQfMcoX3DHH+boUPmLwbdJhj2r
-         B0QXp/vJEXep/Dr3NNWZes3zY86SrW5BXHx44Ro7cWCkSw1GZc6D811UnAfzhzA8kMH5
-         UXqPZBdSf8KIIpVItAW9IyQUwZQxLOz9qfuEUQrjfrLx/HDlIYYqDgP6TGUJhHK9faPx
-         1U3bWFXmM+GNdsyzEpAyCA/rSnVa6wGkXPSLt3gyjsHs8rC145/qcSsYCvpabEvqZTVU
-         6av3oQlZlEBjGLy+JnJWgp6GFo3Rk06ve3wrc2fSnqumrDMIQIPRIKC1GWtK5htxvO5j
-         UfvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=syBde1rKfM2kggh83qK4r1mfs+ViTeKt0eus0av4hLc=;
-        b=mg4OY9aps48AIV74GR8sPcAnmx0k7iETx/m979NTB4EjtRjUee6Bx8ot6iNdqQpaUn
-         OTampvFV53ntHavJSb0zecU643CBQOgz9GPEBO2XU+ThW3Nbr9DJAUxMidZygfLkWIy6
-         LaY9KzvggGvYfDHWMWr8lRRVH5jQtMGPKHjOVuvGrQf/Xk1gBoMvZfd8IwvI8dixqIBA
-         KnW1aWXesCJZU+Z8gkwi/zCC2zNnoreu0P0xG/Qhj1NhxkS9D+zG0ZaBKiY8BONQ7J3Q
-         vkBjdbZbziY29u0eHLu9BjQfuKDX326ZImnOMpezHV0YCezJUN4xI6h0m9WV1eqIl8qA
-         EaSw==
-X-Gm-Message-State: AOAM533dthB3cdQ/Hhv4TA+G1tJq9G9UeLYhgGopYJZN4pa98rPDVEbi
-        F+HXM+Hx/fxemg4oovusSt+5FSxSzmBRz4MI/WY=
-X-Google-Smtp-Source: ABdhPJwP43Y1+738Ym26VXGsA4rIITq8mmzkFqmBSQFS2dk/VQNhgJHZXEd/Onb6/d8eWPnOhmN/zpngNI9qdOJ35no=
-X-Received: by 2002:a17:907:369:b0:6cf:d106:acae with SMTP id
- rs9-20020a170907036900b006cfd106acaemr4642917ejb.456.1645151611672; Thu, 17
- Feb 2022 18:33:31 -0800 (PST)
+        Thu, 17 Feb 2022 21:35:52 -0500
+Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC016F0F;
+        Thu, 17 Feb 2022 18:35:36 -0800 (PST)
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 21I2ZFv5005356;
+        Fri, 18 Feb 2022 11:35:15 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 21I2ZFv5005356
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1645151715;
+        bh=puHr9io6ldcFQQ1FxuWLJFlpKkiHzLgrPODpqV1G2ww=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=X3YQOuzBkdRDyohTWDOpIqTthO/KxHIDE/1mbyEzhruMVjmcU2nJcvW+ohSVjCV1Y
+         YDnnIvyeEgfZaoz6aHozcY1QGc5hyOR6fA59USHB6QfuAO7cz9WpfKUzXtmDg936Y+
+         6bU9ehj8yJjt16mCFddE8F76/Wdx/7xdGUNpYRr0/Lzov2WG1X+GNOCbVsfe/vwbny
+         OI7cHPoEQFH2QbtloWfvK0XH5l3+h7zgZfJpuFB7TcZLyAuUf8yFm0elK5CjthJ3AL
+         UNc2YsBQiOZoteUDhr+ZBJHDPvk4ZpVN8U0K9cKYPEqPN3iQBvIb1QIckbhjHeCZRI
+         5gfJGyKEhlkBw==
+X-Nifty-SrcIP: [209.85.216.41]
+Received: by mail-pj1-f41.google.com with SMTP id n19-20020a17090ade9300b001b9892a7bf9so11092570pjv.5;
+        Thu, 17 Feb 2022 18:35:15 -0800 (PST)
+X-Gm-Message-State: AOAM532YeGIHvLtrqVpCOhec28oarGXek0jNkTUj6pX1JUcVVzAWDnJS
+        /tfveAWLzgPV83b7/QDi7Y9s4zRsl1zm836cakc=
+X-Google-Smtp-Source: ABdhPJx2M577DIVzSuh6cjkua+KA3A1yP4/J9t7KP2negUHOk2j3T9i+nN0eBU7O6OaFqVrN22vOJHec8G2kFAOfc38=
+X-Received: by 2002:a17:902:d2d1:b0:149:732e:d335 with SMTP id
+ n17-20020a170902d2d100b00149732ed335mr5490327plc.136.1645151714541; Thu, 17
+ Feb 2022 18:35:14 -0800 (PST)
 MIME-Version: 1.0
-References: <20220216035426.2233808-1-imagedong@tencent.com>
- <20220216035426.2233808-2-imagedong@tencent.com> <20220216075821.219b911f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220216115004.5e9dc2b6@gandalf.local.home>
-In-Reply-To: <20220216115004.5e9dc2b6@gandalf.local.home>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 18 Feb 2022 10:28:18 +0800
-Message-ID: <CADxym3YEdO8zGhUsd7S=kh+nfCsTYbK1guOYYbMSdswubNZQaw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/9] net: tcp: introduce tcp_drop_reason()
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        flyingpeng@tencent.com
+References: <20220212161837.2235261-1-masahiroy@kernel.org>
+In-Reply-To: <20220212161837.2235261-1-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 18 Feb 2022 11:34:34 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQNm7Ly6AEx1XBD=gSbQs=Av+TM1bcX5m=DGRSs5BhKqA@mail.gmail.com>
+Message-ID: <CAK7LNAQNm7Ly6AEx1XBD=gSbQs=Av+TM1bcX5m=DGRSs5BhKqA@mail.gmail.com>
+Subject: Re: [PATCH] kconfig: add fflush() before ferror() check
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 12:50 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+On Sun, Feb 13, 2022 at 1:19 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> On Wed, 16 Feb 2022 07:58:21 -0800
-> Jakub Kicinski <kuba@kernel.org> wrote:
+> As David Laight pointed out, there is not much point in calling
+> ferror() unless you call fflush() first.
 >
-> > On Wed, 16 Feb 2022 11:54:18 +0800 menglong8.dong@gmail.com wrote:
-> > > +static inline void tcp_drop(struct sock *sk, struct sk_buff *skb)
-> > > +{
-> > > +   tcp_drop_reason(sk, skb, SKB_DROP_REASON_NOT_SPECIFIED);
-> > >  }
-> >
-> > Please make this non-inline. The compiler will inline it anyway, and
-> > if it's a static inline compiler will not warn us that it should be
-> > removed once all callers are gone.
+> Reported-by: David Laight <David.Laight@ACULAB.COM>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+
+Applied to linux-kbuild.
+
+
 >
-> I guess that's no longer true for C files.
+>  scripts/kconfig/confdata.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
->   https://lore.kernel.org/all/202202132037.4aN017dU-lkp@intel.com/
+> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+> index d3c3a61308ad..94dcec2cc803 100644
+> --- a/scripts/kconfig/confdata.c
+> +++ b/scripts/kconfig/confdata.c
+> @@ -979,6 +979,7 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+>
+>         fprintf(out, "\n$(deps_config): ;\n");
+>
+> +       fflush(out);
+>         ret = ferror(out); /* error check for all fprintf() calls */
+>         fclose(out);
+>         if (ret)
+> @@ -1097,6 +1098,7 @@ static int __conf_write_autoconf(const char *filename,
+>                 if ((sym->flags & SYMBOL_WRITE) && sym->name)
+>                         print_symbol(file, sym);
+>
+> +       fflush(file);
+>         /* check possible errors in conf_write_heading() and print_symbol() */
+>         ret = ferror(file);
+>         fclose(file);
+> --
+> 2.32.0
 >
 
-Ok, seems we can keep this inline still.
 
-> -- Steve
+-- 
+Best Regards
+Masahiro Yamada
