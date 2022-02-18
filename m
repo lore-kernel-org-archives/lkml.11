@@ -2,140 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiBRAGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:06:36 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52770 "EHLO
+        id S229946AbiBRAKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:10:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbiBRAGc (ORCPT
+        with ESMTP id S229619AbiBRAKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:06:32 -0500
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A5251E63;
-        Thu, 17 Feb 2022 16:06:04 -0800 (PST)
-Received: by mail-pf1-f179.google.com with SMTP id z16so1005772pfh.3;
-        Thu, 17 Feb 2022 16:06:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=s929dscyVLXL47tG8YulOaG8Qoyz2aoFJHGoNxnOm6g=;
-        b=qLfU4SHQR2+YL9a5Dcge/xGo3PafejM+vToi1VjPiBa6IfWVYMQY00lN0YQJBY5CWD
-         jWs9O6mssLUMfLdX4PBHvQVAClZPP2kVT8lQymQIsP8GsWHolSLxk4WB/AyQJ2BzmwVt
-         iw5TjdlFnWy6AP8s35kPXMLvt2Ngg45rZPVD012qVNNU7h5LmFO0JkW8SECD9a7dwT+v
-         Yq0OLgo36ChhKUh9pEX6BI7f4og/eCt6JDteYkrmrb5O1fbzhtO2jCl1quPYyAOwaBNZ
-         uGxU01QCRplIIXQfCSVA1emS1ZoarUF8yTAiJJyBnggu2cM6m9ParnWEh1Wx5X+0Qyc7
-         ROcQ==
-X-Gm-Message-State: AOAM530R8yl6knqBhkZ+VGMcNy1RR8rfQeIECAmxhECsE4i/Tm8v55jZ
-        ZAxs1uz4oGeRYEyJJFcH+qYrLFq1hw==
-X-Google-Smtp-Source: ABdhPJyWUVkU+CbllDyvAbEcidfFEm9xfSeMGni+GqR8gNOSrJ8HQeqkslB+1u5bMqeKbC/5N5yHdA==
-X-Received: by 2002:a05:6e02:1a66:b0:2c1:888d:b9cb with SMTP id w6-20020a056e021a6600b002c1888db9cbmr2874007ilv.74.1645142298733;
-        Thu, 17 Feb 2022 15:58:18 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id f13sm2839519ion.18.2022.02.17.15.58.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Feb 2022 15:58:18 -0800 (PST)
-Received: (nullmailer pid 4013102 invoked by uid 1000);
-        Thu, 17 Feb 2022 23:58:16 -0000
-Date:   Thu, 17 Feb 2022 17:58:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH V2 2/3] dt-bindings: nvmem: brcm,nvram: add NVMEM cell to
- example
-Message-ID: <Yg7hGKWFWG4ntk+u@robh.at.kernel.org>
-References: <20220124160300.25131-1-zajec5@gmail.com>
- <20220211130554.13062-1-zajec5@gmail.com>
- <20220211130554.13062-3-zajec5@gmail.com>
+        Thu, 17 Feb 2022 19:10:03 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F3753B46;
+        Thu, 17 Feb 2022 16:09:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645142966;
+        bh=IUY/Y8Yalj5BX0e49AhUG8NejOzNrCeKKECRLd/cfB0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=g9t0/AtHqGQeNCOHRCB1iLtdV7W+jIgwKvpWXnn4VAaGn53Q+XnyM8NF/GrRhngfz
+         w7vnf9MOomInAvIRDPmNPydwle2NUN8I99hh5sOit2QJt4qIwgTfA3lVaIRE4rlrQS
+         51uOVIiozDxeN4+lgawL/RH7PuOwZ5EKPmTO3PUg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MtOGa-1o7bPE27uo-00uo9K; Fri, 18
+ Feb 2022 01:09:26 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-clk@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Subject: [PATCH v4 0/5] clk drivers: Terminate clk_div_table with sentinel element
+Date:   Fri, 18 Feb 2022 01:09:16 +0100
+Message-Id: <20220218000922.134857-1-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220211130554.13062-3-zajec5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:SwIrvdnd0sbyaueb09YuSqV9exkrua/1OLLW1xmo5FZXWsJlJ4C
+ 0z1YzQNkcy/0Mnt1W7+xQVgNWsCI6GPXEtLKMUqA/ZuozNakH/uO0vTaV7ZlFPE0lwEkCbR
+ sJTq8c0117HHNiI7dvTgKyG62lUPmOySRhWRv33FS0M6xaGzLkV8x8aUo8PH/izU+l5rezL
+ zddUvNna+4bGA2EGZtF9A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:J04z+bzVdxI=:sjCHMbAhVUxarWqNKdoWWO
+ briPaCEnwjbYO9upMLl6Lr+yW6Bm0cSA9DEQrcVYwP0PJ8vPpoNqsKNXYa4esIBYt+V3sEjmP
+ 9ez7fu0Be6vry5zGQLAEgeAoZyhbMK5EmV/WiTKXxodJWjLusVBa5R5QP9zA6dOntGHpoQRN7
+ 3VaSdBywx3FWY3Te+1OQpwndImPHXgFB/AWow5ZJPeC4cvV7G1L2QIOmgC/Qhz77C0UNCNedq
+ SEEHyA/eFiSkwU3ntXSm78w0UXFwpiJQaqCnIeOqFEXudtV/BTbN9F5Hxi2WZ9YupeZCMRNJz
+ rwDBNChhKMONCFMCAaoaW3QYSiKw3sYWqXFUYSVeKYRr0i87h3A6Gq6WX8vFhcl0IRuuNSGsB
+ hivQnQ46QmkyRpgn2VKnPV+x5/kqWfuUcpL9J8jJDq8OCx0ii9Z9YKQhDvjPOxk04bqxAYmIC
+ 0WPYFUCxe5k6w6IAg2cIexUmgpPY+eZJzxsb68d2a4inTcbZSCZUh1tCijxSthbopre4TH9pY
+ PnHXoY0wfzyqB+TnhD0KNZAKyV2QKKQ8dSG6uV/c3shh6MiYBCL3jSqglwSAGPunv7MucsfcR
+ nlJXcQzZtGULTMudQhTh4dT9EhmFdMi4qm5vMeGuUip9KmYVwIDLNCHit/vRatpJQyev9xNam
+ E055/c98Im6fhQlmWeUhSlN0V6YJh/OAELZ/EBefiO6EkQiKlbbiIBrV/d7si0v18sgUwBWpF
+ X0GsFqZmdoK/kFWfpAXHyGKF335B0QAcqpjt9orLwTWUjPBbp5H5Y00IsRLr34WT8O4ZNz+YV
+ AtAzSUau05EZCYmxnQ7NNDPaJkweSQD5tfHZP9GRY6EjltUZlqkq1f7dQlM4vavJdh6rCUyIZ
+ VpVXpvZEZzKlXLkJX6QCyrZEXIyrG4bMkkard/j37lzm6k2ayvWDyHP8yeFPu0XF+1ZIG9I41
+ QQv9TBYojHETIF68kGBtTWNxMVj6peSdaXjO5rX5h8M57MauxgYUx5UmiifGt7kkR31RMNIpY
+ QdKSuYIdqEfpAWkWka1LYNRRx/JwVhQELIXo0gnko4sfSNHW83yBhv+rhVEKCBB8kaiAJitwT
+ pIwLWpUygqmi78=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 02:05:53PM +0100, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> NVRAM doesn't have cells at hardcoded addresses. They are stored in
-> internal struct (custom & dynamic format) . It's still important to
-> define relevant cells in DT so NVMEM consumers can reference them.
-> 
-> One of cells set in almost every device is "et0macaddr" containing MAC
-> address. Add it to example to show how it can be referenced.
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-> ---
-> V2: Add children nodes description per Rob's request
-> ---
->  .../devicetree/bindings/nvmem/brcm,nvram.yaml    | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> index 8c3f0cd22821..fc1df9d1c4d4 100644
-> --- a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> +++ b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> @@ -27,11 +27,23 @@ properties:
->    reg:
->      maxItems: 1
->  
-> +patternProperties:
-> +  ".*":
+I noticed that some of the clk_div_tables in different drivers are not
+terminated with a sentinel element. This may cause the code in
+clk-divider.c to read garbage that happens to be beyond the end.
 
-This doesn't really work as a schema as it matches every property or 
-child node.
+This patchset fixed all instances of this bug that I could find, except
+for a case in drivers/phy/ti/phy-j721e-wiz.c that is already fixed in
+linux-next:
+  https://lore.kernel.org/lkml/20220117110108.4117-1-kishon@ti.com/
 
-> +    description: |
-> +      Each child node represents one NVRAM entry (variable). Node name has to
-> +      match variable name as internally defined in the NVRAM.
-> +
-> +      Some of common NVRAM variables are: "board_id", "boardflags", "boot_wait",
-> +      "clkfreq", "et0macaddr", "sdram_config", "wait_time".
+In this version of the patchset, I addressed Philippe Mathieu-Daud=C3=A9's
+style comments. As far as I found it reasonable, I simply updated the
+existing patches, but in the case of the Actions Semiconductor drivers,
+I made a bigger cleanup in a separate patch.
 
-I meant documenting these as schema, not just in a description:
 
-properties:
-  board_id:
-    type: object
-    description: ...
+v4:
+- Various style fixes
 
-  board_flags:
-    type: object
-    description: ...
+v3:
+- Change the Actions patch according to Mani's comment
 
-I'm guessing making this list exhaustive is not possible?
+v2:
+- Add Fixes tags
 
-> +
->  unevaluatedProperties: false
 
-     type: object
+Jonathan Neusch=C3=A4fer (5):
+  clk: actions: Terminate clk_div_table with sentinel element
+  clk: loongson1: Terminate clk_div_table with sentinel element
+  clk: hisilicon: Terminate clk_div_table with sentinel element
+  clk: clps711x: Terminate clk_div_table with sentinel element
+  clk: actions: Make sentinel elements more obvious
 
-To say anything else must be a child node.
+ drivers/clk/actions/owl-s500.c         | 16 ++++++++--------
+ drivers/clk/actions/owl-s700.c         | 17 ++++++++++-------
+ drivers/clk/actions/owl-s900.c         | 26 +++++++++++++-------------
+ drivers/clk/clk-clps711x.c             |  2 ++
+ drivers/clk/hisilicon/clk-hi3559a.c    |  4 ++--
+ drivers/clk/loongson1/clk-loongson1c.c |  1 +
+ 6 files changed, 36 insertions(+), 30 deletions(-)
 
->  
->  examples:
->    - |
->      nvram@1eff0000 {
-> -            compatible = "brcm,nvram";
-> -            reg = <0x1eff0000 0x10000>;
-> +        compatible = "brcm,nvram";
-> +        reg = <0x1eff0000 0x10000>;
-> +
-> +        mac: et0macaddr {
-> +        };
->      };
-> -- 
-> 2.34.1
-> 
-> 
+=2D-
+2.34.1
+
