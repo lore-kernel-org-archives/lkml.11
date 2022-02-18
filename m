@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C657C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbiBRV0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:26:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51248 "EHLO
+        id S239227AbiBRV0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:26:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239799AbiBRVZm (ORCPT
+        with ESMTP id S239786AbiBRVZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:25:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49435243A3E
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:24 -0800 (PST)
+        Fri, 18 Feb 2022 16:25:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 994D22402D7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645219523;
+        s=mimecast20190719; t=1645219520;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BJ8v4efM2N4chZkPCn9ko+wk6+9o/1ayB9nO/iF+hOY=;
-        b=QRXmV+sgvvH2QU2xxhSEa8i3j6T9PQCB/ZLoKTyu1FjnqxFcCWiVvZ2Ksua98VeVvQ2iLD
-        pm4TULL4t1MzMkM9r9y7vGUuCwp2kpPcomxr99ZP64+pYyt2Z0V11wjpYUyxq2pZwA/oGv
-        dONfDvVQDMuxb8ddT0NO9Q+OCPTudcM=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=hPDODXaR8/3AGDN8QUDZ31HR9/DK1gkzEtjlaYiIfVA=;
+        b=OFt2iPFGZRB5vr0TxWykgKV2reK9FKB+8u0WyzTS27eW9G5IgkU0PYkTwmbaYUM8Bc5wZ2
+        Ml69TeyMduo8QAlwt6G3sQR7X18WCef1tYvkdP9iGP4hRMaZz3SqqVnKOmF2N14eJacGhL
+        jgW8i80F/Oqf8g2kVUovGKDXJ9i2HPs=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-HhofPK5sMJ2gtl5txreSAg-1; Fri, 18 Feb 2022 16:25:22 -0500
-X-MC-Unique: HhofPK5sMJ2gtl5txreSAg-1
-Received: by mail-wr1-f69.google.com with SMTP id q21-20020adfab15000000b001e57c9a342aso4079018wrc.6
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:21 -0800 (PST)
+ us-mta-384-HyTKsAzvNJ6fdYwpbB_eoA-1; Fri, 18 Feb 2022 16:25:19 -0500
+X-MC-Unique: HyTKsAzvNJ6fdYwpbB_eoA-1
+Received: by mail-wr1-f71.google.com with SMTP id s5-20020adfbc05000000b001e7af4f2231so4089667wrg.3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BJ8v4efM2N4chZkPCn9ko+wk6+9o/1ayB9nO/iF+hOY=;
-        b=zH1GE5Br+JSWIOh9AKzOBcIxLRCnA9SFBvFw+Vu6ZTdwgm4wSuLcwNbeFHpLUFTIHZ
-         t9+uGu72QTNVmaHQv9rQGEIRQnivq9y76NSJVFuVILmonUUgmOcIEkQIeBOqh9YXOFaN
-         rEKo66DUPPvfF4o88AVB934Bx6DKnizhwWs+lxOea3Qbwo4hWlZ5rvgMUHdrBMl4j3dX
-         +dS0PXzOpptMswYC2I7je/MYD4fvnTJP3YqriboTiAb8ezkXh6VE5ZfVv3ITegPyokUE
-         xw9kBd8j+2Zp1SStjXeVyVlose09A2pikv7K+rEkOcrzdXgbE/m78pwpcRwOybOHqcxW
-         XReg==
-X-Gm-Message-State: AOAM530Lq+PmT5EHscFs8OEF6DIbDOwgYpsPFGEf3qv81Y/0DCJcjcS5
-        0klrW5Z7BKshmQDwIHFL/Bqq2QdlQrlrKgqZEDF5ycjv8nVYpbe1z8IgjdR0mHfKN/iiwRAeYT/
-        F5dnPOt63Jb+1XmRjpewXfto=
-X-Received: by 2002:adf:e28f:0:b0:1e7:cf02:2d28 with SMTP id v15-20020adfe28f000000b001e7cf022d28mr7709000wri.232.1645219520931;
-        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz75WwBwl753v4poDpdux4TITfI6KzYtUDxdN4PGJ/hKxP8K4kr0B5XZsfvMeUUwC3mZDz6KA==
-X-Received: by 2002:adf:e28f:0:b0:1e7:cf02:2d28 with SMTP id v15-20020adfe28f000000b001e7cf022d28mr7708990wri.232.1645219520665;
-        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
+        bh=hPDODXaR8/3AGDN8QUDZ31HR9/DK1gkzEtjlaYiIfVA=;
+        b=TdX37tPEm72GEdoJ3EHMudm1Q0cg8HCoZzjPzVr7ZOV5QoXOGaqjRsrKJ4H6NtoT8i
+         FhZs6kKI8gdhg9nXhQA5opBVWPfVt3g8AYXAJ+i3T4/Uf5wGHS+2CtZM9msZzdkGNaP/
+         63ObdlFM8dhZuymKoTYvZV5RumasnMwkZyLU705g3bj/oYmw+401Fz10ZqAwBy3jo1BS
+         FZNxorCFLek/QwkjiI8Ra2GFg2lfq9vWpag/8e8nB5p5AUaqMGW+SfO4Zuono1cc4IJd
+         98DRQPayFxGHe3ZNF5qqynunDLNB6HpCaaBt7gQ1GilSgLi1uyc63pN7wqdNXFMHMaJd
+         NKVw==
+X-Gm-Message-State: AOAM530kOpvdQ0v+WboJ1/EXCKdtUpQUMFT46xgkbK8G7rk3alPiy7eb
+        hQ7NC2HwIVZhRx2HDjwn/My2qMckqDfLh6GgwcQpDJDAkQgdiRYgnTzenh2A7nV8eMI256rdzjT
+        lkbDbymG1XNV5ItU5rPJqt7A=
+X-Received: by 2002:a5d:4ccc:0:b0:1e3:222b:40fc with SMTP id c12-20020a5d4ccc000000b001e3222b40fcmr7087027wrt.296.1645219518204;
+        Fri, 18 Feb 2022 13:25:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzqme855dEAUGl23LY67f9MJyl8g1VKrcxsCOhX5MZPi4XlnoMw1fBOdo1a8apdoYozJ9eC8A==
+X-Received: by 2002:a5d:4ccc:0:b0:1e3:222b:40fc with SMTP id c12-20020a5d4ccc000000b001e3222b40fcmr7087007wrt.296.1645219518004;
+        Fri, 18 Feb 2022 13:25:18 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id o6-20020a05600c338600b0037c322d1425sm472350wmp.8.2022.02.18.13.25.19
+        by smtp.gmail.com with ESMTPSA id 14sm12854628wrb.34.2022.02.18.13.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
+        Fri, 18 Feb 2022 13:25:17 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -64,9 +64,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
         christophe.leroy@csgroup.eu, msuchanek@suse.de,
         oleksandr@natalenko.name
-Subject: [PATCH v6 06/13] module: Move strict rwx support to a separate file
-Date:   Fri, 18 Feb 2022 21:25:04 +0000
-Message-Id: <20220218212511.887059-7-atomlin@redhat.com>
+Subject: [PATCH v6 04/13] module: Move livepatch support to a separate file
+Date:   Fri, 18 Feb 2022 21:25:02 +0000
+Message-Id: <20220218212511.887059-5-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218212511.887059-1-atomlin@redhat.com>
 References: <20220218212511.887059-1-atomlin@redhat.com>
@@ -78,297 +78,295 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional change.
 
-This patch migrates code that makes module text
-and rodata memory read-only and non-text memory
-non-executable from core module code into
-kernel/module/strict_rwx.c.
+This patch migrates livepatch support (i.e. used during module
+add/or load and remove/or deletion) from core module code into
+kernel/module/livepatch.c. At the moment it contains code to
+persist Elf information about a given livepatch module, only.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/Makefile     |  1 +
- kernel/module/internal.h   | 38 +++++++++++++++
- kernel/module/main.c       | 99 +-------------------------------------
- kernel/module/strict_rwx.c | 84 ++++++++++++++++++++++++++++++++
- 4 files changed, 125 insertions(+), 97 deletions(-)
- create mode 100644 kernel/module/strict_rwx.c
+ include/linux/module.h    |   9 ++--
+ kernel/module/Makefile    |   1 +
+ kernel/module/internal.h  |  22 ++++++++
+ kernel/module/livepatch.c |  74 +++++++++++++++++++++++++++
+ kernel/module/main.c      | 102 ++++----------------------------------
+ 5 files changed, 110 insertions(+), 98 deletions(-)
+ create mode 100644 kernel/module/livepatch.c
 
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1e135fd5c076..7ec9715de7dc 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -663,17 +663,14 @@ static inline bool module_requested_async_probing(struct module *module)
+ 	return module && module->async_probe_requested;
+ }
+ 
+-#ifdef CONFIG_LIVEPATCH
+ static inline bool is_livepatch_module(struct module *mod)
+ {
++#ifdef CONFIG_LIVEPATCH
+ 	return mod->klp;
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static inline bool is_livepatch_module(struct module *mod)
+-{
++#else
+ 	return false;
++#endif
+ }
+-#endif /* CONFIG_LIVEPATCH */
+ 
+ bool is_module_sig_enforced(void);
+ void set_module_sig_enforced(void);
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 6fb21ebe1aa3..3f48343636ff 100644
+index 2902fc7d0ef1..ba3ebdb7055b 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -10,4 +10,5 @@ obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
- obj-$(CONFIG_LIVEPATCH) += livepatch.o
- ifdef CONFIG_MODULES
- obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
-+obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
- endif
+@@ -7,3 +7,4 @@ obj-$(CONFIG_MODULES) += main.o
+ obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
+ obj-$(CONFIG_MODULE_SIG) += signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
++obj-$(CONFIG_LIVEPATCH) += livepatch.o
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 57a715454c9e..f4b7e123d625 100644
+index e0775e66bcf7..ad7a444253ed 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -20,6 +20,17 @@
- /* Maximum number of characters written by module_flags() */
- #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
+@@ -57,6 +57,28 @@ struct load_info {
  
-+/*
-+ * Modules' sections will be aligned on page boundaries
-+ * to ensure complete separation of code and data, but
-+ * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
-+ */
-+#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
-+# define debug_align(X) PAGE_ALIGN(X)
-+#else
-+# define debug_align(X) (X)
-+#endif
-+
- extern struct mutex module_mutex;
- extern struct list_head modules;
+ int mod_verify_sig(const void *mod, struct load_info *info);
  
-@@ -126,3 +137,30 @@ static inline struct module *mod_find(unsigned long addr)
- 	return NULL;
- }
- #endif /* CONFIG_MODULES_TREE_LOOKUP */
-+
-+#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
-+void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
-+								     int num_pages));
-+#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
-+
-+#ifdef CONFIG_STRICT_MODULE_RWX
-+void frob_rodata(const struct module_layout *layout,
-+		 int (*set_memory)(unsigned long start, int num_pages));
-+void frob_ro_after_init(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages));
-+void frob_writable_data(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages));
-+void module_enable_ro(const struct module *mod, bool after_init);
-+void module_enable_nx(const struct module *mod);
-+int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				char *secstrings, struct module *mod);
-+
-+#else /* !CONFIG_STRICT_MODULE_RWX */
-+static void module_enable_nx(const struct module *mod) { }
-+static void module_enable_ro(const struct module *mod, bool after_init) {}
-+static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				       char *secstrings, struct module *mod)
++#ifdef CONFIG_LIVEPATCH
++int copy_module_elf(struct module *mod, struct load_info *info);
++void free_module_elf(struct module *mod);
++#else /* !CONFIG_LIVEPATCH */
++static inline int copy_module_elf(struct module *mod, struct load_info *info)
 +{
 +	return 0;
 +}
-+#endif /* CONFIG_STRICT_MODULE_RWX */
++
++static inline void free_module_elf(struct module *mod) { }
++#endif /* CONFIG_LIVEPATCH */
++
++static inline bool set_livepatch_module(struct module *mod)
++{
++#ifdef CONFIG_LIVEPATCH
++	mod->klp = true;
++	return true;
++#else
++	return false;
++#endif
++}
++
+ #ifdef CONFIG_MODULE_DECOMPRESS
+ int module_decompress(struct load_info *info, const void *buf, size_t size);
+ void module_decompress_cleanup(struct load_info *info);
+diff --git a/kernel/module/livepatch.c b/kernel/module/livepatch.c
+new file mode 100644
+index 000000000000..486d4ff92719
+--- /dev/null
++++ b/kernel/module/livepatch.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module livepatch support
++ *
++ * Copyright (C) 2016 Jessica Yu <jeyu@redhat.com>
++ */
++
++#include <linux/module.h>
++#include <linux/string.h>
++#include <linux/slab.h>
++#include "internal.h"
++
++/*
++ * Persist Elf information about a module. Copy the Elf header,
++ * section header table, section string table, and symtab section
++ * index from info to mod->klp_info.
++ */
++int copy_module_elf(struct module *mod, struct load_info *info)
++{
++	unsigned int size, symndx;
++	int ret;
++
++	size = sizeof(*mod->klp_info);
++	mod->klp_info = kmalloc(size, GFP_KERNEL);
++	if (!mod->klp_info)
++		return -ENOMEM;
++
++	/* Elf header */
++	size = sizeof(mod->klp_info->hdr);
++	memcpy(&mod->klp_info->hdr, info->hdr, size);
++
++	/* Elf section header table */
++	size = sizeof(*info->sechdrs) * info->hdr->e_shnum;
++	mod->klp_info->sechdrs = kmemdup(info->sechdrs, size, GFP_KERNEL);
++	if (!mod->klp_info->sechdrs) {
++		ret = -ENOMEM;
++		goto free_info;
++	}
++
++	/* Elf section name string table */
++	size = info->sechdrs[info->hdr->e_shstrndx].sh_size;
++	mod->klp_info->secstrings = kmemdup(info->secstrings, size, GFP_KERNEL);
++	if (!mod->klp_info->secstrings) {
++		ret = -ENOMEM;
++		goto free_sechdrs;
++	}
++
++	/* Elf symbol section index */
++	symndx = info->index.sym;
++	mod->klp_info->symndx = symndx;
++
++	/*
++	 * For livepatch modules, core_kallsyms.symtab is a complete
++	 * copy of the original symbol table. Adjust sh_addr to point
++	 * to core_kallsyms.symtab since the copy of the symtab in module
++	 * init memory is freed at the end of do_init_module().
++	 */
++	mod->klp_info->sechdrs[symndx].sh_addr = (unsigned long)mod->core_kallsyms.symtab;
++
++	return 0;
++
++free_sechdrs:
++	kfree(mod->klp_info->sechdrs);
++free_info:
++	kfree(mod->klp_info);
++	return ret;
++}
++
++void free_module_elf(struct module *mod)
++{
++	kfree(mod->klp_info->sechdrs);
++	kfree(mod->klp_info->secstrings);
++	kfree(mod->klp_info);
++}
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 76b53880ad91..5cd63f14b1ef 100644
+index 5f5e21f972dd..3596ebf3a6c3 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -63,17 +63,6 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/module.h>
+@@ -2043,81 +2043,6 @@ static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+ }
+ #endif /*  CONFIG_STRICT_MODULE_RWX */
  
+-#ifdef CONFIG_LIVEPATCH
 -/*
-- * Modules' sections will be aligned on page boundaries
-- * to ensure complete separation of code and data, but
-- * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
+- * Persist Elf information about a module. Copy the Elf header,
+- * section header table, section string table, and symtab section
+- * index from info to mod->klp_info.
 - */
--#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
--# define debug_align(X) ALIGN(X, PAGE_SIZE)
--#else
--# define debug_align(X) (X)
--#endif
--
- /*
-  * Mutex protects:
-  * 1) List of modules (also safely readable with preempt_disable),
-@@ -1819,8 +1808,8 @@ static void mod_sysfs_teardown(struct module *mod)
-  * whether we are strict.
-  */
- #ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
--static void frob_text(const struct module_layout *layout,
--		      int (*set_memory)(unsigned long start, int num_pages))
-+void frob_text(const struct module_layout *layout,
-+	       int (*set_memory)(unsigned long start, int num_pages))
- {
- 	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
- 	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
-@@ -1837,90 +1826,6 @@ static void module_enable_x(const struct module *mod)
- static void module_enable_x(const struct module *mod) { }
- #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
- 
--#ifdef CONFIG_STRICT_MODULE_RWX
--static void frob_rodata(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages))
+-static int copy_module_elf(struct module *mod, struct load_info *info)
 -{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->text_size,
--		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
--}
+-	unsigned int size, symndx;
+-	int ret;
 -
--static void frob_ro_after_init(const struct module_layout *layout,
--				int (*set_memory)(unsigned long start, int num_pages))
--{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_size,
--		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
--}
+-	size = sizeof(*mod->klp_info);
+-	mod->klp_info = kmalloc(size, GFP_KERNEL);
+-	if (mod->klp_info == NULL)
+-		return -ENOMEM;
 -
--static void frob_writable_data(const struct module_layout *layout,
--			       int (*set_memory)(unsigned long start, int num_pages))
--{
--	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
--	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
--	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
--		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
--}
+-	/* Elf header */
+-	size = sizeof(mod->klp_info->hdr);
+-	memcpy(&mod->klp_info->hdr, info->hdr, size);
 -
--static void module_enable_ro(const struct module *mod, bool after_init)
--{
--	if (!rodata_enabled)
--		return;
--
--	set_vm_flush_reset_perms(mod->core_layout.base);
--	set_vm_flush_reset_perms(mod->init_layout.base);
--	frob_text(&mod->core_layout, set_memory_ro);
--
--	frob_rodata(&mod->core_layout, set_memory_ro);
--	frob_text(&mod->init_layout, set_memory_ro);
--	frob_rodata(&mod->init_layout, set_memory_ro);
--
--	if (after_init)
--		frob_ro_after_init(&mod->core_layout, set_memory_ro);
--}
--
--static void module_enable_nx(const struct module *mod)
--{
--	frob_rodata(&mod->core_layout, set_memory_nx);
--	frob_ro_after_init(&mod->core_layout, set_memory_nx);
--	frob_writable_data(&mod->core_layout, set_memory_nx);
--	frob_rodata(&mod->init_layout, set_memory_nx);
--	frob_writable_data(&mod->init_layout, set_memory_nx);
--}
--
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	const unsigned long shf_wx = SHF_WRITE|SHF_EXECINSTR;
--	int i;
--
--	for (i = 0; i < hdr->e_shnum; i++) {
--		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
--			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
--				mod->name, secstrings + sechdrs[i].sh_name, i);
--			return -ENOEXEC;
--		}
+-	/* Elf section header table */
+-	size = sizeof(*info->sechdrs) * info->hdr->e_shnum;
+-	mod->klp_info->sechdrs = kmemdup(info->sechdrs, size, GFP_KERNEL);
+-	if (mod->klp_info->sechdrs == NULL) {
+-		ret = -ENOMEM;
+-		goto free_info;
 -	}
 -
+-	/* Elf section name string table */
+-	size = info->sechdrs[info->hdr->e_shstrndx].sh_size;
+-	mod->klp_info->secstrings = kmemdup(info->secstrings, size, GFP_KERNEL);
+-	if (mod->klp_info->secstrings == NULL) {
+-		ret = -ENOMEM;
+-		goto free_sechdrs;
+-	}
+-
+-	/* Elf symbol section index */
+-	symndx = info->index.sym;
+-	mod->klp_info->symndx = symndx;
+-
+-	/*
+-	 * For livepatch modules, core_kallsyms.symtab is a complete
+-	 * copy of the original symbol table. Adjust sh_addr to point
+-	 * to core_kallsyms.symtab since the copy of the symtab in module
+-	 * init memory is freed at the end of do_init_module().
+-	 */
+-	mod->klp_info->sechdrs[symndx].sh_addr = \
+-		(unsigned long) mod->core_kallsyms.symtab;
+-
 -	return 0;
+-
+-free_sechdrs:
+-	kfree(mod->klp_info->sechdrs);
+-free_info:
+-	kfree(mod->klp_info);
+-	return ret;
 -}
 -
--#else /* !CONFIG_STRICT_MODULE_RWX */
--static void module_enable_nx(const struct module *mod) { }
--static void module_enable_ro(const struct module *mod, bool after_init) {}
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
+-static void free_module_elf(struct module *mod)
+-{
+-	kfree(mod->klp_info->sechdrs);
+-	kfree(mod->klp_info->secstrings);
+-	kfree(mod->klp_info);
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static int copy_module_elf(struct module *mod, struct load_info *info)
 -{
 -	return 0;
 -}
--#endif /*  CONFIG_STRICT_MODULE_RWX */
+-
+-static void free_module_elf(struct module *mod)
+-{
+-}
+-#endif /* CONFIG_LIVEPATCH */
 -
  void __weak module_memfree(void *module_region)
  {
  	/*
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-new file mode 100644
-index 000000000000..c642889f8e77
---- /dev/null
-+++ b/kernel/module/strict_rwx.c
-@@ -0,0 +1,84 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Module strict rwx
-+ *
-+ * Copyright (C) 2015 Rusty Russell
-+ */
+@@ -3092,30 +3017,23 @@ static int copy_chunked_from_user(void *dst, const void __user *usrc, unsigned l
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_LIVEPATCH
+ static int check_modinfo_livepatch(struct module *mod, struct load_info *info)
+ {
+-	if (get_modinfo(info, "livepatch")) {
+-		mod->klp = true;
++	if (!get_modinfo(info, "livepatch"))
++		/* Nothing more to do */
++		return 0;
 +
-+#include <linux/module.h>
-+#include <linux/vmalloc.h>
-+#include <linux/set_memory.h>
-+#include "internal.h"
-+
-+void frob_rodata(const struct module_layout *layout,
-+		 int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON(!PAGE_ALIGNED(layout->base));
-+	BUG_ON(!PAGE_ALIGNED(layout->text_size));
-+	BUG_ON(!PAGE_ALIGNED(layout->ro_size));
-+	set_memory((unsigned long)layout->base + layout->text_size,
-+		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
-+}
-+
-+void frob_ro_after_init(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON(!PAGE_ALIGNED(layout->base));
-+	BUG_ON(!PAGE_ALIGNED(layout->ro_size));
-+	BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
-+	set_memory((unsigned long)layout->base + layout->ro_size,
-+		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
-+}
-+
-+void frob_writable_data(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	BUG_ON(!PAGE_ALIGNED(layout->base));
-+	BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
-+	BUG_ON(!PAGE_ALIGNED(layout->size));
-+	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
-+		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
-+}
-+
-+void module_enable_ro(const struct module *mod, bool after_init)
-+{
-+	if (!rodata_enabled)
-+		return;
-+
-+	set_vm_flush_reset_perms(mod->core_layout.base);
-+	set_vm_flush_reset_perms(mod->init_layout.base);
-+	frob_text(&mod->core_layout, set_memory_ro);
-+
-+	frob_rodata(&mod->core_layout, set_memory_ro);
-+	frob_text(&mod->init_layout, set_memory_ro);
-+	frob_rodata(&mod->init_layout, set_memory_ro);
-+
-+	if (after_init)
-+		frob_ro_after_init(&mod->core_layout, set_memory_ro);
-+}
-+
-+void module_enable_nx(const struct module *mod)
-+{
-+	frob_rodata(&mod->core_layout, set_memory_nx);
-+	frob_ro_after_init(&mod->core_layout, set_memory_nx);
-+	frob_writable_data(&mod->core_layout, set_memory_nx);
-+	frob_rodata(&mod->init_layout, set_memory_nx);
-+	frob_writable_data(&mod->init_layout, set_memory_nx);
-+}
-+
-+int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+				char *secstrings, struct module *mod)
-+{
-+	const unsigned long shf_wx = SHF_WRITE | SHF_EXECINSTR;
-+	int i;
-+
-+	for (i = 0; i < hdr->e_shnum; i++) {
-+		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
-+			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
-+			       mod->name, secstrings + sechdrs[i].sh_name, i);
-+			return -ENOEXEC;
-+		}
-+	}
-+
-+	return 0;
-+}
++	if (set_livepatch_module(mod)) {
+ 		add_taint_module(mod, TAINT_LIVEPATCH, LOCKDEP_STILL_OK);
+ 		pr_notice_once("%s: tainting kernel with TAINT_LIVEPATCH\n",
+-			       mod->name);
+-	}
+-
+-	return 0;
+-}
+-#else /* !CONFIG_LIVEPATCH */
+-static int check_modinfo_livepatch(struct module *mod, struct load_info *info)
+-{
+-	if (get_modinfo(info, "livepatch")) {
+-		pr_err("%s: module is marked as livepatch module, but livepatch support is disabled",
+-		       mod->name);
+-		return -ENOEXEC;
++				mod->name);
++		return 0;
+ 	}
+ 
+-	return 0;
++	pr_err("%s: module is marked as livepatch module, but livepatch support is disabled",
++	       mod->name);
++	return -ENOEXEC;
+ }
+-#endif /* CONFIG_LIVEPATCH */
+ 
+ static void check_modinfo_retpoline(struct module *mod, struct load_info *info)
+ {
 -- 
 2.34.1
 
