@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B73C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7144EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237535AbiBRV0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:26:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51494 "EHLO
+        id S239932AbiBRV0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:26:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239832AbiBRVZp (ORCPT
+        with ESMTP id S239860AbiBRVZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:25:45 -0500
+        Fri, 18 Feb 2022 16:25:50 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCA3A2402C1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44DE323F0A3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645219526;
+        s=mimecast20190719; t=1645219531;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qMJDJDbPZoWcP+nDdAgNVL7FhXeZbcGM7cb6CcLOEx0=;
-        b=RZ7gMet2pOhylZfUU9X5sHA+MLwmY4rKHokmsWWMkxhSMV9HH2kN7cFyTPObZKn82V3XSQ
-        +hVOL5y0hDnM8kLhXY3QtQWurxTDQ6ySUCiaMvL6gzPgGfYWYhHoU7SI3z+Rc81RFpyADF
-        XkU0emZrbKNb614qd2CwhzAyLo/E7ok=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=t4YkvwtbfB22VP8TPxgmMroXlY648sAStQ0/hZSRZew=;
+        b=f8qu4bbPUsRJEDkWb+cnWZbGq4oG1Y86yw9RMzE3hHvDJnt3AqRVVGgWCjR2P1ebyea3Js
+        98QFMaIfwiqAFJX3XkOPKwqiTqNEyGJ2WY7aJoMJ0I0zV6BJTRrpo7Sn7gifTLMq/5gudO
+        LbIX5FLRhIBItNQKWfMQlG0kn6HFOnY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-659-xIwl7ys9OlW7HFFZ1F-z2g-1; Fri, 18 Feb 2022 16:25:25 -0500
-X-MC-Unique: xIwl7ys9OlW7HFFZ1F-z2g-1
-Received: by mail-wr1-f70.google.com with SMTP id e1-20020adfa741000000b001e2e74c3d4eso4052594wrd.12
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:25 -0800 (PST)
+ us-mta-361-0C8YmBd1MFeFfXjNw3-eTg-1; Fri, 18 Feb 2022 16:25:30 -0500
+X-MC-Unique: 0C8YmBd1MFeFfXjNw3-eTg-1
+Received: by mail-wm1-f69.google.com with SMTP id 125-20020a1c0283000000b0037bf720e6a8so6464239wmc.8
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qMJDJDbPZoWcP+nDdAgNVL7FhXeZbcGM7cb6CcLOEx0=;
-        b=h/XCK5J4lagRMEYjA+ufpTNbYl8LyfSSG8W5XCLPPy6JkmgZ6Pajrvy24PwFuoNLyM
-         ri+tYBVXwyLneIz7vtQwpRl3ODZ2WgC9MbArhTAGr3HPoBOqthCp8PgYcLYynAKlCLmu
-         oRUhgzebIFMJQUWi//sNO0nEUsysHCYtVlx9HYY4L2dXdzZXwX7mHzY+Kmj2GaCTLsq9
-         g0Qsaps+3umOsKpZtjfXgR97r1v9Tcj/7JFbLLJqj3dVs29E8a+EWnDivtQGxgEYvzt6
-         HqDvAyz0hJDlpZZpw3D30M/IM+Ab9g4tywGaoTzcbKTCWaKUCFOxqiM6wQwEqAlZHr+Z
-         ExVw==
-X-Gm-Message-State: AOAM531U8DEVkUvoQhdW7WkEw6GfrJWkFNdM1Slw5RGAsKRSCwPtu308
-        i4VqSdrKZjrA5MeZeGd9erpWxp4pUXdIwgYgNg/nAIdI7v9u1MNDnLzkRUNcaN/kIS1mZJzBh4q
-        qvovZUR5YDe1Nhxpv72iVQqY=
-X-Received: by 2002:a5d:518d:0:b0:1e5:8cc9:5aa4 with SMTP id k13-20020a5d518d000000b001e58cc95aa4mr7083319wrv.119.1645219524293;
-        Fri, 18 Feb 2022 13:25:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJytk7rliwaFZmS4M0Lmnrr4rsw5hxE0HoGbsbz2eWWA2lrj7q0a/S/r6F9p6yml0YV4jKPMqA==
-X-Received: by 2002:a5d:518d:0:b0:1e5:8cc9:5aa4 with SMTP id k13-20020a5d518d000000b001e58cc95aa4mr7083306wrv.119.1645219524097;
-        Fri, 18 Feb 2022 13:25:24 -0800 (PST)
+        bh=t4YkvwtbfB22VP8TPxgmMroXlY648sAStQ0/hZSRZew=;
+        b=LidsDJTeDDRzl7jHOzes0Qm4CAxJbdI32Bu8boBX19tQYrBeRskH8vQSxGecX/IBMQ
+         fspQkv1iQW1kOe55js5WucU702J/U1LpSmbBVw+DWJt+yKDPjJzGhAuWlb8LAXL/tcoE
+         5CRbalPTU7bGebqHIYBsPQNm1urzfiyC/43YXm9MSgYBv1WfbpPRYxCcflUPgJxeLyoY
+         buS5++koCAzM4HJ+eam68TyNs14uN1ikZlbnc+8aSOTz+x/CJ1/P9vrxdonCqRH8OTfM
+         HBx03IW6fFCR1cr+KQSIk6NgL3QuDf4/rCu5IbULijCDZKG1ukNK0M1TnyRohKrCa+Qr
+         5f9g==
+X-Gm-Message-State: AOAM532sIEeZCs4eKMMZ3qGrWxvGSihUaIsYwFkapbc3kTpbxYXNylu6
+        Jp8stK10E8TctjoJaltUlz5wuM8jTRgNJ+rdARFcoL5RsOjaV3IN9Hev7BDVR4Of0vKWzVd6Ovb
+        7X+QyfA7Wm0hfb0iRctNsqBs=
+X-Received: by 2002:adf:dd87:0:b0:1e4:b8e2:2793 with SMTP id x7-20020adfdd87000000b001e4b8e22793mr7498277wrl.382.1645219527000;
+        Fri, 18 Feb 2022 13:25:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzZLDYJLO1/nZQ+C1BCov2W9Qb5EJfSUyLiu7Xv5aQQQZEEjZ1GP0K5B+qK4NVhMsLxqwfpVw==
+X-Received: by 2002:adf:dd87:0:b0:1e4:b8e2:2793 with SMTP id x7-20020adfdd87000000b001e4b8e22793mr7498260wrl.382.1645219526717;
+        Fri, 18 Feb 2022 13:25:26 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id r11sm498151wmb.19.2022.02.18.13.25.22
+        by smtp.gmail.com with ESMTPSA id bk5sm29207920wrb.10.2022.02.18.13.25.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 13:25:23 -0800 (PST)
+        Fri, 18 Feb 2022 13:25:26 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -64,9 +64,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
         christophe.leroy@csgroup.eu, msuchanek@suse.de,
         oleksandr@natalenko.name
-Subject: [PATCH v6 08/13] module: Move kmemleak support to a separate file
-Date:   Fri, 18 Feb 2022 21:25:06 +0000
-Message-Id: <20220218212511.887059-9-atomlin@redhat.com>
+Subject: [PATCH v6 10/13] module: Move procfs support into a separate file
+Date:   Fri, 18 Feb 2022 21:25:08 +0000
+Message-Id: <20220218212511.887059-11-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218212511.887059-1-atomlin@redhat.com>
 References: <20220218212511.887059-1-atomlin@redhat.com>
@@ -78,117 +78,359 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional change.
 
-This patch migrates kmemleak code out of core module
-code into kernel/module/debug_kmemleak.c
+This patch migrates code that allows one to generate a
+list of loaded/or linked modules via /proc when procfs
+support is enabled into kernel/module/procfs.c.
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/Makefile         |  1 +
- kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
- kernel/module/internal.h       |  7 +++++++
- kernel/module/main.c           | 27 ---------------------------
- 4 files changed, 38 insertions(+), 27 deletions(-)
- create mode 100644 kernel/module/debug_kmemleak.c
+ kernel/module/Makefile   |   1 +
+ kernel/module/internal.h |   1 +
+ kernel/module/main.c     | 131 +-----------------------------------
+ kernel/module/procfs.c   | 142 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 145 insertions(+), 130 deletions(-)
+ create mode 100644 kernel/module/procfs.c
 
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 3f48343636ff..e2a5ae0264f9 100644
+index a5a0963ba481..f66fda0b41cc 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -11,4 +11,5 @@ obj-$(CONFIG_LIVEPATCH) += livepatch.o
- ifdef CONFIG_MODULES
- obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
+@@ -13,4 +13,5 @@ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
  obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
-+obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+ obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+ obj-$(CONFIG_KALLSYMS) += kallsyms.o
++obj-$(CONFIG_PROC_FS) += procfs.o
  endif
-diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 99b88e2eb479..ddb37024a0d6 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -72,6 +72,7 @@ struct module *find_module_all(const char *name, size_t len, bool even_unformed)
+ int cmp_name(const void *name, const void *sym);
+ long module_get_offset(struct module *mod, unsigned int *size, Elf_Shdr *sechdr,
+ 		       unsigned int section);
++char *module_flags(struct module *mod, char *buf);
+ 
+ static inline unsigned long kernel_symbol_value(const struct kernel_symbol *sym)
+ {
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 952079987ea4..44b6fd1acc44 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -22,7 +22,6 @@
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ #include <linux/elf.h>
+-#include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ #include <linux/syscalls.h>
+ #include <linux/fcntl.h>
+@@ -805,31 +804,6 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
+ 	return ret;
+ }
+ 
+-static inline void print_unload_info(struct seq_file *m, struct module *mod)
+-{
+-	struct module_use *use;
+-	int printed_something = 0;
+-
+-	seq_printf(m, " %i ", module_refcount(mod));
+-
+-	/*
+-	 * Always include a trailing , so userspace can differentiate
+-	 * between this and the old multi-field proc format.
+-	 */
+-	list_for_each_entry(use, &mod->source_list, source_list) {
+-		printed_something = 1;
+-		seq_printf(m, "%s,", use->source->name);
+-	}
+-
+-	if (mod->init != NULL && mod->exit == NULL) {
+-		printed_something = 1;
+-		seq_puts(m, "[permanent],");
+-	}
+-
+-	if (!printed_something)
+-		seq_puts(m, "-");
+-}
+-
+ void __symbol_put(const char *symbol)
+ {
+ 	struct find_symbol_arg fsa = {
+@@ -919,12 +893,6 @@ void module_put(struct module *module)
+ EXPORT_SYMBOL(module_put);
+ 
+ #else /* !CONFIG_MODULE_UNLOAD */
+-static inline void print_unload_info(struct seq_file *m, struct module *mod)
+-{
+-	/* We don't know the usage count, or what modules are using. */
+-	seq_puts(m, " - -");
+-}
+-
+ static inline void module_unload_free(struct module *mod)
+ {
+ }
+@@ -3596,7 +3564,7 @@ static void cfi_cleanup(struct module *mod)
+ }
+ 
+ /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
+-static char *module_flags(struct module *mod, char *buf)
++char *module_flags(struct module *mod, char *buf)
+ {
+ 	int bx = 0;
+ 
+@@ -3619,103 +3587,6 @@ static char *module_flags(struct module *mod, char *buf)
+ 	return buf;
+ }
+ 
+-#ifdef CONFIG_PROC_FS
+-/* Called by the /proc file system to return a list of modules. */
+-static void *m_start(struct seq_file *m, loff_t *pos)
+-{
+-	mutex_lock(&module_mutex);
+-	return seq_list_start(&modules, *pos);
+-}
+-
+-static void *m_next(struct seq_file *m, void *p, loff_t *pos)
+-{
+-	return seq_list_next(p, &modules, pos);
+-}
+-
+-static void m_stop(struct seq_file *m, void *p)
+-{
+-	mutex_unlock(&module_mutex);
+-}
+-
+-static int m_show(struct seq_file *m, void *p)
+-{
+-	struct module *mod = list_entry(p, struct module, list);
+-	char buf[MODULE_FLAGS_BUF_SIZE];
+-	void *value;
+-
+-	/* We always ignore unformed modules. */
+-	if (mod->state == MODULE_STATE_UNFORMED)
+-		return 0;
+-
+-	seq_printf(m, "%s %u",
+-		   mod->name, mod->init_layout.size + mod->core_layout.size);
+-	print_unload_info(m, mod);
+-
+-	/* Informative for users. */
+-	seq_printf(m, " %s",
+-		   mod->state == MODULE_STATE_GOING ? "Unloading" :
+-		   mod->state == MODULE_STATE_COMING ? "Loading" :
+-		   "Live");
+-	/* Used by oprofile and other similar tools. */
+-	value = m->private ? NULL : mod->core_layout.base;
+-	seq_printf(m, " 0x%px", value);
+-
+-	/* Taints info */
+-	if (mod->taints)
+-		seq_printf(m, " %s", module_flags(mod, buf));
+-
+-	seq_puts(m, "\n");
+-	return 0;
+-}
+-
+-/*
+- * Format: modulename size refcount deps address
+- *
+- * Where refcount is a number or -, and deps is a comma-separated list
+- * of depends or -.
+- */
+-static const struct seq_operations modules_op = {
+-	.start	= m_start,
+-	.next	= m_next,
+-	.stop	= m_stop,
+-	.show	= m_show
+-};
+-
+-/*
+- * This also sets the "private" pointer to non-NULL if the
+- * kernel pointers should be hidden (so you can just test
+- * "m->private" to see if you should keep the values private).
+- *
+- * We use the same logic as for /proc/kallsyms.
+- */
+-static int modules_open(struct inode *inode, struct file *file)
+-{
+-	int err = seq_open(file, &modules_op);
+-
+-	if (!err) {
+-		struct seq_file *m = file->private_data;
+-		m->private = kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
+-	}
+-
+-	return err;
+-}
+-
+-static const struct proc_ops modules_proc_ops = {
+-	.proc_flags	= PROC_ENTRY_PERMANENT,
+-	.proc_open	= modules_open,
+-	.proc_read	= seq_read,
+-	.proc_lseek	= seq_lseek,
+-	.proc_release	= seq_release,
+-};
+-
+-static int __init proc_modules_init(void)
+-{
+-	proc_create("modules", 0, NULL, &modules_proc_ops);
+-	return 0;
+-}
+-module_init(proc_modules_init);
+-#endif
+-
+ /* Given an address, look for it in the module exception tables. */
+ const struct exception_table_entry *search_module_extables(unsigned long addr)
+ {
+diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
 new file mode 100644
-index 000000000000..12a569d361e8
+index 000000000000..2717e130788e
 --- /dev/null
-+++ b/kernel/module/debug_kmemleak.c
-@@ -0,0 +1,30 @@
++++ b/kernel/module/procfs.c
+@@ -0,0 +1,142 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Module kmemleak support
++ * Module proc support
 + *
-+ * Copyright (C) 2009 Catalin Marinas
++ * Copyright (C) 2008 Alexey Dobriyan
 + */
 +
 +#include <linux/module.h>
-+#include <linux/kmemleak.h>
++#include <linux/kallsyms.h>
++#include <linux/mutex.h>
++#include <linux/seq_file.h>
++#include <linux/proc_fs.h>
 +#include "internal.h"
 +
-+void kmemleak_load_module(const struct module *mod,
-+			  const struct load_info *info)
++#ifdef CONFIG_MODULE_UNLOAD
++static inline void print_unload_info(struct seq_file *m, struct module *mod)
 +{
-+	unsigned int i;
++	struct module_use *use;
++	int printed_something = 0;
 +
-+	/* only scan the sections containing data */
-+	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
++	seq_printf(m, " %i ", module_refcount(mod));
 +
-+	for (i = 1; i < info->hdr->e_shnum; i++) {
-+		/* Scan all writable sections that's not executable */
-+		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
-+		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
-+		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
-+			continue;
-+
-+		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
-+				   info->sechdrs[i].sh_size, GFP_KERNEL);
++	/*
++	 * Always include a trailing , so userspace can differentiate
++	 * between this and the old multi-field proc format.
++	 */
++	list_for_each_entry(use, &mod->source_list, source_list) {
++		printed_something = 1;
++		seq_printf(m, "%s,", use->source->name);
 +	}
-+}
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 0fdd9c0cd77d..1c9604443e2f 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -173,3 +173,10 @@ static inline int module_sig_check(struct load_info *info, int flags)
- 	return 0;
- }
- #endif /* !CONFIG_MODULE_SIG */
 +
-+#ifdef CONFIG_DEBUG_KMEMLEAK
-+void kmemleak_load_module(const struct module *mod, const struct load_info *info);
-+#else /* !CONFIG_DEBUG_KMEMLEAK */
-+static inline void kmemleak_load_module(const struct module *mod,
-+					const struct load_info *info) { }
-+#endif /* CONFIG_DEBUG_KMEMLEAK */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index c63e10c61694..7dd283959c5c 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -2519,33 +2519,6 @@ bool __weak module_exit_section(const char *name)
- 	return strstarts(name, ".exit");
- }
- 
--#ifdef CONFIG_DEBUG_KMEMLEAK
--static void kmemleak_load_module(const struct module *mod,
--				 const struct load_info *info)
--{
--	unsigned int i;
--
--	/* only scan the sections containing data */
--	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
--
--	for (i = 1; i < info->hdr->e_shnum; i++) {
--		/* Scan all writable sections that's not executable */
--		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
--		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
--		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
--			continue;
--
--		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
--				   info->sechdrs[i].sh_size, GFP_KERNEL);
--	}
--}
--#else
--static inline void kmemleak_load_module(const struct module *mod,
--					const struct load_info *info)
--{
--}
--#endif
--
- static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
- {
- #if defined(CONFIG_64BIT)
++	if (mod->init && !mod->exit) {
++		printed_something = 1;
++		seq_puts(m, "[permanent],");
++	}
++
++	if (!printed_something)
++		seq_puts(m, "-");
++}
++#else /* !CONFIG_MODULE_UNLOAD */
++static inline void print_unload_info(struct seq_file *m, struct module *mod)
++{
++	/* We don't know the usage count, or what modules are using. */
++	seq_puts(m, " - -");
++}
++#endif /* CONFIG_MODULE_UNLOAD */
++
++/* Called by the /proc file system to return a list of modules. */
++static void *m_start(struct seq_file *m, loff_t *pos)
++{
++	mutex_lock(&module_mutex);
++	return seq_list_start(&modules, *pos);
++}
++
++static void *m_next(struct seq_file *m, void *p, loff_t *pos)
++{
++	return seq_list_next(p, &modules, pos);
++}
++
++static void m_stop(struct seq_file *m, void *p)
++{
++	mutex_unlock(&module_mutex);
++}
++
++static int m_show(struct seq_file *m, void *p)
++{
++	struct module *mod = list_entry(p, struct module, list);
++	char buf[MODULE_FLAGS_BUF_SIZE];
++	void *value;
++
++	/* We always ignore unformed modules. */
++	if (mod->state == MODULE_STATE_UNFORMED)
++		return 0;
++
++	seq_printf(m, "%s %u",
++		   mod->name, mod->init_layout.size + mod->core_layout.size);
++	print_unload_info(m, mod);
++
++	/* Informative for users. */
++	seq_printf(m, " %s",
++		   mod->state == MODULE_STATE_GOING ? "Unloading" :
++		   mod->state == MODULE_STATE_COMING ? "Loading" :
++		   "Live");
++	/* Used by oprofile and other similar tools. */
++	value = m->private ? NULL : mod->core_layout.base;
++	seq_printf(m, " 0x%px", value);
++
++	/* Taints info */
++	if (mod->taints)
++		seq_printf(m, " %s", module_flags(mod, buf));
++
++	seq_puts(m, "\n");
++	return 0;
++}
++
++/*
++ * Format: modulename size refcount deps address
++ *
++ * Where refcount is a number or -, and deps is a comma-separated list
++ * of depends or -.
++ */
++static const struct seq_operations modules_op = {
++	.start	= m_start,
++	.next	= m_next,
++	.stop	= m_stop,
++	.show	= m_show
++};
++
++/*
++ * This also sets the "private" pointer to non-NULL if the
++ * kernel pointers should be hidden (so you can just test
++ * "m->private" to see if you should keep the values private).
++ *
++ * We use the same logic as for /proc/kallsyms.
++ */
++static int modules_open(struct inode *inode, struct file *file)
++{
++	int err = seq_open(file, &modules_op);
++
++	if (!err) {
++		struct seq_file *m = file->private_data;
++
++		m->private = kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
++	}
++
++	return err;
++}
++
++static const struct proc_ops modules_proc_ops = {
++	.proc_flags	= PROC_ENTRY_PERMANENT,
++	.proc_open	= modules_open,
++	.proc_read	= seq_read,
++	.proc_lseek	= seq_lseek,
++	.proc_release	= seq_release,
++};
++
++static int __init proc_modules_init(void)
++{
++	proc_create("modules", 0, NULL, &modules_proc_ops);
++	return 0;
++}
++module_init(proc_modules_init);
 -- 
 2.34.1
 
