@@ -2,155 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A039C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF629C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233485AbiBRJcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:32:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43624 "EHLO
+        id S233595AbiBRJd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:33:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbiBRJcp (ORCPT
+        with ESMTP id S232058AbiBRJd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:32:45 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F00A10FFA
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:32:26 -0800 (PST)
-Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220218093224epoutp048e59b587a8eb11be24b6fff66e114fe2~U14hHu-ho0057600576epoutp04y
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:32:24 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220218093224epoutp048e59b587a8eb11be24b6fff66e114fe2~U14hHu-ho0057600576epoutp04y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1645176744;
-        bh=ZbMqDPz1/aU815nnZ0+dvC+64Od9cHIaosbZ+gukjNg=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=ufN5MbqAbZZAenR1zVZyugizY/WSTMNC6QMwHFHBVnFvwwEo8HHRqGEV8UGCuHcob
-         KPg5w00SVfHt9WXhj9S+AC6pGxc8NfHAvSzk7ih97rjV4lyvGEgWN9R85sM7qMFA2L
-         clHPsvTzLkDiXKHQgnfsMOsgybgG/4kotf/Lguew=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
-        20220218093223epcas1p4d6902da1601e1950ce086c9561c25aea~U14goH_9p1100611006epcas1p4p;
-        Fri, 18 Feb 2022 09:32:23 +0000 (GMT)
-Received: from epsmges1p4.samsung.com (unknown [182.195.38.233]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4K0RLC42t7z4x9QJ; Fri, 18 Feb
-        2022 09:32:19 +0000 (GMT)
-Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
-        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        9C.3F.21932.3A76F026; Fri, 18 Feb 2022 18:32:19 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220218093218epcas1p385c5cca2010183e90ac7ac1b4063af25~U14b6Pt_72486024860epcas1p3j;
-        Fri, 18 Feb 2022 09:32:18 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220218093218epsmtrp2d30138d4b8aae59d2103d3f9ef8448bb~U14b4tVkO0963709637epsmtrp2r;
-        Fri, 18 Feb 2022 09:32:18 +0000 (GMT)
-X-AuditID: b6c32a38-93fff700000255ac-88-620f67a3e6c5
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        36.82.29871.2A76F026; Fri, 18 Feb 2022 18:32:18 +0900 (KST)
-Received: from [10.113.221.102] (unknown [10.113.221.102]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220218093218epsmtip1476a8068f389cb2e242f97f10dcdec00~U14brLOBq2637126371epsmtip1u;
-        Fri, 18 Feb 2022 09:32:18 +0000 (GMT)
-Subject: Re: [PATCH v3 2/2] extcon: add optional input-debounce attribute
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com
-From:   Chanwoo Choi <cw00.choi@samsung.com>
-Organization: Samsung Electronics
-Message-ID: <ef8bf06d-5762-8149-802a-de5cbdc11cc9@samsung.com>
-Date:   Fri, 18 Feb 2022 18:56:47 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
-        Thunderbird/59.0
+        Fri, 18 Feb 2022 04:33:56 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C4C10FFA;
+        Fri, 18 Feb 2022 01:33:39 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 5C6701F37D;
+        Fri, 18 Feb 2022 09:33:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645176818; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=hGTH3kNBiBRWdFvAIl/Tn00ApW2CGol4TAqB/yXCwcw=;
+        b=YxgsQyuLqZEqurPTkBAQhKhWuF34XKCmC5/K/Vltvn+ofUOuHgYRr1UbZaKvBQpMdru3TN
+        dMKagn9r02rAd4mHlyf44N0Kq5fR74i3WrGqH1FMSprvgufekLoxw/K8jgDZffC0d2n51P
+        CREbrNUsevoRYj5Lkd5IdxOUTWvcBO8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645176818;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=hGTH3kNBiBRWdFvAIl/Tn00ApW2CGol4TAqB/yXCwcw=;
+        b=ruGiu15hZbT9ixT20f8tSO3cY0t981R/XeUPHM4/hD7MLI15J0nNgcqnk925wuY7ysujRZ
+        zxsLl6QdorVKTzDA==
+Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
+        by relay2.suse.de (Postfix) with ESMTP id 06A5EA3B87;
+        Fri, 18 Feb 2022 09:33:37 +0000 (UTC)
+From:   Michal Suchanek <msuchanek@suse.de>
+To:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Cc:     Michal Suchanek <msuchanek@suse.de>, Martin Mares <mj@ucw.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Mack <daniel@zonque.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        linux-video@atrey.karlin.mff.cuni.cz, linux-kernel@vger.kernel.org
+Subject: [PATCH] simpldrm: Enable boot time VESA graphic mode selection.
+Date:   Fri, 18 Feb 2022 10:33:34 +0100
+Message-Id: <20220218093334.24830-1-msuchanek@suse.de>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20220204135937.GA1166088@francesco-nb.int.toradex.com>
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrEJsWRmVeSWpSXmKPExsWy7bCmvu7idP4kg0lTZSzW9h5lsZh/5Byr
-        xd2lPxktLu+aw2ax9PpFJovbjSvYLL61P2K1aN17hN2Bw2PNvDWMHrPun2Xz2LSqk82jb8sq
-        Ro9Nrzw8Pm+SC2CLyrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy
-        8QnQdcvMAbpHSaEsMacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgWqBXnJhbXJqXrpeX
-        WmJlaGBgZApUmJCdsfrDa7aCFxwV9z/tYm9gbGPvYuTgkBAwkXgxV6GLkYtDSGAHo8Sho2tY
-        IJxPjBLr/z1jh3C+MUq8u/eBqYuRE6zj8KNDrBCJvYwSh2f+gqp6zyjRfvEiG0iVsICnxJMX
-        +8E6RAQKJV72TQWzmQVuMko8uKwOYrMJaEnsf3EDrJ5fQFHi6o/HjCA2r4CdxPwlH1lAbBYB
-        VYkpB16ygtiiAmESJ7e1QNUISpyc+QSshlPAReL9uuUsEPPFJW49mQ+1S16ieetsZpDjJARW
-        ckjM3j2RHeIFF4muO0+hbGGJV8e3QNlSEp/f7WWDaGhmlGh4cZsRwulhlDj6rI8FospYYv/S
-        yUyg4GMW0JRYv0sfIqwosfP3XEaIzXwS7772sEJCmFeio00IokRZ4vKDu9BglJRY3N7JNoFR
-        aRaSf2Yh+WEWkh9mISxbwMiyilEstaA4Nz212LDABB7dyfm5mxjBiVXLYgfj3Lcf9A4xMnEw
-        HmKU4GBWEuH9cJA3SYg3JbGyKrUoP76oNCe1+BCjKTCEJzJLiSbnA1N7Xkm8oYmlgYmZkbGJ
-        haGZoZI4b+/U04lCAumJJanZqakFqUUwfUwcnFINTO4VU1KElx611CpwvCUVu2S6jsLulxum
-        zy/XCFuj8Jz7yhE/pwwzox0XQlYWL9mTkLikesGhXZMublpuY9ts2HNgifDzxKkbFh5neLV3
-        +wb9OI57vSU8+heEHT3kRJ5HqAve9jDsmmcz45ZZ+P69zzcvWSmQwf877ui2yT2q71RvnJ1e
-        VDj9sOsf/pmLGtI2cdZx/MydcuFtRbHlP/kL+TN6Uudvmi66LzjgLIvIxwxbhm8Lmi9/fqV0
-        tc5nYZbYkub0bqZ9HAvcZ1kWsXzv1Ipc0j7hzb24hUmygpIsq2Wnz5CNfFl6qq5fb+6M2MKd
-        Gw+2f7hwq/eHzdm7C16Vblf9OP3E7zwZXgsz5uzkX3ZKLMUZiYZazEXFiQDKRVxsNQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphkeLIzCtJLcpLzFFi42LZdlhJTndROn+Swc4GWYu1vUdZLOYfOcdq
-        cXfpT0aLy7vmsFksvX6RyeJ24wo2i2/tj1gtWvceYXfg8Fgzbw2jx6z7Z9k8Nq3qZPPo27KK
-        0WPTKw+Pz5vkAtiiuGxSUnMyy1KL9O0SuDJWf3jNVvCCo+L+p13sDYxt7F2MnBwSAiYShx8d
-        Yu1i5OIQEtjNKDHh+G2ohKTEtItHmbsYOYBsYYnDh4shat4ySkw8ugKsRljAU+LJi/1MIDUi
-        AoUSLzeGgtQwC9xklFi27xYbRMMRJonWuwcYQRrYBLQk9r+4wQZi8wsoSlz98RgszitgJzF/
-        yUcWEJtFQFViyoGXrCC2qECYxM4lj5kgagQlTs58AlbDKeAi8X7dcjCbWUBd4s+8S8wQtrjE
-        rSfzmSBseYnmrbOZJzAKz0LSPgtJyywkLbOQtCxgZFnFKJlaUJybnltsWGCYl1quV5yYW1ya
-        l66XnJ+7iREcYVqaOxi3r/qgd4iRiYPxEKMEB7OSCO+Hg7xJQrwpiZVVqUX58UWlOanFhxil
-        OViUxHkvdJ2MFxJITyxJzU5NLUgtgskycXBKNTAda5GVuym02uz+6cMH9oj4mn4281dUzUt9
-        cFWUWfDAZOWzzCb3+eb6SJ25sPrupiuCW9cEJWd0bPDMUA2++8yOWdL6dF3xWobMI7p7Wxfc
-        n3nQekHs0aVt9rNidlnybnr9tDUnWzco/kXFowaxOZZ1WSs/2fxqZd8V3L/W1mVVFqdM9kT9
-        T/5u4le0N1ioy1e+nKRxSn/tEV6nt13tyyuLn8nVmF+M/L7gdv/lxC8r4s1OqW1getVb6vF5
-        huKb0Bv24gekdLdd733veK1Dgv3opf2zQtfuTZ38PPvAfqOHesd5Tdkjs/u/NB/nZld1YH7J
-        /t81xkYn+MZWGaF1k1s/hTxjPci38OkJw/8aVwWUWIozEg21mIuKEwFdaRAMHwMAAA==
-X-CMS-MailID: 20220218093218epcas1p385c5cca2010183e90ac7ac1b4063af25
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20171019095315epcas1p1da40aef7397c561c5fe970309a97b762
-References: <1508406773-887-1-git-send-email-raveendra.padasalagi@broadcom.com>
-        <CGME20171019095315epcas1p1da40aef7397c561c5fe970309a97b762@epcas1p1.samsung.com>
-        <1508406773-887-2-git-send-email-raveendra.padasalagi@broadcom.com>
-        <59E87BDB.2090104@samsung.com>
-        <20220204135937.GA1166088@francesco-nb.int.toradex.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Francesco,
+Since switch to simpledrm VESA graphic modes are no longer available
+with legacy BIOS.
 
-On 2/4/22 10:59 PM, Francesco Dolcini wrote:
-> Hello Raveendra, Chanwoo et all
-> 
-> On Thu, Oct 19, 2017 at 07:18:03PM +0900, Chanwoo Choi wrote:
->> On 2017년 10월 19일 18:52, Raveendra Padasalagi wrote:
->>> Add changes to capture optional dt attribute "input-debounce"
->>> provided in extcon node and used the same value if provided otherwise
->>> default value of 20000 usecs is used for id and vbus gpios debounce time.
->> Looks good to me.
->> Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
->>
->> After completing the review of patch1 from DT maintainer,
->> I'll merge these patch sets.
-> 
-> I noticed that this series [1] was never merged in the end, anything I
-> can do to help?
-> It is solving a real issue and I would be glad to understand what's the
-> reason this was not merged in 2017 to get it done now.
-> 
-> Francesco
-> 
-> [1] https://lore.kernel.org/all/1508406773-887-1-git-send-email-raveendra.padasalagi@broadcom.com/
-> 
-> 
+The x86 realmode boot code enables the VESA graphic modes when option
+FB_BOOT_VESA_SUPPORT is enabled.
 
-Need to receive the review from dt maintainer.
-If possible, resend this patchset.
+To enable use of VESA modes with simpledrm in legacy BIOS boot mode drop
+dependency of BOOT_VESA_SUPPORT on FB, also drop the FB_ prefix, and
+select the option when simpledrm is built-in on x86.
 
+Fixes: 11e8f5fd223b ("drm: Add simpledrm driver")
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+---
+ arch/x86/boot/video-vesa.c   | 4 ++--
+ drivers/gpu/drm/tiny/Kconfig | 1 +
+ drivers/video/fbdev/Kconfig  | 9 ++++-----
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/arch/x86/boot/video-vesa.c b/arch/x86/boot/video-vesa.c
+index 7e185977a984..c2c6d35e3a43 100644
+--- a/arch/x86/boot/video-vesa.c
++++ b/arch/x86/boot/video-vesa.c
+@@ -83,7 +83,7 @@ static int vesa_probe(void)
+ 			   (vminfo.memory_layout == 4 ||
+ 			    vminfo.memory_layout == 6) &&
+ 			   vminfo.memory_planes == 1) {
+-#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
++#ifdef CONFIG_BOOT_VESA_SUPPORT
+ 			/* Graphics mode, color, linear frame buffer
+ 			   supported.  Only register the mode if
+ 			   if framebuffer is configured, however,
+@@ -121,7 +121,7 @@ static int vesa_set_mode(struct mode_info *mode)
+ 	if ((vminfo.mode_attr & 0x15) == 0x05) {
+ 		/* It's a supported text mode */
+ 		is_graphic = 0;
+-#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
++#ifdef CONFIG_BOOT_VESA_SUPPORT
+ 	} else if ((vminfo.mode_attr & 0x99) == 0x99) {
+ 		/* It's a graphics mode with linear frame buffer */
+ 		is_graphic = 1;
+diff --git a/drivers/gpu/drm/tiny/Kconfig b/drivers/gpu/drm/tiny/Kconfig
+index 712e0004e96e..1bc30c64ed15 100644
+--- a/drivers/gpu/drm/tiny/Kconfig
++++ b/drivers/gpu/drm/tiny/Kconfig
+@@ -54,6 +54,7 @@ config DRM_GM12U320
+ config DRM_SIMPLEDRM
+ 	tristate "Simple framebuffer driver"
+ 	depends on DRM && MMU
++	select BOOT_VESA_SUPPORT if X86 && DRM_SIMPLEDRM = y
+ 	select DRM_GEM_SHMEM_HELPER
+ 	select DRM_KMS_HELPER
+ 	help
+diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
+index 6ed5e608dd04..4f3be9b7a520 100644
+--- a/drivers/video/fbdev/Kconfig
++++ b/drivers/video/fbdev/Kconfig
+@@ -66,9 +66,8 @@ config FB_DDC
+ 	select I2C_ALGOBIT
+ 	select I2C
+ 
+-config FB_BOOT_VESA_SUPPORT
++config BOOT_VESA_SUPPORT
+ 	bool
+-	depends on FB
+ 	help
+ 	  If true, at least one selected framebuffer driver can take advantage
+ 	  of VESA video modes set at an early boot stage via the vga= parameter.
+@@ -627,7 +626,7 @@ config FB_VESA
+ 	select FB_CFB_FILLRECT
+ 	select FB_CFB_COPYAREA
+ 	select FB_CFB_IMAGEBLIT
+-	select FB_BOOT_VESA_SUPPORT
++	select BOOT_VESA_SUPPORT
+ 	help
+ 	  This is the frame buffer device driver for generic VESA 2.0
+ 	  compliant graphic cards. The older VESA 1.2 cards are not supported.
+@@ -1051,7 +1050,7 @@ config FB_INTEL
+ 	select FB_CFB_FILLRECT
+ 	select FB_CFB_COPYAREA
+ 	select FB_CFB_IMAGEBLIT
+-	select FB_BOOT_VESA_SUPPORT if FB_INTEL = y
++	select BOOT_VESA_SUPPORT if FB_INTEL = y
+ 	depends on !DRM_I915
+ 	help
+ 	  This driver supports the on-board graphics built in to the Intel
+@@ -1378,7 +1377,7 @@ config FB_SIS
+ 	select FB_CFB_FILLRECT
+ 	select FB_CFB_COPYAREA
+ 	select FB_CFB_IMAGEBLIT
+-	select FB_BOOT_VESA_SUPPORT if FB_SIS = y
++	select BOOT_VESA_SUPPORT if FB_SIS = y
+ 	select FB_SIS_300 if !FB_SIS_315
+ 	help
+ 	  This is the frame buffer device driver for the SiS 300, 315, 330
 -- 
-Best Regards,
-Chanwoo Choi
-Samsung Electronics
+2.31.1
+
