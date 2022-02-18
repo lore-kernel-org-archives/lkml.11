@@ -2,151 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D61C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235108AbiBRMSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:18:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37264 "EHLO
+        id S235112AbiBRMT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:19:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbiBRMSX (ORCPT
+        with ESMTP id S232054AbiBRMT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:18:23 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226ED294FCC;
-        Fri, 18 Feb 2022 04:18:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k/DIs9ZdmQjc5veV7echyMVS0G3ZDwACgFRdB+W+T4N0HuHvUi/YD1jT2iVgzYzwiMOh3glcW90wGT+1DHmWOUA/hTOkIkqxRbOv338yUK9Av5+qP1ogOJP6AAqeiLjGDIpneMwshpxvqt7NEs3veBttNaBYjzSZQ8eLyUchLa7DVDo1yWIdufAuWE9zi4A2I5x3PXU8LtBha/mPCCBtBWpwvUGtkJhEN/5gxC6OHn920IVeOL/7e8Vc8ROWnokMXqT2rpKct4bSc86CT0mlP1d01X+tofaNQ3EGMW/yhjhsfeW1e7x4btGZU3NrOopK/PB5vaOueElo4KlDq1kfxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GjNndLZ7oDcnGiZ6yBpPbJ50crBgvrrghGer3OqGcHk=;
- b=k2HO+CoXZ7Gl2aW2hH/3ScRUmzTLrOnWWZVKLfksatrdZMCi9eYFZmpNcdDvUd40F4imaDb2h2dIY8DDhJ6PrEskQrdbg2AKuj819qBzLB+SB3BY2Z4UeE6Aegg0C9Ex7F4BklIUH9etb86cFh1RtVma+YsCOm/zeJU26mCCGnk5Yz3FC2kV8QRbU9CGLuFXzBl8FDQ/QosYaWgW6/RBfcYZnj8rAK9dBOUWn3I5dro56Uz/KUZU7Kfkx2DEbKqaaFtxq9o//WyZbr6roSsiFbetzhpcxNrFFmp8iRCZgwa8b/xc3WmZDLnjEZITEW9L3zzeaw7gSSllu0BmWcK16w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
- is 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=temperror action=none header.from=nvidia.com; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GjNndLZ7oDcnGiZ6yBpPbJ50crBgvrrghGer3OqGcHk=;
- b=jll7ZC1xWASlO4MWArN1IQqfPRKQBBnpc+Vw2NX8eRaiHXH/kihL8EsXQnVjeoAnr9c27QTzOEkQHzL+pujIVMswqVLIyJSCNI2iRi6XEbgTa8Db0ApLNH6DnXXOI8znyajf4DQdRTaCA73AtL1+INIgPv4Iaz4tjF3xPWDAmV0GG5uE2zI/51Ij9yhvyEyWzcU/oTsElwodpd/eiv5Gsx4kobXbb/WCf5nncxtK46P0P0MAwKnn1DOo5rhJcdRSR+CF3kR/tfTBu1qIeVICuI48U/VJ191cwW4QGbZmtTz1sA9giH1Q6wRlbQH0YQ+gtf6NI+u5+BIsoIr+afzycQ==
-Received: from BN0PR04CA0086.namprd04.prod.outlook.com (2603:10b6:408:ea::31)
- by PH0PR12MB5629.namprd12.prod.outlook.com (2603:10b6:510:141::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.14; Fri, 18 Feb
- 2022 12:18:03 +0000
-Received: from BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ea:cafe::96) by BN0PR04CA0086.outlook.office365.com
- (2603:10b6:408:ea::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
- Transport; Fri, 18 Feb 2022 12:18:03 +0000
-X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=temperror action=none header.from=nvidia.com;
-Received-SPF: TempError (protection.outlook.com: error in processing during
- lookup of nvidia.com: DNS Timeout)
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT046.mail.protection.outlook.com (10.13.177.127) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Fri, 18 Feb 2022 12:18:01 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 18 Feb
- 2022 12:17:58 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Fri, 18 Feb 2022
- 04:17:57 -0800
-Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server id 15.2.986.9 via Frontend Transport; Fri, 18 Feb
- 2022 04:17:55 -0800
-From:   Sameer Pujar <spujar@nvidia.com>
-To:     <krzysztof.kozlowski@canonical.com>, <thierry.reding@gmail.com>
-CC:     <jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
-Subject: [PATCH] memory: tegra: Add APE memory clients for Tegra234
-Date:   Fri, 18 Feb 2022 17:46:29 +0530
-Message-ID: <1645186589-25118-1-git-send-email-spujar@nvidia.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 18 Feb 2022 07:19:57 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BCE294FD1;
+        Fri, 18 Feb 2022 04:19:39 -0800 (PST)
+Received: from [IPV6:2a01:e0a:120:3210:b17a:7c93:c01d:b57a] (unknown [IPv6:2a01:e0a:120:3210:b17a:7c93:c01d:b57a])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 01A1C1F468BD;
+        Fri, 18 Feb 2022 12:19:36 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645186777;
+        bh=oQyevUz08WI95+K4g5qmVatyjEIjKI5BEw7lmuOeMdU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=SjDdw/8O/cO4zHE4UPCzx3HScQjbtplasdXTKfhbrfSDaaUBsySf1lrlDYIsbhiic
+         4ohoT9/78JGIJmuQgzWe4knsvmUrdtTTKSvoqz/jp6QnaVjj+y7s2qEIy4b/AFs5lG
+         TY7ElHUXOQRLvGGpurd7etduSAeZevTMxrxmb55JU8Jph6Ijakwyn+HlrzIP9dx3RN
+         JkxXrLB3+LBaJPjbuINc1xxRQsu2xCThtcfokjU9cGl4jIdKWMkTdxB0D01HjohuaD
+         Swmar36E5Obs4JkmrsdH7D5I7VrQbHZLgTZfwe5D5+fUFcZD65eDPKJ373QWYIPkwI
+         i4yAThCOVoiyg==
+Message-ID: <3973e1f8-665a-c2d1-d493-19f66d307b88@collabora.com>
+Date:   Fri, 18 Feb 2022 13:19:34 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d21ef22-4c14-4224-8a0d-08d9f2d8b54e
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5629:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR12MB56290EA36F4781A1C089AF9DA7379@PH0PR12MB5629.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OsjL/ZfmqdA+VAKp69HwEHI5xQqnwb7cvFHI2lMcTTf8g9ZkfNW8neMhlHB67UFpdScskcDdV3XX8uqrNFFIo3s0SrO2NBr6Q/Ouk5jvksTcSi8p4XN4vUY/+uY7A2+falIw40SWvFX91Ij6U/gv7yD0siFAt4exabFC3GDRSu9Jk5Rr5BUMLEL5xP/U7FcFCuuKzCI4B0VXibIiafB7iR5ePL9O9pspTTCUvsGoCSYfrYq992vmoEvEJGrvSkfuP9O6+8pvUbKMX4/cm4yfLnyOrsimu73fP0e7JQQX40f1XAkMhxnZl16ruGFR5vHZsl5xyO5rQB6uly25N7PbuGQQDhNhlMyWm2COZLdjKc1sSsuhFxy3B2WdfT3PU3wuvKTNHuHx52iwBfSEHj3xNA+vqi6BavCWkXzHl4aQksCLx7PbLLp1txrv4EXH2dJ614OLpeghQ3mfvN1oWK1n+GvH8pdrVXSbHgoCK/wfDXg1OjMukFK1ouKzXJCZ5aPgrKmATeSiQ3Zypzqk0wrl/zNRIWoGzH/BihLRru+X9Jt2FA6G8eQG9Jam47eFKvgfN+pYLaFvn8r90TyBmu0sWGymselpVz0sBBbLIOkC/NZNpPLPshIUh+IepZYyEcitQDzqxD0Bk9K76VWBajJ6wu+KJV6ihUN7rdZct+ryks6oj+8r+N8iwucL5z0Iezu7A19gTW/9GWoUKEKyrZRSuy+TQVM1BX3HvCbd/Lbgtbedc4AdNZM9vJ+ao42yT/JQgi5yWOh1GLGYaKCiXxi9iIVgnPNhVPXxA1jY1xfkl7g=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(40460700003)(63350400001)(47076005)(83380400001)(107886003)(5660300002)(86362001)(966005)(508600001)(6666004)(63370400001)(36756003)(36860700001)(2906002)(4326008)(336012)(426003)(356005)(186003)(70206006)(8676002)(81166007)(316002)(70586007)(54906003)(110136005)(26005)(2616005)(7696005)(82310400004)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 12:18:01.6441
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d21ef22-4c14-4224-8a0d-08d9f2d8b54e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT046.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5629
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC v2 5/8] media: uapi: Add fields needed for RKVDEC driver
+Content-Language: en-US
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>, mchehab@kernel.org,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, jonas@kwiboo.se, nicolas@ndufresne.ca
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk
+References: <20220215110103.241297-1-benjamin.gaignard@collabora.com>
+ <20220215110103.241297-6-benjamin.gaignard@collabora.com>
+ <b41ea0ec-b5c0-4ea5-9866-35a952c6a8b9@xs4all.nl>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <b41ea0ec-b5c0-4ea5-9866-35a952c6a8b9@xs4all.nl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the memory clients on Tegra234 which are needed for APE
-DMA to properly use the SMMU.
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
----
- Please note that this patch depends on the DT binding patches of series
- https://patchwork.kernel.org/project/alsa-devel/list/?series=609494&state=*.
- So please consider this patch once Thierry picks up DT binding patches and
- provides ACK on this.
+Le 18/02/2022 à 12:32, Hans Verkuil a écrit :
+> On 15/02/2022 12:01, Benjamin Gaignard wrote:
+>> RKVDEC driver requires additional fields to perform HEVC decoding.
+>> Even if the driver isn't mainlined yet WIP patches could be find here:
+>> https://github.com/LibreELEC/LibreELEC.tv/blob/master/projects/Rockchip/patches/linux/default/linux-2000-v4l2-wip-rkvdec-hevc.patch
+>>
+>> This patch only include the change in HEVC uAPI.
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>> ---
+>>   .../userspace-api/media/v4l/ext-ctrls-codec.rst  | 16 ++++++++++++++++
+>>   include/uapi/linux/v4l2-controls.h               |  5 +++++
+>>   2 files changed, 21 insertions(+)
+>>
+>> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>> index 4f3b3ba8319f..3296ac3b9fca 100644
+>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+>> @@ -2661,6 +2661,13 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>       :stub-columns: 0
+>>       :widths:       1 1 2
+>>   
+>> +    * - __u8
+>> +      - ``video_parameter_set_id``
+>> +      - Identifies the VPS for reference by other syntax elements.
+>> +    * - __u8
+>> +      - ``seq_parameter_set_id``
+>> +      - Provides an identifier for the SPS for reference by other syntax
+>> +        elements.
+>>       * - __u16
+>>         - ``pic_width_in_luma_samples``
+>>         -
+>> @@ -2800,6 +2807,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>       :stub-columns: 0
+>>       :widths:       1 1 2
+>>   
+>> +    * - __u8
+>> +      - ``pic_parameter_set_id``
+>> +      - Identifies the PPS for reference by other syntax elements.
+>>       * - __u8
+>>         - ``num_extra_slice_header_bits``
+>>         -
+>> @@ -3026,6 +3036,12 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>>       * - __u8
+>>         - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>>         - The list of L1 reference elements as indices in the DPB.
+>> +    * - __u16
+>> +      - ``short_term_ref_pic_set_size``
+>> +      -
+>> +    * - __u16
+>> +      - ``long_term_ref_pic_set_size``
+>> +      -
+>>       * - __u8
+>>         - ``padding``
+>>         - Applications and drivers must set this to zero.
+> Just to confirm: these additional fields are all from the H.265 spec, right?
+> They are not rkvdec specific.
 
- drivers/memory/tegra/tegra234.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+They are in H.265 spec section "7.4.3.2.2 Sequence parameter set range extension semantics":
+- num_short_term_ref_pic_sets specifies the number of st_ref_pic_set( ) syntax structures included in the SPS. The value
+of num_short_term_ref_pic_sets shall be in the range of 0 to 64, inclusive.
 
-diff --git a/drivers/memory/tegra/tegra234.c b/drivers/memory/tegra/tegra234.c
-index f7b24ba..1d19cb9 100644
---- a/drivers/memory/tegra/tegra234.c
-+++ b/drivers/memory/tegra/tegra234.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (C) 2021 NVIDIA CORPORATION.  All rights reserved.
-+ * Copyright (C) 2021-2022, NVIDIA CORPORATION.  All rights reserved.
-  */
- 
- #include <soc/tegra/mc.h>
-@@ -170,6 +170,26 @@ static const struct tegra_mc_client tegra234_mc_clients[] = {
- 				.security = 0x4b4,
- 			},
- 		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_APEDMAR,
-+		.name = "apedmar",
-+		.sid = TEGRA234_SID_APE,
-+		.regs = {
-+			.sid = {
-+				.override = 0x4f8,
-+				.security = 0x4fc,
-+			},
-+		},
-+	}, {
-+		.id = TEGRA234_MEMORY_CLIENT_APEDMAW,
-+		.name = "apedmaw",
-+		.sid = TEGRA234_SID_APE,
-+		.regs = {
-+			.sid = {
-+				.override = 0x500,
-+				.security = 0x504,
-+			},
-+		},
- 	},
- };
- 
--- 
-2.7.4
+- num_long_term_ref_pics_sps specifies the number of candidate long-term reference pictures that are specified in the
+SPS. The value of num_long_term_ref_pics_sps shall be in the range of 0 to 32, inclusive.
 
+I mention rkvdec because that it is the only driver to use they (as far I knows)
+
+Regards,
+Benjamin
+
+>
+> Regards,
+>
+> 	Hans
+>
+>> diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+>> index 0e0ec2c61b80..b1a3dc05f02f 100644
+>> --- a/include/uapi/linux/v4l2-controls.h
+>> +++ b/include/uapi/linux/v4l2-controls.h
+>> @@ -2341,6 +2341,8 @@ enum v4l2_stateless_hevc_start_code {
+>>   
+>>   struct v4l2_ctrl_hevc_sps {
+>>   	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
+>> +	__u8	video_parameter_set_id;
+>> +	__u8	seq_parameter_set_id;
+>>   	__u16	pic_width_in_luma_samples;
+>>   	__u16	pic_height_in_luma_samples;
+>>   	__u8	bit_depth_luma_minus8;
+>> @@ -2393,6 +2395,7 @@ struct v4l2_ctrl_hevc_sps {
+>>   
+>>   struct v4l2_ctrl_hevc_pps {
+>>   	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
+>> +	__u8	pic_parameter_set_id;
+>>   	__u8	num_extra_slice_header_bits;
+>>   	__u8	num_ref_idx_l0_default_active_minus1;
+>>   	__u8	num_ref_idx_l1_default_active_minus1;
+>> @@ -2487,6 +2490,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>>   	__u32	slice_segment_addr;
+>>   	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>>   	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>> +	__u16	short_term_ref_pic_set_size;
+>> +	__u16	long_term_ref_pic_set_size;
+>>   
+>>   	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
+>>   	struct v4l2_hevc_pred_weight_table pred_weight_table;
