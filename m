@@ -2,119 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0799EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbiBRNKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 08:10:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41416 "EHLO
+        id S235655AbiBRNKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 08:10:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiBRNKe (ORCPT
+        with ESMTP id S232732AbiBRNKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 08:10:34 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE163253BDE;
-        Fri, 18 Feb 2022 05:10:15 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7BBD11F37F;
-        Fri, 18 Feb 2022 13:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645189814;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JlFxuUX2jYEpN7LRjICgbNOHYKr0FMLJ/vNPXX2b/U=;
-        b=z4fVxXPuw0f6uc2eukxJR1Wew1zDHTNY7X7eEEgRuhUWUxeDZQ98fZptur359cHZrl6dl4
-        d8ZpONw5LmnWScpGPPyEgkBsnMtzhjdrnH3b87+E3cxFTRAQ+byIyP3NOu9EjaA+Ito5rY
-        cKKT2ZL+S30ol5XDgeUxkv8BETyBbR0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645189814;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1JlFxuUX2jYEpN7LRjICgbNOHYKr0FMLJ/vNPXX2b/U=;
-        b=cnjSx/5Gzt/joRIUQbkLAXJ2pgOS+AwnCVFi+95JtZugVJgSwsvNsXAYiyOm4cOkiubrIC
-        9448VWjM0cAyZPCA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 6896EA3B83;
-        Fri, 18 Feb 2022 13:10:14 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id CD392DA829; Fri, 18 Feb 2022 14:06:28 +0100 (CET)
-Date:   Fri, 18 Feb 2022 14:06:28 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] btrfs: Fix non-kernel-doc comment
-Message-ID: <20220218130628.GS12643@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220218101345.125518-1-jiapeng.chong@linux.alibaba.com>
+        Fri, 18 Feb 2022 08:10:38 -0500
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4903253BDE;
+        Fri, 18 Feb 2022 05:10:20 -0800 (PST)
+Received: by mail-wr1-f42.google.com with SMTP id u2so13374172wrw.1;
+        Fri, 18 Feb 2022 05:10:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AQkiJ8sW1OP2y4RdGzYTJIbJ9pKacy4Yi3FStIGv35A=;
+        b=oF4b87HmK163jWyYfRYRtGCoPDdJB5kZwYxJBUMDwRf8LMKh+SHOAOWpEEDAJK72fF
+         G81gdtdZ6Q5kPXmteqPQglbhJI50iK6S3iDd4+/OqFlSsOXBhhBaL0Utzk1BeeAUJrqP
+         zsGEOojdDTP1mNmyOe7A0V1MYunn3TrzSA2urFdctiAHlDSDwg6HUudb7xYV77yhgxVn
+         UFPK7eXIFMugiBn520AXy/V3PLPbr4bazVNbwgj9zVNZWvhF3J2LmGfaN7/tNWWypPsb
+         NHzOfc1jRPcWV0Aj6bI5+Q8LjfZQc3JLBHfomL3gT+/a69AeARR8C0iMpte2eB/hDv5N
+         D/gQ==
+X-Gm-Message-State: AOAM532cbDqS8+L4D7Q8Ugfw3FODWRGlUTPYlVPZV0EiBtVI5YAIQzx8
+        DmyHP88/2Dxnq1VRoQv+HCQ=
+X-Google-Smtp-Source: ABdhPJwXA/gJEI4kjedj5s+d7rWYoQff1MaSADKEA4Iyjn4IZAV0cwVD0g6T7JIHYZt5s6I3ruoS+Q==
+X-Received: by 2002:a5d:584f:0:b0:1e8:5697:e979 with SMTP id i15-20020a5d584f000000b001e85697e979mr6002036wrf.167.1645189819011;
+        Fri, 18 Feb 2022 05:10:19 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id z10sm4110316wmi.31.2022.02.18.05.10.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 05:10:18 -0800 (PST)
+Date:   Fri, 18 Feb 2022 13:10:17 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] drivers: hv: log when enabling crash_kexec_post_notifiers
+Message-ID: <20220218131017.cmzirxxo2msppgy4@liuwe-devbox-debian-v2>
+References: <20220215013735.358327-1-stephen.s.brennan@oracle.com>
+ <MWHPR21MB1593EAD0167AA9EC4139042AD7369@MWHPR21MB1593.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220218101345.125518-1-jiapeng.chong@linux.alibaba.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <MWHPR21MB1593EAD0167AA9EC4139042AD7369@MWHPR21MB1593.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 06:13:45PM +0800, Jiapeng Chong wrote:
-> Fixes the following W=1 kernel build warning:
+On Thu, Feb 17, 2022 at 04:44:13PM +0000, Michael Kelley (LINUX) wrote:
+> From: Stephen Brennan <stephen.s.brennan@oracle.com> Sent: Monday, February 14, 2022 5:38 PM
+> > 
+> > Recently I went down a rabbit hole looking at a race condition in
+> > panic() on a Hyper-V guest. I assumed, since it was missing from the
+> > command line, that crash_kexec_post_notifiers was disabled. Only after
+> > a rather long reproduction and analysis process did I learn that Hyper-V
+> > actually enables this setting unconditionally.
+> > 
+> > Users and debuggers alike would like to know when these things happen. I
+> > think it would be good to print a message to the kernel log when this
+> > happens, so that a grep for "crash_kexec_post_notifiers" shows relevant
+> > results.
 > 
-> fs/btrfs/ioctl.c:1789: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Entry point to file defragmentation.
+> I'm OK with adding this output line.  However, you have probably
+> seen the two other LKML threads [1] and [2] about reorganizing the
+> panic notifiers to clearly distinguish between notifiers that always run
+> vs. those controlled by "crash_kexec_post_notifiers".  If the changes
+> proposed in those threads are submitted and accepted, it is likely that
+> the kernel log message in this patch would become unnecessary.
+> But since we don't know when those proposed changes might come
+> to fruition, adding the message for now makes sense.
 > 
-> fs/btrfs/extent_map.c:390: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Add new extent map to the extent tree.
-> 
-> fs/btrfs/block-group.c:1743: warning: This comment starts with '/**',
-> but isn't a kernel-doc comment. Refer
-> Documentation/doc-guide/kernel-doc.rst
->  * Map a physical disk address to a list of logical addresses.
-> 
-> fs/btrfs/extent_io.c:4923: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Walk the list of dirty pages of the given address space and write all
->  * of them.
-> 
-> fs/btrfs/file-item.c:625: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Calculate checksums of the data contained inside a bio.
-> 
-> fs/btrfs/inode.c:3430: warning: This comment starts with '/**', but
-> isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Wait for flushing all delayed iputs
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  fs/btrfs/block-group.c | 2 +-
->  fs/btrfs/extent_io.c   | 2 +-
->  fs/btrfs/extent_map.c  | 2 +-
->  fs/btrfs/file-item.c   | 2 +-
->  fs/btrfs/inode.c       | 2 +-
->  fs/btrfs/ioctl.c       | 2 +-
->  6 files changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
-> index c22d287e020b..884002e510ec 100644
-> --- a/fs/btrfs/block-group.c
-> +++ b/fs/btrfs/block-group.c
-> @@ -1739,7 +1739,7 @@ static void set_avail_alloc_bits(struct btrfs_fs_info *fs_info, u64 flags)
->  	write_sequnlock(&fs_info->profiles_lock);
->  }
->  
-> -/**
-> +/*
->   * Map a physical disk address to a list of logical addresses
->   *
->   * @fs_info:       the filesystem
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 
-We'd actually like the kdoc script to check the argument list.
+Applied to hyperv-next. Thanks.
