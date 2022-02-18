@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27458C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBBDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236663AbiBRO7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:59:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52880 "EHLO
+        id S236908AbiBRPAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:00:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236681AbiBRO6v (ORCPT
+        with ESMTP id S236810AbiBRPAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 09:58:51 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C5E102F;
-        Fri, 18 Feb 2022 06:57:06 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21IEPv4h031154;
-        Fri, 18 Feb 2022 09:57:00 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e9fu17bws-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 09:57:00 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21IEuxna029574
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 18 Feb 2022 09:56:59 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Feb 2022 09:56:58 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 18 Feb 2022 09:56:58 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 18 Feb 2022 09:56:58 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21IEuneO031805;
-        Fri, 18 Feb 2022 09:56:52 -0500
-From:   Cristian Pop <cristian.pop@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
-Subject: [PATCH v5 1/2] dt-bindings: iio: frequency: Add ADMV4420 doc
-Date:   Fri, 18 Feb 2022 17:07:37 +0200
-Message-ID: <20220218150738.94735-1-cristian.pop@analog.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 18 Feb 2022 10:00:25 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9E7EAC9D;
+        Fri, 18 Feb 2022 06:59:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645196356; x=1676732356;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dvWZ47n0i84WPBOUsd+UoD28E/hVOOwEq0Yuclt9AKY=;
+  b=TuFOwg6Zpb93noGrQfMVsMZ9qYh6ckkFNf8NJD4KrGWmpCqeZv6tcKJ1
+   aIbc5xDBZmB6qx8NbvV1EqscVKrrIssqzY2k15Fej0A4TSiUzHiHnWIav
+   rysWvJnb+QDAYMDtCTPJih3T1/ssX15nL42pLCATzb4XRxqauFW1tlk3y
+   SPWOGJSY+iHigp3ehhyHFmDYo2WtmBRvfZ13muZJyBUS0JCJKVFKp5amn
+   ABWV7+vpn6sXDG85IjFyc1ktX07EUceYu5JQkETwXxF0vvnYRrcyweike
+   DAqJb7BxMiHmYhiFIAI6b50AQLuSGz3REbchPoAMu5o6e3xlAqF0hPnKB
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
+   d="scan'208";a="153582936"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 07:59:16 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 18 Feb 2022 07:59:15 -0700
+Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Feb 2022 07:59:12 -0700
+From:   Tudor Ambarus <tudor.ambarus@microchip.com>
+To:     <p.yadav@ti.com>, <michael@walle.cc>, <broonie@kernel.org>
+CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <nicolas.ferre@microchip.com>,
+        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>
+Subject: [PATCH 3/4] mtd: spi-nor: sfdp: Get the 8D-8D-8D byte order from BFPT
+Date:   Fri, 18 Feb 2022 16:58:59 +0200
+Message-ID: <20220218145900.1440045-4-tudor.ambarus@microchip.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
+References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 3mtlnP6pzlF2VtvbZyKt3jwjdMiAJDvS
-X-Proofpoint-GUID: 3mtlnP6pzlF2VtvbZyKt3jwjdMiAJDvS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_05,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0
- priorityscore=1501 clxscore=1015 spamscore=0 mlxlogscore=999
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180096
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the ADMV4420 K band downconverter.
+Parse BFPT in order to retrieve the byte order in 8D-8D-8D mode.
 
-Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 ---
-changes in v5:
- - Add spaces and fix prefix in commit subject
- - Rename node name: admv4420 -> mixer
- .../bindings/iio/frequency/adi,admv4420.yaml  | 55 +++++++++++++++++++
- 1 file changed, 55 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+ drivers/mtd/spi-nor/sfdp.c | 3 +++
+ drivers/mtd/spi-nor/sfdp.h | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-new file mode 100644
-index 000000000000..da7fe85ec92e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/frequency/adi,admv4420.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/mtd/spi-nor/sfdp.c b/drivers/mtd/spi-nor/sfdp.c
+index a5211543d30d..551edbb039f0 100644
+--- a/drivers/mtd/spi-nor/sfdp.c
++++ b/drivers/mtd/spi-nor/sfdp.c
+@@ -633,6 +633,9 @@ static int spi_nor_parse_bfpt(struct spi_nor *nor,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	if (bfpt.dwords[BFPT_DWORD(18)] & BFPT_DWORD18_BYTE_ORDER_SWAPPED)
++		nor->flags |= SNOR_F_DTR_BSWAP16;
 +
-+title: ADMV4420 K Band Downconverter
-+
-+maintainers:
-+  - Cristian Pop <cristian.pop@analog.com>
-+
-+description:
-+  The ADMV4420 is a highly integrated, double balanced, active
-+  mixer with an integrated fractional-N synthesizer, ideally suited
-+  for next generation K band satellite communications
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,admv4420
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 1000000
-+
-+  adi,lo-freq-khz:
-+    description: LO Frequency
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  adi,ref-ext-single-ended-en:
-+    description: External reference selected.
-+    type: boolean
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      mixer@0 {
-+        compatible = "adi,admv4420";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        adi,lo-freq-khz = <16750000>;
-+        adi,ref-ext-single-ended-en;
-+      };
-+    };
-+...
+ 	return spi_nor_post_bfpt_fixups(nor, bfpt_header, &bfpt);
+ }
+ 
+diff --git a/drivers/mtd/spi-nor/sfdp.h b/drivers/mtd/spi-nor/sfdp.h
+index bbf80d2990ab..9a834ea31c16 100644
+--- a/drivers/mtd/spi-nor/sfdp.h
++++ b/drivers/mtd/spi-nor/sfdp.h
+@@ -97,6 +97,7 @@ struct sfdp_bfpt {
+ #define BFPT_DWORD18_CMD_EXT_INV		(0x1UL << 29) /* Invert */
+ #define BFPT_DWORD18_CMD_EXT_RES		(0x2UL << 29) /* Reserved */
+ #define BFPT_DWORD18_CMD_EXT_16B		(0x3UL << 29) /* 16-bit opcode */
++#define BFPT_DWORD18_BYTE_ORDER_SWAPPED		BIT(31)
+ 
+ struct sfdp_parameter_header {
+ 	u8		id_lsb;
 -- 
-2.17.1
+2.25.1
 
