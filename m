@@ -2,119 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE635C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbiBRH4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 02:56:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39504 "EHLO
+        id S232218AbiBRH6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 02:58:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiBRH4T (ORCPT
+        with ESMTP id S229504AbiBRH6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 02:56:19 -0500
+        Fri, 18 Feb 2022 02:58:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A68C5597;
-        Thu, 17 Feb 2022 23:56:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74207151D09;
+        Thu, 17 Feb 2022 23:57:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADEB161149;
-        Fri, 18 Feb 2022 07:56:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E961C340E9;
-        Fri, 18 Feb 2022 07:56:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F49561028;
+        Fri, 18 Feb 2022 07:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0C1C340E9;
+        Fri, 18 Feb 2022 07:57:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645170962;
-        bh=JsBUt67lBl87g1fuiSB/RVaxBrwVBKkrB8bcypGwUbs=;
+        s=korg; t=1645171069;
+        bh=1RjXsiu3Z6SS4o/E9a4X65asxgr+t4tHtpZNXouQhc8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XjVsoi7Z/c+mYAKm2LjxR3hGvRBIU7XQJoO6tsa+cHUPWw30wEuaSNTYh+DEr7FHM
-         ZWb6zwn2JYPBg2Kbu1EGRMM9F2KIASyi/prYKPfl9J3pOSF4OUgUNFm5B34LPjRztj
-         +vyImsRb8HTKGQ5Nuj2bYg19qwl3sgp0q0WpEHlY=
-Date:   Fri, 18 Feb 2022 08:55:59 +0100
+        b=cPYS2jFabTvnkMbQC77iAOAB25vBb+nAZUhtDb3CuoffF3jriH6wQss6h9EX85pQt
+         AdTNny719PLHXh49AeUyXcgBkHcU3Db+BT5cZeC4PkA7qyrV/xx/LO0UpM1TWIHLNz
+         CMOETdfRnGlB5XnVlHZ8HL/JTXe6Ty4CG0gIJPj8=
+Date:   Fri, 18 Feb 2022 08:57:45 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 04/11] bus: platform,amba,fsl-mc,PCI: Add device DMA
- ownership management
-Message-ID: <Yg9RD3OHGl73Ag1P@kroah.com>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-5-baolu.lu@linux.intel.com>
+To:     Daehwan Jung <dh10.jung@samsung.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-usb@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: usb: gadget: function: add spinlock for rndis response list
+Message-ID: <Yg9ReVfKxHUPOTvZ@kroah.com>
+References: <CGME20220218053230epcas2p1c63c8b28e7448988727221e0265c64fc@epcas2p1.samsung.com>
+ <1645162195-54476-1-git-send-email-dh10.jung@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220218005521.172832-5-baolu.lu@linux.intel.com>
+In-Reply-To: <1645162195-54476-1-git-send-email-dh10.jung@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 08:55:14AM +0800, Lu Baolu wrote:
-> The devices on platform/amba/fsl-mc/PCI buses could be bound to drivers
-> with the device DMA managed by kernel drivers or user-space applications.
-> Unfortunately, multiple devices may be placed in the same IOMMU group
-> because they cannot be isolated from each other. The DMA on these devices
-> must either be entirely under kernel control or userspace control, never
-> a mixture. Otherwise the driver integrity is not guaranteed because they
-> could access each other through the peer-to-peer accesses which by-pass
-> the IOMMU protection.
+On Fri, Feb 18, 2022 at 02:29:55PM +0900, Daehwan Jung wrote:
+> There's no lock for rndis response list. It could cause list corruption
+> if two different list_add at the same time like below.
+> It's better to add in rndis_add_response / rndis_free_response
+> / rndis_get_next_response to prevent any race condition on response list.
 > 
-> This checks and sets the default DMA mode during driver binding, and
-> cleanups during driver unbinding. In the default mode, the device DMA is
-> managed by the device driver which handles DMA operations through the
-> kernel DMA APIs (see Documentation/core-api/dma-api.rst).
+> [  361.894299] [1:   irq/191-dwc3:16979] list_add corruption.
+> next->prev should be prev (ffffff80651764d0),
+> but was ffffff883dc36f80. (next=ffffff80651764d0).
 > 
-> For cases where the devices are assigned for userspace control through the
-> userspace driver framework(i.e. VFIO), the drivers(for example, vfio_pci/
-> vfio_platfrom etc.) may set a new flag (driver_managed_dma) to skip this
-> default setting in the assumption that the drivers know what they are
-> doing with the device DMA.
+> [  361.904380] [1:   irq/191-dwc3:16979] Call trace:
+> [  361.904391] [1:   irq/191-dwc3:16979]  __list_add_valid+0x74/0x90
+> [  361.904401] [1:   irq/191-dwc3:16979]  rndis_msg_parser+0x168/0x8c0
+> [  361.904409] [1:   irq/191-dwc3:16979]  rndis_command_complete+0x24/0x84
+> [  361.904417] [1:   irq/191-dwc3:16979]  usb_gadget_giveback_request+0x20/0xe4
+> [  361.904426] [1:   irq/191-dwc3:16979]  dwc3_gadget_giveback+0x44/0x60
+> [  361.904434] [1:   irq/191-dwc3:16979]  dwc3_ep0_complete_data+0x1e8/0x3a0
+> [  361.904442] [1:   irq/191-dwc3:16979]  dwc3_ep0_interrupt+0x29c/0x3dc
+> [  361.904450] [1:   irq/191-dwc3:16979]  dwc3_process_event_entry+0x78/0x6cc
+> [  361.904457] [1:   irq/191-dwc3:16979]  dwc3_process_event_buf+0xa0/0x1ec
+> [  361.904465] [1:   irq/191-dwc3:16979]  dwc3_thread_interrupt+0x34/0x5c
 > 
-> With the IOMMU layer knowing DMA ownership of each device, above problem
-> can be solved.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Stuart Yoder <stuyoder@gmail.com>
-> Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Fixes: f6281af9d62e ("usb: gadget: rndis: use list_for_each_entry_safe")
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 > ---
->  include/linux/amba/bus.h        |  8 ++++++++
->  include/linux/fsl/mc.h          |  8 ++++++++
->  include/linux/pci.h             |  8 ++++++++
->  include/linux/platform_device.h |  8 ++++++++
->  drivers/amba/bus.c              | 20 ++++++++++++++++++++
->  drivers/base/platform.c         | 20 ++++++++++++++++++++
->  drivers/bus/fsl-mc/fsl-mc-bus.c | 26 ++++++++++++++++++++++++--
->  drivers/pci/pci-driver.c        | 21 +++++++++++++++++++++
->  8 files changed, 117 insertions(+), 2 deletions(-)
+>  drivers/usb/gadget/function/rndis.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
+> index b7ccf1803656..b4d58324e2d2 100644
+> --- a/drivers/usb/gadget/function/rndis.c
+> +++ b/drivers/usb/gadget/function/rndis.c
+> @@ -1011,16 +1011,21 @@ void rndis_add_hdr(struct sk_buff *skb)
+>  }
+>  EXPORT_SYMBOL_GPL(rndis_add_hdr);
+>  
+> +/* add spinlock to prevent race condition for rndis response list */
+> +static DEFINE_SPINLOCK(resp_lock);
 
-For the platform.c stuff:
+Shouldn't this be one lock per rndis_params structure, and not a global
+one for the whole driver?
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-
-thanks for renaming this.
+thanks,
 
 greg k-h
