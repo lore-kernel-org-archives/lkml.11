@@ -2,189 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 23:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E66C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 23:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237131AbiBRXLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 18:11:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42840 "EHLO
+        id S238822AbiBRXXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 18:23:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232578AbiBRXLL (ORCPT
+        with ESMTP id S232249AbiBRXXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 18:11:11 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FB760CE2
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 15:10:54 -0800 (PST)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21IKfU7Y006076
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 15:10:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=tpyvDuSepAatgPa0lVT29m6IEHyGw/jgSskFogFZZeQ=;
- b=ZGano73MfLEOQAJUzrMirhxS6d5PDrHkLJbRIauYEqf766HPRUluwP81L9/oa91viRx4
- 0Z2v42hZtRWqruXC4bjObQHKfm1uWNFVyfpzxDhSXfHsBF9V/vrgfy6gy6iQYpxnQXUc
- wSowRSkHke1oknCnmYNv5fXfJWwSIDzG1YA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ea5cae1xp-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 15:10:53 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Feb 2022 15:10:53 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Glop189Lhb1Uak0mmcSZZb0ulUqK7DbquQzeu2hVy1yBunNvQDmgbB/5QkV8QTMWxKuqrut7J5IipBUi7shonaW4ibyvG00K2xoMDWdoG78fvxiE6FMwFgouVjTMyCFOQhxHe8L5GJdfUy7JNcSDsF5DQWkcKPDuYUuhy/SMitCrpxMvO8SUqe4JvaMGMSSMD+XfC4akeEiYAPSRJz4VUy7uMsv3yfS4JOWSVtC7j/d39eu5EpLElM/WrGhH4AQiV5fraAx9wU6sDlP34mpaEOyHuIxQK6wTplFep88Yvo6MeLsQbSNsQ0Mxo70hlRS76rTUI/D1QFzdgakP+AJX6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tpyvDuSepAatgPa0lVT29m6IEHyGw/jgSskFogFZZeQ=;
- b=B39FPZJGx0/xN3JAvJEAB5Yyy4FJqDnUriwlo+orjDx4yoj9DLInK4mp9P7RUsVU7TvAMXi9iXZSPE3jlCjTtyE8TZuoZgKAMza7WcAsF1YnQyLtWZEobgkDTa3x58M8eh3E2ES6XJR3hV3EVLgqOkS4zP2pwL/CRe99Ebk4qQA2hSkMu0bUQLGo7cgWPT4OyyvoopxZqMpP90Q/RtRkLjR5lU2+qCbKAIMn2+F6Dq32nXkzkktiysz/nLijZIzcoly1vK6YA2JDhxNQpbZ7+se23b7E4A8iOYWrqdxoF8/VyTq7VdX2qHF427KFZnSUkSYrV6yzYd2Q7gNlKGDQvA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from BY5PR15MB3667.namprd15.prod.outlook.com (2603:10b6:a03:1f9::18)
- by PH0PR15MB4229.namprd15.prod.outlook.com (2603:10b6:510:1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Fri, 18 Feb
- 2022 23:10:51 +0000
-Received: from BY5PR15MB3667.namprd15.prod.outlook.com
- ([fe80::cfb:a2:e4e9:be55]) by BY5PR15MB3667.namprd15.prod.outlook.com
- ([fe80::cfb:a2:e4e9:be55%3]) with mapi id 15.20.4995.020; Fri, 18 Feb 2022
- 23:10:51 +0000
-From:   Nick Terrell <terrelln@fb.com>
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: v5.17-rc3 compile failure on aarch64
-Thread-Topic: v5.17-rc3 compile failure on aarch64
-Thread-Index: AQHYI9msiKPjLIK4aEiPohfL7+V0rqyZ8dWA
-Date:   Fri, 18 Feb 2022 23:10:51 +0000
-Message-ID: <F85853B6-A81C-4AD9-972C-747CAD6391B8@fb.com>
-References: <85bfe02c-9432-c5b0-04e0-8096adf37b93@gmx.com>
-In-Reply-To: <85bfe02c-9432-c5b0-04e0-8096adf37b93@gmx.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 74eefb59-335d-40cf-5e25-08d9f333e848
-x-ms-traffictypediagnostic: PH0PR15MB4229:EE_
-x-microsoft-antispam-prvs: <PH0PR15MB42291F240BB331E1D9F7A5AFAB379@PH0PR15MB4229.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:2733;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bIHCeKFrnfR5jNqYj3EBLf/ORN+Jlq7ZrqLF/6K4dPJR7A1R8JzLpJa42m9q2YsRcACq0fJ32c0IRehimhAnB4KgP0S0tkbzZZ0dmQdqQt54Wq8IljZmqRlcQiWhgda1uKC3RTe5MPXdJJZ8rHwhMisee6NDEYtnoyuUMl6gmjgZfOrQ2HW0chYGYSp9ehO3xwAkso+c/Tx+5udITt6GmSt4oWGVOBmvFBBEvUkTu8gLvCkI+s8xXvIc9g7lpDfaYx4z+W6Po79IpmlQpIc8v3Es6+NDzHBcUsPjFAMCCS237bniAHZazQ28bxpAXYVP87W8t5ZVY4WcAcYS2rDweEfUOk7Ahd98ymmm8bQ0mWjRZYYQWRfBEwK9eveiiXNvmSJWusS7h7imKqtXRj+Hzdc31L5UGUtpLiFLaPnpXOWxj5efehV/MbpxQb+a5WYDu9gV5jYMLPBy2gszMFllYZjsoKiePw0t8GrvS/Izomv/K8a0NmQ1qFZJesMxlnq9k/M8TOCS6edrwN2XR4gHhnkv7UcDPvLBtx/BYfj60ckFA8y2Y3sISVb9GAJv+1v/wfZxI1e5omcpfdRAywvyfeVA0pQjkzgmreIZVRWOs/2MCm6tIiCOI/LFUHgojbo5aFKuc9aujB0BdEeXazCZzcgJIDuxto1IW8SpGIQfh+WWzXEn+iUat1uTD/gmcqhJisYOxyuHvvHgjl4Jw5kdT9qXgRUXgQ7RNrvDDcfcXPbHHs/URMEvCI+X1vz7IOWJ+2xPjVO2Wds++KtEpTtAlrDckYFLEspoNoQzf4s3b5mY09tjFtvQ58QZEX4yptSXp0ANMB18+9cu4oLUP8bwR9YL5SrSt1W1nbh4VgGYK+s=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3667.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(966005)(36756003)(38070700005)(38100700002)(53546011)(316002)(6506007)(71200400001)(508600001)(186003)(2616005)(6486002)(2906002)(6916009)(8936002)(33656002)(83380400001)(4326008)(5660300002)(66946007)(91956017)(66476007)(76116006)(66556008)(66446008)(64756008)(122000001)(8676002)(86362001)(6512007)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aa1M51tFGqcAlqnOwsA5OXxp8E0fzrNnT7lpklSfayHdDw4aeTr13gEObnmY?=
- =?us-ascii?Q?X4Pc/qS2URLevW3MF1hlFz2BAiMg6IysEbqdiEXYm0J0pS8YW4xIB20AA4kR?=
- =?us-ascii?Q?SwUwyiWmhEVSdGfnN94/bNnsEXNrl2D6Ark6ehJwXqqM5mX9u+r8/ZzTpbbU?=
- =?us-ascii?Q?xiWRxjo924MHSpxTlK8trGgCIy8/sn7zZKfqTk9opcxHRlK8EFcUlpyV1scM?=
- =?us-ascii?Q?0HNGb3ETQU4R1P91ZJOW83CcTaKn9ndLr+tFMoycIa4eSD1TOOPnTeoLBS3/?=
- =?us-ascii?Q?Dj633wQ5O0CYW4hPVjvZWvTYlY/mm3Fq6mJpmdv4Z7SVVLLwt79PQbCh2+Xz?=
- =?us-ascii?Q?20ukX9ntxp6hHgTUXfixfZ53f22DLrPeu+grKW5K7y8XBw24rg+k/QMDe9jN?=
- =?us-ascii?Q?hD8YcJpXtGN4glLu644pNckKGS0k/atgNuCyMf/3XPmzVgoLkrkLhv5MjPNw?=
- =?us-ascii?Q?hoL9bxAVmh4hNZGd2uRebao/RIbv4N1gR3HgVQYjchcACUs2KpHK9KNZR8Sr?=
- =?us-ascii?Q?YRzeE5hLUObmypec7D53te24KQm25ubn8njxV93ZVy1zi/p3epqO17x08LfH?=
- =?us-ascii?Q?PFyQjwAFmZgyqUSUZlvOP5OvraBcjZ1mk0/eahV+ZBRpUiiuJJGtrFLqfdba?=
- =?us-ascii?Q?VQV7CoOwJkVme/Jeo6gcA+SXHHSyJZLJNUnMlu22Gn3DviB7aaJiq8TDrKr/?=
- =?us-ascii?Q?8ax5fGICebwD7+es7BKP6YUQSnPD6Ebku0F0uV6W7BY3YqgPRLFeu6vrI6KF?=
- =?us-ascii?Q?A1ldVLf/kM/n2Q7Gv7ptxybHz5cmJlw9+5yNfF9w2nZd1XpbV4RDoDAY9Xcb?=
- =?us-ascii?Q?3T0JXLiEgK49atQWbBNdPjqan25hJhz0yssTy+V59gTJ1aN2QBQb70hOy03t?=
- =?us-ascii?Q?gideL1TOLjw+ZPMhPM3DYrmDltkxs+jqcmGTE81BBTGNCBcf60XM3YQMwwpg?=
- =?us-ascii?Q?v+405QifkC6br7KnxZxpT0ZL7gRKumzv7+aAJ+BN5BlELIGR/PC0c+gspDwX?=
- =?us-ascii?Q?Q+azbg7rOx+5Q6YUZitUJ2NAYHybZRFYL1nGHyLhy/Z6xKRSPVQuzzgDAUEl?=
- =?us-ascii?Q?UhHBcYWthLDynzBv7gQKTH+4pa2dvKWB9+tiRKJay7FYINnUYWX67thiepcJ?=
- =?us-ascii?Q?O8/ZVBbuOKxvJhlwVVD4/K6sAvd4XFVI7TmPoqw0P94N8ubrWFZVC5xLuqjR?=
- =?us-ascii?Q?bRNbPm2/SU6/2xZ5ApTKX/zdChJGXlI7tQm1sGZlt3KglaTNs5Zie3oB9CkT?=
- =?us-ascii?Q?lsgv/kPBMU8dU/ucSMN+wgXA+f6FIEoi0dAMC7J8faFPOnVnSl4QFxWJVXp8?=
- =?us-ascii?Q?wDkjsH1/PUejj2pZQjEZu7l18JLxFKq1aT25NIEd4zaTi8+dUm0z3NnEEPuy?=
- =?us-ascii?Q?UnTL/Db5k0qabeJW9uBNRXBVM6zKf24CVT2/fIaKa3rJARgVAw78YGa1S+DI?=
- =?us-ascii?Q?K6kPvcNQ4tYynNNpA0gFkzhkmHWG/ombfId9/GciVms3+g6N8tJHb9eHMFE+?=
- =?us-ascii?Q?qTD8s6r/nM7piwvHA7HfZ6wzW+YpPECdQtzwBUn4IeSjJeQ5tvYEZNjPvWTO?=
- =?us-ascii?Q?cakM9nhO70jFDPnIYbjhTzDXyv5Q50dtdo11bE7NPufx3t1AQhu8XE7331vV?=
- =?us-ascii?Q?cQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <24011BDB68AF6A4AA43E9F467B1BA287@namprd15.prod.outlook.com>
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3667.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 74eefb59-335d-40cf-5e25-08d9f333e848
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2022 23:10:51.4480
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Kh3KFWAl8/Sl+yQPUtYNfxJYp99mdjBLyGSPKottgrHv+tBNL7xx3u2J258iJD2B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR15MB4229
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: Po_7wVPpv4JCeaeqyw5_wWriCx9uDIV4
-X-Proofpoint-GUID: Po_7wVPpv4JCeaeqyw5_wWriCx9uDIV4
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 18 Feb 2022 18:23:43 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4707E1A58F9
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 15:23:25 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id f6-20020a056602070600b0063db6e9ab59so5393229iox.2
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 15:23:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=v37WmmuQxHLCms18PJ5QMpDsXXstoYyBMaC9ie0LWzM=;
+        b=zzwQvwGEEVkpK9fYDZiWrnVeW7dPFqr/cnNDq3GSrix9QA8EsS1VG7SDSb1Y2F06Dy
+         gglLL7OP6hAYCiMZEX/wYlWQ/JkRU6T1WcJw5UCN7mK8hjXuQj/XZnB0eDq03kn0sj02
+         pAwccqjWH3yTK0dbKzAxIF1YTtoIq7Pd8ynsLD3llYVm6FFGeejG5tQS26YwKQt6Vu2k
+         N9nLRE4tStnJWk7yGUxzM/irYyOdPsIcItos0PLxXjshCynKAdnGPQIZrF6P5g+i+Pfp
+         wEmY6MYDUhLCLOW/KuwY3bf2lpcNuogdEGjZ8Rrt1nKTLFbQGWTBR2P9vr62nSmHhdNA
+         s/rQ==
+X-Gm-Message-State: AOAM532lupcrtIHCR6Ol+pE/MRMPr+RBGv4x0TWvfmqp2oS5MKiiclDL
+        LMCk4CvkRNUabaK8cVjMPf2F4jiEsWSPh/OdiBWoyWOUbexZ
+X-Google-Smtp-Source: ABdhPJzyU4fEIQbGqzKUTj7EZSZhDW/DaciWhPnkDlkDZorGahMSAhfCpwmV1Shg575lNlsYPyiBw7jhwJxunjS0hfFG5iBiaCJv
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_10,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 priorityscore=1501
- mlxlogscore=803 lowpriorityscore=0 impostorscore=0 suspectscore=0
- malwarescore=0 phishscore=0 adultscore=0 mlxscore=0 spamscore=0
- clxscore=1011 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180142
-X-FB-Internal: deliver
+X-Received: by 2002:a05:6e02:15ca:b0:2bf:ad58:4a6d with SMTP id
+ q10-20020a056e0215ca00b002bfad584a6dmr7111912ilu.13.1645226604587; Fri, 18
+ Feb 2022 15:23:24 -0800 (PST)
+Date:   Fri, 18 Feb 2022 15:23:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000057702a05d8532b18@google.com>
+Subject: [syzbot] INFO: task hung in vhost_work_dev_flush
+From:   syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>
+To:     jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-> On Feb 17, 2022, at 12:37 AM, Qu Wenruo <quwenruo.btrfs@gmx.com> wrote:
-> 
-> Hi,
-> 
-> Recently I found v5.17-rc3 kernel failed to compile on my aarch64 setup,
-> it failed with the following error messages:
-> 
->  AR      lib/zstd/built-in.a
->  LD [M]  lib/zstd/zstd_compress.o
-> ld: __patchable_function_entries has both ordered
-> [`__patchable_function_entries' in lib/zstd/common/entropy_common.o] and
-> unordered [`__patchable_function_entries' in
-> lib/zstd/common/error_private.o] sections
-> ld: final link failed: bad value
-> make[2]: *** [scripts/Makefile.build:484: lib/zstd/zstd_compress.o] Error 1
-> make[1]: *** [scripts/Makefile.build:550: lib/zstd] Error 2
-> make: *** [Makefile:1831: lib] Error 2
-> make: *** Waiting for unfinished jobs....
+syzbot found the following issue on:
 
-I'm not sure what's going on, but maybe I can provide a hint to people
-more knowledgable about the situation.
+HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=163caa3c700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+dashboard link: https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=108514a4700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ca671c700000
 
-These objects are included in both the `zstd_compress` and
-`zstd_decompress` modules [0]. That may be relevant. Back in 2018
-we used to avoid having duplicate objects in different modules,
-but then kbuild added support for it, and it was cleaned up in commit
-dc35da16 [1].
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
 
-It also may be irrelevant. Zstd was updated in the v5.16 kernel, but hasn't
-changed in the v5.17 kernel.
+INFO: task syz-executor117:3632 blocked for more than 143 seconds.
+      Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor117 state:D stack:27512 pid: 3632 ppid:  3631 flags:0x00004002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:4986 [inline]
+ __schedule+0xab2/0x4db0 kernel/sched/core.c:6295
+ schedule+0xd2/0x260 kernel/sched/core.c:6368
+ schedule_timeout+0x1db/0x2a0 kernel/time/timer.c:1857
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x174/0x270 kernel/sched/completion.c:138
+ vhost_work_dev_flush.part.0+0xbb/0xf0 drivers/vhost/vhost.c:243
+ vhost_work_dev_flush drivers/vhost/vhost.c:238 [inline]
+ vhost_poll_flush+0x5e/0x80 drivers/vhost/vhost.c:252
+ vhost_vsock_flush drivers/vhost/vsock.c:710 [inline]
+ vhost_vsock_dev_release+0x1be/0x4b0 drivers/vhost/vsock.c:757
+ __fput+0x286/0x9f0 fs/file_table.c:311
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xb29/0x2a30 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ __do_sys_exit_group kernel/exit.c:946 [inline]
+ __se_sys_exit_group kernel/exit.c:944 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fbf04b83b89
+RSP: 002b:00007fff5bc9ca18 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007fbf04bf8330 RCX: 00007fbf04b83b89
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 00007fff5bc9cc08
+R10: 00007fff5bc9cc08 R11: 0000000000000246 R12: 00007fbf04bf8330
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
 
-Best,
-Nick Terrell
+Showing all locks held in the system:
+1 lock held by khungtaskd/26:
+ #0: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6460
+2 locks held by getty/3275:
+ #0: ffff88807f0db098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
+ #1: ffffc90002b662e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2077
+1 lock held by vhost-3632/3633:
 
-[0] https://github.com/torvalds/linux/blob/master/lib/zstd/Makefile
-[1] https://github.com/torvalds/linux/commit/dc35da16a2e23db04822f0129cd5b28b7b0e72b4
+=============================================
 
-> But the same code base compiles fine inside my x86_64 VM.
-> 
-> The aarch64 environment is an VM running on RockPro64 or RPI CM4.
-> 
-> With a little older gcc (v10.2.0) and bintuils (2.35).
-> 
-> While for my x86_64 VM it has newer gcc (11.1.0) and binutiles (2.36.1)
-> 
-> I'm super happy to upgrade my tool chain for my aarch64 VM, but I'm a
-> little concerned if there is something worthy fixed.
-> 
-> Thanks,
-> Qu
+NMI backtrace for cpu 0
+CPU: 0 PID: 26 Comm: khungtaskd Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
+ nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:212 [inline]
+ watchdog+0xc1d/0xf50 kernel/hung_task.c:369
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 3633 Comm: vhost-3632 Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
+RIP: 0010:__sanitizer_cov_trace_pc+0xd/0x60 kernel/kcov.c:200
+Code: 00 00 e9 c6 41 66 02 66 0f 1f 44 00 00 48 8b be b0 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 65 8b 05 29 f7 89 7e 89 c1 48 8b 34 24 <81> e1 00 01 00 00 65 48 8b 14 25 00 70 02 00 a9 00 01 ff 00 74 0e
+RSP: 0018:ffffc90000cd7c78 EFLAGS: 00000246
+RAX: 0000000080000000 RBX: ffff888079ca8a80 RCX: 0000000080000000
+RDX: 0000000000000000 RSI: ffffffff86d3f8fb RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffffc90000cd7c77
+R10: ffffffff86d3f8ed R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffdf716a3b8 CR3: 00000000235b6000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+ vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+ vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+ vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	00 00                	add    %al,(%rax)
+   2:	e9 c6 41 66 02       	jmpq   0x26641cd
+   7:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   d:	48 8b be b0 01 00 00 	mov    0x1b0(%rsi),%rdi
+  14:	e8 b4 ff ff ff       	callq  0xffffffcd
+  19:	31 c0                	xor    %eax,%eax
+  1b:	c3                   	retq
+  1c:	90                   	nop
+  1d:	65 8b 05 29 f7 89 7e 	mov    %gs:0x7e89f729(%rip),%eax        # 0x7e89f74d
+  24:	89 c1                	mov    %eax,%ecx
+  26:	48 8b 34 24          	mov    (%rsp),%rsi
+* 2a:	81 e1 00 01 00 00    	and    $0x100,%ecx <-- trapping instruction
+  30:	65 48 8b 14 25 00 70 	mov    %gs:0x27000,%rdx
+  37:	02 00
+  39:	a9 00 01 ff 00       	test   $0xff0100,%eax
+  3e:	74 0e                	je     0x4e
 
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
