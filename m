@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7455C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233076AbiBRJC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:02:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58088 "EHLO
+        id S233136AbiBRJDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:03:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233064AbiBRJCa (ORCPT
+        with ESMTP id S233065AbiBRJCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:02:30 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697BC55BEC
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:02:10 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K0QZJ13J1z1FD9b;
-        Fri, 18 Feb 2022 16:57:44 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5832255BD6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:02:09 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K0QdS1kYQz9spQ;
+        Fri, 18 Feb 2022 17:00:28 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Feb
@@ -26,12 +26,10 @@ From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH v3 2/8] mm/memory-failure.c: catch unexpected -EFAULT from vma_address()
-Date:   Fri, 18 Feb 2022 17:01:12 +0800
-Message-ID: <20220218090118.1105-3-linmiaohe@huawei.com>
+Subject: [PATCH v3 0/8] A few cleanup and fixup patches for memory failure
+Date:   Fri, 18 Feb 2022 17:01:10 +0800
+Message-ID: <20220218090118.1105-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220218090118.1105-1-linmiaohe@huawei.com>
-References: <20220218090118.1105-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,30 +41,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's unexpected to walk the page table when vma_address() return -EFAULT.
-But dev_pagemap_mapping_shift() is called only when vma associated to the
-error page is found already in collect_procs_{file,anon}, so vma_address()
-should not return -EFAULT except with some bug, as Naoya pointed out. We
-can use VM_BUG_ON_VMA() to catch this bug here.
+Hi,
+This series contains a few patches to simplify the code logic, remove
+unneeded variable and remove obsolete comment. Also we fix race changing
+page more robustly in memory_failure. More details can be found in the
+respective changelogs. Thanks!
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 ---
- mm/memory-failure.c | 1 +
- 1 file changed, 1 insertion(+)
+v2->v3:
+  limit the retry chance per Naoya.
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index b3ff7e99a421..eaa241058401 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -315,6 +315,7 @@ static unsigned long dev_pagemap_mapping_shift(struct page *page,
- 	pmd_t *pmd;
- 	pte_t *pte;
- 
-+	VM_BUG_ON_VMA(address == -EFAULT, vma);
- 	pgd = pgd_offset(vma->vm_mm, address);
- 	if (!pgd_present(*pgd))
- 		return 0;
+v1->v2:
+  Collect Acked-by tag and fix review comment.
+  Thanks Naoya.
+---
+
+Miaohe Lin (8):
+  mm/memory-failure.c: minor clean up for memory_failure_dev_pagemap
+  mm/memory-failure.c: catch unexpected -EFAULT from vma_address()
+  mm/memory-failure.c: rework the signaling logic in kill_proc
+  mm/memory-failure.c: fix race with changing page more robustly
+  mm/memory-failure.c: remove PageSlab check in hwpoison_filter_dev
+  mm/memory-failure.c: rework the try_to_unmap logic in
+    hwpoison_user_mappings()
+  mm/memory-failure.c: remove obsolete comment in __soft_offline_page
+  mm/memory-failure.c: remove unnecessary PageTransTail check
+
+ mm/memory-failure.c | 87 +++++++++++++++++++++------------------------
+ 1 file changed, 40 insertions(+), 47 deletions(-)
+
 -- 
 2.23.0
 
