@@ -2,191 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F723C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 20:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8773BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 20:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238964AbiBRUJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 15:09:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56504 "EHLO
+        id S230190AbiBRUJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 15:09:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238576AbiBRUI7 (ORCPT
+        with ESMTP id S235188AbiBRUJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 15:08:59 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1BC24B2A3;
-        Fri, 18 Feb 2022 12:08:39 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IK8DAX001416;
-        Fri, 18 Feb 2022 20:08:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=8WtNdrz4XvVj3I7dCRdDhnQLA9IgoRhPdH7j9n1eVRI=;
- b=J6HT/HzgyOpMoVTreAAeIfag1EGdjiPgFS8PR8sM+UalIc1CpGkdKlTR4d+EgrLJnGgp
- cXXGqUlOPMfUXfNYVG68dAM+0rsLlsmvuhFtX4a7I/2haPs4+M2+/bTo3DFOvx1qvRB4
- VogJHsqQW9xpWkyRhZGFmZ42vRqfxV+c4rJC1UcE3R6nzC0vCi40zPVeFtprcEbW0KWQ
- aY7UajSrf5y1G77ieduZWOCIMYci7Y7eE2IYf1uFISY3P7BWrrrKlLqYoFLTl+pUW/XZ
- UvmmW7LS6SZhn7D0YhEH08W0Almzt5oDCzZ+6PY7QRM03xdlcndCkkJ81w61Nm9+3dz5 PA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eaj2505es-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 20:08:21 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21IK8Lgl002212;
-        Fri, 18 Feb 2022 20:08:21 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eaj2505ck-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 20:08:21 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IK2ZV8017792;
-        Fri, 18 Feb 2022 20:04:27 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03fra.de.ibm.com with ESMTP id 3e64hasjd0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 20:04:26 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IK4Lvm43844020
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 20:04:21 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1BA06A405B;
-        Fri, 18 Feb 2022 20:04:21 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5F75A4054;
-        Fri, 18 Feb 2022 20:04:18 +0000 (GMT)
-Received: from sig-9-65-86-101.ibm.com (unknown [9.65.86.101])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 18 Feb 2022 20:04:18 +0000 (GMT)
-Message-ID: <15ff4fc5b4386e588c4314ad9712b7044c0bb8f8.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 16/27] ima: Implement ima_free_policy_rules() for
- freeing of an ima_namespace
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Fri, 18 Feb 2022 15:04:18 -0500
-In-Reply-To: <55c0c300-3fe4-f610-0b78-adc5593a70a0@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-17-stefanb@linux.ibm.com>
-         <ce1fbc8baf5359b698bf4420e602cc3a5a2a1f44.camel@linux.ibm.com>
-         <55c0c300-3fe4-f610-0b78-adc5593a70a0@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hDxCtjCREBgQSbGtvqlRR1EAgOitfuid
-X-Proofpoint-GUID: 138CzvqWyVFF4yLwO7JbbyZGW1JDnJIO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_09,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
- phishscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0 adultscore=0
- spamscore=0 impostorscore=0 priorityscore=1501 malwarescore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180119
+        Fri, 18 Feb 2022 15:09:18 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE7324B2A5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 12:09:00 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id d27so16328553wrc.6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 12:09:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=KK4LIfRjQ7XdJ65sijjMTA8KL2jena4OMb/vo+SZgDA=;
+        b=O4lADO++B26IWMN04OttFj1+9ZaHx1e8RuhuGH3Z0GIc9ZqRqR01W6LYQfqUvFIBK9
+         unVe+v8x2ugV8R88ZNSqd2yntgbwm8NfRHFoovqACbIAmJiYAdp/d/YSXVde1vGEqeHj
+         BkJttgPyNSwWbdFFNx5z0VWbIRrite7ZeFVqU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KK4LIfRjQ7XdJ65sijjMTA8KL2jena4OMb/vo+SZgDA=;
+        b=WImId9w9XIy81aX3WvqiD8+Hx3fC92ubDH/Z12RRL5XZMrnkeDVUqC0e1pQ9H/2zrK
+         hpgKepW/jCDM7oLNSapFLJOJyFiMBYt2HXJetLU1WCW3IBjVCh+kJfa0DIcwXOc2cJFi
+         UBMmx9Lprat/xHw9vChIgUp/sH1xZ5VXwj+m6TdeXzsXlqzni0SJd1tbCZ3GTsRwzoDw
+         xMOdWhYzgAUiDiwZsHPzUOojCjDAHHNMuXZDx/RZcTAgV5gF8sN7SEVMYy0q32FTwvxo
+         OU8EPmSpOv6PZwMIKzEomvrX2D2QMITrkWAd6xMAUP/sq2wkFfRpl22qTAHmPTHl6Tmd
+         /Zdw==
+X-Gm-Message-State: AOAM5331XAkAq+ERYEOuMVDcV1gZaO4aJoJgpnkFbwPKmuP+KnvlDiHZ
+        mPLRX1oODhFAofpdXh6DQ60FUQ==
+X-Google-Smtp-Source: ABdhPJw6U7Nqb50Dj2I+lZOKNtWXDcg5O5UVOnx7P0rw6O19tARBHzQMAjTAaQPIa71MtF//2rybsg==
+X-Received: by 2002:a5d:47ce:0:b0:1e8:88b7:446a with SMTP id o14-20020a5d47ce000000b001e888b7446amr7305907wrc.459.1645214938824;
+        Fri, 18 Feb 2022 12:08:58 -0800 (PST)
+Received: from dy890235-Precision-Tower-3620.ric.broadcom.net ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id g8sm32904815wrd.9.2022.02.18.12.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 12:08:57 -0800 (PST)
+From:   Desmond Yan <desmond.yan@broadcom.com>
+To:     Scott Branden <scott.branden@broadcom.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org,
+        Desmond Yan <desmond.yan@broadcom.com>
+Subject: [PATCH v1 1/1] misc: bcm-vk: add kconfig for supporting viper chip
+Date:   Fri, 18 Feb 2022 12:08:11 -0800
+Message-Id: <20220218200811.17136-1-desmond.yan@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000007c8bc05d850747f"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-18 at 14:38 -0500, Stefan Berger wrote:
-> On 2/18/22 12:09, Mimi Zohar wrote:
-> > On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
-> >> Implement ima_free_policy_rules() that is needed when an ima_namespace
-> >> is freed.
+--00000000000007c8bc05d850747f
 
-ima_free_policy_rules() isn't free all the rules, just the custom
-policy rules.  I would update the patch description as:
+Add kconfig for enabling bcm-vk driver to support the viper chip.
+Default is off and only explicitly configured that the viper chip
+would be discovered by the driver and loaded for usage.
 
-Implement ima_free_policy_rules() to free the custom policy rules, when
-...
+Tested-by: Desmond Yan <desmond.yan@broadcom.com>
+Signed-off-by: Desmond Yan <desmond.yan@broadcom.com>
+---
+ drivers/misc/bcm-vk/Kconfig      | 10 ++++++++++
+ drivers/misc/bcm-vk/bcm_vk_dev.c |  2 ++
+ 2 files changed, 12 insertions(+)
 
-Otherwise,
-
-Reviewd-by: Mimi Zohar <zohar@linux.ibm.com>
-
-> >>
-> >> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> >>
-> >> ---
-> >> v10:
-> >>    - Not calling ima_delete_rules() anymore
-> >>    - Move access check from ima_delete_rules into very last patch
-> >>
-> >>   v9:
-> >>    - Only reset temp_ima_appraise when using init_ima_ns.
-> >> ---
-> >>   security/integrity/ima/ima.h        |  1 +
-> >>   security/integrity/ima/ima_policy.c | 14 ++++++++++++++
-> >>   2 files changed, 15 insertions(+)
-> >>
-> >> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
-> >> index aea8fb8d2854..8c757223d549 100644
-> >> --- a/security/integrity/ima/ima.h
-> >> +++ b/security/integrity/ima/ima.h
-> >> @@ -329,6 +329,7 @@ void ima_update_policy_flags(struct ima_namespace *ns);
-> >>   ssize_t ima_parse_add_rule(struct ima_namespace *ns, char *rule);
-> >>   void ima_delete_rules(struct ima_namespace *ns);
-> >>   int ima_check_policy(struct ima_namespace *ns);
-> >> +void ima_free_policy_rules(struct ima_namespace *ns);
-> >>   void *ima_policy_start(struct seq_file *m, loff_t *pos);
-> >>   void *ima_policy_next(struct seq_file *m, void *v, loff_t *pos);
-> >>   void ima_policy_stop(struct seq_file *m, void *v);
-> >> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
-> >> index 2dcc5a8c585a..fe3dce8fb939 100644
-> >> --- a/security/integrity/ima/ima_policy.c
-> >> +++ b/security/integrity/ima/ima_policy.c
-> >> @@ -1889,6 +1889,20 @@ void ima_delete_rules(struct ima_namespace *ns)
-> >>   	}
-> >>   }
-> >>   
-> >> +/**
-> >> + * ima_free_policy_rules - free all policy rules
-> >> + * @ns: IMA namespace that has the policy
-> >> + */
-> >> +void ima_free_policy_rules(struct ima_namespace *ns)
-> >> +{
-> >> +	struct ima_rule_entry *entry, *tmp;
-> >> +
-> >> +	list_for_each_entry_safe(entry, tmp, &ns->ima_policy_rules, list) {
-> >> +		list_del(&entry->list);
-> >> +		ima_free_rule(entry);
-> >> +	}
-> >> +}
-> >> +
-> > The first time a policy is loaded, the policy rules pivot
-> > from ima_default_rules to the custom rules.  When this happens, the
-> > architecture specific policy rules are freed.  Here too, if a custom
-> > policy isn't already loaded, the architecture specific rules stored as
-> > an array need to be freed.  Refer to the comment in
-> > ima_update_policy().
-> 
-> Right. So here's how it's done (before arch_policy_entry was moved into 
-> ima_namespace).
-> 
->          /*
->           * IMA architecture specific policy rules are specified
->           * as strings and converted to an array of ima_entry_rules
->           * on boot.  After loading a custom policy, free the
->           * architecture specific rules stored as an array.
->           */
->          kfree(arch_policy_entry);
-> 
-> 
-> So, I now added kfree(ns->arch_policy_entry).
-
-Yes, that is fine.
-
+diff --git a/drivers/misc/bcm-vk/Kconfig b/drivers/misc/bcm-vk/Kconfig
+index 68a972772b99..43910a378163 100644
+--- a/drivers/misc/bcm-vk/Kconfig
++++ b/drivers/misc/bcm-vk/Kconfig
+@@ -16,6 +16,16 @@ config BCM_VK
+ 
+ 	  If unsure, say N.
+ 
++config BCM_VK_VIPER
++	bool "VK driver for VIPER"
++	depends on BCM_VK
++	help
++	  Turn on to enable using the vk driver for the viper variant.
++	  Used for development environments where viper uses VK driver
++	  and VK firmware rather than an alternate firmware and driver.
++
++	  If unsure, say N.
++
+ config BCM_VK_TTY
+ 	bool "Enable tty ports on a Broadcom VK Accelerator device"
+ 	depends on TTY
+diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
+index ad639ee85b2a..41dbfa4fa4a5 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_dev.c
++++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+@@ -1633,7 +1633,9 @@ static void bcm_vk_shutdown(struct pci_dev *pdev)
+ 
+ static const struct pci_device_id bcm_vk_ids[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_VALKYRIE), },
++#if defined(CONFIG_BCM_VK_VIPER)
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, PCI_DEVICE_ID_VIPER), },
++#endif
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(pci, bcm_vk_ids);
 -- 
-thanks,
+2.17.1
 
-Mimi
 
+--00000000000007c8bc05d850747f
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+Y3hUv4qpgBHMYL0QOV49hRCEPA9bdA1E2tJZaPTCgQjIBKTXbV/VA5CMlMe/UjOH6nY1hID+c33O
+JjJlS0Q6uDUPv4Xi6hhq1owIm8lcawNZMHODVk3RAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
+BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
+Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
+NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
+A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
+aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
+cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
+MBqBGGRlc21vbmQueWFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
+GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUR/AZEnas6F5UTEkX9MSLkmoVu0kw
+DQYJKoZIhvcNAQELBQADggEBACgclyA89UFYSNYkHRyDaRI1Yfn2L/TiNQDFtP5Jd+W/g9Ouqvq9
+uHw8dCd2QCw8piC0g25U7Q/Tcnfu6sydKZBdtTvv1ZlyCFajkHgSVjZJHmdGAPZdfArtBTlLdYux
+VHvqzlQUuX8vTR7zwapU7Q4S3e/wvJljm0qFlEm9iM7c7X6Qev+iYW+cH0a7StliJYAboI8wTeU5
++CRFe63jlAmMwVJgocvWVCzzG9rP+qiMxBVkmg+la+oG0UHXw4aTu+JfvXadtGCFgsfNrJ8Z5do0
+X8qLr2r16JY0XDTgGVsdivp1TA9Rgv+1dAof3Hu3oabaRfztJlUXP4A1TylsLVsxggJtMIICaQIB
+ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
+bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxu8RiVGamNIPMsivswDQYJ
+YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPpzbcYnZZQVEYGljIWExgxwsFO5uOL7s59s
+tovZbwZeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDIxODIw
+MDg1OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
+AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
+BgkqhkiG9w0BAQEFAASCAQB89kumZ1woZfJU0wDuDZEs4m+pm1B76NmuNj5OwG9dx5MMeMf81zol
+enYvbEye/MgymT4v199S3cADfHu+KxacczbZQnB3uiYu0ZpjpaRBwFPU9pUVcZs08glMP39S4wLm
+hXzpI3AQ9mquLfM889ih12J9DHqmsN+6JsanEx8cqiiuyyBrhpaVI2OkLVV8mk3PjjOYciELlGKB
+ITktfqBPhAXN0NKpCWKrSPTUe9DY9w5d70/1MuD1kehQ4ne9AdvI4IkLyirDPysfmcEHhLI9rdYO
+HzO5Mf/bDC4ieaI0QdKzHw0Off6jlUWR+tVjriJyXJIq9ryeBxjgDoGlbZWl
+--00000000000007c8bc05d850747f--
