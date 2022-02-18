@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A727FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 06:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbiBRGck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 01:32:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45668 "EHLO
+        id S231552AbiBRGct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 01:32:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231403AbiBRGcf (ORCPT
+        with ESMTP id S231165AbiBRGcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 01:32:35 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508E2369D3
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2165A369D2
         for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 22:32:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645165938; x=1676701938;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QCSnJGsGA/3rLBnDEPq7JsVckny++B8iF6OISwIiGcc=;
-  b=BRAiyCTNBu/wi/jO4T6alPPkHII2eWOHbGDEJ0USF3hLS1jaPXtRJk3a
-   FP1qgx1JUUUhOaS5vbDdJZPsBOQswpGRfaNItEcGOOAGYD4jpLrflNZgM
-   s4gF2Jts8ZV4HLLwMVw3vUvJ1UwAWdWQb6acrmo6PfzYA5yUShsKQz7AW
-   ScUGNEN0mW1pZcHeUjF4Jql7RKoSp2XC6qS5dLA7Mp7MeqDoHt66oBDqx
-   scMF2SwUGI79exHgvexUm2t5iFz8MMHWJ/GWL2AiJUTgV4LSKwbLSoxJi
-   1g5wGZp1ygChiV/ZI3iJPWjmA3opZuduTNy9kiNc4eH4fLEf3y2mWHDf+
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="248658203"
+  bh=t+iPf7fvBn97STbfV9cBO5nH2UsusKphjRT7QJvzWgc=;
+  b=U/rzUtrzZJbOjsiJgM6fDzBaNhkowLNcogDvbiPa+6GKK8pbyskG3jxw
+   quEkfkchratO+kISnSJe30wh9qpjub+J9PgKnxUchRxRna1OztNG2w08j
+   owb1p86RuYnZn2bSCvOARfpyMIXNFsbNasv82erljWhuFRmjCqkmF8MTd
+   tfxvLYapT/GjdBg9N2dN5eFSfin5PIdSjH0EE4y4cOmMYT51ZXyfrnuBN
+   8xE0tkH7RuuEh65dOA442DlKT8xEXtwVw92yGqj8yHf8IVoVd9KfDWkLd
+   1u5Dnip+NRHs1F+51MrMxCk8b5NJY4BVCgScYVKyNtQdE5fu+NaagvAB6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231700770"
 X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
-   d="scan'208";a="248658203"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 22:32:18 -0800
+   d="scan'208";a="231700770"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 22:32:17 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
-   d="scan'208";a="637641755"
+   d="scan'208";a="546139257"
 Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 17 Feb 2022 22:32:15 -0800
+  by orsmga008.jf.intel.com with ESMTP; 17 Feb 2022 22:32:15 -0800
 Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nKwoR-00011m-6V; Fri, 18 Feb 2022 06:32:15 +0000
-Date:   Fri, 18 Feb 2022 14:31:27 +0800
+        id 1nKwoR-00011g-59; Fri, 18 Feb 2022 06:32:15 +0000
+Date:   Fri, 18 Feb 2022 14:31:30 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     yipechai <YiPeng.Chai@amd.com>
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
@@ -50,7 +50,7 @@ Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
 Subject: [agd5f:drm-next 73/91]
  drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c:2460:5: warning: no previous
  prototype for function 'amdgpu_ras_block_late_init_default'
-Message-ID: <202202181417.bZQAVKEY-lkp@intel.com>
+Message-ID: <202202181428.CYxC9JXm-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -62,19 +62,19 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
 head:   7dfbe38cecadbaf6dd426855d8bf8f34a4ca2c30
 commit: 418abce203fc2e936bf8c7632a9a429e861f6283 [73/91] drm/amdgpu: Remove redundant .ras_late_init initialization in some ras blocks
-config: arm-randconfig-r036-20220217 (https://download.01.org/0day-ci/archive/20220218/202202181417.bZQAVKEY-lkp@intel.com/config)
+config: riscv-randconfig-r042-20220217 (https://download.01.org/0day-ci/archive/20220218/202202181428.CYxC9JXm-lkp@intel.com/config)
 compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
         git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
         git fetch --no-tags agd5f drm-next
         git checkout 418abce203fc2e936bf8c7632a9a429e861f6283
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
