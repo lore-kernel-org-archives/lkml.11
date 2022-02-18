@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbiBRQSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:18:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42958 "EHLO
+        id S237674AbiBRQSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:18:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237649AbiBRQR5 (ORCPT
+        with ESMTP id S237491AbiBRQR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 11:17:57 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BBB5B88F
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:28 -0800 (PST)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408AF3A5F1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201049; x=1676737049;
+  t=1645201047; x=1676737047;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8/5iP14Tg24GtfulUdmcNudmbOpBuYqe/UqX13ONj68=;
-  b=IhqezXfJpjLutLK4xHENCqF7xCyojhXlYRNgdOu/U+aidJ/PE6HrnowU
-   S2xjpyvoax3qw3kiwqp/1fyHDuYllNyEO/7lhGnMUfxjDNLTgGDaVnAjD
-   wffbTC7qcwSIXEi391NK+Z1oEoAUGCqR7DubMjxjyUo8nc9Yzdl7ihGl9
-   m57N/e9piEmkA3VdRFtrB20UEjc1Gzn/nJbaaZmeagDvYmN4EGtLGWxm6
-   Qa/RlX3PonXK4mgtrKUaE1AMcVDM2BnElHpGKpzNbNupuO64VsrnGMzvk
-   Sky/slYj5Tsawqlma/gXGgJL5JVDPedgNaWtpphqrZhzRC68pvh2gCrMV
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="238559752"
+  bh=jdM9o9zBsR4IN0AD1gbXWvPs/FzIVVhLyWjbGEJjgl8=;
+  b=AiV4RVbjhWeXZnO2apqNl51h7U8ouJrvQORvCiRQpfOvtykcwpVyHftl
+   YM9yzXJS5FD5Zwk3M8bOI1/5Sw19ojgeSI46fT7T3qS4iPvlIN5lKaxfM
+   PmYBGJDswKiQWR9INaEYyQGDblDHdlfQB/UylIjJqBISobybtvuTKMpu7
+   bqNiLq22aHroJyiT2vck99uEmJsoW7SOhT9lzQuFB0opjEICTIu7f5GWp
+   Jpn3f2EUfRlOdELto4wLpgG28w7LhAmyzpNONy1R+Bl5XvDPe3Xn8klPx
+   HVUdYncj/IBcPN+BrT2ivF5UmYCvhGKILh4JqrgGxIJGvL0qRV7kWb2AL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="248752973"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="238559752"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
+   d="scan'208";a="248752973"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="530969774"
+   d="scan'208";a="506200922"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
+  by orsmga006.jf.intel.com with ESMTP; 18 Feb 2022 08:17:20 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 57C9BE26; Fri, 18 Feb 2022 18:17:23 +0200 (EET)
+        id 05048BAE; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -50,10 +50,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 26/32] x86/tdx: Make pages shared in ioremap()
-Date:   Fri, 18 Feb 2022 19:17:12 +0300
-Message-Id: <20220218161718.67148-27-kirill.shutemov@linux.intel.com>
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 20/32] x86/tdx: Wire up KVM hypercalls
+Date:   Fri, 18 Feb 2022 19:17:06 +0300
+Message-Id: <20220218161718.67148-21-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,44 +63,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In TDX guests, guest memory is protected from host access. If a guest
-performs I/O, it needs to explicitly share the I/O memory with the host.
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Make all ioremap()ed pages that are not backed by normal memory
-(IORES_DESC_NONE or IORES_DESC_RESERVED) mapped as shared.
+KVM hypercalls use the VMCALL or VMMCALL instructions. Although the ABI
+is similar, those instructions no longer function for TDX guests.
 
-Since TDX memory encryption support is similar to AMD SEV architecture,
-reuse the infrastructure from AMD SEV code.
+Make vendor-specific TDVMCALLs instead of VMCALL. This enables TDX
+guests to run with KVM acting as the hypervisor.
 
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Among other things, KVM hypercall is used to send IPIs.
+
+Since the KVM driver can be built as a kernel module, export
+tdx_kvm_hypercall() to make the symbols visible to kvm.ko.
+
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/mm/ioremap.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/x86/coco/tdx.c             | 17 +++++++++++++++++
+ arch/x86/include/asm/kvm_para.h | 22 ++++++++++++++++++++++
+ arch/x86/include/asm/tdx.h      | 11 +++++++++++
+ 3 files changed, 50 insertions(+)
 
-diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-index 026031b3b782..a5d4ec1afca2 100644
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -242,10 +242,15 @@ __ioremap_caller(resource_size_t phys_addr, unsigned long size,
- 	 * If the page being mapped is in memory and SEV is active then
- 	 * make sure the memory encryption attribute is enabled in the
- 	 * resulting mapping.
-+	 * In TDX guests, memory is marked private by default. If encryption
-+	 * is not requested (using encrypted), explicitly set decrypt
-+	 * attribute in all IOREMAPPED memory.
- 	 */
- 	prot = PAGE_KERNEL_IO;
- 	if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
- 		prot = pgprot_encrypted(prot);
-+	else
-+		prot = pgprot_decrypted(prot);
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index d23d389124a1..f73983f3ffc4 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -48,6 +48,23 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
+ 	return __tdx_hypercall(&args, 0);
+ }
  
- 	switch (pcm) {
- 	case _PAGE_CACHE_MODE_UC:
++#ifdef CONFIG_KVM_GUEST
++long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
++		       unsigned long p3, unsigned long p4)
++{
++	struct tdx_hypercall_args args = {
++		.r10 = nr,
++		.r11 = p1,
++		.r12 = p2,
++		.r13 = p3,
++		.r14 = p4,
++	};
++
++	return __tdx_hypercall(&args, 0);
++}
++EXPORT_SYMBOL_GPL(tdx_kvm_hypercall);
++#endif
++
+ static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 				   struct tdx_module_output *out)
+ {
+diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
+index 56935ebb1dfe..57bc74e112f2 100644
+--- a/arch/x86/include/asm/kvm_para.h
++++ b/arch/x86/include/asm/kvm_para.h
+@@ -7,6 +7,8 @@
+ #include <linux/interrupt.h>
+ #include <uapi/asm/kvm_para.h>
+ 
++#include <asm/tdx.h>
++
+ #ifdef CONFIG_KVM_GUEST
+ bool kvm_check_and_clear_guest_paused(void);
+ #else
+@@ -32,6 +34,10 @@ static inline bool kvm_check_and_clear_guest_paused(void)
+ static inline long kvm_hypercall0(unsigned int nr)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, 0, 0, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr)
+@@ -42,6 +48,10 @@ static inline long kvm_hypercall0(unsigned int nr)
+ static inline long kvm_hypercall1(unsigned int nr, unsigned long p1)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, 0, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1)
+@@ -53,6 +63,10 @@ static inline long kvm_hypercall2(unsigned int nr, unsigned long p1,
+ 				  unsigned long p2)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2)
+@@ -64,6 +78,10 @@ static inline long kvm_hypercall3(unsigned int nr, unsigned long p1,
+ 				  unsigned long p2, unsigned long p3)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, p3, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
+@@ -76,6 +94,10 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
+ 				  unsigned long p4)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, p3, p4);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3), "S"(p4)
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index ba0f8c2b185c..6a97d42b0de9 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -67,5 +67,16 @@ static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
+ 
+ #endif /* CONFIG_INTEL_TDX_GUEST */
+ 
++#if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)
++long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
++		       unsigned long p3, unsigned long p4);
++#else
++static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
++				     unsigned long p2, unsigned long p3,
++				     unsigned long p4)
++{
++	return -ENODEV;
++}
++#endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
+ #endif /* !__ASSEMBLY__ */
+ #endif /* _ASM_X86_TDX_H */
 -- 
 2.34.1
 
