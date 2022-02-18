@@ -2,120 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E49C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237183AbiBRPtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:49:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53810 "EHLO
+        id S237170AbiBRPut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:50:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237170AbiBRPs1 (ORCPT
+        with ESMTP id S235979AbiBRPuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:48:27 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E9C275AD3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:47:47 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id m185so7989227iof.10
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:47:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0d+ENbVi/YpblJNfRhmkBPMtWMK0eYnnrjx3M98By1Q=;
-        b=iSzm9e9rhgQdjya/dXkRvAM1FpOkM7gQVMGxVGb2x1Y4goZHEdAoK2B9HxrblJG4pO
-         6wf6/kKjkJtiISXXLCHwzlpVKNoAPwhYEAYu+mPgoa2BvPLoJO7yTR2zYtPDUCqWAUEy
-         N48CXZ0HChG5SH0ZIL5VnwzVvgZ9GIlevIoprkPkXl5mx2XSmkhVJWPlhld6nWFEo+/J
-         +hkfWO2MHK6Rqd2hZ+YCH+eIWG4CR8/KnQG7OaEOpnERc0DH6Bg6qUfusAvUqTv4iAOz
-         XPFjiOXk8YeQfwOZW2tfENayg5tdXx0HCC6mZrQB7p+W85ysXB/3elBm+s+DNC5YF4MH
-         PHNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0d+ENbVi/YpblJNfRhmkBPMtWMK0eYnnrjx3M98By1Q=;
-        b=27ifEOC9QlxAZ7M6fTnJfTLqo3oA/TJvhORFf3wa6Tglx36AUjiT3n7ThZit3DTWzD
-         nPUMjWaS7V8+zyU8MoJ254ZBgaYeIEGBAhWqaJ9s2LCKwsgJ8OJUmpYz+ENl3qMrLpaK
-         S2YNxXs68Fe2ETgswmkLWKW68oc6N7m3qB8crwKxpcvEVwgw2JFuQ9XF/uyeoBgCiujp
-         +NbHWLbRqWPDuYqFgODhaCfv+hD0+6qZ/qNoe9zpAChX722Ap9i9HsDaCphMg3Cp4LEA
-         At1NpcoQPSes/UmsUesnS51bNPBnDtDlh4wJvyKJhnqnioGz4WF5Qv94gOFlaLPvPz4h
-         Cl2w==
-X-Gm-Message-State: AOAM531cSU2LKQng/pHQCcQDmGqVfebbBbRTy+lM7mHog3Zm3dtB+D2f
-        SHHXSDvA2qbiFbthlThSYGB4yQ==
-X-Google-Smtp-Source: ABdhPJwHpswjOEoA8nxD3wFPtsUtlFlgSNXvQOMW/OrH5MyURG9TSAVfOrvj6jF1aUyljKqJYuYP6Q==
-X-Received: by 2002:a05:6638:168b:b0:314:7a8d:19d4 with SMTP id f11-20020a056638168b00b003147a8d19d4mr5936881jat.199.1645199266560;
-        Fri, 18 Feb 2022 07:47:46 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id f10sm3550646ilj.73.2022.02.18.07.47.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Feb 2022 07:47:46 -0800 (PST)
-Message-ID: <e516d27b-922a-dbbe-e0da-143eb2ab31d8@linaro.org>
-Date:   Fri, 18 Feb 2022 09:47:44 -0600
+        Fri, 18 Feb 2022 10:50:46 -0500
+Received: from m2.came.com (m2.came.com [185.158.232.192])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D72F272D95
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:50:25 -0800 (PST)
+X-Envelope-From: <rferrazzo@came.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=came.com; s=hqs1;
+        t=1645199415; bh=q6QFR4wFKzZN4oRBk8KBFG9epo/vvtWvpCpYh6Ehr0o=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=Wtch1HJ/vXsf71CQqP7cYJRoWx32CrMOKQhAnvMIOLaqC+wWFmvoP6WEwMn/H3VmR
+         gLofc0taron60T+2IhAwfKAdmr4dZqZJOWaJYU1UlG+nJNvMG/PbKIEJveK+flk9Wb
+         RpftE2vORKPIQ4xPuK86dCVwZnGINpwTFfPjEdLA=
+Received: from mail.came.com (exch.camegroup.local [172.17.10.18])
+        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by m2.came.com (Postfix) with ESMTPS id D335A41ADF;
+        Fri, 18 Feb 2022 16:50:15 +0100 (CET)
+Received: from EXCH01SERVER.camegroup.local (172.17.10.18) by
+ EXCH01SERVER.camegroup.local (172.17.10.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Fri, 18 Feb 2022 16:50:15 +0100
+Received: from EXCH01SERVER.camegroup.local ([fe80::4c87:c04d:9e86:91dc]) by
+ EXCH01SERVER.camegroup.local ([fe80::4c87:c04d:9e86:91dc%8]) with mapi id
+ 15.01.2375.018; Fri, 18 Feb 2022 16:50:15 +0100
+From:   Riccardo Ferrazzo <rferrazzo@came.com>
+To:     =?utf-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] staging: wfx: fix scan with WFM200 and WW regulation
+Thread-Topic: [PATCH] staging: wfx: fix scan with WFM200 and WW regulation
+Thread-Index: AQHYJLXqgTJEtVhygkqmI4jmjTDnvqyZEoqAgAAA3wCAAAMMAIAAPNCo///zhgCAACzfmQ==
+Date:   Fri, 18 Feb 2022 15:50:15 +0000
+Message-ID: <00c200c56dad4b1180d644e740112706@came.com>
+References: <20220218105358.283769-1-Jerome.Pouiller@silabs.com>
+ <3527203.aO2mCyqpp7@pc-42>
+ <5feac65fc71f4060abb7421ee4571af4@came.com>,<3633390.6h3MoT29mx@pc-42>
+In-Reply-To: <3633390.6h3MoT29mx@pc-42>
+Accept-Language: it-IT, en-US
+Content-Language: it-IT
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [192.168.244.98]
+x-c2processedorg: a31d4ad1-e59b-425b-8b09-d5eff97e4ea3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 12/25] bus: mhi: ep: Add support for ring management
-Content-Language: en-US
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
-        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
-        quic_cang@quicinc.com, quic_skananth@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
- <20220212182117.49438-13-manivannan.sadhasivam@linaro.org>
- <20504c14-6df5-83d1-53e9-85c682a5a3c7@linaro.org>
- <20220218080704.GD11964@workstation> <20220218152327.GA11639@thinkpad>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220218152327.GA11639@thinkpad>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-CAME-Libra-ESVA-Information: Please contact CAME for more information
+X-CAME-Libra-ESVA-ID: D335A41ADF.ADE9C
+X-CAME-Libra-ESVA: No virus found
+X-CAME-Libra-ESVA-From: rferrazzo@came.com
+X-CAME-Libra-ESVA-Watermark: 1645804218.74232@4mG+8eCEAtX6cMEcm+BxEA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/18/22 9:23 AM, Manivannan Sadhasivam wrote:
->>>
->>> I'm pretty sure I mentioned this before...  I don't really like these
->>> "DWORD" macros that simply write compute register values to write
->>> out to the TREs.  A TRE is a structure, not a set of registers.  And
->>> a whole TRE can be written or read in a single ARM instruction in
->>> some cases--but most likely you need to define it as a structure
->>> for that to happen.
->>>
->>> struct mhi_tre {
->>> 	__le64 addr;
->>> 	__le16 len_opcode
->>> 	__le16 reserved;
->>> 	__le32 flags;
->>> };
->> Changing the TRE structure requires changes to both host and endpoint
->> stack. So I'll tackle this as an improvement later.
->>
->> Added to TODO list.
-> Just did a comparision w/ IPA code and I convinced myself that this conversion
-> should happen now itself. So please ignore my above comment.
-
-This might not be that much work, but if it is, I somewhat
-apologize for that.  Still, I believe the code will be better
-as a result, so I'm not *that* sorry.
-
-If you do this though, I would recommend you do it as a
-separate, prerequisite bit of work.  Your series is too
-long, and making it longer by adding this will just delay
-*everything* a bit more.  So, I'd advise updating the
-existing host code this way first, then adapt your patch
-series to do things the new way.
-
-Alternatively, do this later (as you earlier said you would),
-and don't delay this series any more.  If it works, it works,
-and you can always improve it in the future.
-
-And now that your series is getting closer to golden, maybe
-you can break it into a few smaller series?  I don't know,
-that also can lead to some confusion, so I won't strongly
-advocate that.  But it's something to consider for future
-work regardless.
-
-					-Alex
+PkRhOiBKw6lyw7RtZSBQb3VpbGxlciA8amVyb21lLnBvdWlsbGVyQHNpbGFicy5jb20+DQo+SW52
+aWF0bzogdmVuZXJkw6wgMTggZmViYnJhaW8gMjAyMiAxNTowNA0KPkE6IEdyZWcgS3JvYWgtSGFy
+dG1hbjsgUmljY2FyZG8gRmVycmF6em8NCj5DYzogbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwu
+b3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBLYWxsZSBWYWxvOyBkZXZlbEBkcml2ZXJkZXYu
+b3N1b3NsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgRGF2aWQgUyAuIE1pbGxl
+cg0KPk9nZ2V0dG86IFJlOiBbUEFUQ0hdIHN0YWdpbmc6IHdmeDogZml4IHNjYW4gd2l0aCBXRk0y
+MDAgYW5kIFdXIHJlZ3VsYXRpb24NCj4NCj5IZWxsbyBSaWNjYXJkbywNCj4NCj4NCj5PbiBGcmlk
+YXkgMTggRmVicnVhcnkgMjAyMiAxNDo1MzozNSBDRVQgUmljY2FyZG8gRmVycmF6em8gd3JvdGU6
+DQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogUmljY2FyZG8gRmVycmF6em8gPHJmZXJyYXp6b0BjYW1l
+LmNvbT4NCj4+DQo+Pg0KPj4gU29ycnkgZm9yIHRoZSBmb290ZXIgaXQgaXMgYWRkZWQgYXV0b21h
+dGljYWxseQ0KPj4NCj4NCj5Zb3VyIG1haWwgaGFzIHByb2JhYmx5IG5vdCBiZWVuIHJlY2VpdmVk
+IGJ5IGV2ZXJ5b25lIHNpbmNlIHlvdSBzZW50IGl0DQo+aW4gaHRtbFsxXSAodHJ5IGFsc28gdG8g
+YXZvaWQgdG9wLXBvc3RpbmcpLg0KPg0KPk5ldmVydGhlbGVzcywgR3JlZywgaXMgaXQgc3VmZmlj
+aWVudCBmb3IgeW91Pw0KPg0KPlsxXTogIGh0dHBzOi8vdXJsc2FuZC5lc3ZhbGFicy5jb20vP3U9
+aHR0cHMlM0ElMkYlMkZ1c2VwbGFpbnRleHQuZW1haWwlMkYmZT0wOTczM2Y5NCZoPTFlYzU1NzFl
+JmY9eSZwPW4NCj4NCj4+IE9uIEZyaWRheSAxOCBGZWJydWFyeSAyMDIyIDEyOjAwOjU0IENFVCBH
+cmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6DQo+PiA+IE9uIEZyaSwgRmViIDE4LCAyMDIyIGF0IDEx
+OjU3OjQ3QU0gKzAxMDAsIErDqXLDtG1lIFBvdWlsbGVyIHdyb3RlOg0KPj4gPiA+IE9uIEZyaWRh
+eSAxOCBGZWJydWFyeSAyMDIyIDExOjUzOjU4IENFVCBKZXJvbWUgUG91aWxsZXIgd3JvdGU6DQo+
+PiA+ID4NCg0KUmljY2FyZG8gRmVycmF6em8NClImRCBTb2Z0d2FyZSBEZXNpZ25lcg0KcmZlcnJh
+enpvQGNhbWUuY29tDQpDQU1FIFMucC5BLg0KDQo+IEZyb206IFJpY2NhcmRvIEZlcnJhenpvIDxy
+ZmVycmF6em9AY2FtZS5jb20+DQo+PiA+ID4gPg0KPj4gPiA+ID4gU29tZSB2YXJpYW50cyBvZiB0
+aGUgV0YyMDAgZGlzYWxsb3cgYWN0aXZlIHNjYW4gb24gY2hhbm5lbCAxMiBhbmQgMTMuDQo+PiA+
+ID4gPiBGb3IgdGhlc2UgcGFydHMsIHRoZSBjaGFubmVscyAxMiBhbmQgMTMgYXJlIG1hcmtlZCBJ
+RUVFODAyMTFfQ0hBTl9OT19JUi4NCj4+ID4gPiA+DQo+PiA+ID4gPiBIb3dldmVyLCB0aGUgYmVh
+Y29uIGhpbnQgcHJvY2VkdXJlIHdhcyByZW1vdmluZyB0aGUgZmxhZw0KPj4gPiA+ID4gSUVFRTgw
+MjExX0NIQU5fTk9fSVIgZnJvbSBjaGFubmVscyB3aGVyZSBhIEJTUyBpcyBkaXNjb3ZlcmVkLiBU
+aGlzIHdhcw0KPj4gPiA+ID4gbWFraW5nIHN1YnNlcXVlbnQgc2NhbnMgdG8gZmFpbCBiZWNhdXNl
+IHRoZSBkcml2ZXIgd2FzIHRyeWluZyBhY3RpdmUNCj4+ID4gPiA+IHNjYW5zIG9uIHByb2hpYml0
+ZWQgY2hhbm5lbHMuDQo+PiA+ID4gPg0KPj4gPiA+ID4gU2lnbmVkLW9mZi1ieTogSsOpcsO0bWUg
+UG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPg0KPj4gPiA+DQo+PiA+ID4gSSBm
+b3Jnb3QgdG8gbWVudGlvbiBJIGhhdmUgcmV2aWV3ZWQgb24gdGhpcyBwYXRjaDoNCj4+ID4gPg0K
+Pj4gPiA+IFJldmlld2VkLWJ5OiBKw6lyw7RtZSBQb3VpbGxlciA8amVyb21lLnBvdWlsbGVyQHNp
+bGFicy5jb20+DQo+PiA+DQo+PiA+IFJldml3ZWQtYnkgaXMgaW1wbGllZCB3aXRoIHNpZ25lZC1v
+ZmYtYnkuDQo+PiA+DQo+PiA+IEJ1dCB3aGF0IGhhcHBlbmVkIHRvIHRoZSBzaWduZWQtb2ZmLWJ5
+IGZyb20gdGhlIGF1dGhvciBvZiB0aGlzIGNoYW5nZT8NCj4+DQo+PiBUaGUgYXV0aG9yIGhhc24n
+dCB1c2VkIGZvcm1hdC1wYXRjaCB0byB0cmFuc21pdCB0aGlzIHBhdGNoLg0KPj4NCj4+IFJpY2Nh
+cmRvLCBjYW4geW91IHJlcGx5IHRvIHRoaXMgbWFpbCB3aXRoIHRoZSBtZW50aW9uICJTaWduZWQt
+b2ZmLWJ5Og0KPj4gWW91ciBuYW1lIDx5b3VyLW1haWxAZG9tLmNvbT4iPyBJdCBjZXJ0aWZpZXMg
+dGhhdCB5b3Ugd3JvdGUgaXQgb3INCj4+IG90aGVyd2lzZSBoYXZlIHRoZSByaWdodCB0byBwYXNz
+IGl0IG9uIGFzIGFuIG9wZW4tc291cmNlIHBhdGNoWzFdLg0KPj4NCj4+DQo+PiBbMV0gIGh0dHBz
+Oi8vdXJsc2FuZC5lc3ZhbGFicy5jb20vP3U9aHR0cHMlM0ElMkYlMkZ3d3cua2VybmVsLm9yZyUy
+RmRvYyUyRmh0bWwlMkZ2NC4xNyUyRnByb2Nlc3MlMkZzdWJtaXR0aW5nLXBhdGNoZXMuaHRtbCUy
+M3NpZ24teW91ci13b3JrLXRoZS1kZXZlbG9wZXItcy1jZXJ0aWZpY2F0ZS1vZi1vcmlnaW4mZT0w
+OTczM2Y5NCZoPWUwOWYyZWZhJmY9eSZwPW48aHR0cHM6Ly91cmxkZWZlbnNlLmNvbS92My9fX2h0
+dHBzOi8vdXJsc2FuZC5lc3ZhbGFicy5jb20vP3U9aHR0cHMqM0EqMkYqMkZ3d3cua2VybmVsLm9y
+ZyoyRmRvYyoyRmh0bWwqMkZ2NC4xNyoyRnByb2Nlc3MqMkZzdWJtaXR0aW5nLXBhdGNoZXMuaHRt
+bCoyM3NpZ24teW91ci13b3JrLXRoZS1kZXZlbG9wZXItcy1jZXJ0aWZpY2F0ZS1vZi1vcmlnaW4m
+ZT0wOTczM2Y5NCZoPWUwOWYyZWZhJmY9eSZwPW5fXztKU1VsSlNVbEpTVWwhIU4zMENzN0pyIUdS
+Z0JfSmxoWkYyWHphREVCMVpEblNiTGlNbUQ4WGRybUNfdXF5TG9jelI1ZTA1dnZNbERDZ3lLbEV1
+M1h5STNQZEpLJD4NCj4+DQo+PiBUaGFuayB5b3UsDQo+Pg0KPj4gLS0NCj4+IErDqXLDtG1lIFBv
+dWlsbGVyDQo+Pg0KPj4NCj4+DQo+DQo+LS0NCj5Kw6lyw7RtZSBQb3VpbGxlcg0KDQpNaWdodCBs
+b29rIGJldHRlciBub3cNClNpZ25lZC1vZmYtYnk6IFJpY2NhcmRvIEZlcnJhenpvIDxyZmVycmF6
+em9AY2FtZS5jb20+DQo=
