@@ -2,81 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 283D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233126AbiBRJGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:06:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46694 "EHLO
+        id S233159AbiBRJIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:08:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiBRJF6 (ORCPT
+        with ESMTP id S231630AbiBRJIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:05:58 -0500
-X-Greylist: delayed 457 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 01:05:40 PST
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A2F2B3AE7;
-        Fri, 18 Feb 2022 01:05:39 -0800 (PST)
-Received: from twspam01.aspeedtech.com (localhost [127.0.0.2] (may be forged))
-        by twspam01.aspeedtech.com with ESMTP id 21I8nNN3034493;
-        Fri, 18 Feb 2022 16:49:23 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 21I8lrmY034381;
-        Fri, 18 Feb 2022 16:47:53 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 18 Feb
- 2022 16:56:33 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <billy_tsai@aspeedtech.com>,
-        <colin.king@canonical.com>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-CC:     Konstantin Klubnichkin <kitsok@yandex-team.ru>
-Subject: [PATCH] iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
-Date:   Fri, 18 Feb 2022 16:57:08 +0800
-Message-ID: <20220218085708.8194-1-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 18 Feb 2022 04:08:36 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5441A13B0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:08:19 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4802A1F383;
+        Fri, 18 Feb 2022 09:08:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645175298; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WALrlzVYoW1+ey/rywCALJO0JwxJ7pJRa7cqfj4GVPg=;
+        b=farHPhEmDA1sEplRo3iPQmN7eBdVXgWdxW3adqSKGYFAmcJDLUv9gIQwkByJXnFSquM1D8
+        v2dHxlE9OgSZ8v6WyeWtjT5j5D8Nc6G+qswC4/CmcjqJRYvO0E2WtSzxRBQUKTrMAUYaAI
+        6+HPKtYxCy91nbFnWaeDVCS78HEejMo=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2E60FA3B84;
+        Fri, 18 Feb 2022 09:08:18 +0000 (UTC)
+Date:   Fri, 18 Feb 2022 10:08:17 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: main loop: was: Re: [PATCH printk v1 10/13] printk: add kthread
+ console printers
+Message-ID: <Yg9iAVk5s4dBfDvP@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-11-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 21I8lrmY034381
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207194323.273637-11-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The formula for the ADC sampling period in ast2400/ast2500 is:
-ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
-When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
-expected, because the hardware may not have enough time to
-charge/discharge to a stable voltage.
+On Mon 2022-02-07 20:49:20, John Ogness wrote:
+> Create a kthread for each console to perform console printing. During
+> normal operation (@system_state == SYSTEM_RUNNING), the kthread
+> printers are responsible for all printing on their respective
+> consoles.
+> 
+> During non-normal operation, console printing is done as it has been:
+> within the context of the printk caller or within irq work triggered
+> by the printk caller.
+> 
+> Console printers synchronize against each other and against console
+> lockers by taking the console lock for each message that is printed.
+> ---
+>  include/linux/console.h |   2 +
+>  kernel/printk/printk.c  | 159 +++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 159 insertions(+), 2 deletions(-)
+> 
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3345,6 +3390,116 @@ bool pr_flush(int timeout_ms, bool reset_on_progress)
+>  }
+>  EXPORT_SYMBOL(pr_flush);
+>  
+> +static bool printer_should_wake(struct console *con, u64 seq)
+> +{
+> +	short flags;
+> +
+> +	if (kthread_should_stop())
+> +		return true;
+> +
+> +	if (console_suspended)
+> +		return false;
+> +
+> +	/*
+> +	 * This is an unsafe read to con->flags, but false positives
+> +	 * are not an issue as long as they are rare.
 
-Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- drivers/iio/adc/aspeed_adc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+This is not convincing. Anyway, it looks like an optimization. I
+suggest to do the check under console_lock in the main loop.
+printk kthread is a slow path anyway.
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index a957cad1bfab..ffae64f39221 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	data->clk_scaler = devm_clk_hw_register_divider(
- 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
- 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
--		data->model_data->scaler_bit_width, 0, &data->clk_lock);
-+		data->model_data->scaler_bit_width,
-+		data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
-+		&data->clk_lock);
- 	if (IS_ERR(data->clk_scaler))
- 		return PTR_ERR(data->clk_scaler);
- 
--- 
-2.25.1
+Also we should call there the entire console_is_usable().
+It should do the same checks as in console_flush_all()
+and the direct mode.
 
+> +	 */
+> +	flags = data_race(READ_ONCE(con->flags));
+> +	if (!(flags & CON_ENABLED))
+> +		return false;
+> +
+> +	return prb_read_valid(prb, seq, NULL);
+> +}
+> +
+> +static int printk_kthread_func(void *data)
+> +{
+> +	struct console *con = data;
+> +	char *dropped_text = NULL;
+> +	char *ext_text = NULL;
+> +	bool progress;
+> +	bool handover;
+> +	u64 seq = 0;
+> +	char *text;
+> +	int error;
+> +
+> +	pr_info("%sconsole [%s%d]: printing thread started\n",
+> +		(con->flags & CON_BOOT) ? "boot" : "",
+> +		con->name, con->index);
+> +
+[...]
+> +
+> +	for (;;) {
+> +		error = wait_event_interruptible(log_wait, printer_should_wake(con, seq));
+> +
+> +		if (kthread_should_stop())
+> +			break;
+> +
+> +		if (error)
+> +			continue;
+> +
+> +		do {
+> +			console_lock();
+> +			if (console_suspended) {
+> +				console_unlock();
+> +				break;
+> +			}
+> +
+
+We should check here also console_is_usable() to be in sync with
+console_flush_all().
+
+> +			/*
+> +			 * Even though the printk kthread is always preemptible, it is
+> +			 * still not allowed to call cond_resched() from within
+> +			 * console drivers. The task may become non-preemptible in the
+> +			 * console driver call chain. For example, vt_console_print()
+> +			 * takes a spinlock and then can call into fbcon_redraw(),
+> +			 * which can conditionally invoke cond_resched().
+> +			 */
+> +			console_may_schedule = 0;
+
+I do not understand the reason. How is this different from console_unlock()
+and console_flush_all(), please?
+
+> +			progress = console_emit_next_record(con, text, ext_text,
+> +							    dropped_text, &handover);
+> +			if (handover)
+> +				break;
+> +
+> +			seq = con->seq;
+> +
+> +			/* Unlock console without invoking direct printing. */
+> +			__console_unlock();
+> +		} while (progress);
+> +	}
+> +out:
+> +	kfree(dropped_text);
+> +	kfree(ext_text);
+> +	kfree(text);
+> +	pr_info("%sconsole [%s%d]: printing thread stopped\n",
+> +		(con->flags & CON_BOOT) ? "boot" : "",
+> +		con->name, con->index);
+> +	return 0;
+> +}
+> +
+
+Best Regards,
+Petr
