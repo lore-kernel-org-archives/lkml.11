@@ -2,177 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45006C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236476AbiBRO4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:56:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50236 "EHLO
+        id S236412AbiBRO4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:56:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236354AbiBRO42 (ORCPT
+        with ESMTP id S236336AbiBRO4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 09:56:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 883D9593A4
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645196164;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4ldn/wyFUYS9oX2H4KZV4SRGFhvLNkEJlNBHlweSE44=;
-        b=ZGJ6uKfop4GVTHnZqrhHQhp3RCzj2MiKOFHTiwphtj1caj4hla0uu227MojdUTUJLInGS3
-        ABPX0tVStqI+JMidxPy2rY7UJySDx9KawhaTQMv44hiZq+edczVIeYdTwNxlvG7pkW3PIb
-        d3eZNS/cJ86gYyTXvc1fZnqreDcmLnw=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611--KoJPLJSPeGI16TeMqEKYQ-1; Fri, 18 Feb 2022 09:56:02 -0500
-X-MC-Unique: -KoJPLJSPeGI16TeMqEKYQ-1
-Received: by mail-qv1-f70.google.com with SMTP id a12-20020a056214062c00b0042c2f3fca04so9039108qvx.21
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:02 -0800 (PST)
+        Fri, 18 Feb 2022 09:56:32 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3105A5AF
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:07 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id p9so14995539wra.12
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cimbY7LPDbRuh3lILBl/36Td2W7ROjWFj0D1595RCaw=;
+        b=TNGjjxKv6EvX9YTQfRDhTS2iTF1YJF70cMlDGdFJvKiVMAcafgzWoGpdVNJ3f1VaN6
+         K2VmR7PE/RJ9gtMjWj0UeFiU4QpV0ro7fQXRXHrO7Ey5v1TM3PuzmRI5HSgWSYJ1c1sF
+         PBOq+rk8WTLpxfSdRm1ZciN3IeAKXL00c+zu8C4GTacn917TuorzBb953HHpAvFUmP7i
+         +yLIkMgLDilwd3itpBtFL5ItEvLySPXk00YHamGIM5JAOXfi4ZfqqCUva2SIgs1j+lks
+         sxrb5oX0G9ATnrJRBpTzk3zCrQVSf5JhtCSXaLUJ7t6abMEtF9CgH2l+EfvwH79/I3MP
+         hcJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=4ldn/wyFUYS9oX2H4KZV4SRGFhvLNkEJlNBHlweSE44=;
-        b=gN/MFE6ewNweUOPQ252YTshjOcOX1HJpAmQ4mhgN9w+YyLTmSMGleWpeDzJUfOlSfa
-         wB1WBB0MFfYRkJscX8WTG9pPX6lzVQuAtYLfXw4SLFIF2GoYJSQ7jLqI96vntb8oxaAq
-         7Cm3obQhze2yzWCJ1tWPpC/eMsDbEAR33D4O1I6CnQ9PxPY0g/KRFsowB43TK+i4ZwlU
-         IBPpWmxfsAt2wOe2wqrFcnc4Si/QbYEzMz7CYxKatPXNIjrLLFFv2vGcf8XJtt5jjb5R
-         CCKI+OVO6avrpiH3BumXfyls8Dba8nvD7ea558OE3owhTJC/IawJegp1SeLQ2cZ71X5H
-         A5cQ==
-X-Gm-Message-State: AOAM53126OnUhPqALnXTxf/LZGXwprTJTL7dii945a7JezlRx7SOv6Tb
-        xQP2Hc+sqNGcRJzJkD/xNhcpJFSw0MqXS6oU9gYD7DgklUZgUAzrqgJuMYPpn+CqyfIfeYyU2lL
-        xoVY11TJd9msmb+YRIAvkS7s6
-X-Received: by 2002:ac8:5c8f:0:b0:2dd:b404:bd94 with SMTP id r15-20020ac85c8f000000b002ddb404bd94mr1693189qta.50.1645196161891;
-        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw8JBQaaH0N3aIPc7v5Iu6VHkGq5FX+w6ES4TNS3Zwc4jIuKXDTgK1I/UV9BSzRxEBdFdrTJA==
-X-Received: by 2002:ac8:5c8f:0:b0:2dd:b404:bd94 with SMTP id r15-20020ac85c8f000000b002ddb404bd94mr1693178qta.50.1645196161706;
-        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id w3sm25923138qta.13.2022.02.18.06.56.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
-Subject: Re: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no
- local BAR space
-To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
-        "Wu, Hao" <hao.wu@intel.com>, "mdf@kernel.org" <mdf@kernel.org>,
-        "Xu, Yilun" <yilun.xu@intel.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "corbet@lwn.net" <corbet@lwn.net>,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>
-References: <20220214112619.219761-1-tianfei.zhang@intel.com>
- <20220214112619.219761-5-tianfei.zhang@intel.com>
- <c527e9c7-4588-463b-8a6b-3db68d003d7a@redhat.com>
- <BN9PR11MB54830E0D185101B6B1517113E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <1281cbc7-7a1f-da84-3713-0d81982379ab@redhat.com>
-Date:   Fri, 18 Feb 2022 06:55:58 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cimbY7LPDbRuh3lILBl/36Td2W7ROjWFj0D1595RCaw=;
+        b=eG+bKKPm6Ix/PoeBqFlmZZ9D0lNZooYdK11GBl4j1rYO9SNK+d9HJ5m4DgybBMFkZA
+         h4aA+IB+FCyzbM+r3/UlNDf7l6oD9fiOjCyBp78QhCub/FfZqM03akxni29lQUB0xiVh
+         uqSnPL1GnKW8hK/sbK3GHB7/P02VKaXqGQJ/1TyOUNvLBD7IgR9UE+/ujDG2OAkd2wVf
+         8GjMuPb1YsnlhTY8S+L6Gs02scEyJFrK+BB6QiczzxU+d7x8COXG0R8U3MHopw0qIU7P
+         KmQ1Is0bLL6pUF+1noS5FWXXCB1pMJgEtyL7J0V+Y4+Bem5ZlTffaQrkLW+xZXo8SQop
+         N0Rg==
+X-Gm-Message-State: AOAM533gJcwWbLtsmmAG3r7Vb9dY8sucUNkAuuC/9Mms7AgcFHJqD2vh
+        hqgtuFuFb5HeBthQNxKCrWLkSw==
+X-Google-Smtp-Source: ABdhPJy1JUJKheTePbsE3NKWxwoKzBKakTmpScLec8cb68771P+YmJAhdQP0PlPzF4bonlbfNdg8+Q==
+X-Received: by 2002:adf:d20c:0:b0:1e5:952c:34b5 with SMTP id j12-20020adfd20c000000b001e5952c34b5mr6528414wrh.82.1645196165879;
+        Fri, 18 Feb 2022 06:56:05 -0800 (PST)
+Received: from localhost.localdomain (2a02-8440-6241-3b28-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6241:3b28:3074:96af:9642:2])
+        by smtp.gmail.com with ESMTPSA id b10sm47431454wrd.8.2022.02.18.06.56.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 06:56:05 -0800 (PST)
+From:   Guillaume Ranquet <granquet@baylibre.com>
+To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        Markus Schneider-Pargmann <msp@baylibre.com>
+Subject: [PATCH v8 04/19] video/hdmi: Add audio_infoframe packing for DP
+Date:   Fri, 18 Feb 2022 15:54:22 +0100
+Message-Id: <20220218145437.18563-5-granquet@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220218145437.18563-1-granquet@baylibre.com>
+References: <20220218145437.18563-1-granquet@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB54830E0D185101B6B1517113E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-On 2/18/22 12:14 AM, Zhang, Tianfei wrote:
->
->> -----Original Message-----
->> From: Tom Rix <trix@redhat.com>
->> Sent: Tuesday, February 15, 2022 11:51 PM
->> To: Zhang, Tianfei <tianfei.zhang@intel.com>; Wu, Hao <hao.wu@intel.com>;
->> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.org;
->> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org
->> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
->> Subject: Re: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no local
->> BAR space
->>
->>
->> On 2/14/22 3:26 AM, Tianfei zhang wrote:
->>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>>
->>> When a port is not connected to the same PCIe endpoint as the FME, the
->>> port does not need to be released before being virtualized.  Fix VF
->>> creation code to handle this new use
->> Similar, how does this fit in with iofs, this looks like it would not be valid for the
->> existing cards
-> IOFS introducing multiple methods for PR and AFU access.
-> 1. Legacy Model.
-> 2. Micro-Personas in AFU.
-> 3. Multiple VFs per PR slot.
->
-> For 1 and 2 model, there are 1:1 mapping between Port device and PR slot (or entire AFU). In virtualization,
-> it should release the Port device firstly and then assign to VM. In this models, the DFL driver will track  that
-> the number of port devices has released (cdev->released_port_num in dfl_fpga_cdev_config_ports_vf() function)
-> are equal with the numbers of SRIOV or not. But in model 3, it has multiple VFs per PR slot, and assign the VF to VM
-> without release the port device, so the tracking mechanism of cdev->released_port_num is not workable on new
+Similar to HDMI, DP uses audio infoframes as well which are structured
+very similar to the HDMI ones.
 
-If ->release_port_num is not workable, then it needs to be generalized.
+This patch adds a helper function to pack the HDMI audio infoframe for
+DP, called hdmi_audio_infoframe_pack_for_dp().
+hdmi_audio_infoframe_pack_only() is split into two parts. One of them
+packs the payload only and can be used for HDMI and DP.
 
-Refactor to handle all the cases.
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+---
+ drivers/video/hdmi.c        | 83 ++++++++++++++++++++++++++++---------
+ include/drm/drm_dp_helper.h |  2 +
+ include/linux/hdmi.h        |  7 +++-
+ 3 files changed, 72 insertions(+), 20 deletions(-)
 
-Tom
-
-> model. This patch want to handle this new model during VF creation.
->
->>> case.
->>>
->>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
->>> ---
->>>    drivers/fpga/dfl.c | 11 +++++++++--
->>>    1 file changed, 9 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c index
->>> 26f8cf890700..cfc539a656f0 100644
->>> --- a/drivers/fpga/dfl.c
->>> +++ b/drivers/fpga/dfl.c
->>> @@ -1705,15 +1705,22 @@
->> EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
->>>    int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
->>>    {
->>>    	struct dfl_feature_platform_data *pdata;
->>> -	int ret = 0;
->>> +	int ret = 0, port_count = 0;
->>>
->>>    	mutex_lock(&cdev->lock);
->>> +
->>> +	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
->>> +		if (pdata->dev)
->> This looks wrong,
->>
->> pdata->dev is dereferenced below, if there is a case were (!pdata->dev)
->> here there would be crash later.
->>
->>> +			continue;
->>> +		port_count++;
->> how does this work when only some of the ports are handled in the new way ?
-> This code want to handle the " Multiple VFs per PR slot" model as I mentioned above.
-> In new model, the port_count want to count that how many port devices have released.
-> This code looks not good readability, I try to re-write it.
->
->> Tom
->>
->>> +	}
->>> +
->>>    	/*
->>>    	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
->>>    	 * device, so if released port number doesn't match VF device number,
->>>    	 * then reject the request with -EINVAL error code.
->>>    	 */
->>> -	if (cdev->released_port_num != num_vfs) {
->>> +	if (port_count && cdev->released_port_num != num_vfs) {
->>>    		ret = -EINVAL;
->>>    		goto done;
->>>    	}
+diff --git a/drivers/video/hdmi.c b/drivers/video/hdmi.c
+index 947be761dfa40..63e74d9fd210e 100644
+--- a/drivers/video/hdmi.c
++++ b/drivers/video/hdmi.c
+@@ -21,6 +21,7 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
+ 
++#include <drm/drm_dp_helper.h>
+ #include <linux/bitops.h>
+ #include <linux/bug.h>
+ #include <linux/errno.h>
+@@ -381,12 +382,34 @@ static int hdmi_audio_infoframe_check_only(const struct hdmi_audio_infoframe *fr
+  *
+  * Returns 0 on success or a negative error code on failure.
+  */
+-int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame)
++int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame)
+ {
+ 	return hdmi_audio_infoframe_check_only(frame);
+ }
+ EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+ 
++static void
++hdmi_audio_infoframe_pack_payload(const struct hdmi_audio_infoframe *frame,
++				  u8 *buffer)
++{
++	u8 channels;
++
++	if (frame->channels >= 2)
++		channels = frame->channels - 1;
++	else
++		channels = 0;
++
++	buffer[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
++	buffer[1] = ((frame->sample_frequency & 0x7) << 2) |
++		 (frame->sample_size & 0x3);
++	buffer[2] = frame->coding_type_ext & 0x1f;
++	buffer[3] = frame->channel_allocation;
++	buffer[4] = (frame->level_shift_value & 0xf) << 3;
++
++	if (frame->downmix_inhibit)
++		buffer[4] |= BIT(7);
++}
++
+ /**
+  * hdmi_audio_infoframe_pack_only() - write HDMI audio infoframe to binary buffer
+  * @frame: HDMI audio infoframe
+@@ -404,7 +427,6 @@ EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 				       void *buffer, size_t size)
+ {
+-	unsigned char channels;
+ 	u8 *ptr = buffer;
+ 	size_t length;
+ 	int ret;
+@@ -420,28 +442,13 @@ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 
+ 	memset(buffer, 0, size);
+ 
+-	if (frame->channels >= 2)
+-		channels = frame->channels - 1;
+-	else
+-		channels = 0;
+-
+ 	ptr[0] = frame->type;
+ 	ptr[1] = frame->version;
+ 	ptr[2] = frame->length;
+ 	ptr[3] = 0; /* checksum */
+ 
+-	/* start infoframe payload */
+-	ptr += HDMI_INFOFRAME_HEADER_SIZE;
+-
+-	ptr[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
+-	ptr[1] = ((frame->sample_frequency & 0x7) << 2) |
+-		 (frame->sample_size & 0x3);
+-	ptr[2] = frame->coding_type_ext & 0x1f;
+-	ptr[3] = frame->channel_allocation;
+-	ptr[4] = (frame->level_shift_value & 0xf) << 3;
+-
+-	if (frame->downmix_inhibit)
+-		ptr[4] |= BIT(7);
++	hdmi_audio_infoframe_pack_payload(frame,
++					  ptr + HDMI_INFOFRAME_HEADER_SIZE);
+ 
+ 	hdmi_infoframe_set_checksum(buffer, length);
+ 
+@@ -479,6 +486,44 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+ }
+ EXPORT_SYMBOL(hdmi_audio_infoframe_pack);
+ 
++/**
++ * hdmi_audio_infoframe_pack_for_dp - Pack a HDMI Audio infoframe for
++ *                                    displayport
++ *
++ * @frame HDMI Audio infoframe
++ * @sdp secondary data packet for display port. This is filled with the
++ * appropriate data
++ * @dp_version Display Port version to be encoded in the header
++ *
++ * Packs a HDMI Audio Infoframe to be sent over Display Port. This function
++ * fills the secondary data packet to be used for Display Port.
++ *
++ * Return: Number of total written bytes or a negative errno on failure.
++ */
++ssize_t
++hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
++				 struct dp_sdp *sdp, u8 dp_version)
++{
++	int ret;
++
++	ret = hdmi_audio_infoframe_check(frame);
++	if (ret)
++		return ret;
++
++	memset(sdp->db, 0, sizeof(sdp->db));
++
++	// Secondary-data packet header
++	sdp->sdp_header.HB0 = 0;
++	sdp->sdp_header.HB1 = frame->type;
++	sdp->sdp_header.HB2 = DP_SDP_AUDIO_INFOFRAME_HB2;
++	sdp->sdp_header.HB3 = (dp_version & 0x3f) << 2;
++
++	hdmi_audio_infoframe_pack_payload(frame, sdp->db);
++
++	return frame->length + 4;
++}
++EXPORT_SYMBOL(hdmi_audio_infoframe_pack_for_dp);
++
+ /**
+  * hdmi_vendor_infoframe_init() - initialize an HDMI vendor infoframe
+  * @frame: HDMI vendor infoframe
+diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
+index 30359e434c3f3..707927e3e773a 100644
+--- a/include/drm/drm_dp_helper.h
++++ b/include/drm/drm_dp_helper.h
+@@ -1567,6 +1567,8 @@ int drm_dp_bw_code_to_link_rate(u8 link_bw);
+ #define DP_SDP_VSC_EXT_CEA		0x21 /* DP 1.4 */
+ /* 0x80+ CEA-861 infoframe types */
+ 
++#define DP_SDP_AUDIO_INFOFRAME_HB2	0x1b
++
+ /**
+  * struct dp_sdp_header - DP secondary data packet header
+  * @HB0: Secondary Data Packet ID
+diff --git a/include/linux/hdmi.h b/include/linux/hdmi.h
+index c8ec982ff4984..2f4dcc8d060e3 100644
+--- a/include/linux/hdmi.h
++++ b/include/linux/hdmi.h
+@@ -336,7 +336,12 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+ 				  void *buffer, size_t size);
+ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 				       void *buffer, size_t size);
+-int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame);
++int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame);
++
++struct dp_sdp;
++ssize_t
++hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
++				 struct dp_sdp *sdp, u8 dp_version);
+ 
+ enum hdmi_3d_structure {
+ 	HDMI_3D_STRUCTURE_INVALID = -1,
+-- 
+2.34.1
 
