@@ -2,184 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70286C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3147C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 13:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbiBRNLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 08:11:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45388 "EHLO
+        id S235679AbiBRNL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 08:11:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiBRNLp (ORCPT
+        with ESMTP id S235687AbiBRNL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 08:11:45 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A731114;
-        Fri, 18 Feb 2022 05:11:26 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IBjnl4023165;
-        Fri, 18 Feb 2022 13:11:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=fKVhjSYiibOSJq3O1/0+08AGxNO1ENinWHGINOwzLAI=;
- b=UmLyn9OTB05CuXlcFjUk1noxE46hfmlexfrWWxOLa6cfId/rCcRdpu0aG50PJQWkYwxM
- VbG/HulVOAtTBwTAFrNrNdLhrHixejzqGGCGOAFJFWRxPg93jLqQy2AuSP0joz6u/StZ
- g5D+9V9VIGJkw+/Ere5bXzDDFn6DtQlJkhifWhltDEjDsrHj/rv6cjX/Z/DVa9dCfTDh
- dhCnsm8n8qHWPbgMvH946dwOr1rNLuG1fR4fjdNiPXl1v4jlxd0Td6mhh/eOhVTQwRWV
- J55UJ4VgbIFihKp0vkz/kV3mX38cFXMyuQmGBlsF8kJr3GHXqmijKtVOcTnkmbk20sAb BQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eaavastxd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 13:11:25 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21ID7is3021648;
-        Fri, 18 Feb 2022 13:11:25 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eaavastwr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 13:11:25 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21ID43aw001236;
-        Fri, 18 Feb 2022 13:11:23 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e64hat64x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 13:11:23 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21IDBKI936569346
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 13:11:20 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6E453A406F;
-        Fri, 18 Feb 2022 13:11:20 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B50B0A405B;
-        Fri, 18 Feb 2022 13:11:19 +0000 (GMT)
-Received: from [9.171.47.189] (unknown [9.171.47.189])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 18 Feb 2022 13:11:19 +0000 (GMT)
-Message-ID: <97af6268-ff7a-cfb6-5ea4-217b5162cfe7@linux.ibm.com>
-Date:   Fri, 18 Feb 2022 14:13:34 +0100
+        Fri, 18 Feb 2022 08:11:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA38E7B;
+        Fri, 18 Feb 2022 05:11:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 785DA615FE;
+        Fri, 18 Feb 2022 13:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75D3AC340E9;
+        Fri, 18 Feb 2022 13:11:35 +0000 (UTC)
+Message-ID: <1425d3a5-95e4-29c8-4dcf-8d9c7f8fa288@xs4all.nl>
+Date:   Fri, 18 Feb 2022 14:11:34 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v7 1/1] s390x: KVM: guest support for topology function
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 04/16] media: Remove usage of the deprecated
+ "pci-dma-compat.h" API
 Content-Language: en-US
-To:     Nico Boehr <nrb@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com
-References: <20220217095923.114489-1-pmorel@linux.ibm.com>
- <20220217095923.114489-2-pmorel@linux.ibm.com>
- <f0bf737abf480d6d16af6e5335bb195061f3d076.camel@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <f0bf737abf480d6d16af6e5335bb195061f3d076.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: A1Lyg0RSc8DoD6mcQzOuGGxpckvcaM-_
-X-Proofpoint-ORIG-GUID: GzAtew3Zeqc2gdxdBdVVz4intC7a5M2X
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_05,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 phishscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
- suspectscore=0 spamscore=0 mlxscore=0 bulkscore=0 priorityscore=1501
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180085
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        awalls@md.metrocast.net,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <e89f4b29b9f7e0c711a3ccc16a009f49f416e1fc.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <CAK8P3a0w51bnDy2whAC8WOCx2=9UB1ViX3veOfhSmQwwLr3VNQ@mail.gmail.com>
+ <20220107081003.63c7cea6@coco.lan>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220107081003.63c7cea6@coco.lan>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/17/22 18:17, Nico Boehr wrote:
-> On Thu, 2022-02-17 at 10:59 +0100, Pierre Morel wrote:
-> [...]
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index 2296b1ff1e02..af7ea8488fa2 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
-> [...]
->>   
->> -void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
->> +/**
->> + * kvm_s390_vcpu_set_mtcr
->> + * @vcp: the virtual CPU
->> + *
->> + * Is only relevant if the topology facility is present.
->> + *
->> + * Updates the Multiprocessor Topology-Change-Report to signal
->> + * the guest with a topology change.
->> + */
->> +static void kvm_s390_vcpu_set_mtcr(struct kvm_vcpu *vcpu)
->>   {
->> +       struct esca_block *esca = vcpu->kvm->arch.sca;
+On 07/01/2022 08:10, Mauro Carvalho Chehab wrote:
+> Em Thu, 6 Jan 2022 19:51:47 -0500
+> Arnd Bergmann <arnd@arndb.de> escreveu:
 > 
-> utility is at the same offset for the bsca and the esca, still
-> wondering whether it is a good idea to assume esca here...
+>> On Thu, Jan 6, 2022 at 4:50 PM Christophe JAILLET
+>> <christophe.jaillet@wanadoo.fr> wrote:
+>>>
+>>> In [1], Christoph Hellwig has proposed to remove the wrappers in
+>>> include/linux/pci-dma-compat.h.
+>>>
+>>> Some reasons why this API should be removed have been given by Julia
+>>> Lawall in [2].
+>>>
+>>> A coccinelle script has been used to perform the needed transformation.
+>>> It can be found in [3].
+>>>
+>>> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+>>> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+>>> [3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
+>>>
+>>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>  
+>>
+>> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+>>
+>> Mauro, could you pick this up directly? It has no dependencies on the rest of
+>> the series.
+> 
+> Sure, but I already closed the media merge window. If you prefer to
+> apply it directly via your tree, that would be OK for me as well.
+> If so, just let me know. On such case:
+> 
+> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-We can take bsca to be coherent with the include file where we define 
-ESCA_UTILITY_MTCR inside the bsca.
-And we can rename the define to SCA_UTILITY_MTCR as it is common for 
-both BSCA and ESCA the (E) is too much.
+I picked it up for inclusion in the media subsystem for 5.18.
+
+Regards,
+
+	Hans
 
 > 
-> [...]
->> diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
->> index 098831e815e6..af04ffbfd587 100644
->> --- a/arch/s390/kvm/kvm-s390.h
->> +++ b/arch/s390/kvm/kvm-s390.h
->> @@ -503,4 +503,29 @@ void kvm_s390_vcpu_crypto_reset_all(struct kvm
->> *kvm);
->>    */
->>   extern unsigned int diag9c_forwarding_hz;
->>   
->> +#define S390_KVM_TOPOLOGY_NEW_CPU -1
->> +/**
->> + * kvm_s390_topology_changed
->> + * @vcpu: the virtual CPU
->> + *
->> + * If the topology facility is present, checks if the CPU toplogy
->> + * viewed by the guest changed due to load balancing or CPU hotplug.
->> + */
->> +static inline bool kvm_s390_topology_changed(struct kvm_vcpu *vcpu)
->> +{
->> +       if (!test_kvm_facility(vcpu->kvm, 11))
->> +               return false;
->> +
->> +       /* A new vCPU has been hotplugged */
->> +       if (vcpu->arch.prev_cpu == S390_KVM_TOPOLOGY_NEW_CPU)
->> +               return true;
->> +
->> +       /* The real CPU backing up the vCPU moved to another socket
->> */
->> +       if (topology_physical_package_id(vcpu->cpu) !=
->> +           topology_physical_package_id(vcpu->arch.prev_cpu))
->> +               return true;
-> 
-> Why is it OK to look just at the physical package ID here? What if the
-> vcpu for example moves to a different book, which has a core with the
-> same physical package ID?
-> 
+> Regards,
+> Mauro
 
-You are right, we should look at the drawer and book id too.
-Something like that I think:
-
-         if ((topology_physical_package_id(vcpu->cpu) !=
-              topology_physical_package_id(vcpu->arch.prev_cpu)) ||
-             (topology_book_id(vcpu->cpu) !=
-              topology_book_id(vcpu->arch.prev_cpu)) ||
-             (topology_drawer_id(vcpu->cpu) !=
-              topology_drawer_id(vcpu->arch.prev_cpu)))
-                 return true;
-
-
-Thanks,
-regards,
-Pierre
--- 
-Pierre Morel
-IBM Lab Boeblingen
