@@ -2,132 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E87C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E187C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234812AbiBRL5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:57:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50548 "EHLO
+        id S234978AbiBRMCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:02:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234375AbiBRL5X (ORCPT
+        with ESMTP id S232329AbiBRMCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:57:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646B6253BE5;
-        Fri, 18 Feb 2022 03:57:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0097061F58;
-        Fri, 18 Feb 2022 11:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE1DC340E9;
-        Fri, 18 Feb 2022 11:57:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645185426;
-        bh=kUbpTt/StXluIZwwl2qBkxYOiqUkjNO4FOl6aWmkKgE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GxwBfGr8ZW19lDxtJvWqMkKDLHE29ewva9Z5w5wTqgsRIc/oWypmSBMOGez3bUB77
-         wOUrA4reZxkn5hagfLnGvI/b2eh58WVZ9qJRvRZ4bhGAN+Uv0sKqOhgIp2RMiQcPr/
-         6fQai/yh6H2DAhtsOItLpCKoz7i+oTZIgqxq/Q2Kq1c8FhwNbGlfRpdj8kYOMBlc5b
-         4t8ByMv94NaewMe8SPseAAGO3Y1Qh1HT9Tuf9oDDllMIjwlo9zv3zSrC2HZ0e59EI1
-         loyUFvDZwia2cqIjejXlj3lSw0sqtLsNdl44jOWs3Afa8XsLPP+lEKyCKgJTLZQW8s
-         xJVvGgOPbe9pg==
-Date:   Fri, 18 Feb 2022 12:03:55 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cristian Pop <cristian.pop@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: Re: [PATCH v4 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
-Message-ID: <20220218120355.4b7c33e1@jic23-huawei>
-In-Reply-To: <20220218095048.86826-1-cristian.pop@analog.com>
-References: <20220218095048.86826-1-cristian.pop@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 18 Feb 2022 07:02:32 -0500
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 04:02:15 PST
+Received: from eu-shark2.inbox.eu (eu-shark2.inbox.eu [195.216.236.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A5620F42;
+        Fri, 18 Feb 2022 04:02:14 -0800 (PST)
+Received: from eu-shark2.inbox.eu (localhost [127.0.0.1])
+        by eu-shark2-out.inbox.eu (Postfix) with ESMTP id 077E41E005B2;
+        Fri, 18 Feb 2022 13:46:10 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=inbox.eu; s=20140211;
+        t=1645184770; bh=TWX5DE7/6M1wbf9G5K6Mo9luL0SKZqEs1V53oV4Q540=;
+        h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
+         Content-Type:X-ESPOL:from:date:to:cc;
+        b=Z1pZSnNw2tS1jSbNX3qZKpEOCaM4OHV8kduQUjJc0egJXb0RIKo0FtJj07aZjY1cF
+         X99wdX272SHjeAYRtC2UgBMEKlI3jmCG8N76lGkhoHO1vjnZwUxk7kZpyNvIbclW+s
+         iqjp8zMnznew5G/gaPY7OyuVX6/r6Alht9x2oYro=
+Received: from localhost (localhost [127.0.0.1])
+        by eu-shark2-in.inbox.eu (Postfix) with ESMTP id E643C1E005AB;
+        Fri, 18 Feb 2022 13:46:09 +0200 (EET)
+Received: from eu-shark2.inbox.eu ([127.0.0.1])
+        by localhost (eu-shark2.inbox.eu [127.0.0.1]) (spamfilter, port 35)
+        with ESMTP id dBWL_8A02l0l; Fri, 18 Feb 2022 13:46:09 +0200 (EET)
+Received: from mail.inbox.eu (eu-pop1 [127.0.0.1])
+        by eu-shark2-in.inbox.eu (Postfix) with ESMTP id 69C011E0058C;
+        Fri, 18 Feb 2022 13:46:09 +0200 (EET)
+References: <20220209184103.47635-1-sashal@kernel.org>
+ <20220209184103.47635-16-sashal@kernel.org> <Yg92voqmS9jz/rI+@kroah.com>
+User-agent: mu4e 1.7.0; emacs 27.2
+From:   Su Yue <l@damenly.su>
+To:     Greg KH <greg@kroah.com>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, David Sterba <dsterba@suse.com>,
+        clm@fb.com, josef@toxicpanda.com, linux-btrfs@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 16/27] btrfs: tree-checker: check item_size
+ for dev_item
+Date:   Fri, 18 Feb 2022 19:25:20 +0800
+In-reply-to: <Yg92voqmS9jz/rI+@kroah.com>
+Message-ID: <1r00qtxj.fsf@damenly.su>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed
+X-Virus-Scanned: OK
+X-ESPOL: +dBm1NUOBk3XhyTBXxmtCA4rzV5EXevl+uWy0xxdmmeDUSOFfksTURS1g21yTGK6vzsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 11:50:47 +0200
-Cristian Pop <cristian.pop@analog.com> wrote:
 
-> Add device tree bindings for the ADMV4420 K band downconverter.
-> 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> ---
+On Fri 18 Feb 2022 at 11:36, Greg KH <greg@kroah.com> wrote:
 
-Change log?  Also, looks like this crossed with a question from
-Rob on v3.
+> On Wed, Feb 09, 2022 at 01:40:52PM -0500, Sasha Levin wrote:
+>> From: Su Yue <l@damenly.su>
+>>
+>> [ Upstream commit ea1d1ca4025ac6c075709f549f9aa036b5b6597d ]
+>>
+>> Check item size before accessing the device item to avoid out 
+>> of bound
+>> access, similar to inode_item check.
+>>
+>> Signed-off-by: Su Yue <l@damenly.su>
+>> Reviewed-by: David Sterba <dsterba@suse.com>
+>> Signed-off-by: David Sterba <dsterba@suse.com>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>> ---
+>>  fs/btrfs/tree-checker.c | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
+>> index d4a3a56726aa8..4a5ee516845f7 100644
+>> --- a/fs/btrfs/tree-checker.c
+>> +++ b/fs/btrfs/tree-checker.c
+>> @@ -947,6 +947,7 @@ static int check_dev_item(struct 
+>> extent_buffer *leaf,
+>>  			  struct btrfs_key *key, int slot)
+>>  {
+>>  	struct btrfs_dev_item *ditem;
+>> +	const u32 item_size = btrfs_item_size(leaf, slot);
+>>
+>>  	if (key->objectid != BTRFS_DEV_ITEMS_OBJECTID) {
+>>  		dev_item_err(leaf, slot,
+>> @@ -954,6 +955,13 @@ static int check_dev_item(struct 
+>> extent_buffer *leaf,
+>>  			     key->objectid, 
+>>  BTRFS_DEV_ITEMS_OBJECTID);
+>>  		return -EUCLEAN;
+>>  	}
+>> +
+>> +	if (unlikely(item_size != sizeof(*ditem))) {
+>> +		dev_item_err(leaf, slot, "invalid item size: has 
+>> %u expect %zu",
+>> +			     item_size, sizeof(*ditem));
+>> +		return -EUCLEAN;
+>> +	}
+>> +
+>>  	ditem = btrfs_item_ptr(leaf, slot, struct btrfs_dev_item);
+>>  	if (btrfs_device_id(leaf, ditem) != key->offset) {
+>>  		dev_item_err(leaf, slot,
+>> --
+>> 2.34.1
+>>
+>
+> This adds a build warning, showing that the backport is not 
+> correct, so
+> I'll go drop this :(
+>
+And the warning is
+========================================================================
+arch/x86/kernel/head_64.o: warning: objtool: .text+0x5: 
+unreachable instruction
+fs/btrfs/tree-checker.c: In function 
+\342\200\230check_dev_item\342\200\231:
+fs/btrfs/tree-checker.c:950:53: warning: passing argument 2 of 
+\342\200\230btrfs_item_size\342\200\231 makes pointer from integer 
+without a cast [-Wint-conversion]
+  950 |         const u32 item_size = btrfs_item_size(leaf, slot);
+      |                                                     ^~~~
+      |                                                     |
+      |                                                     int
+In file included from fs/btrfs/tree-checker.c:21:
+fs/btrfs/ctree.h:1474:48: note: expected \342\200\230const struct 
+btrfs_item *\342\200\231 but argument is of type 
+\342\200\230int\342\200\231
+ 1474 |                                    const type *s) 
+ \
+      |                                    ~~~~~~~~~~~~^
+fs/btrfs/ctree.h:1833:1: note: in expansion of macro 
+\342\200\230BTRFS_SETGET_FUNCS\342\200\231
+ 1833 | BTRFS_SETGET_FUNCS(item_size, struct btrfs_item, size, 
+ 32);
+      | ^~~~~~~~~~~~~~~~~~
+========================================================================
 
-Thanks,
+The upstream patchset[1] merged in 5.17-rc1, changed second 
+parameter
+of btrfs_item_size() from btrfs_item * to int directly.
+So yes, the backport is wrong.
 
-Jonathan
+I'm not familiar with stable backport progress. Should I file a 
+patch
+using btrfs_item *? Or just drop it?
 
+The patch is related to  0c982944af27d131d3b74242f3528169f66950ad 
+but
+I wonder why the 0c98294 is not selected automatically.
 
->  .../bindings/iio/frequency/adi,admv4420.yaml  | 55 +++++++++++++++++++
->  1 file changed, 55 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> new file mode 100644
-> index 000000000000..35a3fb3fd339
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> @@ -0,0 +1,55 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/frequency/adi,admv4420.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ADMV4420 K Band Downconverter
-> +
-> +maintainers:
-> +  - Cristian Pop <cristian.pop@analog.com>
-> +
-> +description:
-> +  The ADMV4420 is a highly integrated, double balanced, active
-> +  mixer with an integrated fractional-N synthesizer, ideally suited
-> +  for next generation K band satellite communications
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,admv4420
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 1000000
-> +
-> +  adi,lo-freq-khz:
-> +    description: LO Frequency
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +
-> +  adi,ref-ext-single-ended-en:
-> +    description: External reference selected.
-> +    type: boolean
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      admv4420@0 {
-> +        compatible = "adi,admv4420";
-> +        reg = <0>;
-> +        spi-max-frequency = <1000000>;
-> +        adi,lo-freq-khz = <16750000>;
-> +        adi,ref-ext-single-ended-en;
-> +      };
-> +    };
-> +...
+Thanks.
 
+[1]: 
+https://patchwork.kernel.org/project/linux-btrfs/cover/cover.1634842475.git.josef@toxicpanda.com/
+--
+Su
+> thanks,
+>
+> greg k-h
