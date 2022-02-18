@@ -2,248 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA529C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239858AbiBRVmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:42:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35150 "EHLO
+        id S240003AbiBRVp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:45:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235827AbiBRVmV (ORCPT
+        with ESMTP id S235827AbiBRVpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:42:21 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503F632075
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:42:01 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645220518;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z2l+VAxQDDx0OeC/30i+N6nTLlw9tzVQSZFkmj5mJEI=;
-        b=AW1Q53bTOoUds/cBBbJwTVorSd7ruQTq3kYySocEUrj0ITuHiOsXcBoYyWfy8/PlASIzGD
-        CY8giMnNnFQxJwpjqylZRJt2w+58BTC8j6OlWc9Xb8mnQTBo37sf1zzc8ovo1om3di7/Ri
-        wOHLnYHzoIibXcU00FPQflL6vcCxLL4OidTtmK+5YA8MciTlYwxJfogEG5+4DfFvGgQRWO
-        Kw04zKfNgTXk37VpBUUk0JdAdc05MMqT3xb2cWZBFYnAPososkVvJFNXTSO9urygNhnJC2
-        DNSgM8etoZhXd6WUQ63xtjb7xgAzEQtUv32wg6nrHQ15NtHn1eoNhMmSzt6QAg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645220518;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z2l+VAxQDDx0OeC/30i+N6nTLlw9tzVQSZFkmj5mJEI=;
-        b=90WzBgevenrLcolcfeOW85Ts5j5qTA3HrVaKX1ZEp4qwnPqGX0UjPnxBKb6trMo4eIYSPn
-        618KNeObv6zRB1CQ==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
- proper kthread support
-In-Reply-To: <Yg/HWcifuqLsS6cv@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-12-john.ogness@linutronix.de>
- <Yg/HWcifuqLsS6cv@alley>
-Date:   Fri, 18 Feb 2022 22:47:56 +0106
-Message-ID: <87o8333l97.fsf@jogness.linutronix.de>
+        Fri, 18 Feb 2022 16:45:54 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048BC53723
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:45:36 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso9738477pjj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:45:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JaeagXxuhD2kZkRTgNU1zWFrxImSXnIIvtWnxMCwcII=;
+        b=Z1InYZJUStPQfviXgRDxLvua+UzOg5hswh4ibXD4czbaWWyBsrcAzuSsfUPetpYalb
+         DS7vUjapdjku+Gh2MHu2Wua86gda6pxyUM66Nb5BvlXMNd5JGAHKqKwNLMGoGM/TntR+
+         eKtGDs8udPDqha5/fk2j9UHLIrgcBjBuqDwhS1lifkfdg5mJs6f2eXXcA8mWCFEV7+Mk
+         HUCXNTnYqbxTQ3voqdwipD46Rnjb6QtJPOiwIyDhbK02c9s4R0Qe0gNPdh4AUptcoWzc
+         qddvkElPn7oyCBaxP1tAAdrIuNDmoSUAlcZBhJWXMKAXXuPosdTTBpfMgIfMfQaHMhBn
+         UJLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JaeagXxuhD2kZkRTgNU1zWFrxImSXnIIvtWnxMCwcII=;
+        b=JPEtREIvTf5ahdgJu3jG7X8rU0rxJSNrBKtUUE2q33A5PAChelG2i3KaSJcIMTUoW9
+         5vpCrLAYqaAQOVnxp9dSLrn58EbTnwEwQiUvvSzQL1s+aAbKJiD1+MpWe69SiM9MwJhI
+         RGk24scrQbyTsDsnO6Yt6irK03De1mSQjgcES2Cdg4t+PNdAhvr9Umk5wPqoxFahAHKp
+         LlSjXdXrO6mUSqwjqnogkvFciShA6dfKfKoxhSUn4Pkp+ge8APg7TUjxCNa0QnoAViVZ
+         s0EbnHvyB9UE+drQj5ua8Ct2YrPKNopH2b/IoFzANlVi452UkZ3l91fz0yWU3Qu317eT
+         RVBw==
+X-Gm-Message-State: AOAM530DcOzGVqhakjzyng6Yoj3pyqmfZ03/JUpdafTW7gfYvcoTk7fT
+        GcV4BsyBQhXeLYnMz6mlPKN/4g==
+X-Google-Smtp-Source: ABdhPJzqy+w0T5SGh21c6mr3YpBl5xDnECIpD9YzhBbG/uqEBUmA/IZ+Fig7ly1Bf4z5b3EyFdOUhQ==
+X-Received: by 2002:a17:90b:104:b0:1b8:d212:9b8e with SMTP id p4-20020a17090b010400b001b8d2129b8emr14495377pjz.11.1645220735923;
+        Fri, 18 Feb 2022 13:45:35 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id pg1sm299689pjb.31.2022.02.18.13.45.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 13:45:35 -0800 (PST)
+Date:   Fri, 18 Feb 2022 21:45:31 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v2 16/18] KVM: x86: introduce KVM_REQ_MMU_UPDATE_ROOT
+Message-ID: <YhATewkkO/l4P9UN@google.com>
+References: <20220217210340.312449-1-pbonzini@redhat.com>
+ <20220217210340.312449-17-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217210340.312449-17-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-18, Petr Mladek <pmladek@suse.com> wrote:
-> the solution is very interesting and I am sure that it has many
-> advantages. But it is also quite complex. I want to be sure
-> about the motivations before I start discussing details.
-
-I am jumping ahead to this email so that we can start discussing
-details. This patch is really the key to make the whole series work
-correctly.
-
-> On Mon 2022-02-07 20:49:21, John Ogness wrote:
->> With non-threaded console printers preemption is disabled while
->> holding the console lock in order to avoid the situation where the
->> console printer is scheduled away and no other task can lock the
->> console (for printing or otherwise).
+On Thu, Feb 17, 2022, Paolo Bonzini wrote:
+> Whenever KVM knows the page role flags have changed, it needs to drop
+> the current MMU root and possibly load one from the prev_roots cache.
+> Currently it is papering over some overly simplistic code by just
+> dropping _all_ roots, so that the root will be reloaded by
+> kvm_mmu_reload, but this has bad performance for the TDP MMU
+> (which drops the whole of the page tables when freeing a root,
+> without the performance safety net of a hash table).
+> 
+> To do this, KVM needs to do a more kvm_mmu_update_root call from
+> kvm_mmu_reset_context.  Introduce a new request bit so that the call
+> can be delayed until after a possible KVM_REQ_MMU_RELOAD, which would
+> kill all hopes of finding a cached PGD.
 >
-> I guess that you are talking about that vprintk_emit() disables
-> the preemtion. console_lock() does not disable preemption.
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
 
-Yes. I did not mean to imply that console_lock() is disabling
-preemption. But preemption is disabled at some point _within_ the
-console_lock()/console_unlock() window. I consider
-console_lock()/console_unlock() to be the main API functions for direct
-printing and I wanted to point out that calling that pair will cause
-preemption disabling.
+Please no.
 
->> Disabling preemption is necessary because the console lock is
->> implemented purely as a semaphore, which has no owner.
->
-> I do not understand this explanation.
->
-> The preemtion was added into vprintk_emit() by the commit
-> fd5f7cde1b85d4c8e09c ("printk: Never set console_may_schedule
-> in console_trylock()").
->
-> It is not really necessary. It actually increases the risk of softlockups.
-> The motivation was to increase the chance that messages will get
-> printed. Nobody prints the messages when the owner is sleeping.
-> We hoped that the console owner steeling will be efficient enough
-> to prevent the softlockups.
+I really, really do not want to add yet another deferred-load in the nested
+virtualization paths.  As Jim pointed out[1], KVM_REQ_GET_NESTED_STATE_PAGES should
+never have been merged. And on that point, I've no idea how this new request will
+interact with KVM_REQ_GET_NESTED_STATE_PAGE.  It may be a complete non-issue, but
+I'd honestly rather not have to spend the brain power.
 
-Yes, I am referring to this case where the context taking the semaphore
-goes to sleep. If another context tries to take the semaphore, the
-scheduler does not know which task it can schedule to resolve the
-situation because there is no true lock contention.
+And I still do not like the approach of converting kvm_mmu_reset_context() wholesale
+to not doing kvm_mmu_unload().  There are currently eight kvm_mmu_reset_context() calls:
 
-With a mutex there is an owner. When another task tries to lock a mutex,
-the scheduler knows which task must be scheduled to resolve this true
-lock contention. (There are also other benefits relating to priority
-inheritance, but I chose not to mention this.)
+  1.   nested_vmx_restore_host_state() - Only for a missed VM-Entry => VM-Fail
+       consistency check, not at all a performance concern.
 
->> Like non-threaded console printers, kthread printers use the
->> console lock to synchronize during printing. However, since they
->> use console_lock() instead of a best-effort console_trylock(), it
->> is not possible to disable preemption upon locking.
->   ^^^^^^^^^^^^^^^
->
-> IMHO, it is possible to disable preemtion. But we propably do
-> not want to do it, especially on RT.
+  2.   kvm_mmu_after_set_cpuid() - Still needs to unload.  Not a perf concern.
 
-As stated in the commit message of fd5f7cde1b85 ("printk: Never set
-console_may_schedule in console_trylock()"), enabling preemption is "a
-mistake". That is why I said "not possible". Perhaps I should say "bad
-idea".
+  3.   kvm_vcpu_reset() - Relevant only to INIT.  Not a perf concern, but could be
+       converted manually to a different path without too much fuss.
 
->> Therefore an alternative for synchronizing and avoiding
->> the above mentioned situation is needed.
->
-> I do not think that preemtion is the reason for an alternative
-> soluiton.
+  4+5. enter_smm() / kvm_smm_changed() - IMO, not a perf concern, but again could
+       be converted manually if anyone cares.
 
-Well, if enabling preemption is "a mistake" then we _need_ an
-alternative.
+  6.   set_efer() - Silly corner case that basically requires host userspace abuse
+       of KVM APIs.  Not a perf concern.
 
-> IMHO, the reason is to handle different consoles independently.
-> It will allow to handle more consoles in parallel. And more
-> importantly they will not block each other.
+  7+8. kvm_post_set_cr0/4() - These are the ones we really care about, and they
+       can be handled quite trivially, and can even share much of the logic with
+       kvm_set_cr3().
 
-This is an additional benefit, but it was not my primary motivation when
-designing the alternative. Honestly, I do not care how we phrase the
-motivation and benefits. I only wanted to make it clear that disabling
-preemption is not an acceptable option.
+I strongly prefer that we take a more conservative approach and fix 7+8, and then
+tackle 1, 3, and 4+5 separately if someone cares enough about those flows to avoid
+dropping roots.
 
->> The kthread printers do not need to synchronize against each other,
->
-> yes
->
->> but they do need to synchronize against console_lock() callers.
->
-> We should make it more clear why. I see the following reasons:
->
->    + it is needed for switching between direct printing and
->      offload to kthreads.
->
->    + another operations on all consoles, e.g. suspend, updating
->      list of registered consoles
->
->    + console_lock() has several other external users and their
->      dependencies are complicated.
+Regarding KVM_REQ_MMU_RELOAD, that mess mostly goes away with my series to replace
+that with KVM_REQ_MMU_FREE_OBSOLETE_ROOTS.  Obsolete TDP MMU roots will never get
+a cache hit because the obsolete root will have an "invalid" role.  And if we care
+about optimizing this with respect to a memslot (highly unlikely), then we could
+add an MMU generation check in the cache lookup.  I was planning on posting that
+series as soon as this one is queued, but I'm more than happy to speculatively send
+a refreshed version that applies on top of this series.
 
-OK. Those are also the reasons I see.
-
->> To provide this synchronization, introduce a per-console mutex. The
->> mutex is taken by the kthread printer during printing and is also
->> taken by console_lock() callers.
->
-> ok
->
->> Since mutexes have owners, when calling console_lock(), the
->> scheduler is able to schedule any kthread printers that may have
->> been preempted while printing.
->
-> I do not userstand the relation between mutex owners and scheduling
-> kthreads. The mutex can be taken by any process.
-
-As mentioned above, it is about creating true lock contention between
-the kthreads and the console_lock() callers.
-
->> Rather than console_lock() callers holding the per-console mutex
->> for the duration of the console lock, the per-console mutex is only
->> taken in order to set a new CON_PAUSED flag, which is checked by
->> the kthread printers. This avoids any issues due to nested locking
->> between the various per-console mutexes.
->
-> The flag adds some complexity. The logic will use two locks + one flag
-> instead of just two locks. IMHO, it deserves a more clear explanation
-> why it is needed. When can nested locking happen? Will it make the
-> nested locking safe?
->
-> The obvious ordering is to always take con->mutex under console_sem.
->
-> Are you afraid that some console driver might need to take console_sem
-> from con->write() callback?
-
-No. By nested locking I mean:
-
-    for_each_console(c)
-        mutex_lock(&c->lock);
-
-    /* .... do something .... */
-
-    for_each_console_reversed(c)
-        mutex_unlock(&c->lock);
-
-Aside from this looking ugly and being a potential lockdep problem if
-the console ordering were to change, it would also mean that all the
-console mutexes are locked while suspended. That is not necessarily an
-issue, but I just did not like the idea of holding so many locks while
-suspended. And I still do not feel so comfortable about the somewhat
-arbitrary ordering of console locking.
-
-If you think the above construct is good, then we do not need the flag
-approach.
-
->> The kthread printers must also synchronize against console_trylock()
->> callers. Since console_trylock() is non-blocking, a global atomic
->> counter will be used to identify if any kthread printers are active.
->> The kthread printers will also check the atomic counter to identify
->> if the console has been locked by another task via
->> console_trylock().
->
-> This is another complexity. An easier solution would be to do:
->
-> console_trylock()
-> {
-> 	if (down_trylock(&console_sem))
-> 		return failed;
->
-> 	for_each_console(con) {
-> 		if (mutext_trylock(&con->lock))
-> 			goto fail;
-> 	}
->
-> 	// sucess
->
-> fail:
-> 	for_each_console(con_fail) {
-> 		if (con_fail == con)
-> 			break;
-> 		mutex_unlock(&con->lock);
-> }
-
-No, this cannot work. Semaphores are the _only_ synchonization object in
-the kernel that is allowed to perform a trylock from any context
-(because they don't have owners).
-
-> Of course, the atomic counter is interesting. But it is
-> also another extra complexity. Is it worth it?
-
-I could find no alternative. But I am open for ideas if anyone thinks it
-can be done with less complexity.
-
-John
+[1] https://lore.kernel.org/all/CALMp9eT2cP7kdptoP3=acJX+5_Wg6MXNwoDh42pfb21-wdXvJg@mail.gmail.com
+[2] https://lore.kernel.org/all/20211209060552.2956723-1-seanjc@google.com
