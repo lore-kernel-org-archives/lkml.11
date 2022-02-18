@@ -2,134 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232916AbiBRMjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:39:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58504 "EHLO
+        id S235098AbiBRMmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:42:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231348AbiBRMje (ORCPT
+        with ESMTP id S233235AbiBRMmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:39:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE0129A545
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 04:39:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5191361F7C
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 12:39:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E30C340E9;
-        Fri, 18 Feb 2022 12:39:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645187956;
-        bh=qHo65HwDG+mU8Tt9U4kRIsnLeY0N9I8w58mBY4WGkv8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cyWp+KBXIpnavPKW7B5sricRFuxXTZGKK8esBbwSIv7atqD9bv18uIqSc/hYr4cHa
-         TT2v1yBOgfvC9CHCPY136XKC6DuytmaOeEVEo2DwTgiu7onlHdcF6XSIw2aEr+4CzW
-         aJHkKNRZkqPyXrobyFCfiTQ2TVbCNuHGMqEnK/zqqwjIS7i0AtOkT3Fw7+ynPhtVzs
-         lBwWfpMsIMAP7NnWkqb9992rC3YHzQNITr02Jypi/DpEEDOT0ARcZwJkWpHkOpHu3Y
-         y4WDTTLai392zI3ykP9s3DwdLcWFLPe8qMcU7kMeuL1lZsHb+9W6AVe3a7NqlFwOco
-         p3FSpWLpnqffg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id CF4B8400FE; Fri, 18 Feb 2022 09:39:13 -0300 (-03)
-Date:   Fri, 18 Feb 2022 09:39:13 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>
-Subject: Re: [PATCH] perf data: Fix double free in perf_session__delete
-Message-ID: <Yg+TcWkRDowtQfqO@kernel.org>
-References: <20220218113008.24416-1-alexey.v.bayduraev@linux.intel.com>
+        Fri, 18 Feb 2022 07:42:16 -0500
+X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Feb 2022 04:41:59 PST
+Received: from mail-m2838.qiye.163.com (mail-m2838.qiye.163.com [103.74.28.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262B41CC7CF;
+        Fri, 18 Feb 2022 04:41:58 -0800 (PST)
+Received: from localhost.localdomain (unknown [117.48.120.186])
+        by mail-m2838.qiye.163.com (Hmail) with ESMTPA id DF7583C066F;
+        Fri, 18 Feb 2022 20:35:27 +0800 (CST)
+From:   Tao Liu <thomas.liu@ucloud.cn>
+To:     willemdebruijn.kernel@gmail.com, Tao Liu <thomas.liu@ucloud.cn>
+Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, sridhar.samudrala@intel.com,
+        yoshfuji@linux-ipv6.org
+Subject: Re: [PATCH net v2] gso: do not skip outer ip header in case of ipip and net_failover
+Date:   Fri, 18 Feb 2022 20:35:06 +0800
+Message-ID: <CAF=yD-JH3uKC20eRcNGkrYHnz0Csgg_NvnGNw4k-ECz9vLpKbg@mail.gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <CAF=yD-JH3uKC20eRcNGkrYHnz0Csgg_NvnGNw4k-ECz9vLpKbg@mail.gmail.com>
+References: <CAF=yD-JH3uKC20eRcNGkrYHnz0Csgg_NvnGNw4k-ECz9vLpKbg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218113008.24416-1-alexey.v.bayduraev@linux.intel.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlCN1dZLVlBSVdZDwkaFQgSH1lBWUJCHx5WGk5DGkoaTh9ISE
+        lOVRkRExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OhQ6HBw4PTIrNw1WAzgiOgwf
+        PxkaCxJVSlVKTU9OSkNMTElDSUhLVTMWGhIXVQ8TFBYaCFUXEg47DhgXFA4fVRgVRVlXWRILWUFZ
+        SkpMVU9DVUpJS1VKQ01ZV1kIAVlBSElMSjcG
+X-HM-Tid: 0a7f0cd4829f8420kuqwdf7583c066f
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220218123506.9Zp7Y3pSRyqn9KK3O1Gv8qU1-cliAFX6gilMi7BeSRs@z>
 
-Em Fri, Feb 18, 2022 at 02:30:08PM +0300, Alexey Bayduraev escreveu:
-> When perf_data__create_dir fails, it calls close_dir, but
-> perf_session__delete also calls close_dir and since dir.version and
-> dir.nr was initialized by perf_data__create_dir, a double free occurs.
-> This patch moves the initialization of dir.version and dir.nr after
-> successful initialization of dir.files, that prevents double freeing.
-> This behavior is already implemented in perf_data__open_dir. The patch
-> also adds a missing error message in case data directory creation fails.
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 
-Is this for perf/urgent or for perf/core? Probably perf/core as that
-record__threads_enabled(rec) call hints.
+Sorry for late reply.
 
-Please state for which branch the patch should be applied, something
-like;
-
-[PATCH next] perf data: Fix double free in perf_session__delete()
-
-Or:
-
-[PATCH urgent] perf data: Fix double free in perf_session__delete()
-
-- Arnaldo
- 
-> Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-> ---
->  tools/perf/builtin-record.c | 4 +++-
->  tools/perf/util/data.c      | 7 +++----
->  2 files changed, 6 insertions(+), 5 deletions(-)
 > 
-> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-> index 0bc6529814b2..0306d5911de2 100644
-> --- a/tools/perf/builtin-record.c
-> +++ b/tools/perf/builtin-record.c
-> @@ -1186,8 +1186,10 @@ static int record__mmap_evlist(struct record *rec,
->  
->  	if (record__threads_enabled(rec)) {
->  		ret = perf_data__create_dir(&rec->data, evlist->core.nr_mmaps);
-> -		if (ret)
-> +		if (ret) {
-> +			pr_err("Failed to create data directory: %s\n", strerror(errno));
->  			return ret;
-> +		}
->  		for (i = 0; i < evlist->core.nr_mmaps; i++) {
->  			if (evlist->mmap)
->  				evlist->mmap[i].file = &rec->data.dir.files[i];
-> diff --git a/tools/perf/util/data.c b/tools/perf/util/data.c
-> index f5d260b1df4d..15a4547d608e 100644
-> --- a/tools/perf/util/data.c
-> +++ b/tools/perf/util/data.c
-> @@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_data *data, int nr)
->  	if (!files)
->  		return -ENOMEM;
->  
-> -	data->dir.version = PERF_DIR_VERSION;
-> -	data->dir.files   = files;
-> -	data->dir.nr      = nr;
-> -
->  	for (i = 0; i < nr; i++) {
->  		struct perf_data_file *file = &files[i];
->  
-> @@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_data *data, int nr)
->  		file->fd = ret;
->  	}
->  
-> +	data->dir.version = PERF_DIR_VERSION;
-> +	data->dir.files   = files;
-> +	data->dir.nr      = nr;
->  	return 0;
->  
->  out_err:
-> -- 
-> 2.19.0
+> I think the message could be rewritten to point out that the issue is
+> specific with the rare combination of SKB_GSO_DODGY and a tunnel
+> device that adds an SKB_GSO_ tunnel option.
+> 
+Will do.
 
--- 
+> > This patch also includes ipv6_gso_segment(), considering SIT, etc.
+> >
+> > Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+> > Fixes: cfc80d9a1163 ("net: Introduce net_failover driver")
+> 
+> This is not a net_failover issue.
+> 
+Will remove it.
 
-- Arnaldo
+> I'm not sure whether the issue existed at the time tunnel support was
+> added, or introduced later. It's reasonable to assume that it was
+> always there, but it might be worth a quick code inspection.
+> 
+> > Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+> > ---
+> >  net/ipv4/af_inet.c     | 5 ++++-
+> >  net/ipv6/ip6_offload.c | 2 ++
+> >  2 files changed, 6 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > index 9c465ba..72fde28 100644
+> > --- a/net/ipv4/af_inet.c
+> > +++ b/net/ipv4/af_inet.c
+> > @@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
+> >         }
+> >
+> >         ops = rcu_dereference(inet_offloads[proto]);
+> > -       if (likely(ops && ops->callbacks.gso_segment))
+> > +       if (likely(ops && ops->callbacks.gso_segment)) {
+> >                 segs = ops->callbacks.gso_segment(skb, features);
+> > +               if (!segs)
+> > +                       skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+> > +       }
+> >
+> >         if (IS_ERR_OR_NULL(segs))
+> >                 goto out;
+> 
+> It's unfortunate that we have to add a branch in the common path. But
+> I also don't immediately see a cleaner option.
+> 
+Yes, it is.
+
+Thanks.
