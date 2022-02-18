@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF47C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235570AbiBRM4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:56:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35580 "EHLO
+        id S235626AbiBRM44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:56:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235490AbiBRM4a (ORCPT
+        with ESMTP id S235610AbiBRM4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:56:30 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5EF2B620F;
-        Fri, 18 Feb 2022 04:55:58 -0800 (PST)
+        Fri, 18 Feb 2022 07:56:43 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8632B73F7;
+        Fri, 18 Feb 2022 04:56:08 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 0DC341F4241F
+        with ESMTPSA id D26C11F4241F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645188957;
-        bh=zZZAdneJgA4W7d7XjgDPYrk55GM/cCNi1QttHSnzdKw=;
+        s=mail; t=1645188967;
+        bh=3cKLFODejquWIHPYAw3eHu3koF0olH3bhXMFQxUCMeQ=;
         h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=ZSGoIM7dw6wGoMBH5Bre9rq5VoKXoY/lgOZ04rVjsvCgPg87XsnUtB7fOSBnxg3+2
-         PjfZrAt+ZazJwLwcTGqW1FrcU5wRZAo+RYQhkppwl63CsIdDZrJgQQ4XaJmBOKDWeB
-         XCMSGOp6bVTYiboOb3cFr9dVgN+iPssLaqlttKFVpK4xHB/a4PWx6ZRacccDrL9ZNw
-         CIxLd3X43uUGSe9nhWKMNlpfNSS4siyYDq0w92V+u2JunuQolhm5lWupn3dlyO/R9i
-         y/HFLFkENxUmwbLQR9oqlYFmxKkoaG/E7sIQs0BlfD3JarKHzW2RzEsuWJj2saAodj
-         J2a/P17Y3dQVg==
-Message-ID: <518a64d5-2101-dc31-c409-e9c99458c900@collabora.com>
-Date:   Fri, 18 Feb 2022 13:55:54 +0100
+        b=YdaWjvljX5wM0iuL780yoYpWHTPyevhyjVgBu76atMBDyWcbWJVZTtPzY8yDDlkDZ
+         8EcEtPwi7F5UdHZAlX1azsI4QR4etvV5Kanoj6hCs2jN0ExRhFZoxJFbgoAE2hp8pK
+         MQpmHExBri4qZpL9DNV2ylRafTjwkCeeWd3IUkTobMFrJv3la+aYNLQ0LNJu2dowOV
+         1FsVmOIGiJJNI8RVba7QBLbFW0zBYF82hi5MZ9o/6ZWG3SjbZJCEh8EGI9r+tZQ37Y
+         lEJ+h5HMQOedCvwasrPbewyHE2aqsOavBOJ7jHrjmCWMGEcIV4f0l3NaRr8pdUwvj5
+         iE9pID0eBecAg==
+Message-ID: <8b87bbc1-d6b2-a98f-ee02-a7ac57c5607e@collabora.com>
+Date:   Fri, 18 Feb 2022 13:56:04 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v2 13/23] arm64: dts: mt8192: Add mmc device nodes
+Subject: Re: [PATCH v2 16/23] arm64: dts: mt8192: Add H264 venc device node
 To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -48,9 +48,9 @@ Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
         =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
         <nfraprado@collabora.com>
 References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-14-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-17-allen-kh.cheng@mediatek.com>
 Content-Language: en-US
-In-Reply-To: <20220218091633.9368-14-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220218091633.9368-17-allen-kh.cheng@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -58,65 +58,9 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
-> Add mmc nodes for mt8192 SoC.
+> Adds H264 venc node for mt8192 SoC.
 > 
 > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 36 +++++++++++++++++++++---
->   1 file changed, 32 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 094805db395b..cfc2db501108 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1154,10 +1154,38 @@
->   			#clock-cells = <1>;
->   		};
->   
-> -		msdc: clock-controller@11f60000 {
-> -			compatible = "mediatek,mt8192-msdc";
-> -			reg = <0 0x11f60000 0 0x1000>;
-> -			#clock-cells = <1>;
-> +		mmc0: mmc@11f60000 {
-> +			compatible = "mediatek,mt8192-mmc", "mediatek,mt8183-mmc";
-> +			reg = <0 0x11f60000 0 0x1000>,
-> +			      <0 0x11f50000 0 0x1000>;
 
-This fits on a single line:
-			reg = <0 0x11f60000 0 0x1000>, <0 0x11f50000 0 0x1000>;
-
-> +			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>,
-> +				 <&msdc_top CLK_MSDC_TOP_H_MST_0P>,
-> +				 <&msdc_top CLK_MSDC_TOP_SRC_0P>,
-> +				 <&msdc_top CLK_MSDC_TOP_P_CFG>,
-> +				 <&msdc_top CLK_MSDC_TOP_AXI>,
-> +				 <&msdc_top CLK_MSDC_TOP_AHB2AXI_BRG_AXI>,
-> +				 <&msdc_top CLK_MSDC_TOP_P_MSDC0>;
-> +			clock-names = "source", "hclk", "source_cg", "sys_cg",
-> +				      "axi_cg", "ahb_cg", "pclk_cg";
-> +			status = "disabled";
-> +		};
-> +
-> +		mmc1: mmc@11f70000 {
-> +			compatible = "mediatek,mt8192-mmc", "mediatek,mt8183-mmc";
-> +			reg = <0 0x11f70000 0 0x1000>,
-> +			      <0 0x11c70000 0 0x1000>;
-
-Same here.
-
-> +			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&topckgen CLK_TOP_MSDC30_1_SEL>,
-> +				 <&msdc_top CLK_MSDC_TOP_H_MST_1P>,
-> +				 <&msdc_top CLK_MSDC_TOP_SRC_1P>,
-> +				 <&msdc_top CLK_MSDC_TOP_P_CFG>,
-> +				 <&msdc_top CLK_MSDC_TOP_AXI>,
-> +				 <&msdc_top CLK_MSDC_TOP_AHB2AXI_BRG_AXI>,
-> +				 <&msdc_top CLK_MSDC_TOP_P_MSDC1>;
-> +			clock-names = "source", "hclk", "source_cg", "sys_cg",
-> +				      "axi_cg", "ahb_cg", "pclk_cg";
-> +			status = "disabled";
->   		};
->   
->   		mfgcfg: clock-controller@13fbf000 {
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
