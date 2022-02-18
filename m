@@ -2,96 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 932C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A87C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbiBRH6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 02:58:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45032 "EHLO
+        id S232237AbiBRH6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 02:58:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiBRH6H (ORCPT
+        with ESMTP id S229504AbiBRH6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 02:58:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74207151D09;
-        Thu, 17 Feb 2022 23:57:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F49561028;
-        Fri, 18 Feb 2022 07:57:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0C1C340E9;
-        Fri, 18 Feb 2022 07:57:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645171069;
-        bh=1RjXsiu3Z6SS4o/E9a4X65asxgr+t4tHtpZNXouQhc8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cPYS2jFabTvnkMbQC77iAOAB25vBb+nAZUhtDb3CuoffF3jriH6wQss6h9EX85pQt
-         AdTNny719PLHXh49AeUyXcgBkHcU3Db+BT5cZeC4PkA7qyrV/xx/LO0UpM1TWIHLNz
-         CMOETdfRnGlB5XnVlHZ8HL/JTXe6Ty4CG0gIJPj8=
-Date:   Fri, 18 Feb 2022 08:57:45 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daehwan Jung <dh10.jung@samsung.com>
-Cc:     Felipe Balbi <balbi@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-usb@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
-Subject: Re: usb: gadget: function: add spinlock for rndis response list
-Message-ID: <Yg9ReVfKxHUPOTvZ@kroah.com>
-References: <CGME20220218053230epcas2p1c63c8b28e7448988727221e0265c64fc@epcas2p1.samsung.com>
- <1645162195-54476-1-git-send-email-dh10.jung@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1645162195-54476-1-git-send-email-dh10.jung@samsung.com>
+        Fri, 18 Feb 2022 02:58:11 -0500
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C22315DB33
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 23:57:55 -0800 (PST)
+Received: by mail-pf1-x449.google.com with SMTP id d5-20020a623605000000b004e01ccd08abso1274099pfa.10
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 23:57:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=pzssXhX8riGRjAd4+3metqANF5chmN7DhU3KIG19plk=;
+        b=BXYHGO/apr1trZ7ANJF1Lt6pYKglG4Ybyk1oIZRHZKKVSqoKSXgrBXlJ+1OM+32L9t
+         MU8n7K+r76s0oXflCxISCV1ICc0UvMWkHQwSTytgu8Evx0a2e982roAPsTJGWM6fb62G
+         4xiTSYukPeiMTehnCZ8Ef6urhW9UdAhyCH8qBQH/Z3umLv0xdGv2JPdSLHgNuZnc3YDQ
+         m26WTBm81XDNmFpY/glb5MBqUkdfdOBU4PUPqt6iZ2jAhWr3J7itrrkNCi44IwFV8KeU
+         S94sCD0t8mfXDphKvuDMvw2otQeqJUpd7l5aT+oeKWADzDv5u6Czmms69AvfX5QGDeUK
+         NAmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=pzssXhX8riGRjAd4+3metqANF5chmN7DhU3KIG19plk=;
+        b=gd+ROc0IwO9NmL03Vst4mkyrg5J8785oD/XZzBCRolo4L6SgafqagjwenBg70LAPKK
+         IzpeWqyfm4vQViZtjacaDt5p+Ys6L0Ct7ytY5tTPkmqYW3IG9TpVJL6fp6sDWHWxfPFV
+         Hh2vnVteHAxqMlJCkcbpAPqtfxjldwik3YGU9jCnbFmWlDfsFwM7khtd7YwCoKUVQk+o
+         3zdMzrZlxgWiTVvV3LOrOzOY9+ty8Y/I7vo5NKilujkxmddPkrak9IrshAHfG/oSkwGA
+         HSwGOuHTqCSOzne26IOWJqrUn7qYccjBdyQludgYIk7yqnEva/TaEXTF9jSxprZX3lCq
+         VxrQ==
+X-Gm-Message-State: AOAM5306NQC6+20P5U7dbKXYqf/VZJCZUkUEEvu7uRZ1X44SiSior1v8
+        CeM/tNKAW6aWCb2w+KeD3aR7/a5jC70tYA==
+X-Google-Smtp-Source: ABdhPJw0UMsgszZC5yB3naBv5jFWjYWF4uP6hg8QghCa4W6xT10Nwxg2nhu4SD1k1Vghgej18o9lOhbEem5LzA==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a17:90a:a50f:b0:1b8:e6ad:f63c with SMTP
+ id a15-20020a17090aa50f00b001b8e6adf63cmr333880pjq.1.1645171074073; Thu, 17
+ Feb 2022 23:57:54 -0800 (PST)
+Date:   Fri, 18 Feb 2022 15:57:23 +0800
+Message-Id: <20220218075727.2737623-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH 0/4] kunit,um: Fix kunit.py build --alltests
+From:   David Gow <davidgow@google.com>
+To:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-rdma@vger.kernel.org, x86@kernel.org, felix.kuehling@amd.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 02:29:55PM +0900, Daehwan Jung wrote:
-> There's no lock for rndis response list. It could cause list corruption
-> if two different list_add at the same time like below.
-> It's better to add in rndis_add_response / rndis_free_response
-> / rndis_get_next_response to prevent any race condition on response list.
-> 
-> [  361.894299] [1:   irq/191-dwc3:16979] list_add corruption.
-> next->prev should be prev (ffffff80651764d0),
-> but was ffffff883dc36f80. (next=ffffff80651764d0).
-> 
-> [  361.904380] [1:   irq/191-dwc3:16979] Call trace:
-> [  361.904391] [1:   irq/191-dwc3:16979]  __list_add_valid+0x74/0x90
-> [  361.904401] [1:   irq/191-dwc3:16979]  rndis_msg_parser+0x168/0x8c0
-> [  361.904409] [1:   irq/191-dwc3:16979]  rndis_command_complete+0x24/0x84
-> [  361.904417] [1:   irq/191-dwc3:16979]  usb_gadget_giveback_request+0x20/0xe4
-> [  361.904426] [1:   irq/191-dwc3:16979]  dwc3_gadget_giveback+0x44/0x60
-> [  361.904434] [1:   irq/191-dwc3:16979]  dwc3_ep0_complete_data+0x1e8/0x3a0
-> [  361.904442] [1:   irq/191-dwc3:16979]  dwc3_ep0_interrupt+0x29c/0x3dc
-> [  361.904450] [1:   irq/191-dwc3:16979]  dwc3_process_event_entry+0x78/0x6cc
-> [  361.904457] [1:   irq/191-dwc3:16979]  dwc3_process_event_buf+0xa0/0x1ec
-> [  361.904465] [1:   irq/191-dwc3:16979]  dwc3_thread_interrupt+0x34/0x5c
-> 
-> Fixes: f6281af9d62e ("usb: gadget: rndis: use list_for_each_entry_safe")
-> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-> ---
->  drivers/usb/gadget/function/rndis.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
-> index b7ccf1803656..b4d58324e2d2 100644
-> --- a/drivers/usb/gadget/function/rndis.c
-> +++ b/drivers/usb/gadget/function/rndis.c
-> @@ -1011,16 +1011,21 @@ void rndis_add_hdr(struct sk_buff *skb)
->  }
->  EXPORT_SYMBOL_GPL(rndis_add_hdr);
->  
-> +/* add spinlock to prevent race condition for rndis response list */
-> +static DEFINE_SPINLOCK(resp_lock);
+kunit_tool's --alltests option uses UML and make allyesconfig to produce
+a configuration which enables as many tests as possible. However, make
+ARCH=um allyesconfig is broken for a number of reasons.
 
-Shouldn't this be one lock per rndis_params structure, and not a global
-one for the whole driver?
+Fix a few different UML build breakages, and disable a few config
+options in kunit_tool in order to get this kernel compiling again.
 
-thanks,
+Note that the resulting kernel still doesn't run, but having it compile
+is the first step to fixing that.
 
-greg k-h
+David Gow (3):
+  drm/amdgpu: Make smu7_hwmgr build on UML
+  IB/qib: Compile under User-Mode Linux
+  kunit: tool: Disable broken options for --alltests
+
+Randy Dunlap (1):
+  drm/amdgpu: Fix compilation under UML
+
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c               | 6 +++---
+ drivers/gpu/drm/amd/amdkfd/kfd_topology.c           | 2 +-
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c | 2 +-
+ drivers/infiniband/hw/qib/qib_wc_x86_64.c           | 4 ++++
+ tools/testing/kunit/configs/broken_on_uml.config    | 5 +++++
+ 5 files changed, 14 insertions(+), 5 deletions(-)
+
+-- 
+2.35.1.265.g69c8d7142f-goog
+
