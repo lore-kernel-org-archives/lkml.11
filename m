@@ -2,114 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ADAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE44C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 00:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiBRAKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 19:10:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42736 "EHLO
+        id S230056AbiBRALO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 19:11:14 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbiBRAK3 (ORCPT
+        with ESMTP id S230093AbiBRALM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 19:10:29 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E82A58397;
-        Thu, 17 Feb 2022 16:10:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645142976;
-        bh=dzJiVygOZA/XkFKLwsRSgIaENO2Mjx5mqLbH784YinQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=FCjYPrjopSOTOkN5xkyxo4aMsaqyGSRWBJdVLSZOLMXWhQNGuzqE4ny9YAGF7s1gk
-         /SFkKGh0Po6Pe5tnDfcQWbqpS6TovJUR54TWSr1sHHbeCq0DOmFG90hGcH7/yQAh7b
-         4GHhNfgcy/dCF3zGZvKW5qq5KrGZohHMIY88PM0w=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.194.160]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MD9X9-1nTtGT0vTt-009Cyg; Fri, 18
- Feb 2022 01:09:36 +0100
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-clk@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mips@vger.kernel.org,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dongjiu Geng <gengdongjiu@huawei.com>
-Subject: [PATCH v4 3/5] clk: hisilicon: Terminate clk_div_table with sentinel element
-Date:   Fri, 18 Feb 2022 01:09:19 +0100
-Message-Id: <20220218000922.134857-4-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220218000922.134857-1-j.neuschaefer@gmx.net>
-References: <20220218000922.134857-1-j.neuschaefer@gmx.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:96xUFhBHPOxIo5rsl7aBIDVboX7ATG6jjQOvUnqABAZuh+GTOdX
- 8dHXnASXn6cdEmpIzWVB9KiGlYMZs8v/KXblu7IfthqQKw0zC9ZkRaKpFEQITYz8Vd5PXqi
- yNPTcZU2mkWfvM8h746o8fOxWR+yA43l6owwHTDU7PCnx+kNNd2UTMqhXHjF3qsdI9h5vv0
- iKxkTpKL2eK8GUu/vKlhA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ql56313tolk=:Wc9bpvNMS3EcswujPVJEIN
- 1EAiSU9uhRJH9Gra1G+hprLiZ31XYGylZGDcD4PiqvxXvH5xDnL1wZWvREidCkUt/8uF8ZFc8
- vdi+7BGzI7INCxGhGeZIBMkRF7n6UtgXIVP2WRWbhWgJH/qhyX/f9V73502HJjkCHsBQUSlKa
- OfuRAW51ROKeTv81HSEFnaH9IG3d20THDv6c9FLmwTy0Jc6RrImgk2gArGtUFbVrqoUhaxZ3V
- HndtmWSJ2UdFKZCqNO9fGLmgASdlOgI0OyQRxlbP6b9PRIhSIx3GPcrDQurftqdsYgBb7QIpH
- qIjdeC5K2u3//RFe1kJ7MbK0ZbqyXuJyh5wl35rZCumW+5tMHkn20oi10Ygpoihb97tW6uVRT
- zj+jM4jt7hYDbFF7qEXplRdwxHAOZ+lyFcE3SglCYD9Q58KuFLo3oMtwxwucBRm9o7GLoNO++
- WIA90P8t9FvDJnAOL7uLXbbmh6w1OKf8ohC1cav2WFNT23/I9sYErNryZTNYzRDRM0ReE8Tfg
- claIFk1DKNfvB0xvtGxfwRqWRC7Zvy2/3Hx1TldCQOG4rtG6kX+JZ2ygeBKG+8k0ZFRyzB2u2
- zQuvKtuXbZqeN/EHgLoO4mkyk72XcbuBu+LExrwS/Lclz+iQ/pahiUxOolkZW9B0BnR6LVXa4
- NHg5B6SXlO3JA6JhUV2tQhf0hsELDcTMihCQ8SU8IU4RJj03A6iWUo24P4BeflctxgomvlycL
- xeSJROfUs/yQJPVm0qcf1DTq8aZLG/J/rQVxWGwGvBMy8PJjfZUHGHCbGKACX1S8uay66PY5g
- FYwQ8n6ma0STPAlqaCrae4XXFI67Epzot3LuuZFYFzGeZcx9pMIAsnxHXFMqOzX0WQYA4Eytg
- jexRLxH6YIt67hAjYWNmtB5yqaBQhduXclfYNcl56Gi4pW8CFjsb4ccWzowagOyo1HVWUtpx/
- afcMEQKGuhe7YeIll9e3AtQ9WryazgSjDFPvTIdIaYpsaMNQ1f7+936rPVQhoqBQL03FtoiiL
- Fsi5HqeaS+j17U+E2DDlVocvACQ3/+82Y2QJpHdyx3IgaF0EgRsvRtY1SOe1ApIZLZIQcz4RH
- o3r/3cKV3JxE7k=
+        Thu, 17 Feb 2022 19:11:12 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6E158E4A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:10:51 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id y28-20020aa793dc000000b004e160274e3eso677775pff.18
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 16:10:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=daH+2gut1QW9kZErJcIx6WIChTci/r2UH1rfRtql99A=;
+        b=q6FFpZFF3pNwD7OlZ/4hTa2+tIgGnbd0G+XzZL/u5K1MB7T5d3HgNPpm2WrpsJPGFI
+         qbChI7Kpr1Y4OTN5CIt+CtbUwHq36Dd+XGnXtyuPffUh+44yH9JneNO90sOM503sq9Pt
+         eZKwkuGVLEDIqmylXibuvfO4mWbfbCRMK5t+UM9Ilo+KyaG5HjwenZcHPW8R1weAluSt
+         i263hDw9mxz0nZrOUc3z2zZ9m/JbUInIRuLVFBolt1BGTlkMdal9EsLlqJ9bYGB+yS5s
+         5eibzP96XUS/1KgFsqhE0qyvdkm/TzDcixiWKzx+aATSw/NN755gez1zeV5N/3bhONkt
+         Kp8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=daH+2gut1QW9kZErJcIx6WIChTci/r2UH1rfRtql99A=;
+        b=OS402md6wZ5izFw/mKAiu6fL8GuU76x6ydnerw0/uEzJtRnEBuf6Cf8o0sUuhulzCi
+         sVaZKgxhpeecwo1CK1n9Mv1ND/Kzk62qop75VQTIKjgKNIh1sUnEnwLLIIH/JAXs/R9P
+         8tejQ8ugX75jsjsUqRQ/NG1MQBNf4OIYMlTPxr9g1PQlFTKXC1EHvyYus2hRnjrs1X8m
+         auC6zbweJVR+URmG8a4SoXsqjg2UV44rFD0U1VGaidTWwms7nJCNXu+VVUIUCH7We3aD
+         5dqqirTx892xi9z1yt9PeAftg5sBVsY26xcROUhO2X5jJZzT4yxpf9ZWewsO+rD06p8j
+         dZmg==
+X-Gm-Message-State: AOAM533H73uHZJ/qlzU+HDtZ0tgoDqPleSIc5pkTQY49s2e1rhFIv9XK
+        0oXEArw0IWPCH3/RTWri2h3Mu9qL27GD
+X-Google-Smtp-Source: ABdhPJw6fTpwF9+VtM9cM6JfysP1jGMHMiG5w+LL8NIkGyT/Fp5ts9IYmAvlnIrXQpBFUhpxsnIfEpXhUeXQ
+X-Received: from yuanchu.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1e51])
+ (user=yuanchu job=sendgmr) by 2002:a17:90a:a50f:b0:1b8:e6ad:f63c with SMTP id
+ a15-20020a17090aa50f00b001b8e6adf63cmr199698pjq.1.1645143045060; Thu, 17 Feb
+ 2022 16:10:45 -0800 (PST)
+Date:   Fri, 18 Feb 2022 00:10:16 +0000
+In-Reply-To: <20220218001017.3500673-1-yuanchu@google.com>
+Message-Id: <20220218001017.3500673-2-yuanchu@google.com>
+Mime-Version: 1.0
+References: <20220218001017.3500673-1-yuanchu@google.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH 1/2] selftests/damon: add damon to selftests root Makefile
+From:   Yuanchu Xie <yuanchu@google.com>
+To:     Shuah Khan <shuah@kernel.org>, Markus Boehme <markubo@amazon.de>,
+        SeongJae Park <sj@kernel.org>
+Cc:     rientjes@google.com, Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yuanchu Xie <yuanchu@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div =3D 0).
+Currently the damon selftests are not built with the rest of the
+selftests. We add damon to the list of targets.
 
-Fixes: 6c81966107dc0 ("clk: hisilicon: Add clock driver for hi3559A SoC")
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
+Fixes: b348eb7abd09 ("mm/damon: add user space selftests")
+Signed-off-by: Yuanchu Xie <yuanchu@google.com>
+---
+ tools/testing/selftests/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-v4:
-- add /* sentinel */ comment into sentinel element
-
-v3:
-- no changes
-
-v2:
-- Add Fixes tag
-=2D--
- drivers/clk/hisilicon/clk-hi3559a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/clk/hisilicon/clk-hi3559a.c b/drivers/clk/hisilicon/c=
-lk-hi3559a.c
-index 56012a3d02192..9ea1a80acbe8b 100644
-=2D-- a/drivers/clk/hisilicon/clk-hi3559a.c
-+++ b/drivers/clk/hisilicon/clk-hi3559a.c
-@@ -611,8 +611,8 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks=
-[] =3D {
-
-
- /* shub div clk */
--static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}};
--static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-};
-+static struct clk_div_table shub_spi_clk_table[] =3D {{0, 8}, {1, 4}, {2,=
- 2}, {/*sentinel*/}};
-+static struct clk_div_table shub_uart_div_clk_table[] =3D {{1, 8}, {2, 4}=
-, {/*sentinel*/}};
-
- static struct hisi_divider_clock hi3559av100_shub_div_clks[] =3D {
- 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 2=
-4, 2,
-=2D-
-2.34.1
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index d08fe4cfe811..ffe453760a12 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -9,6 +9,7 @@ TARGETS += clone3
+ TARGETS += core
+ TARGETS += cpufreq
+ TARGETS += cpu-hotplug
++TARGETS += damon
+ TARGETS += drivers/dma-buf
+ TARGETS += efivarfs
+ TARGETS += exec
+-- 
+2.35.1.265.g69c8d7142f-goog
 
