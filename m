@@ -2,150 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4882CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 02:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C761C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 02:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiBRCzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 21:55:11 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60546 "EHLO
+        id S231766AbiBRCzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 21:55:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbiBRCzJ (ORCPT
+        with ESMTP id S231715AbiBRCzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 21:55:09 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D05580F9;
-        Thu, 17 Feb 2022 18:54:52 -0800 (PST)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21I2sUcx031678
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 21:54:31 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 8A76415C34C8; Thu, 17 Feb 2022 21:54:30 -0500 (EST)
-Date:   Thu, 17 Feb 2022 21:54:30 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-ext4@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [REPORT] kernel BUG at fs/ext4/inode.c:2620 - page_buffers()
-Message-ID: <Yg8KZvDVFJgTXm4C@mit.edu>
-References: <Yg0m6IjcNmfaSokM@google.com>
+        Thu, 17 Feb 2022 21:55:40 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B6A60CF1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 18:55:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645152924; x=1676688924;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8tbuvYh0eK0b0TFW+yWYPs3qXHRE9DlvaagIPNoX7vY=;
+  b=i2YUqfHeSM3Te0H+zfvOj6D1CJ2iwOuNLETJOu39TspBZNIiU8OAU/Mu
+   VgxdGLE2Sb9SfcvBTqmPm+C/FDbf/uvxFv4/HnEk5IGHKulkz4OMgP2wr
+   V/RmcWCaZAjgPDqEKh6KIowgHnmLmrvRtvHum0pIcoh2zn3o0Kd6R2YI1
+   Iu1M4kxO8yV877lmM1b5xeD/CKhdxWLQqL5Y66xmcs+Jcugz6BPFF44ii
+   Nv0xRbzUyXKKEsDORJ5dhmnpXuN47JU7qdohTLq8Hiszw1lXm/MBUNLya
+   hj1jWQxlmxw2QGJoU2pNC75EVBmL3fVY9UsBintoEnqPzh3lLFGB81H+e
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="234568067"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="234568067"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 18:55:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="682316036"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 17 Feb 2022 18:55:21 -0800
+Message-ID: <60d395f4-6103-94fe-9b05-daeaf0b00adb@linux.intel.com>
+Date:   Fri, 18 Feb 2022 10:53:59 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yg0m6IjcNmfaSokM@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Enable ATS for the devices in SATC table
+Content-Language: en-US
+To:     Yian Chen <yian.chen@intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Sohil Mehta <sohil.mehta@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220216193609.686107-1-yian.chen@intel.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220216193609.686107-1-yian.chen@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 04:31:36PM +0000, Lee Jones wrote:
+Hi Yian,
+
+On 2/17/22 3:36 AM, Yian Chen wrote:
+> Starting from Intel VT-d v3.2, Intel platform BIOS can provide
+> additional SATC table structure. SATC table includes a list of
+> SoC integrated devices that support ATC (Address translation
+> cache).
 > 
-> After recently receiving a bug report from Syzbot [0] which was raised
-> specifically against the Android v5.10 kernel, I spent some time
-> trying to get to the crux.  Firstly I reproduced the issue on the
-> reported kernel, then did the same using the latest release kernel
-> v5.16.
+> Enabling ATC (via ATS capability) can be a functional requirement
+> for SATC device operation or an optional to enhance device
+> performance/functionality. This is determined by the bit of
+> ATC_REQUIRED in SATC table. When IOMMU is working in scalable
+> mode, software chooses to always enable ATS for every device in
+> SATC table because Intel SoC devices in SATC table are trusted
+> to use ATS.
 > 
-> The full kernel trace can be seen below at [1].
+> On the other hand, if IOMMU is in legacy mode, ATS of SATC
+> capable devices can work transparently to software and be
+> automatically enabled by IOMMU hardware. As the result,
+> there is no need for software to enable ATS on these devices.
 > 
+> Signed-off-by: Yian Chen <yian.chen@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 53 ++++++++++++++++++++++++++++++++++---
+>   include/linux/intel-iommu.h |  2 +-
+>   2 files changed, 51 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 92fea3fbbb11..58a80cec50bb 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -872,7 +872,6 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
+>   
+>   	return false;
+>   }
+> -
 
-Lee, thanks for your work in trimming down the syzkaller reproducer.
-The moral equivalent of what it is doing (except each system call is
-done in a separate thread, with synchronization so each gets executed
-in order, but perhaps on a different CPU) is:
+Unnecessary.
 
-        int dest_fd, src_fd, truncate_fd, mmap_fd;
-        pid_t tid;
-        struct iovec local_iov, remote_iov;
+>   struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
+>   {
+>   	struct dmar_drhd_unit *drhd = NULL;
+> @@ -2684,7 +2683,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>   
+>   		if (ecap_dev_iotlb_support(iommu->ecap) &&
+>   		    pci_ats_supported(pdev) &&
+> -		    dmar_find_matched_atsr_unit(pdev))
+> +		    dmar_ats_supported(pdev, iommu))
+>   			info->ats_supported = 1;
+>   
+>   		if (sm_supported(iommu)) {
+> @@ -4020,7 +4019,42 @@ static void intel_iommu_free_dmars(void)
+>   	}
+>   }
+>   
+> -int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+> +/* dev_satc_state - Find if dev is in a DMAR SATC table
+> + *
+> + * return value:
+> + *    1: dev is in STAC table and ATS is required
+> + *    0: dev is in SATC table and ATS is optional
+> + *    -1: dev isn't in SATC table
+> + */
 
-        dest_fd = open("./bus", O_RDWR|O_CREAT|O_NONBLOCK|O_SYNC|
-                       O_DIRECT|O_LARGEFILE|O_NOATIME, 0);
-        src_fd = openat(AT_FDCWD, "/bin/bash", O_RDONLY);
-        truncate_fd = syscall(__NR_open, "./bus", O_RDWR|O_CREAT|O_SYNC|O_NOATIME|O_ASYNC);
-        ftruncate(truncate_fd, 0x2008002ul);
-        mmap((void *) 0x20000000ul /* addr */, 0x600000ul /* length */,
-             PROT_WRITE|PROT_EXEC|PROT_SEM||0x7ffff0, MAP_FIXED|MAP_SHARED, mmap_fd, 0);
-        sendfile(dest_fd, src_fd, 0 /* offset */, 0x80000005ul /* count */);
-        local_iov.iov_base = (void *) 0x2034afa4;
-        local_iov.iov_len = 0x1f80;
-        remote_iov.iov_base = (void *) 0x20000080;
-        remote_iov.iov_len = 0x2034afa5;
-        process_vm_writev(gettid(), &local_iov, 1, &remote_iov, 1, 0);
-        sendfile(dest_fd, src_fd, 0 /* offset */, 0x1f000005ul /* count */);
+Judging the status of the device in table according to the hard coded
+return value will make the code hard to read. How about using two
+helpers with meaningful names, for example,
 
-Which is then executed repeataedly over and over again.  (With the
-file descriptors closed at each loop, so the file is reopened each time.)
+bool dmar_find_matched_satc_unit()
+bool dmar_ats_required_in_satc()?
 
-So basically, we have a scratch file which is initialized using an
-sendfile using O_DIRECT.  The scratch file is also mmap'ed into the
-process's address space, and we then *modify* that an mmap'ed reagion
-using process_vm_writev() --- and this is where the problem starts.
+> +static int dev_satc_state(struct pci_dev *dev)
+> +{
+> +	int i, ret = -1;
+> +	struct device *tmp;
+> +	struct dmar_satc_unit *satcu;
+> +	struct acpi_dmar_satc *satc;
+> +
+> +	dev = pci_physfn(dev);
+> +	rcu_read_lock();
+> +
+> +	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
+> +		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
+> +		if (satc->segment != pci_domain_nr(dev->bus))
+> +			continue;
+> +		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
+> +			if (to_pci_dev(tmp) == dev) {
+> +				if (satc->flags)
 
-process_vm_writev() uses [un]pin_user_pages_remote() which is the same
-interface uses for RDMA.  But it's not clear this is ever supposed to
-work for memory which is mmap'ed region backed by a file.
-pin_user_pages_remote() appears to assume that it is an anonymous
-region, since the get_user_pages functions in mm/gup.c don't call
-read_page() to read data into any pages that might not be mmaped in.
+Do you need to check the ATC_REQUIRED bit field?
 
-They also don't follow the mm / file system protocol of calling the
-file system's write_begin() or page_mkwrite() before modifying a page,
-and so when when process_vm_writev() calls unpin_user_pages_remote(),
-this tries to dirty the page, but since page_mkwrite() or
-write_begin() hasn't been called, buffers haven't been attached to the
-page, and so that triggers the following ext4 WARN_ON:
+> +					ret = 1;
+> +				else
+> +					ret = 0;
+> +				goto out;
+> +			}
+> +	}
+> +out:
+> +	rcu_read_unlock();
+> +	return ret;
+> +}
+> +
+> +int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
+>   {
+>   	int i, ret = 1;
+>   	struct pci_bus *bus;
+> @@ -4030,6 +4064,19 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
+>   	struct dmar_atsr_unit *atsru;
+>   
+>   	dev = pci_physfn(dev);
+> +	i = dev_satc_state(dev);
+> +	if (i >= 0) {
+> +		/* This dev supports ATS as it is in SATC table!
+> +		 * When IOMMU is in legacy mode, enabling ATS is done
+> +		 * automatically by HW for the device that requires
+> +		 * ATS, hence OS should not enable this device ATS
+> +		 * to avoid duplicated TLB invalidation
+> +		 */
+> +		if (i && !sm_supported(iommu))
+> +			ret = 0;
+> +		return ret;
+> +	}
+> +
+>   	for (bus = dev->bus; bus; bus = bus->parent) {
+>   		bridge = bus->self;
+>   		/* If it's an integrated device, allow ATS */
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 69230fd695ea..fe9fd417d611 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -717,7 +717,7 @@ static inline int nr_pte_to_next_page(struct dma_pte *pte)
+>   }
+>   
+>   extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
+> -extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
+> +extern int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu);
 
-[ 1451.095939] WARNING: CPU: 1 PID: 449 at fs/ext4/inode.c:3565 ext4_set_page_dirty+0x48/0x50
-  ...
-[ 1451.139877] Call Trace:
-[ 1451.140833]  <TASK>
-[ 1451.141889]  folio_mark_dirty+0x2f/0x60
-[ 1451.143408]  set_page_dirty_lock+0x3e/0x60
-[ 1451.145130]  unpin_user_pages_dirty_lock+0x108/0x130
-[ 1451.147405]  process_vm_rw_single_vec.constprop.0+0x1b9/0x260
-[ 1451.150135]  process_vm_rw_core.constprop.0+0x156/0x280
-[ 1451.159576]  process_vm_rw+0xc4/0x110
+The dmar_find_matched_atsr_unit() is not used out of iommu.c. Can you
+please make a patch to change it to a static one?
 
+>   
+>   extern int dmar_enable_qi(struct intel_iommu *iommu);
+>   extern void dmar_disable_qi(struct intel_iommu *iommu);
 
-Then when ext4_writepages() gets called, we trigger the BUG because
-buffers haven't been attached to the page.  We can certainly avoid the
-BUG by checking to see if buffers are attached first, and if not, skip
-writing the page trigger a WARN_ON, and then forcibly clear the page
-dirty flag so don't permanently leak memory and allow the file system
-to be unmounted.  (Note: we can't fix the problem by attaching the
-buffers in set_page_dirty(), since is occasionally called under
-spinlocks and without the page being locked, so we can't do any kind
-of allocation, so ix-nay on calling create_empty_buffers() which calls
-alloc_buffer_head().)
-
-BUT, that is really papering over the problem, since it's not clear
-it's valid to try to use get_user_pages() and friends (including
-[un]pin_user_pages_remote() on file-backed memory.
-
-And if it is supposed to be valid, then mm/gup.c needs to first call
-readpage() if the page is not present, so that if process_vm_writev()
-is only modifying a few bytes in the mmap'ed region, we need to fault
-in the page first, and then mm/gup.c needs to inform the file system
-to make sure that if pinned memory region is not yet allocated, than
-whatever needs to happen to allocate space, via page_mkwrite() has
-taken place.  (And by the way, that means that pin_user_pages_remote()
-may need to return ENOSPC if there is not free space in the file
-system, and hence ENOSPC may need to reflected all the way back to
-process_vm_writev().
-
-Alternatively, if we don't expect process_vm_writev() to work on
-file-backed memory, perhaps it and pin_user_pages_remote() should
-return some kind of error?
-
-	    	      	     	    	      - Ted
+Best regards,
+baolu
