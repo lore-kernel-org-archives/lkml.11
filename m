@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B38DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C657C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239839AbiBRV0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:26:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51404 "EHLO
+        id S239862AbiBRV0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:26:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239805AbiBRVZm (ORCPT
+        with ESMTP id S239799AbiBRVZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 16:25:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 214382402C1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:25 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49435243A3E
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645219524;
+        s=mimecast20190719; t=1645219523;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wTqJ9ZbJUCgx8VrF++WoBF0cwmRu2Y/rNRNUF4x8BCg=;
-        b=hSRjPNl2igdotrW7hpJVF570X04Qxyvqll1IOx71y/TDJkJXG6JsY0Ldcvu3xoqPqWEOyC
-        H4FwOLPbX3rqwPw32T0YitdDozDTDtv8y7PJORMsx+gMMopWjc2W5WM/yVLNytSk24KjQj
-        mmXrrxyuVLdVE6uhGubKYSX4x1r2Jqw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=BJ8v4efM2N4chZkPCn9ko+wk6+9o/1ayB9nO/iF+hOY=;
+        b=QRXmV+sgvvH2QU2xxhSEa8i3j6T9PQCB/ZLoKTyu1FjnqxFcCWiVvZ2Ksua98VeVvQ2iLD
+        pm4TULL4t1MzMkM9r9y7vGUuCwp2kpPcomxr99ZP64+pYyt2Z0V11wjpYUyxq2pZwA/oGv
+        dONfDvVQDMuxb8ddT0NO9Q+OCPTudcM=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-34-hkX32_i9NUy6BzbXG2Mzqw-1; Fri, 18 Feb 2022 16:25:18 -0500
-X-MC-Unique: hkX32_i9NUy6BzbXG2Mzqw-1
-Received: by mail-wm1-f71.google.com with SMTP id c7-20020a1c3507000000b0034a0dfc86aaso6464747wma.6
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:18 -0800 (PST)
+ us-mta-79-HhofPK5sMJ2gtl5txreSAg-1; Fri, 18 Feb 2022 16:25:22 -0500
+X-MC-Unique: HhofPK5sMJ2gtl5txreSAg-1
+Received: by mail-wr1-f69.google.com with SMTP id q21-20020adfab15000000b001e57c9a342aso4079018wrc.6
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wTqJ9ZbJUCgx8VrF++WoBF0cwmRu2Y/rNRNUF4x8BCg=;
-        b=yRgL3o2bdX26K2imZivaa7nFBIkfgQo7VIfaHd8AaiLe7xwpGWs98M/KHn/Nj0Gzm2
-         VVTSuJH0rCBO2k7x68oBMnt9Jakk13DsDmCrpX5nCW+U+bJXLW0yR8VD2gvoiVCrXFUx
-         4Wr9/cagkkRaJf3ul48MUR+L2/TqvFSEerRbHH1OCpA9HmdYtFQeDn9nYAzY+SSJ+oaA
-         sgvJnsQRmXza8+v4aspOMuJaPPpvSRt8p0qwNKETwoUZFuntP+Rn2FQeMACNDR558oM8
-         K8XE0HIYzsk1CvZGXhb041gr+3o2ppr6Ft2Q4GH3T5yBphNmi5D/Mc8CN4P+mW/IZpNW
-         mwEw==
-X-Gm-Message-State: AOAM533p59QLxc+h2r2QytD5XTrL1b2iSK6kaQwLV1xL50mrGvec4Njt
-        arvxnMRsPX0tWBwnrLUXr7E45EfPy7c8JmG5fc4oD3kObviN7EKMSBScqAJWa/hajgk3OOebSNO
-        m/7Q+F/u9//s1P2R6tPNkOKs=
-X-Received: by 2002:a05:6000:1813:b0:1e7:6ac7:d6be with SMTP id m19-20020a056000181300b001e76ac7d6bemr7502145wrh.54.1645219517038;
-        Fri, 18 Feb 2022 13:25:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw22CPgUBXuOIWwUF4Vs7kU+E/iFFGVYUTwCba+1kpLI1JYsMJISA7h2h1doT5as8bFZQJxAw==
-X-Received: by 2002:a05:6000:1813:b0:1e7:6ac7:d6be with SMTP id m19-20020a056000181300b001e76ac7d6bemr7502137wrh.54.1645219516801;
-        Fri, 18 Feb 2022 13:25:16 -0800 (PST)
+        bh=BJ8v4efM2N4chZkPCn9ko+wk6+9o/1ayB9nO/iF+hOY=;
+        b=zH1GE5Br+JSWIOh9AKzOBcIxLRCnA9SFBvFw+Vu6ZTdwgm4wSuLcwNbeFHpLUFTIHZ
+         t9+uGu72QTNVmaHQv9rQGEIRQnivq9y76NSJVFuVILmonUUgmOcIEkQIeBOqh9YXOFaN
+         rEKo66DUPPvfF4o88AVB934Bx6DKnizhwWs+lxOea3Qbwo4hWlZ5rvgMUHdrBMl4j3dX
+         +dS0PXzOpptMswYC2I7je/MYD4fvnTJP3YqriboTiAb8ezkXh6VE5ZfVv3ITegPyokUE
+         xw9kBd8j+2Zp1SStjXeVyVlose09A2pikv7K+rEkOcrzdXgbE/m78pwpcRwOybOHqcxW
+         XReg==
+X-Gm-Message-State: AOAM530Lq+PmT5EHscFs8OEF6DIbDOwgYpsPFGEf3qv81Y/0DCJcjcS5
+        0klrW5Z7BKshmQDwIHFL/Bqq2QdlQrlrKgqZEDF5ycjv8nVYpbe1z8IgjdR0mHfKN/iiwRAeYT/
+        F5dnPOt63Jb+1XmRjpewXfto=
+X-Received: by 2002:adf:e28f:0:b0:1e7:cf02:2d28 with SMTP id v15-20020adfe28f000000b001e7cf022d28mr7709000wri.232.1645219520931;
+        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz75WwBwl753v4poDpdux4TITfI6KzYtUDxdN4PGJ/hKxP8K4kr0B5XZsfvMeUUwC3mZDz6KA==
+X-Received: by 2002:adf:e28f:0:b0:1e7:cf02:2d28 with SMTP id v15-20020adfe28f000000b001e7cf022d28mr7708990wri.232.1645219520665;
+        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id p23-20020a1c7417000000b0037bf902737esm560539wmc.9.2022.02.18.13.25.16
+        by smtp.gmail.com with ESMTPSA id o6-20020a05600c338600b0037c322d1425sm472350wmp.8.2022.02.18.13.25.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 13:25:16 -0800 (PST)
+        Fri, 18 Feb 2022 13:25:20 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -64,9 +64,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
         christophe.leroy@csgroup.eu, msuchanek@suse.de,
         oleksandr@natalenko.name
-Subject: [PATCH v6 03/13] module: Make internal.h and decompress.c more compliant
-Date:   Fri, 18 Feb 2022 21:25:01 +0000
-Message-Id: <20220218212511.887059-4-atomlin@redhat.com>
+Subject: [PATCH v6 06/13] module: Move strict rwx support to a separate file
+Date:   Fri, 18 Feb 2022 21:25:04 +0000
+Message-Id: <20220218212511.887059-7-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218212511.887059-1-atomlin@redhat.com>
 References: <20220218212511.887059-1-atomlin@redhat.com>
@@ -76,112 +76,299 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch will address the following warning and style violations
-generated by ./scripts/checkpatch.pl in strict mode:
+No functional change.
 
-  WARNING: Use #include <linux/module.h> instead of <asm/module.h>
-  #10: FILE: kernel/module/internal.h:10:
-  +#include <asm/module.h>
+This patch migrates code that makes module text
+and rodata memory read-only and non-text memory
+non-executable from core module code into
+kernel/module/strict_rwx.c.
 
-  CHECK: spaces preferred around that '-' (ctx:VxV)
-  #18: FILE: kernel/module/internal.h:18:
-  +#define INIT_OFFSET_MASK (1UL << (BITS_PER_LONG-1))
-
-  CHECK: Please use a blank line after function/struct/union/enum declarations
-  #69: FILE: kernel/module/internal.h:69:
-  +}
-  +static inline void module_decompress_cleanup(struct load_info *info)
-						   ^
-  CHECK: extern prototypes should be avoided in .h files
-  #84: FILE: kernel/module/internal.h:84:
-  +extern int mod_verify_sig(const void *mod, struct load_info *info);
-
-  WARNING: Missing a blank line after declarations
-  #116: FILE: kernel/module/decompress.c:116:
-  +               struct page *page = module_get_next_page(info);
-  +               if (!page) {
-
-  WARNING: Missing a blank line after declarations
-  #174: FILE: kernel/module/decompress.c:174:
-  +               struct page *page = module_get_next_page(info);
-  +               if (!page) {
-
-  CHECK: Please use a blank line after function/struct/union/enum declarations
-  #258: FILE: kernel/module/decompress.c:258:
-  +}
-  +static struct kobj_attribute module_compression_attr = __ATTR_RO(compression);
-
-Note: Fortunately, the multiple-include optimisation found in
-include/linux/module.h will prevent duplication/or inclusion more than
-once.
-
-Fixes: f314dfea16a ("modsign: log module name in the event of an error")
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- kernel/module/decompress.c | 3 +++
- kernel/module/internal.h   | 6 ++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ kernel/module/Makefile     |  1 +
+ kernel/module/internal.h   | 38 +++++++++++++++
+ kernel/module/main.c       | 99 +-------------------------------------
+ kernel/module/strict_rwx.c | 84 ++++++++++++++++++++++++++++++++
+ 4 files changed, 125 insertions(+), 97 deletions(-)
+ create mode 100644 kernel/module/strict_rwx.c
 
-diff --git a/kernel/module/decompress.c b/kernel/module/decompress.c
-index d14d6443225a..2fc7081dd7c1 100644
---- a/kernel/module/decompress.c
-+++ b/kernel/module/decompress.c
-@@ -113,6 +113,7 @@ static ssize_t module_gzip_decompress(struct load_info *info,
- 
- 	do {
- 		struct page *page = module_get_next_page(info);
-+
- 		if (!page) {
- 			retval = -ENOMEM;
- 			goto out_inflate_end;
-@@ -171,6 +172,7 @@ static ssize_t module_xz_decompress(struct load_info *info,
- 
- 	do {
- 		struct page *page = module_get_next_page(info);
-+
- 		if (!page) {
- 			retval = -ENOMEM;
- 			goto out;
-@@ -256,6 +258,7 @@ static ssize_t compression_show(struct kobject *kobj,
- {
- 	return sysfs_emit(buf, "%s\n", __stringify(MODULE_COMPRESSION));
- }
-+
- static struct kobj_attribute module_compression_attr = __ATTR_RO(compression);
- 
- static int __init module_decompress_sysfs_init(void)
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index 6fb21ebe1aa3..3f48343636ff 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -10,4 +10,5 @@ obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
+ obj-$(CONFIG_LIVEPATCH) += livepatch.o
+ ifdef CONFIG_MODULES
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
++obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
+ endif
 diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index ea8c4c02614c..e0775e66bcf7 100644
+index 57a715454c9e..f4b7e123d625 100644
 --- a/kernel/module/internal.h
 +++ b/kernel/module/internal.h
-@@ -6,7 +6,8 @@
-  */
+@@ -20,6 +20,17 @@
+ /* Maximum number of characters written by module_flags() */
+ #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
  
- #include <linux/elf.h>
--#include <asm/module.h>
-+#include <linux/compiler.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
- 
- #ifndef ARCH_SHF_SMALL
-@@ -54,7 +55,7 @@ struct load_info {
- 	} index;
- };
- 
--extern int mod_verify_sig(const void *mod, struct load_info *info);
-+int mod_verify_sig(const void *mod, struct load_info *info);
- 
- #ifdef CONFIG_MODULE_DECOMPRESS
- int module_decompress(struct load_info *info, const void *buf, size_t size);
-@@ -65,6 +66,7 @@ static inline int module_decompress(struct load_info *info,
- {
- 	return -EOPNOTSUPP;
- }
++/*
++ * Modules' sections will be aligned on page boundaries
++ * to ensure complete separation of code and data, but
++ * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
++ */
++#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
++# define debug_align(X) PAGE_ALIGN(X)
++#else
++# define debug_align(X) (X)
++#endif
 +
- static inline void module_decompress_cleanup(struct load_info *info)
- {
+ extern struct mutex module_mutex;
+ extern struct list_head modules;
+ 
+@@ -126,3 +137,30 @@ static inline struct module *mod_find(unsigned long addr)
+ 	return NULL;
  }
+ #endif /* CONFIG_MODULES_TREE_LOOKUP */
++
++#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
++void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
++								     int num_pages));
++#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
++
++#ifdef CONFIG_STRICT_MODULE_RWX
++void frob_rodata(const struct module_layout *layout,
++		 int (*set_memory)(unsigned long start, int num_pages));
++void frob_ro_after_init(const struct module_layout *layout,
++			int (*set_memory)(unsigned long start, int num_pages));
++void frob_writable_data(const struct module_layout *layout,
++			int (*set_memory)(unsigned long start, int num_pages));
++void module_enable_ro(const struct module *mod, bool after_init);
++void module_enable_nx(const struct module *mod);
++int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
++				char *secstrings, struct module *mod);
++
++#else /* !CONFIG_STRICT_MODULE_RWX */
++static void module_enable_nx(const struct module *mod) { }
++static void module_enable_ro(const struct module *mod, bool after_init) {}
++static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
++				       char *secstrings, struct module *mod)
++{
++	return 0;
++}
++#endif /* CONFIG_STRICT_MODULE_RWX */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 76b53880ad91..5cd63f14b1ef 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -63,17 +63,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+ 
+-/*
+- * Modules' sections will be aligned on page boundaries
+- * to ensure complete separation of code and data, but
+- * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
+- */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-# define debug_align(X) ALIGN(X, PAGE_SIZE)
+-#else
+-# define debug_align(X) (X)
+-#endif
+-
+ /*
+  * Mutex protects:
+  * 1) List of modules (also safely readable with preempt_disable),
+@@ -1819,8 +1808,8 @@ static void mod_sysfs_teardown(struct module *mod)
+  * whether we are strict.
+  */
+ #ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+-static void frob_text(const struct module_layout *layout,
+-		      int (*set_memory)(unsigned long start, int num_pages))
++void frob_text(const struct module_layout *layout,
++	       int (*set_memory)(unsigned long start, int num_pages))
+ {
+ 	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+ 	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
+@@ -1837,90 +1826,6 @@ static void module_enable_x(const struct module *mod)
+ static void module_enable_x(const struct module *mod) { }
+ #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+ 
+-#ifdef CONFIG_STRICT_MODULE_RWX
+-static void frob_rodata(const struct module_layout *layout,
+-			int (*set_memory)(unsigned long start, int num_pages))
+-{
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
+-	set_memory((unsigned long)layout->base + layout->text_size,
+-		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
+-}
+-
+-static void frob_ro_after_init(const struct module_layout *layout,
+-				int (*set_memory)(unsigned long start, int num_pages))
+-{
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->ro_size & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
+-	set_memory((unsigned long)layout->base + layout->ro_size,
+-		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
+-}
+-
+-static void frob_writable_data(const struct module_layout *layout,
+-			       int (*set_memory)(unsigned long start, int num_pages))
+-{
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->ro_after_init_size & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->size & (PAGE_SIZE-1));
+-	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
+-		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
+-}
+-
+-static void module_enable_ro(const struct module *mod, bool after_init)
+-{
+-	if (!rodata_enabled)
+-		return;
+-
+-	set_vm_flush_reset_perms(mod->core_layout.base);
+-	set_vm_flush_reset_perms(mod->init_layout.base);
+-	frob_text(&mod->core_layout, set_memory_ro);
+-
+-	frob_rodata(&mod->core_layout, set_memory_ro);
+-	frob_text(&mod->init_layout, set_memory_ro);
+-	frob_rodata(&mod->init_layout, set_memory_ro);
+-
+-	if (after_init)
+-		frob_ro_after_init(&mod->core_layout, set_memory_ro);
+-}
+-
+-static void module_enable_nx(const struct module *mod)
+-{
+-	frob_rodata(&mod->core_layout, set_memory_nx);
+-	frob_ro_after_init(&mod->core_layout, set_memory_nx);
+-	frob_writable_data(&mod->core_layout, set_memory_nx);
+-	frob_rodata(&mod->init_layout, set_memory_nx);
+-	frob_writable_data(&mod->init_layout, set_memory_nx);
+-}
+-
+-static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+-				       char *secstrings, struct module *mod)
+-{
+-	const unsigned long shf_wx = SHF_WRITE|SHF_EXECINSTR;
+-	int i;
+-
+-	for (i = 0; i < hdr->e_shnum; i++) {
+-		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
+-			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
+-				mod->name, secstrings + sechdrs[i].sh_name, i);
+-			return -ENOEXEC;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-#else /* !CONFIG_STRICT_MODULE_RWX */
+-static void module_enable_nx(const struct module *mod) { }
+-static void module_enable_ro(const struct module *mod, bool after_init) {}
+-static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+-				       char *secstrings, struct module *mod)
+-{
+-	return 0;
+-}
+-#endif /*  CONFIG_STRICT_MODULE_RWX */
+-
+ void __weak module_memfree(void *module_region)
+ {
+ 	/*
+diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
+new file mode 100644
+index 000000000000..c642889f8e77
+--- /dev/null
++++ b/kernel/module/strict_rwx.c
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Module strict rwx
++ *
++ * Copyright (C) 2015 Rusty Russell
++ */
++
++#include <linux/module.h>
++#include <linux/vmalloc.h>
++#include <linux/set_memory.h>
++#include "internal.h"
++
++void frob_rodata(const struct module_layout *layout,
++		 int (*set_memory)(unsigned long start, int num_pages))
++{
++	BUG_ON(!PAGE_ALIGNED(layout->base));
++	BUG_ON(!PAGE_ALIGNED(layout->text_size));
++	BUG_ON(!PAGE_ALIGNED(layout->ro_size));
++	set_memory((unsigned long)layout->base + layout->text_size,
++		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
++}
++
++void frob_ro_after_init(const struct module_layout *layout,
++			int (*set_memory)(unsigned long start, int num_pages))
++{
++	BUG_ON(!PAGE_ALIGNED(layout->base));
++	BUG_ON(!PAGE_ALIGNED(layout->ro_size));
++	BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
++	set_memory((unsigned long)layout->base + layout->ro_size,
++		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
++}
++
++void frob_writable_data(const struct module_layout *layout,
++			int (*set_memory)(unsigned long start, int num_pages))
++{
++	BUG_ON(!PAGE_ALIGNED(layout->base));
++	BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
++	BUG_ON(!PAGE_ALIGNED(layout->size));
++	set_memory((unsigned long)layout->base + layout->ro_after_init_size,
++		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
++}
++
++void module_enable_ro(const struct module *mod, bool after_init)
++{
++	if (!rodata_enabled)
++		return;
++
++	set_vm_flush_reset_perms(mod->core_layout.base);
++	set_vm_flush_reset_perms(mod->init_layout.base);
++	frob_text(&mod->core_layout, set_memory_ro);
++
++	frob_rodata(&mod->core_layout, set_memory_ro);
++	frob_text(&mod->init_layout, set_memory_ro);
++	frob_rodata(&mod->init_layout, set_memory_ro);
++
++	if (after_init)
++		frob_ro_after_init(&mod->core_layout, set_memory_ro);
++}
++
++void module_enable_nx(const struct module *mod)
++{
++	frob_rodata(&mod->core_layout, set_memory_nx);
++	frob_ro_after_init(&mod->core_layout, set_memory_nx);
++	frob_writable_data(&mod->core_layout, set_memory_nx);
++	frob_rodata(&mod->init_layout, set_memory_nx);
++	frob_writable_data(&mod->init_layout, set_memory_nx);
++}
++
++int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
++				char *secstrings, struct module *mod)
++{
++	const unsigned long shf_wx = SHF_WRITE | SHF_EXECINSTR;
++	int i;
++
++	for (i = 0; i < hdr->e_shnum; i++) {
++		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
++			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
++			       mod->name, secstrings + sechdrs[i].sh_name, i);
++			return -ENOEXEC;
++		}
++	}
++
++	return 0;
++}
 -- 
 2.34.1
 
