@@ -2,217 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBACC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45006C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236463AbiBRO4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:56:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50272 "EHLO
+        id S236476AbiBRO4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:56:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232520AbiBRO42 (ORCPT
+        with ESMTP id S236354AbiBRO42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 09:56:28 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9E557B1A
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:04 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id i14so14999406wrc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nJkHxY5AR6xqJWj38hKMvv+Z6LskhPZHMXhRMUaTZBg=;
-        b=d4/A7tapqhoj+nKQknbI9myUskve33mE681HrsO26zPtt277c7xD5xX1OUlmAVlFMM
-         GazLRWwYi7bBKTz0B+bjiXXoNTZPLzZ6xgpE/oHg8wA+lSQYCx4M33ob2H0UmVjv7HyZ
-         Hv3bJhIlhPfm0Yo9043I6dnA8OZ4xd38JXmZwzeziS7hSM8e6qmSv8n0s81VklGSqHX9
-         vadFGHdH+6mdVgHOCY8KY/dF7owTVl4GJTmNe+rdf+deBJWkw2N9SlRpAwhVHJ1I87H6
-         ExctPr4MqPcB5h6o47uN6YRYlXtxsK3BPfBQpkMbqDG3w12PaIbJTsy1tUCEImY8HjP1
-         GaHQ==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 883D9593A4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645196164;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4ldn/wyFUYS9oX2H4KZV4SRGFhvLNkEJlNBHlweSE44=;
+        b=ZGJ6uKfop4GVTHnZqrhHQhp3RCzj2MiKOFHTiwphtj1caj4hla0uu227MojdUTUJLInGS3
+        ABPX0tVStqI+JMidxPy2rY7UJySDx9KawhaTQMv44hiZq+edczVIeYdTwNxlvG7pkW3PIb
+        d3eZNS/cJ86gYyTXvc1fZnqreDcmLnw=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611--KoJPLJSPeGI16TeMqEKYQ-1; Fri, 18 Feb 2022 09:56:02 -0500
+X-MC-Unique: -KoJPLJSPeGI16TeMqEKYQ-1
+Received: by mail-qv1-f70.google.com with SMTP id a12-20020a056214062c00b0042c2f3fca04so9039108qvx.21
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nJkHxY5AR6xqJWj38hKMvv+Z6LskhPZHMXhRMUaTZBg=;
-        b=AdJekj9/D8YV5IiAsLj41gWGhqoEuiyUcDbPijEfIppvAgjuRUz9WpuEmBpHAYE1LE
-         Zt3mpzhM06pzrc6VffAfXjDW8kfyIB7s/J6KxkQ51abUAvCZesEeetBGYTT6bepC9crb
-         nFMX2+Rt5GuluZPqLlBgQf0r09n4yS42+BiEdEQczNG4Isft1+HG0DLPiqC3oJiPpvw2
-         wWurQ1GoxEI8Q39HHYNDnG80QS7HSWFcgR5WKV645qpQ/U2M9vFqdsXKUH8Ri8m3c3N5
-         cS1zG8KoBPQ6Kji7+d00hEv2fJa9oqkRUnHBdaPNN3Q8/8az9oKciWeaCAiNbOIhWSJR
-         WjBA==
-X-Gm-Message-State: AOAM53313n5X5HTnH0PwqmOOppIaFNI5gm6fnT8UsCpagpmVchpUVBm6
-        W/eF9RQBEE4hUgeN7IcFX+3ZuQ==
-X-Google-Smtp-Source: ABdhPJzKg+0QXkil1m7jx6gI2ctEKlAP5e/CL5A6ueJGTjphI0RFc7JztgkWPfSY1UibxXF5qSrFxg==
-X-Received: by 2002:adf:8170:0:b0:1e0:6087:9d42 with SMTP id 103-20020adf8170000000b001e060879d42mr6297395wrm.217.1645196163141;
-        Fri, 18 Feb 2022 06:56:03 -0800 (PST)
-Received: from localhost.localdomain (2a02-8440-6241-3b28-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6241:3b28:3074:96af:9642:2])
-        by smtp.gmail.com with ESMTPSA id b10sm47431454wrd.8.2022.02.18.06.56.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 06:56:02 -0800 (PST)
-From:   Guillaume Ranquet <granquet@baylibre.com>
-To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
-        angelogioacchino.delregno@collabora.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v8 03/19] drm/edid: Add cea_sad helpers for freq/length
-Date:   Fri, 18 Feb 2022 15:54:21 +0100
-Message-Id: <20220218145437.18563-4-granquet@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220218145437.18563-1-granquet@baylibre.com>
-References: <20220218145437.18563-1-granquet@baylibre.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=4ldn/wyFUYS9oX2H4KZV4SRGFhvLNkEJlNBHlweSE44=;
+        b=gN/MFE6ewNweUOPQ252YTshjOcOX1HJpAmQ4mhgN9w+YyLTmSMGleWpeDzJUfOlSfa
+         wB1WBB0MFfYRkJscX8WTG9pPX6lzVQuAtYLfXw4SLFIF2GoYJSQ7jLqI96vntb8oxaAq
+         7Cm3obQhze2yzWCJ1tWPpC/eMsDbEAR33D4O1I6CnQ9PxPY0g/KRFsowB43TK+i4ZwlU
+         IBPpWmxfsAt2wOe2wqrFcnc4Si/QbYEzMz7CYxKatPXNIjrLLFFv2vGcf8XJtt5jjb5R
+         CCKI+OVO6avrpiH3BumXfyls8Dba8nvD7ea558OE3owhTJC/IawJegp1SeLQ2cZ71X5H
+         A5cQ==
+X-Gm-Message-State: AOAM53126OnUhPqALnXTxf/LZGXwprTJTL7dii945a7JezlRx7SOv6Tb
+        xQP2Hc+sqNGcRJzJkD/xNhcpJFSw0MqXS6oU9gYD7DgklUZgUAzrqgJuMYPpn+CqyfIfeYyU2lL
+        xoVY11TJd9msmb+YRIAvkS7s6
+X-Received: by 2002:ac8:5c8f:0:b0:2dd:b404:bd94 with SMTP id r15-20020ac85c8f000000b002ddb404bd94mr1693189qta.50.1645196161891;
+        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw8JBQaaH0N3aIPc7v5Iu6VHkGq5FX+w6ES4TNS3Zwc4jIuKXDTgK1I/UV9BSzRxEBdFdrTJA==
+X-Received: by 2002:ac8:5c8f:0:b0:2dd:b404:bd94 with SMTP id r15-20020ac85c8f000000b002ddb404bd94mr1693178qta.50.1645196161706;
+        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w3sm25923138qta.13.2022.02.18.06.56.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 06:56:01 -0800 (PST)
+Subject: Re: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no
+ local BAR space
+To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
+        "Wu, Hao" <hao.wu@intel.com>, "mdf@kernel.org" <mdf@kernel.org>,
+        "Xu, Yilun" <yilun.xu@intel.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "corbet@lwn.net" <corbet@lwn.net>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com>
+ <20220214112619.219761-5-tianfei.zhang@intel.com>
+ <c527e9c7-4588-463b-8a6b-3db68d003d7a@redhat.com>
+ <BN9PR11MB54830E0D185101B6B1517113E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <1281cbc7-7a1f-da84-3713-0d81982379ab@redhat.com>
+Date:   Fri, 18 Feb 2022 06:55:58 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB54830E0D185101B6B1517113E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-This patch adds two helper functions that extract the frequency and word
-length from a struct cea_sad.
+On 2/18/22 12:14 AM, Zhang, Tianfei wrote:
+>
+>> -----Original Message-----
+>> From: Tom Rix <trix@redhat.com>
+>> Sent: Tuesday, February 15, 2022 11:51 PM
+>> To: Zhang, Tianfei <tianfei.zhang@intel.com>; Wu, Hao <hao.wu@intel.com>;
+>> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.org;
+>> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org
+>> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> Subject: Re: [PATCH v1 4/7] fpga: dfl: fix VF creation when ports have no local
+>> BAR space
+>>
+>>
+>> On 2/14/22 3:26 AM, Tianfei zhang wrote:
+>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>
+>>> When a port is not connected to the same PCIe endpoint as the FME, the
+>>> port does not need to be released before being virtualized.  Fix VF
+>>> creation code to handle this new use
+>> Similar, how does this fit in with iofs, this looks like it would not be valid for the
+>> existing cards
+> IOFS introducing multiple methods for PR and AFU access.
+> 1. Legacy Model.
+> 2. Micro-Personas in AFU.
+> 3. Multiple VFs per PR slot.
+>
+> For 1 and 2 model, there are 1:1 mapping between Port device and PR slot (or entire AFU). In virtualization,
+> it should release the Port device firstly and then assign to VM. In this models, the DFL driver will track  that
+> the number of port devices has released (cdev->released_port_num in dfl_fpga_cdev_config_ports_vf() function)
+> are equal with the numbers of SRIOV or not. But in model 3, it has multiple VFs per PR slot, and assign the VF to VM
+> without release the port device, so the tracking mechanism of cdev->released_port_num is not workable on new
 
-For these helper functions new defines are added that help translate the
-'freq' and 'byte2' fields into real numbers.
+If ->release_port_num is not workable, then it needs to be generalized.
 
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
----
- drivers/gpu/drm/drm_edid.c | 74 ++++++++++++++++++++++++++++++++++++++
- include/drm/drm_edid.h     | 18 ++++++++--
- 2 files changed, 90 insertions(+), 2 deletions(-)
+Refactor to handle all the cases.
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index 12893e7be89bb..500279a82167a 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -4747,6 +4747,80 @@ int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb)
- }
- EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
- 
-+/**
-+ * drm_cea_sad_get_sample_rate - Extract the sample rate from cea_sad
-+ * @sad: Pointer to the cea_sad struct
-+ *
-+ * Extracts the cea_sad frequency field and returns the sample rate in Hz.
-+ *
-+ * Return: Sample rate in Hz or a negative errno if parsing failed.
-+ */
-+int drm_cea_sad_get_sample_rate(const struct cea_sad *sad)
-+{
-+	switch (sad->freq) {
-+	case DRM_CEA_SAD_FREQ_32KHZ:
-+		return 32000;
-+	case DRM_CEA_SAD_FREQ_44KHZ:
-+		return 44100;
-+	case DRM_CEA_SAD_FREQ_48KHZ:
-+		return 48000;
-+	case DRM_CEA_SAD_FREQ_88KHZ:
-+		return 88200;
-+	case DRM_CEA_SAD_FREQ_96KHZ:
-+		return 96000;
-+	case DRM_CEA_SAD_FREQ_176KHZ:
-+		return 176400;
-+	case DRM_CEA_SAD_FREQ_192KHZ:
-+		return 192000;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+EXPORT_SYMBOL(drm_cea_sad_get_sample_rate);
-+
-+static bool drm_cea_sad_is_uncompressed(const struct cea_sad *sad)
-+{
-+	switch (sad->format) {
-+	case HDMI_AUDIO_CODING_TYPE_STREAM:
-+	case HDMI_AUDIO_CODING_TYPE_PCM:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+/**
-+ * drm_cea_sad_get_uncompressed_word_length - Extract word length
-+ * @sad: Pointer to the cea_sad struct
-+ *
-+ * Extracts the cea_sad byte2 field and returns the word length for an
-+ * uncompressed stream.
-+ *
-+ * Note: This function may only be called for uncompressed audio.
-+ *
-+ * Return: Word length in bits or a negative errno if parsing failed.
-+ */
-+int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad)
-+{
-+	if (!drm_cea_sad_is_uncompressed(sad)) {
-+		DRM_WARN("Unable to get the uncompressed word length for a compressed format: %u\n",
-+			 sad->format);
-+		return -EINVAL;
-+	}
-+
-+	switch (sad->byte2) {
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT:
-+		return 16;
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT:
-+		return 20;
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT:
-+		return 24;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+EXPORT_SYMBOL(drm_cea_sad_get_uncompressed_word_length);
-+
- /**
-  * drm_av_sync_delay - compute the HDMI/DP sink audio-video sync delay
-  * @connector: connector associated with the HDMI/DP sink
-diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-index 18f6c700f6d02..a30452b313979 100644
---- a/include/drm/drm_edid.h
-+++ b/include/drm/drm_edid.h
-@@ -361,12 +361,24 @@ struct edid {
- 
- /* Short Audio Descriptor */
- struct cea_sad {
--	u8 format;
-+	u8 format; /* See HDMI_AUDIO_CODING_TYPE_* */
- 	u8 channels; /* max number of channels - 1 */
--	u8 freq;
-+	u8 freq; /* See CEA_SAD_FREQ_* */
- 	u8 byte2; /* meaning depends on format */
- };
- 
-+#define DRM_CEA_SAD_FREQ_32KHZ  BIT(0)
-+#define DRM_CEA_SAD_FREQ_44KHZ  BIT(1)
-+#define DRM_CEA_SAD_FREQ_48KHZ  BIT(2)
-+#define DRM_CEA_SAD_FREQ_88KHZ  BIT(3)
-+#define DRM_CEA_SAD_FREQ_96KHZ  BIT(4)
-+#define DRM_CEA_SAD_FREQ_176KHZ BIT(5)
-+#define DRM_CEA_SAD_FREQ_192KHZ BIT(6)
-+
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT BIT(0)
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT BIT(1)
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT BIT(2)
-+
- struct drm_encoder;
- struct drm_connector;
- struct drm_connector_state;
-@@ -374,6 +386,8 @@ struct drm_display_mode;
- 
- int drm_edid_to_sad(struct edid *edid, struct cea_sad **sads);
- int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb);
-+int drm_cea_sad_get_sample_rate(const struct cea_sad *sad);
-+int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad);
- int drm_av_sync_delay(struct drm_connector *connector,
- 		      const struct drm_display_mode *mode);
- 
--- 
-2.34.1
+Tom
+
+> model. This patch want to handle this new model during VF creation.
+>
+>>> case.
+>>>
+>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+>>> ---
+>>>    drivers/fpga/dfl.c | 11 +++++++++--
+>>>    1 file changed, 9 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c index
+>>> 26f8cf890700..cfc539a656f0 100644
+>>> --- a/drivers/fpga/dfl.c
+>>> +++ b/drivers/fpga/dfl.c
+>>> @@ -1705,15 +1705,22 @@
+>> EXPORT_SYMBOL_GPL(dfl_fpga_cdev_config_ports_pf);
+>>>    int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
+>>>    {
+>>>    	struct dfl_feature_platform_data *pdata;
+>>> -	int ret = 0;
+>>> +	int ret = 0, port_count = 0;
+>>>
+>>>    	mutex_lock(&cdev->lock);
+>>> +
+>>> +	list_for_each_entry(pdata, &cdev->port_dev_list, node) {
+>>> +		if (pdata->dev)
+>> This looks wrong,
+>>
+>> pdata->dev is dereferenced below, if there is a case were (!pdata->dev)
+>> here there would be crash later.
+>>
+>>> +			continue;
+>>> +		port_count++;
+>> how does this work when only some of the ports are handled in the new way ?
+> This code want to handle the " Multiple VFs per PR slot" model as I mentioned above.
+> In new model, the port_count want to count that how many port devices have released.
+> This code looks not good readability, I try to re-write it.
+>
+>> Tom
+>>
+>>> +	}
+>>> +
+>>>    	/*
+>>>    	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
+>>>    	 * device, so if released port number doesn't match VF device number,
+>>>    	 * then reject the request with -EINVAL error code.
+>>>    	 */
+>>> -	if (cdev->released_port_num != num_vfs) {
+>>> +	if (port_count && cdev->released_port_num != num_vfs) {
+>>>    		ret = -EINVAL;
+>>>    		goto done;
+>>>    	}
 
