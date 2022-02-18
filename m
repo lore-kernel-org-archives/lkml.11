@@ -2,143 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 719D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7604C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233048AbiBRJCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:02:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56934 "EHLO
+        id S233051AbiBRJCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:02:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbiBRJCS (ORCPT
+        with ESMTP id S233056AbiBRJCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:02:18 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF529546AE;
-        Fri, 18 Feb 2022 01:02:01 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id v12so13393331wrv.2;
-        Fri, 18 Feb 2022 01:02:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zt/INQArzFP2YspYBVAWXDYYTQUHjLodpxi7D41llRw=;
-        b=ksmSLR/lTnudWA58lc+ENSY99WBfEIJ9m4SWkf1/iGjZZY6xnpmH6KF71FJIZQ3tkA
-         oP0gbzPmxBK7JTlyEJr33FYiAXANcxtJd10i9dL17Ze4uFSKLzWohJZlIu0yDbe/nZBU
-         3EC4u8JSjVSmxG7LftBTCBrvckukNdqzD5t13pVOV3J//eGRl0eBk+z5upYYmhIJjSwP
-         iRVIaT0Bj5rVvP57puhsBgmdMUOMSDF1GB/y55HZhRyRGRLybeic3uuahp5X1dqMzPgj
-         C5UO4hUBk1YoE1R1+BC0KRXqNp0Ae7/biaLUmOObX9szSauvKWcZ3Pi4xacae7dMHWKT
-         RkLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zt/INQArzFP2YspYBVAWXDYYTQUHjLodpxi7D41llRw=;
-        b=CJKi6WpSZ8RK1EI0rvYs6NXJPreJr/rXaJtoykc2NV2eCiVNZEpcQ8kgMgGVFGhpuj
-         uReGnc/ZegBfygIie8c4dDxaE8rvCA60oD5jAK2OOSxAvmwMD2C6svuTJrfMHtuGkQP0
-         bdzylm5eYBplgCwmQ3jjwAy3M+5uu9ZaW52TECYZHWhSeq5fBDlai9/IavVN2df9ZHIe
-         GcGvIi4N++MR2OFcc7hE2S0RAs/JFnpHeM8FmIcudXeDhPJxGS6FptnrWDFIq9OLaJZt
-         HsgbvfMcwGnPYXTWQBAKn5H/0vi0JB02HzvCn0beOuK4SGMLXWHLimHUsHcvb8g6OEBX
-         is8w==
-X-Gm-Message-State: AOAM531NwEbL6filCA1BZjYUsnXpwDgcgzKs0ei8Nw/MBduPwchsK9bw
-        jewt4EHZWVqJzWJwIBuh4z2xcWw89ySF1g==
-X-Google-Smtp-Source: ABdhPJwkyUQ5mu+CrJtI9sHBM7jNa9N5pnN9USLm7H+Q2cbcFnP9N3h2/J5TST6pDpQb15qSzark1A==
-X-Received: by 2002:a5d:6c68:0:b0:1e8:9827:b978 with SMTP id r8-20020a5d6c68000000b001e89827b978mr4909654wrz.633.1645174920533;
-        Fri, 18 Feb 2022 01:02:00 -0800 (PST)
-Received: from krava ([2a00:102a:5012:d617:c924:e6ed:1707:a063])
-        by smtp.gmail.com with ESMTPSA id s7sm11525680wro.104.2022.02.18.01.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 01:02:00 -0800 (PST)
-Date:   Fri, 18 Feb 2022 10:01:56 +0100
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCHv2 0/3] perf/bpf: Replace deprecated code
-Message-ID: <Yg9ghL33UYyh3es4@krava>
-References: <20220217131916.50615-1-jolsa@kernel.org>
- <CAEf4BzY+_3vjtN3dJjU4deVR131=Dz-9adYQ+mntVqgAOfh4RA@mail.gmail.com>
+        Fri, 18 Feb 2022 04:02:30 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B46855BDA
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:02:09 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K0Qf35yghzbkFg;
+        Fri, 18 Feb 2022 17:00:59 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Feb
+ 2022 17:02:07 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH v3 1/8] mm/memory-failure.c: minor clean up for memory_failure_dev_pagemap
+Date:   Fri, 18 Feb 2022 17:01:11 +0800
+Message-ID: <20220218090118.1105-2-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220218090118.1105-1-linmiaohe@huawei.com>
+References: <20220218090118.1105-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY+_3vjtN3dJjU4deVR131=Dz-9adYQ+mntVqgAOfh4RA@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 01:55:13PM -0800, Andrii Nakryiko wrote:
-> On Thu, Feb 17, 2022 at 5:19 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > hi,
-> > the original patchset [1] removed the whole perf functionality
-> > with the hope nobody's using that. But it turned out there's
-> > actually bpf script using prologue functionality, so there
-> > might be users of this.
-> >
-> > This patchset gets rid of and adds workaround (and keeps the
-> > current functionality) for following deprecated libbpf
-> > functions/struct:
-> >
-> >   bpf_program__set_priv
-> >   bpf_program__priv
-> >   bpf_map__set_priv
-> >   bpf_map__priv
-> >   bpf_program__set_prep
-> >   bpf_program__nth_fd
-> >   struct bpf_prog_prep_result
-> >
-> > Basically it implements workarounds suggested by Andrii in [2].
-> >
-> > I tested with script from examples/bpf that are working for me:
-> >
-> >   examples/bpf/hello.c
-> >   examples/bpf/5sec.c
-> >
-> > The rest seem to fail for various reasons even without this
-> > change..  they seem unmaintained for some time now, but I might
-> > have wrong setup.
-> >
-> > Also available in here:
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-> >   perf/depre
-> >
-> > thanks,
-> > jirka
-> >
-> >
-> > [1] https://lore.kernel.org/linux-perf-users/YgoPxhE3OEEmZqla@krava/T/#t
-> > [2] https://lore.kernel.org/linux-perf-users/YgoPxhE3OEEmZqla@krava/T/#md3ccab9fe70a4583e94603b1a562e369bd67b17d
-> > ---
-> > Jiri Olsa (3):
-> >       perf tools: Remove bpf_program__set_priv/bpf_program__priv usage
-> >       perf tools: Remove bpf_map__set_priv/bpf_map__priv usage
-> >       perf tools: Rework prologue generation code
-> >
-> 
-> It's great that you are deprecating these, thanks a lot for that! I
-> suggest to also doing libbpf_set_strict_mode(LIBBPF_STRICT_ALL) to
+The flags always has MF_ACTION_REQUIRED and MF_MUST_KILL set. So we do
+not need to check these flags again.
 
-will check
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+ mm/memory-failure.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> check that libbpf 1.0 won't break anything. For example, you'll need
-> to use a custom SEC() handler to handle those quirky sections that
-> perf allows. This patch set has landed in bpf-next, so you should be
-> good to go.
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 55edb0cc3848..b3ff7e99a421 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1644,7 +1644,7 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+ 	 * SIGBUS (i.e. MF_MUST_KILL)
+ 	 */
+ 	flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
+-	collect_procs(page, &tokill, flags & MF_ACTION_REQUIRED);
++	collect_procs(page, &tokill, true);
+ 
+ 	list_for_each_entry(tk, &tokill, nd)
+ 		if (tk->size_shift)
+@@ -1659,7 +1659,7 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+ 		start = (page->index << PAGE_SHIFT) & ~(size - 1);
+ 		unmap_mapping_range(page->mapping, start, size, 0);
+ 	}
+-	kill_procs(&tokill, flags & MF_MUST_KILL, false, pfn, flags);
++	kill_procs(&tokill, true, false, pfn, flags);
+ 	rc = 0;
+ unlock:
+ 	dax_unlock_page(page, cookie);
+-- 
+2.23.0
 
-ah ok it already got merged.. I'll add it in new version
-
-thanks,
-jirka
-
-> 
-> 
-> >  tools/perf/util/bpf-loader.c | 267 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------
-> >  1 file changed, 230 insertions(+), 37 deletions(-)
