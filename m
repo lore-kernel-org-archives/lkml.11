@@ -2,236 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C746CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB580C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231712AbiBRVF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:05:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37566 "EHLO
+        id S238782AbiBRVGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:06:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239611AbiBRVFz (ORCPT
+        with ESMTP id S231464AbiBRVGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:05:55 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC22528B62B
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:05:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=eAq41CbrMkcQnROsQjt7CUO6ANNFYk+q4WR8WhAKO5c=; b=eCsEWcTshrcntcB2nUMxJOzgdF
-        ILJSspSSVoDZFOONURt0rzitRuDVQqkMLjqmO4xkGeWTWGdijZ9uAXL1f5moHph1jGrm4fjyuqmpa
-        MSP2yMZ6yfDyCeiAOpgLCKl8KdVkXpwbrx8sd6gEc5qDfjJPpB5dyIvGO+tBLZkcprvlguP30OC87
-        Hm5ez6TOzGQ8OHLw0sxEO5WP1/u6qYKbAApHPDuAnLPqZ1bPrDs+MiUFEQjmSQFd8YvsGn0vGXzfh
-        4gKLGFgiPap77pQUZxqsWGcJszBglm6/4qpztlbxRR9xwcONd5MEmqIv2m+BmRXTq4DfnKWW06uc4
-        8iUQKXsg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nLARE-00AucW-2N; Fri, 18 Feb 2022 21:05:12 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3543A300296;
-        Fri, 18 Feb 2022 22:05:11 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E32162BCA7EB4; Fri, 18 Feb 2022 22:05:10 +0100 (CET)
-Date:   Fri, 18 Feb 2022 22:05:10 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andrew Cooper <Andrew.Cooper3@citrix.com>
-Cc:     "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        Juergen Gross <jgross@suse.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "alyssa.milburn@intel.com" <alyssa.milburn@intel.com>
-Subject: Re: [PATCH 19/29] x86/ibt,xen: Annotate away warnings
-Message-ID: <YhAKBrTiQwFkocez@hirez.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.696743603@infradead.org>
- <e5b93f0a-a28c-8c63-0193-4b4d0db509ab@citrix.com>
+        Fri, 18 Feb 2022 16:06:52 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3CB261F;
+        Fri, 18 Feb 2022 13:06:33 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nLASV-002pya-10; Fri, 18 Feb 2022 21:06:31 +0000
+Date:   Fri, 18 Feb 2022 21:06:31 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        linux-fsdevel@vger.kernel.org, paulmck@kernel.org,
+        gscrivan@redhat.com, Eric Biederman <ebiederm@xmission.com>,
+        Chris Mason <clm@fb.com>
+Subject: Re: [PATCH 1/2] vfs: free vfsmount through rcu work from kern_unmount
+Message-ID: <YhAKV5cjXEz2JTBB@zeniv-ca.linux.org.uk>
+References: <20220218183114.2867528-1-riel@surriel.com>
+ <20220218183114.2867528-2-riel@surriel.com>
+ <Yg/y6qv6dZ2fc5z1@zeniv-ca.linux.org.uk>
+ <5f442a7770fe4ac06b2837e4f937d559f5d17b8b.camel@surriel.com>
+ <Yg/273dWmTKDW5Mu@zeniv-ca.linux.org.uk>
+ <YhAAaU5wSoFdMsQf@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e5b93f0a-a28c-8c63-0193-4b4d0db509ab@citrix.com>
+In-Reply-To: <YhAAaU5wSoFdMsQf@zeniv-ca.linux.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 08:24:41PM +0000, Andrew Cooper wrote:
-> On 18/02/2022 16:49, Peter Zijlstra wrote:
-> > The xen_iret ENDBR is needed for pre-alternative code calling the
-> > pv_ops using indirect calls.
-> >
-> > The rest look like hypervisor entry points which will be IRET like
-> > transfers and as such don't need ENDBR.
+On Fri, Feb 18, 2022 at 08:24:09PM +0000, Al Viro wrote:
+> On Fri, Feb 18, 2022 at 07:43:43PM +0000, Al Viro wrote:
+> > On Fri, Feb 18, 2022 at 02:33:31PM -0500, Rik van Riel wrote:
+> > > On Fri, 2022-02-18 at 19:26 +0000, Al Viro wrote:
+> > > > On Fri, Feb 18, 2022 at 01:31:13PM -0500, Rik van Riel wrote:
+> > > > > After kern_unmount returns, callers can no longer access the
+> > > > > vfsmount structure. However, the vfsmount structure does need
+> > > > > to be kept around until the end of the RCU grace period, to
+> > > > > make sure other accesses have all gone away too.
+> > > > > 
+> > > > > This can be accomplished by either gating each kern_unmount
+> > > > > on synchronize_rcu (the comment in the code says it all), or
+> > > > > by deferring the freeing until the next grace period, where
+> > > > > it needs to be handled in a workqueue due to the locking in
+> > > > > mntput_no_expire().
+> > > > 
+> > > > NAK.  There's code that relies upon kern_unmount() being
+> > > > synchronous.  That's precisely the reason why MNT_INTERNAL
+> > > > is treated that way in mntput_no_expire().
+> > > 
+> > > Fair enough. Should I make a kern_unmount_rcu() version
+> > > that gets called just from mq_put_mnt()?
+> > 
+> > Umm...  I'm not sure you can afford having struct ipc_namespace
+> > freed and reused before the mqueue superblock gets at least to
+> > deactivate_locked_super().
 > 
-> That's up for debate.  Mechanically, yes - they're IRET or SYSERET.
+> BTW, that's a good demonstration of the problems with making those
+> beasts async.  struct mount is *not* accessed past kern_unmount(),
+> but the objects used by the superblock might very well be - in
+> this case they (struct ipc_namespace, pointed to by s->s_fs_data)
+> are freed by the caller after kern_unmount() returns.  And possibly
+> reused.  Now note that they are used as search keys by
+> mqueue_get_tree() and it becomes very fishy.
 > 
-> Logically however, they're entrypoints registered with Xen, so following
-> the spec, Xen ought to force WAIT-FOR-ENDBR.
-
-Cute..
-
-> I'd be tempted to leave the ENDBR's in.  It feels like a safer default
-> until we figure out how to paravirt IBT properly.
-
-Fair enough, done.
-
-> at a minimum, and possibly also:
+> If you want to go that way, make it something like
 > 
-> diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
-> index 444d824775f6..96db5c50a6e7 100644
-> --- a/arch/x86/xen/xen-asm.S
-> +++ b/arch/x86/xen/xen-asm.S
-> @@ -124,7 +124,7 @@ SYM_CODE_START(xen_\name)
->         UNWIND_HINT_EMPTY
->         pop %rcx
->         pop %r11
-> -       jmp  \name
-> +       jmp  \name + 4 * IS_ENABLED(CONFIG_X86_IBT)
->  SYM_CODE_END(xen_\name)
->  _ASM_NOKPROBE(xen_\name)
->  .endm
+> void put_ipc_ns(struct ipc_namespace *ns)
+> {
+>         if (refcount_dec_and_lock(&ns->ns.count, &mq_lock)) {
+> 		mq_clear_sbinfo(ns);
+> 		spin_unlock(&mq_lock);
+> 		kern_unmount_rcu(ns->mq_mnt);
+> 	}
+> }
+> 
+> and give mqueue this for ->kill_sb():
+> 
+> static void mqueue_kill_super(struct super_block *sb)
+> {
+> 	struct ipc_namespace *ns = sb->s_fs_info;
+> 	kill_litter_super(sb);
+> 	do the rest of free_ipc_ns();
+> }
+> 
+> One thing: kern_unmount_rcu() needs a very big warning about
+> the caution needed from its callers.  It's really not safe
+> for general use, and it will be a temptation for folks with
+> scalability problems like this one to just use it instead of
+> kern_unmount() and declare the problem solved.
 
-objtool will do that for you, it will rewrite all direct jmp/call to
-endbr.
-
-
-Something like so then?
-
----
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -818,6 +818,7 @@ SYM_CODE_END(exc_xen_hypervisor_callback
-  */
- SYM_CODE_START(xen_failsafe_callback)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	movl	%ds, %ecx
- 	cmpw	%cx, 0x10(%rsp)
- 	jne	1f
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -392,6 +392,7 @@ SYM_CODE_START(early_idt_handler_array)
- 	.endr
- 	UNWIND_HINT_IRET_REGS offset=16 entry=0
- SYM_CODE_END(early_idt_handler_array)
-+	ANNOTATE_NOENDBR // early_idt_handler_array[NUM_EXCEPTION_VECTORS]
- 
- SYM_CODE_START_LOCAL(early_idt_handler_common)
- 	/*
---- a/arch/x86/xen/enlighten_pv.c
-+++ b/arch/x86/xen/enlighten_pv.c
-@@ -624,6 +624,7 @@ static struct trap_array_entry trap_arra
- 	TRAP_ENTRY(exc_coprocessor_error,		false ),
- 	TRAP_ENTRY(exc_alignment_check,			false ),
- 	TRAP_ENTRY(exc_simd_coprocessor_error,		false ),
-+	TRAP_ENTRY(exc_control_protection,		false ),
- };
- 
- static bool __ref get_trap_addr(void **addr, unsigned int ist)
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -122,6 +122,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
- .macro xen_pv_trap name
- SYM_CODE_START(xen_\name)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	pop %rcx
- 	pop %r11
- 	jmp  \name
-@@ -147,6 +148,7 @@ xen_pv_trap asm_exc_page_fault
- xen_pv_trap asm_exc_spurious_interrupt_bug
- xen_pv_trap asm_exc_coprocessor_error
- xen_pv_trap asm_exc_alignment_check
-+xen_pv_trap_asm_exc_control_protection
- #ifdef CONFIG_X86_MCE
- xen_pv_trap asm_xenpv_exc_machine_check
- #endif /* CONFIG_X86_MCE */
-@@ -162,6 +164,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
- 	i = 0
- 	.rept NUM_EXCEPTION_VECTORS
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	pop %rcx
- 	pop %r11
- 	jmp early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE
-@@ -169,6 +172,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
- 	.fill xen_early_idt_handler_array + i*XEN_EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
- 	.endr
- SYM_CODE_END(xen_early_idt_handler_array)
-+	ANNOTATE_NOENDBR
- 	__FINIT
- 
- hypercall_iret = hypercall_page + __HYPERVISOR_iret * 32
-@@ -189,6 +193,7 @@ hypercall_iret = hypercall_page + __HYPE
-  */
- SYM_CODE_START(xen_iret)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	pushq $0
- 	jmp hypercall_iret
- SYM_CODE_END(xen_iret)
-@@ -230,6 +235,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
- /* Normal 64-bit system call target */
- SYM_CODE_START(xen_syscall_target)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	popq %rcx
- 	popq %r11
- 
-@@ -249,6 +255,7 @@ SYM_CODE_END(xen_syscall_target)
- /* 32-bit compat syscall target */
- SYM_CODE_START(xen_syscall32_target)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	popq %rcx
- 	popq %r11
- 
-@@ -266,6 +273,7 @@ SYM_CODE_END(xen_syscall32_target)
- /* 32-bit compat sysenter target */
- SYM_CODE_START(xen_sysenter_target)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
- 	 * that we don't need to guard against single step exceptions here.
-@@ -289,6 +297,7 @@ SYM_CODE_END(xen_sysenter_target)
- SYM_CODE_START(xen_syscall32_target)
- SYM_CODE_START(xen_sysenter_target)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
- 	pushq $0
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -25,8 +25,11 @@
- SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
--		.skip 31, 0x90
--		RET
-+		ANNOTATE_NOENDBR
-+		/*
-+		 * Xen will write the hypercall page, and sort out ENDBR.
-+		 */
-+		.skip 32, 0xcc
- 	.endr
- 
- #define HYPERCALL(n) \
-@@ -74,6 +77,7 @@ SYM_CODE_END(startup_xen)
- .pushsection .text
- SYM_CODE_START(asm_cpu_bringup_and_idle)
- 	UNWIND_HINT_EMPTY
-+	ENDBR
- 
- 	call cpu_bringup_and_idle
- SYM_CODE_END(asm_cpu_bringup_and_idle)
+FWIW, that won't work correctly wrt failure exits.  I'm digging
+through the lifetime rules in there right now, will post when
+I'm done.
