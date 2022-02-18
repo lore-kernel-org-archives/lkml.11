@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B73C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239227AbiBRV0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:26:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51250 "EHLO
+        id S237535AbiBRV0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:26:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239786AbiBRVZj (ORCPT
+        with ESMTP id S239832AbiBRVZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:25:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 994D22402D7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:21 -0800 (PST)
+        Fri, 18 Feb 2022 16:25:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCA3A2402C1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645219520;
+        s=mimecast20190719; t=1645219526;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hPDODXaR8/3AGDN8QUDZ31HR9/DK1gkzEtjlaYiIfVA=;
-        b=OFt2iPFGZRB5vr0TxWykgKV2reK9FKB+8u0WyzTS27eW9G5IgkU0PYkTwmbaYUM8Bc5wZ2
-        Ml69TeyMduo8QAlwt6G3sQR7X18WCef1tYvkdP9iGP4hRMaZz3SqqVnKOmF2N14eJacGhL
-        jgW8i80F/Oqf8g2kVUovGKDXJ9i2HPs=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=qMJDJDbPZoWcP+nDdAgNVL7FhXeZbcGM7cb6CcLOEx0=;
+        b=RZ7gMet2pOhylZfUU9X5sHA+MLwmY4rKHokmsWWMkxhSMV9HH2kN7cFyTPObZKn82V3XSQ
+        +hVOL5y0hDnM8kLhXY3QtQWurxTDQ6ySUCiaMvL6gzPgGfYWYhHoU7SI3z+Rc81RFpyADF
+        XkU0emZrbKNb614qd2CwhzAyLo/E7ok=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-HyTKsAzvNJ6fdYwpbB_eoA-1; Fri, 18 Feb 2022 16:25:19 -0500
-X-MC-Unique: HyTKsAzvNJ6fdYwpbB_eoA-1
-Received: by mail-wr1-f71.google.com with SMTP id s5-20020adfbc05000000b001e7af4f2231so4089667wrg.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:19 -0800 (PST)
+ us-mta-659-xIwl7ys9OlW7HFFZ1F-z2g-1; Fri, 18 Feb 2022 16:25:25 -0500
+X-MC-Unique: xIwl7ys9OlW7HFFZ1F-z2g-1
+Received: by mail-wr1-f70.google.com with SMTP id e1-20020adfa741000000b001e2e74c3d4eso4052594wrd.12
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:25:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hPDODXaR8/3AGDN8QUDZ31HR9/DK1gkzEtjlaYiIfVA=;
-        b=TdX37tPEm72GEdoJ3EHMudm1Q0cg8HCoZzjPzVr7ZOV5QoXOGaqjRsrKJ4H6NtoT8i
-         FhZs6kKI8gdhg9nXhQA5opBVWPfVt3g8AYXAJ+i3T4/Uf5wGHS+2CtZM9msZzdkGNaP/
-         63ObdlFM8dhZuymKoTYvZV5RumasnMwkZyLU705g3bj/oYmw+401Fz10ZqAwBy3jo1BS
-         FZNxorCFLek/QwkjiI8Ra2GFg2lfq9vWpag/8e8nB5p5AUaqMGW+SfO4Zuono1cc4IJd
-         98DRQPayFxGHe3ZNF5qqynunDLNB6HpCaaBt7gQ1GilSgLi1uyc63pN7wqdNXFMHMaJd
-         NKVw==
-X-Gm-Message-State: AOAM530kOpvdQ0v+WboJ1/EXCKdtUpQUMFT46xgkbK8G7rk3alPiy7eb
-        hQ7NC2HwIVZhRx2HDjwn/My2qMckqDfLh6GgwcQpDJDAkQgdiRYgnTzenh2A7nV8eMI256rdzjT
-        lkbDbymG1XNV5ItU5rPJqt7A=
-X-Received: by 2002:a5d:4ccc:0:b0:1e3:222b:40fc with SMTP id c12-20020a5d4ccc000000b001e3222b40fcmr7087027wrt.296.1645219518204;
-        Fri, 18 Feb 2022 13:25:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzqme855dEAUGl23LY67f9MJyl8g1VKrcxsCOhX5MZPi4XlnoMw1fBOdo1a8apdoYozJ9eC8A==
-X-Received: by 2002:a5d:4ccc:0:b0:1e3:222b:40fc with SMTP id c12-20020a5d4ccc000000b001e3222b40fcmr7087007wrt.296.1645219518004;
-        Fri, 18 Feb 2022 13:25:18 -0800 (PST)
+        bh=qMJDJDbPZoWcP+nDdAgNVL7FhXeZbcGM7cb6CcLOEx0=;
+        b=h/XCK5J4lagRMEYjA+ufpTNbYl8LyfSSG8W5XCLPPy6JkmgZ6Pajrvy24PwFuoNLyM
+         ri+tYBVXwyLneIz7vtQwpRl3ODZ2WgC9MbArhTAGr3HPoBOqthCp8PgYcLYynAKlCLmu
+         oRUhgzebIFMJQUWi//sNO0nEUsysHCYtVlx9HYY4L2dXdzZXwX7mHzY+Kmj2GaCTLsq9
+         g0Qsaps+3umOsKpZtjfXgR97r1v9Tcj/7JFbLLJqj3dVs29E8a+EWnDivtQGxgEYvzt6
+         HqDvAyz0hJDlpZZpw3D30M/IM+Ab9g4tywGaoTzcbKTCWaKUCFOxqiM6wQwEqAlZHr+Z
+         ExVw==
+X-Gm-Message-State: AOAM531U8DEVkUvoQhdW7WkEw6GfrJWkFNdM1Slw5RGAsKRSCwPtu308
+        i4VqSdrKZjrA5MeZeGd9erpWxp4pUXdIwgYgNg/nAIdI7v9u1MNDnLzkRUNcaN/kIS1mZJzBh4q
+        qvovZUR5YDe1Nhxpv72iVQqY=
+X-Received: by 2002:a5d:518d:0:b0:1e5:8cc9:5aa4 with SMTP id k13-20020a5d518d000000b001e58cc95aa4mr7083319wrv.119.1645219524293;
+        Fri, 18 Feb 2022 13:25:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJytk7rliwaFZmS4M0Lmnrr4rsw5hxE0HoGbsbz2eWWA2lrj7q0a/S/r6F9p6yml0YV4jKPMqA==
+X-Received: by 2002:a5d:518d:0:b0:1e5:8cc9:5aa4 with SMTP id k13-20020a5d518d000000b001e58cc95aa4mr7083306wrv.119.1645219524097;
+        Fri, 18 Feb 2022 13:25:24 -0800 (PST)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id 14sm12854628wrb.34.2022.02.18.13.25.17
+        by smtp.gmail.com with ESMTPSA id r11sm498151wmb.19.2022.02.18.13.25.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 13:25:17 -0800 (PST)
+        Fri, 18 Feb 2022 13:25:23 -0800 (PST)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     mcgrof@kernel.org
 Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
@@ -64,9 +64,9 @@ Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
         ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
         christophe.leroy@csgroup.eu, msuchanek@suse.de,
         oleksandr@natalenko.name
-Subject: [PATCH v6 04/13] module: Move livepatch support to a separate file
-Date:   Fri, 18 Feb 2022 21:25:02 +0000
-Message-Id: <20220218212511.887059-5-atomlin@redhat.com>
+Subject: [PATCH v6 08/13] module: Move kmemleak support to a separate file
+Date:   Fri, 18 Feb 2022 21:25:06 +0000
+Message-Id: <20220218212511.887059-9-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218212511.887059-1-atomlin@redhat.com>
 References: <20220218212511.887059-1-atomlin@redhat.com>
@@ -78,295 +78,117 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional change.
 
-This patch migrates livepatch support (i.e. used during module
-add/or load and remove/or deletion) from core module code into
-kernel/module/livepatch.c. At the moment it contains code to
-persist Elf information about a given livepatch module, only.
+This patch migrates kmemleak code out of core module
+code into kernel/module/debug_kmemleak.c
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- include/linux/module.h    |   9 ++--
- kernel/module/Makefile    |   1 +
- kernel/module/internal.h  |  22 ++++++++
- kernel/module/livepatch.c |  74 +++++++++++++++++++++++++++
- kernel/module/main.c      | 102 ++++----------------------------------
- 5 files changed, 110 insertions(+), 98 deletions(-)
- create mode 100644 kernel/module/livepatch.c
+ kernel/module/Makefile         |  1 +
+ kernel/module/debug_kmemleak.c | 30 ++++++++++++++++++++++++++++++
+ kernel/module/internal.h       |  7 +++++++
+ kernel/module/main.c           | 27 ---------------------------
+ 4 files changed, 38 insertions(+), 27 deletions(-)
+ create mode 100644 kernel/module/debug_kmemleak.c
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 1e135fd5c076..7ec9715de7dc 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -663,17 +663,14 @@ static inline bool module_requested_async_probing(struct module *module)
- 	return module && module->async_probe_requested;
- }
- 
--#ifdef CONFIG_LIVEPATCH
- static inline bool is_livepatch_module(struct module *mod)
- {
-+#ifdef CONFIG_LIVEPATCH
- 	return mod->klp;
--}
--#else /* !CONFIG_LIVEPATCH */
--static inline bool is_livepatch_module(struct module *mod)
--{
-+#else
- 	return false;
-+#endif
- }
--#endif /* CONFIG_LIVEPATCH */
- 
- bool is_module_sig_enforced(void);
- void set_module_sig_enforced(void);
 diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 2902fc7d0ef1..ba3ebdb7055b 100644
+index 3f48343636ff..e2a5ae0264f9 100644
 --- a/kernel/module/Makefile
 +++ b/kernel/module/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_MODULES) += main.o
- obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
- obj-$(CONFIG_MODULE_SIG) += signing.o
- obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
-+obj-$(CONFIG_LIVEPATCH) += livepatch.o
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index e0775e66bcf7..ad7a444253ed 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -57,6 +57,28 @@ struct load_info {
- 
- int mod_verify_sig(const void *mod, struct load_info *info);
- 
-+#ifdef CONFIG_LIVEPATCH
-+int copy_module_elf(struct module *mod, struct load_info *info);
-+void free_module_elf(struct module *mod);
-+#else /* !CONFIG_LIVEPATCH */
-+static inline int copy_module_elf(struct module *mod, struct load_info *info)
-+{
-+	return 0;
-+}
-+
-+static inline void free_module_elf(struct module *mod) { }
-+#endif /* CONFIG_LIVEPATCH */
-+
-+static inline bool set_livepatch_module(struct module *mod)
-+{
-+#ifdef CONFIG_LIVEPATCH
-+	mod->klp = true;
-+	return true;
-+#else
-+	return false;
-+#endif
-+}
-+
- #ifdef CONFIG_MODULE_DECOMPRESS
- int module_decompress(struct load_info *info, const void *buf, size_t size);
- void module_decompress_cleanup(struct load_info *info);
-diff --git a/kernel/module/livepatch.c b/kernel/module/livepatch.c
+@@ -11,4 +11,5 @@ obj-$(CONFIG_LIVEPATCH) += livepatch.o
+ ifdef CONFIG_MODULES
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
+ obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
++obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+ endif
+diff --git a/kernel/module/debug_kmemleak.c b/kernel/module/debug_kmemleak.c
 new file mode 100644
-index 000000000000..486d4ff92719
+index 000000000000..12a569d361e8
 --- /dev/null
-+++ b/kernel/module/livepatch.c
-@@ -0,0 +1,74 @@
++++ b/kernel/module/debug_kmemleak.c
+@@ -0,0 +1,30 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * Module livepatch support
++ * Module kmemleak support
 + *
-+ * Copyright (C) 2016 Jessica Yu <jeyu@redhat.com>
++ * Copyright (C) 2009 Catalin Marinas
 + */
 +
 +#include <linux/module.h>
-+#include <linux/string.h>
-+#include <linux/slab.h>
++#include <linux/kmemleak.h>
 +#include "internal.h"
 +
-+/*
-+ * Persist Elf information about a module. Copy the Elf header,
-+ * section header table, section string table, and symtab section
-+ * index from info to mod->klp_info.
-+ */
-+int copy_module_elf(struct module *mod, struct load_info *info)
++void kmemleak_load_module(const struct module *mod,
++			  const struct load_info *info)
 +{
-+	unsigned int size, symndx;
-+	int ret;
++	unsigned int i;
 +
-+	size = sizeof(*mod->klp_info);
-+	mod->klp_info = kmalloc(size, GFP_KERNEL);
-+	if (!mod->klp_info)
-+		return -ENOMEM;
++	/* only scan the sections containing data */
++	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
 +
-+	/* Elf header */
-+	size = sizeof(mod->klp_info->hdr);
-+	memcpy(&mod->klp_info->hdr, info->hdr, size);
++	for (i = 1; i < info->hdr->e_shnum; i++) {
++		/* Scan all writable sections that's not executable */
++		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
++		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
++		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
++			continue;
 +
-+	/* Elf section header table */
-+	size = sizeof(*info->sechdrs) * info->hdr->e_shnum;
-+	mod->klp_info->sechdrs = kmemdup(info->sechdrs, size, GFP_KERNEL);
-+	if (!mod->klp_info->sechdrs) {
-+		ret = -ENOMEM;
-+		goto free_info;
++		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
++				   info->sechdrs[i].sh_size, GFP_KERNEL);
 +	}
-+
-+	/* Elf section name string table */
-+	size = info->sechdrs[info->hdr->e_shstrndx].sh_size;
-+	mod->klp_info->secstrings = kmemdup(info->secstrings, size, GFP_KERNEL);
-+	if (!mod->klp_info->secstrings) {
-+		ret = -ENOMEM;
-+		goto free_sechdrs;
-+	}
-+
-+	/* Elf symbol section index */
-+	symndx = info->index.sym;
-+	mod->klp_info->symndx = symndx;
-+
-+	/*
-+	 * For livepatch modules, core_kallsyms.symtab is a complete
-+	 * copy of the original symbol table. Adjust sh_addr to point
-+	 * to core_kallsyms.symtab since the copy of the symtab in module
-+	 * init memory is freed at the end of do_init_module().
-+	 */
-+	mod->klp_info->sechdrs[symndx].sh_addr = (unsigned long)mod->core_kallsyms.symtab;
-+
-+	return 0;
-+
-+free_sechdrs:
-+	kfree(mod->klp_info->sechdrs);
-+free_info:
-+	kfree(mod->klp_info);
-+	return ret;
 +}
-+
-+void free_module_elf(struct module *mod)
-+{
-+	kfree(mod->klp_info->sechdrs);
-+	kfree(mod->klp_info->secstrings);
-+	kfree(mod->klp_info);
-+}
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 5f5e21f972dd..3596ebf3a6c3 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -2043,81 +2043,6 @@ static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- }
- #endif /*  CONFIG_STRICT_MODULE_RWX */
- 
--#ifdef CONFIG_LIVEPATCH
--/*
-- * Persist Elf information about a module. Copy the Elf header,
-- * section header table, section string table, and symtab section
-- * index from info to mod->klp_info.
-- */
--static int copy_module_elf(struct module *mod, struct load_info *info)
--{
--	unsigned int size, symndx;
--	int ret;
--
--	size = sizeof(*mod->klp_info);
--	mod->klp_info = kmalloc(size, GFP_KERNEL);
--	if (mod->klp_info == NULL)
--		return -ENOMEM;
--
--	/* Elf header */
--	size = sizeof(mod->klp_info->hdr);
--	memcpy(&mod->klp_info->hdr, info->hdr, size);
--
--	/* Elf section header table */
--	size = sizeof(*info->sechdrs) * info->hdr->e_shnum;
--	mod->klp_info->sechdrs = kmemdup(info->sechdrs, size, GFP_KERNEL);
--	if (mod->klp_info->sechdrs == NULL) {
--		ret = -ENOMEM;
--		goto free_info;
--	}
--
--	/* Elf section name string table */
--	size = info->sechdrs[info->hdr->e_shstrndx].sh_size;
--	mod->klp_info->secstrings = kmemdup(info->secstrings, size, GFP_KERNEL);
--	if (mod->klp_info->secstrings == NULL) {
--		ret = -ENOMEM;
--		goto free_sechdrs;
--	}
--
--	/* Elf symbol section index */
--	symndx = info->index.sym;
--	mod->klp_info->symndx = symndx;
--
--	/*
--	 * For livepatch modules, core_kallsyms.symtab is a complete
--	 * copy of the original symbol table. Adjust sh_addr to point
--	 * to core_kallsyms.symtab since the copy of the symtab in module
--	 * init memory is freed at the end of do_init_module().
--	 */
--	mod->klp_info->sechdrs[symndx].sh_addr = \
--		(unsigned long) mod->core_kallsyms.symtab;
--
--	return 0;
--
--free_sechdrs:
--	kfree(mod->klp_info->sechdrs);
--free_info:
--	kfree(mod->klp_info);
--	return ret;
--}
--
--static void free_module_elf(struct module *mod)
--{
--	kfree(mod->klp_info->sechdrs);
--	kfree(mod->klp_info->secstrings);
--	kfree(mod->klp_info);
--}
--#else /* !CONFIG_LIVEPATCH */
--static int copy_module_elf(struct module *mod, struct load_info *info)
--{
--	return 0;
--}
--
--static void free_module_elf(struct module *mod)
--{
--}
--#endif /* CONFIG_LIVEPATCH */
--
- void __weak module_memfree(void *module_region)
- {
- 	/*
-@@ -3092,30 +3017,23 @@ static int copy_chunked_from_user(void *dst, const void __user *usrc, unsigned l
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 0fdd9c0cd77d..1c9604443e2f 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -173,3 +173,10 @@ static inline int module_sig_check(struct load_info *info, int flags)
  	return 0;
  }
- 
--#ifdef CONFIG_LIVEPATCH
- static int check_modinfo_livepatch(struct module *mod, struct load_info *info)
- {
--	if (get_modinfo(info, "livepatch")) {
--		mod->klp = true;
-+	if (!get_modinfo(info, "livepatch"))
-+		/* Nothing more to do */
-+		return 0;
+ #endif /* !CONFIG_MODULE_SIG */
 +
-+	if (set_livepatch_module(mod)) {
- 		add_taint_module(mod, TAINT_LIVEPATCH, LOCKDEP_STILL_OK);
- 		pr_notice_once("%s: tainting kernel with TAINT_LIVEPATCH\n",
--			       mod->name);
--	}
--
--	return 0;
--}
--#else /* !CONFIG_LIVEPATCH */
--static int check_modinfo_livepatch(struct module *mod, struct load_info *info)
--{
--	if (get_modinfo(info, "livepatch")) {
--		pr_err("%s: module is marked as livepatch module, but livepatch support is disabled",
--		       mod->name);
--		return -ENOEXEC;
-+				mod->name);
-+		return 0;
- 	}
- 
--	return 0;
-+	pr_err("%s: module is marked as livepatch module, but livepatch support is disabled",
-+	       mod->name);
-+	return -ENOEXEC;
++#ifdef CONFIG_DEBUG_KMEMLEAK
++void kmemleak_load_module(const struct module *mod, const struct load_info *info);
++#else /* !CONFIG_DEBUG_KMEMLEAK */
++static inline void kmemleak_load_module(const struct module *mod,
++					const struct load_info *info) { }
++#endif /* CONFIG_DEBUG_KMEMLEAK */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index c63e10c61694..7dd283959c5c 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -2519,33 +2519,6 @@ bool __weak module_exit_section(const char *name)
+ 	return strstarts(name, ".exit");
  }
--#endif /* CONFIG_LIVEPATCH */
  
- static void check_modinfo_retpoline(struct module *mod, struct load_info *info)
+-#ifdef CONFIG_DEBUG_KMEMLEAK
+-static void kmemleak_load_module(const struct module *mod,
+-				 const struct load_info *info)
+-{
+-	unsigned int i;
+-
+-	/* only scan the sections containing data */
+-	kmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);
+-
+-	for (i = 1; i < info->hdr->e_shnum; i++) {
+-		/* Scan all writable sections that's not executable */
+-		if (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||
+-		    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||
+-		    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))
+-			continue;
+-
+-		kmemleak_scan_area((void *)info->sechdrs[i].sh_addr,
+-				   info->sechdrs[i].sh_size, GFP_KERNEL);
+-	}
+-}
+-#else
+-static inline void kmemleak_load_module(const struct module *mod,
+-					const struct load_info *info)
+-{
+-}
+-#endif
+-
+ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
  {
+ #if defined(CONFIG_64BIT)
 -- 
 2.34.1
 
