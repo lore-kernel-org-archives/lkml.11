@@ -2,154 +2,425 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 423ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0775C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 12:16:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235065AbiBRMOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:14:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55592 "EHLO
+        id S235070AbiBRMRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:17:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiBRMOs (ORCPT
+        with ESMTP id S233930AbiBRMRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 07:14:48 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960C1285707;
-        Fri, 18 Feb 2022 04:14:31 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IAbx5j004757;
-        Fri, 18 Feb 2022 12:14:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=qYg3HbRvuyaDwlHM7pM6xhilL0TvYLUeas7iaFOSKs4=;
- b=oapUP9ukTBd+6fEhkmhMmghy447KM4OKaHQLx6dXARxsCoqenmY1bzxjmrUCmvRtpDRE
- 5MpsEY3FTOuzaKJE8ZHv9CcdR4bYzYDb0o3+GmEAtBUvzLtFwKKn0AEh6pPXZi/ZQT47
- 9a5xCn3cGHCW2Wbui7RwTpWpz1HAVFjgCJuJZ/SfHFdNONB3rgswDZBjNrtxyCU8Yjx6
- ehZh3C7JsniHLgKbd4Q8akeFVYi7dRFfQCRKI6WjQDo+UKjlh2kD/6hH6XPXdiD1ezsp
- x+FmEbWFLHWUsRnszfJgJhHHRtWgUb34xRtqSWX6FX4iCKgSQ5f+eCf2ZHGjVsLjirrk tg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ea9jda9aj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:14:30 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21ICETOO008647;
-        Fri, 18 Feb 2022 12:14:29 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ea9jda9a2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:14:29 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21IC7rRH027863;
-        Fri, 18 Feb 2022 12:14:27 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e645khwda-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 12:14:27 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21ICEOa818940406
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 12:14:24 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 17B6EA4054;
-        Fri, 18 Feb 2022 12:14:24 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F1A5EA4062;
-        Fri, 18 Feb 2022 12:14:22 +0000 (GMT)
-Received: from [9.171.81.151] (unknown [9.171.81.151])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 18 Feb 2022 12:14:22 +0000 (GMT)
-Message-ID: <2af9c3a9-e5a1-484b-9c1e-693a25993cdb@linux.ibm.com>
-Date:   Fri, 18 Feb 2022 13:14:21 +0100
+        Fri, 18 Feb 2022 07:17:12 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D0828ADBB;
+        Fri, 18 Feb 2022 04:16:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645186613; x=1676722613;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=jo9RXuWk9+zTcvMEjwT0ZCRUnTvpVEE6zSwU3xjPQ/I=;
+  b=bTzBfVL/REsG68T8FJQOCPHWo4buHalbltTLn5vnlhFxmIkMpxmA1o+A
+   /buWD0Uo2lMOt3SUsKipEh9pHUBvoH32xW0AfKBRtA9y2to2SRSHTzkYG
+   J9zDaq9B4zC0J+8Hn6KfFmKem8N5oQ+Om4oPEIAHQvEgPBYGq21mEC2mR
+   hIulpvsiVhiVpNS27XShj3y/ZgaJBaN/fG9U/oobGQv9tEFly8DH3Fsys
+   Z+g+T3rNr9b37LpPdH3knfclG3K3AVMImGD3ts+lFiP/ks1u7PPknwKdh
+   rQQcv5GIxziLr2d3oSGl1S3vy8ur69ZSuP1CqYlMfyldoAZTQP7ba5gtk
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
+   d="scan'208";a="149211524"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2022 05:16:52 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 18 Feb 2022 05:16:52 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Feb 2022 05:16:47 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <arnd@arndb.de>, <alexandre.belloni@bootlin.com>, <olof@lixom.net>,
+        <soc@kernel.org>, <robh+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>,
+        <Manohar.Puri@microchip.com>
+Subject: [PATCH v6] ARM: dts: add DT for lan966 SoC and 2-port board pcb8291
+Date:   Fri, 18 Feb 2022 17:46:41 +0530
+Message-ID: <20220218121641.26472-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/2] KVM: s390: selftests: Test vm and vcpu memop with
- keys
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Thomas Huth <thuth@redhat.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220211182215.2730017-11-scgl@linux.ibm.com>
- <20220217145336.1794778-1-scgl@linux.ibm.com>
- <20220217145336.1794778-3-scgl@linux.ibm.com>
- <7d0b5b03-21f4-0402-779a-788d4bd58071@linuxfoundation.org>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <7d0b5b03-21f4-0402-779a-788d4bd58071@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: dgoOZILauosDLH8qZeOhpT3DQ9BI8vfF
-X-Proofpoint-GUID: H5CqkSacmumSN9NkkxkBuif3WNkLkAdt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-18_04,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 adultscore=0 priorityscore=1501 clxscore=1015
- suspectscore=0 mlxscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202180078
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/17/22 18:54, Shuah Khan wrote:
-> On 2/17/22 7:53 AM, Janis Schoetterl-Glausch wrote:
->> Test storage key checking for both vm and vcpu MEM_OP ioctls.
->> Test both error and non error conditions.
->>
-> 
-> This patch seems to combine restructuring the code and new code.
-> e,g test_errors() was added in the last patch, only to be redone
-> in this patch with test_errors split into test_common_errors()
-> 
-> Doing restructure in a separate patch and then adding new code
-> makes it easier to review and also keep them simpler patches.
-> 
-> Please split the code in these two patches to just do restructure
-> and then add new code.
-> 
-> I also would like to have good reasons to change existing code and
-> make them into macros.
->  
->> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->> ---
->>   tools/testing/selftests/kvm/s390x/memop.c | 342 +++++++++++++++++++++-
->>   1 file changed, 328 insertions(+), 14 deletions(-)
->>
->> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
->> index 4510418d73e6..bc12a9238967 100644
->> --- a/tools/testing/selftests/kvm/s390x/memop.c
->> +++ b/tools/testing/selftests/kvm/s390x/memop.c
->> @@ -201,6 +201,8 @@ static int err_memop_ioctl(struct test_vcpu vcpu, struct kvm_s390_mem_op *ksmo)
->>   #define PAGE_SHIFT 12
->>   #define PAGE_SIZE (1ULL << PAGE_SHIFT)
->>   #define PAGE_MASK (~(PAGE_SIZE - 1))
->> +#define CR0_FETCH_PROTECTION_OVERRIDE    (1UL << (63 - 38))
->> +#define CR0_STORAGE_PROTECTION_OVERRIDE    (1UL << (63 - 39))
->>     #define ASSERT_MEM_EQ(p1, p2, size) \
->>       TEST_ASSERT(!memcmp(p1, p2, size), "Memory contents do not match!")
->> @@ -235,6 +237,11 @@ static struct test_default test_default_init(void *guest_code)
->>       return t;
->>   }
->>   +static vm_vaddr_t test_vaddr_alloc(struct test_vcpu vm, size_t size, vm_vaddr_t vaddr_min)
->> +{
->> +    return vm_vaddr_alloc(vm.vm, size, vaddr_min);
->> +}
->> +
-> 
-> What is the value of adding a new routine that simply calls another?
+This patch adds basic DT for Microchip lan966x SoC and associated board
+pcb8291(2-port EVB). Adds peripherals required to allow booting: Interrupt
+Controller, Clock, Generic ARMv7 Timers, Synopsys Timer, Flexcoms, GPIOs.
+Also adds other peripherals like crypto(AES/SHA), DMA, Watchdog Timer, TRNG
+and MCAN0.
 
-I just found the vm.vm confusing/ugly and wanted to hide it,
-I'm not married to that idea, tho.
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+---
+v5 -> v6:
+- Renamed dts file to lan966x-pcb8291.dts file.
+- Disabled optional watchdog in dtsi file and enabled it in dts file.
 
-> Do you see this routine changing in the future to do more?
+v4 -> v5:
+- Modified AES, SHA, TRNG node names as per generic names recommended.
 
-No.
-> 
-> thanks,
-> -- Shuah
+v3 -> v4:
+- Removed character 'x' from compatible string.
+- Removed memory node as handled by bootloader.
+- Renamed flexcom3 usart0 to usart3
+- Added /chosen and /aliases nodes in dts file.
+
+v2 -> v3:
+- Enabling trng in dtsi itself.
+- Removed "status=okay" dma0.
+- Add gpio pin settings for can0(missed adding this in previous version)
+
+v1 -> v2:
+- Moved flx3 usart0 node to dtsi file.
+- Removed status="okay" for dma0 to maintain consistency across nodes
+  (which means enabling dma0 by default)
+
+ arch/arm/boot/dts/Makefile            |   2 +
+ arch/arm/boot/dts/lan966x-pcb8291.dts |  64 +++++++
+ arch/arm/boot/dts/lan966x.dtsi        | 238 ++++++++++++++++++++++++++
+ 3 files changed, 304 insertions(+)
+ create mode 100644 arch/arm/boot/dts/lan966x-pcb8291.dts
+ create mode 100644 arch/arm/boot/dts/lan966x.dtsi
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 235ad559acb2..c17a7308ff44 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -735,6 +735,8 @@ dtb-$(CONFIG_SOC_IMX7D) += \
+ dtb-$(CONFIG_SOC_IMX7ULP) += \
+ 	imx7ulp-com.dtb \
+ 	imx7ulp-evk.dtb
++dtb-$(CONFIG_SOC_LAN966) += \
++	lan966x-pcb8291.dtb
+ dtb-$(CONFIG_SOC_LS1021A) += \
+ 	ls1021a-moxa-uc-8410a.dtb \
+ 	ls1021a-qds.dtb \
+diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
+new file mode 100644
+index 000000000000..3281af90ac6d
+--- /dev/null
++++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
+@@ -0,0 +1,64 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * lan966x_pcb8291.dts - Device Tree file for PCB8291
++ */
++/dts-v1/;
++#include "lan966x.dtsi"
++
++/ {
++	model = "Microchip EVB - LAN9662";
++	compatible = "microchip,lan9662-pcb8291", "microchip,lan9662", "microchip,lan966";
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	aliases {
++		serial0 = &usart3;
++	};
++};
++
++&gpio {
++	fc_shrd7_pins: fc_shrd7-pins {
++		pins = "GPIO_49";
++		function = "fc_shrd7";
++	};
++
++	fc_shrd8_pins: fc_shrd8-pins {
++		pins = "GPIO_54";
++		function = "fc_shrd8";
++	};
++
++	fc3_b_pins: fcb3-spi-pins {
++		/* SCK, RXD, TXD */
++		pins = "GPIO_51", "GPIO_52", "GPIO_53";
++		function = "fc3_b";
++	};
++
++	can0_b_pins:  can0_b_pins {
++		/* RX, TX */
++		pins = "GPIO_35", "GPIO_36";
++		function = "can0_b";
++	};
++};
++
++&can0 {
++	pinctrl-0 = <&can0_b_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&flx3 {
++	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_USART>;
++	status = "okay";
++
++	usart3: serial@200 {
++		pinctrl-0 = <&fc3_b_pins>, <&fc_shrd7_pins>, <&fc_shrd8_pins>;
++		pinctrl-names = "default";
++		status = "okay";
++	};
++};
++
++&watchdog {
++	status = "okay";
++};
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+new file mode 100644
+index 000000000000..10ffe78110ff
+--- /dev/null
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -0,0 +1,238 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * lan966x.dtsi - Device Tree Include file for Microchip LAN966 family SoC
++ *
++ * Copyright (C) 2021 Microchip Technology, Inc. and its subsidiaries
++ *
++ * Author: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
++ *
++ */
++
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/mfd/atmel-flexcom.h>
++#include <dt-bindings/dma/at91.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/clock/microchip,lan966x.h>
++
++/ {
++	model = "Microchip LAN966 family SoC";
++	compatible = "microchip,lan966";
++	interrupt-parent = <&gic>;
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a7";
++			clock-frequency = <600000000>;
++			reg = <0x0>;
++		};
++	};
++
++	clocks {
++		sys_clk: sys_clk {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <162500000>;
++		};
++
++		cpu_clk: cpu_clk {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <600000000>;
++		};
++
++		ddr_clk: ddr_clk {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <300000000>;
++		};
++
++		nic_clk: nic_clk {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <200000000>;
++		};
++	};
++
++	clks: clock-controller@e00c00a8 {
++		compatible = "microchip,lan966x-gck";
++		#clock-cells = <1>;
++		clocks = <&cpu_clk>, <&ddr_clk>, <&sys_clk>;
++		clock-names = "cpu", "ddr", "sys";
++		reg = <0xe00c00a8 0x38>;
++	};
++
++	timer {
++		compatible = "arm,armv7-timer";
++		interrupt-parent = <&gic>;
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
++		clock-frequency = <37500000>;
++		arm,cpu-registers-not-fw-configured;
++	};
++
++	soc {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		flx0: flexcom@e0040000 {
++			compatible = "atmel,sama5d2-flexcom";
++			reg = <0xe0040000 0x100>;
++			clocks = <&clks GCK_ID_FLEXCOM0>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0x0 0xe0040000 0x800>;
++			status = "disabled";
++		};
++
++		flx1: flexcom@e0044000 {
++			compatible = "atmel,sama5d2-flexcom";
++			reg = <0xe0044000 0x100>;
++			clocks = <&clks GCK_ID_FLEXCOM1>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0x0 0xe0044000 0x800>;
++			status = "disabled";
++		};
++
++		trng: rng@e0048000 {
++			compatible = "atmel,at91sam9g45-trng";
++			reg = <0xe0048000 0x100>;
++			clocks = <&nic_clk>;
++		};
++
++		aes: crypto@e004c000 {
++			compatible = "atmel,at91sam9g46-aes";
++			reg = <0xe004c000 0x100>;
++			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
++			dmas = <&dma0 AT91_XDMAC_DT_PERID(13)>,
++			       <&dma0 AT91_XDMAC_DT_PERID(12)>;
++			dma-names = "rx", "tx";
++			clocks = <&nic_clk>;
++			clock-names = "aes_clk";
++		};
++
++		flx2: flexcom@e0060000 {
++			compatible = "atmel,sama5d2-flexcom";
++			reg = <0xe0060000 0x100>;
++			clocks = <&clks GCK_ID_FLEXCOM2>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0x0 0xe0060000 0x800>;
++			status = "disabled";
++		};
++
++		flx3: flexcom@e0064000 {
++			compatible = "atmel,sama5d2-flexcom";
++			reg = <0xe0064000 0x100>;
++			clocks = <&clks GCK_ID_FLEXCOM3>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0x0 0xe0064000 0x800>;
++			status = "disabled";
++
++			usart3: serial@200 {
++				compatible = "atmel,at91sam9260-usart";
++				reg = <0x200 0x200>;
++				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&nic_clk>;
++				clock-names = "usart";
++				atmel,fifo-size = <32>;
++				status = "disabled";
++			};
++		};
++
++		dma0: dma-controller@e0068000 {
++			compatible = "microchip,sama7g5-dma";
++			reg = <0xe0068000 0x1000>;
++			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
++			#dma-cells = <1>;
++			clocks = <&nic_clk>;
++			clock-names = "dma_clk";
++		};
++
++		sha: crypto@e006c000 {
++			compatible = "atmel,at91sam9g46-sha";
++			reg = <0xe006c000 0xec>;
++			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
++			dmas = <&dma0 AT91_XDMAC_DT_PERID(14)>;
++			dma-names = "tx";
++			clocks = <&nic_clk>;
++			clock-names = "sha_clk";
++		};
++
++		flx4: flexcom@e0070000 {
++			compatible = "atmel,sama5d2-flexcom";
++			reg = <0xe0070000 0x100>;
++			clocks = <&clks GCK_ID_FLEXCOM4>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0x0 0xe0070000 0x800>;
++			status = "disabled";
++		};
++
++		timer0: timer@e008c000 {
++			compatible = "snps,dw-apb-timer";
++			reg = <0xe008c000 0x400>;
++			clocks = <&nic_clk>;
++			clock-names = "timer";
++			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
++		watchdog: watchdog@e0090000 {
++			compatible = "snps,dw-wdt";
++			reg = <0xe0090000 0x1000>;
++			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&nic_clk>;
++			status = "disabled";
++		};
++
++		can0: can@e081c000 {
++			compatible = "bosch,m_can";
++			reg = <0xe081c000 0xfc>, <0x00100000 0x4000>;
++			reg-names = "m_can", "message_ram";
++			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "int0", "int1";
++			clocks = <&clks GCK_ID_MCAN0>, <&clks GCK_ID_MCAN0>;
++			clock-names = "hclk", "cclk";
++			assigned-clocks = <&clks GCK_ID_MCAN0>;
++			assigned-clock-rates = <40000000>;
++			bosch,mram-cfg = <0x0 0 0 64 0 0 32 32>;
++			status = "disabled";
++		};
++
++		gpio: pinctrl@e2004064 {
++			compatible = "microchip,lan966x-pinctrl";
++			reg = <0xe2004064 0xb4>,
++			    <0xe2010024 0x138>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			gpio-ranges = <&gpio 0 0 78>;
++			interrupt-controller;
++			interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
++			#interrupt-cells = <2>;
++		};
++
++		gic: interrupt-controller@e8c11000 {
++			compatible = "arm,gic-400", "arm,cortex-a7-gic";
++			#interrupt-cells = <3>;
++			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-controller;
++			reg = <0xe8c11000 0x1000>,
++			      <0xe8c12000 0x2000>,
++			      <0xe8c14000 0x2000>,
++			      <0xe8c16000 0x2000>;
++		};
++	};
++};
+-- 
+2.17.1
 
