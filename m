@@ -2,117 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E97FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BCFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 14:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236588AbiBRO53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:57:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51386 "EHLO
+        id S236650AbiBRO5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:57:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236410AbiBRO4s (ORCPT
+        with ESMTP id S236524AbiBRO4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 09:56:48 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6502B2FF0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:18 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id cm8so6301822edb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:18 -0800 (PST)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04022B2FC7
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:17 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id e3so15109244wra.0
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HEDVsJdoBlriKRiWsMiaPibDlLRBSHkQp8aBEXdrRPg=;
-        b=fqRe4zP7YJl0es1coqEkQ+IA42hkW52O3II+Mzuv6ExVlmG3hQ9BH55+U9/QlFyisp
-         0usnUkaPANy2IpTeSlyrZXG5nwU5PJx+kftwW3x7K85HTPrWGf5JoMKVsOXl8czZudNt
-         kgmk68cPq+KhxefMKldnyo24+ONhbjWcEPftQ=
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BY2INqP5/ML6M0B5RXCe3qW6LaccjrUVhDYjta1rw28=;
+        b=Nn5Qt5GlmO2JofQtcrAgsfqSOdkqB7Tu5hXL1wU5yHulSqYqZhoEI/4feFzqNbfqrp
+         br80hHQ0W+SbYWnzHMvh/tsB4sBXwJMWrskwR8RT0d2fbx8ec92r8h/SAac/iyzsUjns
+         Hm7TyLj+eAsJmiUPkoHrACNiEWJnPW18SlQorK+lfzAg4XeO202ydsKvTFsBPBqoU9kU
+         AEkryKI9f3gbLYaDDo22CnDnQz6r27txIm57q33phelJy8ZbZ64oU0fO/yu8RCR3tmb3
+         tonoAnsfjNBqmJxBULHXKDDtF/5bUV5u8iE1X6tNQHhlIgoyXIRTPuzVSrIVoZ5WOMOE
+         QL7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HEDVsJdoBlriKRiWsMiaPibDlLRBSHkQp8aBEXdrRPg=;
-        b=NlR2YxHRPWoi3ULARZIQZzaOAM6/YEUXO1Glb4rFnNTnYq4Kq1/BjqvuR4QziDFEtU
-         hJHkHnRkSHwLTxjESsqXjy7lefy1Zl18KhoIlkPueyeoMbuD3OEMp5+EJ7nNjC21nqpU
-         elBy99rTulvThOr4qNcIs0xbTDrQnxeCs4a1ZX8hm+8vq3hVf5VVrD8fcA6DhAqo2pud
-         HlimleIJICPMSS24Vbdz5JbkdrAfgLvRirA9Fp1o046VGWeV4jHtkGSfouA5922ALNT9
-         mfoTmitMdErJqc0/+Hc8ionXR1hF677DKqDcvnVv6P1KS+WJ2fAA7Ah6Nw1BI7bQxIwG
-         Y2eA==
-X-Gm-Message-State: AOAM530tZ1qnHGU/QK284LF16jl1jmR5GMz38HEzh0gmrVs3ui1T7eoz
-        k7tilGHmLwLtyHcN27/oqYxPpt4ECvZs3FJHEqU=
-X-Google-Smtp-Source: ABdhPJyKJpSAHcZtMzfYQF/gcShqQif4CzVTjcl/RQ6Tg+W9nLIA/gdXfqnenWj7SzTHEtNsmP/qJw==
-X-Received: by 2002:a05:6402:518b:b0:412:80a3:fb6e with SMTP id q11-20020a056402518b00b0041280a3fb6emr8865190edd.84.1645196176254;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BY2INqP5/ML6M0B5RXCe3qW6LaccjrUVhDYjta1rw28=;
+        b=knkBClbFaXgo9eKoNblELOrpioTxnP8qHQZ3haKk2NFx2QEDcELPWfj9Xr16KxLA/j
+         7TCQthff0GmRqmNb4r4Gic2lqfD2xj3cEHVcxHko1vWkm0Ow/KBGQcgxPpWIgmYtXweN
+         US3QhKTqQZ7GoNng9S+gTlrhUoluoMVHUHut/MQ+Z4ZAvKTJzVlMZHFJhrwozOI/Gipc
+         8Asb/N6qDBssx+IHcHJdoJPKqFPP771df6WQSbT/Jou5rkMJykLo5w54lCrFavAgeTM6
+         AapQ089YD0J46L3iE68k+xwxVOWqop9OpIUXmhqYEyc3INJHptTja2YcRYXzABIHuh/C
+         PsnQ==
+X-Gm-Message-State: AOAM530783wJigxC5x9XkxDJqibXE7U26Szch5yetAYm7y4ae0GN3b6e
+        GPBDBCg/6tl+57p3mdIJTCfqPQ==
+X-Google-Smtp-Source: ABdhPJx1nSDEfTBmLfQ7yKV8krgbtdoJ22jOuH5HY/NqNK/26S8qJNcxP8B0rTBJCXywchzlr5iR6Q==
+X-Received: by 2002:adf:d20c:0:b0:1e5:952c:34b5 with SMTP id j12-20020adfd20c000000b001e5952c34b5mr6528939wrh.82.1645196176558;
         Fri, 18 Feb 2022 06:56:16 -0800 (PST)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id z12sm5153604edb.77.2022.02.18.06.56.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Feb 2022 06:56:15 -0800 (PST)
-Received: by mail-wr1-f47.google.com with SMTP id f3so14887809wrh.7
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 06:56:15 -0800 (PST)
-X-Received: by 2002:a5d:4c48:0:b0:1e4:aeab:c77e with SMTP id
- n8-20020a5d4c48000000b001e4aeabc77emr6335194wrt.342.1645196174604; Fri, 18
- Feb 2022 06:56:14 -0800 (PST)
+Received: from localhost.localdomain (2a02-8440-6241-3b28-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6241:3b28:3074:96af:9642:2])
+        by smtp.gmail.com with ESMTPSA id b10sm47431454wrd.8.2022.02.18.06.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 06:56:16 -0800 (PST)
+From:   Guillaume Ranquet <granquet@baylibre.com>
+To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org
+Subject: [PATCH v8 09/19] drm/mediatek: dpi: move dimension_mask to board config
+Date:   Fri, 18 Feb 2022 15:54:27 +0100
+Message-Id: <20220218145437.18563-10-granquet@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220218145437.18563-1-granquet@baylibre.com>
+References: <20220218145437.18563-1-granquet@baylibre.com>
 MIME-Version: 1.0
-References: <1644494255-6632-1-git-send-email-quic_sbillaka@quicinc.com>
- <1644494255-6632-3-git-send-email-quic_sbillaka@quicinc.com> <YgWoAwdH/AqJUshh@builder.lan>
-In-Reply-To: <YgWoAwdH/AqJUshh@builder.lan>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 18 Feb 2022 06:56:01 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=XHsgg-cPVRr8jEUTGm3rf_BO5P+jQawDPq9Hju-O4uwQ@mail.gmail.com>
-Message-ID: <CAD=FV=XHsgg-cPVRr8jEUTGm3rf_BO5P+jQawDPq9Hju-O4uwQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] arm64: dts: qcom: sc7280: Add support for eDP
- panel on CRD
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
-        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
-        quic_mkrishn@quicinc.com, quic_vproddut@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Add flexibility by moving the dimension mask to board config
 
-On Thu, Feb 10, 2022 at 4:04 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> > +&mdss_edp {
-> > +     status = "okay";
-> > +
-> > +     vdda-1p2-supply = <&vreg_l6b_1p2>;
-> > +     vdda-0p9-supply = <&vreg_l10c_0p8>;
-> > +     /delete-property/ pinctrl-names;
-> > +     /delete-property/ pinctrl-0;
->
-> If the first device to enable &mdss_edp overwrites pinctrl-{names,0} in
-> &mdss_dp and removes the properties in &mdss_edp, I think that's a sign
-> that they should not be in the .dtsi in the first place.
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-Actually, I just looked more carefully here. I think the
-"/delete-property" for edp_hpd here is just wrong. I'm pretty sure
-that the HPD signal is hooked up on CRD and we actually need it. If
-somehow deleting the property helps you then it's probably just
-hacking around a bug and relying on the panel to be always powered on,
-or something.
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 8ca3455ed64ee..0d3acd08ea358 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -129,6 +129,8 @@ struct mtk_dpi_conf {
+ 	bool swap_input_support;
+ 	// Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH (no shift)
+ 	u32 dimension_mask;
++	// Mask used for HSIZE and VSIZE (no shift)
++	u32 hvsize_mask;
+ 	const struct mtk_dpi_yc_limit *limit;
+ };
+ 
+@@ -243,8 +245,10 @@ static void mtk_dpi_config_interface(struct mtk_dpi *dpi, bool inter)
+ 
+ static void mtk_dpi_config_fb_size(struct mtk_dpi *dpi, u32 width, u32 height)
+ {
+-	mtk_dpi_mask(dpi, DPI_SIZE, width << HSIZE, HSIZE_MASK);
+-	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE, VSIZE_MASK);
++	mtk_dpi_mask(dpi, DPI_SIZE, width << HSIZE,
++		     dpi->conf->hvsize_mask << HSIZE);
++	mtk_dpi_mask(dpi, DPI_SIZE, height << VSIZE,
++		     dpi->conf->hvsize_mask << VSIZE);
+ }
+ 
+ static void mtk_dpi_config_channel_limit(struct mtk_dpi *dpi)
+@@ -816,6 +820,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
+ 	.dimension_mask = HPW_MASK,
++	.hvsize_mask = HSIZE_MASK,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -829,6 +834,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
+ 	.dimension_mask = HPW_MASK,
++	.hvsize_mask = HSIZE_MASK,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -841,6 +847,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
+ 	.dimension_mask = HPW_MASK,
++	.hvsize_mask = HSIZE_MASK,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -853,6 +860,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.is_ck_de_pol = true,
+ 	.swap_input_support = true,
+ 	.dimension_mask = HPW_MASK,
++	.hvsize_mask = HSIZE_MASK,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+-- 
+2.34.1
 
-I think this gets into some of the stuff in your final patch in this
-series. I found that, on my hardware, the panel doesn't come up at all
-with that final patch. When I go back to how things were working in an
-earlier version of your series, though, I can get things working a
-little better (though still not perfect).
-
--Doug
