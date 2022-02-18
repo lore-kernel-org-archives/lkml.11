@@ -2,121 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 01:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbiBRBds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 20:33:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33054 "EHLO
+        id S231300AbiBRBhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 20:37:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbiBRBdo (ORCPT
+        with ESMTP id S231156AbiBRBhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 20:33:44 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63861B2799;
-        Thu, 17 Feb 2022 17:33:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645148009; x=1676684009;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=68iC9cnz+ae05R1FGoesD5y/UbMcqAkHpnWUd6+k1Sc=;
-  b=i8bZya4fC7QqS0Q3v9ZsXM9QyMpcd82z4nidTqgc3Ml9jE15DsSuaPjy
-   518ThgpjNEBIb6Pi31gCVTkpu5SobGZeNE6TB5VRp6LSASKzFkhko080I
-   MhTR+KOeYKT+49lyZoTU0QZ3w1yVdBT8Gie5uQNVhjv+XX+DURXJ7auUM
-   gMTRplpG+MmE81goCYlyM+jcFjYzNkW1EJ+oY78Fxl0KBUnL2mos15849
-   GfChBTVzFEXXRTQmwidw0S/ICuOa2jieFVT5nRUN4d6vof+T18IEH4DgX
-   n7GUpWK9GK2vtTpJjQ8Jm2c9Bgx5+QnKXnwnV3BJnwenT8vpRn21bEiHv
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231662947"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="231662947"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 17:33:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
-   d="scan'208";a="503791413"
-Received: from zxingrtx.sh.intel.com ([10.239.159.110])
-  by orsmga002.jf.intel.com with ESMTP; 17 Feb 2022 17:33:26 -0800
-From:   zhengjun.xing@linux.intel.com
-To:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        irogers@google.com, adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com, zhengjun.xing@linux.intel.com
-Subject: [PATCH] perf tools: fix failed to use cpu list for uncore events
-Date:   Fri, 18 Feb 2022 17:31:27 +0800
-Message-Id: <20220218093127.1844241-1-zhengjun.xing@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 17 Feb 2022 20:37:05 -0500
+Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47ED64C0;
+        Thu, 17 Feb 2022 17:36:49 -0800 (PST)
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 21I1aP3F029682;
+        Fri, 18 Feb 2022 10:36:26 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 21I1aP3F029682
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1645148186;
+        bh=VKdbuX5iAWZp7EuE5zh/xocsqym/fIrci0mPxooYe28=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IWhfFvtew4XU+l1tL7Sq692w35/peSkY5xMOmfIiDPmNJsFG/dLnh6hvuX7ZTQUAv
+         RRW+NYubKgOIhXlWjhKo/2EDILOCt78EfK6HwxqRRfooUeivpKtY1htnxsEICsK9f7
+         E5ql2bG+4s1DtHOKKdrpXy044p38x41eVsw9RIgZFPss5pUUwxst2PuCkvzz9UvlJh
+         +1RmkYZhSo9R5pPRI81FNE6r2L6eQHnKUKh4ulAcVwXBKvxh39KYHGOFSKlRQphiJy
+         n7ZaF4Z/STeLg4vjvCaaV4QaRvbPk6GKJlpASNp11lAs8w/T/9J6IF4nN+lGAbtnBB
+         CfH4t3KPiPU3A==
+X-Nifty-SrcIP: [209.85.216.47]
+Received: by mail-pj1-f47.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso7090066pjh.5;
+        Thu, 17 Feb 2022 17:36:26 -0800 (PST)
+X-Gm-Message-State: AOAM532U0FmFG9PBIDONcPzEOkTOvUH1yB2zbXQrBFvot8N0nLqimv0A
+        MRSYl7ZbLZwaW1OpeMWCSVmMYI81zjXrQmbV2Qo=
+X-Google-Smtp-Source: ABdhPJy0Ae337oqKkEUoK4O3IKhPlww6tXbKq+aJYguPXt6um9PiI+8T8dLczPOUtLJexLG3bu+W8fp8Z0qZsjNXFyc=
+X-Received: by 2002:a17:90b:4d84:b0:1b9:4109:7118 with SMTP id
+ oj4-20020a17090b4d8400b001b941097118mr10117749pjb.119.1645148185337; Thu, 17
+ Feb 2022 17:36:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <978951d76d8cb84bab347c7623bc163e9a038452.1645100305.git.christophe.leroy@csgroup.eu>
+ <35bcd5df0fb546008ff4043dbea68836@AcuMS.aculab.com> <d38e5e1c-29b6-8cc6-7409-d0bdd5772f23@csgroup.eu>
+ <9b8ef186-c7fe-822c-35df-342c9e86cc88@csgroup.eu> <3c2b682a7d804b5e8749428b50342c82@AcuMS.aculab.com>
+ <CAK7LNASWTJ-ax9u5yOwHV9vHCBAcQTazV-oXtqVFVFedOA0Eqw@mail.gmail.com>
+ <2e38265880db45afa96cfb51223f7418@AcuMS.aculab.com> <CAK7LNASvBLLWMa+kb5eGJ6vpSqob_dBUxwCnpHZfL-spzRG7qA@mail.gmail.com>
+ <20220217180735.GM614@gate.crashing.org>
+In-Reply-To: <20220217180735.GM614@gate.crashing.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 18 Feb 2022 10:35:48 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com>
+Message-ID: <CAK7LNAQ3tdOEYP7LjSX5+vhy=eUf0q-YiktQriH-rcr1n2Q3aA@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: Force inlining of checksum functions in net/checksum.h
+To:     Segher Boessenkool <segher@kernel.crashing.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+On Fri, Feb 18, 2022 at 3:10 AM Segher Boessenkool
+<segher@kernel.crashing.org> wrote:
+>
+> On Fri, Feb 18, 2022 at 02:27:16AM +0900, Masahiro Yamada wrote:
+> > On Fri, Feb 18, 2022 at 1:49 AM David Laight <David.Laight@aculab.com> wrote:
+> > > That description is largely fine.
+> > >
+> > > Inappropriate 'inline' ought to be removed.
+> > > Then 'inline' means - 'really do inline this'.
+> >
+> > You cannot change "static inline" to "static"
+> > in header files.
+>
+> Why not?  Those two have identical semantics!
 
-The 'perf record' and 'perf stat' commands have supported the option
-'-C/--cpus' to count or collect only on the list of CPUs provided.
-commit 1d3351e631fc ("perf tools: Enable on a list of CPUs for hybrid")
-add it to be supported for hybrid. For hybrid support, it checks the
-cpu list are available on hybrid PMU. But when we test only uncore
-events(or events not in cpu_core and cpu_atom), there is a bug:
+e.g.)
 
-Before:
- # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
-   failed to use cpu list 0
 
-In this case, for uncore event, its pmu_name is not cpu_core or cpu_atom,
-so in evlist__fix_hybrid_cpus, perf_pmu__find_hybrid_pmu should return
-NULL,both events_nr and unmatched_count should be 0 ,then the cpu list
-check function evlist__fix_hybrid_cpus return -1 and the error "failed
-to use cpu list 0" will happen. Bypass "events_nr=0" case then the issue
-is fixed.
+[1] Open  include/linux/device.h with your favorite editor,
+     then edit
 
-After:
- # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
+static inline void *devm_kcalloc(struct device *dev,
 
- Performance counter stats for 'CPU(s) 0':
+    to
 
-       195,476,873      uncore_clock/clockticks/
+static void *devm_kcalloc(struct device *dev,
 
-       1.004518677 seconds time elapsed
 
-When testing with at least one core event and uncore events, it has no
-issue.
+[2] Build the kernel
 
- # perf stat -C0  -e cpu_core/cpu-cycles/,uncore_clock/clockticks/ sleep 1
 
- Performance counter stats for 'CPU(s) 0':
 
-         5,993,774      cpu_core/cpu-cycles/
-       301,025,912      uncore_clock/clockticks/
 
-       1.003964934 seconds time elapsed
 
-Fixes: 1d3351e631fc ("perf tools: Enable on a list of CPUs for hybrid")
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
----
- tools/perf/util/evlist-hybrid.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/evlist-hybrid.c b/tools/perf/util/evlist-hybrid.c
-index 7f234215147d..57f02beef023 100644
---- a/tools/perf/util/evlist-hybrid.c
-+++ b/tools/perf/util/evlist-hybrid.c
-@@ -154,8 +154,8 @@ int evlist__fix_hybrid_cpus(struct evlist *evlist, const char *cpu_list)
- 		perf_cpu_map__put(matched_cpus);
- 		perf_cpu_map__put(unmatched_cpus);
- 	}
--
--	ret = (unmatched_count == events_nr) ? -1 : 0;
-+	if (events_nr)
-+		ret = (unmatched_count == events_nr) ? -1 : 0;
- out:
- 	perf_cpu_map__put(cpus);
- 	return ret;
+
+
+
+>
+>
+> Segher
+
+
+
+
+
+
+
 -- 
-2.25.1
-
+Best Regards
+Masahiro Yamada
