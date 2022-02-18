@@ -2,84 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE914C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 07:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbiBRHdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 02:33:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39718 "EHLO
+        id S231868AbiBRHdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 02:33:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232105AbiBRHcz (ORCPT
+        with ESMTP id S232322AbiBRHdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 02:32:55 -0500
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Feb 2022 23:32:39 PST
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C357296929
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 23:32:37 -0800 (PST)
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202202180731280445ec3ecc9d6b97da
-        for <linux-kernel@vger.kernel.org>;
-        Fri, 18 Feb 2022 08:31:29 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=2QoxEb5jjQqEe5geNwJ+mjwTK4TQqzNR+pyl04R918k=;
- b=ZeGM0muVikeLVW3ioAfDZNV2g2Cl5RsaHoqT0WQLRx5dRB8w8z9WrwyEfoi6mLA4tmkRFv
- MVuAUrAh6AJzR1KgOdLqX9SQ2KBnGMpl70c+uWHsscI1JBW5PY9cFSK6cez1SJ3rGhxo9I3T
- k8l1NnzzQsphVDTRZXAxMEFjgPUZc=;
-From:   daniel.starke@siemens.com
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4/7] tty: n_gsm: fix NULL pointer access due to DLCI release
-Date:   Thu, 17 Feb 2022 23:31:20 -0800
-Message-Id: <20220218073123.2121-4-daniel.starke@siemens.com>
-In-Reply-To: <20220218073123.2121-1-daniel.starke@siemens.com>
-References: <20220218073123.2121-1-daniel.starke@siemens.com>
+        Fri, 18 Feb 2022 02:33:36 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF5D29A55A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 23:33:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645169599; x=1676705599;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2ovBAY+X/7UhDUZdaPOalwBTMM25xCH0YwNPpTpTrdM=;
+  b=dyYLxJgS2d1A2VhUlgjnwBc2kLFRs4VfDQB9rWH36pbIl5jQCbVXODBd
+   c9hvgJqKlMYN8fARZ8gQKE+YLWcHNH8dwCDGqEY8vwYOM1aEzLSi9/rdY
+   YWEIiHsU9H4P5rWb0OFZzRvDmEZy/y132lSizZCsBURbEuVgeayaE2Ns0
+   qm9gOUpKyfahkfSuE5DRtRJUrjQ8hvyJ5wAxnD3QgJDEozmDzlRz4A0jy
+   JSgWtgTOXGvHaefIYTQ303VX58GGIJ4KTEi+m0dVuTPxA06VrxbDx/6JY
+   jIpDQxwwSvzZF25sSvfcEFC8vy7Ra0f9q2kfTpW3kNqmi3HohPHzxjDru
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="250828740"
+X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
+   d="scan'208";a="250828740"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 23:33:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,378,1635231600"; 
+   d="scan'208";a="530811264"
+Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 17 Feb 2022 23:33:17 -0800
+Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKxlU-00014v-G6; Fri, 18 Feb 2022 07:33:16 +0000
+Date:   Fri, 18 Feb 2022 15:33:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 2786/4461] arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available'
+ undeclared
+Message-ID: <202202181558.uVIihgU4-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-7517:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The here fixed commit made the tty hangup asynchronous to avoid a circular
-locking warning. I could not reproduce this warning. Furthermore, due to
-the asynchronous hangup the function call now gets queued up while the
-underlying tty is being freed. Depending on the timing this results in a
-NULL pointer access in the global work queue scheduler. To be precise in
-process_one_work(). Therefore, the previous commit made the issue worse
-which it tried to fix.
+Hi Will,
 
-This patch fixes this by falling back to the old behavior which uses a
-blocking tty hangup call before freeing up the associated tty.
+FYI, the error/warning still remains.
 
-Fixes: 7030082a7415 ("tty: n_gsm: avoid recursive locking with async port hangup")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   8f3d3d547d2c725afdb67b3a4ffb4a2f0f9dd339
+commit: 888643ea37b504cb32afdd6430698d1e92a79a71 [2786/4461] ANDROID: KVM: arm64: relay entropy requests from protected guests directly to secure
+config: arm64-randconfig-r003-20220217 (https://download.01.org/0day-ci/archive/20220218/202202181558.uVIihgU4-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/888643ea37b504cb32afdd6430698d1e92a79a71
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout 888643ea37b504cb32afdd6430698d1e92a79a71
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/arm64/kvm/arm.c: In function 'kvm_hyp_init_protection':
+>> arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available' undeclared (first use in this function)
+    2011 |         kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+         |                                              ^~~~~~~~~~~~~~~~~~~~
+   arch/arm64/kvm/arm.c:2011:46: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +/smccc_trng_available +2011 arch/arm64/kvm/arm.c
+
+  1997	
+  1998	static int kvm_hyp_init_protection(u32 hyp_va_bits)
+  1999	{
+  2000		void *addr = phys_to_virt(hyp_mem_base);
+  2001		int ret;
+  2002	
+  2003		kvm_nvhe_sym(id_aa64pfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
+  2004		kvm_nvhe_sym(id_aa64pfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1);
+  2005		kvm_nvhe_sym(id_aa64isar0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR0_EL1);
+  2006		kvm_nvhe_sym(id_aa64isar1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR1_EL1);
+  2007		kvm_nvhe_sym(id_aa64mmfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
+  2008		kvm_nvhe_sym(id_aa64mmfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
+  2009		kvm_nvhe_sym(id_aa64mmfr2_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR2_EL1);
+  2010		kvm_nvhe_sym(__icache_flags) = __icache_flags;
+> 2011		kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+  2012	
+  2013		ret = create_hyp_mappings(addr, addr + hyp_mem_size, PAGE_HYP);
+  2014		if (ret)
+  2015			return ret;
+  2016	
+  2017		ret = init_stage2_iommu();
+  2018		if (ret < 0)
+  2019			return ret;
+  2020	
+  2021		ret = do_pkvm_init(hyp_va_bits, (enum kvm_iommu_driver)ret);
+  2022		if (ret)
+  2023			return ret;
+  2024	
+  2025		free_hyp_pgds();
+  2026	
+  2027		return 0;
+  2028	}
+  2029	
+
 ---
- drivers/tty/n_gsm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 0b1808e3a912..e63154ef0b6c 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1748,7 +1748,12 @@ static void gsm_dlci_release(struct gsm_dlci *dlci)
- 		gsm_destroy_network(dlci);
- 		mutex_unlock(&dlci->mutex);
- 
--		tty_hangup(tty);
-+		/* We cannot use tty_hangup() because in tty_kref_put() the tty
-+		 * driver assumes that the hangup queue is free and reuses it to
-+		 * queue release_one_tty() -> NULL pointer panic in
-+		 * process_one_work().
-+		 */
-+		tty_vhangup(tty);
- 
- 		tty_port_tty_set(&dlci->port, NULL);
- 		tty_kref_put(tty);
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
