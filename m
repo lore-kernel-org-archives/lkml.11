@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 586BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233599AbiBRJbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:31:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37138 "EHLO
+        id S233589AbiBRJbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:31:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233569AbiBRJbB (ORCPT
+        with ESMTP id S233578AbiBRJbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 04:31:01 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D2F253BDA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B7B253BD9
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 01:30:45 -0800 (PST)
 Received: from dslb-178-004-174-047.178.004.pools.vodafone-ip.de ([178.4.174.47] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nKzb7-0005VT-9z; Fri, 18 Feb 2022 10:30:41 +0100
+        id 1nKzb6-0005VT-Ef; Fri, 18 Feb 2022 10:30:40 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/4] staging: r8188eu: RxSNR is set but not used
-Date:   Fri, 18 Feb 2022 10:30:32 +0100
-Message-Id: <20220218093034.854049-3-martin@kaiser.cx>
+Subject: [PATCH 1/4] staging: r8188eu: RxMIMOSignalQuality is set but not used
+Date:   Fri, 18 Feb 2022 10:30:31 +0100
+Message-Id: <20220218093034.854049-2-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218093034.854049-1-martin@kaiser.cx>
 References: <20220218093034.854049-1-martin@kaiser.cx>
@@ -39,39 +39,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RxSNR array in struct phy_info is set but not used.
-Remove it.
+The RxMIMOSignalQuality array in struct signal_stat is set but
+not used. Remove it.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/odm_HWConfig.c | 1 -
+ drivers/staging/r8188eu/hal/odm_HWConfig.c | 6 ------
  drivers/staging/r8188eu/include/rtw_recv.h | 1 -
- 2 files changed, 2 deletions(-)
+ 2 files changed, 7 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/odm_HWConfig.c b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-index 8ebcd3050892..7d47ecd53757 100644
+index dcc38b036280..8ebcd3050892 100644
 --- a/drivers/staging/r8188eu/hal/odm_HWConfig.c
 +++ b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-@@ -171,7 +171,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
- 			pPhyInfo->RxMIMOSignalStrength[i] = (u8)RSSI;
+@@ -67,9 +67,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
  
- 			/* Get Rx snr value in DB */
--			pPhyInfo->RxSNR[i] = (s32)(pPhyStaRpt->path_rxsnr[i] / 2);
- 			dm_odm->PhyDbgInfo.RxSNRdB[i] = (s32)(pPhyStaRpt->path_rxsnr[i] / 2);
+ 	isCCKrate = ((pPktinfo->Rate >= DESC92C_RATE1M) && (pPktinfo->Rate <= DESC92C_RATE11M)) ? true : false;
+ 
+-	pPhyInfo->RxMIMOSignalQuality[RF_PATH_A] = -1;
+-	pPhyInfo->RxMIMOSignalQuality[RF_PATH_B] = -1;
+-
+ 	if (isCCKrate) {
+ 		u8 cck_agc_rpt;
+ 
+@@ -150,8 +147,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
+ 					SQ = ((64 - SQ_rpt) * 100) / 44;
+ 			}
+ 			pPhyInfo->SignalQuality = SQ;
+-			pPhyInfo->RxMIMOSignalQuality[RF_PATH_A] = SQ;
+-			pPhyInfo->RxMIMOSignalQuality[RF_PATH_B] = -1;
  		}
- 		/*  (2)PWDB, Average PWDB cacluated by hardware (for rate adaptive) */
+ 	} else { /* is OFDM rate */
+ 		dm_odm->PhyDbgInfo.NumQryPhyStatusOFDM++;
+@@ -203,7 +198,6 @@ static void odm_RxPhyStatus92CSeries_Parsing(struct odm_dm_struct *dm_odm,
+ 			if (pPktinfo->bPacketMatchBSSID) {
+ 				if (i == RF_PATH_A) /*  Fill value in RFD, Get the first spatial stream only */
+ 					pPhyInfo->SignalQuality = (u8)(EVM & 0xff);
+-				pPhyInfo->RxMIMOSignalQuality[i] = (u8)(EVM & 0xff);
+ 			}
+ 		}
+ 	}
 diff --git a/drivers/staging/r8188eu/include/rtw_recv.h b/drivers/staging/r8188eu/include/rtw_recv.h
-index f82a26a675c0..5e65cf6b87bc 100644
+index 920f33235e00..f82a26a675c0 100644
 --- a/drivers/staging/r8188eu/include/rtw_recv.h
 +++ b/drivers/staging/r8188eu/include/rtw_recv.h
-@@ -79,7 +79,6 @@ struct phy_info {
- 	s8	recvpower;
- 	u8	SignalStrength; /*  in 0-100 index. */
- 	u8	RxPwr[MAX_PATH_NUM_92CS];/* per-path's pwdb */
--	u8	RxSNR[MAX_PATH_NUM_92CS];/* per-path's SNR */
- };
- 
- struct rx_pkt_attrib {
+@@ -72,7 +72,6 @@ struct signal_stat {
+ struct phy_info {
+ 	u8	RxPWDBAll;
+ 	u8	SignalQuality;	 /*  in 0-100 index. */
+-	u8	RxMIMOSignalQuality[MAX_PATH_NUM_92CS]; /* EVM */
+ 	u8	RxMIMOSignalStrength[MAX_PATH_NUM_92CS];/*  in 0~100 index */
+ 	s8	RxPower; /*  in dBm Translate from PWdB */
+ /*  Real power in dBm for this packet, no beautification and aggregation.
 -- 
 2.30.2
 
