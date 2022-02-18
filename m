@@ -2,120 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8842DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A00C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 04:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiBREsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 23:48:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60460 "EHLO
+        id S229970AbiBREud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 23:50:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiBREsC (ORCPT
+        with ESMTP id S229643AbiBREua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 23:48:02 -0500
-Received: from conuserg-11.nifty.com (conuserg-11.nifty.com [210.131.2.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BFD2A267;
-        Thu, 17 Feb 2022 20:47:45 -0800 (PST)
-Received: from grover.. (133-32-176-37.west.xps.vectant.ne.jp [133.32.176.37]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id 21I4kcpD010407;
-        Fri, 18 Feb 2022 13:46:38 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 21I4kcpD010407
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1645159599;
-        bh=JIjbg7vgzAe37E26iyaSzTnZQmUAVRx74bHrvZXfv4Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=0ZMfvvYrLvkbVPttL8eDFaVoj19pgO+okECRE1fVHZRBMuTUaUAWIu1Aji3zl9cek
-         Fukii7oFc2BT2GII/0p2Wu0Yxkishv8Fb5Nnd4ljU+K27K6t8yA4yIRuVIH5/B4imN
-         WG6LPfkJJ5wWdXimKmd0MaSjrR31IP5a6ANeUc6rs1wjKHwBa17Yc+zolWH6B4gfE8
-         eWUxEU6i1WRIL4HqRFo275ycNsjLv0bvWq6FvndkFDkxygUpVvyrWcxnEbAwG/O7d0
-         onyaiAo00EdgBB1bktFaD8KSa0M/tKzci/Qc3eSiboivfvISKrLK1U99dWE4K6xz2B
-         kEEkTZ6LK8wAA==
-X-Nifty-SrcIP: [133.32.176.37]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>, keyrings@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 1/2] certs: include certs/signing_key.x509 unconditionally
-Date:   Fri, 18 Feb 2022 13:46:33 +0900
-Message-Id: <20220218044634.169520-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 17 Feb 2022 23:50:30 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46914381B5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 20:50:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645159814; x=1676695814;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1q9lyZ7SfHxzF/tZG+SDZW03B5Y5ntyuNBRp9lB7juU=;
+  b=VfW8/csyX1lGWZ62BbhRVZYcVirGe6rZ5hU8ZdcRdR9+F/DNfjVBJkpY
+   ZnzKAaEmb2bkoXIYDOChMTpgz1uf8gd0wpQw1H7oDfe9A1EDFDOjkTvng
+   EX2LZ0p9ZzErenWk7NQwDXG0Vw5jR/P1sSh1OEv5x+dMhWCrkyhmF6fCb
+   kU/bRdseTaor037Pqz3/ledlrpB07bblVGmR6f+C0cxQOkhayPZnyu/+W
+   HX9bR2hBO7UYeaZEZNQ+M3XXVhXAUqRUwxCGLWBflQ43egKIc9vOeikjJ
+   uxLzaoA+kdMdih6nSkoIp5YeQeWZ2Jlw+vvL/WDgB+eKXsNAzDNaOx174
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="311793122"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="311793122"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2022 20:50:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; 
+   d="scan'208";a="635515186"
+Received: from lkp-server01.sh.intel.com (HELO 6f05bf9e3301) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 17 Feb 2022 20:50:12 -0800
+Received: from kbuild by 6f05bf9e3301 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nKvDf-0000wf-VH; Fri, 18 Feb 2022 04:50:11 +0000
+Date:   Fri, 18 Feb 2022 12:49:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [peterz-queue:x86/wip.ibt 21/24]
+ drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool:
+ Hal_EfuseReadEFuse88E()+0x6e: relocation to !ENDBR:
+ Hal_EfuseReadEFuse88E+0x0
+Message-ID: <202202181231.hlZjRGdf-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I do not see much sense in the #if conditional in system_certificates.S;
-even if the condition is true, there exists no signing key when
-CONFIG_MODULE_SIG_KEY="".
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
+head:   20f0cd68b8d42470e0a0459aa5db23d7dae8f83d
+commit: 885519698e96a729a44a35f71f898d52b11704d7 [21/24] x86/alternative: Use .ibt_endbr_sites to seal indirect calls
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220218/202202181231.hlZjRGdf-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=885519698e96a729a44a35f71f898d52b11704d7
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue x86/wip.ibt
+        git checkout 885519698e96a729a44a35f71f898d52b11704d7
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/staging/
 
-So, certs/Makefile generates empty certs/signing_key.x509 in such a
-case. We can always do this, irrespective of CONFIG_MODULE_SIG or
-(CONFIG_IMA_APPRAISE_MODSIG && CONFIG_MODULES).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-We only need to check CONFIG_MODULE_SIG_KEY, then both *.S and Makefile
-will become much simpler.
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: phy_IQCalibrate_8188E()+0x5b: relocation to !ENDBR: phy_IQCalibrate_8188E+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: odm_RSSIMonitorCheck()+0x46: relocation to !ENDBR: odm_RSSIMonitorCheck+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: FillH2CCmd_88E()+0x4c: relocation to !ENDBR: FillH2CCmd_88E+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: ConstructBeacon()+0x4f: relocation to !ENDBR: ConstructBeacon+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: SetFwRsvdPagePkt.constprop.0()+0x45: relocation to !ENDBR: SetFwRsvdPagePkt.constprop.0+0x0
+>> drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: Hal_EfuseReadEFuse88E()+0x6e: relocation to !ENDBR: Hal_EfuseReadEFuse88E+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: iol_read_efuse.constprop.0()+0x5c: relocation to !ENDBR: iol_read_efuse.constprop.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: usb_read()+0x4e: relocation to !ENDBR: usb_read+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: usb_write()+0x55: relocation to !ENDBR: usb_write+0x0
+>> drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: rtw_set_wpa_ie()+0x4d: relocation to !ENDBR: rtw_set_wpa_ie+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: translate_scan()+0x5e: relocation to !ENDBR: translate_scan+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: rtw_p2p_get_go_device_address.isra.0()+0x51: relocation to !ENDBR: rtw_p2p_get_go_device_address.isra.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: rtw_p2p_prov_disc.isra.0()+0x49: relocation to !ENDBR: rtw_p2p_prov_disc.isra.0+0x0
+>> drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: rtw_p2p_invite_req.isra.0()+0x53: relocation to !ENDBR: rtw_p2p_invite_req.isra.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: lps_ctrl_wk_hdl()+0x3a: relocation to !ENDBR: lps_ctrl_wk_hdl+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: init_channel_list()+0x5b: relocation to !ENDBR: init_channel_list+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: update_hidden_ssid()+0x48: relocation to !ENDBR: update_hidden_ssid+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: process_80211d()+0x53: relocation to !ENDBR: process_80211d+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: issue_p2p_GO_response()+0x5c: relocation to !ENDBR: issue_p2p_GO_response+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: issue_p2p_GO_confirm()+0x4a: relocation to !ENDBR: issue_p2p_GO_confirm+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: on_action_public_p2p()+0x37: relocation to !ENDBR: on_action_public_p2p+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: issue_action_BSSCoexistPacket()+0x4d: relocation to !ENDBR: issue_action_BSSCoexistPacket+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: _issue_probereq_p2p.constprop.0()+0x4b: relocation to !ENDBR: _issue_probereq_p2p.constprop.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: _issue_probereq()+0x55: relocation to !ENDBR: _issue_probereq+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: _issue_deauth()+0x4f: relocation to !ENDBR: _issue_deauth+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: issue_p2p_provision_resp()+0x47: relocation to !ENDBR: issue_p2p_provision_resp+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: issue_p2p_presence_resp.constprop.0()+0x41: relocation to !ENDBR: issue_p2p_presence_resp.constprop.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: wlanhdr_to_ethhdr()+0x46: relocation to !ENDBR: wlanhdr_to_ethhdr+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: amsdu_to_msdu()+0x56: relocation to !ENDBR: amsdu_to_msdu+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: validate_recv_data_frame()+0x57: relocation to !ENDBR: validate_recv_data_frame+0x0
+>> drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: validate_recv_frame()+0x48: relocation to !ENDBR: validate_recv_frame+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: recv_func_posthandle()+0x43: relocation to !ENDBR: recv_func_posthandle+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: phase2()+0x63: relocation to !ENDBR: phase2+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: next_key()+0x48: relocation to !ENDBR: next_key+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: mix_column()+0x50: relocation to !ENDBR: mix_column+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: aes128k128d()+0x53: relocation to !ENDBR: aes128k128d+0x0
+>> drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: aes_decipher.isra.0()+0x76: relocation to !ENDBR: aes_decipher.isra.0+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: aes_cipher()+0x66: relocation to !ENDBR: aes_cipher+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: set_qos()+0x3a: relocation to !ENDBR: set_qos+0x0
+   drivers/staging/r8188eu/r8188eu.lto.o: warning: objtool: update_attrib()+0x4f: relocation to !ENDBR: update_attrib+0x0
+
 ---
-
- certs/Makefile              | 16 ----------------
- certs/system_certificates.S |  3 ---
- 2 files changed, 19 deletions(-)
-
-diff --git a/certs/Makefile b/certs/Makefile
-index 3ea7fe60823f..68c1d7b9a388 100644
---- a/certs/Makefile
-+++ b/certs/Makefile
-@@ -22,25 +22,10 @@ $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert
- 
- targets += x509_certificate_list
- 
--ifeq ($(CONFIG_MODULE_SIG),y)
--	SIGN_KEY = y
--endif
--
--ifeq ($(CONFIG_IMA_APPRAISE_MODSIG),y)
--ifeq ($(CONFIG_MODULES),y)
--	SIGN_KEY = y
--endif
--endif
--
--ifdef SIGN_KEY
--###############################################################################
--#
- # If module signing is requested, say by allyesconfig, but a key has not been
- # supplied, then one will need to be generated to make sure the build does not
- # fail and that the kernel may be used afterwards.
- #
--###############################################################################
--
- # We do it this way rather than having a boolean option for enabling an
- # external private key, because 'make randconfig' might enable such a
- # boolean option and we unfortunately can't make it depend on !RANDCONFIG.
-@@ -76,7 +61,6 @@ $(obj)/system_certificates.o: $(obj)/signing_key.x509
- 
- $(obj)/signing_key.x509: $(X509_DEP) $(obj)/extract-cert FORCE
- 	$(call if_changed,extract_certs,$(if $(CONFIG_MODULE_SIG_KEY),$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)),""))
--endif # CONFIG_MODULE_SIG
- 
- targets += signing_key.x509
- 
-diff --git a/certs/system_certificates.S b/certs/system_certificates.S
-index e1645e6f4d97..003e25d4a17e 100644
---- a/certs/system_certificates.S
-+++ b/certs/system_certificates.S
-@@ -9,10 +9,7 @@
- system_certificate_list:
- __cert_list_start:
- __module_cert_start:
--#if defined(CONFIG_MODULE_SIG) || (defined(CONFIG_IMA_APPRAISE_MODSIG) \
--			       && defined(CONFIG_MODULES))
- 	.incbin "certs/signing_key.x509"
--#endif
- __module_cert_end:
- 	.incbin "certs/x509_certificate_list"
- __cert_list_end:
--- 
-2.32.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
