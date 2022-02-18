@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 08:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A40EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 08:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbiBRILv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 03:11:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47732 "EHLO
+        id S232437AbiBRIMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 03:12:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbiBRILr (ORCPT
+        with ESMTP id S232425AbiBRIMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 03:11:47 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C650A6527;
-        Fri, 18 Feb 2022 00:11:30 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id f8so7193867pgc.8;
-        Fri, 18 Feb 2022 00:11:30 -0800 (PST)
+        Fri, 18 Feb 2022 03:12:03 -0500
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E5E33E93;
+        Fri, 18 Feb 2022 00:11:42 -0800 (PST)
+Received: by mail-pj1-x1041.google.com with SMTP id v4so7936031pjh.2;
+        Fri, 18 Feb 2022 00:11:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=bXsJR1hdtDvMtwp7yRC+IBrb2NPsW+Emms20iVxrSMU=;
-        b=AaBFLmiOGsUkw4+8UvUdL+L5kkVxHOj1Npl1IXE6YoKWXYSl/9K3tUdIfZ4RO6foc5
-         fonKpoD6m+5CQSiabZVRp2mpP0AEIycjGJHGIuxkpBRbgoFtbzS6jl0R2XZadf34rg04
-         BEtiiX6bSLhmQsgz/61xruiUuQMCe9vD69ARsBpJekQRpqt8cOSobfTjaHFWITJerM97
-         07WsrQVX/pvu4jBCyzwicR4yAgM4ZQ8fZV/k4hj5Nx1pC7v8kaoRZLW6+gGRVfnoCG9V
-         noWENnvIpDCzOyl07mlvHCv7Sz1a0MQ9LcP0rwB+gHx4WUw2J9e2tw/s2BPSS1xc9tfb
-         e/aw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4tyuVDt8konpruvFZLheBo0477RzkXZvUE1/xQIQQzU=;
+        b=HGxw+cT80fKVAuFta3cCBeLL2b3yRUW4hCLbJ2St0WM6ijqZZ41IvyiizVcSr/bqL0
+         7GQoGde/lTLLFvZf5RXAu44mpBNxaYjiFE+ah3cPxMwb59NyI4gG1pazf2+OyVrfB1tQ
+         NOyeWna96ckGtA+bPNeAFOPqajoNvpB1LEjj6sRdzXnyVvlrOzdOw9oeWuOhSvBhVwOP
+         4Aj3WAyj2s09kvwuVgAnYx1CCTiPBd+7Jxok0aL2n/e4KT3816iH37IADV81aPwdsMmc
+         sbgk0kCwqj5g5ZCL1qKVYcZhc9f3VFrYOWshUVKwWLLzOv4fBMTNKR7rUA0RdPvJlfPc
+         37RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=bXsJR1hdtDvMtwp7yRC+IBrb2NPsW+Emms20iVxrSMU=;
-        b=r75EKQn9zJFIzalGKrtWLhJDL9DK6N1FfYzWrm3qG7b7SRDsoSi97sQq+iDdmiBaed
-         htJstcVYAUPq5/6iGlIBol1cPtKqDMeVBjW7EI5X8RLYMfWaImzKOqktUlf/M/VbxWIw
-         EHiOOVVJQwpftONDgYxfwTCOU6kT/ykCcAB+/NGZlAGg/JB2K8XCojNVMMz0Wq3UMGpe
-         Ok56KTkQqWJUXKMvPxsMiYsCkDfsYXlqxbkv7ki//tg4aFHvxGquFiVy065nPVFimAyE
-         Y0SySgfDGILxlnUlrM/iN5vpqo4ZbiFwAdscCVKbGu8E5ikYVOJWFzvQQwvFyqD+bk3I
-         ngGw==
-X-Gm-Message-State: AOAM532bvpKWGq3PdZlQNBnPpsHgtymsB/ha/OOrepCi74U8LFS6rL8d
-        j+yzRLoD1nevlCOzKtVt0m243n94o6U=
-X-Google-Smtp-Source: ABdhPJwRUo2LbLZ8iHn9ZB7+3ee+Hfk4AOhSTzpGDqcHJojFIKF0Ywl1WCJUSiXWUQjWfHRD5nxCfQ==
-X-Received: by 2002:a63:f00e:0:b0:373:9fdb:ce03 with SMTP id k14-20020a63f00e000000b003739fdbce03mr5474869pgh.518.1645171889241;
-        Fri, 18 Feb 2022 00:11:29 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.110])
-        by smtp.googlemail.com with ESMTPSA id l8sm10673665pgt.77.2022.02.18.00.11.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Feb 2022 00:11:28 -0800 (PST)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] x86/kvm: Don't use pv tlb/ipi/sched_yield if on 1 vCPU
-Date:   Fri, 18 Feb 2022 00:10:38 -0800
-Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4tyuVDt8konpruvFZLheBo0477RzkXZvUE1/xQIQQzU=;
+        b=f6kRVPGxQECXiBpBo28saO3dzIxc9UsLXmaakf0H67hblZ881ls+KHSzdZHKHZ2p9n
+         rKDP9n7VS1mtmZ8+MoZt+Arsrem1Qdkol1CBeSUyLgJzdLQjTBiMVZnh7n+PfbCo8Jda
+         FwxwTDov/fsDH3pPvEtbIHf3OdwEkAJxg6SfeXXl5/PxFacNeOB7lEoedSqrWRVtryyK
+         B2I4RQu/HKZRuT0oru2A5zHN5YgDaytvMUhSWonWY9eWJ/OXQCmwZtbfGIuNkr9QylzG
+         +jOB/wY6CfUmpBAbgTdxYp+V4iENfptwqqHkJ0amHdCHeOQNLwnNoVomcBorh8ddZUX/
+         MLBg==
+X-Gm-Message-State: AOAM532J7JLCc7oJXYyHuS97cRsaADl0yI1pDmwiwm8cIBBM/n1eEX18
+        Mv8CPZvJTuG3k+SbpiAcCTM=
+X-Google-Smtp-Source: ABdhPJy6dTgjTfwO+xBjsRnrzDVHxDWbcM2O1ZHCcdZ0hKvPfLXE8LTO96lZXLmUSDJ8THT3vpCP2w==
+X-Received: by 2002:a17:90a:1202:b0:1b9:b7e7:1652 with SMTP id f2-20020a17090a120200b001b9b7e71652mr7282313pja.1.1645171901988;
+        Fri, 18 Feb 2022 00:11:41 -0800 (PST)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id g21sm2004515pfc.167.2022.02.18.00.11.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 00:11:41 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        coiby.xu@gmail.com, gregkh@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] staging: qlge: add unregister_netdev in qlge_probe
+Date:   Fri, 18 Feb 2022 16:11:30 +0800
+Message-Id: <20220218081130.45670-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+unregister_netdev need to be called when register_netdev succeeds
+qlge_health_create_reporters fails.
 
-Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
-only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable 
-pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
-
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- arch/x86/kernel/kvm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/staging/qlge/qlge_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index a438217cbfac..f734e3b0cfec 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -462,19 +462,22 @@ static bool pv_tlb_flush_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+		(num_possible_cpus() != 1));
- }
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 9873bb2a9ee4..0a199c6d77a1 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4611,8 +4611,10 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	}
  
- static bool pv_ipi_supported(void)
- {
--	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
-+	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
-+	       (num_possible_cpus() != 1));
- }
+ 	err = qlge_health_create_reporters(qdev);
+-	if (err)
++	if (err) {
++		unregister_netdev(ndev);
+ 		goto netdev_free;
++	}
  
- static bool pv_sched_yield_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+	    (num_possible_cpus() != 1));
- }
- 
- #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
+ 	/* Start up the timer to trigger EEH if
+ 	 * the bus goes dead
 -- 
 2.25.1
 
