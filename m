@@ -2,106 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5493EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 03:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 03:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbiBRDlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 22:41:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40856 "EHLO
+        id S229593AbiBRDld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Feb 2022 22:41:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiBRDlC (ORCPT
+        with ESMTP id S229561AbiBRDlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 22:41:02 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E8EDF86
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Feb 2022 19:40:45 -0800 (PST)
-Received: from kwepemi100019.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K0HWC075RzbkZg;
-        Fri, 18 Feb 2022 11:39:34 +0800 (CST)
-Received: from kwepemm600012.china.huawei.com (7.193.23.74) by
- kwepemi100019.china.huawei.com (7.221.188.189) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Feb 2022 11:40:42 +0800
-Received: from huawei.com (10.174.177.28) by kwepemm600012.china.huawei.com
- (7.193.23.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Feb
- 2022 11:40:42 +0800
-From:   liuyuntao <liuyuntao10@huawei.com>
-To:     <mike.kravetz@oracle.com>
-CC:     <akpm@linux-foundation.org>, <baolin.wang@linux.alibaba.com>,
-        <dan.carpenter@oracle.com>, <linux-kernel@vger.kernel.org>,
-        <linux-mm@kvack.org>, <liuyuntao10@huawei.com>,
-        <yaozhenguo1@gmail.com>
-Subject: Re: [PATCH] hugetlb: clean up potential spectre issue warnings
-Date:   Fri, 18 Feb 2022 11:40:25 +0800
-Message-ID: <20220218034025.17687-1-liuyuntao10@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220217234218.192885-1-mike.kravetz@oracle.com>
-References: <20220217234218.192885-1-mike.kravetz@oracle.com>
+        Thu, 17 Feb 2022 22:41:32 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16E5B18B6;
+        Thu, 17 Feb 2022 19:41:16 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id d16so6732999pgd.9;
+        Thu, 17 Feb 2022 19:41:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IO9s8KzRes95vzfkF7po1cE6U/yprrUy5xOgD2OSUu4=;
+        b=ON3tYEw/7+3ccvxhEx90PqtB6dGsTiQOSIRCkXBXa/ykFOEXPWEOQv8iaAsD5MhEk9
+         Fi2YzjXH3edf5xlWOYV0pJt2z/hP4ZWwNLLCnKCS+UrAE69Zbvp67rnIeaXiY3pxf9v0
+         zZxaXIAZRtKhZ6SQgYTD6kEUR+DEHrdICGGZhmZ7VfvKcc3BVD3D19tzs6qQ8YlpiPln
+         sllGf7i61bpMPJ3k5pTHyZjC+bjvFh5K8T91WfA8/MOBl+PQeaQe7Rp489cqRLW9XbN6
+         9RjB9ertGPP/I4eWyGGYeLjA1J4rGmjRPtRoCTTXugIwtF53BWYi1kdNgKFHwLVkzjjF
+         FJ2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IO9s8KzRes95vzfkF7po1cE6U/yprrUy5xOgD2OSUu4=;
+        b=HJlBdOxUDmHH8fy+hNDY6d3luECPnA7OW9veSnwATQQR/t9RuUSJgZBe/5Uv+9Ekd0
+         20p/jV/O+P11ipeFM62S1bZ4F9TBX5S8DMcLTAUs99f7Ma8scxG+T39Do4gO3LDt7RCD
+         VBg2DJTBIKjDNKzQXMo4VAa2YFiZuGOH2yFrguzrjZCZaVeyiEEoJiaS+JAjsoOKJWG+
+         HnEOe0b5XNRTLkFZld5y1NlHwCo64GDG02vqsLJPN2CG26h8k7Mez+tD7WJpAyWUuonD
+         2sWTHNmlN0XH5OeRJKP8vOEbxIqDxSziDsRBZZckwXPUzZD0AxqoTMs2mB/GekfS/IlY
+         oetQ==
+X-Gm-Message-State: AOAM532hfspP5MuIROyaeNO2hQilmTDXX9wwu/+r9/U8w1VWSECBJrHL
+        dPsxI9JBP5xIteBVaiyfFdU=
+X-Google-Smtp-Source: ABdhPJwd6cr/xrdWP6jxd0afu7D5RpFS8K7nU2iDuksHf9i7m2G/f7+NEAJQA+nRszt/SY9o9ifWpQ==
+X-Received: by 2002:a63:5f0f:0:b0:370:1db0:5766 with SMTP id t15-20020a635f0f000000b003701db05766mr4816692pgb.532.1645155676052;
+        Thu, 17 Feb 2022 19:41:16 -0800 (PST)
+Received: from [172.20.119.15] ([103.112.79.203])
+        by smtp.gmail.com with ESMTPSA id ng16sm3245301pjb.12.2022.02.17.19.41.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Feb 2022 19:41:15 -0800 (PST)
+Message-ID: <6e6df16c-3609-71ef-c147-435920e59e8c@gmail.com>
+Date:   Fri, 18 Feb 2022 11:41:11 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.177.28]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600012.china.huawei.com (7.193.23.74)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [RFC V4 2/6] blk-wbt: make wbt pluggable
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
+        Tejun Heo <tj@kernel.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+ <20220217031349.98561-3-jianchao.wan9@gmail.com>
+ <Yg4MQSUZZu9D+qJu@infradead.org>
+From:   Wang Jianchao <jianchao.wan9@gmail.com>
+In-Reply-To: <Yg4MQSUZZu9D+qJu@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17 Feb 2022 15:42:18 -0800, Mike Kravetz wrote:
-> Recently introduced code allows numa nodes to be specified on the
-> kernel command line for hugetlb allocations or CMA reservations.  The
-> node values are user specified and used as indicies into arrays.  This
-> generated the following smatch warnings:
-> 
-> mm/hugetlb.c:4170 hugepages_setup() warn: potential spectre issue 'default_hugepages_in_node' [w]
-> mm/hugetlb.c:4172 hugepages_setup() warn: potential spectre issue 'parsed_hstate->max_huge_pages_node' [w]
-> mm/hugetlb.c:6898 cmdline_parse_hugetlb_cma() warn: potential spectre issue 'hugetlb_cma_size_in_node' [w] (local cap)
-> 
-> Clean up by using array_index_nospec to sanitize array indicies.
-> 
-> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-> ---
->  mm/hugetlb.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 1f0cca036f7f..6b14d0791cb4 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -31,6 +31,7 @@
->  #include <linux/llist.h>
->  #include <linux/cma.h>
->  #include <linux/migrate.h>
-> +#include <linux/nospec.h>
->  
->  #include <asm/page.h>
->  #include <asm/pgalloc.h>
-> @@ -4161,7 +4162,7 @@ static int __init hugepages_setup(char *s)
->  			}
->  			if (tmp >= nr_online_nodes)
->  				goto invalid;
-> -			node = tmp;
-> +			node = array_index_nospec(tmp, nr_online_nodes);
->  			p += count + 1;
->  			/* Parse hugepages */
->  			if (sscanf(p, "%lu%n", &tmp, &count) != 1)
-> @@ -6889,9 +6890,9 @@ static int __init cmdline_parse_hugetlb_cma(char *p)
->  			break;
->  
->  		if (s[count] == ':') {
-> -			nid = tmp;
-> -			if (nid < 0 || nid >= MAX_NUMNODES)
-> +			if (tmp < 0 || tmp >= MAX_NUMNODES)
 
-Here tmp is unsigned, no need to check if less than 0.
-Do we really have any automated checking? lol
 
->  				break;
-> +			nid = array_index_nospec(tmp, MAX_NUMNODES);
->  
->  			s += count + 1;
->  			tmp = memparse(s, &s);
-> -- 
-> 2.34.1
+On 2022/2/17 4:50 下午, Christoph Hellwig wrote:
+>> +struct rq_qos *wbt_rq_qos(struct request_queue *q);
+>>  int wbt_init(struct request_queue *);
+> 
+> 
+> Please move the wb_lat sysfs attribute into blk-wbt.c as well, which
+> removes the need to expose these two functions.
+> 
+
+Given this patchset:
+(1) Do we need to reserve the wb_lat sysfs when we turn off the wbt ?
+(2) Do we need to disable wbt automatically when switch io scheduler
+    to bfq ? Or just tell the user turn off the wbt by themselves ?
+
+Thanks
+Jianchao
