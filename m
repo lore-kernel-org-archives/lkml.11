@@ -2,234 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6907FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18920C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 21:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239974AbiBRVhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 16:37:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42164 "EHLO
+        id S239979AbiBRViB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 16:38:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235931AbiBRVhH (ORCPT
+        with ESMTP id S235586AbiBRVh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 16:37:07 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB33436685
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:36:48 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id b11so7760363lfb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 13:36:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=n9yp2F/tFbPYbNUub6ORMzULNCV7x8Jlyoxm8mDT9LM=;
-        b=Vzr8WauP0HUY6liDBBny5+hyIdwaYSB7eC8COVdVPuuehStAkuOCBNtdW+EB7vYzT/
-         H9gQvBm04uo+QRZ83sJECp7nWUQBFcYTMHJDcPZ+lXanfAEUq6V7a/pvQsdVqtAwbuuX
-         Aaww0DIIgs5T0c1t5HcDcI3J2P2t1VHfyX9Mae3YWroLW9EomXY6CfBCIiwX0rkND1Zm
-         uBza6AD97DSxFT4mwF+lecomueWaVfFNz6FJIucnwwjktFoZ9eFIRkVYzu/LbWdPrFO1
-         v40FUCYG/BhllxpVG7ljKeh7/cx79qEyJdClSBEJRS2I5JzmvaBL5v3JEKRojKabVPO1
-         LS5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=n9yp2F/tFbPYbNUub6ORMzULNCV7x8Jlyoxm8mDT9LM=;
-        b=HiYe7/4jAlRwhzWIK+cydd1TSHYfPN9Qt04YxmavxzBrSAoPwMUtl1ZHkxoekZsiI/
-         z+EMCNMxI6OzlSPfQdBUH1VdP7qKGDvbsIePWDUTi4Ltq6AvK/kEhr2GVklDE0W/Hfrb
-         rFbKfj7dGYTLgcqQIPlyE3wvr9htfE32ObWFtPzFqGVZcBegh0pztk9MvWDULEV1UY9l
-         Z3T+oPAj8wFijq0hjjLgUgPnib2J0g9yucU2vU4gQBRwLCb6ycCs6g719HN2iVNKKrpW
-         qoHF1WOzUi/Swf5fSkjGn3N4oTL6iTD6PSHMW2DssIrG2cReaqcq71RtwXchjRR7nkok
-         QLfw==
-X-Gm-Message-State: AOAM5306IojxOckEr5H6qlpOhTX4HY8n2CsPfX60+LdDteKjIynKj1wM
-        IJi08uFGQj36zUbVC78jvmOGXw==
-X-Google-Smtp-Source: ABdhPJyg1rjvoJjmNealuZAHVqqpmiKSoqxUfMtoP0Z2gXj+zdSFLGc9yJCrsBJCytQTPBU0xzhdhQ==
-X-Received: by 2002:ac2:4e04:0:b0:442:bfb6:c832 with SMTP id e4-20020ac24e04000000b00442bfb6c832mr7105656lfr.519.1645220207016;
-        Fri, 18 Feb 2022 13:36:47 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id l24sm451725ljb.90.2022.02.18.13.36.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Feb 2022 13:36:46 -0800 (PST)
-Message-ID: <e8bd7d02-1de6-4de0-9b01-68152f22e8a2@linaro.org>
-Date:   Sat, 19 Feb 2022 00:36:45 +0300
+        Fri, 18 Feb 2022 16:37:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612DA154733;
+        Fri, 18 Feb 2022 13:37:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EDC5B826F7;
+        Fri, 18 Feb 2022 21:37:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 146EDC340E9;
+        Fri, 18 Feb 2022 21:37:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645220259;
+        bh=SG75R8KlcROnDx1nkIWdtrWdYWk4Ym8gjKexAWDRwDU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gR3Vheu0Hi+6x9vDjsoHxaWQ3DJeLAN6xwFG61+B6cSo1Sg3Dl843TYYIu3Uhq46Z
+         Nv4+sY4iUXYduSq2FWbZxVgGfLdQOoFxvwbf3z1nTIls0MwI+V6siWvTDnfta240R9
+         voZ4x4uE0bbLl2oIY9Lt8e0cvzzEifuciEorSUcifCrAeYOzVcIqzAp5hv0IlNHXuB
+         DKbhRdlEXbHTLN/TgyDhM+mrpsDVW/45vKtq2nBqBcfY73pXYHVNosYM/DWJZ7gOru
+         wlez0o9NQ29cjMBsbn1O07tW3jarvOEJTUKfW3QSjocZMmbN0gZDJYc4phcjz29fXr
+         kuEDJme1iHnSA==
+Date:   Fri, 18 Feb 2022 15:45:24 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Robert Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] ACPICA: iASL: Replace zero-length array with
+ flexible-array member
+Message-ID: <20220218214524.GA971461@embeddedor>
+References: <20220216203240.GA918517@embeddedor>
+ <202202161236.FBD5D268@keescook>
+ <CAJZ5v0j0+oAG3s_ZrhmG+1WaTTc-hogiKv9ZuKDiCkH8JtZ0YA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [Freedreno] [REPOST PATCH v4 08/13] drm/msm/disp/dpu1: Don't use
- DSC with mode_3d
-Content-Language: en-GB
-To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Jonathan Marek <jonathan@marek.ca>,
-        David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        freedreno@lists.freedesktop.org
-References: <20220210103423.271016-1-vkoul@kernel.org>
- <20220210103423.271016-9-vkoul@kernel.org>
- <67006cc4-3385-fe03-bb4d-58623729a8a8@quicinc.com> <Yg3mvEvqYs89dJWI@matsya>
- <4b89f5fe-0752-3c6a-3fb0-192f1f2e7b9e@quicinc.com>
- <acf0a2a2-f2e5-906a-3c51-525abd18ee6f@linaro.org>
- <a38432a8-7920-e26d-7391-a49bebbc57f9@quicinc.com>
- <9f1e2df6-4f28-1d91-7654-ff2d9339dfd9@linaro.org>
- <5b27912e-3e49-675e-86f5-ac6be8dc21c5@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <5b27912e-3e49-675e-86f5-ac6be8dc21c5@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0j0+oAG3s_ZrhmG+1WaTTc-hogiKv9ZuKDiCkH8JtZ0YA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/02/2022 00:29, Abhinav Kumar wrote:
+On Fri, Feb 18, 2022 at 08:47:15PM +0100, Rafael J. Wysocki wrote:
+> On Wed, Feb 16, 2022 at 9:36 PM Kees Cook <keescook@chromium.org> wrote:
 > 
-> 
-> On 2/18/2022 1:21 PM, Dmitry Baryshkov wrote:
->> On 18/02/2022 23:46, Abhinav Kumar wrote:
->>>
->>>
->>> On 2/16/2022 11:12 PM, Dmitry Baryshkov wrote:
->>>> On 17/02/2022 09:33, Abhinav Kumar wrote:
->>>>>
->>>>>
->>>>> On 2/16/2022 10:10 PM, Vinod Koul wrote:
->>>>>> On 16-02-22, 19:11, Abhinav Kumar wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 2/10/2022 2:34 AM, Vinod Koul wrote:
->>>>>>>> We cannot enable mode_3d when we are using the DSC. So pass
->>>>>>>> configuration to detect DSC is enabled and not enable mode_3d
->>>>>>>> when we are using DSC
->>>>>>>>
->>>>>>>> We add a helper dpu_encoder_helper_get_dsc() to detect dsc
->>>>>>>> enabled and pass this to .setup_intf_cfg()
->>>>>>>>
->>>>>>>> Signed-off-by: Vinod Koul <vkoul@kernel.org>
->>>>>>>
->>>>>>> We should not use 3D mux only when we use DSC merge topology.
->>>>>>> I agree that today we use only 2-2-1 topology for DSC which means 
->>>>>>> its using
->>>>>>> DSC merge.
->>>>>>>
->>>>>>> But generalizing that 3D mux should not be used for DSC is not 
->>>>>>> right.
->>>>>>>
->>>>>>> You can detect DSC merge by checking if there are two encoders 
->>>>>>> and one
->>>>>>> interface in the topology and if so, you can disable 3D mux.
->>>>>>
->>>>>> Right now with DSC we disable that as suggested by Dmitry last time.
->>>>>> Whenever we introduce merge we should revisit this, for now this 
->>>>>> should
->>>>>> suffice
->>>>>>
->>>>>
->>>>> Sorry I didnt follow.
->>>>>
->>>>> The topology which you are supporting today IS DSC merge 2-2-1. I 
->>>>> didnt get what you mean by "whenever we introduce".
->>>>>
->>>>> I didnt follow Dmitry's comment either.
->>>>>
->>>>> "anybody adding support for SDE_RM_TOPOLOGY_DUALPIPE_3DMERGE_DSC 
->>>>> handle this."
->>>>>
->>>>> 3D mux shouldnt be used when DSC merge is used.
->>>>>
->>>>> The topology Dmitry is referring to will not use DSC merge but you 
->>>>> are using it here and thats why you had to make this patch in the 
->>>>> first place. So I am not sure why would someone who uses 3D merge 
->>>>> topology worry about DSC merge. Your patch is the one which deals 
->>>>> with the topology in question.
->>>>>
->>>>> What I am suggesting is a small but necessary improvement to this 
->>>>> patch.
->>>>
->>>> It seems that we can replace this patch by changing 
->>>> dpu_encoder_helper_get_3d_blend_mode() to contain the following 
->>>> condition (instead of the one present there). Does the following 
->>>> seem correct to you:
->>>>
->>>> static inline enum dpu_3d_blend_mode 
->>>> dpu_encoder_helper_get_3d_blend_mode(
->>>>                  struct dpu_encoder_phys *phys_enc)
->>>> {
->>>>          struct dpu_crtc_state *dpu_cstate;
->>>>
->>>>          if (!phys_enc || phys_enc->enable_state == DPU_ENC_DISABLING)
->>>>                  return BLEND_3D_NONE;
->>>>
->>>>          dpu_cstate = to_dpu_crtc_state(phys_enc->parent->crtc->state);
->>>>
->>>> +    /* Use merge_3d unless DSCMERGE topology is used */
->>>>          if (phys_enc->split_role == ENC_ROLE_SOLO &&
->>>> +           hweight(dpu_encoder_helper_get_dsc(phys_enc)) != 1 &&
->>
->> Yes, the correct should be:
->> hweight(...) == 2
->>
->>>>              dpu_cstate->num_mixers == CRTC_DUAL_MIXERS)
->>>>                  return BLEND_3D_H_ROW_INT;
->>>>
->>>>          return BLEND_3D_NONE;
->>>> }
->>>
->>> This will not be enough. To detect whether DSC merge is enabled you 
->>> need to query the topology. The above condition only checks if DSC is 
->>> enabled not DSC merge.
->>>
->>> So the above function can be modified to use a helper like below 
->>> instead of the hweight.
->>>
->>> bool dpu_encoder_get_dsc_merge_info(struct dpu_encoder_virt *dpu_enc)
->>> {
->>>      struct msm_display_topology topology = {0};
->>>
->>>      topology = dpu_encoder_get_topology(...);
->>>
->>>      if (topology.num_dsc > topology.num_intf)
->>
->> num_intf is 1 or 2. If it's one, the split_role is SOLO
->> hweight would return a num of bits in the DSC mask. It's 0, 1 or 2.
->> So, if the split_role is SOLO and hweight is 2, we get exactly your 
->> condition.
->>
-> num_intf is 1 in this case as only single interface is used. But even 4 
-> dsc encoders going to 2 interfaces its DSC merge. So assuming num_intf 
-> as 1 always is not right. Thats why I suggested a generalized confition 
-> like above.
+> I've created an upstream ACPICA pull request for this change, thanks!
 
-Ah, quadpipe. Yes, then I was incorrect.
+Great.
 
-> 
->> Does that sound correct?
->>
->>>          return true;
->>>      else
->>>          return false;
->>> }
->>>
->>> if (!dpu_encoder_get_dsc_merge_info() && other conditions listed above)
->>>      return BLEND_3D_H_ROW_INT;
->>> else
->>>      BLEND_3D_NONE;
->>>>
->>>>
->>>>>
->>>>> All that you have to do is in query whether DSC merge is used from 
->>>>> the topology. You can do it in multiple ways:
->>>>>
->>>>> 1) Either query this from the encoder
->>>>> 2) Store a bool "dsc_merge" in the intf_cfg
->>>>>
->>>>
->>>>
->>
->>
-
-
--- 
-With best wishes
-Dmitry
+Thanks, Rafael.
+--
+Gustavo
