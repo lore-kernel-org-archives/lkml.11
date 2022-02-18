@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 199B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED95C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 09:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232573AbiBRJSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 04:18:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59666 "EHLO
+        id S233469AbiBRJS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 04:18:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233314AbiBRJRZ (ORCPT
+        with ESMTP id S233188AbiBRJRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 04:17:25 -0500
+        Fri, 18 Feb 2022 04:17:17 -0500
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020201D334;
-        Fri, 18 Feb 2022 01:17:05 -0800 (PST)
-X-UUID: 0d04cbee63d6418d80cc3d063b58a05a-20220218
-X-UUID: 0d04cbee63d6418d80cc3d063b58a05a-20220218
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F91E10FF9;
+        Fri, 18 Feb 2022 01:16:59 -0800 (PST)
+X-UUID: 9c929ed809f443ac99cb348187ab6c65-20220218
+X-UUID: 9c929ed809f443ac99cb348187ab6c65-20220218
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1942008424; Fri, 18 Feb 2022 17:17:00 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 70572379; Fri, 18 Feb 2022 17:16:56 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 18 Feb 2022 17:16:58 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 18 Feb 2022 17:16:56 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Feb 2022 17:16:58 +0800
+ Transport; Fri, 18 Feb 2022 17:16:55 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -37,12 +36,12 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
         Ryder Lee <ryder.lee@kernel.org>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 23/23] arm64: dts: mt8192: Add pwm node
-Date:   Fri, 18 Feb 2022 17:16:33 +0800
-Message-ID: <20220218091633.9368-24-allen-kh.cheng@mediatek.com>
+Subject: [PATCH v2 21/23] arm64: dts: mt8192: Add dsi node
+Date:   Fri, 18 Feb 2022 17:16:31 +0800
+Message-ID: <20220218091633.9368-22-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
 References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
@@ -53,34 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pwm node for mt8192 SoC.
+Add dsi ndoe for mt8192 SoC.
 
 Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index df884c48669e..c0fc723fdf0a 100644
+index 026f2d8141b0..1f1555fd18f5 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -642,6 +642,16 @@
- 			status = "disabled";
+@@ -1350,6 +1350,19 @@
+ 			clocks = <&mmsys CLK_MM_DISP_DITHER0>;
  		};
  
-+		pwm0: pwm@1100e000 {
-+			compatible = "mediatek,mt8183-disp-pwm";
-+			reg = <0 0x1100e000 0 0x1000>;
-+			interrupts = <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#pwm-cells = <2>;
-+			clocks = <&topckgen CLK_TOP_DISP_PWM_SEL>,
-+				 <&infracfg CLK_INFRA_DISP_PWM>;
-+			clock-names = "main", "mm";
++		dsi0: dsi@14010000 {
++			compatible = "mediatek,mt8183-dsi";
++			reg = <0 0x14010000 0 0x1000>;
++			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH 0>;
++			mediatek,syscon-dsi = <&mmsys 0x140>;
++			clocks = <&mmsys CLK_MM_DSI0>,
++				<&mmsys CLK_MM_DSI_DSI0>,
++				<&mipi_tx0>;
++			clock-names = "engine", "digital", "hs";
++			phys = <&mipi_tx0>;
++			phy-names = "dphy";
 +		};
 +
- 		spi1: spi@11010000 {
- 			compatible = "mediatek,mt8192-spi",
- 				     "mediatek,mt6765-spi";
+ 		ovl_2l2: ovl@14014000 {
+ 			compatible = "mediatek,mt8192-disp-ovl-2l";
+ 			reg = <0 0x14014000 0 0x1000>;
 -- 
 2.18.0
 
