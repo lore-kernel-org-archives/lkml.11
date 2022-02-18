@@ -2,180 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1279C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 17:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238654AbiBRRdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 12:33:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48652 "EHLO
+        id S238653AbiBRRd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 12:33:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238638AbiBRRdp (ORCPT
+        with ESMTP id S238656AbiBRRdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 12:33:45 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54322B4D9A;
-        Fri, 18 Feb 2022 09:33:27 -0800 (PST)
+        Fri, 18 Feb 2022 12:33:54 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EF72B6201
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:33:33 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id y11so2814827pfi.11
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 09:33:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645205608; x=1676741608;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7VcMIjzFAlbXIka1xHuVOCoWaCPdmJ8L+FS+cLBlhpQ=;
-  b=Lg9MSRABCdY9hHJFQYU6LEdAy8+fEsiPvgUZzo9rozXwhzKAseGLvi/C
-   VoDCu6ziEgrKp580fj2ObtChPO13Q1dkvutG9YM1/aFp8+mxT5njxc19L
-   lgHT2vYRAQMKTEPIVDa3g2lkm8AtK/L3KlVhBj+30mlRQ3Ms8x4trS99t
-   U=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 18 Feb 2022 09:33:27 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 09:33:27 -0800
-Received: from [10.216.39.162] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Fri, 18 Feb
- 2022 09:33:23 -0800
-Message-ID: <ca0cac53-68ec-7df4-e617-2a4cd9710491@quicinc.com>
-Date:   Fri, 18 Feb 2022 23:03:03 +0530
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DawLCXzSIgJxif3UfQrpoVCzlIzEfJYQjJYMKzO/mqA=;
+        b=bVtGhZHOXdLJk0W06wRc9uBcovqXbMoH9SqzLAvel4sB4lBTQjw7M+OF4TKBMmyGpd
+         VZ/esSYZsMef1kAycskE8+oPeO0CeUlBe+quQFZIqu/IFDww5w079ABI/XtovZhxkRGW
+         IuThUHhMGXXFTvwNs75R2kKB5jWMld9KxT41vzdc0bcQVVPCAjVMzBhEJHNYDFbrWKQc
+         UDUqSnPWoV42JOduUdC8T/vrnRceCTEygns9/GZ/MJwSXf5qNgflqtqYuF83JGGgOVo3
+         3y/NrHemd63hmx/NTjNxMNVohpgFhYd4TaA+GaK+jQ8seJP5ab0qPPhRZHSrRsDKRgq7
+         XaJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DawLCXzSIgJxif3UfQrpoVCzlIzEfJYQjJYMKzO/mqA=;
+        b=AOJsapL/ngoIqLTrMYSjk4m5XK2kUDAxD9Y9TAr8JqK7hpRktEN0ZAlGLfymL5VOs/
+         EA2z2o18+8tGelIUm0MT0hNT1zb9DcWR8riXDbNOenhdfNw6+4BfqxDZtkgm6IoxRHKF
+         uCfmZRFBXt2Vgu1m5jr+0qJiwd/EzD5QNBgFRpAwwhFTU8VM7pL+ve8H4/IS2owj4LQY
+         OzvdpcEnhpi+Bcdv2XnnEoLyU5LLWs6Jj4wsOH6ubtAM5MKY8y0JM0yM3Ob5zlhenOWi
+         c68b2/m0+ViSYXCGrL6VqSVnVHrhfGHx/lv/zug5eHVrVfrzShs2FvtUpESqqqZTd3xj
+         tgyg==
+X-Gm-Message-State: AOAM532XClZ/VDdaN7wt2hl7Ynd3Fddby/HJg6gsnjhY7PQ6eOlQHuGX
+        GNs2Tj+PskvcgT8z64lG+MTCmA==
+X-Google-Smtp-Source: ABdhPJw5eWTs2BTk05UmURA54Db71bx4mjZ+FpOAoAe2XOR2qvF9PrePoJKMFqLR+3MSyalzpy67vw==
+X-Received: by 2002:a63:560a:0:b0:373:bd8f:bb6f with SMTP id k10-20020a63560a000000b00373bd8fbb6fmr5401620pgb.33.1645205613073;
+        Fri, 18 Feb 2022 09:33:33 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id e3sm8534386pga.74.2022.02.18.09.33.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Feb 2022 09:33:32 -0800 (PST)
+Date:   Fri, 18 Feb 2022 17:33:28 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 6/6] KVM: x86: allow defining return-0 static calls
+Message-ID: <Yg/YaOgTLixP2K8s@google.com>
+References: <20220217180831.288210-1-pbonzini@redhat.com>
+ <20220217180831.288210-7-pbonzini@redhat.com>
+ <Yg/JZZ+i67HDKCVK@google.com>
+ <8f99a6a2-b64e-0211-a7d3-8b84c668a92f@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH rcu 3/3] rcu: Allow expedited RCU grace periods on
- incoming CPUs
-Content-Language: en-US
-To:     <paulmck@kernel.org>
-CC:     <kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
-        <rcu@vger.kernel.org>, <rostedt@goodmis.org>, <tj@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-References: <20220209233811.GC557593@lothringen>
- <20220214164435.GA2805255@paulmck-ThinkPad-P17-Gen-1>
- <f8cff19c-5e8f-a7ed-c2ff-49a264b4e342@quicinc.com>
- <20220215173951.GH4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220215173951.GH4285@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f99a6a2-b64e-0211-a7d3-8b84c668a92f@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Feb 18, 2022, Paolo Bonzini wrote:
+> On 2/18/22 17:29, Sean Christopherson wrote:
+> > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > > index ab1c4778824a..d3da64106685 100644
+> > > --- a/arch/x86/kvm/x86.c
+> > > +++ b/arch/x86/kvm/x86.c
+> > > @@ -131,6 +131,7 @@ struct kvm_x86_ops kvm_x86_ops __read_mostly;
+> > >   	DEFINE_STATIC_CALL_NULL(kvm_x86_##func,			     \
+> > >   				*(((struct kvm_x86_ops *)0)->func));
+> > >   #define KVM_X86_OP_OPTIONAL KVM_X86_OP
+> > > +#define KVM_X86_OP_OPTIONAL_RET0 KVM_X86_OP
+> > >   #include <asm/kvm-x86-ops.h>
+> > >   EXPORT_STATIC_CALL_GPL(kvm_x86_get_cs_db_l_bits);
+> > >   EXPORT_STATIC_CALL_GPL(kvm_x86_cache_reg);
+> > > @@ -12016,7 +12017,6 @@ void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
+> > >   static inline bool kvm_guest_apic_has_interrupt(struct kvm_vcpu *vcpu)
+> > >   {
+> > >   	return (is_guest_mode(vcpu) &&
+> > > -			kvm_x86_ops.guest_apic_has_interrupt &&
+> > >   			static_call(kvm_x86_guest_apic_has_interrupt)(vcpu));
+> > 
+> > Can you opportunistically align the indentation and drop the outer parantheses? I.e.
+> > 
+> > 	return is_guest_mode(vcpu) &&
+> > 	       static_call(kvm_x86_guest_apic_has_interrupt)(vcpu);
+> 
+> Hmm, I like having the parentheses (despite "return not being a function")
+> because editors are inconsistent in what indentation to use after return.
+> 
+> Some use a tab (which does the right thing just by chance with Linux because
+> "return " is as long as a tab is wide), but vim for example does the totally
 
-On 2/15/2022 11:09 PM, Paul E. McKenney wrote:
-> On Tue, Feb 15, 2022 at 07:53:10PM +0530, Mukesh Ojha wrote:
->> On 2/14/2022 10:14 PM, Paul E. McKenney wrote:
->>> On Thu, Feb 10, 2022 at 12:38:11AM +0100, Frederic Weisbecker wrote:
->>>> On Fri, Feb 04, 2022 at 02:55:07PM -0800, Paul E. McKenney wrote:
->>>>> Although it is usually safe to invoke synchronize_rcu_expedited() from a
->>>>> preemption-enabled CPU-hotplug notifier, if it is invoked from a notifier
->>>>> between CPUHP_AP_RCUTREE_ONLINE and CPUHP_AP_ACTIVE, its attempts to
->>>>> invoke a workqueue handler will hang due to RCU waiting on a CPU that
->>>>> the scheduler is not paying attention to.  This commit therefore expands
->>>>> use of the existing workqueue-independent synchronize_rcu_expedited()
->>>>> from early boot to also include CPUs that are being hotplugged.
->>>>>
->>>>> Link:https://lore.kernel.org/lkml/7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com/
->>>>> Reported-by: Mukesh Ojha<quic_mojha@quicinc.com>
->>>>> Cc: Tejun Heo<tj@kernel.org>
->>>>> Signed-off-by: Paul E. McKenney<paulmck@kernel.org>
->>>> I'm surprised by this scheduler behaviour.
->>>>
->>>> Since sched_cpu_activate() hasn't been called yet,
->>>> rq->balance_callback = balance_push_callback. As a result, balance_push() should
->>>> be called at the end of schedule() when the workqueue is picked as the next task.
->>>> Then eventually the workqueue should be immediately preempted by the stop task to
->>>> be migrated elsewhere.
->>>>
->>>> So I must be missing something. For the fun, I booted the following and it
->>>> didn't produce any issue:
->>>>
->>>> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
->>>> index 80faf2273ce9..b1e74a508881 100644
->>>> --- a/kernel/rcu/tree.c
->>>> +++ b/kernel/rcu/tree.c
->>>> @@ -4234,6 +4234,8 @@ int rcutree_online_cpu(unsigned int cpu)
->>>>    	// Stop-machine done, so allow nohz_full to disable tick.
->>>>    	tick_dep_clear(TICK_DEP_BIT_RCU);
->>>> +	if (cpu != 0)
->>>> +		synchronize_rcu_expedited();
->>>>    	return 0;
->>>>    }
->>> That does seem compelling.  And others have argued that the workqueue
->>> system's handling of offline CPUs should deal with this.
->>>
->>> Mukesh, was this a theoretical bug, or did you actually make it happen?
->>> If you made it happen, as seems to have been the case given your original
->>> email [1], could you please post your reproducer?
->> No, it was not theoretical one. We saw this issue only once in our testing
->> and i don't think it is easy to reproduce otherwise
->> it would been fixed by now.
->>
->> When one of thread calling synchronize_expedite_rcu with timer of 20s but it
->> did not get the exp funnel
->> lock for 20s and there we crash it with panic() on timeout.
->>
->> The other thread cpuhp which was having the lock got stuck at the point
->> mentioned at the below link.
->>
->> https://lore.kernel.org/lkml/7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com/
-> OK.  Are you able to create an in-kernel reproducer, perhaps similar to
-> Frederic's change above?
->
-> I am worried that the patch that I am carrying might be fixing some
-> other bug by accident...
+Uh, no, vim inserts a tab.  "return " isn't as long as a tab is wide.  That's 7
+chars, tabs are 8, which is exactly the problem.
 
-Just for information, we are running on 5.10 kernel and after numerous 
-attempt, i was not able to reproduce the issue:-)
+I'm ok with
+	
+	return (is_guest_mode(vcpu) &&
+		static_call(kvm_x86_guest_apic_has_interrupt)(vcpu));
 
-Thanks,
--Mukesh
+I care more about alignment than unnecessary (), but I'd still prefer
 
->
-> 							Thanx, Paul
->
->> e.g Below sample test in combination of many other test in parallel
->>
->> :loop
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu0/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu0/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu1/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu1/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu2/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu2/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu3/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu3/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu4/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu4/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu5/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu5/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu6/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu6/online"
->>
->> adb shell "echo 0 > /sys/devices/system/cpu/cpu7/online"
->>
->> adb shell "echo 1 > /sys/devices/system/cpu/cpu7/online"
->>
->> goto loop
->>
->>
->>
->> Thanks, Mukesh
->>
->>> 							Thanx, Paul
->>>
->>> [1]https://lore.kernel.org/lkml/7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com/
+	return is_guest_mode(vcpu) &&
+	       static_call(kvm_x86_guest_apic_has_interrupt)(vcpu));
+
+> awkward
+> 
+> int f()
+> {
+>         return a &&
+>                 b;
+> }
+> 
+> Of course I can fix the indentation.
+> 
+> Paolo
+> 
+> > >   }
+> > > diff --git a/kernel/static_call.c b/kernel/static_call.c
+> > > index 43ba0b1e0edb..76abd46fe6ee 100644
+> > > --- a/kernel/static_call.c
+> > > +++ b/kernel/static_call.c
+> > > @@ -503,6 +503,7 @@ long __static_call_return0(void)
+> > >   {
+> > >   	return 0;
+> > >   }
+> > > +EXPORT_SYMBOL_GPL(__static_call_return0)
+> > 
+> > This doesn't compile, it needs a semicolon.
+> > 
+> 
