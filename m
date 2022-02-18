@@ -2,84 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 15:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236962AbiBRPYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 10:24:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44368 "EHLO
+        id S236976AbiBRPZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 10:25:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiBRPY1 (ORCPT
+        with ESMTP id S232694AbiBRPZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 10:24:27 -0500
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC371251E6E
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:24:10 -0800 (PST)
-Received: by mail-qv1-f50.google.com with SMTP id d3so15306989qvb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:24:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HicT2KGwDhgG1AYwf+MMrWNob5K09V49Vg8labRu7kg=;
-        b=d4beppwB5fncwyC54lnbewyFAaG7ETyrZhdj0Ph5PbOch13zVobeX7xbo+X8sdZE7Y
-         8YS4tgBRcV8EuMqs6hgA4Uz6v9qYxI2kBWXGhhlfrXk4rQD5WiagnMKZnIm5dD08ac0W
-         yzi0ZReZ+Hp52L7RkmrDDx3BFP3AdkoAc62uIYdMZdX2Zf9ot/E7k08nEbpjx1GUtWWZ
-         XX7pNVBTSX2yNCWi7KRvbca6h7XeCxbZBxnZRitfULxEH+DtttBMUolcmZhILUAMoPrL
-         Qm1b7cXGkyx19obAanIw1/qa80zQRtnIpUaP5x+LYotW2sl2MWsdb5KJixQfVkpV1wRO
-         GxJQ==
-X-Gm-Message-State: AOAM532OSPHa2E+ypdeoDbOzeyPYB/tJFIKB9NyrvLND1CM9sXzfwNPS
-        q9MVlzuZ4XkAXg9Btbc3VyQ=
-X-Google-Smtp-Source: ABdhPJwJLyhtSjopHm8e2GCkzQjrvcV2L/Z8t7S3K+hHtkJkpcX6l4ogXK7Pbx20H72XsjsBbfv/GQ==
-X-Received: by 2002:a05:6214:2a82:b0:42a:a3c7:b3be with SMTP id jr2-20020a0562142a8200b0042aa3c7b3bemr6399961qvb.131.1645197849808;
-        Fri, 18 Feb 2022 07:24:09 -0800 (PST)
-Received: from localhost (fwdproxy-ash-008.fbsv.net. [2a03:2880:20ff:8::face:b00c])
-        by smtp.gmail.com with ESMTPSA id x16sm22075203qko.17.2022.02.18.07.24.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 07:24:09 -0800 (PST)
-From:   David Vernet <void@manifault.com>
-To:     peterz@infradead.org, linux-kernel@vger.kernel.org
-Cc:     void@manifault.com, kernel-team@fb.com, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com
-Subject: [PATCH] sched: Fix stale try_invoke_on_locked_down_task comment
-Date:   Fri, 18 Feb 2022 07:23:29 -0800
-Message-Id: <20220218152328.883437-1-void@manifault.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211230193633.1295745-1-void@manifault.com>
-References: <20211230193633.1295745-1-void@manifault.com>
+        Fri, 18 Feb 2022 10:25:17 -0500
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249672B1A9B
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 07:24:59 -0800 (PST)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E894D1C0009;
+        Fri, 18 Feb 2022 15:24:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645197898;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bH9jFFMUpeu1jlpFnHW5Tq0sYFAnVpCE7f4kf0gx5uo=;
+        b=EJbQ27ckGECJAr6ecUFCTGJJDDfnsaIrk8a2yf+1Vp7ZYZWk5Wv1UIpVhciwT1im2jJIXc
+        ZhUhKZb27ghHjdsKI0lQ7MYZlQ+c+iPxvMhGNDEYQYPbr1hXTjTnoIQ4MC25lXQCINH7fm
+        BetfPA3+IZAEtPa/mLRfrlavDGR0EJdgSecEyf4ucfjM1S2RzY3x3i9/E3QQEZOWx70Xdx
+        ZbEOgnkJBfQ6U6ycTk3iY+RFPsEBIOZeRhYnp2hHWD0JbJXtXWeQCiuxaBUbM8Jq/aUFKb
+        QgDoVbUeyWD7fUVU1SvrFJnRi/EtVfCd/OS2aruX7xecOcjhIPDKB2P1+CVWcw==
+Date:   Fri, 18 Feb 2022 16:24:55 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     mpm@selenic.com, herbert@gondor.apana.org.au,
+        nicolas.ferre@microchip.com, linux-crypto@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] hwrnd: atmel - add runtime pm support
+Message-ID: <Yg+6R52is+0tQk3d@piout.net>
+References: <20220218101712.530576-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218101712.530576-1-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In 9b3c4ab3045e, try_invoke_on_locked_down_task() was renamed to
-task_call_func(), and several callers, comments, etc were updated to use
-the new name and signature. There was one comment in try_to_wake_up() that
-was missed, and still refers to the old name. This diff corrects that
-comment to refer to the new name.
+On 18/02/2022 12:17:05+0200, Claudiu Beznea wrote:
+> Hi,
+> 
+> This series adds runtime PM support for atmel-rng driver. Along with
+> this some cleanup and fixes patches were added to the series.
+> 
+> Thank you,
+> Claudiu Beznea
+> 
+> Claudiu Beznea (7):
+>   hwrng: atmel - add wait for ready support on read
+>   hwrnd: atmel - disable trng on failure path
+>   hwrnd: atmel - rename enable/disable functions to init/cleanup
+>   hwrng: atmel - move set of TRNG_HALFR in atmel_trng_init()
+>   hwrnd: atmel - use __maybe_unused and pm_ptr() for pm ops
+>   hwrnd: atmel - add runtime pm support
+>   hwrnd: atmel - remove extra line
+>
 
-Fixes: 9b3c4ab3045e ("sched,rcu: Rework try_invoke_on_locked_down_task()")
-Signed-off-by: David Vernet <void@manifault.com>
----
- kernel/sched/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't mind too much but you are mixing hwrng and hwrnd ;)
+ 
+>  drivers/char/hw_random/atmel-rng.c | 148 ++++++++++++++++++-----------
+>  1 file changed, 91 insertions(+), 57 deletions(-)
+> 
+> -- 
+> 2.32.0
+> 
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1e08b02e0cd5..d76e3da0d7d6 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4042,7 +4042,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
- 	 * Pairs with the LOCK+smp_mb__after_spinlock() on rq->lock in
- 	 * __schedule().  See the comment for smp_mb__after_spinlock().
- 	 *
--	 * A similar smb_rmb() lives in try_invoke_on_locked_down_task().
-+	 * A similar smb_rmb() lives in task_call_func().
- 	 */
- 	smp_rmb();
- 	if (READ_ONCE(p->on_rq) && ttwu_runnable(p, wake_flags))
 -- 
-2.30.2
-
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
