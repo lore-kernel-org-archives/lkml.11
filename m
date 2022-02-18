@@ -2,395 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39753C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E374C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbiBRLou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:44:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50636 "EHLO
+        id S234904AbiBRLqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:46:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234930AbiBRLoZ (ORCPT
+        with ESMTP id S234915AbiBRLpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:44:25 -0500
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A822182D;
-        Fri, 18 Feb 2022 03:43:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=A0ES94RB8ss0IE5g/Imh4fw5K6SE/rzur7MuY1WTuvE=; b=vtczx+b9uHmxAJfzit9FlIrEX7
-        wlQ3II06qVnJhbCuexXqp0AO8xMqszCUCFVevcuxouVxSHFdNNNVhXRJC+9CkfMJfK2Wl5hLSGpwP
-        4e+7yI7Nt5WeSCEpo1OIyCMhqdTimmfIdPAlK/ZO8OWLlhveCws+g5+krO9K7EV4tbKYosFtrR27t
-        PHMTaipD5gw8P17EVZQgqxrgPxHmEcRZ9AspZ/f8H6LC0FfzgMm/UTP5GkZPe5KEgcJFjwkgpFofy
-        0kRJBvAX2Laa1qID70nUeAvHxU3IHfrh41PLOSMFeTKxPVkcM1EdETGuL2qnhYNvl/ZzW2BPMXVtx
-        u8ESujqw==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <mperttunen@nvidia.com>)
-        id 1nL1fq-0006eP-0w; Fri, 18 Feb 2022 13:43:42 +0200
-From:   Mikko Perttunen <mperttunen@nvidia.com>
-To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
-        will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
-Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v3 3/9] gpu: host1x: Add context device management code
-Date:   Fri, 18 Feb 2022 13:39:46 +0200
-Message-Id: <20220218113952.3077606-4-mperttunen@nvidia.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220218113952.3077606-1-mperttunen@nvidia.com>
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+        Fri, 18 Feb 2022 06:45:42 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFD9140A3
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 03:45:25 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IAHhft009210;
+        Fri, 18 Feb 2022 11:45:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=G2Wkq9ECtBBFKxcJidrjhdLiG9ceRfmG9tSNUfnjQn8=;
+ b=N4ylGuuML8oHsbUvFe/G7DKl3KGjd93ZZ/yqBKikif/qYFOYzAAfYxqFSL+oROGGJ/7i
+ +WlFXEa6QvSUZvUQigg9XOWpBSJilWdFfgwGFm38LvEKp3RbpQ/v0S5PB0pEcIta/MMd
+ dQkuJmN4pZhZpBB+7bjYsoFXfVvq+VafYF8F0VHn1XHr1NWyy55EOyTMdfeyZNuOtFIi
+ eHeCs0TQdGxr4vQk3d5AW2TJx8/qpvQPNbaqbzYzVpFHxXhaLZEAqRY11G17cU6WHKe+
+ LxZ/0dcrNPRVH3iJstVorjCql1/C8dPJMBviuf8Zgapy8fJbWhACVaWzXG02UGw5a163 5Q== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e8n3e17tu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 11:45:17 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21IBedHa058840;
+        Fri, 18 Feb 2022 11:45:16 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2045.outbound.protection.outlook.com [104.47.51.45])
+        by aserp3030.oracle.com with ESMTP id 3e9brdp2un-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 18 Feb 2022 11:45:16 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JMbN9qhv71uUtAJe1LdOtdLJCxw0y9iwCCBFlkm6maFwf4CbuvmqIJNpjbE8ra4rmuP3Ts+9cB4YOcq2arjJaS2KD5nwekAbOCdf0uI/SY1wWVWcgJWQ/4AlnSSvtJffq6aJaCcMKFjDO5o3L1/IqugpYASFEAiWlr1xW8MNsJ2ZTCpM9tSxpzfL33TO0mnA1E274OOey3eRFyWgjcxRWKgMHLTUmlJjYvUNflzNoNGNPDYnLYpv2paWJvoNwerZnvUd7MKlIYMLZYvWB77NWqt28Vw0a2gs5JVl8+S4cpBcSJZc7Tu48P2UHHM0W/LxUYsuGSvXyUYYOKLYmV+ciA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G2Wkq9ECtBBFKxcJidrjhdLiG9ceRfmG9tSNUfnjQn8=;
+ b=lln47+ttCWZkB5hsfa15q/DJ7U/Co7qhlQXhcQySo3VbNABXRYxm3s5C1307iMBmzbWV7Yp3cKXjMOuGEu0C/wH/uzfGprBofc4Ns1GAUG6nMtRuNPq0mxcUY6GFkzbkiZ7WeYLlTJjSybN3Dl+8GzSeZs6ozz0r+qQKCshwPzCUwu65TeFoeH7Gd2NBb8G/r7l5MPX3Lmj3Zq9pSH+O+4WsFtlR5SX6291t9ynIBDRgvIznNPziwO/9XvbAmQs+gxPan8dNKgwpIeSs/RhEYUKmR8YevplaE4LmM17lMmskodkR+8AhAJpnwSBrBZcDhzmzC3CvPkTN2lLUZR+zyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G2Wkq9ECtBBFKxcJidrjhdLiG9ceRfmG9tSNUfnjQn8=;
+ b=AqM/scw3QXGG2oZueEzdw2KbpQwY6zKLSRQdqdVcN3buSXyEfDyLVuLVaj19PWkiLEDXgkl2DWsiFbwGoZY5ALaJHzsJspoVKGeCnXyFZ0OoWbH0/zJkZ2klL+D1CZkzNSZ+aXspiYt/2bdwjW1ChT3Q9Nqk1VX0U1a59Ku1dWQ=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MW5PR10MB5849.namprd10.prod.outlook.com
+ (2603:10b6:303:19b::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.18; Fri, 18 Feb
+ 2022 11:45:14 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%3]) with mapi id 15.20.4975.019; Fri, 18 Feb 2022
+ 11:45:14 +0000
+Date:   Fri, 18 Feb 2022 14:44:55 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Marcelo Aloisio da Silva <marcelo.as@aol.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: r8188eu: remove unnecessary braces in if
+ statements
+Message-ID: <20220218114455.GG2407@kadam>
+References: <20220218043705.GA23783.ref@snoopy>
+ <20220218043705.GA23783@snoopy>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218043705.GA23783@snoopy>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0051.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::14)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: mperttunen@nvidia.com
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 784b953e-a183-433c-68c8-08d9f2d4201d
+X-MS-TrafficTypeDiagnostic: MW5PR10MB5849:EE_
+X-Microsoft-Antispam-PRVS: <MW5PR10MB58499C7793395EBC8B503EB78E379@MW5PR10MB5849.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rjCXhcvdAp08bAStdPVd/yWyv3finOoqUAItRn1TVlZHPlOVB4bMeXXrVpOVMVdIC6r6QE9XGPoqWT0y18M6ukvSDNrZvmuSVGwBm9cCP30qpOTA21fSY5AwXqLXEZz3Q2Sk+gUVzc4myT78Xk+TTNzUnr9Xu4/1NW4yAk5J23p9alvmMFJGa7s7SEuNpbou5BX1T8LtdKjWa6MFH1PlcbUEvMIrsrikgwtUpXr01HeoUF8+YdV17/u4X04UtxQNQ0mmr3Rk94tqWvX7cv0wYVV6wvTdhAZFCv5zhaEy6g3xYf6HNNa47oywdPCAHdAZnavNxkSQZrIIuSz5a+9JGj+uSqQ+yWYNAdMEE31W+GJAx/JKrFUPZK80CaYs9pmwHbLX3Ep54350cIGjs3sUQpfc0AScWvbg+xupLEHLdnOjL11h6B+dH6fzAHnp6xYSsmvYnjAN/IRhvKeBEgALtg6GyTpRI8doUrW1JNX+B5rbXgagEP3ztV/VRaYbT+Z4TL0jM2B+hraxDAimWRlX56Sb0We4p99d9NIVKGeWGpJn2B15rJQl6ZzG9Hxna8Erxo4d9KDon11UcSByb2G7tjLbgmJJYGa5yXMTwOacJPnCvZWOTJYd5rA+gbi+u9kTm+KWgvlCm1CF0jZUggcZKcREnl+AaEDZxaW0cX2PGXaITWUVXnnuE7W1gAeDbJnonrH0UGK2zydWFw7U4UfIKA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6486002)(316002)(33656002)(1076003)(6666004)(54906003)(6916009)(66556008)(66946007)(66476007)(38350700002)(52116002)(44832011)(26005)(6506007)(33716001)(6512007)(186003)(5660300002)(508600001)(9686003)(8936002)(8676002)(86362001)(38100700002)(83380400001)(2906002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DeqrlG8nipE3P15PRMJfGDhLvC5N+da41HXUZZX4xGWRfiRohHVt8Ae4tzTE?=
+ =?us-ascii?Q?WDQBHFf0Clv3rbz767EysdwO0IoJ3L3/3aO75pt5TBPU0m+WT9z6TCWGYuCs?=
+ =?us-ascii?Q?9ePwZlgF+SkiPLGhgq0Wfz0FX7Gkfr1GXlJQPpjnGOtdkYidEZWCjhEStj1O?=
+ =?us-ascii?Q?dDGyuKHdMOQAr3ZKh5yKRgWBxa2FAw9/owBRnceerRqD8WogCHlfAj11B+mi?=
+ =?us-ascii?Q?DxvNH3kvR5mdsfnXafBF5t2lQQsaXdHUtpu8VKUCjuWH5mr27/j0Q8PTCWlj?=
+ =?us-ascii?Q?/HMJV6PFBdxdaXYB/mqopOWVN9L0d5KoMosKVjDhU9zM4CF1pnVYI2CZzCEu?=
+ =?us-ascii?Q?YsBfgGNIo9tV+QflcNq/E5BWf40Ovwuus7uRxwj8uqtWO+n0aP6/+TGgmSSF?=
+ =?us-ascii?Q?LoklN39dVlkzlZmV5MZwMcONCpBQgX0rEnHX2mBo70G+WpXLhWu6KvksiAh9?=
+ =?us-ascii?Q?lfyE8bpCAdy0CuV1T8/Lyl0W6zahmf/2I1kpqLuMxS7MYAEjHggXh/x4gUCQ?=
+ =?us-ascii?Q?eRmJoFrcCh2nfspuBPCAS7WSOPP4laNzGM3gNGyBpiiEholyvvmTfh1IBmbN?=
+ =?us-ascii?Q?OXmYKjE3wuYt5SwWZitMETEZEJ+bZCrjRaeuVhc1mY+gno1BOY0TykvQFpqL?=
+ =?us-ascii?Q?Bs5MwX6HqOdF59cIyAqUTrMRaDg1tuEo+Po23phaBytmgH24OH9xskcH8Mm3?=
+ =?us-ascii?Q?IWe9YMYe1ISfvSziAgN/m3L1MR8SDkOSATNu+oIaBEmuNmkbW4LisuKxePdL?=
+ =?us-ascii?Q?L4P8QpMG7166npfKb0bszlggps1WoFQHoadeXyDKUnwVgbL2T8mfNTQf0fg/?=
+ =?us-ascii?Q?d9lhdVCp/Pzw3Z0PE30J4jv4eUh+0QCEsQe3NQiMqvoKYzDVouokXjQlGxnh?=
+ =?us-ascii?Q?O7u1pPZG47O0diXucra1S8rqVeC37ErKC3oC58dnkBgKnIbPSCdi4+s93oVg?=
+ =?us-ascii?Q?c6tvcHBo2disx58GyoJWfF/IwKFtY3SsJ1JlUTnx8uekQZRJ4xa2BXnnUxuy?=
+ =?us-ascii?Q?gSta0C4x1NbtIjighGz8n6dV1ZieiE0x8bMRV3b+dOLmb4rPMYnUcl2kGiWf?=
+ =?us-ascii?Q?Xyxr9rNb2MiVUQvzs/8Er/w80T6bGlR8cZMSZzstcmR0XIwgfB/J4+VPV7f9?=
+ =?us-ascii?Q?8vgnh5pARJ3A3hplpz4cjeCcs1Ezg25xHoeC918MOuuprfow2jwRYTwatGmu?=
+ =?us-ascii?Q?ZXsNNpCRzfMcz0Qkd6MeJIWw0OU1QuiRV7bUecp+XOu8nSTqXWjUXqTK3RSf?=
+ =?us-ascii?Q?cNPQO5kF04Eswaq01uN4vFEIzQbhJcwBVQuqVhkLpGV79kk3YTL4t0RhBbby?=
+ =?us-ascii?Q?/MpNPD9m7/V7qbVsW9u7jqR/o8Fa/auHzNc+JZ2Ziw7fYAm0Ije7fGjoCmG6?=
+ =?us-ascii?Q?dfzzF/fpZAHnegNdW/pERADAlZd8iLxpBD7ljFScYY9zPxL68XQM7YDx8ae6?=
+ =?us-ascii?Q?siK6taAzE2HgUXkCW+wfwh2VHvSX9jp4P1fWsQG5yW2/MRbuCSOE/n4Mg/zf?=
+ =?us-ascii?Q?IoqW199XRoPkv5rSjvLWDih3MNOKAZGgAd6UmGBTpwpksMMPdJHZdqHey9tu?=
+ =?us-ascii?Q?+Mx4G/SZKy8xZION970UIiYDP96+464yJDoujpfa8p4XW5t/5X9kCIJ85kVm?=
+ =?us-ascii?Q?R7UpyOQZ6a6CYWLeaTC33NOsr0Hnd9Y8f+YfOz0ehyd80WptfT6qLfluHE3/?=
+ =?us-ascii?Q?as66bg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 784b953e-a183-433c-68c8-08d9f2d4201d
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2022 11:45:14.0109
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zYEzTewsLL+u9jC5anGrrCNFRSRnfRWvXrPf3SjLPUNrxqkA2YOW9jXgEODxpnWyu8s4RsL3jaiss18taTvPGrvRwMR2qs1D+Hzl7DOlyis=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR10MB5849
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10261 signatures=677564
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202180075
+X-Proofpoint-ORIG-GUID: QmIdNzhmZIxg1Ntw83H6Nvig960Rz9qu
+X-Proofpoint-GUID: QmIdNzhmZIxg1Ntw83H6Nvig960Rz9qu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add code to register context devices from device tree, allocate them
-out and manage their refcounts.
+On Fri, Feb 18, 2022 at 01:37:05AM -0300, Marcelo Aloisio da Silva wrote:
+> Braces are not necessary for single statement blocks.
+> 
+> Signed-off-by: Marcelo Aloisio da Silva <marcelo.as@aol.com>
+> ---
+>  drivers/staging/r8188eu/core/rtw_mlme.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+> index 45eff3018d73..ad1d73a27548 100644
+> --- a/drivers/staging/r8188eu/core/rtw_mlme.c
+> +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+> @@ -1379,10 +1379,8 @@ void rtw_dynamic_check_timer_handlder(struct adapter *adapter)
+>  	if (pregistrypriv->wifi_spec == 1) {
+>  		struct wifidirect_info *pwdinfo = &adapter->wdinfo;
+>  		if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
+> -		{
+>  			/* auto site survey */
+>  			rtw_auto_scan_handler(adapter);
+> -		}
 
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
----
-v2:
-* Directly set DMA mask instead of inheriting from Host1x.
-* Use iommu-map instead of custom DT property.
----
- drivers/gpu/host1x/Makefile  |   1 +
- drivers/gpu/host1x/context.c | 174 +++++++++++++++++++++++++++++++++++
- drivers/gpu/host1x/context.h |  27 ++++++
- drivers/gpu/host1x/dev.c     |  12 ++-
- drivers/gpu/host1x/dev.h     |   2 +
- include/linux/host1x.h       |  17 ++++
- 6 files changed, 232 insertions(+), 1 deletion(-)
- create mode 100644 drivers/gpu/host1x/context.c
- create mode 100644 drivers/gpu/host1x/context.h
+Generally we prefer if statements around multi-line indents.  It helps
+for readability.  But you could move them to the right place in a
+different patch.
 
-diff --git a/drivers/gpu/host1x/Makefile b/drivers/gpu/host1x/Makefile
-index c891a3e33844..8a65e13d113a 100644
---- a/drivers/gpu/host1x/Makefile
-+++ b/drivers/gpu/host1x/Makefile
-@@ -10,6 +10,7 @@ host1x-y = \
- 	debug.o \
- 	mipi.o \
- 	fence.o \
-+	context.o \
- 	hw/host1x01.o \
- 	hw/host1x02.o \
- 	hw/host1x04.o \
-diff --git a/drivers/gpu/host1x/context.c b/drivers/gpu/host1x/context.c
-new file mode 100644
-index 000000000000..987c08a1e2f2
---- /dev/null
-+++ b/drivers/gpu/host1x/context.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/kref.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/pid.h>
-+#include <linux/slab.h>
-+
-+#include "context.h"
-+#include "dev.h"
-+
-+/*
-+ * Due to an issue with T194 NVENC, only 38 bits can be used.
-+ * Anyway, 256GiB of IOVA ought to be enough for anyone.
-+ */
-+static dma_addr_t context_device_dma_mask = DMA_BIT_MASK(38);
-+
-+int host1x_context_list_init(struct host1x *host1x)
-+{
-+	struct host1x_context_list *cdl = &host1x->context_list;
-+	struct host1x_context *ctx;
-+	struct device_node *node;
-+	int index;
-+	int err;
-+
-+	node = of_get_child_by_name(host1x->dev->of_node, "memory-contexts");
-+	if (!node)
-+		return 0;
-+
-+	cdl->devs = NULL;
-+	cdl->len = 0;
-+	mutex_init(&cdl->lock);
-+
-+	err = of_property_count_u32_elems(node, "iommu-map");
-+	if (err < 0) {
-+		err = 0;
-+		goto put_node;
-+	}
-+
-+	cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
-+	if (!cdl->devs) {
-+		err = -ENOMEM;
-+		goto put_node;
-+	}
-+	cdl->len = err / 4;
-+
-+	for (index = 0; index < cdl->len; index++) {
-+		struct iommu_fwspec *fwspec;
-+
-+		ctx = &cdl->devs[index];
-+
-+		ctx->host = host1x;
-+
-+		device_initialize(&ctx->dev);
-+
-+		ctx->dev.dma_mask = &context_device_dma_mask;
-+		ctx->dev.coherent_dma_mask = context_device_dma_mask;
-+		dev_set_name(&ctx->dev, "host1x-ctx.%d", index);
-+		ctx->dev.bus = &host1x_context_device_bus_type;
-+		ctx->dev.parent = host1x->dev;
-+
-+		dma_set_max_seg_size(&ctx->dev, UINT_MAX);
-+
-+		err = device_add(&ctx->dev);
-+		if (err) {
-+			dev_err(host1x->dev, "could not add context device %d: %d\n", index, err);
-+			goto del_devices;
-+		}
-+
-+		err = of_dma_configure_id(&ctx->dev, node, true, &index);
-+		if (err) {
-+			dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
-+				index, err);
-+			device_del(&ctx->dev);
-+			goto del_devices;
-+		}
-+
-+		fwspec = dev_iommu_fwspec_get(&ctx->dev);
-+		if (!fwspec) {
-+			dev_err(host1x->dev, "Context device %d has no IOMMU!\n", index);
-+			device_del(&ctx->dev);
-+			goto del_devices;
-+		}
-+
-+		ctx->stream_id = fwspec->ids[0] & 0xffff;
-+	}
-+
-+	of_node_put(node);
-+
-+	return 0;
-+
-+del_devices:
-+	while (--index >= 0)
-+		device_del(&cdl->devs[index].dev);
-+
-+	kfree(cdl->devs);
-+	cdl->len = 0;
-+
-+put_node:
-+	of_node_put(node);
-+
-+	return err;
-+}
-+
-+void host1x_context_list_free(struct host1x_context_list *cdl)
-+{
-+	int i;
-+
-+	for (i = 0; i < cdl->len; i++)
-+		device_del(&cdl->devs[i].dev);
-+
-+	kfree(cdl->devs);
-+	cdl->len = 0;
-+}
-+
-+struct host1x_context *host1x_context_alloc(struct host1x *host1x,
-+					    struct pid *pid)
-+{
-+	struct host1x_context_list *cdl = &host1x->context_list;
-+	struct host1x_context *free = NULL;
-+	int i;
-+
-+	if (!cdl->len)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	mutex_lock(&cdl->lock);
-+
-+	for (i = 0; i < cdl->len; i++) {
-+		struct host1x_context *cd = &cdl->devs[i];
-+
-+		if (cd->owner == pid) {
-+			refcount_inc(&cd->ref);
-+			mutex_unlock(&cdl->lock);
-+			return cd;
-+		} else if (!cd->owner && !free) {
-+			free = cd;
-+		}
-+	}
-+
-+	if (!free) {
-+		mutex_unlock(&cdl->lock);
-+		return ERR_PTR(-EBUSY);
-+	}
-+
-+	refcount_set(&free->ref, 1);
-+	free->owner = get_pid(pid);
-+
-+	mutex_unlock(&cdl->lock);
-+
-+	return free;
-+}
-+EXPORT_SYMBOL(host1x_context_alloc);
-+
-+void host1x_context_get(struct host1x_context *cd)
-+{
-+	refcount_inc(&cd->ref);
-+}
-+EXPORT_SYMBOL(host1x_context_get);
-+
-+void host1x_context_put(struct host1x_context *cd)
-+{
-+	struct host1x_context_list *cdl = &cd->host->context_list;
-+
-+	if (refcount_dec_and_mutex_lock(&cd->ref, &cdl->lock)) {
-+		put_pid(cd->owner);
-+		cd->owner = NULL;
-+		mutex_unlock(&cdl->lock);
-+	}
-+}
-+EXPORT_SYMBOL(host1x_context_put);
-diff --git a/drivers/gpu/host1x/context.h b/drivers/gpu/host1x/context.h
-new file mode 100644
-index 000000000000..268ecdf6b1bb
---- /dev/null
-+++ b/drivers/gpu/host1x/context.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Host1x context devices
-+ *
-+ * Copyright (c) 2020, NVIDIA Corporation.
-+ */
-+
-+#ifndef __HOST1X_CONTEXT_H
-+#define __HOST1X_CONTEXT_H
-+
-+#include <linux/mutex.h>
-+#include <linux/refcount.h>
-+
-+struct host1x;
-+
-+extern struct bus_type host1x_context_device_bus_type;
-+
-+struct host1x_context_list {
-+	struct mutex lock;
-+	struct host1x_context *devs;
-+	unsigned int len;
-+};
-+
-+int host1x_context_list_init(struct host1x *host1x);
-+void host1x_context_list_free(struct host1x_context_list *cdl);
-+
-+#endif
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 6994f8c0e02e..40f64efd5865 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -28,6 +28,7 @@
- 
- #include "bus.h"
- #include "channel.h"
-+#include "context.h"
- #include "debug.h"
- #include "dev.h"
- #include "intr.h"
-@@ -502,10 +503,16 @@ static int host1x_probe(struct platform_device *pdev)
- 		goto iommu_exit;
- 	}
- 
-+	err = host1x_context_list_init(host);
-+	if (err) {
-+		dev_err(&pdev->dev, "failed to initialize context list\n");
-+		goto free_channels;
-+	}
-+
- 	err = host1x_syncpt_init(host);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to initialize syncpts\n");
--		goto free_channels;
-+		goto free_contexts;
- 	}
- 
- 	err = host1x_intr_init(host, syncpt_irq);
-@@ -549,6 +556,8 @@ static int host1x_probe(struct platform_device *pdev)
- 	host1x_intr_deinit(host);
- deinit_syncpt:
- 	host1x_syncpt_deinit(host);
-+free_contexts:
-+	host1x_context_list_free(&host->context_list);
- free_channels:
- 	host1x_channel_list_free(&host->channel_list);
- iommu_exit:
-@@ -568,6 +577,7 @@ static int host1x_remove(struct platform_device *pdev)
- 
- 	host1x_intr_deinit(host);
- 	host1x_syncpt_deinit(host);
-+	host1x_context_list_free(&host->context_list);
- 	host1x_iommu_exit(host);
- 	host1x_bo_cache_destroy(&host->cache);
- 
-diff --git a/drivers/gpu/host1x/dev.h b/drivers/gpu/host1x/dev.h
-index ca4b082f0cd4..92f4804d8b70 100644
---- a/drivers/gpu/host1x/dev.h
-+++ b/drivers/gpu/host1x/dev.h
-@@ -14,6 +14,7 @@
- 
- #include "cdma.h"
- #include "channel.h"
-+#include "context.h"
- #include "intr.h"
- #include "job.h"
- #include "syncpt.h"
-@@ -141,6 +142,7 @@ struct host1x {
- 	struct mutex syncpt_mutex;
- 
- 	struct host1x_channel_list channel_list;
-+	struct host1x_context_list context_list;
- 
- 	struct dentry *debugfs;
- 
-diff --git a/include/linux/host1x.h b/include/linux/host1x.h
-index e8dc5bc41f79..9d9f1711472b 100644
---- a/include/linux/host1x.h
-+++ b/include/linux/host1x.h
-@@ -440,4 +440,21 @@ int tegra_mipi_disable(struct tegra_mipi_device *device);
- int tegra_mipi_start_calibration(struct tegra_mipi_device *device);
- int tegra_mipi_finish_calibration(struct tegra_mipi_device *device);
- 
-+/* host1x context devices */
-+
-+struct host1x_context {
-+	struct host1x *host;
-+
-+	refcount_t ref;
-+	struct pid *owner;
-+
-+	struct device dev;
-+	u32 stream_id;
-+};
-+
-+struct host1x_context *host1x_context_alloc(struct host1x *host1x,
-+					    struct pid *pid);
-+void host1x_context_get(struct host1x_context *cd);
-+void host1x_context_put(struct host1x_context *cd);
-+
- #endif
--- 
-2.35.0
+ 		if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE)) {
+ 			/* auto site survey */
+ 			rtw_auto_scan_handler(adapter);
+		}
+
+The rest of the patch is fine.
+
+regards,
+dan carpenter
 
