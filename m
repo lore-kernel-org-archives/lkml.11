@@ -2,65 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6525C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FDFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237721AbiBRToF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 14:44:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57990 "EHLO
+        id S233267AbiBRTok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 14:44:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbiBRToC (ORCPT
+        with ESMTP id S231124AbiBRToi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 14:44:02 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F811074D8;
-        Fri, 18 Feb 2022 11:43:45 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nL9AO-002oME-0T; Fri, 18 Feb 2022 19:43:44 +0000
-Date:   Fri, 18 Feb 2022 19:43:43 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Rik van Riel <riel@surriel.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        linux-fsdevel@vger.kernel.org, paulmck@kernel.org,
-        gscrivan@redhat.com, Eric Biederman <ebiederm@xmission.com>,
-        Chris Mason <clm@fb.com>
-Subject: Re: [PATCH 1/2] vfs: free vfsmount through rcu work from kern_unmount
-Message-ID: <Yg/273dWmTKDW5Mu@zeniv-ca.linux.org.uk>
-References: <20220218183114.2867528-1-riel@surriel.com>
- <20220218183114.2867528-2-riel@surriel.com>
- <Yg/y6qv6dZ2fc5z1@zeniv-ca.linux.org.uk>
- <5f442a7770fe4ac06b2837e4f937d559f5d17b8b.camel@surriel.com>
+        Fri, 18 Feb 2022 14:44:38 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E56F15C65A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:44:21 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id c15so5762410ljf.11
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:44:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=11A+0Eks+jC0w/1uVoE5SKsP/3nLc9GXz9ehFpzmcvU=;
+        b=o2Hn+YBOZ4FU7alTHvEiw9RlAdYkxmj0LIODdDaUfF/tro0MWTyR1gBXXpXYY7y84V
+         nJUiRT8aJ4z08sVZxugLzKx5rOFeZ7f5OFH/o2k2ZddipGgbXnCyknFTYJLc1DWyZgdX
+         M5+4YxgK3tuP5h8aH/8Nrl8D74/NgKHUa2owk2TCsvczfRpTi+z5/bRwcSPj3C8L/LMu
+         NN0nLu6BMT3H3hAkajmNxu8fQ6Oqlf83bKR4AajYHsCA5WCR3nMbbUyGysuxR47Y/RAW
+         OHvtmGt20gaErKcM2wYvbRZUpyQ3KrscWM3rI40/0zflQTPaeuzSwS0B3mn8ppPnelII
+         JJ6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=11A+0Eks+jC0w/1uVoE5SKsP/3nLc9GXz9ehFpzmcvU=;
+        b=Gq85PmKap+lErQa5lcFafxl7+rETO1AigeAPzuY0zsCe2U0l31APm1JFiThtuX7SrC
+         Y/HdaXrxSpj0YnYMH7TRpdvrx2x4H1P8tq57sV21y0+mlP+CZcojTQnic3ynBQX2pwGi
+         XoGsAmV6Qm1cNBHCu4xqXU7b3Xi+s7UmnHwpcpsQp/ECHLxVMPRF5y22poYyEycDTgo5
+         1UL0aV2beniZckzVm7gCye4i3XXBpLZfr16ETb1dmvkB1zFx7mXivvS+N0OKNVpwTpkk
+         IyQVAhdc/zdTR3Mq4sGYZnf/Jxf+i4EVrB7Q80HSaVwQ/EPgEeMag1ou/Sj2xR9ulZog
+         aAUg==
+X-Gm-Message-State: AOAM532z+UynpxM9KsGgAxOKQwb9bv0bVxhCx/lse0hDim4mnwlM0/Mk
+        yGB4g+iywh6SYnZ6PJYR6mar7Ifcz59cvOx3VKe/LA==
+X-Google-Smtp-Source: ABdhPJyBor1AykngqiuumCK477PW9cyrK+7gTKgyyObnORVL5QLiZVwG6IFJ2mEjqJEIwbDP77+GoKIg5ZZAr4GZ0+s=
+X-Received: by 2002:a2e:8941:0:b0:244:8a87:f760 with SMTP id
+ b1-20020a2e8941000000b002448a87f760mr6804241ljk.369.1645213459498; Fri, 18
+ Feb 2022 11:44:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5f442a7770fe4ac06b2837e4f937d559f5d17b8b.camel@surriel.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+References: <20220218100910.35767-1-pbonzini@redhat.com>
+In-Reply-To: <20220218100910.35767-1-pbonzini@redhat.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Fri, 18 Feb 2022 12:44:07 -0700
+Message-ID: <CAMkAt6rS-YrrSoYSU_9AukoTfrAy5awNFw3dkbCrFNoq0b3fWw@mail.gmail.com>
+Subject: Re: [PATCH] selftests: KVM: add sev_migrate_tests on machines without SEV-ES
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, kvm list <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 02:33:31PM -0500, Rik van Riel wrote:
-> On Fri, 2022-02-18 at 19:26 +0000, Al Viro wrote:
-> > On Fri, Feb 18, 2022 at 01:31:13PM -0500, Rik van Riel wrote:
-> > > After kern_unmount returns, callers can no longer access the
-> > > vfsmount structure. However, the vfsmount structure does need
-> > > to be kept around until the end of the RCU grace period, to
-> > > make sure other accesses have all gone away too.
-> > > 
-> > > This can be accomplished by either gating each kern_unmount
-> > > on synchronize_rcu (the comment in the code says it all), or
-> > > by deferring the freeing until the next grace period, where
-> > > it needs to be handled in a workqueue due to the locking in
-> > > mntput_no_expire().
-> > 
-> > NAK.  There's code that relies upon kern_unmount() being
-> > synchronous.  That's precisely the reason why MNT_INTERNAL
-> > is treated that way in mntput_no_expire().
-> 
-> Fair enough. Should I make a kern_unmount_rcu() version
-> that gets called just from mq_put_mnt()?
+On Fri, Feb 18, 2022 at 3:09 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> I managed to get hold of a machine that has SEV but not SEV-ES, and
+> sev_migrate_tests fails because sev_vm_create(true) returns ENOTTY.
+> Fix this, and while at it also return KSFT_SKIP on machines that do
+> not have SEV at all, instead of returning 0.
+>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 
-Umm...  I'm not sure you can afford having struct ipc_namespace
-freed and reused before the mqueue superblock gets at least to
-deactivate_locked_super().
+Tested-by: Peter Gonda <pgonda@google.com>
+
+
+>
+> +#define X86_FEATURE_SEV (1 << 1)
+> +#define X86_FEATURE_SEV_ES (1 << 3)
+
+These conflict with these names but have different values:
+https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/cpufeatures.h#L402.
+Is that normal in selftests or should we go with another name?
+> +
+>  int main(int argc, char *argv[])
+>  {
+> +       struct kvm_cpuid_entry2 *cpuid;
+> +
+> +       if (!kvm_check_cap(KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM) &&
+> +           !kvm_check_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM)) {
+> +               print_skip("Capabilities not available");
+> +               exit(KSFT_SKIP);
+> +       }
+> +
+> +       cpuid = kvm_get_supported_cpuid_entry(0x80000000);
+> +       if (cpuid->eax < 0x8000001f) {
+> +               print_skip("AMD memory encryption not available");
+> +               exit(KSFT_SKIP);
+> +       }
+> +       cpuid = kvm_get_supported_cpuid_entry(0x8000001f);
+> +       if (!(cpuid->eax & X86_FEATURE_SEV)) {
+> +               print_skip("AMD SEV not available");
+> +               exit(KSFT_SKIP);
+> +       }
+> +       have_sev_es = !!(cpuid->eax & X86_FEATURE_SEV_ES);
+> +
+>         if (kvm_check_cap(KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM)) {
+>                 test_sev_migrate_from(/* es= */ false);
+> -               test_sev_migrate_from(/* es= */ true);
+> +               if (have_sev_es)
+> +                       test_sev_migrate_from(/* es= */ true);
+>                 test_sev_migrate_locking();
+>                 test_sev_migrate_parameters();
+>                 if (kvm_check_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM))
+> @@ -405,7 +440,8 @@ int main(int argc, char *argv[])
+>         }
+>         if (kvm_check_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM)) {
+>                 test_sev_mirror(/* es= */ false);
+> -               test_sev_mirror(/* es= */ true);
+> +               if (have_sev_es)
+> +                       test_sev_mirror(/* es= */ true);
+>                 test_sev_mirror_parameters();
+>         }
+>         return 0;
+> --
+> 2.31.1
+>
