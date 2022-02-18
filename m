@@ -2,242 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94155C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B86C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 19:45:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237810AbiBRTou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 14:44:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32980 "EHLO
+        id S237616AbiBRTqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 14:46:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237782AbiBRTop (ORCPT
+        with ESMTP id S234826AbiBRTqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 14:44:45 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ECD1617C0
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:44:28 -0800 (PST)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21IIhS6H007058;
-        Fri, 18 Feb 2022 19:43:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=UK3n6zJR4ml8W5EfJ7Is9BNSuF9dRruKlC9fsprykqI=;
- b=eB9xOumu0Tywff2UsdU44RZqYtU9auM3H1N6WnaKrdq2ED930Z/5gP4qi2rHBHZwCkt6
- 2bgsGBONbbbimLHbyKde1rlGlmI+tetI3j5WTHDdamx+Ua5HDXCcTEc4AOn0viTTft0d
- LoaIrn+9y96dSCXzRQ+b4ATiD4eSmPUrsCIaL2u0vyQqMC1R6rVOcbaomBhaUqNxfMnW
- B18LBJwW3MXBdxjjZdw9LEd0HxP2CJaCY0dS7oJDwMs5QP3J6CTwaDsLarqTBthJC2PE
- urkOiMgFvoP/wJngVsSjxlH0g6t3PtXMoE/+rc+SNQ4DYjZg3YseSBMTZkyi+Z1O5DCv xw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e8nr9ar1j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 19:43:52 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21IJfpdL162175;
-        Fri, 18 Feb 2022 19:43:50 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
-        by userp3020.oracle.com with ESMTP id 3e8n4xyv5a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 18 Feb 2022 19:43:50 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aerR8cn8BYUSFpLY9YfpbxFhJorSXm/op+vT7HKbJ1TLub/gf0yAtU3CiUxQO6/Uxcj266sjFn59TuX2ZIYbfWRUV8aBMEpCu72IEfo4ImpIO0+eBrUA0Npv9YL3LC/L38lFMEAY77+H/0WxyoCNlHhxUbpPJ4D97K6voqopcuXyZiQaFs1rLHWmMyjBy8+VdJTrlYus9jBgtp8cTAvs3mwLcm9FRKyy81V64hmwmneHUD0l4BfAbJG/ylDs9d0ccveTaWI4nztQnTBYkeAdfDoxmyAj283ciAAIEzYqPlK18iNc45aymm+6EtNM+9uPr+YQD4+iJzdb8q+2pvzwbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UK3n6zJR4ml8W5EfJ7Is9BNSuF9dRruKlC9fsprykqI=;
- b=juRJRUFc3undzojm8xlXdQKXa4iC+QelypKUXD8tnWzEijVSGZGbUHk0pUcc9aQG8KC9kvvlbHO+whkzB1pSwuyDDy5B3Dvf/vX1UrcEn1QwH+BbCVALZZPypDPDyQY4M5/YwwIJXolE/NKgYvrvcjDFEgMzrYar+svEryJx8INFzHpXekoKnaTOdfW7Qp6haxN0CIfe6zI0pGX/xJj9PxSIgtwQy7dEMkavki8Xl1s0e8Uz4xqHAAFBr6sxqiz7KUFKPF2Z6ovyeJ/wtzWf1C8WuffQen0WNoW5I6aeRRJ0J6W7OZuQ3Txe4DXDWoIL8Z4YbE3KciWBGHEY53PXMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 18 Feb 2022 14:46:12 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872491A2E71
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:45:55 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id qx21so17261760ejb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 11:45:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UK3n6zJR4ml8W5EfJ7Is9BNSuF9dRruKlC9fsprykqI=;
- b=ChYyx2z9SIz9wfNyY/cAZpy/moelWD+DeALvTUqr1FE3eFyqQ34+gtbLnqmNS+V0w20ypLTqvC3NaqPFw11w7hGONgY4/aJz7pCGdfwn/kupU0zAdUkqrnj2MhQeNj0XEpCmlIqk2FVCaJSeQ473mx9rKuk954HjNoZra95+yd8=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by SA2PR10MB4713.namprd10.prod.outlook.com (2603:10b6:806:11d::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Fri, 18 Feb
- 2022 19:43:48 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::899e:951a:8129:8ef1]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::899e:951a:8129:8ef1%4]) with mapi id 15.20.4995.023; Fri, 18 Feb 2022
- 19:43:48 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     =?utf-8?B?SmFrdWIgTWF0xJtuYQ==?= <matenajakub@gmail.com>
-CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "mgorman@techsingularity.net" <mgorman@techsingularity.net>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "hughd@google.com" <hughd@google.com>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "riel@surriel.com" <riel@surriel.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>
-Subject: Re: [RFC PATCH 1/4] [PATCH 1/4] mm: refactor of vma_merge()
-Thread-Topic: [RFC PATCH 1/4] [PATCH 1/4] mm: refactor of vma_merge()
-Thread-Index: AQHYJMIWR3BGTps7OUOPY/SvNH0+TqyZtiEA
-Date:   Fri, 18 Feb 2022 19:43:48 +0000
-Message-ID: <20220218194338.5sdi7jwusfvh3b45@revolver>
-References: <20220218122019.130274-1-matenajakub@gmail.com>
- <20220218122019.130274-2-matenajakub@gmail.com>
-In-Reply-To: <20220218122019.130274-2-matenajakub@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83f3d1c6-d8c9-4015-7e24-08d9f316fbb2
-x-ms-traffictypediagnostic: SA2PR10MB4713:EE_
-x-microsoft-antispam-prvs: <SA2PR10MB47138367ABB757F9632C8278FD379@SA2PR10MB4713.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /aaiQbN6EDB+Zfyob+CcOkLcf3s4HkDYPlG7uuA5UcoIGrwGEjZ3LoRUxj+pXjF8TbcYTOTZQ96l2zCwMg9einUbLm616MxSxmqPzxSA1WHfdWO2qTmYKKAv0tKisO6EsHS9Y76VHYJJX+L8PS6SHDtXcHhafiKQXqZl4lXK0EqIZrrLALH6Ak6Z8esUMfPJg3p4LXPLExLqSiM7eX6XhZ8s/7Xm3d5kD98Hc+I/oQnghNMXkYWVG3oRZ7UHphu2Onu7cD6Mj9E4Yi9tyYvQ0Q/5j/VrIItV/w+LKq2PRTw/hMsKSTj+gRznRjojoZKocvQ48w/XaBy6ojoEu+ZIbDDYgGpYkmjznfCPlwDR8QmjktlcXpXpmTXPo//sbHn6D7p4wGmrSNNFGpF0NU2GtfUePPIaOufbh0CNmUk6d4XqgOMCDN8Oq3aFqyU1Sd2BgrKP/UiYGm4C8SYTFH7ya4GEPVwRFrucMEQnmLLjTgXxW9wesiN5pboqXYsLer+2ztoxTV5ntaCdMJggsTN1JUz43UNlBWwh06ESyTFK2t/a02mEuz9GDJbysqinTQw3jFPQfiasF4xTHtdUl62WetCG6mttZlOHXyg6OYSjViQ/X8T94zQx5lPF6TtZwGNxKl70eS6zHYsTDJv2vSZNO8kS7M1S5HOFXFY82EbI2bB3sdnVQJb2La/lZm2KVhcP2XY+JMQaUoAxG1UPplC6yg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(91956017)(66476007)(8676002)(66946007)(4326008)(1076003)(38070700005)(66574015)(64756008)(2906002)(8936002)(71200400001)(38100700002)(76116006)(26005)(44832011)(186003)(86362001)(66446008)(6506007)(316002)(66556008)(83380400001)(33716001)(7416002)(6486002)(6512007)(508600001)(9686003)(6916009)(54906003)(5660300002)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UGFyVzBkQ1BYMmdCOGl5NHNKK0U4d1I2Z2pmSndJZDdla0U0S1RTV2ZOYjY5?=
- =?utf-8?B?eWl4VzVDbUZ2N2VWb0dvZ0tDVnNRb2JtWnB1aWV6ZVkzQ2R4dE8vODdTQ0VG?=
- =?utf-8?B?QmtLS3dUaVVtVDZmd3Z4cll4MlpoangyRW9NQkQvZWRISkNHa0NBNzdyMWht?=
- =?utf-8?B?cTB5WVFQZWtqa2p3QXJxVzBGTVRpSmRYTTBPc1VuN05rUkp4L20yVFM4MHpM?=
- =?utf-8?B?b05TZzh3ZWp6ZkdXZWlocGVlQS9aU3RTQmdWcjNSSFlEODBrQlJId0ozMHdy?=
- =?utf-8?B?Y1oxc0pDd3RqN0hoOFJ6dFk5TWpBbnNJN1p1emlRaUpyKzk3d2IyR1hEZnha?=
- =?utf-8?B?OWlqNkVyckJhWDJzV0FxSzE4VWZxdmp1OWNORVVOUHQwM2lGR3Jpd3IyYXhi?=
- =?utf-8?B?S1JQMElJWjUwNFErV2JvNEJNeTQ5ZzNyMXdNb1VKZUxacEVWWCtMbk80NGJ4?=
- =?utf-8?B?QW1JL1NxNThCZnZRUmwyd0xwdk1UTGkxVHMrMUFzSE53R2tnVE1tV2FDUUo3?=
- =?utf-8?B?bkJnNXJVVmxyMmVZbEVJeVJDUVNBd2ZRYmVBY0dTTmdBbUt2dTd1QWhVQWpw?=
- =?utf-8?B?Y1FPY3hYZzM5bHhqME9NY243ZFVOd29lU3lULzhSK05GSjJzck5aUjRZZ05F?=
- =?utf-8?B?QlZZWWt6Q0J5ckVDcnY0YWV1WDZtTWtoQkNxYm9aWHhmWktQMFBFNmpEOUxG?=
- =?utf-8?B?emEzdUpXZUkrVWc3UFVuM3ZiUEVQdncwcERQa0JPVkVlYVhkdWRSeDZaL05P?=
- =?utf-8?B?MHN1SDU5dnpFWTI2b2dwVnlmc1EybHRIMUJYMUhBWC9BTHJYcmJLbTBHVS9i?=
- =?utf-8?B?U2RSSUV0YjdhZWZqMmtnQ01SVkFJcFUxL2UyNHdBWHR2Wno2a0NVY3VzVThJ?=
- =?utf-8?B?VmorUlZQQVpES0JsMkFXSzFYalprWjJ6RFFiSjdtTDZEU09xVlJyN1R3NFpH?=
- =?utf-8?B?UXJZOGozVXBYclBBQXc5WmdVMklld0t5cnpOU1U3bHhzdnpVVThQa3lURkx1?=
- =?utf-8?B?V29LYXJmSjRqTEhUY3hKdU5ZcCtvWUp1N0dUVjVuQ0JXZko0WmExaXFHZUpz?=
- =?utf-8?B?cEZ6VjZDM2FkNEFMaHpBcWpkZG81eU9KWVQ5UmV2bjNSQVZHbEZWMENXc1Yy?=
- =?utf-8?B?bjExWjFBOWorZCtRbm01Z1lDRGVuUlJUcVhjUGhHWHRwQnVONUZZbWtrM1R4?=
- =?utf-8?B?MFFpbGJCdWJnc1YwaFg5Z0wyN1pkakd3VE12ZzVodEdSdll0enN1cEM1dUhw?=
- =?utf-8?B?WFh0MHNoTHlrcXJ4Y3RFUC9rakk1bWZGQW5VZWk2WEJ0OXJyVjMvZVJwSlJy?=
- =?utf-8?B?KzJLa3VpZUJVMW9hdXZxNDg3R0lVZXVKeWNKMTN6Nmlrd3FLYzA5QWU3VnBM?=
- =?utf-8?B?Y3RqekV2eDBkb2x2cko2eEVLaHdBSUxmRy9icmpqMTYwcWt4azkwUFRlM0cr?=
- =?utf-8?B?TjBxcjU1MW9EL1pOaE1UTklMNkkyQ0ZPU3BicGtIbXlTWVRrMVB1OTVScEFR?=
- =?utf-8?B?emd5VEMvVlQvMVZ3UUMrUzNWdDdUL09VbzNBbU1MMUw0ZHM5b29WQjlXVklj?=
- =?utf-8?B?cUpoMi9XN0cxMUxaTW8zZDRTN0V4RkxKR0ZkOFUydGhPK2lsQi9teDI5YTFR?=
- =?utf-8?B?azBxRWFreHhRaXN2alR1MG5LeDB5K3pGVUU5R09GMzRtK1RrVk96ai83MUo3?=
- =?utf-8?B?V1BrQ0o2T3dDN0NnTU5mVGMxUDl0S1NCNERmL3g3V2pUWmVPa3dwV1o1c2R6?=
- =?utf-8?B?eXpIUzY0MVRLaFhaS0lycWxyYStsMkkwZjZCWVVYZG91ZkNHTVZNYit3RGVQ?=
- =?utf-8?B?Q2t5MG5OdmxxZm5sSjBjTGlMeFBpTm9nazdDbDVabEx4Q1RQNnR5Sm53WE5n?=
- =?utf-8?B?Z2JHcXJTRU0wakpwcWlCMFZLRGRMaDA5ckpjZkFnNndYd3BMTzdQMWo4Sk9r?=
- =?utf-8?B?WmUrNlVMR2JnWmwvL2o2dWh1SUJidXpaZlJVR0RjL2tNMUg3SXlDWE1kVXdU?=
- =?utf-8?B?c2JtNUlNL2hTa0o4TjY0VWkzc2kvU2owVEg1MVhHWDFoODlUU2V2N1A4cTFi?=
- =?utf-8?B?N3E0RkhjMXBlaDM5QWF0QklTQ2g3MFhkYnFneTJTVzUyRzdieXBDN01YOUxi?=
- =?utf-8?B?Zk9IREdINHNNZnE4eFlvM01xaUplQ1FodVN4WUlyTVl3Q3FZWmlTMzFBK2F0?=
- =?utf-8?Q?K9LxAG+3/0X8r1I75xDG5Zo=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CAA8C319B91F894BA1C998DEC85AED61@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:content-transfer-encoding;
+        bh=TnkmE51UkNMsCcfFfMpS33esSVozAPP7mpptFWEYpDM=;
+        b=dKSzoS/3aMC9ZRTMRyoosCDwk0ZSwBgTYl7XOfoKh4dfyzYc0fm4Gex4e8pwyOivcP
+         SYAJlV3s0lYSSGU7TjYA717k0mEzY4L+r0w2xUh0A1LafHFru6PLi9IXvCbEDEaJRMQ1
+         5iKvU1QviQ6hvuziixKIgraX1Pj7S7s/2x7dMeeWDNMaCoOmeIE/NjNnBkB/c93f1ZCq
+         wfY7XSIqb6EGClIXRzo95STJU1+3WiAyTHMdyyebIvKGEIhAo9eohREh9rW5BIvM+8vJ
+         tCX59RL/RbirgTbFao0An00pgMqcG2xL2b+OXt/tKz2LHvzgECYKFJmZd16VU1r69UJw
+         VMnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:content-transfer-encoding;
+        bh=TnkmE51UkNMsCcfFfMpS33esSVozAPP7mpptFWEYpDM=;
+        b=TbjHZKOPkzxDAMWneFtMhSgoLZUUa5wnQEHqdWafecr0iB2FYiMpBfvjcFCbigCIgc
+         WZP5amgXaG5OIu8QMqk0UZRSG2jq0l7rLQZXf8qcQJ6nsQAkBZ5yMr8jQZR9GUoo1rkG
+         9OGH/u2DQTcBcDMXnO4/xEcrgmwHc6DcogmyDbJsrQGaXqi17nvDB535HD6CzZAPMJAx
+         6PZQ95W+BFe5mdvtWW8pBjvb1fHdUWejzg4QmL7hR8Wjv3ZpL1McQjNwFmGgNnNY21j+
+         LwepgEH7HZHyEN2pd3LNVIG9+3Jv+gCxdqHus3+21IM+qZMzASOHvcXyIZvfDpCVcgK4
+         6mhg==
+X-Gm-Message-State: AOAM531v6JHzsrU8pAp64mhs3H/W01tLdxvrSBTjUT1iwX1wqE+lfjA1
+        q7xFZbBvqdmZdVPCiPupfnM5nWkNqaYdJw==
+X-Google-Smtp-Source: ABdhPJxHrwyJCxDhLFrjCzW69ZvfsjmR+IMuhgAuKO0gzs2uTEtYDNQO2rPGEtUNikscE07/abTwUw==
+X-Received: by 2002:a17:906:9b88:b0:6d0:f843:4068 with SMTP id dd8-20020a1709069b8800b006d0f8434068mr195022ejc.678.1645213554058;
+        Fri, 18 Feb 2022 11:45:54 -0800 (PST)
+Received: from ?IPV6:2a00:a040:197:458f:c93a:90a3:1c34:c6d2? ([2a00:a040:197:458f:c93a:90a3:1c34:c6d2])
+        by smtp.gmail.com with ESMTPSA id o12sm412793ejg.105.2022.02.18.11.45.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Feb 2022 11:45:53 -0800 (PST)
+Message-ID: <9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com>
+Date:   Fri, 18 Feb 2022 21:45:51 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83f3d1c6-d8c9-4015-7e24-08d9f316fbb2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2022 19:43:48.6619
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wdB5qX0BwvMFc/vHQWmhv91MySZUjcEJ0N5qKO+Bj39rIS5MyTCyOfGzLzK6yZuRJachOO5bw1oZP7Ncm90lzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4713
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10262 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0 spamscore=0
- phishscore=0 bulkscore=0 mlxlogscore=891 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202180120
-X-Proofpoint-GUID: 2AHJrvvMZA3RV7hdYBieq8hEG4ureeTn
-X-Proofpoint-ORIG-GUID: 2AHJrvvMZA3RV7hdYBieq8hEG4ureeTn
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     catalin.marinas@arm.com, akpm@linux-foundation.org,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+From:   Ariel Marcovitch <arielmarcovitch@gmail.com>
+Subject: False positive kmemleak report for dtb properties names on powerpc
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KiBKYWt1YiBNYXTEm25hIDxtYXRlbmFqYWt1YkBnbWFpbC5jb20+IFsyMjAyMTggMDc6MjFdOg0K
-PiBSZWZhY3RvciB2bWFfbWVyZ2UoKSB0byBtYWtlIGl0IHNob3J0ZXIsIG1vcmUgdW5kZXJzdGFu
-ZGFibGUgYW5kDQo+IHN1aXRhYmxlIGZvciB0cmFjaW5nIG9mIHN1Y2Nlc3NmdWwgbWVyZ2VzIG1h
-ZGUgcG9zc2libGUgYnkgZm9sbG93aW5nDQo+IHBhdGNoZXMgaW4gdGhlIHNlcmllcy4NCj4gDQo+
-IFNpZ25lZC1vZmYtYnk6IEpha3ViIE1hdMSbbmEgPG1hdGVuYWpha3ViQGdtYWlsLmNvbT4NCj4g
-LS0tDQo+ICBtbS9tbWFwLmMgfCA4MSArKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMzkgaW5zZXJ0aW9ucygr
-KSwgNDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvbW0vbW1hcC5jIGIvbW0vbW1h
-cC5jDQo+IGluZGV4IDFlOGZkYjBiNTFlZC4uYjU1ZTExZjIwNTcxIDEwMDY0NA0KPiAtLS0gYS9t
-bS9tbWFwLmMNCj4gKysrIGIvbW0vbW1hcC5jDQo+IEBAIC0xMTcyLDYgKzExNzIsOSBAQCBzdHJ1
-Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYV9tZXJnZShzdHJ1Y3QgbW1fc3RydWN0ICptbSwNCj4gIAlw
-Z29mZl90IHBnbGVuID0gKGVuZCAtIGFkZHIpID4+IFBBR0VfU0hJRlQ7DQo+ICAJc3RydWN0IHZt
-X2FyZWFfc3RydWN0ICphcmVhLCAqbmV4dDsNCj4gIAlpbnQgZXJyOw0KPiArCWludCBtZXJnZV9w
-cmV2ID0gMDsNCj4gKwlpbnQgbWVyZ2VfYm90aCA9IDA7DQo+ICsJaW50IG1lcmdlX25leHQgPSAw
-Ow0KDQpZb3Ugc2V0IHRoZXNlIGFzIHRydWUsIGNhbiB5b3UgcGxlYXNlIHVzZSBib29sZWFucz8N
-Cg0KPiAgDQo+ICAJLyoNCj4gIAkgKiBXZSBsYXRlciByZXF1aXJlIHRoYXQgdm1hLT52bV9mbGFn
-cyA9PSB2bV9mbGFncywNCj4gQEAgLTExOTEsNjUgKzExOTQsNTkgQEAgc3RydWN0IHZtX2FyZWFf
-c3RydWN0ICp2bWFfbWVyZ2Uoc3RydWN0IG1tX3N0cnVjdCAqbW0sDQo+ICAJVk1fV0FSTl9PTihh
-ZGRyID49IGVuZCk7DQo+ICANCj4gIAkvKg0KPiAtCSAqIENhbiBpdCBtZXJnZSB3aXRoIHRoZSBw
-cmVkZWNlc3Nvcj8NCj4gKwkgKiBDYW4gd2UgbWVyZ2UgcHJlZGVjZXNzb3I/DQo+ICAJICovDQo+
-ICAJaWYgKHByZXYgJiYgcHJldi0+dm1fZW5kID09IGFkZHIgJiYNCj4gIAkJCW1wb2xfZXF1YWwo
-dm1hX3BvbGljeShwcmV2KSwgcG9saWN5KSAmJg0KPiAgCQkJY2FuX3ZtYV9tZXJnZV9hZnRlcihw
-cmV2LCB2bV9mbGFncywNCj4gIAkJCQkJICAgIGFub25fdm1hLCBmaWxlLCBwZ29mZiwNCj4gIAkJ
-CQkJICAgIHZtX3VzZXJmYXVsdGZkX2N0eCwgYW5vbl9uYW1lKSkgew0KPiAtCQkvKg0KPiAtCQkg
-KiBPSywgaXQgY2FuLiAgQ2FuIHdlIG5vdyBtZXJnZSBpbiB0aGUgc3VjY2Vzc29yIGFzIHdlbGw/
-DQo+IC0JCSAqLw0KPiAtCQlpZiAobmV4dCAmJiBlbmQgPT0gbmV4dC0+dm1fc3RhcnQgJiYNCj4g
-LQkJCQltcG9sX2VxdWFsKHBvbGljeSwgdm1hX3BvbGljeShuZXh0KSkgJiYNCj4gLQkJCQljYW5f
-dm1hX21lcmdlX2JlZm9yZShuZXh0LCB2bV9mbGFncywNCj4gLQkJCQkJCSAgICAgYW5vbl92bWEs
-IGZpbGUsDQo+IC0JCQkJCQkgICAgIHBnb2ZmK3BnbGVuLA0KPiAtCQkJCQkJICAgICB2bV91c2Vy
-ZmF1bHRmZF9jdHgsIGFub25fbmFtZSkgJiYNCj4gLQkJCQlpc19tZXJnZWFibGVfYW5vbl92bWEo
-cHJldi0+YW5vbl92bWEsDQo+IC0JCQkJCQkgICAgICBuZXh0LT5hbm9uX3ZtYSwgTlVMTCkpIHsN
-Cj4gLQkJCQkJCQkvKiBjYXNlcyAxLCA2ICovDQo+IC0JCQllcnIgPSBfX3ZtYV9hZGp1c3QocHJl
-diwgcHJldi0+dm1fc3RhcnQsDQo+IC0JCQkJCSBuZXh0LT52bV9lbmQsIHByZXYtPnZtX3Bnb2Zm
-LCBOVUxMLA0KPiAtCQkJCQkgcHJldik7DQo+IC0JCX0gZWxzZQkJCQkJLyogY2FzZXMgMiwgNSwg
-NyAqLw0KPiAtCQkJZXJyID0gX192bWFfYWRqdXN0KHByZXYsIHByZXYtPnZtX3N0YXJ0LA0KPiAt
-CQkJCQkgZW5kLCBwcmV2LT52bV9wZ29mZiwgTlVMTCwgcHJldik7DQo+IC0JCWlmIChlcnIpDQo+
-IC0JCQlyZXR1cm4gTlVMTDsNCj4gLQkJa2h1Z2VwYWdlZF9lbnRlcl92bWFfbWVyZ2UocHJldiwg
-dm1fZmxhZ3MpOw0KPiAtCQlyZXR1cm4gcHJldjsNCj4gKwkJbWVyZ2VfcHJldiA9IHRydWU7DQoN
-CllvdSBjb3VsZCBzZXQgYXJlYSA9IHByZXYgaGVyZSBhbmQgc2ltcGxpZnkgdGhlIGlmIHN0YXRl
-bWVudHMgYmVsb3cuDQoNCj4gIAl9DQo+IC0NCj4gIAkvKg0KPiAtCSAqIENhbiB0aGlzIG5ldyBy
-ZXF1ZXN0IGJlIG1lcmdlZCBpbiBmcm9udCBvZiBuZXh0Pw0KPiArCSAqIENhbiB3ZSBtZXJnZSBz
-dWNjZXNzb3I/DQo+ICAJICovDQo+ICAJaWYgKG5leHQgJiYgZW5kID09IG5leHQtPnZtX3N0YXJ0
-ICYmDQo+ICAJCQltcG9sX2VxdWFsKHBvbGljeSwgdm1hX3BvbGljeShuZXh0KSkgJiYNCj4gIAkJ
-CWNhbl92bWFfbWVyZ2VfYmVmb3JlKG5leHQsIHZtX2ZsYWdzLA0KPiAtCQkJCQkgICAgIGFub25f
-dm1hLCBmaWxlLCBwZ29mZitwZ2xlbiwNCj4gLQkJCQkJICAgICB2bV91c2VyZmF1bHRmZF9jdHgs
-IGFub25fbmFtZSkpIHsNCj4gKwkJCQkJYW5vbl92bWEsIGZpbGUsIHBnb2ZmK3BnbGVuLA0KPiAr
-CQkJCQl2bV91c2VyZmF1bHRmZF9jdHgsIGFub25fbmFtZSkpIHsNCj4gKwkJbWVyZ2VfbmV4dCA9
-IHRydWU7DQo+ICsJfQ0KPiArCS8qDQo+ICsJICogQ2FuIHdlIG1lcmdlIGJvdGggcHJlZGVjZXNz
-b3IgYW5kIHN1Y2Nlc3Nvcj8NCj4gKwkgKi8NCj4gKwlpZiAobWVyZ2VfcHJldiAmJiBtZXJnZV9u
-ZXh0KQ0KPiArCQltZXJnZV9ib3RoID0gaXNfbWVyZ2VhYmxlX2Fub25fdm1hKHByZXYtPmFub25f
-dm1hLCBuZXh0LT5hbm9uX3ZtYSwgTlVMTCk7DQo+ICsNCj4gKwlpZiAobWVyZ2VfYm90aCkgewkg
-LyogY2FzZXMgMSwgNiAqLw0KPiArCQllcnIgPSBfX3ZtYV9hZGp1c3QocHJldiwgcHJldi0+dm1f
-c3RhcnQsDQo+ICsJCQkJCW5leHQtPnZtX2VuZCwgcHJldi0+dm1fcGdvZmYsIE5VTEwsDQo+ICsJ
-CQkJCXByZXYpOw0KPiArCQlhcmVhID0gcHJldjsNCg0KSSBkb24ndCB0aGluayB5b3UgbmVlZCBh
-bGwgdGhyZWUgYm9vbGVhbnMgc2luY2UgbWVyZ2VfYm90aCBpcyBvbmx5IHVzZWQNCmhlcmUuDQoN
-Cj4gKwl9IGVsc2UgaWYgKG1lcmdlX3ByZXYpIHsJCQkvKiBjYXNlcyAyLCA1LCA3ICovDQo+ICsJ
-CWVyciA9IF9fdm1hX2FkanVzdChwcmV2LCBwcmV2LT52bV9zdGFydCwNCj4gKwkJCQkJZW5kLCBw
-cmV2LT52bV9wZ29mZiwgTlVMTCwgcHJldik7DQo+ICsJCWFyZWEgPSBwcmV2Ow0KPiArCX0gZWxz
-ZSBpZiAobWVyZ2VfbmV4dCkgew0KPiAgCQlpZiAocHJldiAmJiBhZGRyIDwgcHJldi0+dm1fZW5k
-KQkvKiBjYXNlIDQgKi8NCj4gIAkJCWVyciA9IF9fdm1hX2FkanVzdChwcmV2LCBwcmV2LT52bV9z
-dGFydCwNCj4gLQkJCQkJIGFkZHIsIHByZXYtPnZtX3Bnb2ZmLCBOVUxMLCBuZXh0KTsNCj4gLQkJ
-ZWxzZSB7CQkJCQkvKiBjYXNlcyAzLCA4ICovDQo+ICsJCQkJCWFkZHIsIHByZXYtPnZtX3Bnb2Zm
-LCBOVUxMLCBuZXh0KTsNCj4gKwkJZWxzZQkJCQkJLyogY2FzZXMgMywgOCAqLw0KPiAgCQkJZXJy
-ID0gX192bWFfYWRqdXN0KGFyZWEsIGFkZHIsIG5leHQtPnZtX2VuZCwNCj4gLQkJCQkJIG5leHQt
-PnZtX3Bnb2ZmIC0gcGdsZW4sIE5VTEwsIG5leHQpOw0KPiAtCQkJLyoNCj4gLQkJCSAqIEluIGNh
-c2UgMyBhcmVhIGlzIGFscmVhZHkgZXF1YWwgdG8gbmV4dCBhbmQNCj4gLQkJCSAqIHRoaXMgaXMg
-YSBub29wLCBidXQgaW4gY2FzZSA4ICJhcmVhIiBoYXMNCj4gLQkJCSAqIGJlZW4gcmVtb3ZlZCBh
-bmQgbmV4dCB3YXMgZXhwYW5kZWQgb3ZlciBpdC4NCj4gLQkJCSAqLw0KDQpJIHRoaW5rIHRoZSBh
-Ym92ZSBjb21tZW50IGlzIHN0aWxsIHRydWU/DQoNCj4gLQkJCWFyZWEgPSBuZXh0Ow0KPiAtCQl9
-DQo+IC0JCWlmIChlcnIpDQo+IC0JCQlyZXR1cm4gTlVMTDsNCj4gLQkJa2h1Z2VwYWdlZF9lbnRl
-cl92bWFfbWVyZ2UoYXJlYSwgdm1fZmxhZ3MpOw0KPiAtCQlyZXR1cm4gYXJlYTsNCj4gKwkJCQkJ
-bmV4dC0+dm1fcGdvZmYgLSBwZ2xlbiwgTlVMTCwgbmV4dCk7DQo+ICsJCWFyZWEgPSBuZXh0Ow0K
-PiArCX0gZWxzZSB7DQo+ICsJCWVyciA9IC0xOw0KPiAgCX0NCg0KSWYgeW91IGluaXRpYWxpemUg
-ZXJyIHRvIHNvbWV0aGluZywgeW91IGNhbiBkcm9wIHRoaXMgZWxzZS4NCg0KPiAgDQo+IC0JcmV0
-dXJuIE5VTEw7DQo+ICsJLyoNCj4gKwkgKiBDYW5ub3QgbWVyZ2Ugd2l0aCBwcmVkZWNlc3NvciBv
-ciBzdWNjZXNzb3Igb3IgZXJyb3IgaW4gX192bWFfYWRqdXN0Pw0KPiArCSAqLw0KPiArCWlmIChl
-cnIpDQo+ICsJCXJldHVybiBOVUxMOw0KPiArCWtodWdlcGFnZWRfZW50ZXJfdm1hX21lcmdlKGFy
-ZWEsIHZtX2ZsYWdzKTsNCj4gKwlyZXR1cm4gYXJlYTsNCj4gIH0NCj4gIA0KPiAgLyoNCj4gLS0g
-DQo+IDIuMzQuMQ0KPiA=
+Hello!
+
+I was running a powerpc 32bit kernel (built using 
+qemu_ppc_mpc8544ds_defconfig
+buildroot config, with enabling DEBUGFS+KMEMLEAK+HIGHMEM in the kernel 
+config)
+on qemu and invoked the kmemleak scan (twice. for some reason the first 
+time wasn't enough).
+
+(Actually the problem will probably reproduce on every ppc kernel with
+HIGHMEM enabled, but I only checked this config)
+
+I got 97 leak reports, all similar to the following:
+
+```
+
+unreferenced object 0xc1803840 (size 16):
+   comm "swapper", pid 1, jiffies 4294892303 (age 39.320s)
+   hex dump (first 16 bytes):
+     64 65 76 69 63 65 5f 74 79 70 65 00 00 00 00 00 device_type.....
+   backtrace:
+     [<(ptrval)>] kstrdup+0x40/0x98
+     [<(ptrval)>] __of_add_property_sysfs+0xa4/0x10c
+     [<(ptrval)>] __of_attach_node_sysfs+0xc0/0x110
+     [<(ptrval)>] of_core_init+0xa8/0x15c
+     [<(ptrval)>] driver_init+0x24/0x3c
+     [<(ptrval)>] kernel_init_freeable+0xb8/0x23c
+     [<(ptrval)>] kernel_init+0x24/0x14c
+     [<(ptrval)>] ret_from_kernel_thread+0x5c/0x64
+```
+
+The objects in the reports are the names of the sysfs files created for 
+the dtb
+nodes and properties.
+
+These are definitely not leaked, as they are even visible to the user as 
+the sysfs file names.
+
+These strings (for dtb properties, in the case of the shown report, but 
+the case with dtb nodes is very similar) are created in 
+__of_add_property_sysfs() and the pointer to them is stored in 
+pp->attr.attr.name (so, actually stored in the memory pointed by pp)
+
+pp is one of the dtb property objects which are allocated in 
+early_init_dt_alloc_memory_arch() in of/fdt.c using memblock_alloc. This 
+happens very early, in setup_arch()->unflatten_device_tree().
+
+memblock_alloc lets kmemleak know about the allocated memory using 
+kmemleak_alloc_phys (in mm/memblock.c:memblock_alloc_range_nid()).
+
+The problem is with the following code (mm/kmemleak.c):
+
+```c
+
+void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
+                                gfp_t gfp)
+{
+         if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
+                 kmemleak_alloc(__va(phys), size, min_count, gfp);
+}
+
+```
+
+When CONFIG_HIGHMEM is enabled, the pfn of the allocated memory is 
+checked against max_low_pfn, to make sure it is not in the HIGHMEM zone.
+
+However, when called through unflatten_device_tree(), max_low_pfn is not 
+yet initialized in powerpc.
+
+max_low_pfn is initialized (when NUMA is disabled) in 
+arch/powerpc/mm/mem.c:mem_topology_setup() which is called only after 
+unflatten_device_tree() is called in the same function (setup_arch()).
+
+Because max_low_pfn is global it is 0 before initialization, so as far 
+as kmemleak_alloc_phys() is concerned, every memory is HIGHMEM (: and 
+the allocated memory is not tracked by kmemleak, causing references to 
+objects allocated later with kmalloc() to be ignored and these objects 
+are marked as leaked.
+
+I actually tried to find out whether this happen on other arches as 
+well, and it seems like arm64 also have this problem when dtb is used 
+instead of acpi, although I haven't had the chance to confirm this.
+
+I don't suppose I can just shuffle the calls in setup_arch() around, so 
+I wanted to hear your opinions first
+
+Thanks!
+
