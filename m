@@ -2,104 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A84B6C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90408C4167D
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237591AbiBRQPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:15:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37840 "EHLO
+        id S237608AbiBRQP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:15:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237566AbiBRQPr (ORCPT
+        with ESMTP id S237569AbiBRQPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:15:47 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9DF294FDF
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:30 -0800 (PST)
+        Fri, 18 Feb 2022 11:15:48 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6722B2E3C
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:31 -0800 (PST)
 Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3E66E3F1C9
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:15:26 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 8B2B53F203
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645200926;
-        bh=ArqYovumOubQeXG2JMFc63fkt0qJo0xXojg7cAGT2ys=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=IfuhE60YfWrcO71eE6faaf28qx/9iergmJq7eI5NpZ0P+qm43qtLIBLxLXXTlUS5+
-         nn54ncm1TgqQWHcrOxXJ9VdU2YjD4r3JVSXUqqJyqW8o7DE+nZk59lduWweQEwCc2U
-         ariiY8z1jto9gyZHL3MwWTlNYdLIY5lyVrDYnSCKs2mZ8Fh2epZbgVAzcfHGNKeDrh
-         PAZrdD5onQGCDKBdwzIceIOXtTk8ylhmxsgsKPYDadoB0wm4RdR0HLTQUMy2zdXVVz
-         oqDenaXBrcDhCfpHltaPR5NbVxeKDMQvmNixnjvFyf+e3N0WH2yrtC9GKYl2Y+uSBQ
-         pUr7EsU4NqheA==
-Received: by mail-ej1-f72.google.com with SMTP id q3-20020a17090676c300b006a9453c33b0so3240888ejn.13
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:26 -0800 (PST)
+        s=20210705; t=1645200929;
+        bh=Fdez1AmqlsBKbf0sdm0whcYqGiEOg3dPughdxsguAXI=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=NXI4erxcLg4wnIgsuHh0kFmU5I2lWf8FCMhIVgrGw8TBrb6T5DFUUGDfwyW5M5+oz
+         ULtAfAVKWlILygLKj5zQ4L+10h8RgQHxNRWrNgWmKo3ov1kfoJV6hLULvMk6ZEWP9v
+         ttra0hLl1n/I+E/GUF/TEDoheWpD7u1PluBhd08q9wh34/o5fLQaw64QKKXWuAzx9i
+         0GmIkW56z8e1ADl40PeWqlO+XfNqCLNIWW8PP9bdjeA9yvA5rPXHQ6aJ47+Bxh2d/Y
+         iq5PFOXIDK480EasAOcBLII3u12EhylNxRid+p8YC5fTIv7I6ejS9Uzq6PoGiSOBMh
+         A+TOvXSYo/awA==
+Received: by mail-ej1-f72.google.com with SMTP id qf24-20020a1709077f1800b006ce8c140d3dso3269211ejc.18
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:15:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ArqYovumOubQeXG2JMFc63fkt0qJo0xXojg7cAGT2ys=;
-        b=BQT2UY9hoSjP1DeEMuA6oXhaCLZd7KhZ3j58L8SREQ31pni+qhw9a1RRV1wV9QVwvX
-         pIuFwrgpMZ7Ibs1TgsoI4iDKivecct6273KcQ5y+ZtvkvkWVWp4JtX85/AwsGeBFMrtP
-         pOO3U7gdirjSNONVLHr93857IK+8UJ+t/2ENAAC7UjDnRU+/McPaYt7CvGAU/7zJ5rCG
-         5DiNoYYBgqwBgudAAxudG4U7Q6fg0W8I2BrAt5KMxWyaeXMy1QHSr8ggQhH3wqnRXUzU
-         yGfxeNeAYo4vFhj95K+IGC/wPncu897UEj4kXF+n5WmLZoj90TDoPno72Ny8jzBsnjmH
-         /jrg==
-X-Gm-Message-State: AOAM530tcEN80SkfkMg9dvjbjgfKXwc8hfnlhRi2bZcPhHFpuDtKwGAM
-        PmDhdcJXgJwJdDqp193A3bvtJDyxiVUY/pUh61KFeviuD2cxsG2A2lvRyFJOWwsN+9wiY/EwSIo
-        kOV9+ihGX4RT0yrTQQsy1NSDrV2KCNyrt122fSlcOng==
-X-Received: by 2002:aa7:d403:0:b0:40f:739c:cbae with SMTP id z3-20020aa7d403000000b0040f739ccbaemr9144595edq.267.1645200925937;
-        Fri, 18 Feb 2022 08:15:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLUc/jtciQ3hgHthIGyTcihNgoDi/ahnpFRpSQuYK90a2g0jWHWbYdDdGVN0jKHYlqHqIOog==
-X-Received: by 2002:aa7:d403:0:b0:40f:739c:cbae with SMTP id z3-20020aa7d403000000b0040f739ccbaemr9144574edq.267.1645200925759;
-        Fri, 18 Feb 2022 08:15:25 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Fdez1AmqlsBKbf0sdm0whcYqGiEOg3dPughdxsguAXI=;
+        b=fhw7VVLWR1ATRBs24hEi8KI5FPI8KmpdoRlLqVYBY2BRIoxJz++0yqwHvTGHz2VwAS
+         L7U+Jp1v4nku2++cj9Sxk8PVONNiR649PtY9K4+mFrpztOvpCR4eewjqN/EX0qUpA6Lo
+         a3ewPNpXm61TGY4nHIgSHtGf5poks8mzYKkYfjf9YnHt+4VZ5R82I5/VMWEl3s936Z46
+         5nG0Iik0u9CdcIee2b9gI7BL5hQVcEKpZ7WRwjxf78U6B9OQBVhvZu5Qo0OJpryvnwAz
+         n6xG1c+EDHEyZ43+DO7wIJ9OBvc3f0fS93RgUTCdigXAXTh28tuxIX5MMGqDgoipN8xp
+         lkmQ==
+X-Gm-Message-State: AOAM5308TIA665P8Eg856jk4CjaAhg4FMmMm1O2c52o9+WadqECG+oa8
+        jFbdkAMUCPq7dYcT52pfoSiUvFRg/XGHH5+pwDOnm77SiVWYgmU5rST1biXFNvx9hpbn27jv8Oi
+        rOKsfCegUA0plzeD06sb2/IaWRUeuDFaXymAnjbqwnQ==
+X-Received: by 2002:a17:907:7053:b0:6a6:b835:dbd3 with SMTP id ws19-20020a170907705300b006a6b835dbd3mr6755939ejb.190.1645200928919;
+        Fri, 18 Feb 2022 08:15:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxif3aG4j6jnGHwS6RzVrgD+2IJjpK+S4H+3CmJ2oLVH02iXXbrxboKEJzUTsWoN3HnciK9Tg==
+X-Received: by 2002:a17:907:7053:b0:6a6:b835:dbd3 with SMTP id ws19-20020a170907705300b006a6b835dbd3mr6755917ejb.190.1645200928644;
+        Fri, 18 Feb 2022 08:15:28 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id y21sm2325572ejq.185.2022.02.18.08.15.24
+        by smtp.gmail.com with ESMTPSA id y21sm2325572ejq.185.2022.02.18.08.15.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 08:15:25 -0800 (PST)
+        Fri, 18 Feb 2022 08:15:28 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Dinh Nguyen <dinguyen@kernel.org>, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] dt-bindings: usb: dwc2: fix compatible of Intel Agilex
-Date:   Fri, 18 Feb 2022 17:15:19 +0100
-Message-Id: <20220218161522.52044-1-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 3/4] dt-bindings: usb: dwc2: add disable-over-current
+Date:   Fri, 18 Feb 2022 17:15:21 +0100
+Message-Id: <20220218161522.52044-3-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220218161522.52044-1-krzysztof.kozlowski@canonical.com>
+References: <20220218161522.52044-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel Agilex USB DWC2 node is used as compatible with generic snps,dwc2
-(just like Altera's Stratix10).
+The driver parses disable-over-current protection and some
+implementations use it (e.g. Altera Stratix10), so document it in the
+bindings.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- Documentation/devicetree/bindings/usb/dwc2.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/usb/dwc2.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/usb/dwc2.yaml b/Documentation/devicetree/bindings/usb/dwc2.yaml
-index 481aaa09f3f2..048e352c531a 100644
+index 1ba96706bbcb..1addab83f4fd 100644
 --- a/Documentation/devicetree/bindings/usb/dwc2.yaml
 +++ b/Documentation/devicetree/bindings/usb/dwc2.yaml
-@@ -41,6 +41,7 @@ properties:
-               - amlogic,meson8b-usb
-               - amlogic,meson-gxbb-usb
-               - amlogic,meson-g12a-usb
-+              - intel,socfpga-agilex-hsotg
-           - const: snps,dwc2
-       - const: amcc,dwc-otg
-       - const: apm,apm82181-dwc-otg
-@@ -53,7 +54,6 @@ properties:
-           - const: st,stm32mp15-hsotg
-           - const: snps,dwc2
-       - const: samsung,s3c6400-hsotg
--      - const: intel,socfpga-agilex-hsotg
+@@ -68,6 +68,10 @@ properties:
+     items:
+       - const: otg
  
-   reg:
++  disable-over-current:
++    type: boolean
++    description: whether to disable detection of over-current condition.
++
+   iommus:
      maxItems: 1
+ 
 -- 
 2.32.0
 
