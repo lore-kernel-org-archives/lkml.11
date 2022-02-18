@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50FF3C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B25C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 18:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238510AbiBRSRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 13:17:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53456 "EHLO
+        id S239130AbiBRSRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 13:17:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239066AbiBRSRC (ORCPT
+        with ESMTP id S239080AbiBRSRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 13:17:02 -0500
+        Fri, 18 Feb 2022 13:17:06 -0500
 Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDC4E46;
-        Fri, 18 Feb 2022 10:16:45 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id x5so11077970wrg.13;
-        Fri, 18 Feb 2022 10:16:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F3FBA5;
+        Fri, 18 Feb 2022 10:16:49 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id e3so16005223wra.0;
+        Fri, 18 Feb 2022 10:16:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4uog9y8e2uGEDe7ul64TEQZKDjtI1qlVaFMwkdOVDqo=;
-        b=BcRgIjpCjdKsmD1hifDCxyFo7H8M+pelERGXldq/KXqEHk6EkcL0zFiu1G2aBagFdw
-         Ycm5NTRmPepuel/RcIcGgKLiU63n4TeV+wyDXRQ74M4FfpY9yra8PkRUVI48MD9yG7X6
-         LEsAaWL5q0YdJq3jali0uTa0KMBZOxnI4jQ0urGcoSyxmBiv1rsDzRtPxxxklKpUyb5r
-         6z2rnXkWYoN+Lq2hCHKajRhJNEvXBF0jL8vhdiFU+GuxEe07eDxUGJB/iZCbZtRv9xPD
-         VxRiKf2hf3QCBy1JgYQi+77olsvbVEeYpN76PCxKMuPZsDn552gH3dfHts44S+phhn0Z
-         0BtQ==
+        bh=2lb5EpDrjZ7Ucka1D9DCg1WHob0SHwbW9oEXk90RPrs=;
+        b=WS3QZY6M3UB9909PRkjQxHh3MFAbnv5w63hkV438NIYYd84kFghIWSJErVXRGpgY0e
+         VA9gO3pQHfB3JAgF4hwCGe+jI3x8Cg5SFDmg2hxcw1AkWq+C7+g0rovX3YNrqw7Pb39Y
+         fAhcCLHtVPZNe+G8/v2s82g/qP48s6gIz76tD3ouu4DBh1qTDVMqQ7AZ3LH745yG8lzq
+         +N2P0x7dE4eTabpuiBSICqwZ+Ppzm7keyoBtfgcKt6q3nhRCRD+ntfQB3EWD/uWWpqA6
+         fng7F/+TtGEivESLN0mw35wwju7YqME3CeNDV+Bn+JE2b6MYu6SDYXmo+fFRYw850W2U
+         MVZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4uog9y8e2uGEDe7ul64TEQZKDjtI1qlVaFMwkdOVDqo=;
-        b=qEWj5OruEeRwzOxjV3rWIeBfi7mCh6EC0UTc4Tk5UnLy4i8VaE7bHpbHTBWOqplZCj
-         jnbk8Qgc2GiZ7ApgbKbDIrK33h6o+jg+16/2cLmLq9fXlUJn31v1PQwP5qp7PGcp8lWO
-         HuQF6EJ/46I0OgdTwaMFTpTVFJvungvzmgLSy1LQsaX7UOrkNzr2fN6W2C1djleJQ5zf
-         8D1vBZseh3RlHCoIpEcAk8v18RcmeHsZ7ND6wM8oBchtq+F/8r7JC2ROGUqcT2fhM5U6
-         0YsK44OZ3UhsUqLEgPl4kK7kUsi3gmNO494QDvdxMCOM+qqU2aOz5+hYg5wKmHOW1Spg
-         ZRcg==
-X-Gm-Message-State: AOAM531b1vjpGhxhEjY9B/txsPrETQAZ1VYQbdLiM47q5Ako3jApNnI6
-        8Gktm/b8NYa7z0dv+FXn91M=
-X-Google-Smtp-Source: ABdhPJwoGAqCnTbH6+8pCXavYOeKOon6tieBJ1Aoa51OqKaHWYhCdLMszt/uM6Vdcl8otOgbgFTMUQ==
-X-Received: by 2002:a05:6000:144c:b0:1e8:50e5:fec1 with SMTP id v12-20020a056000144c00b001e850e5fec1mr7113263wrx.648.1645208203688;
-        Fri, 18 Feb 2022 10:16:43 -0800 (PST)
+        bh=2lb5EpDrjZ7Ucka1D9DCg1WHob0SHwbW9oEXk90RPrs=;
+        b=vN2P1SQPDZCr/ctIY8xl8kxdr+z7HGQxUSudFg6P2ZEWsOMLKma2AI3cyhIfDperHp
+         OQR2M/7+v/Lw19uhcci6EXS3YDlPc3a5uKfwxrEsuMAte3er/jJG8PrOPH0MPJMYEe04
+         f67wYWszp28BAdi/4tCRzRMmchbmckP6kPva+x8xhzBuZaRV95+Oiie38wByeI1Os9qA
+         wA/Lz54ZTRhxLbDNRDTNO8BJkaY1FHWGtFSOB/6Rkqn/yH94TCXypK7pFKrOFi+9iijl
+         MMVl6Qhgi1lRTyA8xTL29FOtyLiW2ypCt3eanGBCnxo0WW+4y7LXQvIxhuuUPjRn7oWH
+         zXRA==
+X-Gm-Message-State: AOAM5321gwA+P7FdeKr55H9Z7AwoVOhvsDdr4BdmLZJwIueQ32ibgLtN
+        po7c2oBQpx4pk23fRINC6sY=
+X-Google-Smtp-Source: ABdhPJwlQXbzR3MwBSz9x39dlEhRav6nu/HafcNw9vr9feXS38Bl6Inn00TaH4YdXR9hbOsIhWbFgA==
+X-Received: by 2002:a5d:6244:0:b0:1e7:686d:41e7 with SMTP id m4-20020a5d6244000000b001e7686d41e7mr6785305wrv.491.1645208207924;
+        Fri, 18 Feb 2022 10:16:47 -0800 (PST)
 Received: from fuji.fritz.box (ip-89-161-76-237.tel.tkb.net.pl. [89.161.76.237])
-        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.42
+        by smtp.gmail.com with ESMTPSA id b2sm20978639wri.35.2022.02.18.10.16.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 10:16:43 -0800 (PST)
+        Fri, 18 Feb 2022 10:16:47 -0800 (PST)
 From:   =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>
 To:     corbet@lwn.net
 Cc:     =?UTF-8?q?Tomasz=20Warnie=C5=82=C5=82o?= 
         <tomasz.warniello@gmail.com>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 04/11] scripts: kernel-doc: Translate the "Output format selection" subsection of OPTIONS
-Date:   Fri, 18 Feb 2022 19:16:21 +0100
-Message-Id: <20220218181628.1411551-5-tomasz.warniello@gmail.com>
+Subject: [PATCH v4 08/11] scripts: kernel-doc: Translate the "Other parameters" subsection of OPTIONS
+Date:   Fri, 18 Feb 2022 19:16:25 +0100
+Message-Id: <20220218181628.1411551-9-tomasz.warniello@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
 References: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
@@ -67,74 +67,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Another step in the direction of a uniform POD documentation, which will
-make users happier.
+Aim: unified POD, user more satisfied, script better structured
 
-Options land at the end of the script, not to clutter the file top.
-
-The default output format is corrected to rst. That's what it is now.
-
-A POD delimiting comment is added to the script head, which improves
-the script logical structure.
+Notes:
+- The -help token is added.
+- The entries are sorted alphbetically.
 
 Signed-off-by: Tomasz Warniełło <tomasz.warniello@gmail.com>
 ---
- scripts/kernel-doc | 31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+ scripts/kernel-doc | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
 diff --git a/scripts/kernel-doc b/scripts/kernel-doc
-index e4203f13fa93..18eca172c4b5 100755
+index 210e7e3b501b..4a26a74318e6 100755
 --- a/scripts/kernel-doc
 +++ b/scripts/kernel-doc
-@@ -52,6 +52,8 @@ See Documentation/doc-guide/kernel-doc.rst for the documentation comment syntax.
- 
- =cut
- 
-+# more perldoc at the end of the file
-+
- # 18/01/2001 - 	Cleanups
- # 		Functions prototyped as foo(void) same as foo()
- # 		Stop eval'ing where we don't need to.
-@@ -81,11 +83,6 @@ sub usage {
+@@ -83,11 +83,6 @@ sub usage {
      my $message = <<"EOF";
  Usage: $0 [OPTION ...] FILE ...
  
--Output format selection (mutually exclusive):
--  -man			Output troff manual page format. This is the default.
--  -rst			Output reStructuredText format.
--  -none			Do not output documentation, only warnings.
+-Other parameters:
+-  -v			Verbose output, more warnings and other information.
+-  -h			Print this help.
+-  -Werror		Treat warnings as errors.
 -
- Output format selection modifier (affects only ReST output):
+ EOF
+     print $message;
+     exit 1;
+@@ -2628,4 +2623,22 @@ Enable output of #define LINENO lines.
  
-   -sphinx-version	Use the ReST C domain dialect compatible with an
-@@ -2563,3 +2560,27 @@ if ($Werror && $warnings) {
- } else {
-     exit($output_mode eq "none" ? 0 : $errors)
- }
-+
-+__END__
-+
-+=head1 OPTIONS
-+
-+=head2 Output format selection (mutually exclusive):
+ =back
+ 
++=head2 Other parameters:
 +
 +=over 8
 +
-+=item -man
++=item -h, -help
 +
-+Output troff manual page format.
++Print this help.
 +
-+=item -rst
++=item -v
 +
-+Output reStructuredText format. This is the default.
++Verbose output, more warnings and other information.
 +
-+=item -none
++=item -Werror
 +
-+Do not output documentation, only warnings.
++Treat warnings as errors.
 +
 +=back
 +
-+=cut
+ =cut
 -- 
 2.30.2
 
