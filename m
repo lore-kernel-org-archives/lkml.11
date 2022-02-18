@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F53C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 16:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237700AbiBRQSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 11:18:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42904 "EHLO
+        id S237656AbiBRQSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 11:18:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233841AbiBRQR4 (ORCPT
+        with ESMTP id S237561AbiBRQRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 11:17:56 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510B431519
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:22 -0800 (PST)
+        Fri, 18 Feb 2022 11:17:38 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDCE22BE4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 08:17:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645201042; x=1676737042;
+  t=1645201040; x=1676737040;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=u3x9XgG7VJ5RoOBjvNJruzRbem2Zn32xV8jdzKXZWH8=;
-  b=HxbDw99bMBcZdPyexyWgD/rHRWeOTn2f5p8ZzDeogF8HZBlWjWVh2iiH
-   7JPZZREw5Ao0ZXLJpq5/5XGngJXLxrDcaB4Gm8w1dyxaaBv2ZiwuaIOpg
-   T7sH2yX5M6jX5eUaY/hNOV01c11XQ50+zHP5u5MYiBBk/L6jl0Tx2qPrE
-   oO/eJsVqoqCCdpTVxP9TKL0v0WI9ydMz+jPwf/gsKdxYaAGAGMm4zUbK7
-   Y6PGBsoGpjT5HybdTPRzq6umslvJg9a/4cYeDhQLQ4CdyEK9ZVJC0LUyA
-   djFd50udeO5GUxyoAs9758hrSzTWauF4rzuD/jjXislmh0MRlW0BYX1hl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="238559701"
+  bh=lW76XWoHEmDrfZOgnDMzIKPN2jpQBKZ8nzllyPMLMsc=;
+  b=YAMkXWk/Way+NmvbDdmZlDZzuNTDcw5MW+0i37JVflKldsysxxcTdUwl
+   4a58qr0gAv/YMOfTl31WjgFE5i+A3UFmpGXH67uYwWn+aCC8UUJ94V8Vg
+   qPyQVeoSlW6pzDwkY0hDRENrB0i5NXxY5EernSd5hnF1kFggxaVtzGxZb
+   qqWfsH4mKNAZvYTOsMpzKZ8fo1+uzWFuHxwuh9lF/fcZs8EWbM8d0pIrl
+   s3wxaghbLPCjoMfyzEKKpkPy3pv2BNdf5JbTw2GYgir+2rjc4McDyPzZG
+   xtryWuYczcMNNFLYblNE1n7ahC351+SYNZbWfmnifTiaaAOkkVqhVGibb
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="251355311"
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="238559701"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:20 -0800
+   d="scan'208";a="251355311"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2022 08:17:19 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,379,1635231600"; 
-   d="scan'208";a="635870701"
+   d="scan'208";a="541945052"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Feb 2022 08:17:13 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 18 Feb 2022 08:17:13 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 850DF924; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
+        id A6A02A24; Fri, 18 Feb 2022 18:17:22 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -50,10 +50,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 10/32] x86/tdx: Add MSR support for TDX guests
-Date:   Fri, 18 Feb 2022 19:16:56 +0300
-Message-Id: <20220218161718.67148-11-kirill.shutemov@linux.intel.com>
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 13/32] x86/tdx: Detect TDX at early kernel decompression time
+Date:   Fri, 18 Feb 2022 19:16:59 +0300
+Message-Id: <20220218161718.67148-14-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
 References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
@@ -63,98 +63,193 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use hypercall to emulate MSR read/write for the TDX platform.
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-There are two viable approaches for doing MSRs in a TD guest:
+The early decompression code does port I/O for its console output. But,
+handling the decompression-time port I/O demands a different approach
+from normal runtime because the IDT required to support #VE based port
+I/O emulation is not yet set up. Paravirtualizing I/O calls during
+the decompression step is acceptable because the decompression code size is
+small enough and hence patching it will not bloat the image size a lot.
 
-1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
-   do. Some will succeed, others will cause a #VE. All of those that
-   cause a #VE will be handled with a TDCALL.
-2. Use paravirt infrastructure.  The paravirt hook has to keep a list
-   of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
-   execute RDMSR/WRMSR instructions directly.
+To support port I/O in decompression code, TDX must be detected before
+the decompression code might do port I/O. Detect whether the kernel runs
+in a TDX guest.
 
-The second option can be ruled out because the list of MSRs was
-challenging to maintain. That leaves option #1 as the only viable
-solution for the minimal TDX support.
+Add an early_is_tdx_guest() interface to query the cached TDX guest
+status in the decompression code.
 
-For performance-critical MSR writes (like TSC_DEADLINE), future patches
-will replace the WRMSR/#VE sequence with the direct TDCALL.
+The actual port I/O paravirtualization will come later in the series.
 
-RDMSR and WRMSR specification details can be found in
-Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
-Extensions (Intel TDX) specification, sec titled "TDG.VP.
-VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
-
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/coco/tdx.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ arch/x86/boot/compressed/Makefile |  1 +
+ arch/x86/boot/compressed/misc.c   |  8 ++++++++
+ arch/x86/boot/compressed/misc.h   |  2 ++
+ arch/x86/boot/compressed/tdx.c    | 26 ++++++++++++++++++++++++++
+ arch/x86/boot/compressed/tdx.h    | 15 +++++++++++++++
+ arch/x86/boot/cpuflags.c          |  3 +--
+ arch/x86/boot/cpuflags.h          |  1 +
+ arch/x86/include/asm/shared/tdx.h |  8 ++++++++
+ arch/x86/include/asm/tdx.h        |  4 +---
+ 9 files changed, 63 insertions(+), 5 deletions(-)
+ create mode 100644 arch/x86/boot/compressed/tdx.c
+ create mode 100644 arch/x86/boot/compressed/tdx.h
+ create mode 100644 arch/x86/include/asm/shared/tdx.h
 
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index 8adc759961f3..c0549dce2588 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -116,6 +116,44 @@ void __cpuidle tdx_safe_halt(void)
- 		WARN_ONCE(1, "HLT instruction emulation failed\n");
- }
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 6115274fe10f..732f6b21ecbd 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -101,6 +101,7 @@ ifdef CONFIG_X86_64
+ endif
  
-+static bool read_msr(struct pt_regs *regs)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_MSR_READ,
-+		.r12 = regs->cx,
-+	};
-+
+ vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
++vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
+ 
+ vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
+ efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
+diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
+index a4339cb2d247..2b1169869b96 100644
+--- a/arch/x86/boot/compressed/misc.c
++++ b/arch/x86/boot/compressed/misc.c
+@@ -370,6 +370,14 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
+ 	lines = boot_params->screen_info.orig_video_lines;
+ 	cols = boot_params->screen_info.orig_video_cols;
+ 
 +	/*
-+	 * Emulate the MSR read via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
++	 * Detect TDX guest environment.
++	 *
++	 * It has to be done before console_init() in order to use
++	 * paravirtualized port I/O operations if needed.
 +	 */
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return false;
++	early_tdx_detect();
 +
-+	regs->ax = lower_32_bits(args.r11);
-+	regs->dx = upper_32_bits(args.r11);
-+	return true;
+ 	console_init();
+ 
+ 	/*
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 16ed360b6692..0d8e275a9d96 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -28,6 +28,8 @@
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
+ 
++#include "tdx.h"
++
+ #define BOOT_CTYPE_H
+ #include <linux/acpi.h>
+ 
+diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
+new file mode 100644
+index 000000000000..8a72ce2e880f
+--- /dev/null
++++ b/arch/x86/boot/compressed/tdx.c
+@@ -0,0 +1,26 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#include "../cpuflags.h"
++#include "../string.h"
++
++#include <asm/shared/tdx.h>
++
++static bool tdx_guest_detected;
++
++bool early_is_tdx_guest(void)
++{
++	return tdx_guest_detected;
 +}
 +
-+static bool write_msr(struct pt_regs *regs)
++void early_tdx_detect(void)
 +{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = EXIT_REASON_MSR_WRITE,
-+		.r12 = regs->cx,
-+		.r13 = (u64)regs->dx << 32 | regs->ax,
-+	};
++	u32 eax, sig[3];
 +
-+	/*
-+	 * Emulate the MSR write via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
-+	 */
-+	return !__tdx_hypercall(&args, 0);
++	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
++
++	if (memcmp(TDX_IDENT, sig, 12))
++		return;
++
++	/* Cache TDX guest feature status */
++	tdx_guest_detected = true;
 +}
+diff --git a/arch/x86/boot/compressed/tdx.h b/arch/x86/boot/compressed/tdx.h
+new file mode 100644
+index 000000000000..a7bff6ae002e
+--- /dev/null
++++ b/arch/x86/boot/compressed/tdx.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef BOOT_COMPRESSED_TDX_H
++#define BOOT_COMPRESSED_TDX_H
 +
- void tdx_get_ve_info(struct ve_info *ve)
++#include <linux/types.h>
++
++#ifdef CONFIG_INTEL_TDX_GUEST
++void early_tdx_detect(void);
++bool early_is_tdx_guest(void);
++#else
++static inline void early_tdx_detect(void) { };
++static inline bool early_is_tdx_guest(void) { return false; }
++#endif
++
++#endif /* BOOT_COMPRESSED_TDX_H */
+diff --git a/arch/x86/boot/cpuflags.c b/arch/x86/boot/cpuflags.c
+index a0b75f73dc63..a83d67ec627d 100644
+--- a/arch/x86/boot/cpuflags.c
++++ b/arch/x86/boot/cpuflags.c
+@@ -71,8 +71,7 @@ int has_eflag(unsigned long mask)
+ # define EBX_REG "=b"
+ #endif
+ 
+-static inline void cpuid_count(u32 id, u32 count,
+-		u32 *a, u32 *b, u32 *c, u32 *d)
++void cpuid_count(u32 id, u32 count, u32 *a, u32 *b, u32 *c, u32 *d)
  {
- 	struct tdx_module_output out;
-@@ -158,6 +196,10 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 	switch (ve->exit_reason) {
- 	case EXIT_REASON_HLT:
- 		return handle_halt();
-+	case EXIT_REASON_MSR_READ:
-+		return read_msr(regs);
-+	case EXIT_REASON_MSR_WRITE:
-+		return write_msr(regs);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
+ 	asm volatile(".ifnc %%ebx,%3 ; movl  %%ebx,%3 ; .endif	\n\t"
+ 		     "cpuid					\n\t"
+diff --git a/arch/x86/boot/cpuflags.h b/arch/x86/boot/cpuflags.h
+index 2e20814d3ce3..475b8fde90f7 100644
+--- a/arch/x86/boot/cpuflags.h
++++ b/arch/x86/boot/cpuflags.h
+@@ -17,5 +17,6 @@ extern u32 cpu_vendor[3];
+ 
+ int has_eflag(unsigned long mask);
+ void get_cpuflags(void);
++void cpuid_count(u32 id, u32 count, u32 *a, u32 *b, u32 *c, u32 *d);
+ 
+ #endif
+diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
+new file mode 100644
+index 000000000000..8209ba9ffe1a
+--- /dev/null
++++ b/arch/x86/include/asm/shared/tdx.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_SHARED_TDX_H
++#define _ASM_X86_SHARED_TDX_H
++
++#define TDX_CPUID_LEAF_ID	0x21
++#define TDX_IDENT		"IntelTDX    "
++
++#endif /* _ASM_X86_SHARED_TDX_H */
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index e6e23ade53a6..d4c28b9f2fbc 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -6,9 +6,7 @@
+ #include <linux/bits.h>
+ #include <linux/init.h>
+ #include <asm/ptrace.h>
+-
+-#define TDX_CPUID_LEAF_ID	0x21
+-#define TDX_IDENT		"IntelTDX    "
++#include <asm/shared/tdx.h>
+ 
+ #define TDX_HYPERCALL_STANDARD  0
+ 
 -- 
 2.34.1
 
