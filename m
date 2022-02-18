@@ -2,65 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B149C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F29C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 18 Feb 2022 11:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234358AbiBRLHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 06:07:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50654 "EHLO
+        id S234363AbiBRLI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:08:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiBRLHU (ORCPT
+        with ESMTP id S232598AbiBRLI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 06:07:20 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B812A22B1;
-        Fri, 18 Feb 2022 03:07:03 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 441AF1EC0523;
-        Fri, 18 Feb 2022 12:06:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645182418;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=c4c6I8GLhkF9RWrXeinlmv4me3VZ4wvoVq26Nzv3b44=;
-        b=lvRpPmqmF5peidcetEaGgL9OJ/9OdTFCY75wemCra+JHqNRGOEugflNH76wwA7UH+rDLYH
-        CvZwjmm7hP6hm4p7fOGxq80nZe1aoTqohfMdePVnvPecduIRC+bRnCZqkAOlZXsxmDWoy0
-        xNJtv02U06mRVEOCXXTaRpjn9F19eI4=
-Date:   Fri, 18 Feb 2022 12:07:04 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Luck, Tony" <tony.luck@intel.com>,
-        Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Cc:     x86@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-Subject: Re: [RFC PATCH 1/2] x86/mce: Handle AMD threshold interrupt storms
-Message-ID: <Yg992OrUbfmtRizs@zn.tnic>
-References: <20220217141609.119453-1-Smita.KoralahalliChannabasappa@amd.com>
- <20220217141609.119453-2-Smita.KoralahalliChannabasappa@amd.com>
- <Yg6FqR2cMZDwdBdi@agluck-desk3.sc.intel.com>
+        Fri, 18 Feb 2022 06:08:26 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AD22AE73A;
+        Fri, 18 Feb 2022 03:08:10 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id B2A481F46751
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645182488;
+        bh=MWH+/EKkY4LjLqgJrcKLJ7r78Z4lhuUmpr0kon7qvkg=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=Wj0tW+9GkMa6s8+StqasaD8bQ8GVceX1XiW5s2yWmvR2d1+xqNFU2ZcOa0w0tvhqW
+         v7Z1Do5WOb6zUvAs8pgH9XXkRymc3slhIvm6juwFLlJVhInMN81yyJ6Y9dudvZm14G
+         nYceNqcWFNOWBtQKNOcgter2/OJEdb5wIYZ0wgM9TXTNGznBCcPOmiUEuwb2p4hPJr
+         CbyqbQdgJJ8MAchJj9Q3bnkKEbMITkSnJYFFnoeU54yWOtPtlFZQC6vleB2HrD422L
+         4sS2ZIT5rRK67K8c7z1Ygh5Yury9IVnEVo1D53+PwEzBuDMTsOFH+Ll2YjRBA74Zse
+         F47n4UsVbNI4w==
+Message-ID: <cb4db484-c4e6-9cf9-baa5-0be454947ed5@collabora.com>
+Date:   Fri, 18 Feb 2022 16:08:00 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yg6FqR2cMZDwdBdi@agluck-desk3.sc.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     usama.anjum@collabora.com, kernel@collabora.com,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH V2] media: imx: imx8mq-mipi_csi2: Remove unneeded code
+Content-Language: en-US
+To:     Steve Longerbeam <slongerbeam@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "open list:MEDIA DRIVERS FOR FREESCALE IMX" 
+        <linux-media@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>, mkl@pengutronix.de
+References: <20220128170722.1624767-1-usama.anjum@collabora.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220128170722.1624767-1-usama.anjum@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 09:28:09AM -0800, Luck, Tony wrote:
-> I've been sitting on some partially done patches to re-work
-> storm handling for Intel ... which rips out all the existing
-> storm bits and replaces with something all new. I'll post the
-> 2-part series as replies to this.
+Reminder.
 
-Which begs the obvious question: how much of that code can be shared
-between the two?
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+On 1/28/22 10:07 PM, Muhammad Usama Anjum wrote:
+> ret is constant in imx8mq_mipi_csi_pm_suspend(). This function cannot
+> return error. Remove the return variable. Simplify other functions which
+> are using this function.
+> 
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+> Changes in V2:
+> Removed fixes tag
+> ---
+>  drivers/staging/media/imx/imx8mq-mipi-csi2.c | 16 ++++------------
+>  1 file changed, 4 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/staging/media/imx/imx8mq-mipi-csi2.c b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
+> index 3b9fa75efac6b..c992b845e63d1 100644
+> --- a/drivers/staging/media/imx/imx8mq-mipi-csi2.c
+> +++ b/drivers/staging/media/imx/imx8mq-mipi-csi2.c
+> @@ -693,11 +693,10 @@ static int imx8mq_mipi_csi_async_register(struct csi_state *state)
+>   * Suspend/resume
+>   */
+>  
+> -static int imx8mq_mipi_csi_pm_suspend(struct device *dev)
+> +static void imx8mq_mipi_csi_pm_suspend(struct device *dev)
+>  {
+>  	struct v4l2_subdev *sd = dev_get_drvdata(dev);
+>  	struct csi_state *state = mipi_sd_to_csi2_state(sd);
+> -	int ret = 0;
+>  
+>  	mutex_lock(&state->lock);
+>  
+> @@ -708,8 +707,6 @@ static int imx8mq_mipi_csi_pm_suspend(struct device *dev)
+>  	}
+>  
+>  	mutex_unlock(&state->lock);
+> -
+> -	return ret ? -EAGAIN : 0;
+>  }
+>  
+>  static int imx8mq_mipi_csi_pm_resume(struct device *dev)
+> @@ -742,15 +739,12 @@ static int __maybe_unused imx8mq_mipi_csi_suspend(struct device *dev)
+>  {
+>  	struct v4l2_subdev *sd = dev_get_drvdata(dev);
+>  	struct csi_state *state = mipi_sd_to_csi2_state(sd);
+> -	int ret;
+>  
+> -	ret = imx8mq_mipi_csi_pm_suspend(dev);
+> -	if (ret)
+> -		return ret;
+> +	imx8mq_mipi_csi_pm_suspend(dev);
+>  
+>  	state->state |= ST_SUSPENDED;
+>  
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  static int __maybe_unused imx8mq_mipi_csi_resume(struct device *dev)
+> @@ -770,9 +764,7 @@ static int __maybe_unused imx8mq_mipi_csi_runtime_suspend(struct device *dev)
+>  	struct csi_state *state = mipi_sd_to_csi2_state(sd);
+>  	int ret;
+>  
+> -	ret = imx8mq_mipi_csi_pm_suspend(dev);
+> -	if (ret)
+> -		return ret;
+> +	imx8mq_mipi_csi_pm_suspend(dev);
+>  
+>  	ret = icc_set_bw(state->icc_path, 0, 0);
+>  	if (ret)
