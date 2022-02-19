@@ -2,95 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F912C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E925C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240872AbiBSA4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:56:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39838 "EHLO
+        id S240961AbiBSA4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:56:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240863AbiBSAzu (ORCPT
+        with ESMTP id S240758AbiBSAzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E9AC27AFD9
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645232124;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=DZGh4bIHBOmHOiALkgVaQHB6FPGaLxO56EvLhQh60X4=;
-        b=Z12fQk4s/bSyJI6yHts5A5TNML9Sje2Ut/hKRx+05qk5L/EN9bLIqTMZ8pu/H2pp9qJJet
-        cijPyg1wTOJl0HWjsE/08fnMCz7sZkNdpikVWdLkpWZu8S7v+Ehbp0BC6AqK5a/5Q5kQgN
-        uojgFKHvOpSrU/AJiNkNo0PYteOqj6A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-670-b_nDA3aCMyKcIv_TXZ3MAg-1; Fri, 18 Feb 2022 19:55:21 -0500
-X-MC-Unique: b_nDA3aCMyKcIv_TXZ3MAg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B4341006AA0;
-        Sat, 19 Feb 2022 00:55:18 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7366162D56;
-        Sat, 19 Feb 2022 00:55:09 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
-        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        David.Laight@ACULAB.COM, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: [PATCH 13/22] spi: atmel: Don't use GFP_DMA when calling dma_alloc_coherent()
-Date:   Sat, 19 Feb 2022 08:52:12 +0800
-Message-Id: <20220219005221.634-14-bhe@redhat.com>
-In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
-References: <20220219005221.634-1-bhe@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        Fri, 18 Feb 2022 19:55:52 -0500
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC4D27B489
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:26 -0800 (PST)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2d07ae0b1c5so83419557b3.5
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l6e9XzbPyHYbUgARMJP6T48TY7WCA5S63JhOSi9mRoE=;
+        b=RikRBU7xIaIKvWLfe7SQw6ulaZ/y3ifFsyHlUYpwm4CyMN0bNrabJONNFTvSgOXy4z
+         UE1+PhxhbbBqGFcgZvQ5KQiY5boog3hwz8Mf83oTOLM2B2y0QHCb8CFJoelkGv7967ID
+         oTcVFwNH1UEjoR727/kfKB0NTyQYGVb3umh5akuFLzeKEBKD9OQ5EAP1m2NobiJG+jEd
+         LQIZzKBhHXkrprQ4z7hw9V5hP7dE0Pm2RYK1X/WcvoQvgGSKIXU3GDE8bxe1OIdN95tw
+         SyHQgaOfoOxHvDvGTXsvWKFcJ4Fc14uryZePzoesB+LDuZVPz8ZWjmIjX2P8N5XhtEnB
+         fHnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l6e9XzbPyHYbUgARMJP6T48TY7WCA5S63JhOSi9mRoE=;
+        b=24Suq+MI7VIOHyFOpayPwLC/28hh7YC9KDzzhLnHQxI5JmFehGrYdc5t8QDiNCNWOu
+         gnqNxhXJpHg30vy7lHASLcrVS9NIfND94BAH9/b/bdgEY87wpceLNb7/wVx/ODL1oexU
+         oBqkwyOhKhroroIBkx6Ei1nvIt1DJQIONWXN6BFIvuGJWDpC+PZ4zFYqMG8owqm11Y72
+         7bc0fFEio+kQ6ClOGFpKqLyhvEr783YFjKY4oP1PiM+Yw8GUapCNEeKm24/vWd33KDA4
+         XB2cOAEF2fsyBeql2HqJL+12ZtIt0kF0ndQvT/Sjb/fvqtbFi6y+iWwg/QuaCCB3stLM
+         VYNw==
+X-Gm-Message-State: AOAM531LnIcE9iTF8eW1C8NHUFCbIS1b2NzQkGTXIimUGbYWJGYhm/+g
+        bN1vZ1fSH75x+C1Y+dADbS5/ROKrHIaDE3L494zWJlD5rA5fJQ==
+X-Google-Smtp-Source: ABdhPJy0QzuFnbO1uSx4wHtdx9Iu18Fqj83SdErZlQ0sdD5fQ+iXFH2oyJpJxC9LTUhmYM+eMpl58Y567TJZ8lB3D3A=
+X-Received: by 2002:a81:9957:0:b0:2d0:a8ee:37e7 with SMTP id
+ q84-20020a819957000000b002d0a8ee37e7mr10582199ywg.448.1645232125466; Fri, 18
+ Feb 2022 16:55:25 -0800 (PST)
+MIME-Version: 1.0
+References: <20220210131210.24605-1-jonathan@marek.ca> <20220210131210.24605-2-jonathan@marek.ca>
+In-Reply-To: <20220210131210.24605-2-jonathan@marek.ca>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 19 Feb 2022 01:55:14 +0100
+Message-ID: <CACRpkdbcmmjfybySW572JM1-2s98JZaSnf9OnAepMJEf3oM4vQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pinctrl: qcom: print egpio mode in debugfs
+To:     Jonathan Marek <jonathan@marek.ca>
+Cc:     linux-arm-msm@vger.kernel.org, dmitry.baryshkov@linaro.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dma_alloc_coherent() allocates dma buffer with device's addressing
-limitation in mind. It's redundent to specify GFP_DMA when calling
-dma_alloc_coherent().
+On Thu, Feb 10, 2022 at 2:14 PM Jonathan Marek <jonathan@marek.ca> wrote:
 
-[ 42.hyeyoo@gmail.com: Update changelog ]
+> When egpio_enable bit is cleared, the gpio is driven by SSC/LPASS TLMM and
+> the APSS TLMM settings are ignored. Reflect that in the debugfs dump.
+>
+> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- drivers/spi/spi-atmel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Patch applied.
 
-diff --git a/drivers/spi/spi-atmel.c b/drivers/spi/spi-atmel.c
-index 9e300a932699..271dacf3b7d2 100644
---- a/drivers/spi/spi-atmel.c
-+++ b/drivers/spi/spi-atmel.c
-@@ -1516,14 +1516,14 @@ static int atmel_spi_probe(struct platform_device *pdev)
- 		as->addr_rx_bbuf = dma_alloc_coherent(&pdev->dev,
- 						      SPI_MAX_DMA_XFER,
- 						      &as->dma_addr_rx_bbuf,
--						      GFP_KERNEL | GFP_DMA);
-+						      GFP_KERNEL);
- 		if (!as->addr_rx_bbuf) {
- 			as->use_dma = false;
- 		} else {
- 			as->addr_tx_bbuf = dma_alloc_coherent(&pdev->dev,
- 					SPI_MAX_DMA_XFER,
- 					&as->dma_addr_tx_bbuf,
--					GFP_KERNEL | GFP_DMA);
-+					GFP_KERNEL);
- 			if (!as->addr_tx_bbuf) {
- 				as->use_dma = false;
- 				dma_free_coherent(&pdev->dev, SPI_MAX_DMA_XFER,
--- 
-2.17.2
-
+Yours,
+Linus Walleij
