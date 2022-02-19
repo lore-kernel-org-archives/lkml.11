@@ -2,87 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9BCC43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240699AbiBSAzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:55:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39170 "EHLO
+        id S240701AbiBSAzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:55:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240693AbiBSAzO (ORCPT
+        with ESMTP id S240697AbiBSAzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 933E5279917
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:54:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645232095;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=v/k2K83RAFQXWw+FW9AtTE6sGHTDhK7lYEKZol/q3C8=;
-        b=E0FCwhdd65bWyomZcmjpOzRnKaspIwIvaje4pltLCX3QjdR83Ce5bQStR01tqFxCB39hsz
-        rfoLUSRMd7LspDEkGYbgUTBlcJSbxVuF6GzzDNDQ8xG9r4EXcRKHU7k4EcAnr0znwe0jeu
-        A9xmbJqTK0/xsoDpKWooQ3hcXCLwwwQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-PSG0sG8zMOqRzb1iuQMW6w-1; Fri, 18 Feb 2022 19:54:52 -0500
-X-MC-Unique: PSG0sG8zMOqRzb1iuQMW6w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 730272F4F;
-        Sat, 19 Feb 2022 00:54:49 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C4E0962D4E;
-        Sat, 19 Feb 2022 00:54:40 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
-        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        David.Laight@ACULAB.COM, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: [PATCH 11/22] staging: emxx_udc: Don't use GFP_DMA when calling dma_alloc_coherent()
-Date:   Sat, 19 Feb 2022 08:52:10 +0800
-Message-Id: <20220219005221.634-12-bhe@redhat.com>
-In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
-References: <20220219005221.634-1-bhe@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        Fri, 18 Feb 2022 19:55:15 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72812782A2
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:54:57 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id v186so22793256ybg.1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:54:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Vx+WPjk3Jqu/26mjZeRumiFftkfvBsbmk7u8x9gYoY=;
+        b=R9puxGJ7+Pr8wR/uUccCrfAZoWcAAi1ZN6s1pGy9Gak7AQvMqOSH8LAhEjcn5CCCOZ
+         noZmvNx/A+IjYcwWlom8/Ju1AK19wsZMF9LzmKV8bHUfeuyTMxNArJ0/s1CS30KgXoeU
+         VCZHCHAzv7G5GSamfnD23A/TjvvNgrRHcMCMVR5forkuuUPcNXjX6VijmO9+5wbbVjJS
+         kQSE1PXZ3paLguxz0QFxj+28GBv0+8jQeSJ4uy9l9CdexXEzbEd03znbqoQgU45/DKUi
+         km+AMtEzkSYTV3N0hi7/Q7/ziITi1gP4hM142X+T6oKUw+/gZeUonk4LDW5RR+yFfAk1
+         KpaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Vx+WPjk3Jqu/26mjZeRumiFftkfvBsbmk7u8x9gYoY=;
+        b=uzA+vyUQfjOC33Vopkd7xJxlqZzZB8UoNgsPjC4nikm+rNjRUi5BkmQnn8hqh9mH7k
+         hyfH5yteE2jleQHbLXop7CwtvtWLcOtrBlfi8KIBRCGuOmte2xjnjFUTf+Ko5Zju4yE5
+         ythQIP3Sd0zD99Aps/BM7/gzXP0Mac7TftUgjUahjVaC+92fmYNeZugnMTKIqWIw1XIp
+         BBPhBUvOBRm2eg+H6PtjDHetOxfyoBaMO45K/f1gT5DFt59dkfeMG4U+pkOx2N+oBmPj
+         +1rta7NyH81hHGb8JdP3NWTgJ4+kg0EMbwUDKox7f+q84EeXa5XwFuit/nWGsgxQJBS5
+         4ecA==
+X-Gm-Message-State: AOAM532jz6WRua4NmCZS4s8A5mQ6c+l+spTyowZI7YMXduC04bIl5ex0
+        +F6n5Iglci3FtcAKXRnvEhkmKgRbSDawjwM+OW4q8A==
+X-Google-Smtp-Source: ABdhPJwQCzUoixTMtsRur9qzlG1qSn+Sx4LgwajsEMFV5UPE5DKIly0PKpV1NusJBRnndSql78KQlyW9+v6HfFngB7A=
+X-Received: by 2002:a25:a123:0:b0:623:f539:9b94 with SMTP id
+ z32-20020a25a123000000b00623f5399b94mr10088403ybh.291.1645232097187; Fri, 18
+ Feb 2022 16:54:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20220210131210.24605-1-jonathan@marek.ca>
+In-Reply-To: <20220210131210.24605-1-jonathan@marek.ca>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 19 Feb 2022 01:54:46 +0100
+Message-ID: <CACRpkdYPYJoteTR_zoSr4CZZiCEARu-wE4_ruN6gF8EdT_X6OQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] pinctrl: qcom: sm8450: Add egpio support
+To:     Jonathan Marek <jonathan@marek.ca>
+Cc:     linux-arm-msm@vger.kernel.org, dmitry.baryshkov@linaro.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dma_alloc_coherent() allocates dma buffer with device's addressing
-limitation in mind. It's redundent to specify GFP_DMA when calling
-dma_alloc_coherent().
+On Thu, Feb 10, 2022 at 2:14 PM Jonathan Marek <jonathan@marek.ca> wrote:
 
-[ 42.hyeyoo@gmail.com: Update changelog ]
+> This mirrors egpio support added for sc7280. This change is necessary for
+> gpios 165 to 209 to be driven by APSS.
+>
+> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- drivers/staging/media/imx/imx-media-utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Haven't heard anything for over a week so I just applied the
+patches. I assume you know what you're doing.
 
-diff --git a/drivers/staging/media/imx/imx-media-utils.c b/drivers/staging/media/imx/imx-media-utils.c
-index 94bc866ca28c..043281ec2e9d 100644
---- a/drivers/staging/media/imx/imx-media-utils.c
-+++ b/drivers/staging/media/imx/imx-media-utils.c
-@@ -588,7 +588,7 @@ int imx_media_alloc_dma_buf(struct device *dev,
- 
- 	buf->len = PAGE_ALIGN(size);
- 	buf->virt = dma_alloc_coherent(dev, buf->len, &buf->phys,
--				       GFP_DMA | GFP_KERNEL);
-+				       GFP_KERNEL);
- 	if (!buf->virt) {
- 		dev_err(dev, "%s: failed\n", __func__);
- 		return -ENOMEM;
--- 
-2.17.2
-
+Yours,
+Linus Walleij
