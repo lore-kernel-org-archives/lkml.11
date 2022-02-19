@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED00C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 05:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CC0C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 05:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbiBSFWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 00:22:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48566 "EHLO
+        id S238349AbiBSFu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 00:50:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231442AbiBSFWl (ORCPT
+        with ESMTP id S236043AbiBSFuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 00:22:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D658D3DA57
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 21:22:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645248142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P9r+Bhfs5dDddqduzGiZYaJG4staNq0SxYzZYyrkYbI=;
-        b=MTNLUZk2K2LteSWUtU1WLlQZ5MsvjQ+9XWCBLFB/dacKbbw5PsdcTrW4RhqpUnOyDC01qj
-        +mG0I19X3kJnCV9V3WibWgi3/nCe7FPlXDaelxvRFL0G2pqYJVZPfnKXQy5fPz9NuyTik2
-        rE5iQQ98PsN0fX9QOxNl6XKOPXhtdTo=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-qj0T0RAKPrKo9YQHNE6J4A-1; Sat, 19 Feb 2022 00:22:21 -0500
-X-MC-Unique: qj0T0RAKPrKo9YQHNE6J4A-1
-Received: by mail-qv1-f71.google.com with SMTP id e9-20020a0cf749000000b0042bf697ff6bso11060837qvo.5
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 21:22:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P9r+Bhfs5dDddqduzGiZYaJG4staNq0SxYzZYyrkYbI=;
-        b=d/eg+DQvaqB4sIP2lZdX/fmo/JSl4Q0KKLa68R5O/gNFojs9BCS8pfRiGZIVQGFjlG
-         eOGsfMGvjRiLfrqyAefzBxgXtIX6Mz+BRKTtr10eCvUI06cILK5QVjpBBxkwQIHJFEkN
-         MkmP7J7ukVvVozroB1AOcMgtqmSyCxHKc7YULv+USPDFCJGWpzR8olnjPDDmshdKClc+
-         OIh/Q+kmBD0O1BI3e7uIOeaQqW6c51pfh+Bcs47V3x/hQBYETmXq3aJmSZqaPjUC4CBu
-         4FdSEFQ6XX+FGT5iT0Kq8z/4mVd0kt5YNd7Z+ueFxCjZnt77rOSudHvpxhtGrk4S83xX
-         FG+w==
-X-Gm-Message-State: AOAM533yf6o6qyb2CMJaE0yx3Ereq+chZhjwdWNFGjFiMZbeuM6tVcqO
-        67CYlEKsItIOw10lz7v6YuScty4DKt2nsfS5Vq9QcmVknBPKPgeHsg4qgBD69sj2uBl+kEWslMC
-        kV1ThZ/5zyTJUb9rvH2GqJ1Ak
-X-Received: by 2002:a05:622a:13c6:b0:2d6:75cf:cc23 with SMTP id p6-20020a05622a13c600b002d675cfcc23mr9595842qtk.473.1645248140805;
-        Fri, 18 Feb 2022 21:22:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHO9z5PxXHTDIIDy7QdEheDxE0SOBADu6a7I5ZgJcPDSSKo8J1gtoH6AnueqXtBdR+w0nTjA==
-X-Received: by 2002:a05:622a:13c6:b0:2d6:75cf:cc23 with SMTP id p6-20020a05622a13c600b002d675cfcc23mr9595837qtk.473.1645248140580;
-        Fri, 18 Feb 2022 21:22:20 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e3sm3473029qto.25.2022.02.18.21.22.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 21:22:20 -0800 (PST)
-Date:   Fri, 18 Feb 2022 21:22:16 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 17/29] x86/ibt: Annotate text references
-Message-ID: <20220219052216.7b5fx6qileqrdjbw@treble>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.579455015@infradead.org>
+        Sat, 19 Feb 2022 00:50:55 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF713BDE44;
+        Fri, 18 Feb 2022 21:50:36 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nLIdf-002uw8-6x; Sat, 19 Feb 2022 05:50:35 +0000
+Date:   Sat, 19 Feb 2022 05:50:35 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        linux-fsdevel@vger.kernel.org, paulmck@kernel.org,
+        gscrivan@redhat.com, Eric Biederman <ebiederm@xmission.com>,
+        Chris Mason <clm@fb.com>
+Subject: Re: [PATCH 1/2] vfs: free vfsmount through rcu work from kern_unmount
+Message-ID: <YhCFKyVMtOSyBDJh@zeniv-ca.linux.org.uk>
+References: <20220218183114.2867528-1-riel@surriel.com>
+ <20220218183114.2867528-2-riel@surriel.com>
+ <Yg/y6qv6dZ2fc5z1@zeniv-ca.linux.org.uk>
+ <5f442a7770fe4ac06b2837e4f937d559f5d17b8b.camel@surriel.com>
+ <Yg/273dWmTKDW5Mu@zeniv-ca.linux.org.uk>
+ <YhAAaU5wSoFdMsQf@zeniv-ca.linux.org.uk>
+ <YhAKV5cjXEz2JTBB@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220218171409.579455015@infradead.org>
+In-Reply-To: <YhAKV5cjXEz2JTBB@zeniv-ca.linux.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:49:19PM +0100, Peter Zijlstra wrote:
-> Annotate away some of the generic code references. This is things
-> where we take the address of a symbol for exception handling or return
-> addresses (eg. context switch).
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+On Fri, Feb 18, 2022 at 09:06:31PM +0000, Al Viro wrote:
 
-The vast majority of these annotations can go away if objtool only
-requires ENDBR for referenced *STT_FUNC* symbols.
+> FWIW, that won't work correctly wrt failure exits.  I'm digging
+> through the lifetime rules in there right now, will post when
+> I'm done.
 
-Anything still needing ANNOTATE_NOENDBR after that, might arguably not
-belong as STT_FUNC anyway and it might make sense to convert it to
-non-function code (e.g. SYM_CODE{START,END}.
+OK, now that I'd reconstructed the picture...  The problems with
+delayed shutdown are prevented by mq_clear_sbinfo() call in there -
+mqueue is capable of more or less gracefully dealing with
+having ->s_fs_info ripped from under it, which is what that
+thing does.  Before the kern_unmount().  And since that code is
+non-modular, we don't need to protect that either.
 
-> @@ -564,12 +565,16 @@ SYM_CODE_END(\asmsym)
->  	.align 16
->  	.globl __irqentry_text_start
->  __irqentry_text_start:
-> +	ANNOTATE_NOENDBR // unwinders
-> +	ud2;
->  
->  #include <asm/idtentry.h>
->  
->  	.align 16
->  	.globl __irqentry_text_end
->  __irqentry_text_end:
-> +	ANNOTATE_NOENDBR
-> +	ud2;
+IOW, having
+void put_ipc_ns(struct ipc_namespace *ns)
+{
+        if (refcount_dec_and_lock(&ns->ns.count, &mq_lock)) {
+		mq_clear_sbinfo(ns);
+		spin_unlock(&mq_lock);
+		free_ipc_ns(ns);
+	}
+}
 
-Why ud2?  If no ud2 then the annotation shouldn't be needed since the
-first idt entry has ENDBR.
+and
+void mq_put_mnt(struct ipc_namespace *ns)
+{
+	/*
+	 * The only reason it's safe to have the mntput async
+	 * is that we'd already ripped the ipc_namespace away
+	 * from the mqueue superblock, by having called
+	 * mq_clear_sbinfo().
+	 *
+	 * NOTE: kern_unmount_rcu() IS NOT SAFE TO USE
+	 * WITHOUT SERIOUS PRECAUTIONS.
+	 *
+	 * Anything that is used by filesystem must either
+	 * be already taken away (and fs must survive that)
+	 * or have its destruction delayed until the superblock
+	 * shutdown.
+	 *
+	 */
+        kern_unmount_rcu(ns->mq_mnt);
+}
 
--- 
-Josh
-
+would suffice.  free_ipc_work/free_ipc/mnt_llist can be killed off.
