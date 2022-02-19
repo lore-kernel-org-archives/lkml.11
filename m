@@ -2,87 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B09CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D52BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240989AbiBSA5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:57:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39788 "EHLO
+        id S241007AbiBSA5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:57:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240796AbiBSAzl (ORCPT
+        with ESMTP id S240769AbiBSAzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3346127B992
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645232117;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=ClO/R9JRyaaM8bjM+2BOla/lLPUNMsID41a68FPN8DI=;
-        b=bo7VjF24UMdbtxaHprk33A1muHj9fywR2QlB7yzGXmWhC5zbtB3W0JAeoba/AZEqKJcXQ+
-        XJrGg/e2DLr1zaLHGI/kDrIXaZuNAtpGCmhjCrrCjywFvJW378Q4M8CFZJ5eI2wyEq0z5R
-        lvQwOpkiYsGfxMM9clWvUYl+RYyAmew=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-a-TIrPYBP8-42XIzhwQwjA-1; Fri, 18 Feb 2022 19:55:12 -0500
-X-MC-Unique: a-TIrPYBP8-42XIzhwQwjA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 18 Feb 2022 19:55:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76E627AFE4
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D73291091DA1;
-        Sat, 19 Feb 2022 00:55:08 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 190B262D4E;
-        Sat, 19 Feb 2022 00:54:49 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85EADB82765
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54734C340FB;
+        Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nLE1p-0051Zd-Ga;
+        Fri, 18 Feb 2022 19:55:13 -0500
+Message-ID: <20220219005513.341653321@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 18 Feb 2022 19:54:36 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
-        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        David.Laight@ACULAB.COM, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: [PATCH 12/22] staging: emxx_udc: Don't use GFP_DMA when calling dma_alloc_coherent()
-Date:   Sat, 19 Feb 2022 08:52:11 +0800
-Message-Id: <20220219005221.634-13-bhe@redhat.com>
-In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
-References: <20220219005221.634-1-bhe@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>
+Subject: [for-next][PATCH 06/16] user_events: Add print_fmt generation support for basic types
+References: <20220219005430.848118506@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dma_alloc_coherent() allocates dma buffer with device's addressing
-limitation in mind. It's redundent to specify GFP_DMA when calling
-dma_alloc_coherent().
+From: Beau Belgrave <beaub@linux.microsoft.com>
 
-[ 42.hyeyoo@gmail.com: Update changelog ]
+Addes print_fmt format generation for basic types that are supported for
+user processes. Only supports sizes that are the same on 32 and 64 bit.
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Link: https://lkml.kernel.org/r/20220118204326.2169-3-beaub@linux.microsoft.com
+
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/staging/emxx_udc/emxx_udc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/trace/trace_events_user.c | 115 ++++++++++++++++++++++++++++++-
+ 1 file changed, 113 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/emxx_udc/emxx_udc.c b/drivers/staging/emxx_udc/emxx_udc.c
-index b6abd3770e81..673f8de50213 100644
---- a/drivers/staging/emxx_udc/emxx_udc.c
-+++ b/drivers/staging/emxx_udc/emxx_udc.c
-@@ -2593,7 +2593,7 @@ static int nbu2ss_ep_queue(struct usb_ep *_ep,
- 		if (!ep->virt_buf)
- 			ep->virt_buf = dma_alloc_coherent(udc->dev, PAGE_SIZE,
- 							  &ep->phys_buf,
--							  GFP_ATOMIC | GFP_DMA);
-+							  GFP_ATOMIC);
- 		if (ep->epnum > 0)  {
- 			if (ep->direct == USB_DIR_IN)
- 				memcpy(ep->virt_buf, req->req.buf,
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 77105233115e..ddc5c3cf1bf8 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -359,6 +359,114 @@ static int user_event_parse_fields(struct user_event *user, char *args)
+ 
+ static struct trace_event_fields user_event_fields_array[1];
+ 
++static const char *user_field_format(const char *type)
++{
++	if (strcmp(type, "s64") == 0)
++		return "%lld";
++	if (strcmp(type, "u64") == 0)
++		return "%llu";
++	if (strcmp(type, "s32") == 0)
++		return "%d";
++	if (strcmp(type, "u32") == 0)
++		return "%u";
++	if (strcmp(type, "int") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned int") == 0)
++		return "%u";
++	if (strcmp(type, "s16") == 0)
++		return "%d";
++	if (strcmp(type, "u16") == 0)
++		return "%u";
++	if (strcmp(type, "short") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned short") == 0)
++		return "%u";
++	if (strcmp(type, "s8") == 0)
++		return "%d";
++	if (strcmp(type, "u8") == 0)
++		return "%u";
++	if (strcmp(type, "char") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned char") == 0)
++		return "%u";
++	if (strstr(type, "char[") != 0)
++		return "%s";
++
++	/* Unknown, likely struct, allowed treat as 64-bit */
++	return "%llu";
++}
++
++static bool user_field_is_dyn_string(const char *type, const char **str_func)
++{
++	if (str_has_prefix(type, "__data_loc ")) {
++		*str_func = "__get_str";
++		goto check;
++	}
++
++	if (str_has_prefix(type, "__rel_loc ")) {
++		*str_func = "__get_rel_str";
++		goto check;
++	}
++
++	return false;
++check:
++	return strstr(type, "char") != 0;
++}
++
++#define LEN_OR_ZERO (len ? len - pos : 0)
++static int user_event_set_print_fmt(struct user_event *user, char *buf, int len)
++{
++	struct ftrace_event_field *field, *next;
++	struct list_head *head = &user->fields;
++	int pos = 0, depth = 0;
++	const char *str_func;
++
++	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
++
++	list_for_each_entry_safe_reverse(field, next, head, link) {
++		if (depth != 0)
++			pos += snprintf(buf + pos, LEN_OR_ZERO, " ");
++
++		pos += snprintf(buf + pos, LEN_OR_ZERO, "%s=%s",
++				field->name, user_field_format(field->type));
++
++		depth++;
++	}
++
++	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
++
++	list_for_each_entry_safe_reverse(field, next, head, link) {
++		if (user_field_is_dyn_string(field->type, &str_func))
++			pos += snprintf(buf + pos, LEN_OR_ZERO,
++					", %s(%s)", str_func, field->name);
++		else
++			pos += snprintf(buf + pos, LEN_OR_ZERO,
++					", REC->%s", field->name);
++	}
++
++	return pos + 1;
++}
++#undef LEN_OR_ZERO
++
++static int user_event_create_print_fmt(struct user_event *user)
++{
++	char *print_fmt;
++	int len;
++
++	len = user_event_set_print_fmt(user, NULL, 0);
++
++	print_fmt = kmalloc(len, GFP_KERNEL);
++
++	if (!print_fmt)
++		return -ENOMEM;
++
++	user_event_set_print_fmt(user, print_fmt, len);
++
++	user->call.print_fmt = print_fmt;
++
++	return 0;
++}
++
+ static enum print_line_t user_event_print_trace(struct trace_iterator *iter,
+ 						int flags,
+ 						struct trace_event *event)
+@@ -392,6 +500,7 @@ static int destroy_user_event(struct user_event *user)
+ 	clear_bit(user->index, page_bitmap);
+ 	hash_del(&user->node);
+ 
++	kfree(user->call.print_fmt);
+ 	kfree(EVENT_NAME(user));
+ 	kfree(user);
+ 
+@@ -669,8 +778,10 @@ static int user_event_parse(char *name, char *args, char *flags,
+ 	if (ret)
+ 		goto put_user;
+ 
+-	/* Minimal print format */
+-	user->call.print_fmt = "\"\"";
++	ret = user_event_create_print_fmt(user);
++
++	if (ret)
++		goto put_user;
+ 
+ 	user->call.data = user;
+ 	user->call.class = &user->class;
 -- 
-2.17.2
-
+2.34.1
