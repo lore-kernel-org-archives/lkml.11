@@ -2,106 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3822C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD41FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242861AbiBSSfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:35:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43556 "EHLO
+        id S242866AbiBSShM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:37:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiBSSfl (ORCPT
+        with ESMTP id S237333AbiBSShL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:35:41 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCE1158DBC;
-        Sat, 19 Feb 2022 10:35:22 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id v22so6974911ljh.7;
-        Sat, 19 Feb 2022 10:35:22 -0800 (PST)
+        Sat, 19 Feb 2022 13:37:11 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307BB22BD7;
+        Sat, 19 Feb 2022 10:36:51 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id j9-20020a05600c190900b0037bff8a24ebso10829347wmq.4;
+        Sat, 19 Feb 2022 10:36:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ihAhYAdeg+5mNGGybXtL07Go2hn89yUQuHza/hGj/wQ=;
-        b=CKbEo/EfSh655da36ya0jrhiGmnzQqTJlKVP0gefuCExsV+Ab7Ta4cauO8X8eA3OWK
-         TEZrfeFlxRC+gQEgaRmPQeXwLBjjzfgOYxrodtJQGs+efxIkqMPTUKC4v9B7eVm7qKYl
-         YGUfTC6sdtKsKCnDAFUKWJTjZ9s2Zr79iREHv35eU1e/w4U8VDM29SYxf88A+zdYNJs0
-         9hAbRMheWeo4Hmth/m1GzpzOmPFDZ5rP+lCPG8lUufpRM2Alh00ttY9Ml9cgAXiicfP6
-         HYkiHJhRMbJTXV+hdEPibOskEipA8014nW1jPmS00i/Qqz9eCUw8Pc36FwSTGZ0Y0L6F
-         xTtg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pAZG7JbLQbeA7Yj+mlgqX0k/1mUajJPRecROZ8iw+8c=;
+        b=OJkpULWy9BPv8scnQFQP2MQL1Ele2xge0o1Pj1x9KMbJpLTUJkfiqfOhC8PZShcBpk
+         USH+xwYud1/tctwvjUFm4YSlNGlPl1+sidtvBa/dgyDHyKaOUuSfW3pczbOlDssg4cVp
+         gzZa1HsPNwCi4Ih5A449CLnvRVQKmMQ7IeiaI90t+1NT1GBWQTitdtMDZOsjU5s9nLbh
+         bZ1SUilCoBwTMCAMziP4GMfswYU39HlTxFDjXpgkX9tTPS7UPzqwjbYVuBjISxniMmI/
+         wah3lBe/4YtVwzOcDzO3QHVqPUxUBsyRHMuJP9qBc3YYLiTVZFSGNab2SxKJSLd2LC1x
+         oD5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ihAhYAdeg+5mNGGybXtL07Go2hn89yUQuHza/hGj/wQ=;
-        b=JwjAXoFNtblGnZ2uuzKZpdhDkouuJ6f1NGk2GHorpvhSS67CMtfwgkjQSwhogFLhvh
-         ETQEWspR49PQA+WjFLaut5mTHGsT3nyZnlFwCr7WhaQkTKyPNVNIp3UssL/XYcyH8dBu
-         ZAvo27PjQJ5KGvBGUHmD9cu8qRV0SBElWtOOFgeGaOV7oZoGt92K/5zyioYgdZjgS7wP
-         GsOJ+uOmnv3R72CgNCUa17Crrk5bpJKYUUMsevQKvmR38EFxvITFHDxtd2cHq/OcCJCv
-         KlrW2QKczt4UhDx1LzMFpEdHmKPjovnJtPoM4xddyFILqGILSMovZ4uWZ4z5w6vSmIWS
-         mYhQ==
-X-Gm-Message-State: AOAM531WyRYmavLv5bnH3uBhcPho6A5YrKtNA+q/fa9O/UFQqqezaqPs
-        9ROJFNVYXK5rnQ5eBulL1Ec=
-X-Google-Smtp-Source: ABdhPJyUuey/Cp/BTWCj1MjuWX+PNTm6NcAPr+wmv4r6uS40/QsJrxTXnPwEO8K6bkDeKyB/mQeKDw==
-X-Received: by 2002:a05:651c:201b:b0:246:34b5:155e with SMTP id s27-20020a05651c201b00b0024634b5155emr1600949ljo.273.1645295720866;
-        Sat, 19 Feb 2022 10:35:20 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id j11sm642315lfm.40.2022.02.19.10.35.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Feb 2022 10:35:20 -0800 (PST)
-Message-ID: <2b4dd244-f918-4d26-2322-00a0bb226ccf@gmail.com>
-Date:   Sat, 19 Feb 2022 21:35:19 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pAZG7JbLQbeA7Yj+mlgqX0k/1mUajJPRecROZ8iw+8c=;
+        b=z7ooAE5GhhcJWneuisnLrdk4lZ8IDVYxqAIB+fi3/XY74r9vqaCBqErmdc4nVtPc0G
+         ckIeNkBlJF4DGH9R564SHAtAmNKWRuKHbSvR4hP3vTOicAyswvtKjiKDevYbWCpcT1DU
+         dhEohF3cJfH43jti2CBUqIg0/hfSE6OeUzzC1YzRM0ulvdYDK51ZTx0bN6yvgYyYi1ey
+         lqjAddWDkNYLeR/uZtBZ0AeRPT56oabN69xiHZtSdnUy+fOxLKIi1ua9Wrecwnaz2lja
+         RJ7i7/uTUnveVa3y1tdty4zIj4bo3w9GVe5X7tCcR1Q28kKwaX8inTWFuWv7fjURRezI
+         pEsg==
+X-Gm-Message-State: AOAM5326dMo4WZBAlGu0sVkJoTQhad5uJh7uC7cJ6k2NB5Jhswetp8ps
+        HL6A84opo43XDf6WfKaHobse7YnBcmpBvcJlT9M=
+X-Google-Smtp-Source: ABdhPJyhZ8HikhSS8fR813GuqsYCfEmMiKIonHQ8cVxp0BFB8dDWVsnhF7MitnZKn+FSIYqhR59KYeBOOaChHlUi2dU=
+X-Received: by 2002:a05:600c:1e0a:b0:37d:342c:36ac with SMTP id
+ ay10-20020a05600c1e0a00b0037d342c36acmr11851160wmb.168.1645295809620; Sat, 19
+ Feb 2022 10:36:49 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 9/9] drm/tegra: Support context isolation
-Content-Language: en-US
-To:     Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org,
-        robh+dt@kernel.org, robin.murphy@arm.com
-Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
- <20220218113952.3077606-10-mperttunen@nvidia.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220218113952.3077606-10-mperttunen@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220219183310.557435-1-robdclark@gmail.com>
+In-Reply-To: <20220219183310.557435-1-robdclark@gmail.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Sat, 19 Feb 2022 10:37:09 -0800
+Message-ID: <CAF6AEGviF8r=0gyqh6wWCc5O+JCJwgjLVrL-K3qfVXUvRH-ZDw@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/gpu: Fix crash on devices without devfreq support
+To:     dri-devel <dri-devel@lists.freedesktop.org>
+Cc:     freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-18.02.2022 14:39, Mikko Perttunen пишет:
-> +	if (context->memory_context && context->client->ops->get_streamid_offset) {
-            ^^^
-> +		int offset = context->client->ops->get_streamid_offset(context->client);
+On Sat, Feb 19, 2022 at 10:32 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> Avoid going down devfreq paths on devices where devfreq is not
+> initialized.
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Reported-by: Anders Roxell <anders.roxell@linaro.org>
+
+forgot to add:
+
+Fixes: 6aa89ae1fb04 ("drm/msm/gpu: Cancel idle/boost work on suspend")
+
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>  drivers/gpu/drm/msm/msm_gpu_devfreq.c | 31 +++++++++++++++++++++------
+>  1 file changed, 25 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> index 9bf319be11f6..26a3669a97b3 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> @@ -83,12 +83,17 @@ static struct devfreq_dev_profile msm_devfreq_profile = {
+>  static void msm_devfreq_boost_work(struct kthread_work *work);
+>  static void msm_devfreq_idle_work(struct kthread_work *work);
+>
+> +static bool has_devfreq(struct msm_gpu *gpu)
+> +{
+> +       return !!gpu->funcs->gpu_busy;
+> +}
 > +
-> +		if (offset >= 0) {
-> +			job->context = context->memory_context;
-> +			job->engine_streamid_offset = offset;
-> +			host1x_context_get(job->context);
-> +		}
-
-You should bump refcount unconditionally or you'll get refcnt underflow
-on put, when offset < 0.
-
-> +	}
+>  void msm_devfreq_init(struct msm_gpu *gpu)
+>  {
+>         struct msm_gpu_devfreq *df = &gpu->devfreq;
+>
+>         /* We need target support to do devfreq */
+> -       if (!gpu->funcs->gpu_busy)
+> +       if (!has_devfreq(gpu))
+>                 return;
+>
+>         dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
+> @@ -149,6 +154,9 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
+>  {
+>         struct msm_gpu_devfreq *df = &gpu->devfreq;
+>
+> +       if (!has_devfreq(gpu))
+> +               return;
 > +
->  	/*
->  	 * job_data is now part of job reference counting, so don't release
->  	 * it from here.
-> diff --git a/drivers/gpu/drm/tegra/uapi.c b/drivers/gpu/drm/tegra/uapi.c
-> index 9ab9179d2026..be33da54d12c 100644
-> --- a/drivers/gpu/drm/tegra/uapi.c
-> +++ b/drivers/gpu/drm/tegra/uapi.c
-> @@ -33,6 +33,9 @@ static void tegra_drm_channel_context_close(struct tegra_drm_context *context)
->  	struct tegra_drm_mapping *mapping;
->  	unsigned long id;
->  
-> +	if (context->memory_context)
-> +		host1x_context_put(context->memory_context);
-
-The "if (context->memory_context &&
-context->client->ops->get_streamid_offset)" above doesn't match the "if
-(context->memory_context)". You'll get refcount underflow.
+>         devfreq_cooling_unregister(gpu->cooling);
+>         dev_pm_qos_remove_request(&df->boost_freq);
+>         dev_pm_qos_remove_request(&df->idle_freq);
+> @@ -156,16 +164,24 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
+>
+>  void msm_devfreq_resume(struct msm_gpu *gpu)
+>  {
+> -       gpu->devfreq.busy_cycles = 0;
+> -       gpu->devfreq.time = ktime_get();
+> +       struct msm_gpu_devfreq *df = &gpu->devfreq;
+>
+> -       devfreq_resume_device(gpu->devfreq.devfreq);
+> +       if (!has_devfreq(gpu))
+> +               return;
+> +
+> +       df->busy_cycles = 0;
+> +       df->time = ktime_get();
+> +
+> +       devfreq_resume_device(df->devfreq);
+>  }
+>
+>  void msm_devfreq_suspend(struct msm_gpu *gpu)
+>  {
+>         struct msm_gpu_devfreq *df = &gpu->devfreq;
+>
+> +       if (!has_devfreq(gpu))
+> +               return;
+> +
+>         devfreq_suspend_device(df->devfreq);
+>
+>         cancel_idle_work(df);
+> @@ -185,6 +201,9 @@ void msm_devfreq_boost(struct msm_gpu *gpu, unsigned factor)
+>         struct msm_gpu_devfreq *df = &gpu->devfreq;
+>         uint64_t freq;
+>
+> +       if (!has_devfreq(gpu))
+> +               return;
+> +
+>         freq = get_freq(gpu);
+>         freq *= factor;
+>
+> @@ -207,7 +226,7 @@ void msm_devfreq_active(struct msm_gpu *gpu)
+>         struct devfreq_dev_status status;
+>         unsigned int idle_time;
+>
+> -       if (!df->devfreq)
+> +       if (!has_devfreq(gpu))
+>                 return;
+>
+>         /*
+> @@ -253,7 +272,7 @@ void msm_devfreq_idle(struct msm_gpu *gpu)
+>  {
+>         struct msm_gpu_devfreq *df = &gpu->devfreq;
+>
+> -       if (!df->devfreq)
+> +       if (!has_devfreq(gpu))
+>                 return;
+>
+>         msm_hrtimer_queue_work(&df->idle_work, ms_to_ktime(1),
+> --
+> 2.34.1
+>
