@@ -2,123 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D36C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 19:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 19:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243073AbiBSTJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 14:09:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33582 "EHLO
+        id S238798AbiBSTMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 14:12:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243058AbiBSTI6 (ORCPT
+        with ESMTP id S243058AbiBSTMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 14:08:58 -0500
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCF8286;
-        Sat, 19 Feb 2022 11:08:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-        s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=m8sEB9GrTA4GPwtivV3jg4rj+1a8Ftb8pAhyUy9NMhQ=; b=ULAnvRoeJKfXcwmauHVweXPb4i
-        rwS+HvLjsOjTLWbi2FDRXSQM72mjuU9k1DF/ZAbXI+v1VEeV9GqGNjVHP0mljHuljsQ6j0o60rnCB
-        uT3f6snjqoHMwJ/95d+OdomYeAWjv3awAPfdfz6Ip3nWT2AdH2Jq2KKZ6rgDTWv2MQnC0IE5tEqIA
-        MoQy1TaEwC4bz1Wyrj778NHW2s+Kv5I97Did5t4rwHfPWOJ+kMzO1flVUAI/x49E5PxIjC2X11pZ9
-        fb+hl76lPEV9o3EE/V2mtV2qu4FfPlN29nUmWsZ8jebDc5bqc5HxfN8SS4ewVE6vYNzVJGlPrzEYL
-        /29Egm/g==;
-Received: from noodles by the.earth.li with local (Exim 4.94.2)
-        (envelope-from <noodles@earth.li>)
-        id 1nLV5u-009gvf-6q; Sat, 19 Feb 2022 19:08:34 +0000
-Date:   Sat, 19 Feb 2022 19:08:34 +0000
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 16/18] ARM: dts: qcom: remove redundant binding from
- ipq8064 rb3011 dts
-Message-ID: <YhFAMlSA0WYoSE6w@earth.li>
-References: <20220218002956.6590-1-ansuelsmth@gmail.com>
- <20220218002956.6590-17-ansuelsmth@gmail.com>
- <Yg+pL44ogVscn9Kw@earth.li>
+        Sat, 19 Feb 2022 14:12:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CF638B7
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 11:11:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A51B60AE9
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 19:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE901C004E1;
+        Sat, 19 Feb 2022 19:11:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645297912;
+        bh=AdNNP3f2nzvuisqB37U22ZFFkpwe6bfxYYWqRev4vwQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=cbImLl1jXLs7ShzBAg0QzQ/sXVqTMPCMrfHZqCGqMSUjIOz377LkoRYgiWxWerz47
+         S+P4Njx8QALDuCOrtvLQoJJEJyzmu6+Ys0agpbpIkSHa7e11ZZ1xhT/6pAPjjGROIz
+         O3pfVo8flWDxHh/T0t+TRQg+G4hTzRzPLCZV06ufKkdCw6tzqWjZ5+Pz91XJy80pua
+         LbLQFNRk4OxzFeAhtGXqiawsfvaREGgh30X4LlAA0PHb5iMK3zf3Jel2o2vMQ+h88B
+         x+yWKeq/n3/wz0LB9qC/gh3bMAje6XH3SOJ+JMVErgjBsNsJtQl3YhJrYU2el3Erq+
+         yocwGKyFRAmDw==
+Message-ID: <8a6f24eb-a256-3d0e-5a2c-f62b4afd30aa@kernel.org>
+Date:   Sat, 19 Feb 2022 21:11:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yg+pL44ogVscn9Kw@earth.li>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] mtd: rawnand: omap2: Prevent invalid configuration and
+ build error
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     miquel.raynal@bootlin.com, krzysztof.kozlowski@canonical.com,
+        vigneshr@ti.com, nm@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220118123525.8020-1-rogerq@kernel.org>
+ <20220219150836.GA1035394@roeck-us.net>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20220219150836.GA1035394@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 02:11:59PM +0000, Jonathan McDowell wrote:
-> On Fri, Feb 18, 2022 at 01:29:54AM +0100, Ansuel Smith wrote:
-> > Mdio0_pins are now declared in ipq8064 dtsi. Usb phy are enabled by
-> > default.
-...
-> > -	mdio0_pins: mdio0_pins {
-> > -		mux {
-> > -			pins = "gpio0", "gpio1";
-> > -			function = "gpio";
-> > -			drive-strength = <8>;
-> > -			bias-disable;
-> > -		};
-> > -	};
-> > -
+Hi,
+
+On 19/02/2022 17:08, Guenter Roeck wrote:
+> On Tue, Jan 18, 2022 at 02:35:25PM +0200, Roger Quadros wrote:
+>> We need to select MEMORY as well otherwise OMAP_GPMC will not be built.
+>> For simplicity let's select MEMORY and OMAP_GPMC unconditionally as
+>> this driver depends on OMAP_GPMC driver and uses symbols from there.
+>>
+>> Fixes: dbcb124acebd ("mtd: rawnand: omap2: Select GPMC device driver for ARCH_K3")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Roger Quadros <rogerq@kernel.org>
 > 
-> This sets the pins to "gpio". Your earlier patch sets them to "mdio", so
-> removing this will break MDIO0 on the RB3011. It's likely that your
-> fixes for MDIO/QCA8K mean that the RB3011 can be switch to use the MDIO
-> driver rather than mdio-gpio, but that will need tested and this change
-> alone will definitely break things.
+> This patch ignores OMAP_GPMC dependencies and results in:
+> 
+> WARNING: unmet direct dependencies detected for OMAP_GPMC
+>   Depends on [n]: MEMORY [=y] && OF_ADDRESS [=n]
+>   Selected by [m]:
+>   - MTD_NAND_OMAP2 [=m] && MTD [=m] && MTD_RAW_NAND [=m] && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST [=y]) && HAS_IOMEM [=y]
+> 
+> when configuring sparc64:allmodconfig, and in the following
+> build failure when trying to build that image.
+> 
+> Building sparc64:allmodconfig ... failed
+> --------------
+> Error log:
+> <stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
+> sparc64-linux-ld: drivers/memory/omap-gpmc.o: in function `gpmc_probe_generic_child':
+> omap-gpmc.c:(.text.unlikely+0x14c4): undefined reference to `of_platform_device_create'
+> 
+> Guenter
+> 
+>> ---
+>>  drivers/mtd/nand/raw/Kconfig | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
+>> index 20408b7db540..d986ab4e4c35 100644
+>> --- a/drivers/mtd/nand/raw/Kconfig
+>> +++ b/drivers/mtd/nand/raw/Kconfig
+>> @@ -42,7 +42,8 @@ config MTD_NAND_OMAP2
+>>  	tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
+>>  	depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+>>  	depends on HAS_IOMEM
+>> -	select OMAP_GPMC if ARCH_K3
+>> +	select MEMORY
+>> +	select OMAP_GPMC
 
-I tried the below patch to switch the RB3011 to the IPQ8064 MDIO driver
-(based on qcom,ipq8064-mdio.yaml) and get:
+I think selecting these was a bad idea in the first place. I'll send out a patch to remove the selects.
+This driver should depend on them instead.
 
-[    1.270310] qca8k 37000000.mdio-mii:10: Switch id detected 0 but expected 13
+We will figure out how to enable OMAP_GPMC for K3 architecture some other way.
 
-and none of the ports on that associated switch come up. Kernel is
-5.15.23 rather than latest, but there are no updates to mdio-ipq8064.c
-in later kernels than I can see and none of the qca8k changes seem
-relevant. Is there something else I'm missing?
+>>  	help
+>>  	  Support for NAND flash on Texas Instruments OMAP2, OMAP3, OMAP4
+>>  	  and Keystone platforms.
+>> -- 
+>> 2.17.1
+>>
 
-
-diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-index c3e3070702f9..0cafee65ca22 100644
---- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-+++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-@@ -24,13 +24,13 @@ memory@42000000 {
- 		device_type = "memory";
- 	};
- 
--	mdio0: mdio-0 {
-+	mdio0: mdio@37000000 {
- 		status = "okay";
--		compatible = "virtual,mdio-gpio";
--		gpios = <&qcom_pinmux 1 GPIO_ACTIVE_HIGH>,
--			<&qcom_pinmux 0 GPIO_ACTIVE_HIGH>;
-+		compatible = "qcom,ipq8064-mdio";
- 		#address-cells = <1>;
- 		#size-cells = <0>;
-+		reg = <0x37000000 0x200000>;
-+		clocks = <&gcc GMAC_CORE1_CLK>;
- 
- 		pinctrl-0 = <&mdio0_pins>;
- 		pinctrl-names = "default";
-@@ -318,7 +318,7 @@ mux {
- 	mdio0_pins: mdio0_pins {
- 		mux {
- 			pins = "gpio0", "gpio1";
--			function = "gpio";
-+			function = "mdio";
- 			drive-strength = <8>;
- 			bias-disable;
- 		};
-
-J.
-
--- 
-/-\                             |  Shall I call the United Nations?
-|@/  Debian GNU/Linux Developer |
-\-                              |
+cheers,
+-roger
