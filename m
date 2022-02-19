@@ -2,234 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE58C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1284C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242750AbiBSSJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:09:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40000 "EHLO
+        id S242767AbiBSSJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:09:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235751AbiBSSJ1 (ORCPT
+        with ESMTP id S242760AbiBSSJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:09:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300D09FF6;
-        Sat, 19 Feb 2022 10:09:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1BDFB8006F;
-        Sat, 19 Feb 2022 18:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D80C004E1;
-        Sat, 19 Feb 2022 18:09:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645294145;
-        bh=SJGNoJSmk16eqKEQZWdKnvYqxDTdBErC26etaQ5PC1A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lIX8R5N1CoJpvx8LOuW6TkpjpHQkD6KVt0quHBJIeFi9BaDZCHKqM+469JlUbAG0Z
-         RNEr3ThPpg9JtQhSS59wK4UJupelYiD5EXi7c2r9UUfokgxhfINvBb5YzJcffub8l7
-         W763NZexVKGBW0tnUAN7+51Lj5N7/G5KW8WNSCMucyTn+zanj4T+7buzLZom720cQ4
-         x7uG6BZs2p5gx1TGGWt6wsPYKXrqeTaoRjSPAqG7UkmYzjt1yf/5TXao0Ai1lQ2tlz
-         X/CVXpiycBTe3N5BiF8w8GvxKYaspxe/SO8HOn4YzR80FxwIrJuNlSLmkyJ3la0hVC
-         K01y36+fuzohA==
-Date:   Sat, 19 Feb 2022 18:15:52 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
-        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        bsp-development.geo@leica-geosystems.com
-Subject: Re: [PATCH V2 5/5] iio: accel: sca3300: Add inclination channels.
-Message-ID: <20220219181552.5ade5dd1@jic23-huawei>
-In-Reply-To: <20220217062705.2867149-6-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220217062705.2867149-1-Qing-wu.Li@leica-geosystems.com.cn>
-        <20220217062705.2867149-6-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 19 Feb 2022 13:09:40 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C2312AA6;
+        Sat, 19 Feb 2022 10:09:18 -0800 (PST)
+Date:   Sat, 19 Feb 2022 18:09:13 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1645294155;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KT2fuDd/2PirIuy3AtxiVnUjnCo2bXQnL7fxmMZK7E0=;
+        b=4wZDboyuA4Ndb5TrYKYo1T38Fh+GANBotzIzyfjsSK49uu3Dj+1G0x16m1brwNZ1dwftNB
+        1Km6doczk1EFhhOiMqOvDizxBcszr9BgCT9yQCSmN0dZ4aK4ZIMXKL8EV8DCxck0KOv4qA
+        ntRYdXS4U9q3RTp6kaP8+HOtaX+0xBBMVrBa1lq1RbS8mVvF+7bU7N/hUHa/rEWmNdDz2e
+        Rbylriz2Yi3xsYsS2784VBP59yW9mzpcU6yeGqYRe8hmeod08ilui2SvaYbiD3J+hHifDb
+        7G9NLub4kaRmWeMnW538Aa2hUiaP2p1qsZa8bIGeosCnc3O8m1Rk3YewMRmrzg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1645294155;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KT2fuDd/2PirIuy3AtxiVnUjnCo2bXQnL7fxmMZK7E0=;
+        b=h4+WaCIuALhrMLcIaQ2CONyORPxdJ5HOEsmrb4N9TihJ9t9sIGjfVnNyXZ/6ydQcCu02H0
+        TOAs29WW5+yPzRCQ==
+From:   "tip-bot2 for Jue Wang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: ras/core] x86/mce: Work around an erratum on fast string copy
+ instructions
+Cc:     Jue Wang <juew@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220218013209.2436006-1-juew@google.com>
+References: <20220218013209.2436006-1-juew@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <164529415398.16921.8042682039148828519.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 06:27:05 +0000
-LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+The following commit has been merged into the ras/core branch of tip:
 
-> Different with SCA3300, SCL3300 can output inclination angles.
-> Angles are formed from acceleration with following equations:
-> ANG_X =3D atan2(accx / =E2=88=9A(accy^2 + accz^2)),
-> ANG_Y =3D atan2(accy / =E2=88=9A(accx^2 + accz^2)),
-> ANG_Z =3D atan2(accz / =E2=88=9A(accx^2 + accy^2)),
->=20
-> The commit add output of the raw value,scale
-> and scale_available of angles.
+Commit-ID:     8ca97812c3c830573f965a07bbd84223e8c5f5bd
+Gitweb:        https://git.kernel.org/tip/8ca97812c3c830573f965a07bbd84223e8c5f5bd
+Author:        Jue Wang <juew@google.com>
+AuthorDate:    Thu, 17 Feb 2022 17:32:09 -08:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Sat, 19 Feb 2022 14:26:42 +01:00
 
-Hi,
+x86/mce: Work around an erratum on fast string copy instructions
 
-As it came up in another review today, could you confirm
-the units of incli after application of scale?  The units
-of angles have unfortunately become a bit of a mess over time :(
-See the BNO055 review for more discussion.
+A rare kernel panic scenario can happen when the following conditions
+are met due to an erratum on fast string copy instructions:
 
-incli is documented as being in degrees so that should be the case here
-as well.
+1) An uncorrected error.
+2) That error must be in first cache line of a page.
+3) Kernel must execute page_copy from the page immediately before that
+page.
 
-Otherwise, just one comment inline which is really a request to add a little
-more to the description of patch 3 to say it is preparing the way for addit=
-ional
-channels.
+The fast string copy instructions ("REP; MOVS*") could consume an
+uncorrectable memory error in the cache line _right after_ the desired
+region to copy and raise an MCE.
 
-Looks good to me.
-Thanks,
+Bit 0 of MSR_IA32_MISC_ENABLE can be cleared to disable fast string
+copy and will avoid such spurious machine checks. However, that is less
+preferable due to the permanent performance impact. Considering memory
+poison is rare, it's desirable to keep fast string copy enabled until an
+MCE is seen.
 
-Jonathan
+Intel has confirmed the following:
+1. The CPU erratum of fast string copy only applies to Skylake,
+Cascade Lake and Cooper Lake generations.
 
+Directly return from the MCE handler:
+2. Will result in complete execution of the "REP; MOVS*" with no data
+loss or corruption.
+3. Will not result in another MCE firing on the next poisoned cache line
+due to "REP; MOVS*".
+4. Will resume execution from a correct point in code.
+5. Will result in the same instruction that triggered the MCE firing a
+second MCE immediately for any other software recoverable data fetch
+errors.
+6. Is not safe without disabling the fast string copy, as the next fast
+string copy of the same buffer on the same CPU would result in a PANIC
+MCE.
 
->=20
-> New interfaces:
->   in_incli_scale
->   in_incli_scale_available
->   in_incli_x_raw
->   in_incli_y_raw
->   in_incli_z_raw
->=20
-> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-> ---
->  drivers/iio/accel/sca3300.c | 48 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 48 insertions(+)
->=20
-> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-> index 123ab9a784d2..5c86b143d17a 100644
-> --- a/drivers/iio/accel/sca3300.c
-> +++ b/drivers/iio/accel/sca3300.c
-> @@ -64,6 +64,9 @@ enum sca3300_scan_indexes {
->  	SCA3300_ACC_Y,
->  	SCA3300_ACC_Z,
->  	SCA3300_TEMP,
-> +	SCA3300_INCLI_X,
-> +	SCA3300_INCLI_Y,
-> +	SCA3300_INCLI_Z,
->  	SCA3300_TIMESTAMP,
->  };
-> =20
-> @@ -88,6 +91,24 @@ enum sca3300_scan_indexes {
->  	},								\
->  }
-> =20
-> +#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
-> +	.type =3D IIO_INCLI,						\
-> +	.address =3D reg,							\
-> +	.modified =3D 1,							\
-> +	.channel2 =3D IIO_MOD_##axis,					\
-> +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),		\
-> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type_available =3D				\
-> +	BIT(IIO_CHAN_INFO_SCALE),					\
-> +	.scan_index =3D index,						\
-> +	.scan_type =3D {							\
-> +		.sign =3D 's',						\
-> +		.realbits =3D 16,						\
-> +		.storagebits =3D 16,					\
-> +		.endianness =3D IIO_CPU,					\
-> +	},								\
-> +}
-> +
->  #define SCA3300_TEMP_CHANNEL(index, reg) {				\
->  		.type =3D IIO_TEMP,					\
->  		.address =3D reg,						\
-> @@ -115,6 +136,9 @@ static const struct iio_chan_spec scl3300_channels[] =
-=3D {
->  	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
->  	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
->  	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
-> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
-> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
-> +	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
->  	IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP),
->  };
-> =20
-> @@ -124,17 +148,28 @@ static const int scl3300_lp_freq_table[] =3D {40, 7=
-0, 10, 10};
->  static const int sca3300_accel_scale_table[][2] =3D {{0, 370}, {0, 741},=
- {0, 185}, {0, 185}};
->  static const int scl3300_accel_scale_table[][2] =3D {{0, 167}, {0, 333},=
- {0, 83}, {0, 83}};
-> =20
-> +static const int scl3300_incli_scale_table[][2] =3D {{0, 5495}, {0, 5495=
-}, {0, 5495}, {0, 5495}};
-> +
->  static const unsigned long sca3300_scan_masks[] =3D {
->  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
->  	BIT(SCA3300_TEMP),
->  	0,
->  };
-> =20
-> +static const unsigned long scl3300_scan_masks[] =3D {
-> +	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
-> +	BIT(SCA3300_TEMP)  |
-> +	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
-> +	0,
-> +};
-> +
->  struct sca3300_chip_info {
->  	const struct iio_chan_spec *channels;
->  	enum sca3300_chip_type chip_type;
->  	const int (*accel_scale_table)[2];
-> +	const int (*incli_scale_table)[2];
->  	unsigned int num_accel_scales;
-> +	unsigned int num_incli_scales;
->  	unsigned long scan_masks;
->  	unsigned int num_freqs;
->  	const int *freq_table;
-> @@ -172,14 +207,18 @@ static const struct sca3300_chip_info sca3300_chip_=
-info_tbl[] =3D {
->  		.scan_masks =3D sca3300_scan_masks,
->  		.channels =3D sca3300_channels,
->  		.chip_type =3D CHIP_SCA3300,
-> +		.incli_scale_table =3D NULL,
-> +		.num_incli_scales =3D 0,
->  		.name =3D "sca3300",
->  		.chip_id =3D 0x51,
->  		.num_freqs =3D 2,
->  	},
->  	[CHIP_SCL3300] =3D {
->  		.num_accel_scales =3D ARRAY_SIZE(scl3300_accel_scale_table)*2-1,
-> +		.num_incli_scales =3D ARRAY_SIZE(scl3300_lp_freq_table)-1,
->  		.num_channels =3D ARRAY_SIZE(scl3300_channels),
->  		.accel_scale_table =3D scl3300_accel_scale_table,
-> +		.incli_scale_table =3D scl3300_incli_scale_table,
->  		.freq_table =3D scl3300_lp_freq_table,
->  		.scan_masks =3D sca3300_scan_masks,
->  		.channels =3D scl3300_channels,
-> @@ -378,6 +417,10 @@ static int sca3300_read_raw(struct iio_dev *indio_de=
-v,
->  		if (ret)
->  			return ret;
->  		switch (chan->type) {
-> +		case IIO_INCLI:
+This should mitigate the erratum completely with the only caveat that
+the fast string copy is disabled on the affected hyper thread thus
+performance degradation.
 
-Ah. This is why you had the switch in the earlier patch. Makes sense now!
-Please add to the description of patch 3 that it also prepares for the addi=
-tion of
-extra channels.
+This is still better than the OS crashing on MCEs raised on an
+irrelevant process due to "REP; MOVS*' accesses in a kernel context,
+e.g., copy_page.
 
-> +			*val =3D  data->chip_info->incli_scale_table[reg_val][0];
-> +			*val2 =3D data->chip_info->incli_scale_table[reg_val][1];
-> +			return IIO_VAL_INT_PLUS_MICRO;
->  		case IIO_ACCEL:
->  			*val =3D  data->chip_info->accel_scale_table[reg_val][0];
->  			*val2 =3D data->chip_info->accel_scale_table[reg_val][1];
-> @@ -507,6 +550,11 @@ static int sca3300_read_avail(struct iio_dev *indio_=
-dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
-> +		case IIO_INCLI:
-> +			*vals =3D (const int *)data->chip_info->incli_scale_table;
-> +			*length =3D data->chip_info->num_incli_scales;
-> +			*type =3D IIO_VAL_INT_PLUS_MICRO;
-> +			return IIO_AVAIL_LIST;
->  		case IIO_ACCEL:
->  			*vals =3D (const int *)data->chip_info->accel_scale_table;
->  			*length =3D data->chip_info->num_accel_scales;
+Tested:
 
+Injected errors on 1st cache line of 8 anonymous pages of process
+'proc1' and observed MCE consumption from 'proc2' with no panic
+(directly returned).
+
+Without the fix, the host panicked within a few minutes on a
+random 'proc2' process due to kernel access from copy_page.
+
+  [ bp: Fix comment style + touch ups, zap an unlikely(), improve the
+    quirk function's readability. ]
+
+Signed-off-by: Jue Wang <juew@google.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/20220218013209.2436006-1-juew@google.com
+---
+ arch/x86/kernel/cpu/mce/core.c     | 64 +++++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/mce/internal.h |  5 +-
+ 2 files changed, 68 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 0e71474..3d766e6 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -815,6 +815,59 @@ quirk_sandybridge_ifu(int bank, struct mce *m, struct pt_regs *regs)
+ }
+ 
+ /*
++ * Disable fast string copy and return from the MCE handler upon the first SRAR
++ * MCE on bank 1 due to a CPU erratum on Intel Skylake/Cascade Lake/Cooper Lake
++ * CPUs.
++ * The fast string copy instructions ("REP; MOVS*") could consume an
++ * uncorrectable memory error in the cache line _right after_ the desired region
++ * to copy and raise an MCE with RIP pointing to the instruction _after_ the
++ * "REP; MOVS*".
++ * This mitigation addresses the issue completely with the caveat of performance
++ * degradation on the CPU affected. This is still better than the OS crashing on
++ * MCEs raised on an irrelevant process due to "REP; MOVS*" accesses from a
++ * kernel context (e.g., copy_page).
++ *
++ * Returns true when fast string copy on CPU has been disabled.
++ */
++static noinstr bool quirk_skylake_repmov(void)
++{
++	u64 mcgstatus   = mce_rdmsrl(MSR_IA32_MCG_STATUS);
++	u64 misc_enable = mce_rdmsrl(MSR_IA32_MISC_ENABLE);
++	u64 mc1_status;
++
++	/*
++	 * Apply the quirk only to local machine checks, i.e., no broadcast
++	 * sync is needed.
++	 */
++	if (!(mcgstatus & MCG_STATUS_LMCES) ||
++	    !(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING))
++		return false;
++
++	mc1_status = mce_rdmsrl(MSR_IA32_MCx_STATUS(1));
++
++	/* Check for a software-recoverable data fetch error. */
++	if ((mc1_status &
++	     (MCI_STATUS_VAL | MCI_STATUS_OVER | MCI_STATUS_UC | MCI_STATUS_EN |
++	      MCI_STATUS_ADDRV | MCI_STATUS_MISCV | MCI_STATUS_PCC |
++	      MCI_STATUS_AR | MCI_STATUS_S)) ==
++	     (MCI_STATUS_VAL |                   MCI_STATUS_UC | MCI_STATUS_EN |
++	      MCI_STATUS_ADDRV | MCI_STATUS_MISCV |
++	      MCI_STATUS_AR | MCI_STATUS_S)) {
++		misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
++		mce_wrmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
++		mce_wrmsrl(MSR_IA32_MCx_STATUS(1), 0);
++
++		instrumentation_begin();
++		pr_err_once("Erratum detected, disable fast string copy instructions.\n");
++		instrumentation_end();
++
++		return true;
++	}
++
++	return false;
++}
++
++/*
+  * Do a quick check if any of the events requires a panic.
+  * This decides if we keep the events around or clear them.
+  */
+@@ -1383,6 +1436,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 	else if (unlikely(!mca_cfg.initialized))
+ 		return unexpected_machine_check(regs);
+ 
++	if (mce_flags.skx_repmov_quirk && quirk_skylake_repmov())
++		goto clear;
++
+ 	/*
+ 	 * Establish sequential order between the CPUs entering the machine
+ 	 * check handler.
+@@ -1525,6 +1581,7 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ out:
+ 	instrumentation_end();
+ 
++clear:
+ 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
+ }
+ EXPORT_SYMBOL_GPL(do_machine_check);
+@@ -1838,6 +1895,13 @@ static int __mcheck_cpu_apply_quirks(struct cpuinfo_x86 *c)
+ 
+ 		if (c->x86 == 6 && c->x86_model == 45)
+ 			mce_flags.snb_ifu_quirk = 1;
++
++		/*
++		 * Skylake, Cascacde Lake and Cooper Lake require a quirk on
++		 * rep movs.
++		 */
++		if (c->x86 == 6 && c->x86_model == INTEL_FAM6_SKYLAKE_X)
++			mce_flags.skx_repmov_quirk = 1;
+ 	}
+ 
+ 	if (c->x86_vendor == X86_VENDOR_ZHAOXIN) {
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index a04b61e..3efb503 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -170,7 +170,10 @@ struct mce_vendor_flags {
+ 	/* SandyBridge IFU quirk */
+ 	snb_ifu_quirk		: 1,
+ 
+-	__reserved_0		: 57;
++	/* Skylake, Cascade Lake, Cooper Lake REP;MOVS* quirk */
++	skx_repmov_quirk	: 1,
++
++	__reserved_0		: 56;
+ };
+ 
+ extern struct mce_vendor_flags mce_flags;
