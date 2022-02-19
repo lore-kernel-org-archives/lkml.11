@@ -2,84 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A994C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241762AbiBSIdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 03:33:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33118 "EHLO
+        id S240572AbiBSIk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 03:40:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239001AbiBSIdC (ORCPT
+        with ESMTP id S234206AbiBSIkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 03:33:02 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D35673F1;
-        Sat, 19 Feb 2022 00:32:44 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21J8WXVB112528;
-        Sat, 19 Feb 2022 02:32:33 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645259553;
-        bh=yoS740aR9QXHttLhOCtrUXe2a1ycP9PYU0FvhSDUY2c=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=LqhdfCqeX3tcZprlDadWwHRnkOPXVhWe1zwWUEjqNPxOufyFp990/Bk/t3uSPhTcl
-         jibvYbZk3dHYG7TVazrU+yJLCKFD+RosnsbjKv6Ck6eHDd5qV5rTf97l5MHD4oktgu
-         6H5Luv93rHKs0iv7PijEbOFamIpAEKZ2cMp2I/k0=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21J8WXrG070278
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 19 Feb 2022 02:32:33 -0600
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sat, 19
- Feb 2022 02:32:33 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sat, 19 Feb 2022 02:32:33 -0600
-Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21J8WRX7017343;
-        Sat, 19 Feb 2022 02:32:31 -0600
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH 1/2] dmaengine: ti: k3-udma: Add AM62x DMSS support
-Date:   Sat, 19 Feb 2022 14:02:19 +0530
-Message-ID: <20220219083220.489420-2-vigneshr@ti.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220219083220.489420-1-vigneshr@ti.com>
-References: <20220219083220.489420-1-vigneshr@ti.com>
+        Sat, 19 Feb 2022 03:40:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68BA5710C0
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:40:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645260026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EWRQEbURhArmd05PgMJJxgCJWqV85CABLE/ul5StLRE=;
+        b=Hi5CR6Q9ms4Wi+UuHfGKma0Gyxr5aEuyHSLz4OO4m4Rxo57OsoJ+LERlPtAE66G9h+MlrU
+        /LLCmWSjoUJGAcK6YX0bFODdhDL4f+JUQRuuo2tZY+YNVwUM3A9KapLFOFVGSWelxnMhha
+        60hAQl+QIbSaPHRWXLcyJJI5ZfwItsQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-118-ylAVuFwpM82WIs_N0GGJrA-1; Sat, 19 Feb 2022 03:40:25 -0500
+X-MC-Unique: ylAVuFwpM82WIs_N0GGJrA-1
+Received: by mail-ed1-f69.google.com with SMTP id j9-20020a056402238900b004128085d906so6088371eda.19
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:40:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EWRQEbURhArmd05PgMJJxgCJWqV85CABLE/ul5StLRE=;
+        b=XrCKa2MfTCxvOfAbyBpighBApA0koUWcEYXZEN7h+Bs7X1Go8bQfSOdsMEgYc5/cFG
+         /Pn4AXov8rESn18nuPj5Jyk3cq8ou7Abf58ZoqLPb+qOSHppAW1txfR9gTPFxAbICDH2
+         Oq6wj3LC9QaujaE+XEOKXnUsx9R5etuSdUVzp3GBAvL/cucDXVxe+aI8+X0bB+ufJdAI
+         zm1Ka6jjT/0y5UWUWA7AKrHPoQ/aYnOnmmH/vRH/XDQQrlwNbWvlD3JYP+sTN13gsGEP
+         zuAj72eLuHYSMMC+YGHNuXMsMamvTUAEGsqrj2O17gQ5EaRbteZKzRbnp6fgWJrDxtmU
+         fr2w==
+X-Gm-Message-State: AOAM531V44XEJyOJDb/4Z5/15NseR38bSU9Mz61++VATnEHcKPn9Ksxl
+        ffXlsyGZkvdALoNrr+3THLl2v8Gr1fTBIB+XvaP6URT8LigMGrtR4owc2BfqHEiSf8IIx7qaFw/
+        j6/wZQZmf83CdMa6EMhIE4g8N
+X-Received: by 2002:a17:906:b887:b0:6ce:36cb:1e18 with SMTP id hb7-20020a170906b88700b006ce36cb1e18mr9387679ejb.95.1645260024012;
+        Sat, 19 Feb 2022 00:40:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzOaG0WzNYlXYx4k5bTz4ESGBntaVLOg+dQfvubSVqrCkwld+Vugi9SktveTk01s9jyBbpBGA==
+X-Received: by 2002:a17:906:b887:b0:6ce:36cb:1e18 with SMTP id hb7-20020a170906b88700b006ce36cb1e18mr9387665ejb.95.1645260023780;
+        Sat, 19 Feb 2022 00:40:23 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.googlemail.com with ESMTPSA id n25sm5611514eds.89.2022.02.19.00.40.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Feb 2022 00:40:23 -0800 (PST)
+Message-ID: <a6635e90-1cf6-e21d-d3d6-49c47074883a@redhat.com>
+Date:   Sat, 19 Feb 2022 09:40:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] kvm/x86: rename kvm's read_tsc() as
+ kvm_read_host_tsc()
+Content-Language: en-US
+To:     Pete Swain <swine@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Feng Tang <feng.tang@intel.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Juergen Gross <jgross@suse.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20220218221820.950118-1-swine@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220218221820.950118-1-swine@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Attribute AM64x soc data to AM62x as well as the DMSS IP is similar b/w
-these two SoCs
+On 2/18/22 23:18, Pete Swain wrote:
+> Avoid clash with host driver's INDIRECT_CALLABLE_SCOPE read_tsc()
+> 
+> Signed-off-by: Pete Swain <swine@google.com>
+> ---
+>   arch/x86/kvm/x86.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 641044db415d..0424d77cd214 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -2632,7 +2632,7 @@ static inline void adjust_tsc_offset_host(struct kvm_vcpu *vcpu, s64 adjustment)
+>   
+>   #ifdef CONFIG_X86_64
+>   
+> -static u64 read_tsc(void)
+> +static u64 kvm_read_host_tsc(void)
+>   {
+>   	u64 ret = (u64)rdtsc_ordered();
+>   	u64 last = pvclock_gtod_data.clock.cycle_last;
+> @@ -2674,7 +2674,7 @@ static inline u64 vgettsc(struct pvclock_clock *clock, u64 *tsc_timestamp,
+>   		break;
+>   	case VDSO_CLOCKMODE_TSC:
+>   		*mode = VDSO_CLOCKMODE_TSC;
+> -		*tsc_timestamp = read_tsc();
+> +		*tsc_timestamp = kvm_read_host_tsc();
+>   		v = (*tsc_timestamp - clock->cycle_last) &
+>   			clock->mask;
+>   		break;
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- drivers/dma/ti/k3-udma.c | 1 +
- 1 file changed, 1 insertion(+)
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
-diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-index d2d4cbe63e448..2f0d2c68c93c6 100644
---- a/drivers/dma/ti/k3-udma.c
-+++ b/drivers/dma/ti/k3-udma.c
-@@ -4375,6 +4375,7 @@ static const struct soc_device_attribute k3_soc_devices[] = {
- 	{ .family = "J7200", .data = &j7200_soc_data },
- 	{ .family = "AM64X", .data = &am64_soc_data },
- 	{ .family = "J721S2", .data = &j721e_soc_data},
-+	{ .family = "AM62X", .data = &am64_soc_data },
- 	{ /* sentinel */ }
- };
- 
--- 
-2.35.1
+Paolo
 
