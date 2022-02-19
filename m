@@ -2,136 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 706D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 11:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0555EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 11:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242382AbiBSLAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 06:00:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42302 "EHLO
+        id S242362AbiBSLEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 06:04:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242189AbiBSK7O (ORCPT
+        with ESMTP id S240384AbiBSLEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 05:59:14 -0500
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 803666A030
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 02:58:46 -0800 (PST)
-Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
-        by 156.147.23.53 with ESMTP; 19 Feb 2022 19:58:45 +0900
-X-Original-SENDERIP: 156.147.1.151
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.151 with ESMTP; 19 Feb 2022 19:58:45 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: [PATCH v2 18/18] dept: Distinguish each work from another
-Date:   Sat, 19 Feb 2022 19:58:31 +0900
-Message-Id: <1645268311-24222-19-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1645268311-24222-1-git-send-email-byungchul.park@lge.com>
-References: <1645268311-24222-1-git-send-email-byungchul.park@lge.com>
+        Sat, 19 Feb 2022 06:04:05 -0500
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3867A6A075;
+        Sat, 19 Feb 2022 03:01:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=iYUDiAjoLie13BkDtYO7gp/SKHNnEFJhm4CtBUuVL2E=;
+        b=dNY7HR+O49q7ko5z+fV9Du3c5CZrY2LVT8eNks5f1MuYipM9O0SozDdBy85ZStEcLcyvmhWJf2msA
+         nPKcfhNYKRUnSAzdMEVDdD2rDlntg98TlEvei775JvBv8zKJuYr5OF0SSiZ77zR87FEYE6jmacRx05
+         hW4gJCz/hf1GAyLNlIXYj8HnxObygmi3n0mHM2VpyG9uob57R8Qo1UhvFzCtmxSO1oB8SkkO4Pcu3n
+         QgnbKnR4GijBtYFQmqrv4izsePd3Gb56UdzwvvPZkEJ74ztR7jpBZ0Skgu6NfdKDfQayxJvrLrz78r
+         lqP2tW6pVPPafnlmcjc9v8jmywdpAQg==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000009,0.005103)], BW: [Enabled, t: (0.000029,0.000001)], RTDA: [Enabled, t: (0.066537), Hit: No, Details: v2.25.0; Id: 15.52k1vm.1fs8q8lsh.r23u; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Sat, 19 Feb 2022 14:00:54 +0300
+Date:   Sat, 19 Feb 2022 13:42:55 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Xu Yilun <yilun.xu@intel.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        conor.dooley@microchip.com, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, system@metrotek.ru
+Subject: Re: [PATCH v4] fpga: microchip-spi: add Microchip FPGA manager
+Message-ID: <20220219104255.smgqcqlez6sdo4hk@x260>
+References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+ <20220217191851.11730-1-i.bornyakov@metrotek.ru>
+ <20220218160555.GA1333893@yilunxu-OptiPlex-7050>
+ <20220219061627.3oanqx5glsyq47xk@x260>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220219061627.3oanqx5glsyq47xk@x260>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Workqueue already provides concurrency control. By that, any wait in a
-work doesn't prevents events in other works with the control enabled.
-Thus, each work would better be considered a different context.
+On Sat, Feb 19, 2022 at 09:16:27AM +0300, Ivan Bornyakov wrote:
+> On Sat, Feb 19, 2022 at 12:05:55AM +0800, Xu Yilun wrote:
+> >
+> > Maybe the bitstream info at the head of the image could be parsed in
+> > write_init(), and this requires the driver fill the
+> > fpga_manager_ops.initial_header_size
+> >
+> 
+> Header size is not known beforehand and is stored in 25th byte of the
+> image.
+> 
 
-So let Dept assign a different context id to each work.
+Actually I was not quite accurate here. The header itself seems to be of
+constant size according to
+https://coredocs.s3.amazonaws.com/DirectC/2021_2/spi_directc.pdf
+(4. Data File Format)
 
-Signed-off-by: Byungchul Park <byungchul.park@lge.com>
----
- include/linux/dept.h     |  2 ++
- kernel/dependency/dept.c | 10 ++++++++++
- kernel/workqueue.c       |  3 +++
- 3 files changed, 15 insertions(+)
-
-diff --git a/include/linux/dept.h b/include/linux/dept.h
-index 1a1c307..55c5ed5 100644
---- a/include/linux/dept.h
-+++ b/include/linux/dept.h
-@@ -486,6 +486,7 @@ struct dept_task {
- extern void dept_event_split_map(struct dept_map_each *me, struct dept_map_common *mc, unsigned long ip, const char *e_fn);
- extern void dept_ask_event_split_map(struct dept_map_each *me, struct dept_map_common *mc);
- extern void dept_kernel_enter(void);
-+extern void dept_work_enter(void);
- 
- /*
-  * for users who want to manage external keys
-@@ -527,6 +528,7 @@ struct dept_task {
- #define dept_event_split_map(me, mc, ip, e_fn)		do { } while (0)
- #define dept_ask_event_split_map(me, mc)		do { } while (0)
- #define dept_kernel_enter()				do { } while (0)
-+#define dept_work_enter()				do { } while (0)
- #define dept_key_init(k)				do { (void)(k); } while (0)
- #define dept_key_destroy(k)				do { (void)(k); } while (0)
- #endif
-diff --git a/kernel/dependency/dept.c b/kernel/dependency/dept.c
-index c369a8e..ee3faa2 100644
---- a/kernel/dependency/dept.c
-+++ b/kernel/dependency/dept.c
-@@ -1873,6 +1873,16 @@ void dept_disable_hardirq(unsigned long ip)
- 	dept_exit(flags);
- }
- 
-+/*
-+ * Assign a different context id to each work.
-+ */
-+void dept_work_enter(void)
-+{
-+	struct dept_task *dt = dept_task();
-+
-+	dt->cxt_id[DEPT_CXT_PROCESS] += (1UL << DEPT_CXTS_NR);
-+}
-+
- void dept_kernel_enter(void)
- {
- 	struct dept_task *dt = dept_task();
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 33f1106..f5d762c 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -51,6 +51,7 @@
- #include <linux/sched/isolation.h>
- #include <linux/nmi.h>
- #include <linux/kvm_para.h>
-+#include <linux/dept.h>
- 
- #include "workqueue_internal.h"
- 
-@@ -2217,6 +2218,8 @@ static void process_one_work(struct worker *worker, struct work_struct *work)
- 
- 	lockdep_copy_map(&lockdep_map, &work->lockdep_map);
- #endif
-+	dept_work_enter();
-+
- 	/* ensure we're on the correct CPU */
- 	WARN_ON_ONCE(!(pool->flags & POOL_DISASSOCIATED) &&
- 		     raw_smp_processor_id() != pool->cpu);
--- 
-1.9.1
+But the lookup table is definitely of a variable size. Moreover
+bitstream start and size both are somewhere in the image and needed
+to be located through lookup table.
 
