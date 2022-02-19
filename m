@@ -2,345 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C548C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241725AbiBSIEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 03:04:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55006 "EHLO
+        id S241732AbiBSIKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 03:10:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbiBSIEN (ORCPT
+        with ESMTP id S234840AbiBSIJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 03:04:13 -0500
-Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820605675C;
-        Sat, 19 Feb 2022 00:03:55 -0800 (PST)
-Received: from [45.44.224.220] (port=39896 helo=localhost)
-        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <olivier@trillion01.com>)
-        id 1nLKig-0001bt-Ib; Sat, 19 Feb 2022 03:03:54 -0500
-Date:   Sat, 19 Feb 2022 03:03:53 -0500
-Message-Id: <d11e31bd59c75b2cce994dd90a07e769d4e039db.1645257310.git.olivier@trillion01.com>
-From:   Olivier Langlois <olivier@trillion01.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        Hao Xu <haoxu@linux.alibaba.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1] io_uring: Add support for napi_busy_poll
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - trillion01.com
-X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
-X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        Sat, 19 Feb 2022 03:09:58 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7663C5C346;
+        Sat, 19 Feb 2022 00:09:40 -0800 (PST)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21J66vXE026801;
+        Sat, 19 Feb 2022 08:09:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=cYs92ukqP6Kc1Qt0PRBoSN4oMZR6wMODxe+0lCpjYxo=;
+ b=okO4ujBgKp4szNB2CGpEBkn338UnBnH4JRIHShxR/p8H+0La1Jxn+TTroTmCeN1XtNkH
+ uVHrNkgMG/4Wht3CQpl8Zt4EeGt3UDqib1GuMNBH4M1hjtJ/QpxmrwlGRlcZC8NE5lx8
+ 4hgvBr6qcs30TKvKlhGw7LYU+0clVMuno8mdFM7ZBxSyhZO85BBTFjuL+APd9Z+Bna4m
+ nPxKEVagKq3q6NW65B3VjkrdnDi6jR8ZdL6virlXdc+2LST2uzdSuugZ08w23Mb32gbt
+ r2BqTAEfRSgD4A6PfkroMxUPk7Qy+1BC8hCb92q9twfLwlZzJGAkiMDzOjeQCwND4Bym ng== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3earxmauc0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 19 Feb 2022 08:09:39 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21J88072004910;
+        Sat, 19 Feb 2022 08:09:37 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3eaqthh077-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 19 Feb 2022 08:09:37 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21J89ZrW56099092
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 19 Feb 2022 08:09:35 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4638AA4054;
+        Sat, 19 Feb 2022 08:09:35 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C8667A405C;
+        Sat, 19 Feb 2022 08:09:33 +0000 (GMT)
+Received: from localhost (unknown [9.43.86.157])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sat, 19 Feb 2022 08:09:33 +0000 (GMT)
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     linux-fsdevel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org,
+        Ritesh Harjani <riteshh@linux.ibm.com>
+Subject: [PATCHv2 REBASED] bad_inode: add missing i_op initializers for fileattr_get/_set
+Date:   Sat, 19 Feb 2022 13:39:17 +0530
+Message-Id: <456975d5d84b1098d5edc49619cfd9a736fc8594.1645257680.git.riteshh@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 3Wa0HFIGiUoQbEYHsSa99hd7EmJB-XGX
+X-Proofpoint-ORIG-GUID: 3Wa0HFIGiUoQbEYHsSa99hd7EmJB-XGX
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-19_02,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 spamscore=0 clxscore=1011 adultscore=0
+ mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202190051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sqpoll thread can be used for performing the napi busy poll in a
-similar way that it does io polling for file systems supporting direct
-access bypassing the page cache.
+Let's bring inode_operations in sync for bad_inode_ops.
+Some of the reasons for doing this are listed here [1].
+But mostly it is just for completeness sake.
 
-The other way that io_uring can be used for napi busy poll is by
-calling io_uring_enter() to get events.
+[1]: https://lore.kernel.org/lkml/1473708559-12714-2-git-send-email-mszeredi@redhat.com/
 
-If the user specify a timeout value, it is distributed between polling
-and sleeping by using the systemwide setting
-/proc/sys/net/core/busy_poll.
-
-Co-developed-by: Hao Xu <haoxu@linux.alibaba.com>
-Signed-off-by: Hao Xu <haoxu@linux.alibaba.com>
-Signed-off-by: Olivier Langlois <olivier@trillion01.com>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
 ---
- fs/io_uring.c | 194 +++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 192 insertions(+), 2 deletions(-)
+v1 -> v2
+1. Rebased.
+2. Removed end of line whitespace fixes as it could quickly give conflicts
+   while applying.
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 77b9c7e4793b..0ed06f024e79 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -63,6 +63,7 @@
- #include <net/sock.h>
- #include <net/af_unix.h>
- #include <net/scm.h>
-+#include <net/busy_poll.h>
- #include <linux/anon_inodes.h>
- #include <linux/sched/mm.h>
- #include <linux/uaccess.h>
-@@ -395,6 +396,10 @@ struct io_ring_ctx {
- 	struct list_head	sqd_list;
- 
- 	unsigned long		check_cq_overflow;
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+	/* used to track busy poll napi_id */
-+	struct list_head	napi_list;
-+#endif
- 
- 	struct {
- 		unsigned		cached_cq_tail;
-@@ -1464,6 +1469,7 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
- 	INIT_WQ_LIST(&ctx->locked_free_list);
- 	INIT_DELAYED_WORK(&ctx->fallback_work, io_fallback_req_func);
- 	INIT_WQ_LIST(&ctx->submit_state.compl_reqs);
-+	INIT_LIST_HEAD(&ctx->napi_list);
- 	return ctx;
- err:
- 	kfree(ctx->dummy_ubuf);
-@@ -5398,6 +5404,111 @@ IO_NETOP_FN(send);
- IO_NETOP_FN(recv);
- #endif /* CONFIG_NET */
- 
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+
-+#define NAPI_TIMEOUT			(60 * SEC_CONVERSION)
-+
-+struct napi_entry {
-+	struct list_head	list;
-+	unsigned int		napi_id;
-+	unsigned long		timeout;
-+};
-+
-+/*
-+ * Add busy poll NAPI ID from sk.
-+ */
-+static void io_add_napi(struct file *file, struct io_ring_ctx *ctx)
-+{
-+	unsigned int napi_id;
-+	struct socket *sock;
-+	struct sock *sk;
-+	struct napi_entry *ne;
-+
-+	if (!net_busy_loop_on())
-+		return;
-+
-+	sock = sock_from_file(file);
-+	if (!sock)
-+		return;
-+
-+	sk = sock->sk;
-+	if (!sk)
-+		return;
-+
-+	napi_id = READ_ONCE(sk->sk_napi_id);
-+
-+	/* Non-NAPI IDs can be rejected */
-+	if (napi_id < MIN_NAPI_ID)
-+		return;
-+
-+	list_for_each_entry(ne, &ctx->napi_list, list) {
-+		if (ne->napi_id == napi_id) {
-+			ne->timeout = jiffies + NAPI_TIMEOUT;
-+			return;
-+		}
-+	}
-+
-+	ne = kmalloc(sizeof(*ne), GFP_KERNEL);
-+	if (!ne)
-+		return;
-+
-+	ne->napi_id = napi_id;
-+	ne->timeout = jiffies + NAPI_TIMEOUT;
-+	list_add_tail(&ne->list, &ctx->napi_list);
-+}
-+
-+static inline void io_check_napi_entry_timeout(struct napi_entry *ne)
-+{
-+	if (time_after(jiffies, ne->timeout)) {
-+		list_del(&ne->list);
-+		kfree(ne);
-+	}
-+}
-+
-+/*
-+ * Busy poll if globally on and supporting sockets found
-+ */
-+static bool io_napi_busy_loop(struct io_ring_ctx *ctx)
-+{
-+	struct napi_entry *ne, *n;
-+
-+	if (list_empty(&ctx->napi_list))
-+		return false;
-+
-+	list_for_each_entry_safe(ne, n, &ctx->napi_list, list) {
-+		napi_busy_loop(ne->napi_id, NULL, NULL, true,
-+			       BUSY_POLL_BUDGET);
-+		io_check_napi_entry_timeout(ne);
-+	}
-+	return !list_empty(&ctx->napi_list);
-+}
-+
-+static void io_free_napi_list(struct io_ring_ctx *ctx)
-+{
-+	while (!list_empty(&ctx->napi_list)) {
-+		struct napi_entry *ne =
-+			list_first_entry(&ctx->napi_list, struct napi_entry,
-+					 list);
-+
-+		list_del(&ne->list);
-+		kfree(ne);
-+	}
-+}
-+#else
-+static inline void io_add_napi(struct file *file, struct io_ring_ctx *ctx)
-+{
-+}
-+
-+static inline bool io_napi_busy_loop(struct io_ring_ctx *ctx)
-+{
-+	return false;
-+}
-+
-+static inline void io_free_napi_list(struct io_ring_ctx *ctx)
-+{
-+}
-+#endif /* CONFIG_NET_RX_BUSY_POLL */
-+
- struct io_poll_table {
- 	struct poll_table_struct pt;
- 	struct io_kiocb *req;
-@@ -5776,6 +5887,7 @@ static int __io_arm_poll_handler(struct io_kiocb *req,
- 		__io_poll_execute(req, mask);
- 		return 0;
- 	}
-+	io_add_napi(req->file, req->ctx);
- 
- 	/*
- 	 * Release ownership. If someone tried to queue a tw while it was
-@@ -7518,7 +7630,8 @@ static int __io_sq_thread(struct io_ring_ctx *ctx, bool cap_entries)
- 		    !(ctx->flags & IORING_SETUP_R_DISABLED))
- 			ret = io_submit_sqes(ctx, to_submit);
- 		mutex_unlock(&ctx->uring_lock);
--
-+		if (io_napi_busy_loop(ctx))
-+			++ret;
- 		if (to_submit && wq_has_sleeper(&ctx->sqo_sq_wait))
- 			wake_up(&ctx->sqo_sq_wait);
- 		if (creds)
-@@ -7649,6 +7762,9 @@ struct io_wait_queue {
- 	struct io_ring_ctx *ctx;
- 	unsigned cq_tail;
- 	unsigned nr_timeouts;
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+	unsigned busy_poll_to;
-+#endif
- };
- 
- static inline bool io_should_wake(struct io_wait_queue *iowq)
-@@ -7709,6 +7825,67 @@ static inline int io_cqring_wait_schedule(struct io_ring_ctx *ctx,
- 	return !*timeout ? -ETIME : 1;
+ fs/bad_inode.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/fs/bad_inode.c b/fs/bad_inode.c
+index 12b8fdcc445b..cefd4ed8d5b2 100644
+--- a/fs/bad_inode.c
++++ b/fs/bad_inode.c
+@@ -160,6 +160,17 @@ static int bad_inode_set_acl(struct user_namespace *mnt_userns,
+ 	return -EIO;
  }
- 
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+static void io_adjust_busy_loop_timeout(struct timespec64 *ts,
-+					struct io_wait_queue *iowq)
+
++static int bad_inode_fileattr_set(struct user_namespace *mnt_userns,
++			struct dentry *dentry, struct fileattr *fa)
 +{
-+	unsigned busy_poll_to = READ_ONCE(sysctl_net_busy_poll);
-+	struct timespec64 pollto = ns_to_timespec64(1000 * (s64)busy_poll_to);
-+
-+	if (timespec64_compare(ts, &pollto) > 0) {
-+		*ts = timespec64_sub(*ts, pollto);
-+		iowq->busy_poll_to = busy_poll_to;
-+	} else {
-+		iowq->busy_poll_to = timespec64_to_ns(ts) / 1000;
-+		ts->tv_sec = 0;
-+		ts->tv_nsec = 0;
-+	}
++	return -EIO;
 +}
 +
-+static inline bool io_busy_loop_timeout(unsigned long start_time,
-+					unsigned long bp_usec)
++static int bad_inode_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 +{
-+	if (bp_usec) {
-+		unsigned long end_time = start_time + bp_usec;
-+		unsigned long now = busy_loop_current_time();
-+
-+		return time_after(now, end_time);
-+	}
-+	return true;
++	return -EIO;
 +}
 +
-+static bool io_busy_loop_end(void *p, unsigned long start_time)
-+{
-+	struct io_wait_queue *iowq = p;
-+
-+	return signal_pending(current) ||
-+	       io_should_wake(iowq) ||
-+	       io_busy_loop_timeout(start_time, iowq->busy_poll_to);
-+}
-+
-+static void io_blocking_napi_busy_loop(struct io_ring_ctx *ctx,
-+				       struct io_wait_queue *iowq)
-+{
-+	unsigned long start_time =
-+		list_is_singular(&ctx->napi_list) ? 0 :
-+		busy_loop_current_time();
-+
-+	do {
-+		if (list_is_singular(&ctx->napi_list)) {
-+			struct napi_entry *ne =
-+				list_first_entry(&ctx->napi_list,
-+						 struct napi_entry, list);
-+
-+			napi_busy_loop(ne->napi_id, io_busy_loop_end, iowq,
-+				       true, BUSY_POLL_BUDGET);
-+			io_check_napi_entry_timeout(ne);
-+			break;
-+		}
-+	} while (io_napi_busy_loop(ctx) &&
-+		 !io_busy_loop_end(iowq, start_time));
-+}
-+#endif /* CONFIG_NET_RX_BUSY_POLL */
-+
- /*
-  * Wait until events become available, if we don't already have some. The
-  * application must reap them itself, as they reside on the shared cq ring.
-@@ -7729,12 +7906,20 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
- 		if (!io_run_task_work())
- 			break;
- 	} while (1);
--
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+	iowq.busy_poll_to = 0;
-+#endif
- 	if (uts) {
- 		struct timespec64 ts;
- 
- 		if (get_timespec64(&ts, uts))
- 			return -EFAULT;
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+		if (!(ctx->flags & IORING_SETUP_SQPOLL) &&
-+		    !list_empty(&ctx->napi_list)) {
-+			io_adjust_busy_loop_timeout(&ts, &iowq);
-+		}
-+#endif
- 		timeout = timespec64_to_jiffies(&ts);
- 	}
- 
-@@ -7759,6 +7944,10 @@ static int io_cqring_wait(struct io_ring_ctx *ctx, int min_events,
- 	iowq.cq_tail = READ_ONCE(ctx->rings->cq.head) + min_events;
- 
- 	trace_io_uring_cqring_wait(ctx, min_events);
-+#ifdef CONFIG_NET_RX_BUSY_POLL
-+	if (iowq.busy_poll_to)
-+		io_blocking_napi_busy_loop(ctx, &iowq);
-+#endif
- 	do {
- 		/* if we can't even flush overflow, don't wait for more */
- 		if (!io_cqring_overflow_flush(ctx)) {
-@@ -9440,6 +9629,7 @@ static __cold void io_ring_ctx_free(struct io_ring_ctx *ctx)
- 		__io_sqe_files_unregister(ctx);
- 	if (ctx->rings)
- 		__io_cqring_overflow_flush(ctx, true);
-+	io_free_napi_list(ctx);
- 	mutex_unlock(&ctx->uring_lock);
- 	io_eventfd_unregister(ctx);
- 	io_destroy_buffers(ctx);
--- 
-2.35.1
+ static const struct inode_operations bad_inode_ops =
+ {
+ 	.create		= bad_inode_create,
+@@ -183,6 +194,8 @@ static const struct inode_operations bad_inode_ops =
+ 	.atomic_open	= bad_inode_atomic_open,
+ 	.tmpfile	= bad_inode_tmpfile,
+ 	.set_acl	= bad_inode_set_acl,
++	.fileattr_set	= bad_inode_fileattr_set,
++	.fileattr_get	= bad_inode_fileattr_get,
+ };
+
+
+--
+2.25.1
 
