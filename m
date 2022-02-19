@@ -2,101 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D83DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 08:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241740AbiBSINo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 03:13:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60110 "EHLO
+        id S241665AbiBSI1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 03:27:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234840AbiBSINm (ORCPT
+        with ESMTP id S234815AbiBSI1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 03:13:42 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2D2229E41;
-        Sat, 19 Feb 2022 00:13:23 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K11RW3z59z1FCw6;
-        Sat, 19 Feb 2022 16:08:55 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 19 Feb 2022 16:13:20 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 19 Feb
- 2022 16:13:20 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH] crypto: hisilicon/sec - fix the aead software fallback for engine
-Date:   Sat, 19 Feb 2022 16:08:08 +0800
-Message-ID: <20220219080808.12212-1-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Sat, 19 Feb 2022 03:27:05 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53374D9F6
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:26:46 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nLL4c-0005s5-At; Sat, 19 Feb 2022 09:26:34 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nLL4Z-00AIen-Il; Sat, 19 Feb 2022 09:26:31 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 1/1] net: dsa: microchip: ksz9477: export HW stats over stats64 interface
+Date:   Sat, 19 Feb 2022 09:26:30 +0100
+Message-Id: <20220219082630.2454948-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to the subreq pointer misuse the private context memory. The aead
-soft crypto occasionally casues the OS panic as setting the 64K page.
-Here is fix it.
+Provide access to HW offloaded packets over stats64 interface.
+The rx/tx_bytes values needed some fixing since HW is accounting size of
+the Ethernet frame together with FCS.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/crypto/hisilicon/sec2/sec_crypto.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+changes v4:
+- do not copy raw counters to the stack
+changes v3:
+- move dev->dev_ops->r_mib_stat64 insight of the mutex
+changes v2:
+- fix locking issue in in atomic context
+---
+ drivers/net/dsa/microchip/ksz9477.c    | 97 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.c |  4 ++
+ drivers/net/dsa/microchip/ksz_common.h |  3 +
+ 3 files changed, 104 insertions(+)
 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-index 8caba9fd1f19..a91635c348b5 100644
---- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-@@ -2295,9 +2295,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
- 				struct aead_request *aead_req,
- 				bool encrypt)
- {
--	struct aead_request *subreq = aead_request_ctx(aead_req);
- 	struct sec_auth_ctx *a_ctx = &ctx->a_ctx;
- 	struct device *dev = ctx->dev;
-+	struct aead_request *subreq;
-+	int ret;
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index a85d990896b0..18ffc8ded7ee 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -64,6 +64,100 @@ static const struct {
+ 	{ 0x83, "tx_discards" },
+ };
  
- 	/* Kunpeng920 aead mode not support input 0 size */
- 	if (!a_ctx->fallback_aead_tfm) {
-@@ -2305,6 +2306,10 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
- 		return -EINVAL;
++struct ksz9477_stats_raw {
++	u64 rx_hi;
++	u64 rx_undersize;
++	u64 rx_fragments;
++	u64 rx_oversize;
++	u64 rx_jabbers;
++	u64 rx_symbol_err;
++	u64 rx_crc_err;
++	u64 rx_align_err;
++	u64 rx_mac_ctrl;
++	u64 rx_pause;
++	u64 rx_bcast;
++	u64 rx_mcast;
++	u64 rx_ucast;
++	u64 rx_64_or_less;
++	u64 rx_65_127;
++	u64 rx_128_255;
++	u64 rx_256_511;
++	u64 rx_512_1023;
++	u64 rx_1024_1522;
++	u64 rx_1523_2000;
++	u64 rx_2001;
++	u64 tx_hi;
++	u64 tx_late_col;
++	u64 tx_pause;
++	u64 tx_bcast;
++	u64 tx_mcast;
++	u64 tx_ucast;
++	u64 tx_deferred;
++	u64 tx_total_col;
++	u64 tx_exc_col;
++	u64 tx_single_col;
++	u64 tx_mult_col;
++	u64 rx_total;
++	u64 tx_total;
++	u64 rx_discards;
++	u64 tx_discards;
++};
++
++static void ksz9477_r_mib_stats64(struct ksz_device *dev, int port)
++{
++	struct rtnl_link_stats64 *stats;
++	struct ksz9477_stats_raw *raw;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++	stats = &mib->stats64;
++	raw = (struct ksz9477_stats_raw *)mib->counters;
++
++	spin_lock(&mib->stats64_lock);
++
++	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast;
++	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast;
++
++	/* HW counters are counting bytes + FCS which is not acceptable
++	 * for rtnl_link_stats64 interface
++	 */
++	stats->rx_bytes = raw->rx_total - stats->rx_packets * ETH_FCS_LEN;
++	stats->tx_bytes = raw->tx_total - stats->tx_packets * ETH_FCS_LEN;
++
++	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
++		raw->rx_oversize;
++
++	stats->rx_crc_errors = raw->rx_crc_err;
++	stats->rx_frame_errors = raw->rx_align_err;
++	stats->rx_dropped = raw->rx_discards;
++	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
++		stats->rx_frame_errors  + stats->rx_dropped;
++
++	stats->tx_window_errors = raw->tx_late_col;
++	stats->tx_fifo_errors = raw->tx_discards;
++	stats->tx_aborted_errors = raw->tx_exc_col;
++	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
++		stats->tx_aborted_errors;
++
++	stats->multicast = raw->rx_mcast;
++	stats->collisions = raw->tx_total_col;
++
++	spin_unlock(&mib->stats64_lock);
++}
++
++static void ksz9477_get_stats64(struct dsa_switch *ds, int port,
++			       struct rtnl_link_stats64 *s)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib;
++
++	mib = &dev->ports[port].mib;
++
++	spin_lock(&mib->stats64_lock);
++	memcpy(s, &mib->stats64, sizeof(*s));
++	spin_unlock(&mib->stats64_lock);
++}
++
+ static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+ {
+ 	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+@@ -1365,6 +1459,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mdb_del           = ksz9477_port_mdb_del,
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
++	.get_stats64		= ksz9477_get_stats64,
+ };
+ 
+ static u32 ksz9477_get_port_addr(int port, int offset)
+@@ -1524,6 +1619,7 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 	if (!dev->ports)
+ 		return -ENOMEM;
+ 	for (i = 0; i < dev->port_cnt; i++) {
++		spin_lock_init(&dev->ports[i].mib.stats64_lock);
+ 		mutex_init(&dev->ports[i].mib.cnt_mutex);
+ 		dev->ports[i].mib.counters =
+ 			devm_kzalloc(dev->dev,
+@@ -1552,6 +1648,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.port_setup = ksz9477_port_setup,
+ 	.r_mib_cnt = ksz9477_r_mib_cnt,
+ 	.r_mib_pkt = ksz9477_r_mib_pkt,
++	.r_mib_stat64 = ksz9477_r_mib_stats64,
+ 	.freeze_mib = ksz9477_freeze_mib,
+ 	.port_init_cnt = ksz9477_port_init_cnt,
+ 	.shutdown = ksz9477_reset_switch,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 7e33ec73f803..27cae9f04322 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -110,6 +110,10 @@ static void ksz_mib_read_work(struct work_struct *work)
+ 		}
+ 		port_r_cnt(dev, i);
+ 		p->read = false;
++
++		if (dev->dev_ops->r_mib_stat64)
++			dev->dev_ops->r_mib_stat64(dev, i);
++
+ 		mutex_unlock(&mib->cnt_mutex);
  	}
  
-+	subreq = aead_request_alloc(a_ctx->fallback_aead_tfm, GFP_KERNEL);
-+	if (!subreq)
-+		return -ENOMEM;
-+
- 	aead_request_set_tfm(subreq, a_ctx->fallback_aead_tfm);
- 	aead_request_set_callback(subreq, aead_req->base.flags,
- 				  aead_req->base.complete, aead_req->base.data);
-@@ -2312,8 +2317,13 @@ static int sec_aead_soft_crypto(struct sec_ctx *ctx,
- 			       aead_req->cryptlen, aead_req->iv);
- 	aead_request_set_ad(subreq, aead_req->assoclen);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 3db63f62f0a1..c6fa487fb006 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -22,6 +22,8 @@ struct ksz_port_mib {
+ 	struct mutex cnt_mutex;		/* structure access */
+ 	u8 cnt_ptr;
+ 	u64 *counters;
++	struct rtnl_link_stats64 stats64;
++	struct spinlock stats64_lock;
+ };
  
--	return encrypt ? crypto_aead_encrypt(subreq) :
--		   crypto_aead_decrypt(subreq);
-+	if (encrypt)
-+		ret = crypto_aead_encrypt(subreq);
-+	else
-+		ret = crypto_aead_decrypt(subreq);
-+	aead_request_free(subreq);
-+
-+	return ret;
- }
- 
- static int sec_aead_crypto(struct aead_request *a_req, bool encrypt)
+ struct ksz_port {
+@@ -128,6 +130,7 @@ struct ksz_dev_ops {
+ 			  u64 *cnt);
+ 	void (*r_mib_pkt)(struct ksz_device *dev, int port, u16 addr,
+ 			  u64 *dropped, u64 *cnt);
++	void (*r_mib_stat64)(struct ksz_device *dev, int port);
+ 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
+ 	void (*port_init_cnt)(struct ksz_device *dev, int port);
+ 	int (*shutdown)(struct ksz_device *dev);
 -- 
-2.33.0
+2.30.2
 
