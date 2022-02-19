@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF33C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 21:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E99E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 21:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243175AbiBSV42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 16:56:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55432 "EHLO
+        id S243216AbiBSV4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 16:56:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243203AbiBSV4N (ORCPT
+        with ESMTP id S243185AbiBSV4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 16:56:13 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388D2541BC
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 13:55:48 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id h125so10911512pgc.3
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 13:55:48 -0800 (PST)
+        Sat, 19 Feb 2022 16:56:14 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAEB54696
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 13:55:53 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id d187so5304103pfa.10
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 13:55:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=65Eb1HUPdIjM8zVi86DKNREnJ4z9OvkieF1s3FEMLrI=;
-        b=4VytRZT6CAyhgtB0WgTO1CmH6FyEiVE195+cE4dlZVCWFZ8iudpzgTS+gBHtUACxvT
-         MIhY2IZkpmy+hYNGyiNLj9Y0MnvZ5oytRW9znNCeTPHETg9mvXJEBGHAHEdlGiJRuNLt
-         D+NUYwS3fm0pLZSNi2C+PmG/A8uDIxZr9DmzK08CFnih9aSO6qES+NCnIBrB3KUMnrbm
-         kpLLAwu2YKChJx0fZYrR3/P1jV9rMelaKyUtjcKN/EnWjFr8gf9C+6LL0fF+akcmtImi
-         Bk0gAc2Jo5ISBuUh8e3VOK1t/cbq9ZGfd+0hq6z+P+AQypLHD1kIcNXwooUfd9dPHsB4
-         evUw==
+        bh=/Twze+jWTz4YOh5YSziAhocCfC52Co0EJtrbTTXd7Pg=;
+        b=vG+JbMUigvy10tcTl88GkDpP8OmExegUMriyny+TvwZBp2EZ8MYdUDzDsDW+k5E7ST
+         d5eAd26zzDX92/Tl2ElwHXXBDjJpK5/z5Vkz0YjOSMbonMsyPIl4pTTJRTG1Fe04XzSQ
+         TD/Dtki5l8Eey8CyLMmED80b5ur24iDA+d86gs1HP+A+L0fqNjw6WNu1GkgDz5tQVozT
+         qp1EuQxH2/gTPSdmSc0v8jlYHnrTo0RvGZNWW1r/S5q56l5xjDc3i2rapMZ1aKYqDOg1
+         d8mNp50h8HwwhOt4BMglIrIvaiu/0lT6uTBfb/hi5feQ5SLchwQlgZZAXIY4EdQBuIME
+         SdJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=65Eb1HUPdIjM8zVi86DKNREnJ4z9OvkieF1s3FEMLrI=;
-        b=k5oyddwwal4Vxvj1CNe08nhh98rSKj9FOPtx6TuIr3ZQeD45ETWU7MhNy2+s3+nHmp
-         HhIKtyQq6WoyzgcUAhKBBc7iUg+Sb5wHapf6I/+unomsfIqiVbLmTPWllAMB6XxsqOqM
-         n4nUADMqrb1znmfzpjFe0ZM7WDMqIW8KFY+yAdecFj0oOMDkmdoLaQ0vw7FhCytAtI6I
-         EOMzLKO5v2eQb8ShKOToroxp5iCQP6fefp6ws4Q2+kCxOixLPcLdxiDHcPjBrvYVpl2Q
-         qH6eytbdF4F/VMJ+O+bA2D5upgeHlibVq7gSjOHpM3L6pk+qrjk79gWk0WsO9m7aRFeA
-         oKBA==
-X-Gm-Message-State: AOAM533dW7V+OTEGhny/13S7XhSI19FWkcUopJTE0g6/vkiV6pVnW/ie
-        qm3r1RIcpJNmB9xdISmzrt9Oww==
-X-Google-Smtp-Source: ABdhPJzR11qeGJpsKF8keWXr323YCIBX9Clo8mnHXsBsgwGyif8SWMepT1n0NinmAP+YMeQZ1Q2ZaA==
-X-Received: by 2002:a63:3f42:0:b0:363:c08a:8dfd with SMTP id m63-20020a633f42000000b00363c08a8dfdmr11119666pga.108.1645307747624;
-        Sat, 19 Feb 2022 13:55:47 -0800 (PST)
+        bh=/Twze+jWTz4YOh5YSziAhocCfC52Co0EJtrbTTXd7Pg=;
+        b=ExDPLDA7q/T3uWZCiuMhplVvkGZ9vqfeaTAgj1eQToxz7nFehFOkUOEY+orqrVPmiI
+         7iycdSrXkROk4zYxF5qm6W01OszP5rLXLVQ2pOyeCpNjjN3rnN1ZFvLV6I+lz4rH1VEy
+         W5JGBtDRE2gEQl6nYjwRp3QYEKweuBo/4YW3jzqCPny/PCDBXzmdwRVYHwrdE4SzXfZM
+         zZ/ngqj5oL2XCFpMX9zt1Qn4tBnB7qLHIpVp2jh/80naUTDFq337rf3m4I/wQ6yQpYP3
+         IexkR7l7U/d0g7Z7l8gS2ravpLnrIzolahTgZRr/XWH6yh1FeSMFAdR72Jy9XVxj2EZZ
+         Tbmg==
+X-Gm-Message-State: AOAM532klInvuwRx+drhaiwp0Md02ygpP5N0hCHLeyr5qAuRmmNOmF+a
+        xir66gE32heVSjIu0pD6v1ym1g==
+X-Google-Smtp-Source: ABdhPJz6JLPuDNMFwxqmJ1GcafhE8zHgR7FEQxVDTVdvZhZXVSbw57wLOQgSHBaBl2SW/gE+cnHvNQ==
+X-Received: by 2002:a63:1d0f:0:b0:365:7d07:ac44 with SMTP id d15-20020a631d0f000000b003657d07ac44mr10967207pgd.526.1645307752940;
+        Sat, 19 Feb 2022 13:55:52 -0800 (PST)
 Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:31ab:1e81:9550:f30a])
-        by smtp.gmail.com with ESMTPSA id i17sm13447337pgn.82.2022.02.19.13.55.46
+        by smtp.gmail.com with ESMTPSA id i17sm13447337pgn.82.2022.02.19.13.55.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 13:55:47 -0800 (PST)
+        Sat, 19 Feb 2022 13:55:52 -0800 (PST)
 From:   Drew Fustini <dfustini@baylibre.com>
 To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -61,9 +61,9 @@ To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         Santosh Shilimkar <ssantosh@kernel.org>,
         Tony Lindgren <tony@atomide.com>, s-anna@ti.com,
         khilman@baylibre.com
-Subject: [PATCH 06/11] ARM: dts: am437x-gp-evm: Enable wkup_m3 control of IO isolation
-Date:   Sat, 19 Feb 2022 13:53:23 -0800
-Message-Id: <20220219215328.485660-7-dfustini@baylibre.com>
+Subject: [PATCH 10/11] ARM: dts: am43xx: Add scale data fw to wkup_m3_ipc node
+Date:   Sat, 19 Feb 2022 13:53:27 -0800
+Message-Id: <20220219215328.485660-11-dfustini@baylibre.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220219215328.485660-1-dfustini@baylibre.com>
 References: <20220219215328.485660-1-dfustini@baylibre.com>
@@ -75,26 +75,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Dave Gerlach <d-gerlach@ti.com>
 
-With this flag wkup_m3 is able to control IO isolation during
-suspend on the board.
+Add appropriate scale-data-fw names for all am43xx platforms.
 
 Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
 Signed-off-by: Keerthy <j-keerthy@ti.com>
 Signed-off-by: Drew Fustini <dfustini@baylibre.com>
 ---
- arch/arm/boot/dts/am437x-gp-evm.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/am437x-gp-evm.dts  | 1 +
+ arch/arm/boot/dts/am437x-sk-evm.dts  | 4 ++++
+ arch/arm/boot/dts/am43x-epos-evm.dts | 4 ++++
+ 3 files changed, 9 insertions(+)
 
 diff --git a/arch/arm/boot/dts/am437x-gp-evm.dts b/arch/arm/boot/dts/am437x-gp-evm.dts
-index 4416ddb559e4..91b67b428a06 100644
+index 91b67b428a06..ad561f81af3a 100644
 --- a/arch/arm/boot/dts/am437x-gp-evm.dts
 +++ b/arch/arm/boot/dts/am437x-gp-evm.dts
-@@ -1127,6 +1127,10 @@ &cpu {
+@@ -1129,6 +1129,7 @@ &cpu {
+ 
+ &wkup_m3_ipc {
+ 	ti,set-io-isolation;
++	ti,scale-data-fw = "am43x-evm-scale-data.bin";
+ };
+ 
+ &pruss1_mdio {
+diff --git a/arch/arm/boot/dts/am437x-sk-evm.dts b/arch/arm/boot/dts/am437x-sk-evm.dts
+index 20a34d2d85df..7b518aff5f8f 100644
+--- a/arch/arm/boot/dts/am437x-sk-evm.dts
++++ b/arch/arm/boot/dts/am437x-sk-evm.dts
+@@ -893,6 +893,10 @@ vpfe0_ep: endpoint {
+ 	};
+ };
+ 
++&wkup_m3_ipc {
++	ti,scale-data-fw = "am43x-evm-scale-data.bin";
++};
++
+ &pruss1_mdio {
+ 	status = "disabled";
+ };
+diff --git a/arch/arm/boot/dts/am43x-epos-evm.dts b/arch/arm/boot/dts/am43x-epos-evm.dts
+index 2f4d2e4e9b3e..a734bdc5e126 100644
+--- a/arch/arm/boot/dts/am43x-epos-evm.dts
++++ b/arch/arm/boot/dts/am43x-epos-evm.dts
+@@ -1019,6 +1019,10 @@ &cpu {
  	cpu0-supply = <&dcdc2>;
  };
  
 +&wkup_m3_ipc {
-+	ti,set-io-isolation;
++	ti,scale-data-fw = "am43x-evm-scale-data.bin";
 +};
 +
  &pruss1_mdio {
