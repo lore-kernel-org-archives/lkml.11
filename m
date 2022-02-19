@@ -2,161 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B09CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240885AbiBSA5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:57:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39836 "EHLO
+        id S240989AbiBSA5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:57:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240778AbiBSAzl (ORCPT
+        with ESMTP id S240796AbiBSAzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 19:55:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD0E27B489
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3346127B992
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645232117;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+        bh=ClO/R9JRyaaM8bjM+2BOla/lLPUNMsID41a68FPN8DI=;
+        b=bo7VjF24UMdbtxaHprk33A1muHj9fywR2QlB7yzGXmWhC5zbtB3W0JAeoba/AZEqKJcXQ+
+        XJrGg/e2DLr1zaLHGI/kDrIXaZuNAtpGCmhjCrrCjywFvJW378Q4M8CFZJ5eI2wyEq0z5R
+        lvQwOpkiYsGfxMM9clWvUYl+RYyAmew=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-86-a-TIrPYBP8-42XIzhwQwjA-1; Fri, 18 Feb 2022 19:55:12 -0500
+X-MC-Unique: a-TIrPYBP8-42XIzhwQwjA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0DCDB82764
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F551C340F4;
-        Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nLE1p-0051aC-Ma;
-        Fri, 18 Feb 2022 19:55:13 -0500
-Message-ID: <20220219005513.531685906@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 19:54:37 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D73291091DA1;
+        Sat, 19 Feb 2022 00:55:08 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 190B262D4E;
+        Sat, 19 Feb 2022 00:54:49 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>
-Subject: [for-next][PATCH 07/16] user_events: Handle matching arguments from dyn_events
-References: <20220219005430.848118506@goodmis.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
+        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
+        David.Laight@ACULAB.COM, david@redhat.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
+        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
+        linux-i2c@vger.kernel.org, wsa@kernel.org
+Subject: [PATCH 12/22] staging: emxx_udc: Don't use GFP_DMA when calling dma_alloc_coherent()
+Date:   Sat, 19 Feb 2022 08:52:11 +0800
+Message-Id: <20220219005221.634-13-bhe@redhat.com>
+In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
+References: <20220219005221.634-1-bhe@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Beau Belgrave <beaub@linux.microsoft.com>
+dma_alloc_coherent() allocates dma buffer with device's addressing
+limitation in mind. It's redundent to specify GFP_DMA when calling
+dma_alloc_coherent().
 
-Ensures that when dynamic events requests a match with arguments that
-they match what is in the user_event.
+[ 42.hyeyoo@gmail.com: Update changelog ]
 
-Link: https://lkml.kernel.org/r/20220118204326.2169-4-beaub@linux.microsoft.com
-
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 ---
- kernel/trace/trace_events_user.c | 77 +++++++++++++++++++++++++++++++-
- 1 file changed, 76 insertions(+), 1 deletion(-)
+ drivers/staging/emxx_udc/emxx_udc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index ddc5c3cf1bf8..a6794cb1f586 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -39,6 +39,7 @@
- #define MAX_EVENT_DESC 512
- #define EVENT_NAME(user_event) ((user_event)->tracepoint.name)
- #define MAX_FIELD_ARRAY_SIZE 1024
-+#define MAX_FIELD_ARG_NAME 256
- 
- static char *register_page_data;
- 
-@@ -700,13 +701,87 @@ static int user_event_free(struct dyn_event *ev)
- 	return destroy_user_event(user);
- }
- 
-+static bool user_field_match(struct ftrace_event_field *field, int argc,
-+			     const char **argv, int *iout)
-+{
-+	char *field_name, *arg_name;
-+	int len, pos, i = *iout;
-+	bool colon = false, match = false;
-+
-+	if (i >= argc)
-+		return false;
-+
-+	len = MAX_FIELD_ARG_NAME;
-+	field_name = kmalloc(len, GFP_KERNEL);
-+	arg_name = kmalloc(len, GFP_KERNEL);
-+
-+	if (!arg_name || !field_name)
-+		goto out;
-+
-+	pos = 0;
-+
-+	for (; i < argc; ++i) {
-+		if (i != *iout)
-+			pos += snprintf(arg_name + pos, len - pos, " ");
-+
-+		pos += snprintf(arg_name + pos, len - pos, argv[i]);
-+
-+		if (strchr(argv[i], ';')) {
-+			++i;
-+			colon = true;
-+			break;
-+		}
-+	}
-+
-+	pos = 0;
-+
-+	pos += snprintf(field_name + pos, len - pos, field->type);
-+	pos += snprintf(field_name + pos, len - pos, " ");
-+	pos += snprintf(field_name + pos, len - pos, field->name);
-+
-+	if (colon)
-+		pos += snprintf(field_name + pos, len - pos, ";");
-+
-+	*iout = i;
-+
-+	match = strcmp(arg_name, field_name) == 0;
-+out:
-+	kfree(arg_name);
-+	kfree(field_name);
-+
-+	return match;
-+}
-+
-+static bool user_fields_match(struct user_event *user, int argc,
-+			      const char **argv)
-+{
-+	struct ftrace_event_field *field, *next;
-+	struct list_head *head = &user->fields;
-+	int i = 0;
-+
-+	list_for_each_entry_safe_reverse(field, next, head, link)
-+		if (!user_field_match(field, argc, argv, &i))
-+			return false;
-+
-+	if (i != argc)
-+		return false;
-+
-+	return true;
-+}
-+
- static bool user_event_match(const char *system, const char *event,
- 			     int argc, const char **argv, struct dyn_event *ev)
- {
- 	struct user_event *user = container_of(ev, struct user_event, devent);
-+	bool match;
- 
--	return strcmp(EVENT_NAME(user), event) == 0 &&
-+	match = strcmp(EVENT_NAME(user), event) == 0 &&
- 		(!system || strcmp(system, USER_EVENTS_SYSTEM) == 0);
-+
-+	if (match && argc > 0)
-+		match = user_fields_match(user, argc, argv);
-+
-+	return match;
- }
- 
- static struct dyn_event_operations user_event_dops = {
+diff --git a/drivers/staging/emxx_udc/emxx_udc.c b/drivers/staging/emxx_udc/emxx_udc.c
+index b6abd3770e81..673f8de50213 100644
+--- a/drivers/staging/emxx_udc/emxx_udc.c
++++ b/drivers/staging/emxx_udc/emxx_udc.c
+@@ -2593,7 +2593,7 @@ static int nbu2ss_ep_queue(struct usb_ep *_ep,
+ 		if (!ep->virt_buf)
+ 			ep->virt_buf = dma_alloc_coherent(udc->dev, PAGE_SIZE,
+ 							  &ep->phys_buf,
+-							  GFP_ATOMIC | GFP_DMA);
++							  GFP_ATOMIC);
+ 		if (ep->epnum > 0)  {
+ 			if (ep->direct == USB_DIR_IN)
+ 				memcpy(ep->virt_buf, req->req.buf,
 -- 
-2.34.1
+2.17.2
+
