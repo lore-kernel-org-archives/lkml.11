@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2842EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242798AbiBSSQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:16:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58788 "EHLO
+        id S242784AbiBSSUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:20:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbiBSSQE (ORCPT
+        with ESMTP id S232963AbiBSSUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:16:04 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA967B576;
-        Sat, 19 Feb 2022 10:15:44 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id m14so11248484lfu.4;
-        Sat, 19 Feb 2022 10:15:44 -0800 (PST)
+        Sat, 19 Feb 2022 13:20:51 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A12F1107C7;
+        Sat, 19 Feb 2022 10:20:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=ZCklAq/Hx2JD+s8iRJLRBAzKBHd1Vzm6GJgE7/9rJMc=;
-        b=UYwoW4i1T7TbzJAmNBBE/HsET4YSXMQnecavrbyKf7inSJeH4v/AfLKQ8XpquPHPFX
-         iHWiMhWE8hnIwE5wwQ3x0sdr0DvGHneRSwv0U2sPFqcr7o2DoUyEq7lJM/bZLipvNcMC
-         FGPUSRotuOyEZfkkLmM8T8ov0xh8zYlkKpiKNlY/bpuf2avLCS8tbvakdIc8fZiIcZAl
-         uXtLVd8pJH3TJ8H9fpqUO8MzYZDNfYOJ12TTEqjdLsIjHcXOCObWpLBMGuA3JGPAAkIy
-         B9O/fZAgXJHykF3mbMeYmOwvr5MNeDygsQx+NDu5kT8ZAWAalmLWUf9u70TYiNCsahas
-         38ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=ZCklAq/Hx2JD+s8iRJLRBAzKBHd1Vzm6GJgE7/9rJMc=;
-        b=0JoWACQyFY0kQkUj4ZVmlqYI5JfRXQXWx8gb7jCANyBA/6+VG+0l5t74HWXYnHP+Ic
-         TDfDFQ0G41sk16nil9bPXMGrunu8ftgYjXRmhRQnfwqCZZD2GcTaCQRQObbmOD67V9bn
-         96eubvi/QSvhTnECE/96hy/qsL4ts1Cef5M8PznP5xCn3t3DgXxzKXV6GpnM5dYCxd8m
-         gJBjSab27i5CvZ1NWzXN+N/h4KSrUTvod3J1MfvfuOdNGE5L7MbvxO+0dmgoPmbIZFYx
-         OZbIQpqNdnby6cvcaSO776SW8ryhPSRjdBtyyUGsb7WEouFZZWvL7yDFVcpA78viN83W
-         DuQw==
-X-Gm-Message-State: AOAM533Gpno+B1tBsYqb6K71XDH78Ljm2mBIWKhuqe5v/+2ZvovzfgqP
-        YtYu9CdjkIrg5xrCgGU0E8Y=
-X-Google-Smtp-Source: ABdhPJwJdZ0Gd/bbMF0s0unbw8e1WaovO3J5g4uv+x1CAXGO8sdtzQ4dLL+prgBxwbaaJyAXR9g9RQ==
-X-Received: by 2002:a05:6512:548:b0:438:a549:d499 with SMTP id h8-20020a056512054800b00438a549d499mr9082717lfl.326.1645294543281;
-        Sat, 19 Feb 2022 10:15:43 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id v18sm729633ljn.78.2022.02.19.10.15.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Feb 2022 10:15:42 -0800 (PST)
-Message-ID: <50838e8c-8121-d6fb-d693-031739829157@gmail.com>
-Date:   Sat, 19 Feb 2022 21:15:41 +0300
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645294832; x=1676830832;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=43FQQoiARr1oUUz161OUOBUs6C7jlfJSnj8zmZ358yI=;
+  b=uFRALQ/cDeAw4dbsRiKGohQr/rr4dB18wc12TSddB12GneDGvuLOskd8
+   IaFW3LObYRuhChxI6RT558HIYFpO9LRGukyVoaRRoKAOjlfo3XdgKUHAc
+   xgDCfE+AlR4aArP6iFgxhMLpF5Ni/G2IU7rOvkCGALtTbydG9woe6a1Bv
+   M=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 19 Feb 2022 10:20:31 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2022 10:20:30 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Sat, 19 Feb 2022 10:20:30 -0800
+Received: from [10.216.20.52] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Sat, 19 Feb
+ 2022 10:20:23 -0800
+Message-ID: <5a6e307d-f8b0-50b6-f295-fdf6ccd20232@quicinc.com>
+Date:   Sat, 19 Feb 2022 23:50:19 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/9] gpu: host1x: Add context bus
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v6 3/7] pinctrl: qcom: Update macro name to LPI specific
 Content-Language: en-US
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org,
-        robh+dt@kernel.org, robin.murphy@arm.com
-Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
- <20220218113952.3077606-3-mperttunen@nvidia.com>
- <1c97bbb5-ba0b-742c-2a21-8abf195b9e6d@gmail.com>
-In-Reply-To: <1c97bbb5-ba0b-742c-2a21-8abf195b9e6d@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>, <agross@kernel.org>,
+        <alsa-devel@alsa-project.org>, <bgoswami@codeaurora.org>,
+        <bjorn.andersson@linaro.org>, <broonie@kernel.org>,
+        <devicetree@vger.kernel.org>, <judyhsiao@chromium.org>,
+        <lgirdwood@gmail.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <perex@perex.cz>, <quic_plai@quicinc.com>, <robh+dt@kernel.org>,
+        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
+        <tiwai@suse.com>
+CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
+ <1644851994-22732-4-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n527fs5rfPG1HonW_9ZTugANnWNYSs_0+wts+zDK=zcZjA@mail.gmail.com>
+From:   "Srinivasa Rao Mandadapu (Temp)" <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <CAE-0n527fs5rfPG1HonW_9ZTugANnWNYSs_0+wts+zDK=zcZjA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-19.02.2022 20:54, Dmitry Osipenko пишет:
-> 18.02.2022 14:39, Mikko Perttunen пишет:
->> +config TEGRA_HOST1X_CONTEXT_BUS
->> +	bool
->> +
->>  config TEGRA_HOST1X
->>  	tristate "NVIDIA Tegra host1x driver"
->>  	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
->>  	select DMA_SHARED_BUFFER
->> +	select TEGRA_HOST1X_CONTEXT_BUS
-> 
-> What is the point of TEGRA_HOST1X_CONTEXT_BUS if it's selected
-> unconditionally?
 
-I see now that it's used by arm-smmu.c, should be okay then.
+On 2/19/2022 8:06 AM, Stephen Boyd wrote:
+Thanks for Your time Stephen!!!
+> Quoting Srinivasa Rao Mandadapu (2022-02-14 07:19:50)
+>> Update NO_SLEW macro to LPI_NO_SLEW macro as this driver lpi specific.
+> Is this to avoid NO_SLEW somewhere else?
+The above comment addressed resent v7 patches.
+>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> ---
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
