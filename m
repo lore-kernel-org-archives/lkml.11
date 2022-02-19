@@ -2,92 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0301C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 09:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F91C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 09:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241772AbiBSJYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 04:24:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57190 "EHLO
+        id S241780AbiBSJ0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 04:26:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiBSJYr (ORCPT
+        with ESMTP id S235598AbiBSJ0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 04:24:47 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9874824CCD8
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 01:24:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=xIze7FiaNNWSuC34TPpTOugfizZwVMOBTe/chVGWA6g=; b=Z9uVmAbm6hrPyXn8W18wm4coy+
-        b5mnCip+lOnLB5Ja/hXTe+wo7cz2nQpSRqdL4EsXwo2to2oruylNkvWMd8srINAQA+nQb6eAiRQkx
-        MgWMj5j/imwWROdTYSzbhtAIzYvgPYcjcu0PQFwqrRoEgA8hlQ/9IuhVdJmVS0X6KfOQpGnXOQ2Ja
-        pykHZL19qz6UKzldSmK3elo/Ij83HBI2kxxW8b8EjI2x/AnkJiOX6olguxjl0Bv4wosRV1kTTFjso
-        S1DizOHl8Az4OUjQnjZqEus2sb03EzdYOg4TSMWV+thuaIk9FwFLHP1u9lynUmHN4LizbgUj2yczS
-        FN6mLg7Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nLLyJ-00B2fx-BX; Sat, 19 Feb 2022 09:24:07 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 90C6598681B; Sat, 19 Feb 2022 10:24:05 +0100 (CET)
-Date:   Sat, 19 Feb 2022 10:24:05 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 14/29] x86/ibt: Add IBT feature, MSR and #CP handling
-Message-ID: <20220219092405.GF23216@worktop.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.395399333@infradead.org>
- <20220219012155.z24prt3yj25ytacs@treble>
+        Sat, 19 Feb 2022 04:26:39 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6121C24CCDC
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 01:26:21 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K133j6W4HzbbYP;
+        Sat, 19 Feb 2022 17:21:53 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 19 Feb
+ 2022 17:26:19 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <vitaly.wool@konsulko.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH 1/9] mm/z3fold: declare z3fold_mount with __init
+Date:   Sat, 19 Feb 2022 17:25:25 +0800
+Message-ID: <20220219092533.12596-2-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220219092533.12596-1-linmiaohe@huawei.com>
+References: <20220219092533.12596-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220219012155.z24prt3yj25ytacs@treble>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:21:55PM -0800, Josh Poimboeuf wrote:
-> On Fri, Feb 18, 2022 at 05:49:16PM +0100, Peter Zijlstra wrote:
-> > +DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
-> > +{
-> > +	if (!cpu_feature_enabled(X86_FEATURE_IBT)) {
-> > +		pr_err("Whaaa?!?!\n");
-> > +		return;
-> > +	}
-> 
-> Might want to upgrade that to a proper warning :-)
+z3fold_mount is only called during init. So we should declare it
+with __init.
 
-"Unexpected #CP\n" ?
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/z3fold.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > +bool ibt_selftest(void)
-> > +{
-> > +	ibt_selftest_ok = false;
-> > +
-> > +	asm (ANNOTATE_NOENDBR
-> > +	     "1: lea 2f(%%rip), %%rax\n\t"
-> > +	     ANNOTATE_RETPOLINE_SAFE
-> > +	     "   jmp *%%rax\n\t"
-> > +	     "2: nop\n\t"
-> > +
-> > +	     /* unsigned ibt_selftest_ip = 2b */
-> > +	     ".pushsection .data,\"aw\"\n\t"
-> > +	     ".align 8\n\t"
-> > +	     ".type ibt_selftest_ip, @object\n\t"
-> > +	     ".size ibt_selftest_ip, 8\n\t"
-> > +	     "ibt_selftest_ip:\n\t"
-> > +	     ".quad 2b\n\t"
-> > +	     ".popsection\n\t"
-> > +
-> > +	     : : : "rax", "memory");
-> 
-> Can 'ibt_selftest_ip' just be defined in C (with __ro_after_init) and
-> passed as an output to the asm doing 'mov $2b, %[ibt_selftest_ip]'?
+diff --git a/mm/z3fold.c b/mm/z3fold.c
+index b3c0577b8095..e86aafea6599 100644
+--- a/mm/z3fold.c
++++ b/mm/z3fold.c
+@@ -345,7 +345,7 @@ static struct file_system_type z3fold_fs = {
+ };
+ 
+ static struct vfsmount *z3fold_mnt;
+-static int z3fold_mount(void)
++static int __init z3fold_mount(void)
+ {
+ 	int ret = 0;
+ 
+-- 
+2.23.0
 
-This seemed simpler... note that it's ran on cpu bringup, so if you do
-cpu hotplug it'll end up trying to write to ro memory if you do what you
-suggest.
