@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D52BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E304FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241007AbiBSA5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:57:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40012 "EHLO
+        id S231364AbiBSA5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:57:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240769AbiBSAzk (ORCPT
+        with ESMTP id S240768AbiBSAzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 18 Feb 2022 19:55:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76E627AFE4
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECB227AFC9
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85EADB82765
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54734C340FB;
-        Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 253EB61FCE
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03EF0C340E9;
+        Sat, 19 Feb 2022 00:55:16 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nLE1p-0051Zd-Ga;
-        Fri, 18 Feb 2022 19:55:13 -0500
-Message-ID: <20220219005513.341653321@goodmis.org>
+        id 1nLE1r-0051ei-6c;
+        Fri, 18 Feb 2022 19:55:15 -0500
+Message-ID: <20220219005515.044372300@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 19:54:36 -0500
+Date:   Fri, 18 Feb 2022 19:54:45 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Beau Belgrave <beaub@linux.microsoft.com>
-Subject: [for-next][PATCH 06/16] user_events: Add print_fmt generation support for basic types
+Subject: [for-next][PATCH 15/16] user_events: Add sample code for typical usage
 References: <20220219005430.848118506@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,157 +45,128 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Beau Belgrave <beaub@linux.microsoft.com>
 
-Addes print_fmt format generation for basic types that are supported for
-user processes. Only supports sizes that are the same on 32 and 64 bit.
+Add sample code for user_events typical usage to show how to register
+and monitor status, as well as to write out data.
 
-Link: https://lkml.kernel.org/r/20220118204326.2169-3-beaub@linux.microsoft.com
+Link: https://lkml.kernel.org/r/20220118204326.2169-12-beaub@linux.microsoft.com
 
 Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_events_user.c | 115 ++++++++++++++++++++++++++++++-
- 1 file changed, 113 insertions(+), 2 deletions(-)
+ samples/user_events/Makefile  |  5 ++
+ samples/user_events/example.c | 91 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 96 insertions(+)
+ create mode 100644 samples/user_events/Makefile
+ create mode 100644 samples/user_events/example.c
 
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 77105233115e..ddc5c3cf1bf8 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -359,6 +359,114 @@ static int user_event_parse_fields(struct user_event *user, char *args)
- 
- static struct trace_event_fields user_event_fields_array[1];
- 
-+static const char *user_field_format(const char *type)
+diff --git a/samples/user_events/Makefile b/samples/user_events/Makefile
+new file mode 100644
+index 000000000000..7252b589db57
+--- /dev/null
++++ b/samples/user_events/Makefile
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0
++CFLAGS += -Wl,-no-as-needed -Wall -I../../usr/include
++
++example: example.o
++example.o: example.c
+diff --git a/samples/user_events/example.c b/samples/user_events/example.c
+new file mode 100644
+index 000000000000..4f5778e441c0
+--- /dev/null
++++ b/samples/user_events/example.c
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2021, Microsoft Corporation.
++ *
++ * Authors:
++ *   Beau Belgrave <beaub@linux.microsoft.com>
++ */
++
++#include <errno.h>
++#include <sys/ioctl.h>
++#include <sys/mman.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <linux/user_events.h>
++
++/* Assumes debugfs is mounted */
++const char *data_file = "/sys/kernel/debug/tracing/user_events_data";
++const char *status_file = "/sys/kernel/debug/tracing/user_events_status";
++
++static int event_status(char **status)
 +{
-+	if (strcmp(type, "s64") == 0)
-+		return "%lld";
-+	if (strcmp(type, "u64") == 0)
-+		return "%llu";
-+	if (strcmp(type, "s32") == 0)
-+		return "%d";
-+	if (strcmp(type, "u32") == 0)
-+		return "%u";
-+	if (strcmp(type, "int") == 0)
-+		return "%d";
-+	if (strcmp(type, "unsigned int") == 0)
-+		return "%u";
-+	if (strcmp(type, "s16") == 0)
-+		return "%d";
-+	if (strcmp(type, "u16") == 0)
-+		return "%u";
-+	if (strcmp(type, "short") == 0)
-+		return "%d";
-+	if (strcmp(type, "unsigned short") == 0)
-+		return "%u";
-+	if (strcmp(type, "s8") == 0)
-+		return "%d";
-+	if (strcmp(type, "u8") == 0)
-+		return "%u";
-+	if (strcmp(type, "char") == 0)
-+		return "%d";
-+	if (strcmp(type, "unsigned char") == 0)
-+		return "%u";
-+	if (strstr(type, "char[") != 0)
-+		return "%s";
++	int fd = open(status_file, O_RDONLY);
 +
-+	/* Unknown, likely struct, allowed treat as 64-bit */
-+	return "%llu";
-+}
++	*status = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ,
++		       MAP_SHARED, fd, 0);
 +
-+static bool user_field_is_dyn_string(const char *type, const char **str_func)
-+{
-+	if (str_has_prefix(type, "__data_loc ")) {
-+		*str_func = "__get_str";
-+		goto check;
-+	}
++	close(fd);
 +
-+	if (str_has_prefix(type, "__rel_loc ")) {
-+		*str_func = "__get_rel_str";
-+		goto check;
-+	}
-+
-+	return false;
-+check:
-+	return strstr(type, "char") != 0;
-+}
-+
-+#define LEN_OR_ZERO (len ? len - pos : 0)
-+static int user_event_set_print_fmt(struct user_event *user, char *buf, int len)
-+{
-+	struct ftrace_event_field *field, *next;
-+	struct list_head *head = &user->fields;
-+	int pos = 0, depth = 0;
-+	const char *str_func;
-+
-+	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
-+
-+	list_for_each_entry_safe_reverse(field, next, head, link) {
-+		if (depth != 0)
-+			pos += snprintf(buf + pos, LEN_OR_ZERO, " ");
-+
-+		pos += snprintf(buf + pos, LEN_OR_ZERO, "%s=%s",
-+				field->name, user_field_format(field->type));
-+
-+		depth++;
-+	}
-+
-+	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
-+
-+	list_for_each_entry_safe_reverse(field, next, head, link) {
-+		if (user_field_is_dyn_string(field->type, &str_func))
-+			pos += snprintf(buf + pos, LEN_OR_ZERO,
-+					", %s(%s)", str_func, field->name);
-+		else
-+			pos += snprintf(buf + pos, LEN_OR_ZERO,
-+					", REC->%s", field->name);
-+	}
-+
-+	return pos + 1;
-+}
-+#undef LEN_OR_ZERO
-+
-+static int user_event_create_print_fmt(struct user_event *user)
-+{
-+	char *print_fmt;
-+	int len;
-+
-+	len = user_event_set_print_fmt(user, NULL, 0);
-+
-+	print_fmt = kmalloc(len, GFP_KERNEL);
-+
-+	if (!print_fmt)
-+		return -ENOMEM;
-+
-+	user_event_set_print_fmt(user, print_fmt, len);
-+
-+	user->call.print_fmt = print_fmt;
++	if (*status == MAP_FAILED)
++		return -1;
 +
 +	return 0;
 +}
 +
- static enum print_line_t user_event_print_trace(struct trace_iterator *iter,
- 						int flags,
- 						struct trace_event *event)
-@@ -392,6 +500,7 @@ static int destroy_user_event(struct user_event *user)
- 	clear_bit(user->index, page_bitmap);
- 	hash_del(&user->node);
- 
-+	kfree(user->call.print_fmt);
- 	kfree(EVENT_NAME(user));
- 	kfree(user);
- 
-@@ -669,8 +778,10 @@ static int user_event_parse(char *name, char *args, char *flags,
- 	if (ret)
- 		goto put_user;
- 
--	/* Minimal print format */
--	user->call.print_fmt = "\"\"";
-+	ret = user_event_create_print_fmt(user);
++static int event_reg(int fd, const char *command, int *status, int *write)
++{
++	struct user_reg reg = {0};
 +
-+	if (ret)
-+		goto put_user;
- 
- 	user->call.data = user;
- 	user->call.class = &user->class;
++	reg.size = sizeof(reg);
++	reg.name_args = (__u64)command;
++
++	if (ioctl(fd, DIAG_IOCSREG, &reg) == -1)
++		return -1;
++
++	*status = reg.status_index;
++	*write = reg.write_index;
++
++	return 0;
++}
++
++int main(int argc, char **argv)
++{
++	int data_fd, status, write;
++	char *status_page;
++	struct iovec io[2];
++	__u32 count = 0;
++
++	if (event_status(&status_page) == -1)
++		return errno;
++
++	data_fd = open(data_file, O_RDWR);
++
++	if (event_reg(data_fd, "test u32 count", &status, &write) == -1)
++		return errno;
++
++	/* Setup iovec */
++	io[0].iov_base = &write;
++	io[0].iov_len = sizeof(write);
++	io[1].iov_base = &count;
++	io[1].iov_len = sizeof(count);
++
++ask:
++	printf("Press enter to check status...\n");
++	getchar();
++
++	/* Check if anyone is listening */
++	if (status_page[status]) {
++		/* Yep, trace out our data */
++		writev(data_fd, (const struct iovec *)io, 2);
++
++		/* Increase the count */
++		count++;
++
++		printf("Something was attached, wrote data\n");
++	}
++
++	goto ask;
++
++	return 0;
++}
 -- 
 2.34.1
