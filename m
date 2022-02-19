@@ -2,168 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B257BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 06:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F512C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 06:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241347AbiBSGcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 01:32:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35436 "EHLO
+        id S241359AbiBSGe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 01:34:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232507AbiBSGck (ORCPT
+        with ESMTP id S232507AbiBSGey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 01:32:40 -0500
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59E61928A
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 22:32:21 -0800 (PST)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id 749F3403DB;
-        Sat, 19 Feb 2022 11:32:15 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1645252337; bh=i/Xc3rXnQ31VWvth9DwfVBUyC4C2QCHs5CrNABz1B+g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PvRkxicWdFiMqfWBz74nha0w4PHEwhZR6tF+ZDG/YTlzojHskGlrFlKuOZCPY38Hv
-         PO+bgGJg9jaFsh/YzW6ZCBvMKBRwUDYCPUmzxFUck0aFWgdnQHVwC0V7QSUEs0yXUs
-         q3W5YjWWXjtmxvTSCfdvWtdQAkzm7vCiardPMfmRY7k5QAZ8CHkgu6MRufc7h+9S60
-         aapOH3eKCgnbfw0KOS2wJlNcIwbw8+Aoso9wtFH8s39LrHawpb1Z09qDkGQu0deBXg
-         DZVh1cKyesH+Ql4Yry6HZqk/4LrdXYJqP7FE8DP4Cejj+rgguo/7vippcA16DMtYA4
-         dKgygWZpkdOGQ==
+        Sat, 19 Feb 2022 01:34:54 -0500
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F95D2245;
+        Fri, 18 Feb 2022 22:34:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=GTdc3KhpH9SrVmXrydjuExxtLYQXHJtt1/afcKbRb+o=;
+        b=MCpta50v+H01PD7ttCRNy8D3+IAwhyX/cwImaO9WUa0NTMP6HFDqoTOAqddKgizIkUacxIcZC6iyl
+         WaCRYLO2C96JOs0Cq8WRYFCmhCrj4aRCrx0jgwl2xVnWwvSLQB6zSMMNviROiSPmf05E3jLTazWX8Z
+         x1oledYm485TuB6HspCEVm0+5m+qBt64UyntFxWykJ36KLfIpAnM5bFNvkF6u136WwGmPVsIstRNW/
+         +UvIR1026apQTYMvoXqFY2UxItxgbfoy1gtCGeo6XBs9lvH5qp0zD8nUxIp8HqROBWZky3yrRJE0my
+         Ik07DySz1KK2UCAa3Txm5/SgDdrPpaA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000014,0.013593)], BW: [Enabled, t: (0.000033,0.000002)], RTDA: [Enabled, t: (0.062353), Hit: No, Details: v2.25.0; Id: 15.52kd2u.1fs8b0fb1.13cjc; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Sat, 19 Feb 2022 09:34:17 +0300
+Date:   Sat, 19 Feb 2022 09:16:27 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Xu Yilun <yilun.xu@intel.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        conor.dooley@microchip.com, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, system@metrotek.ru
+Subject: Re: [PATCH v4] fpga: microchip-spi: add Microchip FPGA manager
+Message-ID: <20220219061627.3oanqx5glsyq47xk@x260>
+References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+ <20220217191851.11730-1-i.bornyakov@metrotek.ru>
+ <20220218160555.GA1333893@yilunxu-OptiPlex-7050>
 MIME-Version: 1.0
-Date:   Sat, 19 Feb 2022 11:32:15 +0500
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     linus.walleij@linaro.org, mturquette@baylibre.com,
-        bjorn.andersson@linaro.org, agross@kernel.org, tdas@codeaurora.org,
-        svarbanov@mm-sol.com, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH 1/4] clk: qcom: clk-rcg2: Fail Duty-Cycle configuration if
- MND divider is not enabled.
-In-Reply-To: <20220217223736.DFC2EC340E8@smtp.kernel.org>
-References: <20211209163720.106185-1-nikita@trvn.ru>
- <20211209163720.106185-2-nikita@trvn.ru>
- <20220108005209.5140EC36AEB@smtp.kernel.org>
- <991533e0fddd6999c8a06a536ae57999@trvn.ru>
- <20220110201452.2B3E4C36AE3@smtp.kernel.org>
- <cc4241105bfd2249c1c309a4efa2e6aa@trvn.ru>
- <20220217223736.DFC2EC340E8@smtp.kernel.org>
-Message-ID: <6c3d2f619b1e87ef21effc02bb6df1cb@trvn.ru>
-X-Sender: nikita@trvn.ru
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218160555.GA1333893@yilunxu-OptiPlex-7050>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi, Yilun.
 
-Stephen Boyd писал(а) 18.02.2022 03:37:
-> Quoting Nikita Travkin (2022-01-26 07:14:21)
->> Stephen Boyd писал(а) 11.01.2022 01:14:
->> > Quoting Nikita Travkin (2022-01-07 23:25:19)
->> >> Hi,
->> >>
->> >> Stephen Boyd писал(а) 08.01.2022 05:52:
->> >> > Quoting Nikita Travkin (2021-12-09 08:37:17)
->> >> I'm adding this error here primarily to bring attention of the
->> >> user (e.g. developer enabling some peripheral that needs
->> >> duty cycle control) who might have to change their clock tree
->> >> to make this control effective. So, assuming that if someone
->> >> sets the duty cycle to 50% then they might set it to some other
->> >> value later, it makes sense to fail the first call anyway.
->> >>
->> >> If you think there are some other possibilities for this call
->> >> to happen specifically with 50% duty cycle (e.g. some
->> >> preparations or cleanups in the clk subsystem or some drivers
->> >> that I'm not aware of) then I can make an exemption in the check
->> >> for that.
->> >>
->> >
->> > I don't see anywhere in clk_set_duty_cycle() where it would bail out
->> > early if the duty cycle was set to what it already is. The default for
->> > these clks is 50%, so I worry that some driver may try to set the duty
->> > cycle to 50% and then fail now. Either we need to check the duty cycle
->> > in the core before calling down into the driver or we need to check it
->> > here in the driver. Can you send a patch to check the current duty cycle
->> > in the core before calling down into the clk ops?
->>
->> Hi, sorry for a rather delayed response,
->> I spent a bit of time looking at how to make the clk core be
->> careful with ineffective duty-cycle calls and I can't find a
->> nice way to do this... My idea was something like this:
->>
->> static int clk_core_set_duty_cycle_nolock(struct clk_core *core,
->>                                           struct clk_duty *duty)
->> {       /* ... */
->>
->>         /* Update core->duty values */
->>         clk_core_update_duty_cycle_nolock(core);
->>
->>         if ( /* duty doesn't match core->duty */ ) {
->>                 ret = core->ops->set_duty_cycle(core->hw, duty);
->>         /* ... */
->> }
->>
->> However there seem to be drawbacks to any variant of the
->> comparison that I could come up with:
->>
->> Naive one would be to do
->>     if (duty->num != core->duty->num || duty->den != core->duty->den)
->> but it won't correctly compare e.g. 1/2 and 10/20.
->>
->> Other idea was to do
->>     if (duty->den / duty->num != core->duty->den / core->duty->num)
->> but it will likely fail with very close values (e.g. 100/500 and 101/500)
->>
->> I briefly thought of some more sophisticated math but I don't
->> like the idea of complicating this too far.
->>
->> I briefly grepped the kernel sources for duty-cycle related methods
->> and I saw only one user of the clk_set_duty_cycle:
->>     sound/soc/meson/axg-tdm-interface.c
->> Notably it sets the cycle to 1/2 in some cases, though it seems to
->> be tied to the drivers/clk/meson/sclk-div.c clock driver by being
->> the blocks of the same SoC.
+On Sat, Feb 19, 2022 at 12:05:55AM +0800, Xu Yilun wrote:
+> On Thu, Feb 17, 2022 at 10:18:51PM +0300, Ivan Bornyakov wrote:
+> > +static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
+> > +{
+> > +	ssize_t bitstream_start = 0, bitstream_size;
+> > +	struct mpf_priv *priv = mgr->priv;
+> > +	struct spi_device *spi = priv->spi;
+> > +	struct device *dev = &mgr->dev;
+> > +	u8 tmp_buf[SPI_FRAME_SIZE + 1];
+> > +	int ret, i;
+> > +
+> > +	if (crc_ccitt(0, buf, count)) {
+> > +		dev_err(dev, "CRC error\n");
+> > +
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	bitstream_start = lookup_block_start(BITSTREAM_ID, buf, count);
+> > +	if (bitstream_start < 0) {
+> > +		dev_err(dev, "Failed to find bitstream start %zd\n",
+> > +			bitstream_start);
+> > +
+> > +		return bitstream_start;
+> > +	}
+> > +
+> > +	bitstream_size = parse_bitstream_size(buf, count);
+> > +	if (bitstream_size < 0) {
+> > +		dev_err(dev, "Failed to parse bitstream size %zd\n",
+> > +			bitstream_size);
+> > +
+> > +		return bitstream_size;
+> > +	}
+> > +
+> > +	if (bitstream_start + bitstream_size * SPI_FRAME_SIZE > count) {
+> > +		dev_err(dev,
+> > +			"Bitstram outruns firmware. Bitstream start %zd, bitstream size %zd, firmware size %zu\n",
 > 
-> Indeed, so this patch is untested? I doubt the qcom driver is being used
-> with the one caller of clk_set_duty_cycle() in the kernel.
+> 			 Bitstream
+> 
+> > +			bitstream_start, bitstream_size * SPI_FRAME_SIZE, count);
+> > +
+> > +		return -EFAULT;
+> > +	}
+> > +
+> 
+> If I understand right, this function assumes the users provide the
+> entire image buffer. But it is possible the image buffer is from a
+> scatter list and the callback would be called several times.
 > 
 
-While right now, to my knowledge, there is no users of the duty cycle
-control, I'm adding a generic driver that uses it in another series [1]
-with an intention to use it across multiple qcom based devices.
+That is unfortunate. I thought fpga_manager_ops->write_sg() is here for
+that purpose.
 
-While making it I spent quite a bit of time staring at the oscilloscope
-to figure out that I need changes from patch 4/4 of this series and I'd
-like to make this quirk a bit more obvious to others.
+>
+> Maybe the bitstream info at the head of the image could be parsed in
+> write_init(), and this requires the driver fill the
+> fpga_manager_ops.initial_header_size
+>
 
-[1] https://lore.kernel.org/linux-pwm/20220212162342.72646-1-nikita@trvn.ru/
+Header size is not known beforehand and is stored in 25th byte of the
+image.
 
->>
->> Thinking of it a bit more, I saw another approach to the problem
->> I want to solve: Since I just want to make developers aware of the
->> hardware quirk, maybe I don't need to fail the set but just put a
->> WARN or even WARN_ONCE there? This way the behavior will be unchanged.
->>
-> 
-> I don't like the idea of a WARN or a WARN_ONCE as most likely nobody is
-> going to read it or do anything about it. Returning an error should be
-> fine then. If the duty cycle call fails for 50% then that's something we
-> have to live with.
+Overall, thanks for detailed review
 
-I intend this WARN or error to be hit by a person bringing up something
-new, user should never see it. For example a possible story could be:
-
-- Backlight control is connected to the clock on device X
-- Developer adds (future) pwm-clk adapter and pwm-backlight to the DT
-- Backlight slider in UI doesn't work anyway. (don't think UIs show
-  errors here)
-- Developer troubleshoots the thing and either finds WARN in dmesg
-  or that the sysfs write errors out.
-
-In my experience, people bringing devices up pay a very close attention
-to dmesg so I think giving a WARN is fine, but I'm fine with whichever
-approach you prefer.
-
-Nikita
