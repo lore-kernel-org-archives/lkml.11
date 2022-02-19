@@ -2,73 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 06:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B257BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 06:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241346AbiBSGIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 01:08:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60584 "EHLO
+        id S241347AbiBSGcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 01:32:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241334AbiBSGIH (ORCPT
+        with ESMTP id S232507AbiBSGck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 01:08:07 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3719859A70;
-        Fri, 18 Feb 2022 22:07:49 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nLIuJ-002v4X-W6; Sat, 19 Feb 2022 06:07:48 +0000
-Date:   Sat, 19 Feb 2022 06:07:47 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Rik van Riel <riel@surriel.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        linux-fsdevel@vger.kernel.org, paulmck@kernel.org,
-        gscrivan@redhat.com, Eric Biederman <ebiederm@xmission.com>,
-        Chris Mason <clm@fb.com>
-Subject: Re: [PATCH 1/2] vfs: free vfsmount through rcu work from kern_unmount
-Message-ID: <YhCJM3oFbjlln77a@zeniv-ca.linux.org.uk>
-References: <20220218183114.2867528-1-riel@surriel.com>
- <20220218183114.2867528-2-riel@surriel.com>
- <YhCF4Xre/iyyOgT5@zeniv-ca.linux.org.uk>
- <YhCG9cdw2JZSKbDZ@zeniv-ca.linux.org.uk>
+        Sat, 19 Feb 2022 01:32:40 -0500
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59E61928A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 22:32:21 -0800 (PST)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.trvn.ru (Postfix) with ESMTPSA id 749F3403DB;
+        Sat, 19 Feb 2022 11:32:15 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1645252337; bh=i/Xc3rXnQ31VWvth9DwfVBUyC4C2QCHs5CrNABz1B+g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PvRkxicWdFiMqfWBz74nha0w4PHEwhZR6tF+ZDG/YTlzojHskGlrFlKuOZCPY38Hv
+         PO+bgGJg9jaFsh/YzW6ZCBvMKBRwUDYCPUmzxFUck0aFWgdnQHVwC0V7QSUEs0yXUs
+         q3W5YjWWXjtmxvTSCfdvWtdQAkzm7vCiardPMfmRY7k5QAZ8CHkgu6MRufc7h+9S60
+         aapOH3eKCgnbfw0KOS2wJlNcIwbw8+Aoso9wtFH8s39LrHawpb1Z09qDkGQu0deBXg
+         DZVh1cKyesH+Ql4Yry6HZqk/4LrdXYJqP7FE8DP4Cejj+rgguo/7vippcA16DMtYA4
+         dKgygWZpkdOGQ==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhCG9cdw2JZSKbDZ@zeniv-ca.linux.org.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Date:   Sat, 19 Feb 2022 11:32:15 +0500
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     linus.walleij@linaro.org, mturquette@baylibre.com,
+        bjorn.andersson@linaro.org, agross@kernel.org, tdas@codeaurora.org,
+        svarbanov@mm-sol.com, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH 1/4] clk: qcom: clk-rcg2: Fail Duty-Cycle configuration if
+ MND divider is not enabled.
+In-Reply-To: <20220217223736.DFC2EC340E8@smtp.kernel.org>
+References: <20211209163720.106185-1-nikita@trvn.ru>
+ <20211209163720.106185-2-nikita@trvn.ru>
+ <20220108005209.5140EC36AEB@smtp.kernel.org>
+ <991533e0fddd6999c8a06a536ae57999@trvn.ru>
+ <20220110201452.2B3E4C36AE3@smtp.kernel.org>
+ <cc4241105bfd2249c1c309a4efa2e6aa@trvn.ru>
+ <20220217223736.DFC2EC340E8@smtp.kernel.org>
+Message-ID: <6c3d2f619b1e87ef21effc02bb6df1cb@trvn.ru>
+X-Sender: nikita@trvn.ru
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 05:58:13AM +0000, Al Viro wrote:
-> On Sat, Feb 19, 2022 at 05:53:37AM +0000, Al Viro wrote:
-> > On Fri, Feb 18, 2022 at 01:31:13PM -0500, Rik van Riel wrote:
-> > 
-> > >  struct super_block;
-> > >  struct vfsmount;
-> > > @@ -73,6 +74,7 @@ struct vfsmount {
-> > >  	struct super_block *mnt_sb;	/* pointer to superblock */
-> > >  	int mnt_flags;
-> > >  	struct user_namespace *mnt_userns;
-> > > +	struct rcu_work free_rwork;
-> > >  } __randomize_layout;
-> > 
-> > Wait, what?  First of all, that has no business being in vfsmount -
-> > everything that deeply internal belongs in struct mount, not in
-> > its public part.  Moreover, there's already mount->mnt_rcu, so what's
-> > the point duplicating that?
-> 
-> Argh... You need rcu_work there...
-> 
-> OK, so make that a member of the same union mnt_rcu is.  In struct mount,
-> please.  And I'm not sure I like the idea of shoving that much into
-> struct mount, TBH...
+Hi,
 
-We might have a plenty of struct mount instances.  Very few of them will
-ever be internal, in the first place.  Fewer yet - using kern_unmount_rcu().
-And it's not small.  If anything, I would consider something like
-	call_rcu(&m->mnt_rcu, callback)
-with callback adding struct mount to llist and doing schedule_delayed_work()
-on that.  With work consisting of doing mntput on everything in it.
+Stephen Boyd писал(а) 18.02.2022 03:37:
+> Quoting Nikita Travkin (2022-01-26 07:14:21)
+>> Stephen Boyd писал(а) 11.01.2022 01:14:
+>> > Quoting Nikita Travkin (2022-01-07 23:25:19)
+>> >> Hi,
+>> >>
+>> >> Stephen Boyd писал(а) 08.01.2022 05:52:
+>> >> > Quoting Nikita Travkin (2021-12-09 08:37:17)
+>> >> I'm adding this error here primarily to bring attention of the
+>> >> user (e.g. developer enabling some peripheral that needs
+>> >> duty cycle control) who might have to change their clock tree
+>> >> to make this control effective. So, assuming that if someone
+>> >> sets the duty cycle to 50% then they might set it to some other
+>> >> value later, it makes sense to fail the first call anyway.
+>> >>
+>> >> If you think there are some other possibilities for this call
+>> >> to happen specifically with 50% duty cycle (e.g. some
+>> >> preparations or cleanups in the clk subsystem or some drivers
+>> >> that I'm not aware of) then I can make an exemption in the check
+>> >> for that.
+>> >>
+>> >
+>> > I don't see anywhere in clk_set_duty_cycle() where it would bail out
+>> > early if the duty cycle was set to what it already is. The default for
+>> > these clks is 50%, so I worry that some driver may try to set the duty
+>> > cycle to 50% and then fail now. Either we need to check the duty cycle
+>> > in the core before calling down into the driver or we need to check it
+>> > here in the driver. Can you send a patch to check the current duty cycle
+>> > in the core before calling down into the clk ops?
+>>
+>> Hi, sorry for a rather delayed response,
+>> I spent a bit of time looking at how to make the clk core be
+>> careful with ineffective duty-cycle calls and I can't find a
+>> nice way to do this... My idea was something like this:
+>>
+>> static int clk_core_set_duty_cycle_nolock(struct clk_core *core,
+>>                                           struct clk_duty *duty)
+>> {       /* ... */
+>>
+>>         /* Update core->duty values */
+>>         clk_core_update_duty_cycle_nolock(core);
+>>
+>>         if ( /* duty doesn't match core->duty */ ) {
+>>                 ret = core->ops->set_duty_cycle(core->hw, duty);
+>>         /* ... */
+>> }
+>>
+>> However there seem to be drawbacks to any variant of the
+>> comparison that I could come up with:
+>>
+>> Naive one would be to do
+>>     if (duty->num != core->duty->num || duty->den != core->duty->den)
+>> but it won't correctly compare e.g. 1/2 and 10/20.
+>>
+>> Other idea was to do
+>>     if (duty->den / duty->num != core->duty->den / core->duty->num)
+>> but it will likely fail with very close values (e.g. 100/500 and 101/500)
+>>
+>> I briefly thought of some more sophisticated math but I don't
+>> like the idea of complicating this too far.
+>>
+>> I briefly grepped the kernel sources for duty-cycle related methods
+>> and I saw only one user of the clk_set_duty_cycle:
+>>     sound/soc/meson/axg-tdm-interface.c
+>> Notably it sets the cycle to 1/2 in some cases, though it seems to
+>> be tied to the drivers/clk/meson/sclk-div.c clock driver by being
+>> the blocks of the same SoC.
+> 
+> Indeed, so this patch is untested? I doubt the qcom driver is being used
+> with the one caller of clk_set_duty_cycle() in the kernel.
+> 
 
-I'll get some sleep and put together something along those lines tomorrow
-morning.
+While right now, to my knowledge, there is no users of the duty cycle
+control, I'm adding a generic driver that uses it in another series [1]
+with an intention to use it across multiple qcom based devices.
+
+While making it I spent quite a bit of time staring at the oscilloscope
+to figure out that I need changes from patch 4/4 of this series and I'd
+like to make this quirk a bit more obvious to others.
+
+[1] https://lore.kernel.org/linux-pwm/20220212162342.72646-1-nikita@trvn.ru/
+
+>>
+>> Thinking of it a bit more, I saw another approach to the problem
+>> I want to solve: Since I just want to make developers aware of the
+>> hardware quirk, maybe I don't need to fail the set but just put a
+>> WARN or even WARN_ONCE there? This way the behavior will be unchanged.
+>>
+> 
+> I don't like the idea of a WARN or a WARN_ONCE as most likely nobody is
+> going to read it or do anything about it. Returning an error should be
+> fine then. If the duty cycle call fails for 50% then that's something we
+> have to live with.
+
+I intend this WARN or error to be hit by a person bringing up something
+new, user should never see it. For example a possible story could be:
+
+- Backlight control is connected to the clock on device X
+- Developer adds (future) pwm-clk adapter and pwm-backlight to the DT
+- Backlight slider in UI doesn't work anyway. (don't think UIs show
+  errors here)
+- Developer troubleshoots the thing and either finds WARN in dmesg
+  or that the sysfs write errors out.
+
+In my experience, people bringing devices up pay a very close attention
+to dmesg so I think giving a WARN is fine, but I'm fine with whichever
+approach you prefer.
+
+Nikita
