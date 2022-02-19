@@ -2,112 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 01:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17454C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 01:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240870AbiBSBWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 20:22:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57590 "EHLO
+        id S240726AbiBSBZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 20:25:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236726AbiBSBWW (ORCPT
+        with ESMTP id S231910AbiBSBZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 20:22:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 145643B285
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 17:22:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645233721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NKNuU6T0+CgHInxcOtBxN9jDk/rXumbRGkWZ7rGGpH8=;
-        b=CGb7ljFFJ6pZ7r/ECLxYtuGa5/l5lH2i4PYS2PMQZGFq9fpiemIGFl8u5KrZ41HltkZGwC
-        mDHQdW+fstPwbsNKnPxi3NyplHA2omy+sKFzptqikcQ7hSgUTr/ODS7WuJ1PBR8kjIQptM
-        mugSTlvgZSyk7oQ89h+NE6n0rIdKZwc=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-615-RUHg1i0POLu3wraNJzZa8w-1; Fri, 18 Feb 2022 20:22:00 -0500
-X-MC-Unique: RUHg1i0POLu3wraNJzZa8w-1
-Received: by mail-qv1-f70.google.com with SMTP id o6-20020a0562140e4600b0042cf952661bso10652993qvc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 17:21:59 -0800 (PST)
+        Fri, 18 Feb 2022 20:25:21 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652DE1DE90A
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 17:25:03 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id s16so9249968pgs.13
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 17:25:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CclG3ETfwpMiafnLAC+C/g4F0uYLllqSLmjIX1kNOrY=;
+        b=HhKeDGkzTdMv9cvBWKHL5Vw+bO6sTag+TZ5lJgaK8HmmqzGse0As/UN5csfPzjBoiL
+         NOD9d/+VCQ85dYbGDGSzcTIGl2ZNxgt74Emmvn6+8bSxYpSvHoD+X09f6H2XS4MdexJZ
+         xB/FNQhaC/Dnlaw88AiBiUXl8yOok7JBaajVg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NKNuU6T0+CgHInxcOtBxN9jDk/rXumbRGkWZ7rGGpH8=;
-        b=6kZahylozOhagbo4ueiaAmrmhN2BBHTzd55C5xR3H8KGkK681+M0Sz9mhz7wpsMCmS
-         5kMxxi5EImgcVMvpwEomQCWaRXCiBJheKJONTbYtgID+7J3Uzc7YK4Y4K21QF+1llXvC
-         lfbqhdpCTerUdecib1uSPqHBl6tjy+P1lFsCkwK/5z0wAQvENRURpI7dJ/kiG7+rYvAz
-         KSjEu3TUPVRCPwayjabDQMqyfpBG0zOMVuggNaMSSmM61Chf9ATKiJH6O/JUewthXaCk
-         oJ4lP0+EdW2gO/V+o3yktRvaogAvU+4834eds4mv2u028LmQBdU3obw52JIRUFBIiGHS
-         9QZg==
-X-Gm-Message-State: AOAM531xVUKcJPciWSYQpjPHn9wdrxPq1VsSg357WGbDtCItcTc9uwJe
-        S/9RrLbjYpaTcDXK5hzoaD9nofD6MGan/SDpG1RTAsKCV8EfU7lneqYL6gF/+E7/Qx624K3qHd+
-        iOlhrfveTNExWD/pliAcs/MO9
-X-Received: by 2002:ac8:5c4e:0:b0:2cb:9724:8b21 with SMTP id j14-20020ac85c4e000000b002cb97248b21mr9242196qtj.544.1645233719566;
-        Fri, 18 Feb 2022 17:21:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzRni3V2rINh2mu0p+1lIHNNRGvbQyoiDfj6ZyQYSg7zwdZjdUFXldPTpjwYIVPc1enbzm1kQ==
-X-Received: by 2002:ac8:5c4e:0:b0:2cb:9724:8b21 with SMTP id j14-20020ac85c4e000000b002cb97248b21mr9242189qtj.544.1645233719327;
-        Fri, 18 Feb 2022 17:21:59 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id x17sm2584234qtr.69.2022.02.18.17.21.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CclG3ETfwpMiafnLAC+C/g4F0uYLllqSLmjIX1kNOrY=;
+        b=2jenGNfcy2XR86YNS9YMAbWxxBjsXEEzr/7gzBMMKg8Bb0qb6OG6603ARfDhYGqmwa
+         K5pTrBDdLuCw/F8wUI4RwzSYhZZ2iyNBLA4LgbGWy4fLuSXdTVvPPx0kn4cpgDE8ITSG
+         ExppgIla5YulA240v7UxOVJiG38dTEtMZ67I9JK28CuHzCR0OMunzM+RrJ1Z16iVu54p
+         cokyJlPASlfM+Jf5SsLOY1KFl9ffjeUNRAhwPdwzWjwiqYn+WT5n/cEPtiMQU/5RMvdr
+         W7JAEGwN9DIi3P7/SwBLlxA57g64U466NP7vltYRDPat30i1umXSX0m62XLIrsfa9NhP
+         IVWA==
+X-Gm-Message-State: AOAM5335jSt5Cd1/VLVv5zyE+XbeeJeOtF5U8jjuz2Rujov8eny6+3MQ
+        AyZSf1qtT10F3PCVoEZ/24c7/w==
+X-Google-Smtp-Source: ABdhPJwVXKoa3iVfulrG1u4OWGPwFpo9GQJy63j7ET4K2+sD/0DMxFduREoulHsjdf33dILTI40Orw==
+X-Received: by 2002:a63:4a63:0:b0:373:a03a:8a1d with SMTP id j35-20020a634a63000000b00373a03a8a1dmr8120313pgl.460.1645233902910;
+        Fri, 18 Feb 2022 17:25:02 -0800 (PST)
+Received: from jwerner-p920.mtv.corp.google.com ([2620:15c:202:201:90c7:ea9e:6907:5ea9])
+        by smtp.gmail.com with ESMTPSA id j5sm357074pfu.185.2022.02.18.17.25.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 17:21:58 -0800 (PST)
-Date:   Fri, 18 Feb 2022 17:21:55 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 14/29] x86/ibt: Add IBT feature, MSR and #CP handling
-Message-ID: <20220219012155.z24prt3yj25ytacs@treble>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.395399333@infradead.org>
+        Fri, 18 Feb 2022 17:25:02 -0800 (PST)
+From:   Julius Werner <jwerner@chromium.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Julius Werner <jwerner@chromium.org>
+Subject: [PATCH v2] dt-bindings: memory: lpddr2: Adjust revision ID property to match lpddr3
+Date:   Fri, 18 Feb 2022 17:24:57 -0800
+Message-Id: <20220219012457.2889385-1-jwerner@chromium.org>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220218171409.395399333@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:49:16PM +0100, Peter Zijlstra wrote:
-> +DEFINE_IDTENTRY_ERRORCODE(exc_control_protection)
-> +{
-> +	if (!cpu_feature_enabled(X86_FEATURE_IBT)) {
-> +		pr_err("Whaaa?!?!\n");
-> +		return;
-> +	}
+Commit 3539a2 (dt-bindings: memory: lpddr2: Add revision-id properties)
+added the properties `revision-id1` and `revision-id2` to the
+"jedec,lpddr2" binding. The "jedec,lpddr3" binding already had a single
+array property `revision-id` for the same purpose. For consistency
+between related memory types, this patch deprecates the LPDDR2
+properties and instead adds a property in the same style as for LPDDR3
+to that binding.
 
-Might want to upgrade that to a proper warning :-)
+Signed-off-by: Julius Werner <jwerner@chromium.org>
+---
+ .../memory-controllers/ddr/jedec,lpddr2.yaml       | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-> +bool ibt_selftest(void)
-> +{
-> +	ibt_selftest_ok = false;
-> +
-> +	asm (ANNOTATE_NOENDBR
-> +	     "1: lea 2f(%%rip), %%rax\n\t"
-> +	     ANNOTATE_RETPOLINE_SAFE
-> +	     "   jmp *%%rax\n\t"
-> +	     "2: nop\n\t"
-> +
-> +	     /* unsigned ibt_selftest_ip = 2b */
-> +	     ".pushsection .data,\"aw\"\n\t"
-> +	     ".align 8\n\t"
-> +	     ".type ibt_selftest_ip, @object\n\t"
-> +	     ".size ibt_selftest_ip, 8\n\t"
-> +	     "ibt_selftest_ip:\n\t"
-> +	     ".quad 2b\n\t"
-> +	     ".popsection\n\t"
-> +
-> +	     : : : "rax", "memory");
-
-Can 'ibt_selftest_ip' just be defined in C (with __ro_after_init) and
-passed as an output to the asm doing 'mov $2b, %[ibt_selftest_ip]'?
-
+diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
+index 25ed0266f6dd3d..37229738f47271 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
+@@ -30,12 +30,23 @@ properties:
+     maximum: 255
+     description: |
+       Revision 1 value of SDRAM chip. Obtained from device datasheet.
++      Property is deprecated, use revision-id instead.
++    deprecated: true
+ 
+   revision-id2:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     maximum: 255
+     description: |
+       Revision 2 value of SDRAM chip. Obtained from device datasheet.
++      Property is deprecated, use revision-id instead.
++    deprecated: true
++
++  revision-id:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 2
++    maxItems: 2
++    description: |
++      Revision IDs read from Mode Register 6 and 7. One byte per uint32 cell (i.e. <MR6 MR7>).
+ 
+   density:
+     $ref: /schemas/types.yaml#/definitions/uint32
+@@ -164,8 +175,7 @@ examples:
+         compatible = "elpida,ECB240ABACN", "jedec,lpddr2-s4";
+         density = <2048>;
+         io-width = <32>;
+-        revision-id1 = <1>;
+-        revision-id2 = <0>;
++        revision-id = <123 234>;
+ 
+         tRPab-min-tck = <3>;
+         tRCD-min-tck = <3>;
 -- 
-Josh
+2.31.0
 
