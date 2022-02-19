@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 14:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 472FCC43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 14:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242450AbiBSOoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 09:44:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46698 "EHLO
+        id S242459AbiBSOqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 09:46:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiBSOn5 (ORCPT
+        with ESMTP id S232726AbiBSOqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 09:43:57 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7836F3F30D;
-        Sat, 19 Feb 2022 06:43:37 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id a19so20747307qvm.4;
-        Sat, 19 Feb 2022 06:43:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=rqiMv2dfBlWYecvEovZ5f/zHHvSjkItcD/1oZautZdU=;
-        b=NK408NNIuCtNVAfJSS5eI46y6QyMfuvvpXjju4rkIEcC2fAlJJOKY9VxZ3xXj68yX3
-         mdT2V9ng5ErPp/SAsk+CYp7CqK/ltqDKinOpLUhkPgLb2HDvMXnKKbDQWfijDiSxNmOZ
-         2sdThZS7C78Iyi8wNt8VE/WhGLdSg/W8LHjAwyGtzT8SrxnmwPp43+2ls6elcGYrpnlw
-         DpM5gnhXipk52r0DyenHqTfoy3VeDIvk8KyAhtQ+lQ5qHP0Bsany/mN18eHE4YaWlXYt
-         vNJYo2aXIP1qKukcmK0ilCycp7BrmEI19i/45b5R4VVh4OK0w/Pb5BpPLWsbLoerz99l
-         Z8FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=rqiMv2dfBlWYecvEovZ5f/zHHvSjkItcD/1oZautZdU=;
-        b=iZtu4IIRCTWN+fuHGH9y2wlydqVVFphpHQ7IetmmznFBKXWEi66z6Aoj6Ik0TfehB7
-         D6/YLj/thbfRB871EX+jURz7dPDyy/UnpRuTS5k7AjXdLH7nVHcKI/Ol/n3PEwvgp6yA
-         OzHEpzESkH5Ws78MeiA5teWyTlstoIMaZYYUiNeIUhxqji4F0AR8dgn3Tx6kJ6fV8bbR
-         JFQjIi5jRsxbQ8cFKUAlEiXi4ftMhyIEYIJ9f03Nn7yT5jagg4aRq1K4mkK3nt6EeOBF
-         gUsF2XIC/s9aCuwv8C5BUv9rvxe7jhJNA4RV+Sluj1f1DMphIuWY/89TwdSd25p5UsrX
-         5eOw==
-X-Gm-Message-State: AOAM530LcX17nqiGF6RraIkzVyYr632s8jEGosdS/56L8RS7DUr/Byoo
-        VCJhg2KlXXBV42x8JlyJYtE=
-X-Google-Smtp-Source: ABdhPJx4nPrQ0XqrE7710vUfFYUApYELhFK7b7su7IzOiJ+y7MtQifjcyX6qz71SoFioohDwo02uIQ==
-X-Received: by 2002:ac8:5f83:0:b0:2d5:e0d8:a836 with SMTP id j3-20020ac85f83000000b002d5e0d8a836mr10913407qta.46.1645281815915;
-        Sat, 19 Feb 2022 06:43:35 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j19sm21105762qkp.120.2022.02.19.06.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 06:43:35 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 19 Feb 2022 06:43:34 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Armin Wolf <W_Armin@gmx.de>
-Cc:     pali@kernel.org, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] hwmon: (dell-smm) Reword and mark parameter "force"
- as unsafe
-Message-ID: <20220219144334.GA1032424@roeck-us.net>
-References: <20220215191113.16640-1-W_Armin@gmx.de>
- <20220215191113.16640-8-W_Armin@gmx.de>
+        Sat, 19 Feb 2022 09:46:16 -0500
+Received: from out28-169.mail.aliyun.com (out28-169.mail.aliyun.com [115.124.28.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D3B9AE68;
+        Sat, 19 Feb 2022 06:45:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.0903952|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0665288-8.09977e-05-0.93339;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047202;MF=icenowy@nucleisys.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.MsSaWGO_1645281943;
+Received: from ice-e5v2.lan(mailfrom:icenowy@nucleisys.com fp:SMTPD_---.MsSaWGO_1645281943)
+          by smtp.aliyun-inc.com(33.37.75.142);
+          Sat, 19 Feb 2022 22:45:52 +0800
+Message-ID: <6ff70d9fbbfcde860823aa24f0ce58a0a96a1c91.camel@nucleisys.com>
+Subject: Re: [PATCH 00/12] Initial support for Nuclei DemoSoC w/ UX600
+From:   Icenowy Zheng <icenowy@nucleisys.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Date:   Sat, 19 Feb 2022 22:45:43 +0800
+In-Reply-To: <20220127151647.2375449-1-icenowy@nucleisys.com>
+References: <20220127151647.2375449-1-icenowy@nucleisys.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220215191113.16640-8-W_Armin@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 08:11:13PM +0100, Armin Wolf wrote:
-> When enabling said module parameter, the driver ignores
-> all feature blacklists on relevant models, which has the
-> potential for strange side effects. Also there seems to
-> be a slight chance for unsupported devices to behave
-> badly when probed for features.
-> In such cases, the kernel should be tainted to inform
-> people that these issues might have been caused by
-> the dell_smm_hwmon driver with "force" enabled.
-> Also reword the parameter description to remind users
-> that enabling "force" also enables blacklisted features.
+在 2022-01-27星期四的 23:16 +0800，Icenowy Zheng写道：
+> This patchset adds support for Nuclei DemoSoC (which is an evaluation
+> platform made with Nuclei CPU cores and mainly peripherals in
+> original
+> Hummingbird E203 project, running on FPGA) with UX600 CPU cores.
 > 
-> Tested on a Dell Inspiron 3505.
+> Most patches are for DT bindings, the remaining ones are adding a
+> Kconfig option and some DTS/DTSI files. The last one is a workaround
+> for
+> a severe bug in currently released versions of UX600, which is found
+> in 5.17 kernel, in which Sv48 support is added to Linux.
 > 
-> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-> Reviewed-by: Pali Roh�r <pali@kernel.org>
+> Two non-technical patches are in this patchset too, for MAINTAINERS
+> and .mailmap items.
 
-Applied to hwmon-next.
+Ping, could any RISC-V maintainers review these patches, especially the
+SATP workaround one?
 
-Thanks,
-Guenter
+> 
+> Icenowy Zheng (12):
+>   dt-bindings: vendor-prefixes: add Nuclei
+>   RISC-V: add Nuclei SoC Kconfig option
+>   dt-bindings: riscv: add compatible strings for Nuclei UX600 series
+>   dt-bindings: timer: add compatible for Nuclei UX600 CLINT-compat
+> timer
+>   dt-bindings: interrupt-controller: add compatible string for UX600
+>     PLIC
+>   dt-bindings: serial: add compatible string for Nuclei DemoSoC UART
+>   dt-bindings: spi: add compatible string for Nuclei DemoSoC SPI
+>   dt-bindings: riscv: add binding for Nuclei platform boards
+>   riscv: dts: add device tree for Nuclei DemoSoC w/ UX600 on DDR200T
+>   RISC-V: workaround Nuclei UX600 cores with broken SATP CSR
+>   MAINTAINERS: add myself as Nuclei SoCs/CPUs supporter
+>   mailmap: add Icenowy Zheng's Nuclei mail addresses
+> 
+>  .mailmap                                      |  1 +
+>  .../sifive,plic-1.0.0.yaml                    |  1 +
+>  .../devicetree/bindings/riscv/cpus.yaml       |  7 ++
+>  .../devicetree/bindings/riscv/nuclei.yaml     | 27 ++++++++
+>  .../bindings/serial/sifive-serial.yaml        |  1 +
+>  .../devicetree/bindings/spi/spi-sifive.yaml   |  1 +
+>  .../bindings/timer/sifive,clint.yaml          |  1 +
+>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>  MAINTAINERS                                   |  7 ++
+>  arch/riscv/Kconfig.socs                       |  6 ++
+>  arch/riscv/boot/dts/Makefile                  |  1 +
+>  arch/riscv/boot/dts/nuclei/Makefile           |  2 +
+>  .../dts/nuclei/nuclei-demosoc-ddr200t.dtsi    | 41 ++++++++++++
+>  .../nuclei/nuclei-demosoc-ux600-ddr200t.dts   | 13 ++++
+>  .../boot/dts/nuclei/nuclei-demosoc-ux600.dtsi | 49 ++++++++++++++
+>  .../riscv/boot/dts/nuclei/nuclei-demosoc.dtsi | 67
+> +++++++++++++++++++
+>  arch/riscv/include/asm/vendorid_list.h        |  1 +
+>  arch/riscv/mm/init.c                          | 17 +++++
+>  18 files changed, 245 insertions(+)
+>  create mode 100644
+> Documentation/devicetree/bindings/riscv/nuclei.yaml
+>  create mode 100644 arch/riscv/boot/dts/nuclei/Makefile
+>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
+> ddr200t.dtsi
+>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-ux600-
+> ddr200t.dts
+>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
+> ux600.dtsi
+>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc.dtsi
+> 
 
-> ---
->  drivers/hwmon/dell-smm-hwmon.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> --
-> 2.30.2
-> 
-> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-> index 04a41d59da60..67d63932b48a 100644
-> --- a/drivers/hwmon/dell-smm-hwmon.c
-> +++ b/drivers/hwmon/dell-smm-hwmon.c
-> @@ -87,8 +87,8 @@ MODULE_LICENSE("GPL");
->  MODULE_ALIAS("i8k");
-> 
->  static bool force;
-> -module_param(force, bool, 0);
-> -MODULE_PARM_DESC(force, "Force loading without checking for supported models");
-> +module_param_unsafe(force, bool, 0);
-> +MODULE_PARM_DESC(force, "Force loading without checking for supported models and features");
-> 
->  static bool ignore_dmi;
->  module_param(ignore_dmi, bool, 0);
+
