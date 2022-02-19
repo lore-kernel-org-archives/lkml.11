@@ -2,116 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF96C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:37:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58882C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242526AbiBSSh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:37:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49012 "EHLO
+        id S242900AbiBSSnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:43:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237333AbiBSShZ (ORCPT
+        with ESMTP id S242799AbiBSSm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:37:25 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7341305;
-        Sat, 19 Feb 2022 10:37:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645295825; x=1676831825;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GhY3fDCHu53ziSnkTw5eFSyoPC2rhAzNSF2CnP6JEi4=;
-  b=I8v92+VeW5ypO7DaWL+jYPZ42M3jUP+4u3IQ1nUvPyZhjeVlWf76JONd
-   LJZ7hx+pBFVQQgdGkNZ6iSameez0OPYe+s7ymmAgsPJjqRAPXkWE1sS0A
-   fxSHW2Z2XrV1QkEdLpzBQh8qfRq1ClOzHyk6g69nX8EATbXl4UTny3dqd
-   w=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 19 Feb 2022 10:37:05 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2022 10:37:04 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Sat, 19 Feb 2022 10:36:51 -0800
-Received: from [10.216.20.52] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Sat, 19 Feb
- 2022 10:36:44 -0800
-Message-ID: <a3bb48ec-1174-ba2f-eca5-0fed78c55799@quicinc.com>
-Date:   Sun, 20 Feb 2022 00:06:41 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 7/7] pinctrl: qcom: Update clock voting as optional
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        Sat, 19 Feb 2022 13:42:57 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D022716B
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:36 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E6E9B402FD
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 18:42:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645296148;
+        bh=MgKjv9z7uNr3RRUsHMHa/DUOLnVSfcojasTHu53YzZ0=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=doL82KuKwHUFeGeapEXNusQjxhxuNC+tpGVORDoS4ovg9n3WAoHN1vlbIAOM6uKTl
+         lA/AKHGsILWWgON913YU5CYLJnGXZPEEVASmiSzgMwuqShoxoBMUUvBsQvDP1k+WXz
+         BGchNnBlVAoUDQnCAKjTIxZ0xcQE6d2QSe7X6Jp9hnGRnvr+c1aCKGNULgARhqpoNw
+         BkZ4Yurn9l279Tgp5Gr9Py9EezX4gGqeCKKF9nEqV6R5iH7QDLLoyTo9Plpr9Lb7tP
+         2jo9dQu6AEicEo6TUtEYQQrqd4+tNb2FxG3naLj2aFqZB7du6HcidaFlMKdpdM5dHB
+         sEndUQab4aUJA==
+Received: by mail-ed1-f69.google.com with SMTP id b26-20020a056402139a00b004094fddbbdfso7598805edv.12
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MgKjv9z7uNr3RRUsHMHa/DUOLnVSfcojasTHu53YzZ0=;
+        b=ePdR+/UklA/L7J957rjj30dlxtrr7XZuRsfETxUxsT5xy831yrAFA73lVV1vIRusIN
+         6aVOTbwiDIt9g9MmApNhrOLfm4/zpdFSU0/1EnWS3FQOBN8RCkxxBZJvig0gwxP2MC5o
+         W5cI4xQe2o7y/u0keU5NdCf4f+BVVPdA4hAv3U5E7M2XPVqRV85Njkv/bA81NnkrdAcY
+         21D9LRqwpCAFJJ23CzK+Yx1M3dOJXoTpJufBEyBP7uml+x6S6/mQX1PpTLtb/mQABLwS
+         wrpn9ZsMj0SWxNzrYYobl93mGHGzlWJ9QCCT7nJLuQmg91xMp1DtRH/LpPNI9tj2LqPu
+         KQiQ==
+X-Gm-Message-State: AOAM532oLDKvRzICXC0QaY6bqPseSOvKu67MjitqOja3S3gQh/JYLbRS
+        BrBHWadyKr3ZrM7mhw/jGarizZj51l8H9vMcMtKKHQK/MJvt5D+a/NZ9RCorndJIad12DrWq/iU
+        QvFbiOHL6Bp3BjTzCpTl398XWRIELbowprieVNn4q1A==
+X-Received: by 2002:a05:6402:90b:b0:412:a7cc:f5f9 with SMTP id g11-20020a056402090b00b00412a7ccf5f9mr12839301edz.136.1645296148105;
+        Sat, 19 Feb 2022 10:42:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz9AksoCFm+UDOtkXMW7lwQ/A6+F6VdlAYu3MK0g2Dmm81uCBlm5twd4SJuMN4mjgnv445xsg==
+X-Received: by 2002:a05:6402:90b:b0:412:a7cc:f5f9 with SMTP id g11-20020a056402090b00b00412a7ccf5f9mr12839290edz.136.1645296147918;
+        Sat, 19 Feb 2022 10:42:27 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id j8sm6680745edw.40.2022.02.19.10.42.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Feb 2022 10:42:27 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Wei Xu <xuwei5@hisilicon.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Chanho Park <chanho61.park@samsung.com>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        <agross@kernel.org>, <alsa-devel@alsa-project.org>,
-        <bgoswami@codeaurora.org>, <bjorn.andersson@linaro.org>,
-        <broonie@kernel.org>, <devicetree@vger.kernel.org>,
-        <judyhsiao@chromium.org>, <lgirdwood@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <perex@perex.cz>,
-        <quic_plai@quicinc.com>, <robh+dt@kernel.org>,
-        <rohitkr@codeaurora.org>, <tiwai@suse.com>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
- <1644851994-22732-8-git-send-email-quic_srivasam@quicinc.com>
- <a209336a-9108-f1ac-ee6d-a838df115c6d@linaro.org>
- <b663f63f-4a5a-3a2a-9be7-fa7258ce93c5@quicinc.com>
- <09b00fe9-1770-1723-3c4c-6c494da87e8d@linaro.org>
- <CAE-0n5009g2WwnTsmUeKs5jgrnrUf21SgEL1s65C3FL+HJefkQ@mail.gmail.com>
-From:   "Srinivasa Rao Mandadapu (Temp)" <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n5009g2WwnTsmUeKs5jgrnrUf21SgEL1s65C3FL+HJefkQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Jan Kotas <jank@cadence.com>, linux-scsi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [RFC PATCH 0/8] dt-bindings: ufs: add common platform bindings + fixes
+Date:   Sat, 19 Feb 2022 19:42:16 +0100
+Message-Id: <20220219184224.44339-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-On 2/19/2022 8:16 AM, Stephen Boyd wrote:
-Thanks for Your time Stephen!!!
-> Quoting Srinivas Kandagatla (2022-02-16 07:38:02)
->>
->> On 16/02/2022 14:41, Srinivasa Rao Mandadapu wrote:
->>> On 2/16/2022 7:50 PM, Srinivas Kandagatla wrote:
->>> Thanks for Your Time Srini!!!
->>>> On 14/02/2022 15:19, Srinivasa Rao Mandadapu wrote:
->>>>> diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->>>>> b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->>>>> index 5bf30d97..4277e31 100644
->>>>> --- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->>>>> +++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->>>>> @@ -143,6 +143,7 @@ static const struct lpi_pinctrl_variant_data
->>>>> sc7280_lpi_data = {
->>>>>        .ngroups = ARRAY_SIZE(sc7280_groups),
->>>>>        .functions = sc7280_functions,
->>>>>        .nfunctions = ARRAY_SIZE(sc7280_functions),
->>>>> +    .is_clk_optional = 1,
->>>> This is forcefully set assuming that sc7280 is always used in ADSP
->>>> bypass mode. Which is not correct.
->>>>
->>>> Can't you use devm_clk_bulk_get_optional instead?
->>> Yes. Agreed. Initially used devm_clk_bulk_get_optional, but Bjorn
->>> suggested for conditional check instead of optional.
->>>
->>> Again Shall we go for optional clock voting?
->> That means that the condition has to be dynamic based on the platform
->> using DSP or not. Which is impossible to deduce without some help from DT.
->>
->> I would prefer to stay with optional clock unless Bjorn has some strong
->> objection on not using int.
-> I think we need the combination of optional API and bool flag. My
-> understanding is it's optional on sc7280, but not on the previous
-> revision, so we want to be very strict on previous revision and less
-> strict on sc7280. Hence the flag. Maybe we should change it to
-> clk_required and then assume optional going forward. Then the callsite
-> can use one or the other API?
-Okay.Will change accordingly.
+Not tested, so please kindly test.
+
+I am sending as RFC to gather some comments.  If it looks good, I will
+convert other TXT bindings to DT schema format.
+
+Dependencies
+============
+1. The DTS patches (5-8) depend on scsi/ufs driver change (patch 4), so
+   they should go in a following release, after merging driver.
+
+   This is also might affect out-of-tree users of these DTSes (other
+   projects, e.g. U-boot).
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (8):
+  dt-bindings: ufs: add common platform bindings
+  dt-bindings: ufs: samsung,exynos-ufs: use common bindings
+  dt-bindings: ufs: cdns,ufshc: convert to dtschema
+  scsi: ufs: deprecate 'freq-table-hz' property
+  arm64: dts: hi3670: use 'freq-table' in UFS node
+  arm64: dts: exynos: use 'freq-table' in UFS node
+  arm64: dts: qcom: use 'freq-table' in UFS node
+  arm64: dts: ti: use 'freq-table' in UFS node
+
+ .../devicetree/bindings/ufs/cdns,ufshc.txt    | 32 -------
+ .../devicetree/bindings/ufs/cdns,ufshc.yaml   | 56 ++++++++++++
+ .../bindings/ufs/samsung,exynos-ufs.yaml      | 10 +--
+ .../devicetree/bindings/ufs/ti,j721e-ufs.yaml |  2 +-
+ .../devicetree/bindings/ufs/ufs-common.yaml   | 86 +++++++++++++++++++
+ .../devicetree/bindings/ufs/ufs-hisi.txt      |  4 +-
+ MAINTAINERS                                   |  1 +
+ arch/arm64/boot/dts/exynos/exynos7.dtsi       |  3 +-
+ arch/arm64/boot/dts/exynos/exynosautov9.dtsi  |  3 +-
+ arch/arm64/boot/dts/hisilicon/hi3670.dtsi     |  4 +-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         | 23 +++--
+ arch/arm64/boot/dts/qcom/msm8998.dtsi         | 17 ++--
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          | 19 ++--
+ arch/arm64/boot/dts/qcom/sm8150.dtsi          | 19 ++--
+ arch/arm64/boot/dts/qcom/sm8250.dtsi          | 17 ++--
+ arch/arm64/boot/dts/qcom/sm8350.dtsi          | 19 ++--
+ arch/arm64/boot/dts/qcom/sm8450.dtsi          | 17 ++--
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     |  4 +-
+ drivers/scsi/ufs/ufshcd-pltfrm.c              | 21 +++--
+ 19 files changed, 234 insertions(+), 123 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.txt
+ create mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.yaml
+ create mode 100644 Documentation/devicetree/bindings/ufs/ufs-common.yaml
+
+-- 
+2.32.0
+
