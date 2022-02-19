@@ -2,74 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0555EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 11:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 11:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242362AbiBSLEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 06:04:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44188 "EHLO
+        id S235977AbiBSLJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 06:09:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240384AbiBSLEF (ORCPT
+        with ESMTP id S229657AbiBSLJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 06:04:05 -0500
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3867A6A075;
-        Sat, 19 Feb 2022 03:01:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=iYUDiAjoLie13BkDtYO7gp/SKHNnEFJhm4CtBUuVL2E=;
-        b=dNY7HR+O49q7ko5z+fV9Du3c5CZrY2LVT8eNks5f1MuYipM9O0SozDdBy85ZStEcLcyvmhWJf2msA
-         nPKcfhNYKRUnSAzdMEVDdD2rDlntg98TlEvei775JvBv8zKJuYr5OF0SSiZ77zR87FEYE6jmacRx05
-         hW4gJCz/hf1GAyLNlIXYj8HnxObygmi3n0mHM2VpyG9uob57R8Qo1UhvFzCtmxSO1oB8SkkO4Pcu3n
-         QgnbKnR4GijBtYFQmqrv4izsePd3Gb56UdzwvvPZkEJ74ztR7jpBZ0Skgu6NfdKDfQayxJvrLrz78r
-         lqP2tW6pVPPafnlmcjc9v8jmywdpAQg==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000009,0.005103)], BW: [Enabled, t: (0.000029,0.000001)], RTDA: [Enabled, t: (0.066537), Hit: No, Details: v2.25.0; Id: 15.52k1vm.1fs8q8lsh.r23u; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Sat, 19 Feb 2022 14:00:54 +0300
-Date:   Sat, 19 Feb 2022 13:42:55 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v4] fpga: microchip-spi: add Microchip FPGA manager
-Message-ID: <20220219104255.smgqcqlez6sdo4hk@x260>
-References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
- <20220217191851.11730-1-i.bornyakov@metrotek.ru>
- <20220218160555.GA1333893@yilunxu-OptiPlex-7050>
- <20220219061627.3oanqx5glsyq47xk@x260>
+        Sat, 19 Feb 2022 06:09:22 -0500
+Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791513E5C8
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 03:09:00 -0800 (PST)
+Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay08.hostedemail.com (Postfix) with ESMTP id 3814A208BC;
+        Sat, 19 Feb 2022 11:08:59 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id 656842F;
+        Sat, 19 Feb 2022 11:08:58 +0000 (UTC)
+Message-ID: <60e0b4b5b1f925743d2bfbbaf170bfecfd0c92fc.camel@perches.com>
+Subject: Re: fallthrough question
+From:   Joe Perches <joe@perches.com>
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Sat, 19 Feb 2022 03:08:57 -0800
+In-Reply-To: <858a2b13-64e1-99bc-e2f7-5b2477bb1126@infradead.org>
+References: <858a2b13-64e1-99bc-e2f7-5b2477bb1126@infradead.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220219061627.3oanqx5glsyq47xk@x260>
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 656842F
+X-Stat-Signature: zao5s4cakkie794jkgq6y15xtt5mnci1
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+ClDQSqa4QZEA8CHkAUSaB77hB4F7WSvo=
+X-HE-Tag: 1645268938-567866
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 09:16:27AM +0300, Ivan Bornyakov wrote:
-> On Sat, Feb 19, 2022 at 12:05:55AM +0800, Xu Yilun wrote:
-> >
-> > Maybe the bitstream info at the head of the image could be parsed in
-> > write_init(), and this requires the driver fill the
-> > fpga_manager_ops.initial_header_size
-> >
+On Fri, 2022-02-18 at 13:57 -0800, Randy Dunlap wrote:
+> Hi,
 > 
-> Header size is not known beforehand and is stored in 25th byte of the
-> image.
+> I expected this to produce a fallthrough warning, but it doesn't
+> (with gcc 11.1.0):
 > 
+> from sound/oss/dmasound/dmasound_core.c:#1481, when falling from case 1
+> into case 0: (in arch/m68k/ selected builds only)
+> 
+> 	case 1:
+> 		if ((size = ints[2]) < 256) /* check for small buffer specs */
+> 			size <<= 10 ;
+>                 if (size < MIN_BUFSIZE || size > MAX_BUFSIZE)
+>                         printk("dmasound_setup: invalid write buffer size, using default = %d\n", writeBufSize);
+>                 else
+>                         writeBufSize = size;
+> 	case 0:
+> 		break;
+> 	default:
+> 
+> Can you tell me what is going on here?
 
-Actually I was not quite accurate here. The header itself seems to be of
-constant size according to
-https://coredocs.s3.amazonaws.com/DirectC/2021_2/spi_directc.pdf
-(4. Data File Format)
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91432
 
-But the lookup table is definitely of a variable size. Moreover
-bitstream start and size both are somewhere in the image and needed
-to be located through lookup table.
 
