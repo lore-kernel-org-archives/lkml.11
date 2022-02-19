@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58882C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242900AbiBSSnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:43:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43388 "EHLO
+        id S242906AbiBSSnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:43:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242799AbiBSSm5 (ORCPT
+        with ESMTP id S242884AbiBSSm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:42:57 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D022716B
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:36 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        Sat, 19 Feb 2022 13:42:59 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF3726AF6
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:39 -0800 (PST)
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E6E9B402FD
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 18:42:28 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3573840306
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 18:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645296148;
-        bh=MgKjv9z7uNr3RRUsHMHa/DUOLnVSfcojasTHu53YzZ0=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=doL82KuKwHUFeGeapEXNusQjxhxuNC+tpGVORDoS4ovg9n3WAoHN1vlbIAOM6uKTl
-         lA/AKHGsILWWgON913YU5CYLJnGXZPEEVASmiSzgMwuqShoxoBMUUvBsQvDP1k+WXz
-         BGchNnBlVAoUDQnCAKjTIxZ0xcQE6d2QSe7X6Jp9hnGRnvr+c1aCKGNULgARhqpoNw
-         BkZ4Yurn9l279Tgp5Gr9Py9EezX4gGqeCKKF9nEqV6R5iH7QDLLoyTo9Plpr9Lb7tP
-         2jo9dQu6AEicEo6TUtEYQQrqd4+tNb2FxG3naLj2aFqZB7du6HcidaFlMKdpdM5dHB
-         sEndUQab4aUJA==
-Received: by mail-ed1-f69.google.com with SMTP id b26-20020a056402139a00b004094fddbbdfso7598805edv.12
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:28 -0800 (PST)
+        s=20210705; t=1645296151;
+        bh=rlo6dv8R8AO8D00xVoydpkfzh23wJWM99TpGFXJ1F5U=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=nIe/GF4eFfgeyjk+3IYN8rKCtt4tUs8OBkVKrg6MHbSYhaYX0oTxXTdolv32g95E/
+         CSgMMOZtCaEEgi8fOsmtSJInJSWl77dq9uU4ZTpnJD1vRhnnkHKztqlcVOZMdF19VK
+         KPopoU4+Gs1eaC4acd/lOylK7MaBoaNcaoLE5jJEZy/eCrqlS0O3MPYHiKNz1G19tu
+         IkCgla8+QkdO2ezXkuPtGk+5bBCbUtNMJedzdOGnsc+vP2brMnXtWmXdVI1HP8EbXS
+         Sjw1C/LtZXWSfCUSkh4/RRmvGtYHkYDdzUNSwreLPCowwHamgDd+xTHj+zF3VgJkgC
+         OL1HX/aR8Q6qg==
+Received: by mail-ed1-f70.google.com with SMTP id y13-20020aa7c24d000000b00411925b7829so7419878edo.22
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 10:42:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MgKjv9z7uNr3RRUsHMHa/DUOLnVSfcojasTHu53YzZ0=;
-        b=ePdR+/UklA/L7J957rjj30dlxtrr7XZuRsfETxUxsT5xy831yrAFA73lVV1vIRusIN
-         6aVOTbwiDIt9g9MmApNhrOLfm4/zpdFSU0/1EnWS3FQOBN8RCkxxBZJvig0gwxP2MC5o
-         W5cI4xQe2o7y/u0keU5NdCf4f+BVVPdA4hAv3U5E7M2XPVqRV85Njkv/bA81NnkrdAcY
-         21D9LRqwpCAFJJ23CzK+Yx1M3dOJXoTpJufBEyBP7uml+x6S6/mQX1PpTLtb/mQABLwS
-         wrpn9ZsMj0SWxNzrYYobl93mGHGzlWJ9QCCT7nJLuQmg91xMp1DtRH/LpPNI9tj2LqPu
-         KQiQ==
-X-Gm-Message-State: AOAM532oLDKvRzICXC0QaY6bqPseSOvKu67MjitqOja3S3gQh/JYLbRS
-        BrBHWadyKr3ZrM7mhw/jGarizZj51l8H9vMcMtKKHQK/MJvt5D+a/NZ9RCorndJIad12DrWq/iU
-        QvFbiOHL6Bp3BjTzCpTl398XWRIELbowprieVNn4q1A==
-X-Received: by 2002:a05:6402:90b:b0:412:a7cc:f5f9 with SMTP id g11-20020a056402090b00b00412a7ccf5f9mr12839301edz.136.1645296148105;
-        Sat, 19 Feb 2022 10:42:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9AksoCFm+UDOtkXMW7lwQ/A6+F6VdlAYu3MK0g2Dmm81uCBlm5twd4SJuMN4mjgnv445xsg==
-X-Received: by 2002:a05:6402:90b:b0:412:a7cc:f5f9 with SMTP id g11-20020a056402090b00b00412a7ccf5f9mr12839290edz.136.1645296147918;
-        Sat, 19 Feb 2022 10:42:27 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rlo6dv8R8AO8D00xVoydpkfzh23wJWM99TpGFXJ1F5U=;
+        b=vu8UAhZpg0I23LyyC1cSq+dw9jM0lgOyc2WdgZ7rMjjv0kxlFvQELPArIN/nA4FYfa
+         dGLoaz6HcksqVWBu6UXRKZ46Df19FtQxmra9muujCqhKsvfd27XOhcjjUmD6V2HHCgC4
+         oK9VSdYh6QgmQMRWr96R2ioWaMHVNF83GojWmlEJkGRnjGnr+qjZQrGlUQkBhfaBMKSF
+         eZvrpIyTGbitHkIaR6FIkF5w6daa8P02cVd8aDhKr5SotJ1HRYf3x8O/qgBiEKUYD2G8
+         KtAtfVY/3bCVjt2v7hG6vW7tpudbVHHkdYdhyLbK3f7AAS+RnC4IF9agwa0wfkhcJ+Sf
+         7B7g==
+X-Gm-Message-State: AOAM532Qf9AygGZgy2/OyONENAdcERUPvO0dE1Mp1iLLfs1Wd1E4gE/O
+        4a6+kaSonFCfqQnK09hTMNnZlHFlAq5tlYWx4peRWPRuD3/zdBJ5r4RHCL7Yb22xsuzZoVjJJ09
+        VQTv8rmHTEmXD3/zKv1sQL6bu1ZRnsajDaCBFmDgCKQ==
+X-Received: by 2002:a17:907:3a13:b0:6cf:1186:1381 with SMTP id fb19-20020a1709073a1300b006cf11861381mr10792756ejc.539.1645296150893;
+        Sat, 19 Feb 2022 10:42:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx2naSdEU4Ep7cfPOis7zL8hDLMxXjvy+MqwgzXgYHKGMAwKMtnXxUn3sccavk0GfxDOqA4cQ==
+X-Received: by 2002:a17:907:3a13:b0:6cf:1186:1381 with SMTP id fb19-20020a1709073a1300b006cf11861381mr10792750ejc.539.1645296150719;
+        Sat, 19 Feb 2022 10:42:30 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id j8sm6680745edw.40.2022.02.19.10.42.26
+        by smtp.gmail.com with ESMTPSA id j8sm6680745edw.40.2022.02.19.10.42.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 10:42:27 -0800 (PST)
+        Sat, 19 Feb 2022 10:42:30 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Alim Akhtar <alim.akhtar@samsung.com>,
         Avri Altman <avri.altman@wdc.com>,
@@ -74,68 +75,67 @@ To:     Alim Akhtar <alim.akhtar@samsung.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [RFC PATCH 0/8] dt-bindings: ufs: add common platform bindings + fixes
-Date:   Sat, 19 Feb 2022 19:42:16 +0100
-Message-Id: <20220219184224.44339-1-krzysztof.kozlowski@canonical.com>
+Subject: [RFC PATCH 2/8] dt-bindings: ufs: samsung,exynos-ufs: use common bindings
+Date:   Sat, 19 Feb 2022 19:42:18 +0100
+Message-Id: <20220219184224.44339-3-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220219184224.44339-1-krzysztof.kozlowski@canonical.com>
+References: <20220219184224.44339-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Use common UFS bindings in Samsung Exynos UFS to cover generic/common
+properties in DTS.
 
-Not tested, so please kindly test.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ .../devicetree/bindings/ufs/samsung,exynos-ufs.yaml    | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-I am sending as RFC to gather some comments.  If it looks good, I will
-convert other TXT bindings to DT schema format.
-
-Dependencies
-============
-1. The DTS patches (5-8) depend on scsi/ufs driver change (patch 4), so
-   they should go in a following release, after merging driver.
-
-   This is also might affect out-of-tree users of these DTSes (other
-   projects, e.g. U-boot).
-
-Best regards,
-Krzysztof
-
-Krzysztof Kozlowski (8):
-  dt-bindings: ufs: add common platform bindings
-  dt-bindings: ufs: samsung,exynos-ufs: use common bindings
-  dt-bindings: ufs: cdns,ufshc: convert to dtschema
-  scsi: ufs: deprecate 'freq-table-hz' property
-  arm64: dts: hi3670: use 'freq-table' in UFS node
-  arm64: dts: exynos: use 'freq-table' in UFS node
-  arm64: dts: qcom: use 'freq-table' in UFS node
-  arm64: dts: ti: use 'freq-table' in UFS node
-
- .../devicetree/bindings/ufs/cdns,ufshc.txt    | 32 -------
- .../devicetree/bindings/ufs/cdns,ufshc.yaml   | 56 ++++++++++++
- .../bindings/ufs/samsung,exynos-ufs.yaml      | 10 +--
- .../devicetree/bindings/ufs/ti,j721e-ufs.yaml |  2 +-
- .../devicetree/bindings/ufs/ufs-common.yaml   | 86 +++++++++++++++++++
- .../devicetree/bindings/ufs/ufs-hisi.txt      |  4 +-
- MAINTAINERS                                   |  1 +
- arch/arm64/boot/dts/exynos/exynos7.dtsi       |  3 +-
- arch/arm64/boot/dts/exynos/exynosautov9.dtsi  |  3 +-
- arch/arm64/boot/dts/hisilicon/hi3670.dtsi     |  4 +-
- arch/arm64/boot/dts/qcom/msm8996.dtsi         | 23 +++--
- arch/arm64/boot/dts/qcom/msm8998.dtsi         | 17 ++--
- arch/arm64/boot/dts/qcom/sdm845.dtsi          | 19 ++--
- arch/arm64/boot/dts/qcom/sm8150.dtsi          | 19 ++--
- arch/arm64/boot/dts/qcom/sm8250.dtsi          | 17 ++--
- arch/arm64/boot/dts/qcom/sm8350.dtsi          | 19 ++--
- arch/arm64/boot/dts/qcom/sm8450.dtsi          | 17 ++--
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi     |  4 +-
- drivers/scsi/ufs/ufshcd-pltfrm.c              | 21 +++--
- 19 files changed, 234 insertions(+), 123 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.txt
- create mode 100644 Documentation/devicetree/bindings/ufs/cdns,ufshc.yaml
- create mode 100644 Documentation/devicetree/bindings/ufs/ufs-common.yaml
-
+diff --git a/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml b/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
+index 95ac1c18334d..e01408b4fcc2 100644
+--- a/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
++++ b/Documentation/devicetree/bindings/ufs/samsung,exynos-ufs.yaml
+@@ -15,8 +15,10 @@ description: |
+   in the common ufshcd bindings
+   [1] Documentation/devicetree/bindings/ufs/ufshcd-pltfrm.txt
+ 
+-properties:
++allOf:
++  - $ref: ufs-common.yaml
+ 
++properties:
+   compatible:
+     enum:
+       - samsung,exynos7-ufs
+@@ -47,9 +49,6 @@ properties:
+       - const: core_clk
+       - const: sclk_unipro_main
+ 
+-  interrupts:
+-    maxItems: 1
+-
+   phys:
+     maxItems: 1
+ 
+@@ -67,13 +66,12 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts
+   - phys
+   - phy-names
+   - clocks
+   - clock-names
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
 2.32.0
 
