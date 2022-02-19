@@ -2,212 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A15C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241047AbiBSA6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:58:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39834 "EHLO
+        id S240921AbiBSA6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:58:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240729AbiBSAzg (ORCPT
+        with ESMTP id S240863AbiBSA5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CCA27AA08
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 18 Feb 2022 19:57:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BBE027D6A1
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:56:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645232185;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+        bh=yAdt8c3Kx+H+/O3yRynb0JPTBtvJf6iuj3i77jiRv/E=;
+        b=P/qaS6C1UCPjGxsuLPGlp3w8CPZJb6ux2x00cfaLoSrWxuJGssVcmeLxoR+rAReftdZv2f
+        RNdn2h2zmG7Ubty1sGghNubrN+0JRpmSYQ6WZg6QQpJeJComQ1//T/c1sXVJOBF9UL9Lnk
+        HmTGFdw+kpIbSK+kPaIwQSnrDQDfiq0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-475-VXpIlbqxMZCUfEdjOGjxyg-1; Fri, 18 Feb 2022 19:56:19 -0500
+X-MC-Unique: VXpIlbqxMZCUfEdjOGjxyg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9260061F8A
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 700E8C340ED;
-        Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nLE1q-0051d1-Kp;
-        Fri, 18 Feb 2022 19:55:14 -0500
-Message-ID: <20220219005514.487353331@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 19:54:42 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 64C331091DA1;
+        Sat, 19 Feb 2022 00:56:16 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-39.pek2.redhat.com [10.72.12.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D760D62D4E;
+        Sat, 19 Feb 2022 00:56:04 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>
-Subject: [for-next][PATCH 12/16] user_events: Add self-test for dynamic_events integration
-References: <20220219005430.848118506@goodmis.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@lst.de,
+        cl@linux.com, 42.hyeyoo@gmail.com, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
+        David.Laight@ACULAB.COM, david@redhat.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
+        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
+        linux-i2c@vger.kernel.org, wsa@kernel.org
+Subject: [PATCH 16/22] usb: udc: lpc32xx: Don't use GFP_DMA when calling dma_pool_alloc()
+Date:   Sat, 19 Feb 2022 08:52:15 +0800
+Message-Id: <20220219005221.634-17-bhe@redhat.com>
+In-Reply-To: <20220219005221.634-1-bhe@redhat.com>
+References: <20220219005221.634-1-bhe@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Beau Belgrave <beaub@linux.microsoft.com>
+dma_pool_alloc() uses dma_alloc_coherent() to pre-allocate DMA buffer,
+so it's redundent to specify GFP_DMA when calling.
 
-Tests matching deletes, creation of basic and complex types. Ensures
-common patterns work correctly when interacting with dynamic_events
-file.
-
-Link: https://lkml.kernel.org/r/20220118204326.2169-9-beaub@linux.microsoft.com
-
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- tools/testing/selftests/user_events/Makefile  |   2 +-
- .../testing/selftests/user_events/dyn_test.c  | 130 ++++++++++++++++++
- 2 files changed, 131 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/user_events/dyn_test.c
+ drivers/usb/gadget/udc/lpc32xx_udc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/user_events/Makefile b/tools/testing/selftests/user_events/Makefile
-index d66c551a6fe3..e824b9c2cae7 100644
---- a/tools/testing/selftests/user_events/Makefile
-+++ b/tools/testing/selftests/user_events/Makefile
-@@ -2,7 +2,7 @@
- CFLAGS += -Wl,-no-as-needed -Wall -I../../../../usr/include
- LDLIBS += -lrt -lpthread -lm
+diff --git a/drivers/usb/gadget/udc/lpc32xx_udc.c b/drivers/usb/gadget/udc/lpc32xx_udc.c
+index bcba5f9bc5a3..d234de1c62b3 100644
+--- a/drivers/usb/gadget/udc/lpc32xx_udc.c
++++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
+@@ -922,7 +922,7 @@ static struct lpc32xx_usbd_dd_gad *udc_dd_alloc(struct lpc32xx_udc *udc)
+ 	dma_addr_t			dma;
+ 	struct lpc32xx_usbd_dd_gad	*dd;
  
--TEST_GEN_PROGS = ftrace_test
-+TEST_GEN_PROGS = ftrace_test dyn_test
+-	dd = dma_pool_alloc(udc->dd_cache, GFP_ATOMIC | GFP_DMA, &dma);
++	dd = dma_pool_alloc(udc->dd_cache, GFP_ATOMIC, &dma);
+ 	if (dd)
+ 		dd->this_dma = dma;
  
- TEST_FILES := settings
- 
-diff --git a/tools/testing/selftests/user_events/dyn_test.c b/tools/testing/selftests/user_events/dyn_test.c
-new file mode 100644
-index 000000000000..d6265d14cd51
---- /dev/null
-+++ b/tools/testing/selftests/user_events/dyn_test.c
-@@ -0,0 +1,130 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * User Events Dyn Events Test Program
-+ *
-+ * Copyright (c) 2021 Beau Belgrave <beaub@linux.microsoft.com>
-+ */
-+
-+#include <errno.h>
-+#include <linux/user_events.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <fcntl.h>
-+#include <sys/ioctl.h>
-+#include <sys/stat.h>
-+#include <unistd.h>
-+
-+#include "../kselftest_harness.h"
-+
-+const char *dyn_file = "/sys/kernel/debug/tracing/dynamic_events";
-+const char *clear = "!u:__test_event";
-+
-+static int Append(const char *value)
-+{
-+	int fd = open(dyn_file, O_RDWR | O_APPEND);
-+	int ret = write(fd, value, strlen(value));
-+
-+	close(fd);
-+	return ret;
-+}
-+
-+#define CLEAR() \
-+do { \
-+	int ret = Append(clear); \
-+	if (ret == -1) \
-+		ASSERT_EQ(ENOENT, errno); \
-+} while (0)
-+
-+#define TEST_PARSE(x) \
-+do { \
-+	ASSERT_NE(-1, Append(x)); \
-+	CLEAR(); \
-+} while (0)
-+
-+#define TEST_NPARSE(x) ASSERT_EQ(-1, Append(x))
-+
-+FIXTURE(user) {
-+};
-+
-+FIXTURE_SETUP(user) {
-+	CLEAR();
-+}
-+
-+FIXTURE_TEARDOWN(user) {
-+	CLEAR();
-+}
-+
-+TEST_F(user, basic_types) {
-+	/* All should work */
-+	TEST_PARSE("u:__test_event u64 a");
-+	TEST_PARSE("u:__test_event u32 a");
-+	TEST_PARSE("u:__test_event u16 a");
-+	TEST_PARSE("u:__test_event u8 a");
-+	TEST_PARSE("u:__test_event char a");
-+	TEST_PARSE("u:__test_event unsigned char a");
-+	TEST_PARSE("u:__test_event int a");
-+	TEST_PARSE("u:__test_event unsigned int a");
-+	TEST_PARSE("u:__test_event short a");
-+	TEST_PARSE("u:__test_event unsigned short a");
-+	TEST_PARSE("u:__test_event char[20] a");
-+	TEST_PARSE("u:__test_event unsigned char[20] a");
-+	TEST_PARSE("u:__test_event char[0x14] a");
-+	TEST_PARSE("u:__test_event unsigned char[0x14] a");
-+	/* Bad size format should fail */
-+	TEST_NPARSE("u:__test_event char[aa] a");
-+	/* Large size should fail */
-+	TEST_NPARSE("u:__test_event char[9999] a");
-+	/* Long size string should fail */
-+	TEST_NPARSE("u:__test_event char[0x0000000000001] a");
-+}
-+
-+TEST_F(user, loc_types) {
-+	/* All should work */
-+	TEST_PARSE("u:__test_event __data_loc char[] a");
-+	TEST_PARSE("u:__test_event __data_loc unsigned char[] a");
-+	TEST_PARSE("u:__test_event __rel_loc char[] a");
-+	TEST_PARSE("u:__test_event __rel_loc unsigned char[] a");
-+}
-+
-+TEST_F(user, size_types) {
-+	/* Should work */
-+	TEST_PARSE("u:__test_event struct custom a 20");
-+	/* Size not specified on struct should fail */
-+	TEST_NPARSE("u:__test_event struct custom a");
-+	/* Size specified on non-struct should fail */
-+	TEST_NPARSE("u:__test_event char a 20");
-+}
-+
-+TEST_F(user, flags) {
-+	/* Should work */
-+	TEST_PARSE("u:__test_event:BPF_ITER u32 a");
-+	/* Forward compat */
-+	TEST_PARSE("u:__test_event:BPF_ITER,FLAG_FUTURE u32 a");
-+}
-+
-+TEST_F(user, matching) {
-+	/* Register */
-+	ASSERT_NE(-1, Append("u:__test_event struct custom a 20"));
-+	/* Should not match */
-+	TEST_NPARSE("!u:__test_event struct custom b");
-+	/* Should match */
-+	TEST_PARSE("!u:__test_event struct custom a");
-+	/* Multi field reg */
-+	ASSERT_NE(-1, Append("u:__test_event u32 a; u32 b"));
-+	/* Non matching cases */
-+	TEST_NPARSE("!u:__test_event u32 a");
-+	TEST_NPARSE("!u:__test_event u32 b");
-+	TEST_NPARSE("!u:__test_event u32 a; u32 ");
-+	TEST_NPARSE("!u:__test_event u32 a; u32 a");
-+	/* Matching case */
-+	TEST_PARSE("!u:__test_event u32 a; u32 b");
-+	/* Register */
-+	ASSERT_NE(-1, Append("u:__test_event u32 a; u32 b"));
-+	/* Ensure trailing semi-colon case */
-+	TEST_PARSE("!u:__test_event u32 a; u32 b;");
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	return test_harness_run(argc, argv);
-+}
 -- 
-2.34.1
+2.17.2
+
