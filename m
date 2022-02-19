@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8978FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240809AbiBSAzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:55:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39540 "EHLO
+        id S240864AbiBSAzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:55:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240712AbiBSAzc (ORCPT
+        with ESMTP id S240720AbiBSAzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:32 -0500
+        Fri, 18 Feb 2022 19:55:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628F827792B
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CC927792B
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6A2B61F8A
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62BEBC340EF;
-        Sat, 19 Feb 2022 00:55:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FB8061FE6
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF9A5C340EC;
+        Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nLE1o-0051Wr-IC;
-        Fri, 18 Feb 2022 19:55:12 -0500
-Message-ID: <20220219005512.400321023@goodmis.org>
+        id 1nLE1p-0051al-Si;
+        Fri, 18 Feb 2022 19:55:13 -0500
+Message-ID: <20220219005513.718449233@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 19:54:31 -0500
+Date:   Fri, 18 Feb 2022 19:54:38 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: [for-next][PATCH 01/16] tracing: Remove size restriction on tracing_log_err cmd strings
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>
+Subject: [for-next][PATCH 08/16] user_events: Add basic perf and eBPF support
 References: <20220219005430.848118506@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -42,158 +43,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Zanussi <zanussi@kernel.org>
+From: Beau Belgrave <beaub@linux.microsoft.com>
 
-Currently, tracing_log_err.cmd strings are restricted to a length of
-MAX_FILTER_STR_VAL (256), which is too short for some commands already
-seen in the wild (with cmd strings longer than that showing up
-truncated).
+Adds support to write out user_event data to perf_probe/perf files as
+well as to any attached eBPF program.
 
-Remove the restriction so that no command string is ever truncated.
+Link: https://lkml.kernel.org/r/20220118204326.2169-5-beaub@linux.microsoft.com
 
-Link: https://lkml.kernel.org/r/ca965f23256b350ebd94b3dc1a319f28e8267f5f.1643319703.git.zanussi@kernel.org
-
-Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace.c | 55 +++++++++++++++++++++++++++++++++-----------
- kernel/trace/trace.h |  2 +-
- 2 files changed, 43 insertions(+), 14 deletions(-)
+ kernel/trace/trace_events_user.c | 72 +++++++++++++++++++++++++++++++-
+ 1 file changed, 71 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 7c2578efde26..7c85ce9ffdc3 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -7723,7 +7723,7 @@ const struct file_operations trace_min_max_fops = {
- struct err_info {
- 	const char	**errs;	/* ptr to loc-specific array of err strings */
- 	u8		type;	/* index into errs -> specific err string */
--	u8		pos;	/* MAX_FILTER_STR_VAL = 256 */
-+	u16		pos;	/* caret position */
- 	u64		ts;
- };
- 
-@@ -7731,26 +7731,52 @@ struct tracing_log_err {
- 	struct list_head	list;
- 	struct err_info		info;
- 	char			loc[TRACING_LOG_LOC_MAX]; /* err location */
--	char			cmd[MAX_FILTER_STR_VAL]; /* what caused err */
-+	char			*cmd;                     /* what caused err */
- };
- 
- static DEFINE_MUTEX(tracing_err_log_lock);
- 
--static struct tracing_log_err *get_tracing_log_err(struct trace_array *tr)
-+static struct tracing_log_err *alloc_tracing_log_err(int len)
-+{
-+	struct tracing_log_err *err;
-+
-+	err = kzalloc(sizeof(*err), GFP_KERNEL);
-+	if (!err)
-+		return ERR_PTR(-ENOMEM);
-+
-+	err->cmd = kzalloc(len, GFP_KERNEL);
-+	if (!err->cmd) {
-+		kfree(err);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	return err;
-+}
-+
-+static void free_tracing_log_err(struct tracing_log_err *err)
-+{
-+	kfree(err->cmd);
-+	kfree(err);
-+}
-+
-+static struct tracing_log_err *get_tracing_log_err(struct trace_array *tr,
-+						   int len)
- {
- 	struct tracing_log_err *err;
- 
- 	if (tr->n_err_log_entries < TRACING_LOG_ERRS_MAX) {
--		err = kzalloc(sizeof(*err), GFP_KERNEL);
--		if (!err)
--			err = ERR_PTR(-ENOMEM);
--		else
-+		err = alloc_tracing_log_err(len);
-+		if (PTR_ERR(err) != -ENOMEM)
- 			tr->n_err_log_entries++;
- 
- 		return err;
- 	}
- 
- 	err = list_first_entry(&tr->err_log, struct tracing_log_err, list);
-+	kfree(err->cmd);
-+	err->cmd = kzalloc(len, GFP_KERNEL);
-+	if (!err->cmd)
-+		return ERR_PTR(-ENOMEM);
- 	list_del(&err->list);
- 
- 	return err;
-@@ -7811,22 +7837,25 @@ unsigned int err_pos(char *cmd, const char *str)
-  */
- void tracing_log_err(struct trace_array *tr,
- 		     const char *loc, const char *cmd,
--		     const char **errs, u8 type, u8 pos)
-+		     const char **errs, u8 type, u16 pos)
- {
- 	struct tracing_log_err *err;
-+	int len = 0;
- 
- 	if (!tr)
- 		tr = &global_trace;
- 
-+	len += sizeof(CMD_PREFIX) + 2 * sizeof("\n") + strlen(cmd) + 1;
-+
- 	mutex_lock(&tracing_err_log_lock);
--	err = get_tracing_log_err(tr);
-+	err = get_tracing_log_err(tr, len);
- 	if (PTR_ERR(err) == -ENOMEM) {
- 		mutex_unlock(&tracing_err_log_lock);
- 		return;
- 	}
- 
- 	snprintf(err->loc, TRACING_LOG_LOC_MAX, "%s: error: ", loc);
--	snprintf(err->cmd, MAX_FILTER_STR_VAL,"\n" CMD_PREFIX "%s\n", cmd);
-+	snprintf(err->cmd, len, "\n" CMD_PREFIX "%s\n", cmd);
- 
- 	err->info.errs = errs;
- 	err->info.type = type;
-@@ -7844,7 +7873,7 @@ static void clear_tracing_err_log(struct trace_array *tr)
- 	mutex_lock(&tracing_err_log_lock);
- 	list_for_each_entry_safe(err, next, &tr->err_log, list) {
- 		list_del(&err->list);
--		kfree(err);
-+		free_tracing_log_err(err);
- 	}
- 
- 	tr->n_err_log_entries = 0;
-@@ -7872,9 +7901,9 @@ static void tracing_err_log_seq_stop(struct seq_file *m, void *v)
- 	mutex_unlock(&tracing_err_log_lock);
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index a6794cb1f586..371f31472156 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -551,6 +551,50 @@ static void user_event_ftrace(struct user_event *user, void *data, u32 datalen,
+ 	trace_event_buffer_commit(&event_buffer);
  }
  
--static void tracing_err_log_show_pos(struct seq_file *m, u8 pos)
-+static void tracing_err_log_show_pos(struct seq_file *m, u16 pos)
- {
--	u8 i;
-+	u16 i;
- 
- 	for (i = 0; i < sizeof(CMD_PREFIX) - 1; i++)
- 		seq_putc(m, ' ');
-diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
-index d038ddbf1bea..0f5e22238cd2 100644
---- a/kernel/trace/trace.h
-+++ b/kernel/trace/trace.h
-@@ -1878,7 +1878,7 @@ extern ssize_t trace_parse_run_command(struct file *file,
- extern unsigned int err_pos(char *cmd, const char *str);
- extern void tracing_log_err(struct trace_array *tr,
- 			    const char *loc, const char *cmd,
--			    const char **errs, u8 type, u8 pos);
-+			    const char **errs, u8 type, u16 pos);
- 
++#ifdef CONFIG_PERF_EVENTS
++/*
++ * Writes the user supplied payload out to perf ring buffer or eBPF program.
++ */
++static void user_event_perf(struct user_event *user, void *data, u32 datalen,
++			    void *tpdata)
++{
++	struct hlist_head *perf_head;
++
++	if (bpf_prog_array_valid(&user->call)) {
++		struct user_bpf_context context = {0};
++
++		context.data_len = datalen;
++		context.data_type = USER_BPF_DATA_KERNEL;
++		context.kdata = data;
++
++		trace_call_bpf(&user->call, &context);
++	}
++
++	perf_head = this_cpu_ptr(user->call.perf_events);
++
++	if (perf_head && !hlist_empty(perf_head)) {
++		struct trace_entry *perf_entry;
++		struct pt_regs *regs;
++		size_t size = sizeof(*perf_entry) + datalen;
++		int context;
++
++		perf_entry = perf_trace_buf_alloc(ALIGN(size, 8),
++						  &regs, &context);
++
++		if (unlikely(!perf_entry))
++			return;
++
++		perf_fetch_caller_regs(regs);
++
++		memcpy(perf_entry + 1, data, datalen);
++
++		perf_trace_buf_submit(perf_entry, size, context,
++				      user->call.event.type, 1, regs,
++				      perf_head, NULL);
++	}
++}
++#endif
++
  /*
-  * Normal trace_printk() and friends allocates special buffers
+  * Update the register page that is shared between user processes.
+  */
+@@ -573,6 +617,10 @@ static void update_reg_page_for(struct user_event *user)
+ 
+ 				if (probe_func == user_event_ftrace)
+ 					status |= EVENT_STATUS_FTRACE;
++#ifdef CONFIG_PERF_EVENTS
++				else if (probe_func == user_event_perf)
++					status |= EVENT_STATUS_PERF;
++#endif
+ 				else
+ 					status |= EVENT_STATUS_OTHER;
+ 			} while ((++probe_func_ptr)->func);
+@@ -612,8 +660,27 @@ static int user_event_reg(struct trace_event_call *call,
+ 					    data);
+ 		goto dec;
+ 
+-	default:
++#ifdef CONFIG_PERF_EVENTS
++	case TRACE_REG_PERF_REGISTER:
++		ret = tracepoint_probe_register(call->tp,
++						call->class->perf_probe,
++						data);
++		if (!ret)
++			goto inc;
++		break;
++
++	case TRACE_REG_PERF_UNREGISTER:
++		tracepoint_probe_unregister(call->tp,
++					    call->class->perf_probe,
++					    data);
++		goto dec;
++
++	case TRACE_REG_PERF_OPEN:
++	case TRACE_REG_PERF_CLOSE:
++	case TRACE_REG_PERF_ADD:
++	case TRACE_REG_PERF_DEL:
+ 		break;
++#endif
+ 	}
+ 
+ 	return ret;
+@@ -870,6 +937,9 @@ static int user_event_parse(char *name, char *args, char *flags,
+ 	user->class.get_fields = user_event_get_fields;
+ 	user->class.reg = user_event_reg;
+ 	user->class.probe = user_event_ftrace;
++#ifdef CONFIG_PERF_EVENTS
++	user->class.perf_probe = user_event_perf;
++#endif
+ 
+ 	mutex_lock(&event_mutex);
+ 	ret = user_event_trace_register(user);
 -- 
 2.34.1
