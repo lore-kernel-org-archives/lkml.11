@@ -2,309 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD265C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 10:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E67EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 10:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241971AbiBSKDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 05:03:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48598 "EHLO
+        id S241922AbiBSKEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 05:04:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241922AbiBSKCe (ORCPT
+        with ESMTP id S233728AbiBSKEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 05:02:34 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD42DA195;
-        Sat, 19 Feb 2022 02:02:15 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id m27so6681111wrb.4;
-        Sat, 19 Feb 2022 02:02:15 -0800 (PST)
+        Sat, 19 Feb 2022 05:04:11 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8E74F9F4;
+        Sat, 19 Feb 2022 02:03:52 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id c6so16866711edk.12;
+        Sat, 19 Feb 2022 02:03:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=m07NzeDNgXIpmmakHBOfuEWrfbejOEgooxQTFQQRZTQ=;
-        b=l+8HbbX6aO557qAofeqV6p33HmS49v1TQL8MKgnIP9geIC359EMQnC407Xioi0RieF
-         ln0PO9kx7RJi8+bRyvLqFQ//vTTa6q3oIdjaFSjql/JkGKaV+sIe+9TRBVAAIBpyulsD
-         PJflX2uVIP57KGGVR6xT5a4+cgApuwzM14XdGkBfHY36qvZ3uv6/vb9Q+ucfKc+LL7qe
-         tSxWs0kGmpm6S7cTtZWMK8hhWGYP/dEb0ySPH34PZtvNqUcIbua/nPN4M04WpsZZP1YV
-         paMSiTmZ3rkhdB+xxADqcD5W2dpzuBHHfIpIhpjQcNYJX++54FYqpHYVmINRsA+xe8i/
-         xoCA==
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=e8sLN6vkZrz7khSRwbfrA2x7wxsnzRm53OM6VfGG9Ts=;
+        b=dqfgGPL9Inj94Y03GiY39z2k92/jaNO8XsInxdyb90ADDo0ZnLZl8OALy2xrARDhIH
+         bHDrlMkuHcmEktY/E5z+QeNMwAFGYTUUvf2yiGDEp0WQMQwRxtrpDjCjdOu4ylpiYlKM
+         pOvTK3I1ZnxC4WUZVhB/uK9mxtLSrjRM8RXDjGxXgo3jN7AXupAYrwBblr2I1l6Xs38s
+         S53+M6id7Fu58rNF8/f63u2ZdNCASa23o3ytZzchZglZ+XACgHug908ERD5dvTcTFvQ/
+         ZWZiIU5Uu/hcUjwh8PN7Kh6/0KcsM7fo84M9t06n1Pw6bazJx4Rdm6kWv0Bc+Zk9rcol
+         L+pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=m07NzeDNgXIpmmakHBOfuEWrfbejOEgooxQTFQQRZTQ=;
-        b=izBXh03LEaoYIgt/DuvH4KvEEEvQD49YqNxJjJ8glU2Ir+vGnluHJRpK1sbpEe4Zrq
-         CHu6tqOdULI4tHxe6uY8hJgFKlwD0oxWVf9J6UE8GyJvIWr0pas5VIRAKPBwuKWB6wvF
-         lK1ik9RKf+56wH8lm1lF3KAjkHSNWjvneIEcu0LKs5/+qxAyBry5c/NfatBa8r+SGClY
-         tZnrlvZ5IKUqXZJiNersufxlBrYviNoG83chuwsZI1Tr1QPynGaAj+H7ai9BjcVRiMYI
-         88YxaxGZ8KL3u8YQIsXoAJC8cjd2WrQc2Ag828NkudBT1KcvH79yyia4KkiLoJOuYWsr
-         Jxsg==
-X-Gm-Message-State: AOAM533bl8LySDbehiCJ1lWIjQ6wFLKSWomWQVgIhmJHPjFNepA7H4Uf
-        IJXQDFAr/y++JuPT/uz5WvI=
-X-Google-Smtp-Source: ABdhPJxW3KRQYeN0N509XlLSenXfkWvsxLyjoZegXSx+UFYWl+W/CMd9Hzd/UyrrFiPZxY2KcW5CuA==
-X-Received: by 2002:adf:fe02:0:b0:1e3:266:d1c with SMTP id n2-20020adffe02000000b001e302660d1cmr8761544wrr.582.1645264934427;
-        Sat, 19 Feb 2022 02:02:14 -0800 (PST)
-Received: from localhost.localdomain ([94.73.33.246])
-        by smtp.gmail.com with ESMTPSA id az13sm24417244wrb.39.2022.02.19.02.02.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 02:02:14 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH for-5.18/uclogic 6/9] HID: uclogic: Use "frame" instead of "buttonpad"
-Date:   Sat, 19 Feb 2022 11:01:54 +0100
-Message-Id: <20220219100157.41920-7-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220219100157.41920-1-jose.exposito89@gmail.com>
-References: <20220219100157.41920-1-jose.exposito89@gmail.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=e8sLN6vkZrz7khSRwbfrA2x7wxsnzRm53OM6VfGG9Ts=;
+        b=0i/m763cJ90I6nI7+CeiXeY2dwizwFw59NJfo8s3j6fSNHPhQ/H14U1pBIyvwKWz1k
+         8u23jxHVjshGSaRpx1iz3hLQJksdS7+NP5rRigD7M3n5DFjIh9VWfw21PhoIkb+BqwXp
+         5P5JQLZl5bDg8nsXvqm3lIJlc/n6Xylg3S/QlgFetoWGjwQXR+Oc+LS/jS6QtvEcSvqa
+         FPIIVATNl4gKyUYQ1kOeowU/J8BOHhBPxFADZtaBcLBfUmL3KjhSXsZ0V9leRJsUxJcF
+         gZ9ZME3VoHaloj2Ka3xad5QRVRRlkGlzWkqMflv7hmYkRe9sfypImwDunCke6J/C828a
+         HI/A==
+X-Gm-Message-State: AOAM532jfYarMk3FbnP6J6TNlhL4N4arB568KKgmjHOhMHQfQCz71yg1
+        qnmYxBoveYYrj1lcQhUVSAc=
+X-Google-Smtp-Source: ABdhPJwYTq/zuccUutieRVqseJ1kObi/ppnw9r/8MTAdtkU1qc5An4S35BM4Q2IKvnGmxml5rAFc7Q==
+X-Received: by 2002:aa7:d3d9:0:b0:410:7a81:c0cf with SMTP id o25-20020aa7d3d9000000b004107a81c0cfmr12150696edr.177.1645265031366;
+        Sat, 19 Feb 2022 02:03:51 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id z11sm6194528edd.75.2022.02.19.02.03.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Feb 2022 02:03:50 -0800 (PST)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <55ef796b-6433-b72f-6f5c-b7499284c9a4@redhat.com>
+Date:   Sat, 19 Feb 2022 11:03:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 14/18] KVM: x86/mmu: avoid indirect call for get_cr3
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220217210340.312449-1-pbonzini@redhat.com>
+ <20220217210340.312449-15-pbonzini@redhat.com> <YhAB1d1/nQbx6yvk@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YhAB1d1/nQbx6yvk@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolai Kondrashov <spbnick@gmail.com>
+On 2/18/22 21:30, Sean Christopherson wrote:
+> On Thu, Feb 17, 2022, Paolo Bonzini wrote:
+>> Most of the time, calls to get_guest_pgd result in calling
+>> kvm_read_cr3 (the exception is only nested TDP).  Hardcode
+>> the default instead of using the get_cr3 function, avoiding
+>> a retpoline if they are enabled.
+>>
+>> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+>> ---
+>>   arch/x86/kvm/mmu.h             | 13 +++++++++++++
+>>   arch/x86/kvm/mmu/mmu.c         | 15 +++++----------
+>>   arch/x86/kvm/mmu/paging_tmpl.h |  2 +-
+>>   arch/x86/kvm/x86.c             |  2 +-
+>>   4 files changed, 20 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+>> index 1d0c1904d69a..1808d6814ddb 100644
+>> --- a/arch/x86/kvm/mmu.h
+>> +++ b/arch/x86/kvm/mmu.h
+>> @@ -116,6 +116,19 @@ static inline void kvm_mmu_load_pgd(struct kvm_vcpu *vcpu)
+>>   					  vcpu->arch.mmu->shadow_root_level);
+>>   }
+>>   
+>> +static inline gpa_t __kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
+>> +{
+> 
+> I'd prefer to do what we do for page faults.  That approach avoids the need for a
+> comment to document NULL and avoids a conditional when RETPOLINE is not enabled.
+> 
+> Might be worth renaming get_cr3 => get_guest_cr3 though.
 
-Use the term "frame" instead of "buttonpad" for consistency, in UC-Logic
-driver.
+I did it this way to avoid a slightly gratuitous extern function just 
+because kvm_mmu_get_guest_pgd and kvm_read_cr3 are both inline.  But at 
+least it's not an export since there are no callers in vmx/svm, so it's 
+okay to do it as you suggested.
 
-Signed-off-by: Nikolai Kondrashov <spbnick@gmail.com>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/hid/hid-uclogic-params.c | 46 +++++++++++++++-----------------
- drivers/hid/hid-uclogic-rdesc.c  | 32 +++++++++++-----------
- drivers/hid/hid-uclogic-rdesc.h  | 26 +++++++++---------
- 3 files changed, 51 insertions(+), 53 deletions(-)
+> #ifdef CONFIG_RETPOLINE
+> 	if (mmu->get_guest_pgd = get_guest_cr3)
+> 		return kvm_read_cr3(vcpu);
+> #endif
+> 	return mmu->get_guest_pgd(vcpu);
+> 
+> 
+>> +	if (!mmu->get_guest_pgd)
+>> +		return kvm_read_cr3(vcpu);
+>> +	else
+>> +		return mmu->get_guest_pgd(vcpu);
+>> +}
+>> +
+>> +static inline gpa_t kvm_mmu_get_guest_pgd(struct kvm_vcpu *vcpu)
+>> +{
+>> +	return __kvm_mmu_get_guest_pgd(vcpu, vcpu->arch.mmu);
+> 
+> I'd much prefer we don't provide an @vcpu-only variant and force the caller to
+> provide the mmu.
 
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index a4a53ab1e72c..168749d9a112 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -431,8 +431,8 @@ static int uclogic_params_frame_init_with_desc(
- }
- 
- /**
-- * uclogic_params_frame_init_v1_buttonpad() - initialize abstract buttonpad
-- * on a v1 tablet interface.
-+ * uclogic_params_frame_init_v1() - initialize v1 tablet interface frame
-+ * controls.
-  *
-  * @frame:	Pointer to the frame parameters to initialize (to be cleaned
-  *		up with uclogic_params_frame_cleanup()). Not modified in case
-@@ -446,8 +446,7 @@ static int uclogic_params_frame_init_with_desc(
-  * Returns:
-  *	Zero, if successful. A negative errno code on error.
-  */
--static int uclogic_params_frame_init_v1_buttonpad(
--					struct uclogic_params_frame *frame,
-+static int uclogic_params_frame_init_v1(struct uclogic_params_frame *frame,
- 					bool *pfound,
- 					struct hid_device *hdev)
- {
-@@ -488,9 +487,9 @@ static int uclogic_params_frame_init_v1_buttonpad(
- 		hid_dbg(hdev, "generic buttons enabled\n");
- 		rc = uclogic_params_frame_init_with_desc(
- 				frame,
--				uclogic_rdesc_buttonpad_v1_arr,
--				uclogic_rdesc_buttonpad_v1_size,
--				UCLOGIC_RDESC_BUTTONPAD_V1_ID);
-+				uclogic_rdesc_frame_v1_arr,
-+				uclogic_rdesc_frame_v1_size,
-+				UCLOGIC_RDESC_FRAME_V1_ID);
- 		if (rc != 0)
- 			goto cleanup;
- 		found = true;
-@@ -750,22 +749,22 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 			goto cleanup;
- 		} else if (found) {
- 			hid_dbg(hdev, "pen v2 parameters found\n");
--			/* Create v2 buttonpad parameters */
-+			/* Create v2 frame parameters */
- 			rc = uclogic_params_frame_init_with_desc(
- 					&p.frame,
--					uclogic_rdesc_buttonpad_v2_arr,
--					uclogic_rdesc_buttonpad_v2_size,
--					UCLOGIC_RDESC_BUTTONPAD_V2_ID);
-+					uclogic_rdesc_frame_v2_arr,
-+					uclogic_rdesc_frame_v2_size,
-+					UCLOGIC_RDESC_FRAME_V2_ID);
- 			if (rc != 0) {
- 				hid_err(hdev,
--					"failed creating v2 buttonpad parameters: %d\n",
-+					"failed creating v2 frame parameters: %d\n",
- 					rc);
- 				goto cleanup;
- 			}
- 			/* Link frame button subreports from pen reports */
- 			p.pen.subreport_list[0].value = 0xe0;
- 			p.pen.subreport_list[0].id =
--				UCLOGIC_RDESC_BUTTONPAD_V2_ID;
-+				UCLOGIC_RDESC_FRAME_V2_ID;
- 			goto output;
- 		}
- 		hid_dbg(hdev, "pen v2 parameters not found\n");
-@@ -779,21 +778,20 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 		goto cleanup;
- 	} else if (found) {
- 		hid_dbg(hdev, "pen v1 parameters found\n");
--		/* Try to probe v1 buttonpad */
--		rc = uclogic_params_frame_init_v1_buttonpad(
--						&p.frame,
--						&found, hdev);
-+		/* Try to probe v1 frame */
-+		rc = uclogic_params_frame_init_v1(&p.frame,
-+						  &found, hdev);
- 		if (rc != 0) {
--			hid_err(hdev, "v1 buttonpad probing failed: %d\n", rc);
-+			hid_err(hdev, "v1 frame probing failed: %d\n", rc);
- 			goto cleanup;
- 		}
--		hid_dbg(hdev, "buttonpad v1 parameters%s found\n",
-+		hid_dbg(hdev, "frame v1 parameters%s found\n",
- 			(found ? "" : " not"));
- 		if (found) {
- 			/* Link frame button subreports from pen reports */
- 			p.pen.subreport_list[0].value = 0xe0;
- 			p.pen.subreport_list[0].id =
--				UCLOGIC_RDESC_BUTTONPAD_V1_ID;
-+				UCLOGIC_RDESC_FRAME_V1_ID;
- 		}
- 		goto output;
- 	}
-@@ -1067,7 +1065,7 @@ int uclogic_params_init(struct uclogic_params *params,
- 				UCLOGIC_RDESC_UGEE_G5_FRAME_ID);
- 			if (rc != 0) {
- 				hid_err(hdev,
--					"failed creating buttonpad parameters: %d\n",
-+					"failed creating frame parameters: %d\n",
- 					rc);
- 				goto cleanup;
- 			}
-@@ -1096,12 +1094,12 @@ int uclogic_params_init(struct uclogic_params *params,
- 		} else if (found) {
- 			rc = uclogic_params_frame_init_with_desc(
- 				&p.frame,
--				uclogic_rdesc_ugee_ex07_buttonpad_arr,
--				uclogic_rdesc_ugee_ex07_buttonpad_size,
-+				uclogic_rdesc_ugee_ex07_frame_arr,
-+				uclogic_rdesc_ugee_ex07_frame_size,
- 				0);
- 			if (rc != 0) {
- 				hid_err(hdev,
--					"failed creating buttonpad parameters: %d\n",
-+					"failed creating frame parameters: %d\n",
- 					rc);
- 				goto cleanup;
- 			}
-diff --git a/drivers/hid/hid-uclogic-rdesc.c b/drivers/hid/hid-uclogic-rdesc.c
-index 66aa83f67ccc..e8dedede3395 100644
---- a/drivers/hid/hid-uclogic-rdesc.c
-+++ b/drivers/hid/hid-uclogic-rdesc.c
-@@ -652,12 +652,12 @@ const size_t uclogic_rdesc_pen_v2_template_size =
- 			sizeof(uclogic_rdesc_pen_v2_template_arr);
- 
- /*
-- * Expand to the contents of a generic buttonpad report descriptor.
-+ * Expand to the contents of a generic frame report descriptor.
-  *
-  * @_id:	The report ID to use.
-  * @_size:	Size of the report to pad to, including report ID, bytes.
-  */
--#define UCLOGIC_RDESC_BUTTONPAD_BYTES(_id, _size) \
-+#define UCLOGIC_RDESC_FRAME_BYTES(_id, _size) \
- 	0x05, 0x01,     /*  Usage Page (Desktop),               */ \
- 	0x09, 0x07,     /*  Usage (Keypad),                     */ \
- 	0xA1, 0x01,     /*  Collection (Application),           */ \
-@@ -698,22 +698,22 @@ const size_t uclogic_rdesc_pen_v2_template_size =
- 	0xC0,           /*      End Collection,                 */ \
- 	0xC0            /*  End Collection                      */
- 
--/* Fixed report descriptor for (tweaked) v1 buttonpad reports */
--const __u8 uclogic_rdesc_buttonpad_v1_arr[] = {
--	UCLOGIC_RDESC_BUTTONPAD_BYTES(UCLOGIC_RDESC_BUTTONPAD_V1_ID, 8)
-+/* Fixed report descriptor for (tweaked) v1 frame reports */
-+const __u8 uclogic_rdesc_frame_v1_arr[] = {
-+	UCLOGIC_RDESC_FRAME_BYTES(UCLOGIC_RDESC_FRAME_V1_ID, 8)
- };
--const size_t uclogic_rdesc_buttonpad_v1_size =
--			sizeof(uclogic_rdesc_buttonpad_v1_arr);
-+const size_t uclogic_rdesc_frame_v1_size =
-+			sizeof(uclogic_rdesc_frame_v1_arr);
- 
--/* Fixed report descriptor for (tweaked) v2 buttonpad reports */
--const __u8 uclogic_rdesc_buttonpad_v2_arr[] = {
--	UCLOGIC_RDESC_BUTTONPAD_BYTES(UCLOGIC_RDESC_BUTTONPAD_V2_ID, 12)
-+/* Fixed report descriptor for (tweaked) v2 frame reports */
-+const __u8 uclogic_rdesc_frame_v2_arr[] = {
-+	UCLOGIC_RDESC_FRAME_BYTES(UCLOGIC_RDESC_FRAME_V2_ID, 12)
- };
--const size_t uclogic_rdesc_buttonpad_v2_size =
--			sizeof(uclogic_rdesc_buttonpad_v2_arr);
-+const size_t uclogic_rdesc_frame_v2_size =
-+			sizeof(uclogic_rdesc_frame_v2_arr);
- 
--/* Fixed report descriptor for Ugee EX07 buttonpad */
--const __u8 uclogic_rdesc_ugee_ex07_buttonpad_arr[] = {
-+/* Fixed report descriptor for Ugee EX07 frame */
-+const __u8 uclogic_rdesc_ugee_ex07_frame_arr[] = {
- 	0x05, 0x01,             /*  Usage Page (Desktop),                   */
- 	0x09, 0x07,             /*  Usage (Keypad),                         */
- 	0xA1, 0x01,             /*  Collection (Application),               */
-@@ -736,8 +736,8 @@ const __u8 uclogic_rdesc_ugee_ex07_buttonpad_arr[] = {
- 	0xC0,                   /*      End Collection,                     */
- 	0xC0                    /*  End Collection                          */
- };
--const size_t uclogic_rdesc_ugee_ex07_buttonpad_size =
--			sizeof(uclogic_rdesc_ugee_ex07_buttonpad_arr);
-+const size_t uclogic_rdesc_ugee_ex07_frame_size =
-+			sizeof(uclogic_rdesc_ugee_ex07_frame_arr);
- 
- /* Fixed report descriptor for Ugee G5 frame controls */
- const __u8 uclogic_rdesc_ugee_g5_frame_arr[] = {
-diff --git a/drivers/hid/hid-uclogic-rdesc.h b/drivers/hid/hid-uclogic-rdesc.h
-index c5da51055af3..40c6f02c6bab 100644
---- a/drivers/hid/hid-uclogic-rdesc.h
-+++ b/drivers/hid/hid-uclogic-rdesc.h
-@@ -117,23 +117,23 @@ extern const size_t uclogic_rdesc_pen_v1_template_size;
- extern const __u8 uclogic_rdesc_pen_v2_template_arr[];
- extern const size_t uclogic_rdesc_pen_v2_template_size;
- 
--/* Fixed report descriptor for (tweaked) v1 buttonpad reports */
--extern const __u8 uclogic_rdesc_buttonpad_v1_arr[];
--extern const size_t uclogic_rdesc_buttonpad_v1_size;
-+/* Fixed report descriptor for (tweaked) v1 frame reports */
-+extern const __u8 uclogic_rdesc_frame_v1_arr[];
-+extern const size_t uclogic_rdesc_frame_v1_size;
- 
--/* Report ID for tweaked v1 buttonpad reports */
--#define UCLOGIC_RDESC_BUTTONPAD_V1_ID 0xf7
-+/* Report ID for tweaked v1 frame reports */
-+#define UCLOGIC_RDESC_FRAME_V1_ID 0xf7
- 
--/* Fixed report descriptor for (tweaked) v2 buttonpad reports */
--extern const __u8 uclogic_rdesc_buttonpad_v2_arr[];
--extern const size_t uclogic_rdesc_buttonpad_v2_size;
-+/* Fixed report descriptor for (tweaked) v2 frame reports */
-+extern const __u8 uclogic_rdesc_frame_v2_arr[];
-+extern const size_t uclogic_rdesc_frame_v2_size;
- 
--/* Report ID for tweaked v2 buttonpad reports */
--#define UCLOGIC_RDESC_BUTTONPAD_V2_ID 0xf7
-+/* Report ID for tweaked v2 frame reports */
-+#define UCLOGIC_RDESC_FRAME_V2_ID 0xf7
- 
--/* Fixed report descriptor for Ugee EX07 buttonpad */
--extern const __u8 uclogic_rdesc_ugee_ex07_buttonpad_arr[];
--extern const size_t uclogic_rdesc_ugee_ex07_buttonpad_size;
-+/* Fixed report descriptor for Ugee EX07 frame */
-+extern const __u8 uclogic_rdesc_ugee_ex07_frame_arr[];
-+extern const size_t uclogic_rdesc_ugee_ex07_frame_size;
- 
- /* Fixed report descriptor for XP-Pen Deco 01 frame controls */
- extern const __u8 uclogic_rdesc_xppen_deco01_frame_arr[];
--- 
-2.25.1
+No problem.
 
+Paolo
