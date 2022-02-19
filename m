@@ -2,221 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5359C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D74FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240324AbiBSAMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:12:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56636 "EHLO
+        id S240332AbiBSAQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:16:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235702AbiBSAMc (ORCPT
+        with ESMTP id S234622AbiBSAQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:12:32 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA393EA8D
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:12:14 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id i11so8340627lfu.3
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:12:14 -0800 (PST)
+        Fri, 18 Feb 2022 19:16:23 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A346A47568
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:16:05 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b64-20020a256743000000b0061e169a5f19so15302475ybc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:16:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jQMDNFv9gtsCnS3VKdmm1wB76M4VJRSnZhhrQoJVMi8=;
-        b=iu4h36i9IKyV1eJhR7o6UMEKBkADEj98y1ow9+syZgFbN4JVfEyAKHY2N3SFupf+Ge
-         c+ZNYsI/0leBzkBebfaUaSZkKrnqMXQvZlaYMrBeP0GuluGbgKSH0nH+/RBqhd9kcuaP
-         PWZ2+G5ujpxGcnLZyQdh6O8v6VPGZuC0tp1soZRvX8NfDwfAfJHrENvnLDXKtA3HaN/X
-         155i57XdOCx1Tle80Kb9oENof+H1UBdXaYV8Ie2tlveIt1yBkDC4cDwMKqOJrxn7SGmd
-         zJ8XXqPBOZ/xH5Fa+FIV0eYb95J76RIsVuq7mtyH+HVHDsyPwh3h4ey7k1LspxRdX3a7
-         78IQ==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=t1Jpw+ueBOtsD6/0A+P0khb1gbXjD6yCm6h0DxHEboA=;
+        b=pNQnxU1fILXMInmD4uqudCIT7Be0KkI0yr06/vuLrOZKOAyUYFI5sXtwM1+o9RxR72
+         6+ebYk4+o42Gl9qAWaWQYOihlS/TSymMphgi7XQkxBkA5U8rJdkqh0IWAjljDlB/iSjT
+         2wujuIskcm+4sAHbRr24reNg7ddXqEeBUIytY08mqr90KLmzWy86yHNSp7SNHBWl+UXo
+         ooxyWZbuEdFW4Sq6VZVu2Jc3tlrHOXfz56zgD6htJPtNletRcvBlePF6UXy1Ql0iX8eh
+         MZ6TxwA6vE5InaZxmK7u8gqVAC2ChsGBT3EwQLQoJpV4G2Kxd7wvm6D/7CBe3cdcW8l9
+         eYiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jQMDNFv9gtsCnS3VKdmm1wB76M4VJRSnZhhrQoJVMi8=;
-        b=Nbvg1S0TZTDZlComgrz4BtqyferhWm676dKTntlw5zBLCB6TIEN0jSWtjlPtfQIbmd
-         vOa7aQloZ3mTzozWOksDJWCLonnev7PqwEGU5Yn5rMxCb7DtUivY9PUIVTeLqSd4nRyg
-         OZqWjZhJZ5iaR3+KlwnxRN4MaIXWPlH+D0bKqwQgY8LHAeqNmWLW72HHQekTrHFJjpu5
-         Kh54hOwUISy7fkrNXu9AIChIBG5LCVr/qGOiqilkzoT86vz2MbKxQzp/fO6SBsZWXEqk
-         Cww/dvx7CQzdT/fw1fzGsCJhiYZidnf076zMY1KNHlg3jaHfpkTDdiYVAS2l1GvAKV1r
-         /+0A==
-X-Gm-Message-State: AOAM530urIFZEE0/+AAJ5AHVYcn9gm5vKBrOUEtBctiPJJMPTLUrS72A
-        +E9Kab+eRWzXh1isAT+wU7YDWA==
-X-Google-Smtp-Source: ABdhPJx4mCqVjx8MJl+GBymqCFuuuz1j1s3igoio+6J5srrfvMjo6dCh4ixi0zx1nVxqnS+j148ZVQ==
-X-Received: by 2002:a05:6512:2306:b0:443:3db8:d6c8 with SMTP id o6-20020a056512230600b004433db8d6c8mr6886555lfu.161.1645229533313;
-        Fri, 18 Feb 2022 16:12:13 -0800 (PST)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id o17sm406732lfo.189.2022.02.18.16.12.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Feb 2022 16:12:11 -0800 (PST)
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-X-Google-Original-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 17D2A103935; Sat, 19 Feb 2022 03:13:07 +0300 (+03)
-To:     bp@alien8.de
-Cc:     aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
-        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
-        jpoimboe@redhat.com, kirill.shutemov@linux.intel.com,
-        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
-Subject: [PATCHv3.1 2/32] x86/coco: Explicitly declare type of confidential computing platform
-Date:   Sat, 19 Feb 2022 03:13:04 +0300
-Message-Id: <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <YhAWcPbzgUGcJZjI@zn.tnic>
-References: <YhAWcPbzgUGcJZjI@zn.tnic>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=t1Jpw+ueBOtsD6/0A+P0khb1gbXjD6yCm6h0DxHEboA=;
+        b=dg3rofpSP3h8sCE9pq6ZuAdx4wfIHaHyPS/+GFyRWh4jWaWRG6WsgORmTMxcAg9ITX
+         H9g5UJi5jODkQdqjYxmpQLh5eam8ATinrFNoPT1rsC8FQVi2zm7MyoaYN+Xfx3YXlN7f
+         +FPvOGYaVTBuyj3KOHBeJ8xHkwGmgigdt0llcoocdZR1oaGe/k0vu5fpmlJ3XvNbhCW+
+         NRoCa/nuB00XMvTCOAhJ66SocNiT006KlTf5BVLcDqadh0rIgmQTRnBbw6ACvG3Zc9sy
+         VczW0/qqMks1TX5OW8i6ckAXXkw/0u0hSrSHNid9x1FU0BHqCyn9fs1khxI2xwndOknA
+         KuRg==
+X-Gm-Message-State: AOAM532g7WgLNdk0eBj5qA8eKuPBPEO6rRA8dBU48XykW090vvu9BDMb
+        VX9FQ3KuMMNL0At2VFEkqTD2qcbgJmI=
+X-Google-Smtp-Source: ABdhPJzC9kF2aqyqMClNmlOiYw6vcsQjNtY3AucQyQXxwhWEncOEjhIW6BZgRa79F/iaudlt/FUR/zaaEd4=
+X-Received: from khazhy-linux.svl.corp.google.com ([2620:15c:2cd:202:7d93:7487:6afd:f5f6])
+ (user=khazhy job=sendgmr) by 2002:a25:3b17:0:b0:619:4463:a400 with SMTP id
+ i23-20020a253b17000000b006194463a400mr9943708yba.36.1645229764835; Fri, 18
+ Feb 2022 16:16:04 -0800 (PST)
+Date:   Fri, 18 Feb 2022 16:16:01 -0800
+Message-Id: <20220219001601.3534043-1-khazhy@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v2] scsi: docs: update notes about scsi_times_out
+From:   Khazhismel Kumykov <khazhy@google.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bvanassche@acm.org,
+        Hannes Reinecke <hare@suse.com>,
+        Khazhismel Kumykov <khazhy@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel derives type of confidential computing platform from sme_me_mask
-value and hv_is_isolation_supported(). This detection process will be
-more complicated as more platforms get added.
+Most importantly: eh_timed_out() is not limited by scmd->allowed,
+and can reset timer forever.
 
-Declare confidential computing vendor explicitly via cc_init().
+Fixes: c829c394165f ("[SCSI] FC transport : Avoid device offline cases by stalling aborts until device unblocked")
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
 ---
- arch/x86/include/asm/coco.h        | 16 ++++++++++++++++
- arch/x86/kernel/cc_platform.c      | 29 +++++++++++++++++------------
- arch/x86/kernel/cpu/mshyperv.c     |  3 +++
- arch/x86/mm/mem_encrypt_identity.c |  8 +++++---
- 4 files changed, 41 insertions(+), 15 deletions(-)
- create mode 100644 arch/x86/include/asm/coco.h
+ Documentation/scsi/scsi_eh.rst | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
-new file mode 100644
-index 000000000000..6e770e0dd683
---- /dev/null
-+++ b/arch/x86/include/asm/coco.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_COCO_H
-+#define _ASM_X86_COCO_H
-+
-+#include <asm/pgtable_types.h>
-+
-+enum cc_vendor {
-+	CC_VENDOR_NONE,
-+	CC_VENDOR_AMD,
-+	CC_VENDOR_HYPERV,
-+	CC_VENDOR_INTEL,
-+};
-+
-+void cc_init(enum cc_vendor);
-+
-+#endif /* _ASM_X86_COCO_H */
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index 6a6ffcd978f6..891d3074a16e 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -9,18 +9,15 @@
+diff --git a/Documentation/scsi/scsi_eh.rst b/Documentation/scsi/scsi_eh.rst
+index 7d78c2475615..885395dc1f15 100644
+--- a/Documentation/scsi/scsi_eh.rst
++++ b/Documentation/scsi/scsi_eh.rst
+@@ -95,19 +95,18 @@ function
  
- #include <linux/export.h>
- #include <linux/cc_platform.h>
--#include <linux/mem_encrypt.h>
+     - BLK_EH_RESET_TIMER
+ 	This indicates that more time is required to finish the
+-	command.  Timer is restarted.  This action is counted as a
+-	retry and only allowed scmd->allowed + 1(!) times.  Once the
+-	limit is reached, action for BLK_EH_DONE is taken instead.
++	command.  Timer is restarted.
  
--#include <asm/mshyperv.h>
-+#include <asm/coco.h>
- #include <asm/processor.h>
+     - BLK_EH_DONE
+         eh_timed_out() callback did not handle the command.
+ 	Step #2 is taken.
  
--static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
-+static enum cc_vendor cc_vendor;
-+
-+static bool intel_cc_platform_has(enum cc_attr attr)
- {
--#ifdef CONFIG_INTEL_TDX_GUEST
--	return false;
--#else
- 	return false;
--#endif
- }
+- 2. scsi_abort_command() is invoked to schedule an asynchrous abort.
+-    Asynchronous abort are not invoked for commands which the
+-    SCSI_EH_ABORT_SCHEDULED flag is set (this indicates that the command
+-    already had been aborted once, and this is a retry which failed),
+-    or when the EH deadline is expired. In these case Step #3 is taken.
++ 2. scsi_abort_command() is invoked to schedule an asynchronous abort which may
++    issue a retry scmd->allowed + 1 times.  Asynchronous aborts are not invoked
++    for commands for which the SCSI_EH_ABORT_SCHEDULED flag is set (this
++    indicates that the command already had been aborted once, and this is a
++    retry which failed), when retries are exceeded, or when the EH deadline is
++    expired. In these cases Step #3 is taken.
  
- /*
-@@ -74,12 +71,20 @@ static bool hyperv_cc_platform_has(enum cc_attr attr)
- 
- bool cc_platform_has(enum cc_attr attr)
- {
--	if (sme_me_mask)
-+	switch (cc_vendor) {
-+	case CC_VENDOR_AMD:
- 		return amd_cc_platform_has(attr);
--
--	if (hv_is_isolation_supported())
-+	case CC_VENDOR_INTEL:
-+		return intel_cc_platform_has(attr);
-+	case CC_VENDOR_HYPERV:
- 		return hyperv_cc_platform_has(attr);
--
--	return false;
-+	default:
-+		return false;
-+	}
- }
- EXPORT_SYMBOL_GPL(cc_platform_has);
-+
-+__init void cc_init(enum cc_vendor vendor)
-+{
-+	cc_vendor = vendor;
-+}
-diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-index 5a99f993e639..d77cf3a31f07 100644
---- a/arch/x86/kernel/cpu/mshyperv.c
-+++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -33,6 +33,7 @@
- #include <asm/nmi.h>
- #include <clocksource/hyperv_timer.h>
- #include <asm/numa.h>
-+#include <asm/coco.h>
- 
- /* Is Linux running as the root partition? */
- bool hv_root_partition;
-@@ -344,6 +345,8 @@ static void __init ms_hyperv_init_platform(void)
- 		 */
- 		swiotlb_force = SWIOTLB_FORCE;
- #endif
-+		if (hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE)
-+			cc_init(CC_VENDOR_HYPERV);
- 	}
- 
- 	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
-diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
-index 3f0abb403340..eb7fbd85b77e 100644
---- a/arch/x86/mm/mem_encrypt_identity.c
-+++ b/arch/x86/mm/mem_encrypt_identity.c
-@@ -44,6 +44,7 @@
- #include <asm/setup.h>
- #include <asm/sections.h>
- #include <asm/cmdline.h>
-+#include <asm/coco.h>
- 
- #include "mm_internal.h"
- 
-@@ -565,8 +566,7 @@ void __init sme_enable(struct boot_params *bp)
- 	} else {
- 		/* SEV state cannot be controlled by a command line option */
- 		sme_me_mask = me_mask;
--		physical_mask &= ~sme_me_mask;
--		return;
-+		goto out;
- 	}
- 
- 	/*
-@@ -600,6 +600,8 @@ void __init sme_enable(struct boot_params *bp)
- 		sme_me_mask = 0;
- 	else
- 		sme_me_mask = active_by_default ? me_mask : 0;
--
-+out:
- 	physical_mask &= ~sme_me_mask;
-+	if (sme_me_mask)
-+		cc_init(CC_VENDOR_AMD);
- }
+  3. scsi_eh_scmd_add(scmd, SCSI_EH_CANCEL_CMD) is invoked for the
+     command.  See [1-4] for more information.
 -- 
-2.34.1
+2.35.1.473.g83b2b277ed-goog
 
