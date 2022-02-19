@@ -2,83 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 16:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69976C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 16:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242580AbiBSQai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 11:30:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60450 "EHLO
+        id S242600AbiBSQeL convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 11:34:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiBSQae (ORCPT
+        with ESMTP id S229528AbiBSQeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 11:30:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774F81B7628;
-        Sat, 19 Feb 2022 08:30:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B67460B8A;
-        Sat, 19 Feb 2022 16:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B667AC340EF;
-        Sat, 19 Feb 2022 16:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645288210;
-        bh=nke2SWnrNZAdC6IH4hrZojRETFCYw/NdikKhOHuyGu4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FhPiZWz1e8GbaWXluix0vgQmou1r6sCJSnvhYMI8texbAKVDIsZvWXeCRnHlAxQKv
-         yW/KGh2SJT2LEUiJlUQCHpQmze6HaQW5SRccX0mNIfXPAwxBTHKms3Y/znU8CtLov5
-         Mx3BOCsEPl8ns43qquVfptVU423aaQilgAhFC38BTIP4ARGL3AmykUyRHY2h+pjdws
-         LSYt3WF0Kc54E1xVuu+20wvgRyZpnkgF223Pu6t9+foMNRlksrMrL5JGvX8U0pddwu
-         CU+jCiFEQ2OxPWY3EIBB9zMosLGtb4aPf/s4/d56y63UO/bBzCmnyyLsaARJPUtIKO
-         4RI/erRX441Mw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98BBDE7BB18;
-        Sat, 19 Feb 2022 16:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sat, 19 Feb 2022 11:34:09 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48F6047AEB
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 08:33:48 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-115-134YVXIbNfWUuHtnEmsqEg-1; Sat, 19 Feb 2022 16:33:46 +0000
+X-MC-Unique: 134YVXIbNfWUuHtnEmsqEg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Sat, 19 Feb 2022 16:33:45 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Sat, 19 Feb 2022 16:33:44 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Miaohe Lin' <linmiaohe@huawei.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+CC:     "vitaly.wool@konsulko.com" <vitaly.wool@konsulko.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 6/9] mm/z3fold: move decrement of pool->pages_nr into
+ __release_z3fold_page()
+Thread-Topic: [PATCH 6/9] mm/z3fold: move decrement of pool->pages_nr into
+ __release_z3fold_page()
+Thread-Index: AQHYJXLUWbfrUcWr0kay123DGS2luaybEHRg
+Date:   Sat, 19 Feb 2022 16:33:44 +0000
+Message-ID: <dba43259e1fe4e36a0bdbe97efaaca2f@AcuMS.aculab.com>
+References: <20220219092533.12596-1-linmiaohe@huawei.com>
+ <20220219092533.12596-7-linmiaohe@huawei.com>
+In-Reply-To: <20220219092533.12596-7-linmiaohe@huawei.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: microchip: fix bridging with more than two member
- ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164528821062.2939.12714039069880000598.git-patchwork-notify@kernel.org>
-Date:   Sat, 19 Feb 2022 16:30:10 +0000
-References: <DB7PR08MB3867F92FD096A79EAD736021B5379@DB7PR08MB3867.eurprd08.prod.outlook.com>
-In-Reply-To: <DB7PR08MB3867F92FD096A79EAD736021B5379@DB7PR08MB3867.eurprd08.prod.outlook.com>
-To:     =?utf-8?q?Svenning_S=C3=B8rensen_=3Csss=40secomea=2Ecom=3E?=@ci.codeaurora.org
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux@rempel-privat.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 18 Feb 2022 11:27:01 +0000 you wrote:
-> Commit b3612ccdf284 ("net: dsa: microchip: implement multi-bridge support")
-> plugged a packet leak between ports that were members of different bridges.
-> Unfortunately, this broke another use case, namely that of more than two
-> ports that are members of the same bridge.
+From: Miaohe Lin
+> Sent: 19 February 2022 09:26
 > 
-> After that commit, when a port is added to a bridge, hardware bridging
-> between other member ports of that bridge will be cleared, preventing
-> packet exchange between them.
+> The z3fold will always do atomic64_dec(&pool->pages_nr) when the
+> __release_z3fold_page() is called. Thus we can move decrement of
+> pool->pages_nr into __release_z3fold_page() to simplify the code.
+> Also we can reduce the size of z3fold.o ~1k.
+> Without this patch:
+>    text	   data	    bss	    dec	    hex	filename
+>   15444	   1376	      8	  16828	   41bc	mm/z3fold.o
+> With this patch:
+>    text	   data	    bss	    dec	    hex	filename
+>   15044	   1248	      8	  16300	   3fac	mm/z3fold.o
+
+I can't see anything obvious in this patch that would reduce the size much.
+OTOH there are some large functions that are pointlessly marked 'inline'.
+Maybe the compiler made a better choice?
+Although it isn't al all obvious why the 'data' size changes.
+
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/z3fold.c | 41 ++++++++++++-----------------------------
+>  1 file changed, 12 insertions(+), 29 deletions(-)
 > 
-> [...]
+> diff --git a/mm/z3fold.c b/mm/z3fold.c
+> index adc0b3fa4906..18a697f6fe32 100644
+> --- a/mm/z3fold.c
+> +++ b/mm/z3fold.c
+> @@ -520,6 +520,8 @@ static void __release_z3fold_page(struct z3fold_header *zhdr, bool locked)
+>  	list_add(&zhdr->buddy, &pool->stale);
+>  	queue_work(pool->release_wq, &pool->work);
+>  	spin_unlock(&pool->stale_lock);
+> +
+> +	atomic64_dec(&pool->pages_nr);
 
-Here is the summary with links:
-  - net: dsa: microchip: fix bridging with more than two member ports
-    https://git.kernel.org/netdev/net/c/3d00827a90db
+Looks like you can move the decrement inside the lock.
+If you can do the same for the increment you can avoid the
+expensive locked bus cycle.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+	David
 
+>  }
+> 
+>  static void release_z3fold_page(struct kref *ref)
+> @@ -737,13 +739,9 @@ static struct z3fold_header *compact_single_buddy(struct z3fold_header *zhdr)
+>  	return new_zhdr;
+> 
+>  out_fail:
+> -	if (new_zhdr) {
+> -		if (kref_put(&new_zhdr->refcount, release_z3fold_page_locked))
+> -			atomic64_dec(&pool->pages_nr);
+> -		else {
+> -			add_to_unbuddied(pool, new_zhdr);
+> -			z3fold_page_unlock(new_zhdr);
+> -		}
+> +	if (new_zhdr && !kref_put(&new_zhdr->refcount, release_z3fold_page_locked)) {
+> +		add_to_unbuddied(pool, new_zhdr);
+> +		z3fold_page_unlock(new_zhdr);
+>  	}
+>  	return NULL;
+> 
+> @@ -816,10 +814,8 @@ static void do_compact_page(struct z3fold_header *zhdr, bool locked)
+>  	list_del_init(&zhdr->buddy);
+>  	spin_unlock(&pool->lock);
+> 
+> -	if (kref_put(&zhdr->refcount, release_z3fold_page_locked)) {
+> -		atomic64_dec(&pool->pages_nr);
+> +	if (kref_put(&zhdr->refcount, release_z3fold_page_locked))
+>  		return;
+> -	}
+> 
+>  	if (test_bit(PAGE_STALE, &page->private) ||
+>  	    test_and_set_bit(PAGE_CLAIMED, &page->private)) {
+> @@ -829,9 +825,7 @@ static void do_compact_page(struct z3fold_header *zhdr, bool locked)
+> 
+>  	if (!zhdr->foreign_handles && buddy_single(zhdr) &&
+>  	    zhdr->mapped_count == 0 && compact_single_buddy(zhdr)) {
+> -		if (kref_put(&zhdr->refcount, release_z3fold_page_locked))
+> -			atomic64_dec(&pool->pages_nr);
+> -		else {
+> +		if (!kref_put(&zhdr->refcount, release_z3fold_page_locked)) {
+>  			clear_bit(PAGE_CLAIMED, &page->private);
+>  			z3fold_page_unlock(zhdr);
+>  		}
+> @@ -1089,10 +1083,8 @@ static int z3fold_alloc(struct z3fold_pool *pool, size_t size, gfp_t gfp,
+>  		if (zhdr) {
+>  			bud = get_free_buddy(zhdr, chunks);
+>  			if (bud == HEADLESS) {
+> -				if (kref_put(&zhdr->refcount,
+> +				if (!kref_put(&zhdr->refcount,
+>  					     release_z3fold_page_locked))
+> -					atomic64_dec(&pool->pages_nr);
+> -				else
+>  					z3fold_page_unlock(zhdr);
+>  				pr_err("No free chunks in unbuddied\n");
+>  				WARN_ON(1);
+> @@ -1239,10 +1231,8 @@ static void z3fold_free(struct z3fold_pool *pool, unsigned long handle)
+> 
+>  	if (!page_claimed)
+>  		free_handle(handle, zhdr);
+> -	if (kref_put(&zhdr->refcount, release_z3fold_page_locked_list)) {
+> -		atomic64_dec(&pool->pages_nr);
+> +	if (kref_put(&zhdr->refcount, release_z3fold_page_locked_list))
+>  		return;
+> -	}
+>  	if (page_claimed) {
+>  		/* the page has not been claimed by us */
+>  		put_z3fold_header(zhdr);
+> @@ -1353,9 +1343,7 @@ static int z3fold_reclaim_page(struct z3fold_pool *pool, unsigned int retries)
+>  				break;
+>  			}
+>  			if (!z3fold_page_trylock(zhdr)) {
+> -				if (kref_put(&zhdr->refcount,
+> -						release_z3fold_page))
+> -					atomic64_dec(&pool->pages_nr);
+> +				kref_put(&zhdr->refcount, release_z3fold_page);
+>  				zhdr = NULL;
+>  				continue; /* can't evict at this point */
+>  			}
+> @@ -1366,10 +1354,8 @@ static int z3fold_reclaim_page(struct z3fold_pool *pool, unsigned int retries)
+>  			 */
+>  			if (zhdr->foreign_handles ||
+>  			    test_and_set_bit(PAGE_CLAIMED, &page->private)) {
+> -				if (kref_put(&zhdr->refcount,
+> +				if (!kref_put(&zhdr->refcount,
+>  						release_z3fold_page_locked))
+> -					atomic64_dec(&pool->pages_nr);
+> -				else
+>  					z3fold_page_unlock(zhdr);
+>  				zhdr = NULL;
+>  				continue; /* can't evict such page */
+> @@ -1447,7 +1433,6 @@ static int z3fold_reclaim_page(struct z3fold_pool *pool, unsigned int retries)
+>  			if (kref_put(&zhdr->refcount,
+>  					release_z3fold_page_locked)) {
+>  				kmem_cache_free(pool->c_handle, slots);
+> -				atomic64_dec(&pool->pages_nr);
+>  				return 0;
+>  			}
+>  			/*
+> @@ -1669,10 +1654,8 @@ static void z3fold_page_putback(struct page *page)
+>  	if (!list_empty(&zhdr->buddy))
+>  		list_del_init(&zhdr->buddy);
+>  	INIT_LIST_HEAD(&page->lru);
+> -	if (kref_put(&zhdr->refcount, release_z3fold_page_locked)) {
+> -		atomic64_dec(&pool->pages_nr);
+> +	if (kref_put(&zhdr->refcount, release_z3fold_page_locked))
+>  		return;
+> -	}
+>  	spin_lock(&pool->lock);
+>  	list_add(&page->lru, &pool->lru);
+>  	spin_unlock(&pool->lock);
+> --
+> 2.23.0
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
