@@ -2,397 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28605C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 17:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64597C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 17:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242743AbiBSR5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 12:57:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54572 "EHLO
+        id S242750AbiBSR7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 12:59:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235751AbiBSR5h (ORCPT
+        with ESMTP id S235751AbiBSR67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 12:57:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77951205DC;
-        Sat, 19 Feb 2022 09:57:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C9A8B8006F;
-        Sat, 19 Feb 2022 17:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D150DC004E1;
-        Sat, 19 Feb 2022 17:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645293434;
-        bh=mrHby+KERtUZFmSGtJ89X47TWqTkSlnqjIRkCI0wMe0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YHOg7muw958DQ3m2c+IKIfGqOdDm8mJ8FDfRCW2rbeWGLiEsy4jBXbTnw5bTBG5aa
-         IaTAcEp4sr0K4s8vP5LPzQ8St361/SrcefH4oI9E5iT791M4/NrVeS8LNyoE/HsKuO
-         a+WKn5ghb1ZxkkDGplf0zN+ivGBUxyqeMbTF8ioA0VN79LdC9TEiGK8RSXzsI9UlEk
-         gaxmOOHfCUxL7m/qJItfXYvxmAIp6Z9O0bUAONEuDAqDx/0PoH3vgSYZ/AFa11YgRL
-         ldDQ9XsinNZTwpxF7T994lAL5PFSRc5SlLvgXc0ot9nK/MijRIoWnjCeUpMH0lqc4D
-         C7rdSn26+RDdA==
-Date:   Sat, 19 Feb 2022 18:04:01 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
-        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        bsp-development.geo@leica-geosystems.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH V2 3/5] iio: accel: sca3300: modified to support multi
- chips
-Message-ID: <20220219180401.10e50f1c@jic23-huawei>
-In-Reply-To: <20220217062705.2867149-4-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220217062705.2867149-1-Qing-wu.Li@leica-geosystems.com.cn>
-        <20220217062705.2867149-4-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sat, 19 Feb 2022 12:58:59 -0500
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923BC5F8E0
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 09:58:39 -0800 (PST)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220219175838epoutp017bbb423593392884eb95bebe56e537a2~VQbzL1BrM1395513955epoutp014
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 17:58:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220219175838epoutp017bbb423593392884eb95bebe56e537a2~VQbzL1BrM1395513955epoutp014
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1645293518;
+        bh=nKq37BTRxnF03xFJIUPe/WlXxpClF9Q74HD9ufgg0os=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=ecmAC4N2MO59Y6/B6WLY6PzQZB/P69ZemTnMYVRrrlFgaA59411I75LHXKxODuK3p
+         +CJ6Brdehp/GpIDIWUWY6VqzIeYZ4uiM1OOXqSvMuqyEHBm6chEoT5fMj4o9xj2TEv
+         6+wqnlu5ySkHGP7P/x7Izt5nicd+9U3X/OK557/Q=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220219175836epcas5p24eb86f410d5ad077d8b5a3e8794fa15f~VQbyOuqQ31199511995epcas5p2K;
+        Sat, 19 Feb 2022 17:58:36 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.181]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4K1GWt1b9qz4x9Pt; Sat, 19 Feb
+        2022 17:58:34 +0000 (GMT)
+Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        78.5A.06423.ACF21126; Sun, 20 Feb 2022 02:58:34 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220219175832epcas5p399b652e6da610ada233376651694b42c~VQbuXSUAY2260922609epcas5p3W;
+        Sat, 19 Feb 2022 17:58:32 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220219175832epsmtrp17e62247e5c927b264d7b9a67830d481d~VQbuTNXzR0051400514epsmtrp1K;
+        Sat, 19 Feb 2022 17:58:32 +0000 (GMT)
+X-AuditID: b6c32a49-b13ff70000001917-6b-62112fca7380
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F7.5A.08738.8CF21126; Sun, 20 Feb 2022 02:58:32 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220219175831epsmtip274243b7cab6651563f7fed2052505bb6~VQbs93vgE1832918329epsmtip2a;
+        Sat, 19 Feb 2022 17:58:31 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, pankaj.dubey@samsung.com,
+        m.szyprowski@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH] clocksource/drivers/exynos_mct: Remove mct interrupt index
+ enum
+Date:   Sat, 19 Feb 2022 23:40:03 +0530
+Message-Id: <20220219181003.12739-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMKsWRmVeSWpSXmKPExsWy7bCmpu4pfcEkgzl3WCwezNvGZjHvs6zF
+        xrc/mCw2Pb7GanF51xw2ixnn9zFZrD1yl91i0dYv7BabN01lduD0mNXQy+Zx59oeNo93586x
+        e2xeUu/Rt2UVo8fnTXIBbFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJ
+        uam2Si4+AbpumTlANykplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCkwK9IoTc4tL
+        89L18lJLrAwNDIxMgQoTsjPanv1iLTjCVzF5SV4D4wvuLkZODgkBE4mPrycydzFycQgJ7GaU
+        OLfgJiOE84lRYtb06awQzmdGick979hgWtYePgbVsotRYtfRpywQTguTxPFNV5hAqtgEtCXu
+        Tt8CZosIuEncaOxgAiliFrjGKPFn4iFGkISwQJDEsc/dzCA2i4CqxLK2JywgNq+AjcSz2wdY
+        IdbJS6zecABsnYTAPnaJpkunoBIuEo++n2GCsIUlXh3fwg5hS0m87G8DsjmA7GyJnl3GEOEa
+        iaXzjrFA2PYSB67MYQEpYRbQlFi/Sx8kzCzAJ9H7+wkTRCevREebEES1qkTzu6tQndISE7u7
+        oQ7wkLi74QY4UIQEYiXOt3SyTWCUmYUwdAEj4ypGydSC4tz01GLTAsO81HJ43CTn525iBKcu
+        Lc8djHcffNA7xMjEwXiIUYKDWUmE98NB3iQh3pTEyqrUovz4otKc1OJDjKbAUJrILCWanA9M
+        nnkl8YYmlgYmZmZmJpbGZoZK4ryn0zckCgmkJ5akZqemFqQWwfQxcXBKNTCtldZ0TO16XKrh
+        /KxEiUkxfOUsp4S4uRLbl9utPcI177ZOcCufBMOh7qo7DJZ3TLnv6RsGHdpaP+tRQ2+WvAWb
+        zv4l38L97GKuX3INmyV+ZbfoHelZLO+la7mPzb/3MrV7i6cc95TD7OYrq25qxiimLZnIc0CR
+        85pOQfHWy0IGYgsesbrwWMhIPJv2N2iH99+w7cpRN44wGtgEOvAbRRp/da/P2SHoOTv+7ILX
+        O5d5Vs+T37bsl9UUwzNX0+rsVkW1nG1srtg275zwno+c/o03q9bfbs5ffSd84ZoKyxLfyOoA
+        dce/elwavJYMGyYve7SWXa3O+onU05jglKPBKVd/ameYrPeO7jX9/mzxPyWW4oxEQy3mouJE
+        AODbRwfmAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphluLIzCtJLcpLzFFi42LZdlhJXveEvmCSwbTHahYP5m1js5j3WdZi
+        49sfTBabHl9jtbi8aw6bxYzz+5gs1h65y26xaOsXdovNm6YyO3B6zGroZfO4c20Pm8e7c+fY
+        PTYvqffo27KK0ePzJrkAtigum5TUnMyy1CJ9uwSujLZnv1gLjvBVTF6S18D4gruLkZNDQsBE
+        Yu3hY8xdjFwcQgI7GCXWbOtkg0hIS1zfOIEdwhaWWPnvOTtEUROTRHP7EyaQBJuAtsTd6VvA
+        bBEBD4m2f/fAJjEL3GOU+N0yjREkISwQIHHozxawSSwCqhLL2p6wgNi8AjYSz24fYIXYIC+x
+        esMB5gmMPAsYGVYxSqYWFOem5xYbFhjlpZbrFSfmFpfmpesl5+duYgQHmJbWDsY9qz7oHWJk
+        4mA8xCjBwawkwvvhIG+SEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NTC1KL
+        YLJMHJxSDUyHTsR6Hu3Ytnre1UvvslWjHE7tqzhzMOVpvth9vXMSqt+TLe4slYvlm2dc6Fl6
+        +Ed4sa6rzf6Ti5/N0n2g+DTPtewKw+11sldF8k+08+8qNE9Y/SvgwYbJTyeULb/5X4Et6k5t
+        gdSPxT85OA3dFv/UrgplP7DQ7c45xdf62VpJBRnzH5obq6Q88jpRxvc7XYP7m1fHowPsrfZs
+        mvO9+CPCnnXF+/PI7dDMiGTbN7OSebvbrFVWmpdNdc9OXZDDHtUd19fMreXC/Yn/2s7FMVf8
+        V/jNy9izvlX/wNfSwilp7dPf2bDZn2Ivd3twPIpl+5Wo38mV/v5cXxrb3U5Kz8yM3s+6UL1q
+        9bz1+7nZY5VYijMSDbWYi4oTAe5LUZOfAgAA
+X-CMS-MailID: 20220219175832epcas5p399b652e6da610ada233376651694b42c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220219175832epcas5p399b652e6da610ada233376651694b42c
+References: <CGME20220219175832epcas5p399b652e6da610ada233376651694b42c@epcas5p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 06:27:03 +0000
-LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+MCT driver define an enum which list global and local timer's
+irq index. Most of them are not used but MCT_G0_IRQ and
+MCT_L0_IRQ and these two are at a fixed offset/index.
+Get rid of this enum and use a #define for the used irq index.
 
-Hi,
+While at it, bump-up maximum number of MCT IRQ to match the
+binding documentation. And also change the name variable to be
+more generic.
 
-A few comments inline.
+No functional changes expected.
 
-Thanks,
-Jonathan
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+---
+ drivers/clocksource/exynos_mct.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
+- currently tested on exynos7 platform, appreciate testing on
+ exynos-{3,4,5} platforms
 
-> The drive support sca3300 only,there are some other similar chips,
-
-space after only,
-
-> for instance, SCL3300.
-> modified the driver to read the device id,
-> add the tables for the corresponding id to support multiple chips.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-
-I guess something was reported in v1.  When you have fixed a patch
-make sure you say what was reported. It is also common to credit
-fixes before merging just in the change log rather than with an explicit
-entry like tis.
-
-> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-> ---
->  drivers/iio/accel/sca3300.c | 156 +++++++++++++++++++++++++++---------
->  1 file changed, 118 insertions(+), 38 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-> index ff16d2cc8c70..b1748874c02d 100644
-> --- a/drivers/iio/accel/sca3300.c
-> +++ b/drivers/iio/accel/sca3300.c
-> @@ -37,12 +37,24 @@
->  
->  /* Device ID */
->  #define SCA3300_REG_WHOAMI	0x10
-> -#define SCA3300_WHOAMI_ID	0x51
->  
->  /* Device return status and mask */
->  #define SCA3300_VALUE_RS_ERROR	0x3
->  #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
->  
-> +enum sca3300_op_mode_indexes {
-> +	OP_MOD_1 = 0,
-> +	OP_MOD_2,
-> +	OP_MOD_3,
-> +	OP_MOD_4,
-> +	OP_MOD_CNT,
-> +};
-> +
-> +enum sca3300_chip_type {
-> +	CHIP_SCA3300 = 0,
-> +	CHIP_CNT
-> +};
-> +
->  enum sca3300_scan_indexes {
->  	SCA3300_ACC_X = 0,
->  	SCA3300_ACC_Y,
-> @@ -91,15 +103,29 @@ static const struct iio_chan_spec sca3300_channels[] = {
->  	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
->  	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
->  	IIO_CHAN_SOFT_TIMESTAMP(4),
-> +	IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP),
->  };
->  
-> -static const int sca3300_lp_freq[] = {70, 70, 70, 10};
-> -static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}, {0, 185}};
-> +static const int sca3300_lp_freq_table[] = {70, 70, 70, 10};
-> +static const int sca3300_accel_scale_table[][2] = {{0, 370}, {0, 741}, {0, 185}, {0, 185}};
->  
->  static const unsigned long sca3300_scan_masks[] = {
->  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
->  	BIT(SCA3300_TEMP),
-> -	0
-> +	0,
-
-Unrelated change. Also last value can't be less bits set than 0 so this
-is effectively a terminator and doesn't need the , (though I don't mind if there
-is one as that reasoning is rather obscure!)
-
-> +};
-> +
-> +struct sca3300_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	enum sca3300_chip_type chip_type;
-> +	const int (*accel_scale_table)[2];
-> +	unsigned int num_accel_scales;
-> +	unsigned long scan_masks;
-> +	unsigned int num_freqs;
-> +	const int *freq_table;
-> +	const char *name;
-> +	int num_channels;
-> +	u8 chip_id;
->  };
->  
->  /**
-> @@ -114,13 +140,29 @@ struct sca3300_data {
->  	struct spi_device *spi;
->  	struct mutex lock;
->  	struct {
-> -		s16 channels[4];
-> +		s16 channels[SCA3300_TIMESTAMP - 1];
-
-Why reduction is size?  The use of the enum -1 is
-also confusing as it's not clear why that would be the
-case so just use a number and add a comment if useful
-on which channels it is.  
-
->  		s64 ts __aligned(sizeof(s64));
->  	} scan;
-> +	const struct sca3300_chip_info *chip_info;
->  	u8 txbuf[4] ____cacheline_aligned;
->  	u8 rxbuf[4];
->  };
->  
-> +static const struct sca3300_chip_info sca3300_chip_info_tbl[] = {
-> +	[CHIP_SCA3300] = {
-> +		.num_accel_scales = ARRAY_SIZE(sca3300_accel_scale_table)*2-1,
-> +		.accel_scale_table = sca3300_accel_scale_table,
-> +		.num_channels = ARRAY_SIZE(sca3300_channels),
-> +		.freq_table = &sca3300_lp_freq_table[2],
-> +		.scan_masks = sca3300_scan_masks,
-> +		.channels = sca3300_channels,
-> +		.chip_type = CHIP_SCA3300,
-> +		.name = "sca3300",
-> +		.chip_id = 0x51,
-> +		.num_freqs = 2,
-> +	},
-> +};
-> +
->  DECLARE_CRC8_TABLE(sca3300_crc_table);
->  
->  static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
-> @@ -227,36 +269,57 @@ static int sca3300_write_reg(struct sca3300_data *sca_data, u8 reg, int val)
->  	return sca3300_error_handler(sca_data);
->  }
->  
-> +static int sca3300_set_op_mode(struct sca3300_data *sca_data, unsigned int mode)
-> +{
-> +	if ((mode < OP_MOD_1) || (mode >= OP_MOD_CNT))
-> +		return -EINVAL;
-> +
-> +	return sca3300_write_reg(sca_data, SCA3300_REG_MODE, mode);
-> +}
-> +
->  static int sca3300_write_raw(struct iio_dev *indio_dev,
->  			     struct iio_chan_spec const *chan,
->  			     int val, int val2, long mask)
->  {
->  	struct sca3300_data *data = iio_priv(indio_dev);
-> +	int mode = -1;
->  	int reg_val;
->  	int ret;
->  	int i;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_SCALE:
-> -		if (val)
-> +		if (chan->type != IIO_ACCEL)
->  			return -EINVAL;
-> -
-> -		for (i = 0; i < ARRAY_SIZE(sca3300_accel_scale); i++) {
-> -			if (val2 == sca3300_accel_scale[i][1])
-> -				return sca3300_write_reg(data, SCA3300_REG_MODE, i);
-> +		for (i = 0; i < OP_MOD_CNT; i++) {
-> +			if ((val == data->chip_info->accel_scale_table[i][0]) &&
-> +			(val2 == data->chip_info->accel_scale_table[i][1])) {
-> +				mode = i;
-> +				break;
-> +			}
->  		}
-> -		return -EINVAL;
-> -
-> +		return sca3300_set_op_mode(data, mode);
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->  		ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
->  		if (ret)
->  			return ret;
-> -		/* freq. change is possible only for mode 3 and 4 */
-> -		if (reg_val == 2 && val == sca3300_lp_freq[3])
-> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 3);
-> -		if (reg_val == 3 && val == sca3300_lp_freq[2])
-> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 2);
-> -		return -EINVAL;
-> +		for (i = 0; i < OP_MOD_CNT; i++) {
-> +			if (val == data->chip_info->freq_table[i]) {
-> +				mode = i;
-> +				break;
-> +			}
-> +		}
-> +		switch (data->chip_info->chip_type) {
-> +		case CHIP_SCA3300:
-
-I would prefer if chip_info included a field that expressed this. 
-Ideally we want to just 'pick' static data from the chip_info structure
-rather than having code depending on the chip type.
-
-Perhaps chip_info->freq_modes_bitmap (with a better name).
-
-
-> +			/* SCA330 freq. change is possible only for mode 3 and 4 */
-> +			if (reg_val == OP_MOD_3 && mode == OP_MOD_4)
-> +				return sca3300_set_op_mode(data, mode);
-> +			if (reg_val == OP_MOD_4 && mode == OP_MOD_3)
-> +				return sca3300_set_op_mode(data, mode);
-> +			return -EINVAL;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -267,8 +330,8 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
->  			    int *val, int *val2, long mask)
->  {
->  	struct sca3300_data *data = iio_priv(indio_dev);
-> -	int ret;
->  	int reg_val;
-> +	int ret;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -280,14 +343,18 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
->  		ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
->  		if (ret)
->  			return ret;
-> -		*val = 0;
-> -		*val2 = sca3300_accel_scale[reg_val][1];
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> +		switch (chan->type) {
-> +		case IIO_ACCEL:
-> +			*val =  data->chip_info->accel_scale_table[reg_val][0];
-> +			*val2 = data->chip_info->accel_scale_table[reg_val][1];
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		}
-Prefer
-		default:
-			return -EINVAL;
-in the case statement as done in other similar paths.
-
-However, why is the channel type check needed? (see below for similar)
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 6db3d5511b0f..4aea9cd3f7ba 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -60,27 +60,18 @@
+ #define MCT_CLKEVENTS_RATING		350
+ #endif
  
-> +		return -EINVAL;
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->  		ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
->  		if (ret)
->  			return ret;
-> -		*val = sca3300_lp_freq[reg_val];
-> +		*val = data->chip_info->freq_table[reg_val];
->  		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
-> @@ -330,6 +397,7 @@ static int sca3300_init(struct sca3300_data *sca_data,
->  			struct iio_dev *indio_dev)
->  {
->  	int value = 0;
-> +	int i = 0;
-
-No need to initialize as will always be set by the for loop.
-
->  	int ret;
->  
->  	ret = sca3300_write_reg(sca_data, SCA3300_REG_MODE,
-> @@ -347,12 +415,22 @@ static int sca3300_init(struct sca3300_data *sca_data,
->  	if (ret)
->  		return ret;
->  
-> -	if (value != SCA3300_WHOAMI_ID) {
-> -		dev_err(&sca_data->spi->dev,
-> -			"device id not expected value, %d != %u\n",
-> -			value, SCA3300_WHOAMI_ID);
-> +	for (i = 0; i < ARRAY_SIZE(sca3300_chip_info_tbl); i++) {
-> +		if (sca3300_chip_info_tbl[i].chip_id == value)
-> +			break;
-> +	}
-> +	if (i == ARRAY_SIZE(sca3300_chip_info_tbl)) {
-> +		dev_err(&sca_data->spi->dev, "Invalid chip %x\n", value);
->  		return -ENODEV;
->  	}
-> +
-> +	indio_dev->available_scan_masks = sca3300_chip_info_tbl[i].scan_masks;
-> +	indio_dev->num_channels = sca3300_chip_info_tbl[i].num_channels;
-> +	indio_dev->channels = sca3300_chip_info_tbl[i].channels;
-> +	sca_data->chip_info = &sca3300_chip_info_tbl[i];
-> +	indio_dev->name = sca3300_chip_info_tbl[i].name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
->  	return 0;
->  }
->  
-> @@ -384,15 +462,22 @@ static int sca3300_read_avail(struct iio_dev *indio_dev,
->  			      const int **vals, int *type, int *length,
->  			      long mask)
->  {
-> +	struct sca3300_data *data = iio_priv(indio_dev);
->  	switch (mask) {
->  	case IIO_CHAN_INFO_SCALE:
-> -		*vals = (const int *)sca3300_accel_scale;
-> -		*length = ARRAY_SIZE(sca3300_accel_scale) * 2 - 2;
-> -		*type = IIO_VAL_INT_PLUS_MICRO;
-> -		return IIO_AVAIL_LIST;
-> +		switch (chan->type) {
-> +		case IIO_ACCEL:
-
-Why the need for a check on the channel type?  I don't particularly
-mind having one but I think it will always be IIO_ACCEL and that hasn't
-changed as a result of this patch.  So to keep the patch minimal I would
-prefer not adding the check unless it is necessary.
-
-
-> +			*vals = (const int *)data->chip_info->accel_scale_table;
-> +			*length = data->chip_info->num_accel_scales;
-> +			*type = IIO_VAL_INT_PLUS_MICRO;
-> +			return IIO_AVAIL_LIST;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		return -EINVAL;
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> -		*vals = &sca3300_lp_freq[2];
-> -		*length = 2;
-> +		*vals = (const int *)data->chip_info->freq_table;
-> +		*length = data->chip_info->num_freqs;
->  		*type = IIO_VAL_INT;
->  		return IIO_AVAIL_LIST;
->  	default:
-> @@ -424,11 +509,6 @@ static int sca3300_probe(struct spi_device *spi)
->  	crc8_populate_msb(sca3300_crc_table, SCA3300_CRC8_POLYNOMIAL);
->  
->  	indio_dev->info = &sca3300_info;
-> -	indio_dev->name = SCA3300_ALIAS;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->channels = sca3300_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(sca3300_channels);
-> -	indio_dev->available_scan_masks = sca3300_scan_masks;
->  
->  	ret = sca3300_init(sca_data, indio_dev);
->  	if (ret) {
++/* There are four Global timers starting with 0 offset */
++#define MCT_G0_IRQ	0
++/* Local timers count starts after global timer count */
++#define MCT_L0_IRQ	4
++/* Max number of MCT IRQ as per binding document */
++#define MCT_NR_IRQS	20
++
+ enum {
+ 	MCT_INT_SPI,
+ 	MCT_INT_PPI
+ };
+ 
+-enum {
+-	MCT_G0_IRQ,
+-	MCT_G1_IRQ,
+-	MCT_G2_IRQ,
+-	MCT_G3_IRQ,
+-	MCT_L0_IRQ,
+-	MCT_L1_IRQ,
+-	MCT_L2_IRQ,
+-	MCT_L3_IRQ,
+-	MCT_L4_IRQ,
+-	MCT_L5_IRQ,
+-	MCT_L6_IRQ,
+-	MCT_L7_IRQ,
+-	MCT_NR_IRQS,
+-};
+-
+ static void __iomem *reg_base;
+ static unsigned long clk_rate;
+ static unsigned int mct_int_type;
+@@ -89,7 +80,7 @@ static int mct_irqs[MCT_NR_IRQS];
+ struct mct_clock_event_device {
+ 	struct clock_event_device evt;
+ 	unsigned long base;
+-	char name[10];
++	char name[MCT_NR_IRQS - 1];
+ };
+ 
+ static void exynos4_mct_write(unsigned int value, unsigned long offset)
+-- 
+2.25.1
 
