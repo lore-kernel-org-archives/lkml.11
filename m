@@ -2,76 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9BCC43219
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A583AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240701AbiBSAzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:55:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39220 "EHLO
+        id S240726AbiBSAze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:55:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240697AbiBSAzP (ORCPT
+        with ESMTP id S237526AbiBSAzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:15 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72812782A2
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:54:57 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id v186so22793256ybg.1
-        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:54:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9Vx+WPjk3Jqu/26mjZeRumiFftkfvBsbmk7u8x9gYoY=;
-        b=R9puxGJ7+Pr8wR/uUccCrfAZoWcAAi1ZN6s1pGy9Gak7AQvMqOSH8LAhEjcn5CCCOZ
-         noZmvNx/A+IjYcwWlom8/Ju1AK19wsZMF9LzmKV8bHUfeuyTMxNArJ0/s1CS30KgXoeU
-         VCZHCHAzv7G5GSamfnD23A/TjvvNgrRHcMCMVR5forkuuUPcNXjX6VijmO9+5wbbVjJS
-         kQSE1PXZ3paLguxz0QFxj+28GBv0+8jQeSJ4uy9l9CdexXEzbEd03znbqoQgU45/DKUi
-         km+AMtEzkSYTV3N0hi7/Q7/ziITi1gP4hM142X+T6oKUw+/gZeUonk4LDW5RR+yFfAk1
-         KpaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9Vx+WPjk3Jqu/26mjZeRumiFftkfvBsbmk7u8x9gYoY=;
-        b=uzA+vyUQfjOC33Vopkd7xJxlqZzZB8UoNgsPjC4nikm+rNjRUi5BkmQnn8hqh9mH7k
-         hyfH5yteE2jleQHbLXop7CwtvtWLcOtrBlfi8KIBRCGuOmte2xjnjFUTf+Ko5Zju4yE5
-         ythQIP3Sd0zD99Aps/BM7/gzXP0Mac7TftUgjUahjVaC+92fmYNeZugnMTKIqWIw1XIp
-         BBPhBUvOBRm2eg+H6PtjDHetOxfyoBaMO45K/f1gT5DFt59dkfeMG4U+pkOx2N+oBmPj
-         +1rta7NyH81hHGb8JdP3NWTgJ4+kg0EMbwUDKox7f+q84EeXa5XwFuit/nWGsgxQJBS5
-         4ecA==
-X-Gm-Message-State: AOAM532jz6WRua4NmCZS4s8A5mQ6c+l+spTyowZI7YMXduC04bIl5ex0
-        +F6n5Iglci3FtcAKXRnvEhkmKgRbSDawjwM+OW4q8A==
-X-Google-Smtp-Source: ABdhPJwQCzUoixTMtsRur9qzlG1qSn+Sx4LgwajsEMFV5UPE5DKIly0PKpV1NusJBRnndSql78KQlyW9+v6HfFngB7A=
-X-Received: by 2002:a25:a123:0:b0:623:f539:9b94 with SMTP id
- z32-20020a25a123000000b00623f5399b94mr10088403ybh.291.1645232097187; Fri, 18
- Feb 2022 16:54:57 -0800 (PST)
+        Fri, 18 Feb 2022 19:55:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAB62782AE
+        for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DCD61FCC
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE946C340F3;
+        Sat, 19 Feb 2022 00:55:13 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nLE1o-0051Xy-UV;
+        Fri, 18 Feb 2022 19:55:12 -0500
+Message-ID: <20220219005512.773509189@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 18 Feb 2022 19:54:33 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [for-next][PATCH 03/16] tracing: Remove size restriction on synthetic event cmd error logging
+References: <20220219005430.848118506@goodmis.org>
 MIME-Version: 1.0
-References: <20220210131210.24605-1-jonathan@marek.ca>
-In-Reply-To: <20220210131210.24605-1-jonathan@marek.ca>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 19 Feb 2022 01:54:46 +0100
-Message-ID: <CACRpkdYPYJoteTR_zoSr4CZZiCEARu-wE4_ruN6gF8EdT_X6OQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] pinctrl: qcom: sm8450: Add egpio support
-To:     Jonathan Marek <jonathan@marek.ca>
-Cc:     linux-arm-msm@vger.kernel.org, dmitry.baryshkov@linaro.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 2:14 PM Jonathan Marek <jonathan@marek.ca> wrote:
+From: Tom Zanussi <zanussi@kernel.org>
 
-> This mirrors egpio support added for sc7280. This change is necessary for
-> gpios 165 to 209 to be driven by APSS.
->
-> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Currently, synthetic event command error strings are restricted to a
+length of MAX_FILTER_STR_VAL (256), which is too short for some
+commands already seen in the wild (with cmd strings longer than that
+showing up truncated in err_log).
 
-Haven't heard anything for over a week so I just applied the
-patches. I assume you know what you're doing.
+Remove the restriction so that no synthetic event command error string
+is ever truncated.
 
-Yours,
-Linus Walleij
+Link: https://lkml.kernel.org/r/0376692396a81d0b795127c66ea92ca5bf60f481.1643399022.git.zanussi@kernel.org
+
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events_synth.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/trace/trace_events_synth.c b/kernel/trace/trace_events_synth.c
+index 154db74dadbc..fdd79e07e2fc 100644
+--- a/kernel/trace/trace_events_synth.c
++++ b/kernel/trace/trace_events_synth.c
+@@ -42,10 +42,13 @@ enum { ERRORS };
+ 
+ static const char *err_text[] = { ERRORS };
+ 
+-static char last_cmd[MAX_FILTER_STR_VAL];
++static char *last_cmd;
+ 
+ static int errpos(const char *str)
+ {
++	if (!str || !last_cmd)
++		return 0;
++
+ 	return err_pos(last_cmd, str);
+ }
+ 
+@@ -54,11 +57,19 @@ static void last_cmd_set(const char *str)
+ 	if (!str)
+ 		return;
+ 
+-	strncpy(last_cmd, str, MAX_FILTER_STR_VAL - 1);
++	kfree(last_cmd);
++	last_cmd = kzalloc(strlen(str) + 1, GFP_KERNEL);
++	if (!last_cmd)
++		return;
++
++	strncpy(last_cmd, str, strlen(str) + 1);
+ }
+ 
+-static void synth_err(u8 err_type, u8 err_pos)
++static void synth_err(u8 err_type, u16 err_pos)
+ {
++	if (!last_cmd)
++		return;
++
+ 	tracing_log_err(NULL, "synthetic_events", last_cmd, err_text,
+ 			err_type, err_pos);
+ }
+-- 
+2.34.1
