@@ -2,105 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29019C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 18:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241791AbiBSS5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 13:57:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42846 "EHLO
+        id S231915AbiBSS73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 13:59:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236969AbiBSS5N (ORCPT
+        with ESMTP id S229437AbiBSS70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 13:57:13 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D439C488BE;
-        Sat, 19 Feb 2022 10:56:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645297013; x=1676833013;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OEri4uDqfVq3Sq55bw1JpjblsjiHhv7blHvy92mJyQM=;
-  b=kWTI+FBMYB1yp11DnYtcBWgtIFFCEOYbhKYsMKgOPBzz5pWJ8sRbS9Xb
-   uSx7qW640h5vwXw7ZibsDTLmZyyaIFmvJabVOsq3sIg+dQcKVJsdZiw9Z
-   Svsu4IOYmlYldLI6bjnTE8+cYv3GrQ0KiaozT/SSqGVlL0hRa3qkCPPsX
-   s=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 19 Feb 2022 10:56:53 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2022 10:56:52 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Sat, 19 Feb 2022 10:56:52 -0800
-Received: from [10.216.20.52] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Sat, 19 Feb
- 2022 10:56:45 -0800
-Message-ID: <e279b9ec-92af-1b86-9ea0-09c9c36e1404@quicinc.com>
-Date:   Sun, 20 Feb 2022 00:26:42 +0530
+        Sat, 19 Feb 2022 13:59:26 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A5B59A53;
+        Sat, 19 Feb 2022 10:59:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645297146; x=1676833146;
+  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YjcmreUpCIrBCYdc1cFbN9dGuwQFr7PWHG7P8Kh35AU=;
+  b=mxYwLOvVLbye2UJZxyeA0uzPeDhAvaxPjDXmvFS/d3tS+n5Ma4Oi8Vhq
+   BM601u6AUCVDJCSFvqehXGTujNgXQP+lLoVvf8oGxBAuhoFos5DXQZ0zJ
+   QvWh5Y/bRAA2CIMaWf3kpiLC7WZ2nAKl9DdG4UioFD62u7QeAw8PgvCAC
+   Yt3vWaVnZKxdKT4NWoND+6a1WgngogzRwl/xtYpKWl0tahbdgXwTMFMl8
+   6rGNQBnPUvfSx/OBNWc1eWXRHcl7WOb61lhverkEwLe0eNnxc842zqg4J
+   W9xTVOUocbq9RyKKu+gXdQGTKLEn+OwxjSyaidzFelCela0uZtMLzZZTP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10263"; a="251501265"
+X-IronPort-AV: E=Sophos;i="5.88,381,1635231600"; 
+   d="scan'208";a="251501265"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2022 10:59:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,381,1635231600"; 
+   d="scan'208";a="531330912"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 19 Feb 2022 10:59:06 -0800
+Received: from kpavlasx-mobl2.amr.corp.intel.com (kpavlasx-mobl2.amr.corp.intel.com [10.209.114.238])
+        by linux.intel.com (Postfix) with ESMTP id D74A3580975;
+        Sat, 19 Feb 2022 10:59:05 -0800 (PST)
+Message-ID: <f5318c1171c5733388c9b455f2058f9aed127b8b.camel@linux.intel.com>
+Subject: Re: [PATCH V5 3/3] PCI: vmd: Configure PCIe ASPM and LTR
+From:   "David E. Box" <david.e.box@linux.intel.com>
+Reply-To: david.e.box@linux.intel.com
+To:     Jonathan Derrick <jonathan.derrick@linux.dev>,
+        nirmal.patel@linux.intel.com, lorenzo.pieralisi@arm.com,
+        hch@infradead.org, kw@linux.com, robh@kernel.org,
+        bhelgaas@google.com, michael.a.bottini@linux.intel.com,
+        rafael@kernel.org, me@adhityamohan.in
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sat, 19 Feb 2022 10:59:05 -0800
+In-Reply-To: <1a163e75-f620-dfe7-01b1-5356fe767b2d@linux.dev>
+References: <20220218045056.333799-1-david.e.box@linux.intel.com>
+         <20220218045056.333799-4-david.e.box@linux.intel.com>
+         <1a163e75-f620-dfe7-01b1-5356fe767b2d@linux.dev>
+Organization: David E. Box
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RESEND v13 08/10] ASoC: qcom: Add lpass CPU driver for codec dma
- control
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <alsa-devel@alsa-project.org>, <bgoswami@codeaurora.org>,
-        <bjorn.andersson@linaro.org>, <broonie@kernel.org>,
-        <devicetree@vger.kernel.org>, <judyhsiao@chromium.org>,
-        <lgirdwood@gmail.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <perex@perex.cz>,
-        <quic_plai@quicinc.com>, <robh+dt@kernel.org>,
-        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
-        <tiwai@suse.com>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1644850708-11099-1-git-send-email-quic_srivasam@quicinc.com>
- <1644850708-11099-9-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n52jD_BvQm4CeTkiR723-3uKC9G4fFeynFbs5Ukg_S762g@mail.gmail.com>
- <d70291a6-7e3f-0406-2826-3a30f2d5650b@quicinc.com>
- <CAE-0n51zr2qZ4qSzsC4=3d_jCYGvSxh8_3znrEQFaNrGfRU2Gw@mail.gmail.com>
-From:   "Srinivasa Rao Mandadapu (Temp)" <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n51zr2qZ4qSzsC4=3d_jCYGvSxh8_3znrEQFaNrGfRU2Gw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-On 2/18/2022 1:23 AM, Stephen Boyd wrote:
-Thanks for Your time Stephen!!!
-> Quoting Srinivasa Rao Mandadapu (2022-02-16 01:42:42)
->> On 2/15/2022 7:03 AM, Stephen Boyd wrote:
->> Thanks for your time Stephen!!!
->>> Quoting Srinivasa Rao Mandadapu (2022-02-14 06:58:26)
->>>> +       struct snd_soc_pcm_runtime *soc_runtime = asoc_substream_to_rtd(substream);
->>>> +       struct lpaif_dmactl *dmactl;
->>>> +       int ret = 0, id;
->>>> +
->>>> +       switch (cmd) {
->>>> +       case SNDRV_PCM_TRIGGER_START:
->>>> +       case SNDRV_PCM_TRIGGER_RESUME:
->>>> +       case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
->>>> +               __lpass_platform_codec_intf_init(dai, substream);
->>>> +               break;
->>>> +       case SNDRV_PCM_TRIGGER_STOP:
->>>> +       case SNDRV_PCM_TRIGGER_SUSPEND:
->>>> +       case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
->>>> +               __lpass_get_dmactl_handle(substream, dai, &dmactl, &id);
->>>> +               if (!dmactl) {
->>>> +                       dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
->>> This same message is in many places. I really hope it never gets printed
->>> because finding out which line it got printed at is going to be
->>> impossible.
->> Okay. Will add function name in each print.
-> Are they useful prints at all? They seem like development prints that
-> won't trigger after the driver is developed. Why can't we just remove
-> them?
-Okay. Will remove prints.
+On Fri, 2022-02-18 at 14:30 -0700, Jonathan Derrick wrote:
+> 
+> On 2/17/2022 9:50 PM, David E. Box wrote:
+> > Currently, PCIe ports reserved for VMD use are not visible to BIOS
+> > and
+> > therefore not configured to enable PCIE ASPM. Additionally, PCIE
+> > LTR
+> > values may be left unset since BIOS will set a default maximum LTR
+> > value
+> > on endpoints to ensure that misconfigured devices don't block SoC
+> > power
+> > management. Lack of this programming results in high power
+> > consumption
+> > on laptops as reported in bugzilla [1].  For currently affected
+> > products, use pci_enable_default_link_state to set the allowed link
+> > states for devices on the root ports. Also set the LTR value to the
+> > maximum value needed for the SoC. Per the VMD hardware team future
+> > products using VMD will enable BIOS configuration of these
+> > capabilities.
+> Will the refreshes of the affected CPU be supported in BIOS or this
+> workaround?
+
+I'll have to check with the hardware/BIOS team. Still because it is
+BIOS this should check for signs that it hasn't already configured ASPM
+before modifying anything. I'll make this change.
+
+David
+
+> 
+> > This solution is a workaround for current products that mainly
+> > targets
+> > laptops. Support is not provided if a switch is used nor for
+> > hotplug.
+> > 
+> > [1] https://bugzilla.kernel.org/show_bug.cgi?id=213717
+> > 
+> > Signed-off-by: Michael Bottini <michael.a.bottini@linux.intel.com>
+> > Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+> > ---
+> > V5
+> >   - Provide the LTR value as driver data.
+> >   - Use DWORD for the config space write to avoid PCI WORD access
+> > bug.
+> >   - Set ASPM links firsts, enabling all link states, before setting
+> > a
+> >     default LTR if the capability is present
+> >   - Add kernel message that VMD is setting the device LTR.
+> > V4
+> >   - Refactor vmd_enable_apsm() to exit early, making the lines
+> > shorter
+> >     and more readable. Suggested by Christoph.
+> > V3
+> >   - No changes
+> > V2
+> >   - Use return status to print pci_info message if ASPM cannot be
+> > enabled.
+> >   - Add missing static declaration, caught by lkp@intel.com
+> > 
+> >   drivers/pci/controller/vmd.c | 48
+> > +++++++++++++++++++++++++++++++++++-
+> >   1 file changed, 47 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/pci/controller/vmd.c
+> > b/drivers/pci/controller/vmd.c
+> > index a582c351b461..eac379c80cd7 100644
+> > --- a/drivers/pci/controller/vmd.c
+> > +++ b/drivers/pci/controller/vmd.c
+> > @@ -67,10 +67,19 @@ enum vmd_features {
+> >   	 * interrupt handling.
+> >   	 */
+> >   	VMD_FEAT_CAN_BYPASS_MSI_REMAP		= (1 << 4),
+> > +
+> > +	/*
+> > +	 * Enable ASPM on the PCIE root ports and set the default LTR
+> > of the
+> > +	 * storage devices on platforms where these values are not
+> > configured by
+> > +	 * BIOS. This is needed for laptops, which require these
+> > settings for
+> > +	 * proper power management of the SoC.
+> > +	 */
+> > +	VMD_FEAT_BIOS_PM_QUIRK		= (1 << 5),
+> >   };
+> >   
+> >   struct vmd_device_data {
+> >   	enum vmd_features features;
+> > +	u16 ltr;
+> >   };
+> >   
+> >   static DEFINE_IDA(vmd_instance_ida);
+> > @@ -714,6 +723,38 @@ static void vmd_copy_host_bridge_flags(struct
+> > pci_host_bridge *root_bridge,
+> >   	vmd_bridge->native_dpc = root_bridge->native_dpc;
+> >   }
+> >   
+> > +/*
+> > + * Enable ASPM and LTR settings on devices that aren't configured
+> > by BIOS.
+> > + */
+> > +static int vmd_pm_enable_quirk(struct pci_dev *pdev, void
+> > *userdata)
+> > +{
+> > +	struct vmd_device_data *info = userdata;
+> > +	u32 ltr_reg;
+> > +	int pos;
+> > +
+> > +	if (!(info->features & VMD_FEAT_BIOS_PM_QUIRK))
+> > +		return 0;
+> > +
+> > +	pci_enable_default_link_state(pdev, PCIE_LINK_STATE_ALL);
+> > +
+> > +	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_LTR);
+> > +	if (!pos)
+> > +		return 0;
+> > +
+> > +	/*
+> > +	 * If the LTR capability is present, set the default values to
+> > the
+> > +	 * maximum required by the platform to allow the deepest power
+> > +	 * management savings. Write this as a single DWORD where the
+> > lower word
+> > +	 * is the max snoop latency and the upper word is the max non-
+> > snoop
+> > +	 * latency.
+> > +	 */
+> > +	pci_info(pdev, "VMD: Setting a default LTR\n");
+> > +	ltr_reg = (info->ltr << 16) | info->ltr;
+> > +	pci_write_config_dword(pdev, pos + PCI_LTR_MAX_SNOOP_LAT,
+> > ltr_reg);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >   static int vmd_enable_domain(struct vmd_dev *vmd, struct
+> > vmd_device_data *info)
+> >   {
+> >   	struct pci_sysdata *sd = &vmd->sysdata;
+> > @@ -867,6 +908,8 @@ static int vmd_enable_domain(struct vmd_dev
+> > *vmd, struct vmd_device_data *info)
+> >   		pci_reset_bus(child->self);
+> >   	pci_assign_unassigned_bus_resources(vmd->bus);
+> >   
+> > +	pci_walk_bus(vmd->bus, vmd_pm_enable_quirk, info);
+> > +
+> >   	/*
+> >   	 * VMD root buses are virtual and don't return true on
+> > pci_is_pcie()
+> >   	 * and will fail pcie_bus_configure_settings() early. It can
+> > instead be
+> > @@ -1012,7 +1055,10 @@ static const struct vmd_device_data
+> > vmd_28c0_data = {
+> >   static const struct vmd_device_data vmd_467f_data = {
+> >   	.features = VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |
+> >   		    VMD_FEAT_HAS_BUS_RESTRICTIONS |
+> > -		    VMD_FEAT_OFFSET_FIRST_VECTOR,
+> > +		    VMD_FEAT_OFFSET_FIRST_VECTOR |
+> > +		    VMD_FEAT_BIOS_PM_QUIRK,
+> > +	/* 3145728 ns (LatencyScale of 1048576 ns with a LatencyValue
+> > of 3) */
+> > +	.ltr = 0x1003,
+> >   };
+> >   
+> >   static const struct pci_device_id vmd_ids[] = {
+
