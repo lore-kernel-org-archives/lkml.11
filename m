@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D65C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039A3C43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240388AbiBSA3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:29:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33844 "EHLO
+        id S240395AbiBSA3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:29:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240371AbiBSA3I (ORCPT
+        with ESMTP id S240382AbiBSA3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:29:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C712B7C4E;
-        Fri, 18 Feb 2022 16:28:51 -0800 (PST)
+        Fri, 18 Feb 2022 19:29:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD670B7C4E;
+        Fri, 18 Feb 2022 16:28:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFBAC61F82;
-        Sat, 19 Feb 2022 00:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 51A2AC340ED;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E691B82732;
+        Sat, 19 Feb 2022 00:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C639C340EB;
         Sat, 19 Feb 2022 00:28:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1645230530;
-        bh=gIMZLn4Q9/LKSvS4WzeGjDlGcZ4bQhXwN/jNdrIEJ54=;
+        bh=V51nKj5al366IWu0bB/o4b2q56GYa0ZwsLnnNkcI2/c=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=CEIPLMRSaZsA1Vl1Rinu1V+odPdYcrXWKKDsAhSvmoo4U/NS0xIe+fpT7gevlHDxP
-         jK+MJhdhz8kPwINE/f2u+KzZUXQfgR/Pj1psROLe1MQxB7C1kjZRp0AOqwpvWTiyrA
-         V3LTCEJ348lrATqu7L26xawvBiuiK+PQdh0Mdv216DHPJMhtSiCahRD/9Wr16ltk5l
-         Q7vbSHHZJuXzd9norV3OEXdNNYcXQtxc+oIS2ggyUjdDanz1gBrA5f8ZhgNMZ6spXn
-         pPasr0dF2VYOdhP8fg3ZVGgNvff8PxBC3BCB8imtEazjqyTDoPUnV94or07+g2o/GR
-         i+VQqQPWSNi0g==
+        b=iQdvKMbWQGuGfum3Jnc9e65GOLMFw30CHQ4qDB7BGQZuWUqWaYJZj/mPT6u3+VWYW
+         +D7v4VHfUSfdmAyCDdWRd0fNqZuxCBuzHawwfuUAAfLFR4a0HIhOEkgbtx5RcZrFID
+         LFkqm2a1S1/9ggjy6qfvV3S2XQnWI1Q6X/2lTKQLAqquBW7uXl9zWDxHKAyNX8kgKe
+         lmkT/66Vx9LEiScCRVMDfarzfJV9F2ZJzqfu1Rzj2YeVPL7D1Le4FOaLdFL6mX/yfI
+         Ow2RIcUm6ntiF8XJiQGysMZ98ZNmqPEN2WiLCEk32EkEApGOS7kQbK9NIZeyaj+HOg
+         R6W4lk3Bog2MA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3C959E5D07D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2868BE7BB08;
         Sat, 19 Feb 2022 00:28:50 +0000 (UTC)
-Subject: Re: [GIT PULL] Please Pull A Few More NFS Client Bugfixes for Linux v5.17-rc
+Subject: Re: [GIT PULL] ACPI fixes for v5.17-rc5
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220218222320.386771-1-anna@kernel.org>
-References: <20220218222320.386771-1-anna@kernel.org>
+In-Reply-To: <CAJZ5v0hpQzGdX0HW94fgFG0LjTcKs0s9PgczzjVUcz8AaRPpqg@mail.gmail.com>
+References: <CAJZ5v0hpQzGdX0HW94fgFG0LjTcKs0s9PgczzjVUcz8AaRPpqg@mail.gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220218222320.386771-1-anna@kernel.org>
-X-PR-Tracked-Remote: git://git.linux-nfs.org/projects/anna/linux-nfs.git tags/nfs-for-5.17-3
-X-PR-Tracked-Commit-Id: d19e0183a88306acda07f4a01fedeeffe2a2a06b
+X-PR-Tracked-Message-Id: <CAJZ5v0hpQzGdX0HW94fgFG0LjTcKs0s9PgczzjVUcz8AaRPpqg@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.17-rc5
+X-PR-Tracked-Commit-Id: 8292656464e5f066d46cb73da957930613a2c597
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4f12b742eb2b3a850ac8be7dc4ed52976fc6cb0b
-Message-Id: <164523053024.25426.2356686124435032276.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 1c2a33d0ac6961d36cd653638c7841b179969906
+Message-Id: <164523053016.25426.7046733863089488955.pr-tracker-bot@kernel.org>
 Date:   Sat, 19 Feb 2022 00:28:50 +0000
-To:     Anna Schumaker <anna@kernel.org>
-Cc:     torvalds@linux-foundation.org, linux-nfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 18 Feb 2022 17:23:20 -0500:
+The pull request you sent on Fri, 18 Feb 2022 19:50:36 +0100:
 
-> git://git.linux-nfs.org/projects/anna/linux-nfs.git tags/nfs-for-5.17-3
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.17-rc5
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4f12b742eb2b3a850ac8be7dc4ed52976fc6cb0b
+https://git.kernel.org/torvalds/c/1c2a33d0ac6961d36cd653638c7841b179969906
 
 Thank you!
 
