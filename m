@@ -2,101 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF94DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 16:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 978B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 16:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242688AbiBSQph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 19 Feb 2022 11:45:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60348 "EHLO
+        id S242722AbiBSQpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 19 Feb 2022 11:45:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242682AbiBSQpe (ORCPT
+        with ESMTP id S242704AbiBSQpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 19 Feb 2022 11:45:34 -0500
+        Sat, 19 Feb 2022 11:45:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82751654A9
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 08:45:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052F55F4EE;
+        Sat, 19 Feb 2022 08:45:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EC1760AFA
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 16:45:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3589AC004E1;
-        Sat, 19 Feb 2022 16:45:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 973FA60BA8;
+        Sat, 19 Feb 2022 16:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D972EC004E1;
+        Sat, 19 Feb 2022 16:45:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645289114;
-        bh=fFFD3oN5cDl0TnwcVvL6+V1rI+rC3W6wYV3VSS5WoTI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SY1E+ESkV+fUwtZzdZf7bHMG4LTNlMvATCd4VfhdPp6PfnmGFEokz24snDZ7vK7ZN
-         69Iw+9pl3NtRQ18pzh3kqsuAe+s3A3W/qBAOw/kHJU2XBpsNVvYtOl9Jci8P1S0+rP
-         A9pnP7BX2Rw767poeN69xONghRMuaRgjn4dxWgSADCdFH3LVK7sCKzzJbTnC1tqvzy
-         ORy0Z7AmR5HVZJlbyw3MZssIoSIoRr9RcOw5Cxm5KTtNBVbPqzqzsznKJa2Aqnwqq4
-         hINwwg9iBLIquncP5kuk0nsS3EZiSAu3TRgF8FeiBeNGY6R+uSGI2fBHGxDwN2K2EK
-         zARiwFZLUbNHQ==
-Date:   Sat, 19 Feb 2022 09:45:10 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Fangrui Song <maskray@google.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] riscv module: remove (NOLOAD)
-Message-ID: <YhEelqnPDr1u4uTD@dev-arch.archlinux-ax161>
-References: <20220218082611.396353-1-maskray@google.com>
+        s=k20201202; t=1645289127;
+        bh=+17mVetXReBFkiqb808QaM5pwG49fehWe7y9EWaB+Po=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AH1RWJpdbFv8x08o6D0JJ98Hovj0oWTLt2Cd+PsFG+Vv3xjgNDtKIHjBD2sXiN2cY
+         YLLpSkqAxWjyazESWDeR13BPRRFX5pU/c7sWG+ayqBCA65P2mgZujo/Gaf0Ese0/aZ
+         FLPpy9YhKtwl9z/HkNF+cvPwji6iBjkcXyswdAjQpsTei7gPziG9M9Wng9DzoLmqNT
+         ts9jc6GXyAMDqHdXd36KePicbao2WEkKZPa1D1q9yl/7aXnYOmiciwNmutQnza3FOC
+         /Posj0hi8AQFex2IeKTtTveyK25eYGy5RKAlLW0t15W2lVvDZTysCFELE8Ybz2jyTL
+         ejuCcoHM4qtcw==
+Date:   Sat, 19 Feb 2022 16:52:14 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
+        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
+        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
+Subject: Re: [v3 09/13] iio: document "serial_number" sysfs attribute
+Message-ID: <20220219165214.25804a3f@jic23-huawei>
+In-Reply-To: <20220217162710.33615-10-andrea.merello@gmail.com>
+References: <20220217162710.33615-1-andrea.merello@gmail.com>
+        <20220217162710.33615-10-andrea.merello@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218082611.396353-1-maskray@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 12:26:11AM -0800, Fangrui Song wrote:
-> On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-> inappropriate for .plt, .got, and .got.plt sections which are always
-> SHT_PROGBITS.
+On Thu, 17 Feb 2022 17:27:06 +0100
+Andrea Merello <andrea.merello@gmail.com> wrote:
+
+> This patch adds ABI documentation for the new "serial_number" sysfs
+> attribute. The first user is the bno055 IIO driver.
 > 
-> In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-> and (NOLOAD) will be essentially ignored. In ld.lld, since
-> https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-> customize the output section type"), ld.lld will report a `section type
-> mismatch` error. Just remove (NOLOAD) to fix the error.
-> 
-> [1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-> section should be marked as not loadable" on
-> https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-> outdated for ELF.
-
-Thank you for the patch! As mentioned on the arm64 patch, this needs
-your Signed-off-by tag. With that provided:
-
-Cc: stable@vger.kernel.org
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-
-This needs to go to stable so that older trees with a newer toolchain do
-not warn.
-
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 > ---
->  arch/riscv/include/asm/module.lds.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> diff --git a/arch/riscv/include/asm/module.lds.h b/arch/riscv/include/asm/module.lds.h
-> index 4254ff2ff049..1075beae1ac6 100644
-> --- a/arch/riscv/include/asm/module.lds.h
-> +++ b/arch/riscv/include/asm/module.lds.h
-> @@ -2,8 +2,8 @@
->  /* Copyright (C) 2017 Andes Technology Corporation */
->  #ifdef CONFIG_MODULE_SECTIONS
->  SECTIONS {
-> -	.plt (NOLOAD) : { BYTE(0) }
-> -	.got (NOLOAD) : { BYTE(0) }
-> -	.got.plt (NOLOAD) : { BYTE(0) }
-> +	.plt : { BYTE(0) }
-> +	.got : { BYTE(0) }
-> +	.got.plt : { BYTE(0) }
->  }
->  #endif
-> -- 
-> 2.35.1.265.g69c8d7142f-goog
-> 
-> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 1b8d77577608..224585f00147 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -2017,3 +2017,10 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Raw (unscaled) euler angles readings. Units after
+>  		application of scale are deg.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/serial_number
+> +KernelVersion:	5.17
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		16-bytes, 2-digits-per-byte, HEX-string representing the sensor
+> +		unique ID number.
+This might prove too restrictive for other devices but I guess we can update
+the help text when they come along.  Maybe relax this to
+
+An example format is 16-bytes, 2-digits-per-byte ....
+
+then we avoid having to update it later when a different format comes along.
