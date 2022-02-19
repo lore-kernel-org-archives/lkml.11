@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F81C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51060C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 19 Feb 2022 00:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240896AbiBSA4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 18 Feb 2022 19:56:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39788 "EHLO
+        id S240942AbiBSA4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 18 Feb 2022 19:56:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240760AbiBSAzk (ORCPT
+        with ESMTP id S240741AbiBSAzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 18 Feb 2022 19:55:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CA427AA37
+        Fri, 18 Feb 2022 19:55:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D78279905
         for <linux-kernel@vger.kernel.org>; Fri, 18 Feb 2022 16:55:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8A361FEE
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC17DC340ED;
-        Sat, 19 Feb 2022 00:55:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9A63B8240F
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 00:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9051CC340ED;
+        Sat, 19 Feb 2022 00:55:13 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nLE1r-0051e9-0j;
-        Fri, 18 Feb 2022 19:55:15 -0500
-Message-ID: <20220219005514.857711157@goodmis.org>
+        id 1nLE1o-0051XQ-OK;
+        Fri, 18 Feb 2022 19:55:12 -0500
+Message-ID: <20220219005512.589693373@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 18 Feb 2022 19:54:44 -0500
+Date:   Fri, 18 Feb 2022 19:54:32 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>
-Subject: [for-next][PATCH 14/16] user_events: Add self-test for validator boundaries
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [for-next][PATCH 02/16] tracing: Remove size restriction on hist trigger cmd error logging
 References: <20220219005430.848118506@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,97 +42,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Beau Belgrave <beaub@linux.microsoft.com>
+From: Tom Zanussi <zanussi@kernel.org>
 
-Tests to ensure validator boundary cases are working correctly within
-close and far bounds. Ensures __data_loc and __rel_loc strings are
-null terminated and within range. Ensures min size checks work as
-expected.
+Currently, hist trigger command error strings are restricted to a
+length of MAX_FILTER_STR_VAL (256), which is too short for some
+commands already seen in the wild (with cmd strings longer than that
+showing up truncated in err_log).
 
-Link: https://lkml.kernel.org/r/20220118204326.2169-11-beaub@linux.microsoft.com
+Remove the restriction so that no hist trigger command error string is
+ever truncated.
 
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+Link: https://lkml.kernel.org/r/0f9d46407222eaf6632cd3b417bc50a11f401b71.1643399022.git.zanussi@kernel.org
+
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- .../selftests/user_events/ftrace_test.c       | 65 +++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ kernel/trace/trace_events_hist.c | 30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/user_events/ftrace_test.c b/tools/testing/selftests/user_events/ftrace_test.c
-index 68010fd7b719..a80fb5ef61d5 100644
---- a/tools/testing/selftests/user_events/ftrace_test.c
-+++ b/tools/testing/selftests/user_events/ftrace_test.c
-@@ -309,6 +309,71 @@ TEST_F(user, write_fault) {
- 	ASSERT_EQ(0, munmap(anon, l));
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index ada87bfb5bb8..5e8970624bce 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -727,11 +727,16 @@ static struct track_data *track_data_alloc(unsigned int key_len,
+ 	return data;
  }
  
-+TEST_F(user, write_validator) {
-+	struct user_reg reg = {0};
-+	struct iovec io[3];
-+	int loc, bytes;
-+	char data[8];
-+	int before = 0, after = 0;
+-static char last_cmd[MAX_FILTER_STR_VAL];
++#define HIST_PREFIX "hist:"
 +
-+	reg.size = sizeof(reg);
-+	reg.name_args = (__u64)"__test_event __rel_loc char[] data";
-+
-+	/* Register should work */
-+	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSREG, &reg));
-+	ASSERT_EQ(0, reg.write_index);
-+	ASSERT_NE(0, reg.status_index);
-+
-+	io[0].iov_base = &reg.write_index;
-+	io[0].iov_len = sizeof(reg.write_index);
-+	io[1].iov_base = &loc;
-+	io[1].iov_len = sizeof(loc);
-+	io[2].iov_base = data;
-+	bytes = snprintf(data, sizeof(data), "Test") + 1;
-+	io[2].iov_len = bytes;
-+
-+	/* Undersized write should fail */
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 1));
-+	ASSERT_EQ(EINVAL, errno);
-+
-+	/* Enable event */
-+	self->enable_fd = open(enable_file, O_RDWR);
-+	ASSERT_NE(-1, write(self->enable_fd, "1", sizeof("1")))
-+
-+	/* Full in-bounds write should work */
-+	before = trace_bytes();
-+	loc = DYN_LOC(0, bytes);
-+	ASSERT_NE(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	after = trace_bytes();
-+	ASSERT_GT(after, before);
-+
-+	/* Out of bounds write should fault (offset way out) */
-+	loc = DYN_LOC(1024, bytes);
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Out of bounds write should fault (offset 1 byte out) */
-+	loc = DYN_LOC(1, bytes);
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Out of bounds write should fault (size way out) */
-+	loc = DYN_LOC(0, bytes + 1024);
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Out of bounds write should fault (size 1 byte out) */
-+	loc = DYN_LOC(0, bytes + 1);
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	ASSERT_EQ(EFAULT, errno);
-+
-+	/* Non-Null should fault */
-+	memset(data, 'A', sizeof(data));
-+	loc = DYN_LOC(0, bytes);
-+	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
-+	ASSERT_EQ(EFAULT, errno);
-+}
-+
- TEST_F(user, print_fmt) {
- 	int ret;
++static char *last_cmd;
+ static char last_cmd_loc[MAX_FILTER_STR_VAL];
  
+ static int errpos(char *str)
+ {
++	if (!str || !last_cmd)
++		return 0;
++
+ 	return err_pos(last_cmd, str);
+ }
+ 
+@@ -739,12 +744,19 @@ static void last_cmd_set(struct trace_event_file *file, char *str)
+ {
+ 	const char *system = NULL, *name = NULL;
+ 	struct trace_event_call *call;
++	int len = 0;
+ 
+ 	if (!str)
+ 		return;
+ 
+-	strcpy(last_cmd, "hist:");
+-	strncat(last_cmd, str, MAX_FILTER_STR_VAL - 1 - sizeof("hist:"));
++	len += sizeof(HIST_PREFIX) + strlen(str) + 1;
++	kfree(last_cmd);
++	last_cmd = kzalloc(len, GFP_KERNEL);
++	if (!last_cmd)
++		return;
++
++	strcpy(last_cmd, HIST_PREFIX);
++	strncat(last_cmd, str, len - sizeof(HIST_PREFIX));
+ 
+ 	if (file) {
+ 		call = file->event_call;
+@@ -757,18 +769,22 @@ static void last_cmd_set(struct trace_event_file *file, char *str)
+ 	}
+ 
+ 	if (system)
+-		snprintf(last_cmd_loc, MAX_FILTER_STR_VAL, "hist:%s:%s", system, name);
++		snprintf(last_cmd_loc, MAX_FILTER_STR_VAL, HIST_PREFIX "%s:%s", system, name);
+ }
+ 
+-static void hist_err(struct trace_array *tr, u8 err_type, u8 err_pos)
++static void hist_err(struct trace_array *tr, u8 err_type, u16 err_pos)
+ {
++	if (!last_cmd)
++		return;
++
+ 	tracing_log_err(tr, last_cmd_loc, last_cmd, err_text,
+ 			err_type, err_pos);
+ }
+ 
+ static void hist_err_clear(void)
+ {
+-	last_cmd[0] = '\0';
++	if (last_cmd)
++		last_cmd[0] = '\0';
+ 	last_cmd_loc[0] = '\0';
+ }
+ 
+@@ -5610,7 +5626,7 @@ static int event_hist_trigger_print(struct seq_file *m,
+ 	bool have_var = false;
+ 	unsigned int i;
+ 
+-	seq_puts(m, "hist:");
++	seq_puts(m, HIST_PREFIX);
+ 
+ 	if (data->name)
+ 		seq_printf(m, "%s:", data->name);
 -- 
 2.34.1
