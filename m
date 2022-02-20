@@ -2,106 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79173C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED34C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244282AbiBTPvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 10:51:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40874 "EHLO
+        id S240612AbiBTPxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 10:53:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238020AbiBTPvF (ORCPT
+        with ESMTP id S235340AbiBTPxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 10:51:05 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A53C532D6
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:50:43 -0800 (PST)
+        Sun, 20 Feb 2022 10:53:04 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AA13C717
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:52:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645372244; x=1676908244;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+41pjvkxLFZ3rHEYKRV+R4YgLriWMSAzreXiU6g9y5o=;
-  b=Km34xL7U0ukVPDo7vIqOO/0IjXISzXRx4Dm79rL1wNb0O7bhqWHLPoTr
-   couew9OcXNQqDN6WgGY1WqL/6LZcT0th61oSRolLzO3vsVkG+x1iFRkl2
-   vGNS2j2GCx8jOr8azmXZk4ik7FLJA+ckuem4j8V2WWpKxyloNq8iX2j2+
-   cnRlQ2P8/9qRafzU5fhPTn50xZzQPQSvRFFwiMwClvze5fiNrL+lbhi+H
-   qjXLwIp0LEDo1R2ujUjdmwZXqBrfyG6BamEBvQt2bLnsYWrHMLVhSy+E6
-   qflWYVOW7ta5Mtx4Gdfdb3FUPYHgDpt72TZCy/yAhfPLXWs+Ay8d+z8Qv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="248964897"
+  t=1645372363; x=1676908363;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+gN2CDp8q2u60eFf8847Xv8+qzOmqqhYLLNLGiU8RAA=;
+  b=nlU5v6w9V8cEO1zF7B0vpUEH394ofJpThvFJhYuf5Hqg5xYIIanrMbRO
+   7teh9lrmhiqIY9oKkwh6nccYWKkui2GEMzA+qep+V5jDCkri3rjlLlAQp
+   EQPSRGgFd89cPRU5dNt1dbmiyRZqQtndbR+gPcFdhvgKTywwbUVzaF3nt
+   oOFUeUYOF6qhmbMfjOe+9FxTWYRFWZ5eM6L35ihqmNxJZh2AFmvmbJKnv
+   Omt4AYt2PM72DRTLFpqKk22BrhA6z6yDeFgHxfIOS7034ExBJgUVU7oHc
+   aC7RIEl3+rdrc5h6JP9MP7VtTaHrkZAuQMjSNjy9WJONdFpXtZXLDetXh
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="251566567"
 X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
-   d="scan'208";a="248964897"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 07:50:43 -0800
+   d="scan'208";a="251566567"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 07:52:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
-   d="scan'208";a="547010245"
+   d="scan'208";a="682972204"
 Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 20 Feb 2022 07:50:41 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 20 Feb 2022 07:52:41 -0800
 Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nLoTx-0000QZ-7O; Sun, 20 Feb 2022 15:50:41 +0000
-Date:   Sun, 20 Feb 2022 23:50:19 +0800
+        id 1nLoVt-0000Qj-7v; Sun, 20 Feb 2022 15:52:41 +0000
+Date:   Sun, 20 Feb 2022 23:52:11 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Yifan Zhang <yifan1.zhang@amd.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
         Alex Deucher <alexander.deucher@amd.com>,
         Huang Rui <ray.huang@amd.com>
-Subject: [PATCH] drm/amd/pm: fix returnvar.cocci warnings
-Message-ID: <20220220155019.GA5906@a7651148d694>
-References: <202202202323.i1r9Jm11-lkp@intel.com>
+Subject: [agd5f:drm-next 96/114]
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c:235:5-8: Unneeded
+ variable: "ret". Return "0" on line 243
+Message-ID: <202202202323.i1r9Jm11-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202202202323.i1r9Jm11-lkp@intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
-
-drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c:235:5-8: Unneeded variable: "ret". Return "0" on line 243
-
-
- Remove unneeded variable used to store return value.
-
-Generated by: scripts/coccinelle/misc/returnvar.cocci
-
-Fixes: 068ea8bdc0aa ("drm/amd/pm: add smu_v13_0_5_ppt implementation")
-CC: Yifan Zhang <yifan1.zhang@amd.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
 tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
 head:   ad72a74cfe7edab15aef40519727a388285e7510
 commit: 068ea8bdc0aacb3bba3d1392ed41cc1116a671b8 [96/114] drm/amd/pm: add smu_v13_0_5_ppt implementation
-:::::: branch date: 2 days ago
-:::::: commit date: 2 days ago
+config: arm64-randconfig-c023-20220220 (https://download.01.org/0day-ci/archive/20220220/202202202323.i1r9Jm11-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
 
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
-@@ -229,18 +229,13 @@ static bool smu_v13_0_5_is_dpm_running(s
- 
- static int smu_v13_0_5_post_smu_init(struct smu_context *smu)
- {
--	/*
--	struct amdgpu_device *adev = smu->adev;
--	*/
--	int ret = 0;
--
- 	/* allow message will be sent after enable gfxoff on smu 13.0.5 */
- 	/*
- 	ret = smu_cmn_send_smc_msg(smu, SMU_MSG_EnableGfxOff, NULL);
- 	if (ret)
- 		dev_err(adev->dev, "Failed to Enable GfxOff!\n");
- 	*/
--	return ret;
-+	return 0;
- }
- 
- static int smu_v13_0_5_mode_reset(struct smu_context *smu, int type)
+
+cocci warnings: (new ones prefixed by >>)
+>> drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c:235:5-8: Unneeded variable: "ret". Return "0" on line 243
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
