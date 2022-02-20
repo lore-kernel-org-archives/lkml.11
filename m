@@ -2,109 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE91C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241869AbiBTU0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 15:26:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33180 "EHLO
+        id S244868AbiBTUaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 15:30:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232742AbiBTU0a (ORCPT
+        with ESMTP id S244939AbiBTUat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 15:26:30 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1926A3968C;
-        Sun, 20 Feb 2022 12:26:06 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id i11so15006585lfu.3;
-        Sun, 20 Feb 2022 12:26:06 -0800 (PST)
+        Sun, 20 Feb 2022 15:30:49 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F13C522D4
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:30:27 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id d10so27876720eje.10
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:30:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=G4fVxuzKrXmk38T9ip2XGji02lbnRZqnCl8NZe97wHE=;
-        b=He1Y719i4nk05titS+vnyIbXkWJVbwJ8jXoEnZOmY1VD+fE29A0WSXEKhp++2F+E9G
-         /cq7CQpdZCwDnwP2EGewSN8lQNBXzFPxO690+2/fVofhEr+vnFUF1GyJQJ0g7X9ggPZU
-         OT50Si0Zz2DHx7fGcUCyz1mrCaRIvWhW2pWh/f2p8z7QcJ43MwjhKoUSWAR/ggN4upqK
-         qtWVaiiPNmTTTZuhtD4gAdVK/lOcJxR5HerXKrMrjFEVu0SequidsDZ9+dM7nuN69/Do
-         4gqn1snpubaj/fHPIh4coXn09n/MVbeVkO5tgwEbtO7+V9XAi7/KddsXnwzWomjBZ3rt
-         osBA==
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=dlG18bj99ERjBOy6kSTcERQdUmxCadRteA/b+q4I8ZA=;
+        b=CPG5N4iqjLnPDIkNp+CwkhD3MdeSNJtQfOzDry/tuDfuKF9OMRfCGcw417Q6gNsWE9
+         qGQNGO3GfbFqcp8MkJQeGL8c7irF2uSmM/3/2QKb+JK/7nXB8JUoGoJ3Imm3A1Cef2ax
+         wuFuVHX3vwFYDrvv0thldfA/sT88umGwBibi7oKXmxj2LmA+M332WeuaB4wEeUrUcS7z
+         zDmz1VMi+9zQ6HjrI+0bmL9TMVvWHFy+U5TWRDVyflw2SgDo6uDaX5VpXWZJ7n89oZXE
+         LLjIEqrK2pwbgUTvL/omUKLjjCBWmH901WpcICDxIHvwsh6PQgBfZGE6vH8wF5l+TmvM
+         11bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G4fVxuzKrXmk38T9ip2XGji02lbnRZqnCl8NZe97wHE=;
-        b=FmuI4GsOYSt78e/3A5767rdCtmW1B7bgQ/Pg4t7dVyse0GpKUFU3n7lONuKAsDZ5l3
-         BNBepZUZ3o2hRNckVJp8+78ALJGe5Tl4tB7JBrvbI9H9Lj1kxGWwG4LRpR/prQMdEslm
-         9f0/bz8WeXOp9MCT7J5Pn3UYoqMB+hu/nnKf0DqJk6mEx/7xuD9HHG9OjfxkkX9OlRQJ
-         s2f9kliRx+luPHDEu4WAvTVJ12L2AghzcBaXzHeMgpp+Rj+Ue7fPU56OkmFDn+ErrVaV
-         Ag+SDxeBIB4GuLcGlljntZZwVFxEVBj1zG6f71ZryAHu/xcNEgjE9QhaOPLZXBpNghLy
-         +Mnw==
-X-Gm-Message-State: AOAM533FlZ3ICOqW9q3EBETTP/GHgJhrR6jxX0M9bo5FfvQ++RVxbivC
-        vbAL37bezvOGO49uptWNYscm71pfoSg=
-X-Google-Smtp-Source: ABdhPJxQVI93xxc6iHZZTjo1QbebVWjw6taqMs6g/mPjpLmKZVeMZO/UN7svWA1nLVwFm8CjugquGw==
-X-Received: by 2002:a05:6512:234e:b0:443:d569:4366 with SMTP id p14-20020a056512234e00b00443d5694366mr4961370lfu.490.1645388764361;
-        Sun, 20 Feb 2022 12:26:04 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id s4sm914433lfr.73.2022.02.20.12.26.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 12:26:04 -0800 (PST)
-Message-ID: <65dcd557-984e-8801-96c1-0f14f4d6589b@gmail.com>
-Date:   Sun, 20 Feb 2022 23:26:02 +0300
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=dlG18bj99ERjBOy6kSTcERQdUmxCadRteA/b+q4I8ZA=;
+        b=BJyWW+eu56ZBXMU/Rbsan+aG6ErX+FfLOATEZsO30sj5yIBQFrXhnnz0koRg/iRqSf
+         wRKeX4gJdRc3EDBECDBbckrFuqT4Hdkeg+00gGsgKojp/ndsPOS64zZRseAbPEpOMJx7
+         i0Jew/l+it0aIXr5OsZhhoYJ0byFVbHks+Sidcow+vD/YpbHc9egi4Ne+QC0WYrBU0NU
+         olZruxlNGXOwV2eThib7neqHMYZm/KWXclC1qr8wOTTcBeQO/Z8cpVQBGRAoP4Ihxh9K
+         AaO+efkWkfz8gFtOrNGWxHTfw+32awHW1Sg+ipslG9K2XC4Hzfdsrr7DTEuPcK+6QArg
+         gGCQ==
+X-Gm-Message-State: AOAM533MeTyx7ikP8uac6nH/pjMG6SD3VWdgpyLM3WNpfkn3i3Q6oSfU
+        s31UWsFRcd+RLSbPKjRKcLY=
+X-Google-Smtp-Source: ABdhPJzCg1GsTzm/Y4Fl1EH0/KIQ7cbs3XpyXIVGzX4DHCeE14l1XxWWVjrzo/27U13fdaMQe+OLWA==
+X-Received: by 2002:a17:907:138e:b0:6cc:f1aa:a8fe with SMTP id vs14-20020a170907138e00b006ccf1aaa8femr13150921ejb.25.1645389025651;
+        Sun, 20 Feb 2022 12:30:25 -0800 (PST)
+Received: from matrix-ESPRIMO-P710 (p57935aa6.dip0.t-ipconnect.de. [87.147.90.166])
+        by smtp.gmail.com with ESMTPSA id e17sm4467279ejl.68.2022.02.20.12.30.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Feb 2022 12:30:25 -0800 (PST)
+Date:   Sun, 20 Feb 2022 21:30:23 +0100
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+To:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] staging: vt6656: Fix CamelCase, add comments, change
+ macro to function
+Message-ID: <cover.1645386791.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 6/8] media: staging: tegra-vde: De-stage driver
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220220172950.3401-7-digetx@gmail.com>
- <202202210437.dSxqXeIm-lkp@intel.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <202202210437.dSxqXeIm-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-20.02.2022 23:19, kernel test robot пишет:
-> Hi Dmitry,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on media-tree/master]
-> [also build test ERROR on tegra/for-next linus/master v5.17-rc4 next-20220217]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Dmitry-Osipenko/Add-V4L-stateless-video-decoder-API-support-to-NVIDIA-Tegra-driver/20220221-013333
-> base:   git://linuxtv.org/media_tree.git master
-> config: x86_64-randconfig-m001
-> reproduce (this is a W=1 build):
->         # https://github.com/0day-ci/linux/commit/dd010c4949a824dda7225b7074050b5736d3894a
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Dmitry-Osipenko/Add-V4L-stateless-video-decoder-API-support-to-NVIDIA-Tegra-driver/20220221-013333
->         git checkout dd010c4949a824dda7225b7074050b5736d3894a
->         make W=1 ARCH=x86_64  randconfig
->         mkdir build_dir
->         make W=1 O=build_dir ARCH=x86_64 distclean
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->>> scripts/Makefile.clean:15: drivers/staging/media/tegra-vde/Makefile: No such file or directory
+Various checkpatch.pl fixes as liste below
+Tested with device VNT6656G6A40
+Transferred this patches over VNT6656G6A40
 
-I had a feeling that something is missed in v4.
+Philipp Hortmann (3):
+  staging: vt6656: Fix CamelCase warnings in mac.h and mac.c
+  staging: vt6656: Add comment and change macro to function
+  staging: vt6656: Remove ftrace-like logging and unnecessary line
+    breaks
+
+ drivers/staging/vt6656/device.h | 11 ++---------
+ drivers/staging/vt6656/mac.c    | 14 +++++++-------
+ drivers/staging/vt6656/mac.h    | 22 +++++++++++-----------
+ drivers/staging/vt6656/rxtx.c   |  8 ++------
+ drivers/staging/vt6656/wcmd.c   | 13 +++++++++++--
+ 5 files changed, 33 insertions(+), 35 deletions(-)
+
+-- 
+2.25.1
+
