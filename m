@@ -2,119 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18276C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 05:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29269C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 05:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232440AbiBTFQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 00:16:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46572 "EHLO
+        id S232856AbiBTFmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 00:42:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiBTFQA (ORCPT
+        with ESMTP id S229580AbiBTFmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 00:16:00 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A907F44775
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:29 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id q11-20020a17090a304b00b001b94d25eaecso12239216pjl.4
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:29 -0800 (PST)
+        Sun, 20 Feb 2022 00:42:33 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E8863D8;
+        Sat, 19 Feb 2022 21:42:11 -0800 (PST)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21K5WHXJ024949;
+        Sun, 20 Feb 2022 05:40:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=pAVnhX4U/WuHcquZv9yx77+9Y519j7+DPA35tox98z8=;
+ b=giql4TCcRWbAlc81lT88Xu/EKfMFHbRNxtvQR4S25K84CAHpK85yjt8KZ6hubnNTPdQa
+ HxkLqpsyACgz9hHNfpExq7YbL13345K/a5RxqxrCdRr+s1yyGj+zrKVgdc+AhTZ5wheo
+ q4KgDUAkruLkKU4VPKFTzOQ9ihMa6EvBCRTacC/2xhmVLIx9OZ7LICB5xabBYySl6rtp
+ YLwNGmJOt8HAzPpsHORjcIdu9urXXVmvN27oHwjhkSeH/td3+QgZsZCO0aTNyyeM9CsW
+ SxN4W+GTOufud/RzcZRSoWr29q7CvwfmRFzWG2x9dDK0J6JqSYJK2vCKduzGSeK/9M0t /Q== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3eaqb39j1x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 20 Feb 2022 05:40:49 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21K5e2M3141052;
+        Sun, 20 Feb 2022 05:40:48 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2044.outbound.protection.outlook.com [104.47.66.44])
+        by userp3020.oracle.com with ESMTP id 3eat0j20cn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 20 Feb 2022 05:40:47 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AaKZYx8RQf3Rn307xx0u1e2sMYPBeFO3wk7vbMm4FOz7O+ksYdQZKotVaBgUo1gUlSL1QSmWZKYPE803cCt1VgBFnF1HU1HRt/W4tdxaqdbdB7VDIKMLOH8PAcvpPXjWtyQbhRdzMjP3KjHettG/9fJxTawAA49zXEyEoPB82Fa/br8Kf/afKqZ0fObup3uku78uUdxWJV8Sru0VTDvx2e6BG7UPWDQbx003Vn2uxkeCc4sKQ6dW1Y+2FKv4/vE7XrDD85gYe6ZFT0EIrowlreNsyp2d13LkYWpKFzhL6+cA/k+AGsPnsQpXAp1BnlRgd2o+9Wj052TQV0zityJkyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pAVnhX4U/WuHcquZv9yx77+9Y519j7+DPA35tox98z8=;
+ b=TBaMU91LVNdq++QNUUPaXnRhkO/VlLj4U2jludvoONyR20WgAz64nbIpYuxVowpZZqbK0vCI+kt0ZU3tDTd4PwtSX1ZSNFm6qmH3+Z/EHaDV3/uon8tcGht6q6+DnJOdz1EJASRu1dnkjAaJtrYWjCYpXRR4fnHEApQhKlfDZiC+UXZbVDJsgkrzjpz1/yL2qV1L5ycLuEm1LLZWQj5mWo3OYUR2OaafVThEoKTGSGJv14E9bDsOUpHZphfFDWh8QrqwgrYOdfybPd88hNWGlBs1WqrsJWI1+MHm5x1IVFqzhYEtSgjRmi3epiqV8UgsJqWYJot2cql7th6wlmCOkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BbSKVWodbN20blAPKYCyP8ZKLA8GgWcyo30Dlz3sTHQ=;
-        b=GWDmfVZtO+VdWzOONsY4Dn4WamryrC1STwAcRCB2+rL5L7bsI3st6uUS7iRjlMzTfk
-         3B2+ECc+nmXWYvbZMVnyRMQpHY1pTrBlSXIbKoN3NroGKPb3ljMsla+jER5Tu5z3X6U7
-         WWBpLJ1IpzzFak56f5FyZBwkgKjluTjJdhrF9L0qppkc216XaCvh8lbkLXj//ynvy2k4
-         3PaySNtgaga35Wb9y77uXjzFAf1IJPPEk2k3N5gjM8PZsXxM8j3Q8caEEQAN/s53U9DX
-         1HBqbo+nh9JhVFwmao6wmlhM/+Q4qxB5zCirGsv5j8eyHsBZs7tdHgj6799zF83uR4bW
-         t8SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BbSKVWodbN20blAPKYCyP8ZKLA8GgWcyo30Dlz3sTHQ=;
-        b=KJKGbgEWIR9UQd7IBL9LZ2Oe0mHCiFiozo+txr2VThv8MD5mefnSb0Mlkmq9vYb8Xv
-         1U0zVK9DyISoduGAShNflAhI71RCw1WBPb/S8h7RT7R7REch+XEoNtQOsEQyOa4j9UCN
-         bZnwISEl7kfVLNMG0j5c9WNda4mx3QYLBfLu4AX8cTEmETS07xnA44q2lwWyCBRyENJQ
-         HM8mwHq+7JToAAP3RQUxjdY04lJYTz2iWtJpvWGL5ra4HDMRB0NXmYsVQUe3O+JXsfdL
-         uQyfvku4XlZh3AVhsaMNqfFRm445xdaKaSJ2PpcGpBOZi4UMI3rQJcL4wH2xZL6q4PAD
-         d2SQ==
-X-Gm-Message-State: AOAM53350oyX3MTLL+XMxtR2xpKjenxVETXRWWJ56HEOcfalZSN5XT6T
-        EidmrEZEttS9Q6wMhnAOj85M3A==
-X-Google-Smtp-Source: ABdhPJx9AmlGHj1W1mlCcaxty7LWNnbMfeGaA1BECAfY9xWm73Rn/Z5Hx11SYY6++AUTh2YSidEEqA==
-X-Received: by 2002:a17:90a:e7ca:b0:1b9:66c8:982c with SMTP id kb10-20020a17090ae7ca00b001b966c8982cmr19681462pjb.30.1645334129234;
-        Sat, 19 Feb 2022 21:15:29 -0800 (PST)
-Received: from localhost.localdomain ([2409:8a28:e61:5860:2995:483c:273c:28ec])
-        by smtp.gmail.com with ESMTPSA id y23sm7737907pfa.67.2022.02.19.21.15.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 21:15:28 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
-        bristot@redhat.com, zhaolei@cn.fujitsu.com, tj@kernel.org,
-        lizefan.x@bytedance.com, hannes@cmpxchg.org
-Cc:     linux-kernel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 2/3] sched/cpuacct: optimize away RCU read lock
-Date:   Sun, 20 Feb 2022 13:14:25 +0800
-Message-Id: <20220220051426.5274-2-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220220051426.5274-1-zhouchengming@bytedance.com>
-References: <20220220051426.5274-1-zhouchengming@bytedance.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pAVnhX4U/WuHcquZv9yx77+9Y519j7+DPA35tox98z8=;
+ b=MSqUF6bd+5ToS66KslmvHzWLWwm7wwz5fXckgSy5og/RyoynqYkAkAqPn1FsIVsEvXu04Q6BipZOGWFt1l21rNxis/uoBBtwS5+aVz87VKJvi5kJX1j7EmS06vphhFnJWZAGmkN/UiOqokf3cGaiNYBFLgHX892XW1vmzcScUJA=
+Received: from BYAPR10MB2663.namprd10.prod.outlook.com (2603:10b6:a02:a9::20)
+ by CH2PR10MB4136.namprd10.prod.outlook.com (2603:10b6:610:7f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Sun, 20 Feb
+ 2022 05:40:44 +0000
+Received: from BYAPR10MB2663.namprd10.prod.outlook.com
+ ([fe80::a0d5:610d:bcf:9b47]) by BYAPR10MB2663.namprd10.prod.outlook.com
+ ([fe80::a0d5:610d:bcf:9b47%4]) with mapi id 15.20.4995.026; Sun, 20 Feb 2022
+ 05:40:44 +0000
+Subject: Re: [PATCH v2 3/3] net: tun: track dropped skb via kfree_skb_reason()
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
+        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
+References: <20220219191246.4749-1-dongli.zhang@oracle.com>
+ <20220219191246.4749-4-dongli.zhang@oracle.com>
+ <29ff2768-ca3f-6a09-1df8-d703f85ecfac@gmail.com>
+From:   Dongli Zhang <dongli.zhang@oracle.com>
+Message-ID: <bc0e5a09-e139-0753-26f8-5bc5634a020d@oracle.com>
+Date:   Sat, 19 Feb 2022 21:40:43 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+In-Reply-To: <29ff2768-ca3f-6a09-1df8-d703f85ecfac@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0147.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::32) To BYAPR10MB2663.namprd10.prod.outlook.com
+ (2603:10b6:a02:a9::20)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c8868ef8-44e2-4830-da05-08d9f4338a03
+X-MS-TrafficTypeDiagnostic: CH2PR10MB4136:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR10MB4136E687B4B6611736AD5F2CF0399@CH2PR10MB4136.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ihx2n8LKw6ZeVMO5QlEsm17nPC3PrKPm3JExyj2JlT4UlPAIxkjCWLHWC3nFrJejKHm2egBicoDst3uFVuWMxB/ynyZxPNnEze0eGfZbA13c29Ya4N3f3kI/TQ/vU6G9wBgGWi+1h0pg0c0tM2RVldd7r0kpnX1VBAoKhD0ewDRQwXaoeFYxKTZBwzq6di3screhDRx4WJK5LoLHsVOG2ztGBWQlF/6BiQN/L976tNgTOHY5KsHBhLEUyr5G1yKk8VndXCP4bdvMZ99k35P7Q6RoKLclM9DttOPR4L48wLVqjZ2DBPMaAOCDj9YjdXDpP7R9ZQC9ERTK9TmJglZF803DsYFqEduYy2vHOsPyXEh+is9qXZkcescaJPPmAqhp0OEp13wlYjkiaf6s13rZufUHGTPLu8jBD7ak8COb23dzqig7DH5nq7IL0r4Jtu0LTrEYcquYHFgiGAahwfWe7SO5EJqRz+GZ97QfxJbaFQQJcgBOhVcp+BFAYOv/o3NQ9tyC+jV4zjR14X3Jq0zEJiYoxrSgEWm5LrkUTpQSh0xy6wn3xA4/R63fKpJgRnEWaPw/hLMbl37zBqYaUa161iqfhYpjuLAC3oZ3KN9JnIn98iSBeL6sYY1ypTiLYBEVG/J9AYFedBf7WsZYCOqhEL8xYhImGKhP0+WhapHwY1dYiuJrAdsk6NJA96JuQMkJ2SLyQLOZhCrsoz4UqGZgq8903Tf13MwuHc48yVHLqfk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2663.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31696002)(38100700002)(86362001)(4326008)(8676002)(66946007)(66556008)(66476007)(8936002)(5660300002)(44832011)(4744005)(7416002)(2906002)(186003)(2616005)(6486002)(498600001)(6512007)(6506007)(53546011)(31686004)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZkE1MkJPOWNPR3JDUFdPcVE3Zkc1OXJmYUhocFZlQjVndkY3SGtlUXR5V1R1?=
+ =?utf-8?B?RU9rRnIvSTJMN0lsc2JGR09jdHZNNkg1Y3VXeWtsNWFkcHJ6UStKVkFIOExV?=
+ =?utf-8?B?aXlZUWltMzJPS3ZPTVVMMkZubmc0NXFQWTJhcGNCOC9rb3VJS2hQdVduQTd3?=
+ =?utf-8?B?bFFydytsbHNKTDU2UVFGcWxZd0g3TzJDdTQraTNWQ2tnb05VRzl6c2M5WFl2?=
+ =?utf-8?B?OVFKcVFDVUpRcGVMVU1HZWl5V20xZDdiMkU2RHdZaGNEZCt0eVNVVXBvbXpL?=
+ =?utf-8?B?NFNtY29adkhMSTRZaGp4UlVTS0VQZkpVQVN3Nk9WcWdEK0dMOUMzcWZob0JV?=
+ =?utf-8?B?ZjduMVZ4YStobk9zdE5ZMEYyRlh1SE5raTIvRmZJa2JOZDd5NmhwWVpRaHg5?=
+ =?utf-8?B?RkhMVWlzZGRoelg4dDc1MmJ4N3U4ODg3Mzh1QjlSVFhNcENRakhob0grR0FT?=
+ =?utf-8?B?RFhEYjlFbG9GN2hFeXFNSk5oUS9oVG41OE5uREFyYUxMTmxVRlVxMTdyYWFH?=
+ =?utf-8?B?UXU5dkFSUUFhM01VSGtaU1BYMVFDZWRyQ0N0Z2ZUcUNja3FlRk1vWTAzeFNx?=
+ =?utf-8?B?aFRXL09hNnJTOC9mSXVnakErWjZ5cm9GTmZjQ0VPM2hyVyswcmk5Y3VQQndj?=
+ =?utf-8?B?ZWsrdGh5bWxRTFYxbG10b0E3TnBtYmFyeklWYUxBSWcvbkM4MElOWmdGdTY0?=
+ =?utf-8?B?akRDdEkxVENwSWtReGFzL3BiV01Lb3RXL1VXSm9YU3VuQ0w2WitrWmtBdHNo?=
+ =?utf-8?B?TjdGRFNZaUNVZUdZV2w1QTNVczkwVUtjZlRrUkx1YXI3NXdQcVN2aWRmRFZi?=
+ =?utf-8?B?RGdaR3BZQWNJSGNCamE0MVY4UjU5WVRvRUNtNUp2b0pvczBBT1hzODZYaWlR?=
+ =?utf-8?B?Q0lUTWdIQnBqSXZVQmFWai9ZRUhNUkRIdlhPZkpaSDBLSk1ZWFEzemtqaFFF?=
+ =?utf-8?B?clhCZERiZUg3dGhvMnBBV3RGNUhMWEtzUFAwTWZKSm5LbU1vdzlpQ1pFMkJS?=
+ =?utf-8?B?L1ErMlduNlhxVCtNL2tqZjZEUk5HbWRqWVRmSldER09tdUF5Wm10bTJja3pI?=
+ =?utf-8?B?ZlZ5R0ttT2pYbVBBTjQ2SVJuSlB2bTdJZ0p3MFZ3Ni94WWMzR0lsWnRyRE9H?=
+ =?utf-8?B?RU9DbXZ6RmdvQ1VLZnUvNjloSGdnTHprMUdLbHE0ZXVwQ1VkOVR4MUd6MCta?=
+ =?utf-8?B?T0NVM0ZISURtVUJQVzVFRFVySFlyaWVnY09NRUFQcktRdUZ5QjVidDFZbDdM?=
+ =?utf-8?B?NnExN25PT2ZjeXZMNWNGR1l3RDRGeGwrcGc2OFVkUzhvWnk2dk1xL1JPNkJH?=
+ =?utf-8?B?Z1o2TzJPVjh4dkJBREdNczhXYlpnazZvWEtRVGVEUXJCVy90eFcrMVhmak41?=
+ =?utf-8?B?ajEwUTVLSXhpT0F0YVNBZGJ0OEppZ2hVOVFuNE1UZ2NlSzNiNjh2VUtVLzJV?=
+ =?utf-8?B?RzR0aG9URnEwS1lPeTA0NEh3OHhrbUczYkIxLy9xblpIVitGZ25remQ1ZHVa?=
+ =?utf-8?B?enRkRUFrZVZaejFpZ1ROTVpCRTBVbGE5WkZTSGdCbWxWTXZ6c3IxWEJKaTBi?=
+ =?utf-8?B?N0F4YkJsaE9tM2RWOWxxUk4wRGN6bS8renkvVDRoeXY1NEVzd2dkQ3ZEMHpR?=
+ =?utf-8?B?dVlvUkR6RW5TcnJlaGx1MjcxVERFSzNwbDVjWHhVckNWbTVCb2RHUXVjcllm?=
+ =?utf-8?B?cERsUXJwTHMvQXRsM0NiNTJucVo1akRHUC9wamRFUDNLVVFMVGlHVXdZZUp4?=
+ =?utf-8?B?SXVDQXRISzVKQjM2R1g3cUE0UXFJL284RS91U0FZZFdNUW9MUmptN0RtSHRw?=
+ =?utf-8?B?bjB2QjVZK0dEZThjZ1VUNFF0SFhIMXFSdEZ2dCthYzVWNHU2OGZFb0hQb2VE?=
+ =?utf-8?B?aVF6ejV5a1FaS1JvZ3NiVGJKSHNTVGtONE0zNG1tQWRTQnQ4N0pLdnBFaUVj?=
+ =?utf-8?B?RXJhQlFhYWxaNzlGUXpxbDFvRHhIWndmZnF0WW0ya2RSRG94UUtHMnpWQzdY?=
+ =?utf-8?B?V2R2K0k2NHhIMXhMaWFha09kVGV2bVM4MGJNRFBlc1VzelNoSkNPQjBVT1p2?=
+ =?utf-8?B?MFdYN29xVjFpbkhIN1F3UXhzSUZqendOMmhBQzEvWm9HOGpMcU9EQU9BNFZo?=
+ =?utf-8?B?bTlTQlNwbFkxakdEZnNQZXE5VDZ2VldXQlhYZ25BejRSRkcyVThmTVN3a0Zp?=
+ =?utf-8?Q?NFi3/OPmvU66S5IcWBcVvUoPewzA4OI5wT761Ex9wN95?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c8868ef8-44e2-4830-da05-08d9f4338a03
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2663.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 05:40:44.7372
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RHHaxeUNMcVA0270eC+aLvpiXYW8ezjwJLjaM5WCCJXjSCLJAqxOgfFMSFXUf5rZt2l8ViZE7zWc/W9C1T3scw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4136
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10263 signatures=677614
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 spamscore=0
+ mlxscore=0 adultscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202200037
+X-Proofpoint-ORIG-GUID: vtFxWzf1YWjcGsUlMJgg4qyHa7LutTt6
+X-Proofpoint-GUID: vtFxWzf1YWjcGsUlMJgg4qyHa7LutTt6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since cpuacct_charge() is called from the scheduler update_curr(),
-we must already have rq lock held, then the RCU read lock can
-be optimized away.
+Hi David,
 
-And do the same thing in it's wrapper cgroup_account_cputime(),
-but we can't use lockdep_assert_rq_held() there, which defined
-in kernel/sched/sched.h.
+On 2/19/22 2:54 PM, David Ahern wrote:
+> On 2/19/22 12:12 PM, Dongli Zhang wrote:
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index aa27268edc5f..ab47a66deb7f 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -1062,13 +1062,16 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+>>  	struct netdev_queue *queue;
+>>  	struct tun_file *tfile;
+>>  	int len = skb->len;
+>> +	int drop_reason;
+> 
+> enum skb_drop_reason
+> 
 
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- include/linux/cgroup.h | 2 --
- kernel/sched/cpuacct.c | 4 +---
- 2 files changed, 1 insertion(+), 5 deletions(-)
+As mentioned in previous email ...
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 75c151413fda..9a109c6ac0e0 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -791,11 +791,9 @@ static inline void cgroup_account_cputime(struct task_struct *task,
- 
- 	cpuacct_charge(task, delta_exec);
- 
--	rcu_read_lock();
- 	cgrp = task_dfl_cgroup(task);
- 	if (cgroup_parent(cgrp))
- 		__cgroup_account_cputime(cgrp, delta_exec);
--	rcu_read_unlock();
- }
- 
- static inline void cgroup_account_cputime_field(struct task_struct *task,
-diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index 307800586ac8..f79f88456d72 100644
---- a/kernel/sched/cpuacct.c
-+++ b/kernel/sched/cpuacct.c
-@@ -337,12 +337,10 @@ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
- 	unsigned int cpu = task_cpu(tsk);
- 	struct cpuacct *ca;
- 
--	rcu_read_lock();
-+	lockdep_assert_rq_held(cpu_rq(cpu));
- 
- 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
- 		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
--
--	rcu_read_unlock();
- }
- 
- /*
--- 
-2.20.1
+According to cscope, so far all 'drop_reason' are declared in type 'int' (e.g.,
+ip_rcv_finish_core()).
 
+I will change above to enum.
+
+Thank you very much!
+
+Dongli Zhang
