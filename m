@@ -2,195 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBCFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244243AbiBTPUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 10:20:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59110 "EHLO
+        id S244253AbiBTPVD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 10:21:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244217AbiBTPUZ (ORCPT
+        with ESMTP id S244285AbiBTPU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 10:20:25 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DC449FB5;
-        Sun, 20 Feb 2022 07:20:04 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21KF7x2o007882;
-        Sun, 20 Feb 2022 15:19:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=xWeX0f27hFbj6hWO1Xf04esKZvilAf89jzBgjnNLI4k=;
- b=sqL0BLRzSezQ0pdyfLeHV1nKVxQWdurEJY9W/c8Zbd86fUa+5z0S94X+Niq+syYVyzRs
- rqVowd/kStPV73t7tcWyADKPJcgJ83d+i8zpyR69UYUcFLBrSJVkdu4gGzunET0uvxeG
- fjfyfOR3UYfkrYpcVGkKwjOExWwP6K3KbDpPmqVZ3lioDXINz0vypcEqdwLG5nUiQybp
- sHscwldTft+1skWjzLs8Bn5wrojPYFgAstzVhsptCEkUxmji5OVPOVqhZUK4ZpeoI9Jz
- TsmED9HxKv1mpaGNLvUOvJiDfAWDShlwyyUFb/8Mgm2H+MXyOYpkuqmTGkt+TdGTkLzL 6A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ebpd2h9c0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Feb 2022 15:19:43 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21KFFL4G029654;
-        Sun, 20 Feb 2022 15:19:43 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ebpd2h9bp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Feb 2022 15:19:43 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21KFBeDl005876;
-        Sun, 20 Feb 2022 15:19:41 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3ear68n94m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 20 Feb 2022 15:19:41 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21KFJdKx31195540
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 20 Feb 2022 15:19:39 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2DA8352050;
-        Sun, 20 Feb 2022 15:19:39 +0000 (GMT)
-Received: from sig-9-65-76-76.ibm.com (unknown [9.65.76.76])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 14C7C5204F;
-        Sun, 20 Feb 2022 15:19:37 +0000 (GMT)
-Message-ID: <7d84425f36e3b04ab1adabed23f98b478b53b770.camel@linux.ibm.com>
-Subject: Re: init_ima() adds 8 % to boot time
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     linux-integrity@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, Petr Vorel <pvorel@suse.cz>
-Date:   Sun, 20 Feb 2022 10:19:37 -0500
-In-Reply-To: <32f90c33-eeb9-64a0-b2e2-9258ba2e1820@molgen.mpg.de>
-References: <32f90c33-eeb9-64a0-b2e2-9258ba2e1820@molgen.mpg.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 1dPQYEvnMYQZjOLePHPBzvz4-I6RQEZp
-X-Proofpoint-ORIG-GUID: g3EkaVL9_-6QUV02iYGLRJpgHDACVfCf
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Sun, 20 Feb 2022 10:20:58 -0500
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A89B49FB5;
+        Sun, 20 Feb 2022 07:20:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q/l3srdV8SSOUdwHEEb0yw0ZfhkJrv6TjReI9wYa2sdOFpOuAgGwIRZ5/RyLvmSsQaTVf/KQwDqrc3BeMIRTm38yuWqYJrSxAphHVGKPg7TONYQRNyjf55CEXt/rD3GqySKiZif1gWo/Kvlll7boxELuIHR98H5pSuZSFZivPjWYRXq29yFiCvhDxhMX3IrlGU+FhaLLHwLcOHoe7PidtG8RwS3qG67w5OoaWdQkn/7dPjeSkQspJQALNfWJIcCbPMKzTt1QKctNewGTY7gzudHODSlRre+TyGTkwV+b6cwJJ8KqkEZiIpMuiQzog4qzBfw2AEI2O1Qj2wKRlm3h+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RcEWJU3ZOIldBHJWnxfWMCk2lLh3Fmc26KKemkkU9XE=;
+ b=IfZGaE/aIYDPemOk83+Y/ZWxYSHAOa9fkN6SmI77QBDdlcTy1PIOOI2XE1ebxmh2BWR0iylHgme92swJAa0SuX50+CtAaypFQSBFtfejJVxHHxaPO3e9DPSiJBL4T9ajdTl9lbxVRHygGUx9aQWNf/uQ4+Y0Bhr/NwCrWMHA/FTAZG9mExGzt8ma5rv7yhqYMmFEFone+XLWved2FBtg2zUTkDICpUrGspPFzm03a4vbC2H834nuyFzxqZZo1HYaScgt4iSR+kOIKo+kk6BMerm5vK4inTWBdviDCRfqNXXm1sgulIsH2kbsZ5I8DT67yRozsJ+rTy4vsxJrXtRNbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RcEWJU3ZOIldBHJWnxfWMCk2lLh3Fmc26KKemkkU9XE=;
+ b=qAEP5xtr4eazpF9OkbJHuBRDxPfkzy/WqHo0Ll1diTCje9tObG5Ph754AQKN3c6OEkYhJD4TrbdYzBJSzChqXWCos8xv+m5AAduF/gXJPMYuVEHkXaBR2ajatcXWzeIudu/vmY3UvMrCbDAKtQ4/SwRt2OF/v/U+Id/Aa/QXEc4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM5PR12MB2504.namprd12.prod.outlook.com (2603:10b6:4:b5::19) by
+ MW3PR12MB4585.namprd12.prod.outlook.com (2603:10b6:303:54::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4995.16; Sun, 20 Feb 2022 15:20:32 +0000
+Received: from DM5PR12MB2504.namprd12.prod.outlook.com
+ ([fe80::6cdc:ce39:9104:b1a1]) by DM5PR12MB2504.namprd12.prod.outlook.com
+ ([fe80::6cdc:ce39:9104:b1a1%5]) with mapi id 15.20.4995.026; Sun, 20 Feb 2022
+ 15:20:32 +0000
+Date:   Sun, 20 Feb 2022 23:20:09 +0800
+From:   Huang Rui <ray.huang@amd.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "Sharma, Deepak" <Deepak.Sharma@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        Steven Noonan <steven@valvesoftware.com>,
+        "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        "Yuan, Perry" <Perry.Yuan@amd.com>,
+        "Meng, Li (Jassmine)" <Li.Meng@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Giovanni Gherdovich <ggherdovich@suse.cz>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RESEND v6 0/9] cpupower: Add AMD P-State Support
+Message-ID: <YhJcKXo5t6E/jy8x@amd.com>
+References: <20220216073558.751071-1-ray.huang@amd.com>
+ <8aafb93a-772c-1806-e087-cd285694aa74@linuxfoundation.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8aafb93a-772c-1806-e087-cd285694aa74@linuxfoundation.org>
+X-ClientProxiedBy: HK2PR03CA0065.apcprd03.prod.outlook.com
+ (2603:1096:202:17::35) To DM5PR12MB2504.namprd12.prod.outlook.com
+ (2603:10b6:4:b5::19)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-20_06,2022-02-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 clxscore=1015 lowpriorityscore=0 spamscore=0
- malwarescore=0 priorityscore=1501 impostorscore=0 phishscore=0 mlxscore=0
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202200098
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3091c89e-e01a-4e43-5b58-08d9f4848924
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4585:EE_
+X-Microsoft-Antispam-PRVS: <MW3PR12MB4585BA14A233AA9320407A7AEC399@MW3PR12MB4585.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R9+zA0zWgxq4T9N0oc0TQlWBPesh67vgEGzM+MNC+4mot0fIQZPfM4fYy2T2EeIw0jA5Y/bRdqWDxZX2lc4SNmkdHRhfW9V3AFTQAz63VLnP1wZwRf06DEC2/TTsDkk6Iy5iEbKijEF1P59tuUhhiTKP70Sw3o1txBdLySk96vdc9mOAsLQs2Ncq6u7zn2h+7NMgmgxQlusN5PF0yr1w+bQrIEtwWJz+aJ1poHCUr14fW8JRXf8eA2zNLxO/pP8MsCBy6xybElsJN2SLGo2XElTfFmrIrzb2jLzDOX2RdMORese6wKodbADppjOmJgZxPYSK6eEfL8yLxLXZtUN4w18lQBehqNldqkPT0olV3f6igGH/2/tfHBBCiKKSInJ4XVZwEdPfkHG50B9+A6APb9EspVR2aDrmG5n48A1C35zRxvRKjjekEftQki+F41/gOXGjMu/TBDG9WNSsoLFDPGm5yv6iTKYGmGTPrEt0s63V2ow/9AbRGh2dCmb39y4w4ooVRyBNnkdvwqjRT+YN83h9f6lmAobGe32o+g8p5CZGZzJV0EA0yUDS7IngaudVWjL0aw96BEiwq2k8rIqwndY4b5doFNiQwLAFyCJWmMoWFc827nccjELLey9thoi1iEaORJ8fgJ4GHh8FaCvBeknkWcXhsv/a72QP+p7fW4Sj85h6dMohD3sXn3d+Qsq4xAGgAiPQkwn8kZtXJUTkpP2v5NDqdMHb6oW4RFeHWC5mpL4IqzWQfVugrzqFkF46X3Wp6DEsi/7VETNAYca48g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB2504.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(36756003)(8676002)(4326008)(54906003)(26005)(2616005)(186003)(66946007)(66556008)(66476007)(316002)(6916009)(508600001)(7416002)(53546011)(5660300002)(6666004)(6506007)(6512007)(8936002)(38100700002)(45080400002)(2906002)(966005)(86362001)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UHzpVd38hmAw18LiyL8WeSYfESfwjH9cMjpdiLg4VqxrdoIbjyquByD6IT8D?=
+ =?us-ascii?Q?yI2+2tSJEQCCGmkvv1J4JNsAyp7GEYAUDUDdrHnwqWzaxrZg0blo3u3lBjjF?=
+ =?us-ascii?Q?SfHz+1ViCf5EZBQEoohypLzlqVJzx20aPOXM0c98jYZtFhybI/qAZxsrvbWk?=
+ =?us-ascii?Q?OQZN24i56CKRCmLb3V2rT3QCMHH1bS6Bl1TyBnjeuzsuK+MYVjcBEJSTit3y?=
+ =?us-ascii?Q?WfhKxkW/cAsUN7KoQvjgzILSHVGJ4XySd2NgBKxrVb1/LnbMxNLU2bLzsrL7?=
+ =?us-ascii?Q?bfXvMefMTeGhlYO3z83K9vE3x1ifsWLYM7RnsGx/0RCRWIOedvZrPklpSaLH?=
+ =?us-ascii?Q?4xoj452JugKjsCiIFsy3qkGak+cmVnu43+25Wj9b+hvXypM8I6u3ix61e4U+?=
+ =?us-ascii?Q?6qpPZFIkx8Tn8iC7Ou5td0fIdXJ5j89ZSBiWfJbl8OgKghCXB2mD43HflZi6?=
+ =?us-ascii?Q?6MTUV+jRIUvqgD+KS7ChhduUl5jWNh0kW6vqy7YbZ6gbZ+iMTVtlLGIvtwfK?=
+ =?us-ascii?Q?Q+Cnr2dNII5I2qoslZTXh0UnU7qPqGOHUwS3vuifwyr1QPO24toK3C4lVUfk?=
+ =?us-ascii?Q?hbJZDjt+oEYH1TnY9orntYOAnskYnHKcdti/lAG+UT1VoMcF1eR39Yj3B0Z/?=
+ =?us-ascii?Q?/b+hD7mCLcbdhyvgh4otnlOOb4gKVie1QLGmXaMnDKtust3awjMWeIU/CiYh?=
+ =?us-ascii?Q?gn03Tgmqesr/LMaRA7Hlx0KmC/QxwzUR72syaV97BqNDpaVNG4DQkVFGWTZ8?=
+ =?us-ascii?Q?Hl29ti0taSR5ynXVTKk7FGcPJz6zRczAJseuEGefsoN2RMYMlCBQMa8VdGk3?=
+ =?us-ascii?Q?lj1gmaDp25Nhy0AqqYj0RvYwbkh5qfuHLd/nk3Q729jIb4l1J8/BOFpvmbBp?=
+ =?us-ascii?Q?X/IThILC743Oq3nXKHv4LOSJeCy94sddUIyr4SvXVaO3Nx/VugBojLwy/wHB?=
+ =?us-ascii?Q?/4kvEylPPA7DH+mr27aDm096gi9CSKCJgMF0O5PlHx9jvClCr0Xfwvv22xXy?=
+ =?us-ascii?Q?cwn4F9sroV+HidXk7bqb/DBymKXm1UdpooWCvkg1kgn+vOTAWQ34HsKnrndl?=
+ =?us-ascii?Q?gml9QQ5aTRlWvnpTznCsCK7L3Pd4sZhEbCM9WNHPCAOlBrftfzH8yAZ/BNu/?=
+ =?us-ascii?Q?y8CPjpiyZpu1lnLoKKKK3Hi0WsXMHHhUfP/6NrkS7vOm5VkvFQ0vDzZOTsN1?=
+ =?us-ascii?Q?aDHwsRVhY6og+v/5JW0X83c4pBVlXmBeu3USPoG/ywhlrXlWqoivG3WVFrtt?=
+ =?us-ascii?Q?eS8FZcC6/sqwE2clmdlTVI+Oyf0tXG32lb095DceYhU1/nQU0sifNZGiO+z7?=
+ =?us-ascii?Q?tWS1uFP5Qv1epqRn591U/manTagYeZqy1uW5Oh3LXlvyvynlVgNkJZy6KhXx?=
+ =?us-ascii?Q?JRVagnWqhD3wrRS6rstKT21yqnoqGLqo4SBddx7iUsuOzzWkD/tfGyS48Wzu?=
+ =?us-ascii?Q?ff7lJDONDMiUFVOVtku+SxSl48OhD04HIK/YTqILog9CH0sIe4SS/mZgRQED?=
+ =?us-ascii?Q?fngrAetA0wiHJBiEDDPvWtXH8odCdEIYxpO1rEP2oPpetdgjOKRuo0FI1wPu?=
+ =?us-ascii?Q?NOWt7jh1pCdncq26pwFM/IspG+Aw8cw2zIFVB1llliONeOXjevJDSqEqKyxJ?=
+ =?us-ascii?Q?et/ihIfpvaWTxRBP8Abcmik=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3091c89e-e01a-4e43-5b58-08d9f4848924
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB2504.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2022 15:20:32.5701
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yNJuomIEAKsaoP8eaBjrHGFfWCVS75/+WtV5qcNbbQqNBqlMzLG3Wi4/dhFoNoaDp0PFdWc/ZVABTkciQKSvAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4585
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Cc'ing Jarkko, Petr Vorel]
+Hi Shuah,
 
-Hi Paul,
+I am glad to see your comments again. Thanks for your time!
 
-On Sat, 2022-02-19 at 10:44 +0100, Paul Menzel wrote:
-> Dear Linux folks,
+On Sat, Feb 19, 2022 at 08:27:41AM +0800, Shuah Khan wrote:
+> On 2/16/22 12:35 AM, Huang Rui wrote:
+> > Hi Shuah,
+> > 
+> > Since AMD P-State kernel is merged into 5.17-rc1, I would like to continue
+> > revising the AMD P-State support for the CPUPower tool. These series are
+> > rebased on latest bleeding-edge, any comments are warm for me.
+> > 
+> > See patch series of CPUPower in below git repo:
+> > V1: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Damd-pstate-dev-v1&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=L9G4msSTFHOztI8Dj5en2aC229%2Bn4xZl%2BGYMOG4R2dg%3D&amp;reserved=0
+> > V2: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Damd-pstate-dev-v2&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=ApWETuX6J%2BK5fbHV7ym0%2BYawxD3TAIqaffOCRlBz56g%3D&amp;reserved=0
+> > V3: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Damd-pstate-dev-v3&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=wBn4bLwo4H8E8OIKbtIQ9Rw9AJ49ctk%2FpisN1P32Xpg%3D&amp;reserved=0
+> > V4: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Damd-pstate-dev-v4&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=XITGUWrl4J01mx0V12Unn0ZuODqhAbLuS2eNUIM7IBE%3D&amp;reserved=0
+> > V5: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Damd-pstate-dev-v5&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=D%2F2vCZrlrg3apxht1XX4GfRo1Unfc%2FMqyDX%2FRz0c%2FYU%3D&amp;reserved=0
+> > V6: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgit.kernel.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Frui%2Flinux.git%2Flog%2F%3Fh%3Dcpupower-amd-pstate&amp;data=04%7C01%7Cray.huang%40amd.com%7C7f03b74e8f3044c8574008d9f33ea54e%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637808272662923642%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=g%2FDKBuQirt3pB9dIXkTFbqjyz8LdWBFbhIZBYcRqD8o%3D&amp;reserved=0
+> > 
 > 
+> A few checkpatch warns to fix. I usually ignore CHECK from checkpatch,
+> but a few of them found on this series could improve the code.
 > 
-> Debian builds its Linux kernel image with `CONFIG_IMA=y` since version 
-> 5.13.9 [1]. Unfortunately, on the Dell Latitude E7250 `init_ima` takes 
-> around 33 ms, adding 8 % to the boot time up to loading the initrd.
-> 
->      [    0.000000] Linux version 5.17.0-rc4-amd64 
-> (debian-kernel@lists.debian.org) (gcc-11 (Debian 11.2.0-16) 11.2.0, GNU 
-> ld (GNU Binutils for Debian) 2.38) #1 SMP PREEMPT Debian 5.17~rc4-1~exp1 
-> (2022-02-18)
->      […]
->      [    0.238520] calling  init_tis+0x0/0xde @ 1
->      [    0.254749] tpm_tis 00:08: 1.2 TPM (device-id 0x3205, rev-id 80)
->      [    0.285665] initcall init_tis+0x0/0xde returned 0 after 46038 usecs
->      […]
->      [    0.301327] calling  init_ima+0x0/0xb5 @ 1
->      [    0.301332] ima: Allocated hash algorithm: sha256
->      [    0.335502] ima: No architecture policies found
->      [    0.335520] initcall init_ima+0x0/0xb5 returned 0 after 33389 usecs
->      […]
->      [    0.447312] Run /init as init process
-> 
-> Tracing `init_ima` with a depth of 5 shows 
-> `ima_calc_boot_aggregate_tfm()` takes 24 ms, and 
-> `ima_add_template_entry()` takes 10 ms.
-> 
->          1.282630 |   1)   swapper-1    |               | 
-> ima_add_boot_aggregate() {
->          1.282631 |   1)   swapper-1    |               | 
-> ima_calc_boot_agg:0regate() {
->          1.282631 |   1)   swapper-1    |   0.153 us    | 
-> ima_alloc_tfm();
->          1.282631 |   1)   swapper-1    | * 24404.59 us | 
-> ima_calc_boot_aggregate_tfm();
->          1.307037 |   1)   swapper-1    |   0.482 us    | 
-> ima_free_tfm.part.0();
->          1.307038 |   1)   swapper-1    | * 24407.06 us |        } /* 
-> ima_calc_boot_aggregate */
->          1.307038 |   1)   swapper-1    |               | 
-> ima_alloc_init_template() {
->          1.307038 |   1)   swapper-1    |   0.173 us    | 
-> ima_template_desc_current();
->          1.307039 |   1)   swapper-1    |   0.836 us    | 
-> __kmalloc();
->          1.307040 |   1)   swapper-1    |   0.580 us    | 
-> __kmalloc();
->          1.307041 |   1)   swapper-1    |   1.555 us    | 
-> ima_eventdigest_ng_init();
->          1.307043 |   1)   swapper-1    |   1.275 us    | 
-> ima_eventname_ng_init();
->          1.307044 |   1)   swapper-1    |   0.256 us    | 
-> ima_eventsig_init();
->          1.307045 |   1)   swapper-1    |   6.618 us    |        } /* 
-> ima_alloc_init_template */
->          1.307045 |   1)   swapper-1    |               | 
-> ima_store_template() {
->          1.307045 |   1)   swapper-1    |   5.049 us    | 
-> ima_calc_field_array_hash();
->          1.307051 |   1)   swapper-1    | # 9316.953 us | 
-> ima_add_template_entry();
->          1.316369 |   1)   swapper-1    | # 9323.728 us |        } /* 
-> ima_store_template */
->          1.316369 |   1)   swapper-1    | * 33738.54 us |      } /* 
-> ima_add_boot_aggregate */
-> 
-> Tracing `ima_calc_boot_aggregate_tfm()` (attached) shows that the first 
-> `tpm1_pcr_read()` takes 16 ms in `tpm_transmit()`. Is communicating with 
-> the TPM supposed to be that slow?
-> 
-> In the last years, Linux decreased it’s boot time a lot, so do you see a 
-> way to move things out of the hot path and get `init_ima` well below 10 
-> ms? (As systems get faster and faster, having systems with standard 
-> distributions to be up below two seconds after pressing the power button 
-> should be a reasonable goal (500 ms firmware (like coreboot) + 500 ms 
-> Linux kernel + 1 s user space).
-> 
-> 
-> [1]: 
-> https://salsa.debian.org/kernel-team/linux/-/commit/6e679322d7d98d30b4a8a3d1b659c899a6e9d4df
 
-Thank you including the initial and other TPM delays.  The main reason
-for the "boot_aggregate" is to tie the pre-OS measurements to the post
-OS measurement list.  Without the TPM based 'boot_aggregate', any IMA
-measurement list could be used to verify a TPM quote.  The
-'boot_aggregate' is calculated, originally, based on PCRs 0 - 7 and
-more recently may include PCRs 8 & 9 as well.  The 'boot_aggregate' is
-the first record in the IMA measurement list and the first record after
-a soft reboot (kexec).  It is the one and only IMA measurement record
-not dependent on policy.
+I will use checkpatch script to scan all patches in these series.
 
-There are TPM 1.2 & 2.0 standards' requirements, but there are also
-buggy TPMs which don't adhere to them to such an extent that IMA goes
-into 'TPM-bypass' mode. Perhaps for those not interested in extending
-the concepts of trusted boot to the running OS, defining a new boot
-command line option to force IMA into this 'TPM-bypass' mode would be
-an acceptable alternative to the delay.  The IMA measurement list would
-still include a 'boot_aggregate' record, but one containing 0's.
+> Also is there a need to add/update manpages and documentation.
+> 
 
-thanks,
+Let me find a place to add some descriptions.
 
-Mimi
+> I tested these my AMD Ryzen 7 4700G system. I didn't play with set commands
+> and just the info ones.
+> 
+> cpupower info gave me this output. The first message is fine, but the
+> second one is a bit odd. Should it just bail out right after the first
+> message about "not support"
+> 
+> cpupower info
+> 
+> System does not support Intel's performance bias setting
+> analyzing CPU 0:
+> 
 
+Let me take a look at this issue.
+
+> Go ahead send me v7 for these and add any mapages/doc if necessary.
+> I will get them into Linux 5.18-rc1
+> 
+
+No problem, I will address the comments and send V7.
+
+Thanks,
+Ray
