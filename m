@@ -2,218 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 12:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 12:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243739AbiBTMUn convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 07:20:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40618 "EHLO
+        id S243743AbiBTMWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 07:22:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243684AbiBTMUk (ORCPT
+        with ESMTP id S234315AbiBTMWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 07:20:40 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE7CD53B66
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 04:20:18 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-403-XmNydNefOpKMmaiVw1k89A-1; Sun, 20 Feb 2022 12:20:16 +0000
-X-MC-Unique: XmNydNefOpKMmaiVw1k89A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Sun, 20 Feb 2022 12:20:14 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Sun, 20 Feb 2022 12:20:13 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Armin Wolf' <W_Armin@gmx.de>, "pali@kernel.org" <pali@kernel.org>
-CC:     "jdelvare@suse.com" <jdelvare@suse.com>,
-        "linux@roeck-us.net" <linux@roeck-us.net>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-assembly@vger.kernel.org" <linux-assembly@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] hwmon: (dell-smm) Improve assembly code
-Thread-Topic: [PATCH v2] hwmon: (dell-smm) Improve assembly code
-Thread-Index: AQHYJdVCkKl8QQjZ0kWJRwIdNPLg26ycWRjg
-Date:   Sun, 20 Feb 2022 12:20:13 +0000
-Message-ID: <d66ab183f32c49b2b901b432d284edc5@AcuMS.aculab.com>
-References: <20220219211011.16600-1-W_Armin@gmx.de>
-In-Reply-To: <20220219211011.16600-1-W_Armin@gmx.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Sun, 20 Feb 2022 07:22:37 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5993BBE2
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 04:22:15 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 500981F384;
+        Sun, 20 Feb 2022 12:22:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645359734; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WHh5bhUmbAtH0FtEZ+18Ex0QzFzQh85hJHXiLLwjy6k=;
+        b=NyPRKBasTyLm4SbcV3Uf9s8Bkr24O//8v7NIjmjG2c7DlBSjJ5IO8T0PwEmaLpOq6wZrue
+        EkW3rzNPiGwKpgmASWQuUeJqPtk5XMKxEnMgW0l+brzm5M/EHDo9XtfZlOw0iCs9+4sMta
+        5esOeFylkczCi1JSX7fbr67Vp0v5jQA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645359734;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WHh5bhUmbAtH0FtEZ+18Ex0QzFzQh85hJHXiLLwjy6k=;
+        b=8Ypr47QFKg/oaUyqx1stbRddiumq/Ye0/Ea00LWlCiEpqlOrTz3JgghFVaCGGEzo02uIq/
+        srHMZC5dXpuRX6AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 339CF13398;
+        Sun, 20 Feb 2022 12:22:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5PQNDHYyEmIHJwAAMHmgww
+        (envelope-from <bp@suse.de>); Sun, 20 Feb 2022 12:22:14 +0000
+Date:   Sun, 20 Feb 2022 13:22:17 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/urgent for 5.17
+Message-ID: <YhIyee8tl5YatX36@zn.tnic>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf
-> Sent: 19 February 2022 21:10
-> 
-> The new assembly code works on both 32 bit and 64 bit
-> cpus and allows for more compiler optimisations by not
-> requiring smm_regs to be packed. Also since the
-> SMM handler seems to modify the carry flag, the new
-> code informs the compiler that the flags register
-> needs to be saved/restored. Since clang runs out of
-> registers on 32 bit x86 when using CC_OUT, we need
-> to execute "setc" ourself.
+Hi Linus,
 
-You always need to save anything from the flags register
-inside the asm block - it is never valit afterwards.
+please pull two urgent x86 fixes for 5.17.
 
-> Also modify the debug message so we can still see
-> the result (eax) when the carry flag was set.
-> 
-> Tested with 32 bit and 64 bit kernels on a Dell Inspiron 3505.
-> 
-> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-> ---
-> Changes in v2:
-> - fix clang running out of registers on 32 bit x86
-> - modify debug message
-> ---
->  drivers/hwmon/dell-smm-hwmon.c | 85 ++++++++++------------------------
->  1 file changed, 25 insertions(+), 60 deletions(-)
-> 
-> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-> index c5939e68586d..f1538a46bfc9 100644
-> --- a/drivers/hwmon/dell-smm-hwmon.c
-> +++ b/drivers/hwmon/dell-smm-hwmon.c
-> @@ -119,7 +119,7 @@ struct smm_regs {
->  	unsigned int edx;
->  	unsigned int esi;
->  	unsigned int edi;
-> -} __packed;
-> +};
-> 
->  static const char * const temp_labels[] = {
->  	"CPU",
-> @@ -165,73 +165,38 @@ static int i8k_smm_func(void *par)
->  	int eax = regs->eax;
->  	int ebx = regs->ebx;
->  	long long duration;
-> -	int rc;
-> +	bool carry;
+Thx.
 
-I'd use an explicit 'unsigned char' not bool.
-Matches the type of the 'setcc' instriction.
+---
 
->  	/* SMM requires CPU 0 */
->  	if (smp_processor_id() != 0)
->  		return -EBUSY;
-> 
-> -#if defined(CONFIG_X86_64)
-> -	asm volatile("pushq %%rax\n\t"
-> -		"movl 0(%%rax),%%edx\n\t"
-> -		"pushq %%rdx\n\t"
-> -		"movl 4(%%rax),%%ebx\n\t"
-> -		"movl 8(%%rax),%%ecx\n\t"
-> -		"movl 12(%%rax),%%edx\n\t"
-> -		"movl 16(%%rax),%%esi\n\t"
-> -		"movl 20(%%rax),%%edi\n\t"
-> -		"popq %%rax\n\t"
-> -		"out %%al,$0xb2\n\t"
-> -		"out %%al,$0x84\n\t"
-> -		"xchgq %%rax,(%%rsp)\n\t"
-> -		"movl %%ebx,4(%%rax)\n\t"
-> -		"movl %%ecx,8(%%rax)\n\t"
-> -		"movl %%edx,12(%%rax)\n\t"
-> -		"movl %%esi,16(%%rax)\n\t"
-> -		"movl %%edi,20(%%rax)\n\t"
-> -		"popq %%rdx\n\t"
-> -		"movl %%edx,0(%%rax)\n\t"
-> -		"pushfq\n\t"
-> -		"popq %%rax\n\t"
-> -		"andl $1,%%eax\n"
-> -		: "=a"(rc)
-> -		:    "a"(regs)
-> -		:    "%ebx", "%ecx", "%edx", "%esi", "%edi", "memory");
-> -#else
-> -	asm volatile("pushl %%eax\n\t"
-> -	    "movl 0(%%eax),%%edx\n\t"
-> -	    "push %%edx\n\t"
-> -	    "movl 4(%%eax),%%ebx\n\t"
-> -	    "movl 8(%%eax),%%ecx\n\t"
-> -	    "movl 12(%%eax),%%edx\n\t"
-> -	    "movl 16(%%eax),%%esi\n\t"
-> -	    "movl 20(%%eax),%%edi\n\t"
-> -	    "popl %%eax\n\t"
-> -	    "out %%al,$0xb2\n\t"
-> -	    "out %%al,$0x84\n\t"
-> -	    "xchgl %%eax,(%%esp)\n\t"
-> -	    "movl %%ebx,4(%%eax)\n\t"
-> -	    "movl %%ecx,8(%%eax)\n\t"
-> -	    "movl %%edx,12(%%eax)\n\t"
-> -	    "movl %%esi,16(%%eax)\n\t"
-> -	    "movl %%edi,20(%%eax)\n\t"
-> -	    "popl %%edx\n\t"
-> -	    "movl %%edx,0(%%eax)\n\t"
-> -	    "lahf\n\t"
-> -	    "shrl $8,%%eax\n\t"
-> -	    "andl $1,%%eax\n"
-> -	    : "=a"(rc)
-> -	    :    "a"(regs)
-> -	    :    "%ebx", "%ecx", "%edx", "%esi", "%edi", "memory");
-> -#endif
-> -	if (rc != 0 || (regs->eax & 0xffff) == 0xffff || regs->eax == eax)
-> -		rc = -EINVAL;
-> +	asm volatile("out %%al,$0xb2\n\t"
-> +		     "out %%al,$0x84\n\t"
-> +		     "setc %0\n"
-> +		     : "=mr" (carry),
-> +		       "=a" (regs->eax),
-> +		       "=b" (regs->ebx),
-> +		       "=c" (regs->ecx),
-> +		       "=d" (regs->edx),
-> +		       "=S" (regs->esi),
-> +		       "=D" (regs->edi)
-> +		     : "a" (regs->eax),
-> +		       "b" (regs->ebx),
-> +		       "c" (regs->ecx),
-> +		       "d" (regs->edx),
-> +		       "S" (regs->esi),
-> +		       "D" (regs->edi)
+The following changes since commit 8795359e35bc33bf86b6d0765aa7f37431db3b9c:
 
-If you use "+a" (etc) for the output registers you don't
-need to respecify them as input registers.
+  x86/sgx: Silence softlockup detection when releasing large enclaves (2022-02-10 15:58:14 -0800)
 
-> +		     : "cc");
+are available in the Git repository at:
 
-No need to specify "cc", it is always assumed clobbered.
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_urgent_for_v5.17_rc5
 
-	David
+for you to fetch changes up to 44cad52cc14ae10062f142ec16ede489bccf4469:
 
-> 
->  	duration = ktime_us_delta(ktime_get(), calltime);
-> -	pr_debug("smm(0x%.4x 0x%.4x) = 0x%.4x  (took %7lld usecs)\n", eax, ebx,
-> -		 (rc ? 0xffff : regs->eax & 0xffff), duration);
-> +	pr_debug("smm(0x%.4x 0x%.4x) = 0x%.4x carry: %d (took %7lld usecs)\n",
-> +		 eax, ebx, regs->eax & 0xffff, carry, duration);
-> 
-> -	return rc;
-> +	if (carry || (regs->eax & 0xffff) == 0xffff || regs->eax == eax)
-> +		return -EINVAL;
-> +
-> +	return 0;
->  }
-> 
->  /*
-> --
-> 2.30.2
+  x86/ptrace: Fix xfpregs_set()'s incorrect xmm clearing (2022-02-18 11:23:21 +0100)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+----------------------------------------------------------------
+- Fix the ptrace regset xfpregs_set() callback to behave according to the ABI
 
+- Handle poisoned pages properly in the SGX reclaimer code
+
+----------------------------------------------------------------
+Andy Lutomirski (1):
+      x86/ptrace: Fix xfpregs_set()'s incorrect xmm clearing
+
+Reinette Chatre (1):
+      x86/sgx: Fix missing poison handling in reclaimer
+
+ arch/x86/kernel/cpu/sgx/main.c | 10 +---------
+ arch/x86/kernel/fpu/regset.c   |  9 ++++-----
+ arch/x86/kernel/ptrace.c       |  4 ++--
+ 3 files changed, 7 insertions(+), 16 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
