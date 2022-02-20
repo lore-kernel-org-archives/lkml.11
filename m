@@ -2,198 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F212AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 17:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6815CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 17:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244470AbiBTRkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 12:40:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33852 "EHLO
+        id S240654AbiBTRm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 12:42:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244452AbiBTRkL (ORCPT
+        with ESMTP id S233904AbiBTRmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 12:40:11 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF22F4A92B
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 09:39:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=rx6bPshHOYn+HhILX8jHod/dJBs7+ONDUXo03AfEuVs=; b=naPrCMKXGILKIthtu7Ed/sLs1T
-        mrtfPvTcdPryzIIxcbHWt0ap5Pyc/bPOGLHNpvuJdZHsT3vq9aetFvrKHvxA2gYxNDv9me52kUnqD
-        Wkh9YZez6KqoNFsU+uTk2Uw5rcKmTedzwWleZ12Xw7Ho2wwB2RM/dwjaeJPkxgBQulXDlBdIupwwC
-        TWbg7is/Bvj2mOgoUF9uA2vC2WJo1ISTCVRgZr7jWd+yt81VrSU4fFMkYdV1oijcRhYqbj/qOUW/s
-        ArcS0qtqBbmKiRs955qzKNQJ83xWQBByubPmcmeOJR92kv7SLaQIiQ2NGdWuLGwLDszJqmkdrC33T
-        gbgxC0LA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nLqBX-00BQcz-Pe; Sun, 20 Feb 2022 17:39:48 +0000
-Message-ID: <99ea0e5f-cce4-4a79-00e2-b6fb6e7a84e7@infradead.org>
-Date:   Sun, 20 Feb 2022 09:39:44 -0800
+        Sun, 20 Feb 2022 12:42:24 -0500
+Received: from sonic317-32.consmr.mail.ne1.yahoo.com (sonic317-32.consmr.mail.ne1.yahoo.com [66.163.184.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8432AE69
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 09:42:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1645378922; bh=5i7B4UP6i0xOh6BEGhXP90aB1q+OzqFXQ9IFJRSWCgo=; h=Date:From:To:Cc:Subject:References:From:Subject:Reply-To; b=FnH757QLquYfc1IWozZdoMANUi7PhPuxCwGltXLABpxdmUUwv9aypICKlt95pV4cky7gQrsT/dQOzuPzPl4H4Uh4xgW7RCIERYvj1YsRxRylBOyyKW+eY4K0/raiv9XKq/gDGIimorP4iXx7iiH42mlhKV0L0dW6zXohPd/i3DSKAaC4jXYRZL3oZViGeLB0Kg0NbBEyV3NYvCAtLuqF6uzWqYg2ZEf/Ww/TM+o7Shy3S8s+S/Gc5YV/vPn5WzAmyopUm8OLUbkNf48mQ+lvaP+u8rKyy45jiYWro2zw0MlCYX/cuHewIA2ftQOMflZZfTpP5uqWxonFsW7x7IidqA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1645378922; bh=mJvVav5IUmbUUXlDBej+0nUbu4HFqpBiTsqHxcGa1rq=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=Bz+GhXTWrzSFZimiA4geOwhteKImYLf/XVS7SzmH1xLYpHIgVn7ZGgS33qpRJ5k+USHq92+qehuRpjGs0Aq/0THDeGst/rR0+SgXtB0bLC8HVZI1hedJq5i+aGw7u+0NISqzV0UEuWE853G9zxoQEGMBeH+vxEU2QjqWZxDnKeQBe5Tg73K2T9TPYB+apMyN+j4i14Li1h7of2hlHraLF5r+e0h1kriBIA8WmIpUlRQ1KxXXl3KppkcGpvt+pdgafbK/oD84opxA1UWPVxrtM6FlYQLet/nKY4K62Gzl55ioKhK3Nb5OBGe7n3RsGiroMyGEZTdiKjowtVNE+juEIA==
+X-YMail-OSG: LvXfeYgVM1mEB9uzn_AVpnyxtYlpeI598xjD5FBfI8VOt203pM52W_wps_bNlSp
+ am8ghsM1H7RurTO43jvIMRZ1pKmLG6RqO2I12QitTOyJImQ0Q.Aiag1hTg5ViiJKWU4aoNeEvZwS
+ 1YGYD1Ja8V49qHqW9ED5zPZG2UD14XBPluGE1HA3hS0LCWHeScu0r0P3Zbn78vFa9VraoxWPG8Ti
+ 5loMQaO0S8eZu18WIbFmdT1viN7QzhxZA5ximiQAfFfuWRWvHEA22jaxOQK_W0rEUM5xgWRTbnrn
+ Uy2eJ.ss.R5MEzZ1Sot3QeEbW0NH0cuhh72dejI1jJrYgwD21pjQ8O_qwIU2KM6IccCcPqYvelbz
+ IgXjDBcgNXVm8ju4w7y4Mf_6dMBO1pfbcZGIcvAKSghOvNm0rcOMmsIN0SRdyAVQAeres.yFYSrE
+ FOUr1PooqCUdfD5sGf2aRq0tkppwvf8MaVFxMp3.0vDjddFFmGIGPL7ZRANiehoUi77wGtFAzGTt
+ SOOi2RQR0RLl93EB6xORxj_3wSKqbwITvSaa2o8Nz7j09jriDbMradi2nEkfL.oNRg0KQ9rW342y
+ YAwgIeYd6jkpYYD_clMdLTY066GEOht6LCU2vx8BucSa1e2bN5MU1dJQ4DOGfwhgM47I9.ODosY_
+ jiwWRyiK2dUImzHTkVbMOUmg6M.V3qRZ7_Z3tfN03i1l_o5pBdW49kGz4rk8z1Nt9AvFvVavG.EB
+ ShT.4DR_MzQCAjAAa0.g0m0xD8s9DpmRXC8287eeC_3PtoZq3qowEQKSWd5gcUxQK_Aam7H3JzLT
+ KR46bi0evVaUQWpXWbu3Fm5TMfdrTTpi.43cLTyozk3bCPqDUFg2lFd_AKSiUvGmmnxRnkbGCxvZ
+ FLXkMcRzhTLWXhD1WK58u1V0CaZWtF4AFTjYxdtvliKEP4ejfzG8MYMtdGYRBV9Nh0g4Va9RuZQ7
+ PflYeFIZgzYlJq853YkGG1U5t9w9YaEYufCC29v1LoYSGLNxAr3BEi32w1DvhhbW2ArSROzW4V9O
+ btHNqjiAgM3aDWx7eRaNY1YUIXvPg63AvfnzDbT3YAk4zz9QpWaBz4vFUDEDwvgRf7v3YRuceyB6
+ oPwxBr2f0C90cm812f4y7rvKnTciyCx0MdXHOh6mP6NHSuvTahwfEgPYdT5xrH6TY679STgbtNG9
+ G0P_6lP_stBMBeSS5bGL3UZ640CnmsEnT9a4YmwfEu02m3UtfY97DhTjKrdY0AwtlnwdhjUTFIAy
+ OyZhB30bm5oJgVQ6M9kBtigPcjHFt6sYX4GHRjwuVOYlZ4ZDQ9MVSPOQrZP3fG6pjDPAvyc0KsXD
+ hPlEgcziaDXV6EbYt5hr3mWhqlYq.z0.SQAP8Ldcdpkh.rNvNHmNa6EUnhsN9l6wTlWDzkdYm__w
+ _oZUXnVAMDU0UckG1ce6toDx.PWWlAH7SmxuSiA32yR1yvzzW22rx9.dtl7pA4aG7sTkBcnGKRug
+ 1ZX70tG4xqml20gV96zhK0w_BA0mpP7gWxD.hJy0EnspMRW7OHL4KpbGJb.iimSq_OwnWyLVO0Bt
+ YSkxa8Udw02o8FD3C2GwWSXNL4akobuzXQIrkf0JzpbfZ5oklCqFSFY_u6aajp9obSIUfJYRonL1
+ tdMJ4B866_vH8OtSz1zTYUfqX26YRygXk5DfhsxOteDxV_GUnQC4cq8dZyZ8XY16fRnnWWOAmscB
+ ecgTRuSkcZDXAA5QvIlOK3GGcm3E4354dSmE9VE4Jn70UjdcgH5kgfGp9Iu3XtBSIq1SHqQDNGOc
+ 9Dd06MKUc2QsCOwvi.PYjCG7UwyoxXEQoFPm7frp1XEYB8P9rps.GVSGXS8SWdIvX2upv4VK39cI
+ Mc0HyBbkUEErLNa1V.45tlIcMDkU7bwjtKjkolFlY2rsHJoVBUAShh6sG27EQTQ27Gp3IjLRajko
+ tVshO6m85ajQozRVd1GLQ2BSb2cBgTn6tpHer.YbwX6Vaby8wDGfwBFCgnxUNjzJNvFUY4SF442t
+ UUk.OZz32G9SOTGUlfkafNn1cBmNpUV_V7oVJi3bY2G9wHGFt08T50xALE_lzRgcbPhV13a76HSc
+ uKK7x3UFy_jRZ.nKZIbXTbkAEzPIaY1jTxpX3FEGYdxq.90WglJR4HDDPFkNOS4pTolkVlPC0CnH
+ SqSBK3PYoLyR.iZNy6Afd5RnkTXKil58FP7h7SXQ_TKTxy.PgDFXNY5WrTobUFLcw0DProjNk1qU
+ WqY.Wyg--
+X-Sonic-MF: <marcelo.as@aol.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Sun, 20 Feb 2022 17:42:02 +0000
+Received: by kubenode550.mail-prod1.omega.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 1d00f9055099d6db87fd586831b218f1;
+          Sun, 20 Feb 2022 17:41:59 +0000 (UTC)
+Date:   Sun, 20 Feb 2022 14:41:50 -0300
+From:   Marcelo Aloisio da Silva <marcelo.as@aol.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: r8188eu: remove unnecessary braces in if
+ statements
+Message-ID: <20220220174150.GA11496@snoopy>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 2/2] patch : changed Table 1-1 with /proc/pid fields from
- Kernel 5.10.0
-Content-Language: en-US
-To:     Hans Weber <hwe.kernel@gmail.com>, linux-kernel@vger.kernel.org
-References: <20220220155737.117279-1-hwe.kernel@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220220155737.117279-1-hwe.kernel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+References: <20220220174150.GA11496.ref@snoopy>
+X-Mailer: WebService/1.1.19797 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+Braces are not necessary for single statement blocks.
 
-First of all, you haven't sent this to any maintainer.
-Maintainers don't browse the mailing list to pick up patches,
-so it needs to be sent directly to some appropriate maintainer.
+Signed-off-by: Marcelo Aloisio da Silva <marcelo.as@aol.com>
+---
+Changes in v2:
+ - Only remove braces for the if statements below.
 
-Second: where is patch 1/3, assuming there is one?
-This one should be patch 2/3 and then patch 3
-should be patch 3/3.
+ drivers/staging/r8188eu/core/rtw_mlme.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-3. When applying patch 2, I get this:
-
-Warning: trailing whitespace in lines 12,137,138,151,157,158,160,162,163,165,170,171,175,176,177,179,182,183,184,186,187,189,191,192,194,196,198,199,200,201,203,207 of Documentation/filesystems/proc.rst
-
-
-That is not acceptable.
-
-
-On 2/20/22 07:57, Hans Weber wrote:
-> Signed-off-by: Hans Weber <hwe.kernel@gmail.com>
-> ---
->  Documentation/filesystems/proc.rst | 106 +++++++++++++++++++++--------
->  1 file changed, 76 insertions(+), 30 deletions(-)
-> 
-> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> index 061744c436d9..b9d1c6764266 100644
-> --- a/Documentation/filesystems/proc.rst
-> +++ b/Documentation/filesystems/proc.rst
-> @@ -9,7 +9,7 @@ The /proc Filesystem
->                         Bodo Bauer <bb@ricochet.net>
->  2.4.x update	       Jorge Nerin <comandante@zaralinux.com>   November 14 2000
->  move /proc/sys	       Shen Feng <shen@cn.fujitsu.com>	        April 1 2009
-> -fixes/update part 1.1  Stefani Seibold <stefani@seibold.net>    June 9 2009
-> +fixes/update part 1.1  Stefani Seibold <stefani@seibold.net>    June 9 2009 
->  =====================  =======================================  ================
->  
->  
-> @@ -134,35 +134,81 @@ never act on any new process that the kernel may, through chance, have
->  also assigned the process ID <pid>. Instead, operations on these FDs
->  usually fail with ESRCH.
->  
-> -.. table:: Table 1-1: Process specific entries in /proc
-> -
-> - =============  ===============================================================
-> - File		Content
-> - =============  ===============================================================
-> - clear_refs	Clears page referenced bits shown in smaps output
-> - cmdline	Command line arguments
-> - cpu		Current and last cpu in which it was executed	(2.4)(smp)
-> - cwd		Link to the current working directory
-> - environ	Values of environment variables
-> - exe		Link to the executable of this process
-> - fd		Directory, which contains all file descriptors
-> - maps		Memory maps to executables and library files	(2.4)
-> - mem		Memory held by this process
-> - root		Link to the root directory of this process
-> - stat		Process status
-> - statm		Process memory status information
-> - status		Process status in human readable form
-> - wchan		Present with CONFIG_KALLSYMS=y: it shows the kernel function
-> -		symbol the task is blocked in - or "0" if not blocked.
-> - pagemap	Page table
-> - stack		Report full stack trace, enable via CONFIG_STACKTRACE
-> - smaps		An extension based on maps, showing the memory consumption of
-> -		each mapping and flags associated with it
-> - smaps_rollup	Accumulated smaps stats for all mappings of the process.  This
-> -		can be derived from smaps, but is faster and more convenient
-> - numa_maps	An extension based on maps, showing the memory locality and
-> -		binding policy as well as mem usage (in pages) of each mapping.
-> - =============  ===============================================================
-> +.. table:: Table 1-1: Process specific entries in a alphabetic order in 
-> +           /proc (as of 5.10.0) 
-> +
-> + ======================================================================================
-> + Name   	      T  Content
-> + ======================================================================================
-> + arch_status          f Task architecture specific information
-> + attr                 d API for security modules
-> + autogroup            f Kernel scheduler "task group"
-> + auxv                 f ELF interpreter information passed to the process at exec time
-> + cgroup               f Kernel scheduler group
-> + clear_refs	      f Clears page referenced bits shown in smaps output
-> + cmdline	      f Command line arguments
-> + comm                 f The command name associated with the process
-> + coredump_filter      f What memory segments are written to the core dump file 
-> + cpu_resctrl_groups   f Navigate from tasks to resctrl groups.
-> + cwd		      f Link to the current working directory
-> + environ	      f Values of environment variables
-> + exe		      f Link to the executable of this process
-> + fd		      d Directory, which contains all file descriptors
-> + fdinfo               d Open files for the pid, named by its file descriptor 
-> + gid_map              f User namespaces        
-> + io                   f This file contains I/O statistics for the process
-> + limits               f Displays the soft limit, hard limit, and units of measurement for 
-> +                        each of the process's resource limits
-> + loginuid             f audit login UID 
-> + map_files            d This subdirectory contains entries corresponding to memory-mapped files  
-> + maps		      f File containing the currently mapped memory regions and their access permissions
-> + mem		      f This file can be used to access the pages of a process's memory 
-> +                        through open(2), read(2), and lseek(2)
-> + mountinfo            f Contains information about mount points in the process's mount namespace
-> + mounts               f Lists all the filesystems currently mounted in the process's mount namespace
-> + mountstats           f Exports information (statistics, configuration information) on all mounted fs
-> + net                  d This directory provides a comprehensive look at various networking 
-> +                        parameters and statistics. 
-> + ns                   d This directory containing one entry for each namespace that supports being
-> +                        manipulated by setns(2)
-> + numa_maps            f Displays information about a process's NUMA memory policy and allocation
-> + oom_adj              f This file can be used to adjust the score used to select which process 
-> +                        should be killed in an out-of-memory (OOM) situation  
-> + oom_score            f Displays the current score for out-of-memory (OOM) suituation   
-> + oom_score_adj        f This file can be used to adjust the badness heuristic
-> + pagemap              f Shows the mapping of each of the process's virtual pages 
-> +                        into physical page frames or swap area
-> + patch_state          f Livepatch patch operation state (depends on CONFIG_LIVEPATCH)
-> + personality          f This read-only file exposes the process's execution domain, as 
-> +                        set by personality(2) 
-> + projid_map           f Should be corrected by someone other 
-> + root		      f Link to the root directory of this process
-> + sched                f Contains detailed scheduler info about the process 
-> + schedstat            f Contains only 3 fields of scheduler information   
-> + sessionid            f Audit session ID
-> + setgroups            f Displays the string "allow" if the process is permitted to employ the 
-> +                        setgroups(2) system call
-> + smaps                f Shows memory consumption for each of the process's mappings  
-> + smaps_rollup         f Provides pre-summed memory information for a process.  
-> +                        The format is almost identical to /proc/pid/smaps.
-> +                        The fields Pss_Anon, Pss_File and Pss_Shmem are not present in 
-> +                        /proc/[pid]/smaps
-> + stack                f Provides a symbolic trace of the function calls in this process's kernel stack.  
-> +                        This file is provided only with the CONFIG_STACKTRACE configuration option
-> + stat                 f Status information about the process (not very human readable) 
-> + statm                f Provides information about memory usage, measured in pages 
-> + status               f Status information about the process in a in a format that's  
-> +                        easier for humans to parse 
-> + syscall              f Exposes the system call number and argument registers for the
-> +                        system call currently being executed 
-> + task                 d Contains one subdirectory for each thread in the process
-> + timens_offsets       f Associated with each time namespace are offsets
-> + timers               f List of the POSIX timers for this process
-> + timerslack_ns        f Exposes the process's "current" timer slack value, expressed in nanoseconds 
-> + uid_map              f See user_namespaces(7) for more information
-> + wchan                f Symbolic name corresponding to the location in the kernel where
-> +                        the process is sleeping
-> + ======================================================================================
->  
->  For example, to get the status information of a process, all you have to do is
->  read the file /proc/PID/status::
-
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 45eff3018d73..3a438f917904 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -1392,14 +1392,12 @@ void rtw_dynamic_check_timer_handlder(struct adapter *adapter)
+ 		/*  expire NAT2.5 entry */
+ 		nat25_db_expire(adapter);
+ 
+-		if (adapter->pppoe_connection_in_progress > 0) {
++		if (adapter->pppoe_connection_in_progress > 0)
+ 			adapter->pppoe_connection_in_progress--;
+-		}
+ 
+ 		/*  due to rtw_dynamic_check_timer_handlder() is called every 2 seconds */
+-		if (adapter->pppoe_connection_in_progress > 0) {
++		if (adapter->pppoe_connection_in_progress > 0)
+ 			adapter->pppoe_connection_in_progress--;
+-		}
+ 	}
+ 
+ 	rcu_read_unlock();
 -- 
-~Randy
+2.25.1
+
