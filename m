@@ -2,163 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 23:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F48C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 23:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245304AbiBTX10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 18:27:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58466 "EHLO
+        id S245286AbiBTXhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 18:37:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245298AbiBTX1Y (ORCPT
+        with ESMTP id S230463AbiBTXhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 18:27:24 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6F7396BD
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 15:27:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645399620; x=1676935620;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tdcrbgAF2t7D8WDZNsEUel/uxqM0sq1Nc60cLU1SIFE=;
-  b=JYDlPVtpyaqzMnLo4XXpD8ETRKdSOE+yb861+GyqVSOyenvRNNI1rtNc
-   B3hsHGXqJB4SdQMLaBtbrvduhuuDJuEHyu80EPMKNyzP26UnDDxrHotRR
-   Pr3QvQcRKVoilWVgrKA8GZXfB3I2gxIzfSS4Dg+TbfVlAfCLqnLsxWHMx
-   F7kQrVvcNCZcSR9YROdKR0usljzZbW/eT2GIlDfikqa0Jc6VnDI466b1w
-   cNs9GWsV71H3w4oRP6ZkDrNK9aG38zYLdfbnYqq/Dxm5tKuGikcJr0AhR
-   fBOGvHHE97lJK5s8bwROFi2JoD5FT+Cog3/zaisdoQNKb49lkT3dQEpt8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="250228199"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="250228199"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 15:26:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="507433353"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 20 Feb 2022 15:26:57 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nLvbU-00010s-SG; Sun, 20 Feb 2022 23:26:56 +0000
-Date:   Mon, 21 Feb 2022 07:26:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
-Subject: [mcgrof:modules-next 6/10]
- arch/riscv/include/asm/set_memory.h:25:18: error: implicit declaration of
- function 'PAGE_ALIGN'
-Message-ID: <202202210752.fpjFZ4sv-lkp@intel.com>
+        Sun, 20 Feb 2022 18:37:47 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8C026D1
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 15:37:25 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id ci24-20020a17090afc9800b001bc3071f921so1402978pjb.5
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 15:37:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=PfnPViFi5jg7IRyMxQ3OaQXKIHWgtsoMjGOlXD3zJQM=;
+        b=iRob2c+2Fra2zwal5sxhXh70bO5WigxgAUdN1dsAHPlzA+Chs964jL5I+Xa5jG+zpJ
+         gMIRcE5UBh2Bs5k5+IbI8WsNKt5rf1RTuIJfgzCSRmX/3hO1uEBPnkJZOMdARpiynuIe
+         sZ5vQqFMj7B1O4oIqmecMQrN3x95NLx61I4iThqIv2R6+HvhYyEKg7P688rptpQ6gjwE
+         IyLWu45YshhfjR2YcNBtrMQM5tiPvB5usbh+m4nay4dKLFGiXtOv0Gqt57Qu6p5pymSP
+         gamGFz6gguwmSVtvFCGP06emerWfp95vch1guKiSftIitgRnOyFzEVvcPZA6DScbH9sr
+         h3zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PfnPViFi5jg7IRyMxQ3OaQXKIHWgtsoMjGOlXD3zJQM=;
+        b=MaI+YDHKwqRr+6bnD1MbKphA8hVy4muwVauGEMGjW4JcpuGDgw4F7DQub2KzBhZGeX
+         7oeURXK0r7+1x3f9csoZNuAlpSWRUu3MI78tejCEhxrKRWBigX1Tws0HG4jaEj4KY1XV
+         2axuIu20+rKrgU1VWNdlLJSkmdYhaxjNnGK4G4yyJ7K64PNGj25las7QQxIQL0SVgmdm
+         A7Reda5bw4NvBmkIhTncbEZbMa6xJ1jCdmSYPJm9RcTFaRqaPA2Gm7szy6ii8N05tVDp
+         4UXTIAQ6+ez11Lfnrqn5E2NCLN++2vvRfG3CUmGm+dX2LrgmwwJ8jORZ3ERtf/5OOCXR
+         XVMg==
+X-Gm-Message-State: AOAM530onbMJpjCKeiPt9/MT2fg59w6cJzz1Y0BDf/fOCxqXqjuAVKqk
+        4ho6tFpHpOUfKkaWPo8x2QCqvzw6sM6N2Q==
+X-Google-Smtp-Source: ABdhPJwJZcBh1EKHqiF2w9O4ZrJ1IYsxxMAFqgoYGFudkI4Sp3rvs4qiYXDdGu4DqAapa2ePGodlig==
+X-Received: by 2002:a17:902:e889:b0:14f:c4bc:677b with SMTP id w9-20020a170902e88900b0014fc4bc677bmr965728plg.68.1645400244621;
+        Sun, 20 Feb 2022 15:37:24 -0800 (PST)
+Received: from [192.168.0.2] (c-73-158-10-71.hsd1.ca.comcast.net. [73.158.10.71])
+        by smtp.googlemail.com with ESMTPSA id 13sm5560588pje.50.2022.02.20.15.37.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Feb 2022 15:37:24 -0800 (PST)
+Message-ID: <2d30205a-fc22-02e1-5c4b-99b91493580c@gmail.com>
+Date:   Sun, 20 Feb 2022 15:37:22 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Linux 5.17-rc5
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+From:   Robert Gadsdon <rhgadsdon@gmail.com>
+In-Reply-To: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
-head:   c55dc78176e6fe97a9e92d24a7ff3015b14ac858
-commit: e5973a14d18785b893d383fbd9dc2f98edc16f1b [6/10] module: Move strict rwx support to a separate file
-config: riscv-randconfig-r032-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210752.fpjFZ4sv-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/commit/?id=e5973a14d18785b893d383fbd9dc2f98edc16f1b
-        git remote add mcgrof https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git
-        git fetch --no-tags mcgrof modules-next
-        git checkout e5973a14d18785b893d383fbd9dc2f98edc16f1b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+Compile fail.   Fedora 35, GCC 11.2.1, x86_64..
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from kernel/module/strict_rwx.c:10:
-   In file included from include/linux/set_memory.h:9:
->> arch/riscv/include/asm/set_memory.h:25:18: error: implicit declaration of function 'PAGE_ALIGN' [-Werror,-Wimplicit-function-declaration]
-           int num_pages = PAGE_ALIGN(end - start) >> PAGE_SHIFT;
-                           ^
-   kernel/module/strict_rwx.c:16:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->base));
-                   ^
-   kernel/module/strict_rwx.c:17:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->text_size));
-                   ^
-   kernel/module/strict_rwx.c:18:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
-                   ^
-   kernel/module/strict_rwx.c:26:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->base));
-                   ^
-   kernel/module/strict_rwx.c:27:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
-                   ^
-   kernel/module/strict_rwx.c:28:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
-                   ^
-   kernel/module/strict_rwx.c:36:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->base));
-                   ^
-   kernel/module/strict_rwx.c:37:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
-                   ^
-   kernel/module/strict_rwx.c:38:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
-           BUG_ON(!PAGE_ALIGNED(layout->size));
-                   ^
-   10 errors generated.
+....................
+   AR      net/netfilter/built-in.a
+   LD [M]  net/netfilter/nf_conntrack.o
+   CC [M]  net/netfilter/xt_socket.o
+net/netfilter/xt_socket.c: In function ‘socket_mt_destroy’:
+net/netfilter/xt_socket.c:224:17: error: implicit declaration of 
+function ‘nf_defrag_ipv6_disable’; did you mean 
+‘nf_defrag_ipv4_disable’? [-Werror=implicit-function-declaration]
+   224 |                 nf_defrag_ipv6_disable(par->net);
+       |                 ^~~~~~~~~~~~~~~~~~~~~~
+       |                 nf_defrag_ipv4_disable
+cc1: some warnings being treated as errors
+make[2]: *** [scripts/Makefile.build:288: net/netfilter/xt_socket.o] Error 1
+make[1]: *** [scripts/Makefile.build:550: net/netfilter] Error 2
+make: *** [Makefile:1831: net] Error 2
 
 
-vim +/PAGE_ALIGN +25 arch/riscv/include/asm/set_memory.h
+- already reported on Feb 11th, at:
+http://lkml.iu.edu/hypermail/linux/kernel/2202.1/05890.html
 
-d3ab332a502123 Zong Li         2020-03-10   8  
-00cb41d5ad3189 Zong Li         2020-03-10   9  #ifndef __ASSEMBLY__
-d3ab332a502123 Zong Li         2020-03-10  10  /*
-d3ab332a502123 Zong Li         2020-03-10  11   * Functions to change memory attributes.
-d3ab332a502123 Zong Li         2020-03-10  12   */
-d3ab332a502123 Zong Li         2020-03-10  13  #ifdef CONFIG_MMU
-d3ab332a502123 Zong Li         2020-03-10  14  int set_memory_ro(unsigned long addr, int numpages);
-d3ab332a502123 Zong Li         2020-03-10  15  int set_memory_rw(unsigned long addr, int numpages);
-d3ab332a502123 Zong Li         2020-03-10  16  int set_memory_x(unsigned long addr, int numpages);
-d3ab332a502123 Zong Li         2020-03-10  17  int set_memory_nx(unsigned long addr, int numpages);
-19a00869028f4a Atish Patra     2020-11-04  18  int set_memory_rw_nx(unsigned long addr, int numpages);
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  19  static __always_inline int set_kernel_memory(char *startp, char *endp,
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  20  					     int (*set_memory)(unsigned long start,
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  21  							       int num_pages))
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  22  {
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  23  	unsigned long start = (unsigned long)startp;
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  24  	unsigned long end = (unsigned long)endp;
-c10bc260e7c030 Alexandre Ghiti 2021-06-24 @25  	int num_pages = PAGE_ALIGN(end - start) >> PAGE_SHIFT;
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  26  
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  27  	return set_memory(start, num_pages);
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  28  }
-d3ab332a502123 Zong Li         2020-03-10  29  #else
-d3ab332a502123 Zong Li         2020-03-10  30  static inline int set_memory_ro(unsigned long addr, int numpages) { return 0; }
-d3ab332a502123 Zong Li         2020-03-10  31  static inline int set_memory_rw(unsigned long addr, int numpages) { return 0; }
-d3ab332a502123 Zong Li         2020-03-10  32  static inline int set_memory_x(unsigned long addr, int numpages) { return 0; }
-d3ab332a502123 Zong Li         2020-03-10  33  static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
-19a00869028f4a Atish Patra     2020-11-04  34  static inline int set_memory_rw_nx(unsigned long addr, int numpages) { return 0; }
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  35  static inline int set_kernel_memory(char *startp, char *endp,
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  36  				    int (*set_memory)(unsigned long start,
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  37  						      int num_pages))
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  38  {
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  39  	return 0;
-c10bc260e7c030 Alexandre Ghiti 2021-06-24  40  }
-d3ab332a502123 Zong Li         2020-03-10  41  #endif
-d3ab332a502123 Zong Li         2020-03-10  42  
+Robert Gadsdon
+February 20th 2022.
 
-:::::: The code at line 25 was first introduced by commit
-:::::: c10bc260e7c030364b5150aac7ebf048ddfb9502 riscv: Introduce set_kernel_memory helper
-
-:::::: TO: Alexandre Ghiti <alex@ghiti.fr>
-:::::: CC: Palmer Dabbelt <palmerdabbelt@google.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
