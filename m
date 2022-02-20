@@ -2,99 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE99DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF31C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238649AbiBTPQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 10:16:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50726 "EHLO
+        id S243047AbiBTPUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 10:20:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244143AbiBTPQY (ORCPT
+        with ESMTP id S229574AbiBTPUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 10:16:24 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255AB34BA8
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:16:03 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id p9so22805088wra.12
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:16:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QPxVOPedb7VSlKJrNqeXgyqzEIVCKAODI2AGkqq7jh0=;
-        b=YGrymPtMsXeZaHEpHtmPZMlg3m+LYLl71bOPVMnvF/ikOOpY1R326ccQHH77Tz7CwM
-         66tLMVK0kGZudM/UgNRSMDqPnFKGlzlniu05V0P8tl39/xzGON45pSrOPxSOI4BpCgsZ
-         762VoLHvjM6+3HAPk0s84HgAZd1DjSMiG+t14TpvvkeuYgkBmjQG3wQqLRXg9pW0//o/
-         3Lvakym+02l3Uuk0jwiSVjJKzj79hs2w9l+ZLy7JJXufxDFMgvs6EwPjysvzTww88L9F
-         VUPiQN9uuBpRQkDBWdxqII9HTBtxPDWjISMr/4l6qfwI/ebblm0PpIMcvhmIb1gcmfHy
-         i27g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QPxVOPedb7VSlKJrNqeXgyqzEIVCKAODI2AGkqq7jh0=;
-        b=qoXHljor20ZjQ5svblFNYJ2Lt8S1VlDMKNGT0a7hBc3M4aOFIHccLuhg7/pIq6KY/U
-         lnyohKbdm3X6k+19PWfLfxqtuVqPfKjREpVzmpyKZHEBvEzpCXeG6k9p4gKdW2Mr8cBB
-         P92ag7PENdpSsPtFhJDQWfa+uUw8F1vEXpX8kGgB+npu9EaAQcFdMzoZbt1eMaAe7euV
-         THejBczV43g6SoyC5tFS6Mgoo4Z8BP82VloaAwKmFDL3uQrF7EHjxcBHpzPdDOavw/nW
-         HfmbTqDfdCHxZfFsLTupsOH7+g7TsXGcceX8iVK+Lb4b3tmzgNW2TjsYd2qdtlq29f95
-         /y5w==
-X-Gm-Message-State: AOAM532b4Y/LR+Qa35QNkJPP9qHki+ydnqh8DU8LxLjov8djeRabNEFe
-        YVZgXV8SoHXCaU50XC+NQXnJQA==
-X-Google-Smtp-Source: ABdhPJzoK0LZ8FPn8rmbGAiwjODLqINRZujKRulVkIZMKPBEB7QQS5ZgLH3spfqaJwJPiGfgysMM+g==
-X-Received: by 2002:adf:df0b:0:b0:1e4:979f:a56f with SMTP id y11-20020adfdf0b000000b001e4979fa56fmr12356206wrl.686.1645370161675;
-        Sun, 20 Feb 2022 07:16:01 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id h7sm28687749wru.41.2022.02.20.07.16.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 07:16:01 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 13/13] thunderbolt: Drop duplicate NULL checks around nvmem_unregister()
-Date:   Sun, 20 Feb 2022 15:15:27 +0000
-Message-Id: <20220220151527.17216-14-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220220151527.17216-1-srinivas.kandagatla@linaro.org>
-References: <20220220151527.17216-1-srinivas.kandagatla@linaro.org>
+        Sun, 20 Feb 2022 10:20:18 -0500
+Received: from forward103o.mail.yandex.net (forward103o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::606])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C678649FB1
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:19:55 -0800 (PST)
+Received: from myt6-640abdf8240b.qloud-c.yandex.net (myt6-640abdf8240b.qloud-c.yandex.net [IPv6:2a02:6b8:c12:238c:0:640:640a:bdf8])
+        by forward103o.mail.yandex.net (Yandex) with ESMTP id 337BD10A8B42;
+        Sun, 20 Feb 2022 18:19:50 +0300 (MSK)
+Received: from myt5-aad1beefab42.qloud-c.yandex.net (myt5-aad1beefab42.qloud-c.yandex.net [2a02:6b8:c12:128:0:640:aad1:beef])
+        by myt6-640abdf8240b.qloud-c.yandex.net (mxback/Yandex) with ESMTP id ULTItrHxDE-JmdWIfit;
+        Sun, 20 Feb 2022 18:19:50 +0300
+X-Yandex-Fwd: 2
+Authentication-Results: myt6-640abdf8240b.qloud-c.yandex.net; dkim=pass
+Received: by myt5-aad1beefab42.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id M6K5BEkQDc-JkH89QTQ;
+        Sun, 20 Feb 2022 18:19:47 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Yaroslav Bolyukin <iam@lach.pw>
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        "Lin, Wayne" <Wayne.Lin@amd.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Yaroslav Bolyukin <iam@lach.pw>
+Subject: [PATCH v2 1/2] drm/edid: parse DRM VESA dsc bpp target
+Date:   Sun, 20 Feb 2022 18:19:39 +0300
+Message-Id: <20220220151940.58327-1-iam@lach.pw>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220213133128.5833-1-iam@lach.pw>
+References: <20220213133128.5833-1-iam@lach.pw>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+As per DisplayID v2.0 Errata E9 spec "DSC pass-through timing support"
+VESA vendor-specific data block may contain target DSC bits per pixel
+fields
 
-Since nvmem_unregister() checks for NULL, no need to repeat in
-the caller. Drop duplicate NULL checks.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
 ---
- drivers/thunderbolt/nvm.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/drm_edid.c  | 33 ++++++++++++++++++++++-----------
+ include/drm/drm_connector.h |  6 ++++++
+ include/drm/drm_displayid.h |  4 ++++
+ 3 files changed, 32 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
-index 3a5336913cca..b3f310389378 100644
---- a/drivers/thunderbolt/nvm.c
-+++ b/drivers/thunderbolt/nvm.c
-@@ -154,10 +154,8 @@ int tb_nvm_add_non_active(struct tb_nvm *nvm, size_t size,
- void tb_nvm_free(struct tb_nvm *nvm)
- {
- 	if (nvm) {
--		if (nvm->non_active)
--			nvmem_unregister(nvm->non_active);
--		if (nvm->active)
--			nvmem_unregister(nvm->active);
-+		nvmem_unregister(nvm->non_active);
-+		nvmem_unregister(nvm->active);
- 		vfree(nvm->buf);
- 		ida_simple_remove(&nvm_ida, nvm->id);
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index a7663f9a1..ee8c2b911 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5270,7 +5270,7 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
+ 	if (oui(vesa->oui[0], vesa->oui[1], vesa->oui[2]) != VESA_IEEE_OUI)
+ 		return;
+ 
+-	if (sizeof(*vesa) != sizeof(*block) + block->num_bytes) {
++	if (block->num_bytes < 5) {
+ 		drm_dbg_kms(connector->dev, "Unexpected VESA vendor block size\n");
+ 		return;
  	}
+@@ -5290,20 +5290,29 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
+ 		break;
+ 	}
+ 
+-	if (!info->mso_stream_count) {
+-		info->mso_pixel_overlap = 0;
+-		return;
++	info->mso_pixel_overlap = 0;
++
++	if (info->mso_stream_count) {
++		info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
++		if (info->mso_pixel_overlap > 8) {
++			drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
++				info->mso_pixel_overlap);
++			info->mso_pixel_overlap = 8;
++		}
++
++		drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
++			info->mso_stream_count, info->mso_pixel_overlap);
+ 	}
+ 
+-	info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
+-	if (info->mso_pixel_overlap > 8) {
+-		drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
+-			    info->mso_pixel_overlap);
+-		info->mso_pixel_overlap = 8;
++	if (block->num_bytes < 7) {
++		/* DSC bpp is optional */
++		return;
+ 	}
+ 
+-	drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
+-		    info->mso_stream_count, info->mso_pixel_overlap);
++	info->dp_dsc_bpp = FIELD_GET(DISPLAYID_VESA_DSC_BPP_INT, vesa->dsc_bpp_int) * 16 +
++		FIELD_GET(DISPLAYID_VESA_DSC_BPP_FRACT, vesa->dsc_bpp_fract);
++
++	drm_dbg_kms(connector->dev, "DSC bits per pixel %u\n", info->dp_dsc_bpp);
+ }
+ 
+ static void drm_update_mso(struct drm_connector *connector, const struct edid *edid)
+@@ -5348,6 +5357,8 @@ drm_reset_display_info(struct drm_connector *connector)
+ 
+ 	info->mso_stream_count = 0;
+ 	info->mso_pixel_overlap = 0;
++
++	info->dp_dsc_bpp = 0;
+ }
+ 
+ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edid)
+diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+index 5e36eb3df..04ef0e995 100644
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -634,6 +634,12 @@ struct drm_display_info {
+ 	 * @mso_pixel_overlap: eDP MSO segment pixel overlap, 0-8 pixels.
+ 	 */
+ 	u8 mso_pixel_overlap;
++
++	/**
++	 * @dp_dsc_bpp: DP Display-Stream-Compression (DSC) timing's target
++	 * DST bits per pixel in 6.4 fixed point format. 0 means undefined
++	 */
++	u16 dp_dsc_bpp;
+ };
+ 
+ int drm_display_info_set_bus_formats(struct drm_display_info *info,
+diff --git a/include/drm/drm_displayid.h b/include/drm/drm_displayid.h
+index 7ffbd9f7b..1be6deddc 100644
+--- a/include/drm/drm_displayid.h
++++ b/include/drm/drm_displayid.h
+@@ -131,12 +131,16 @@ struct displayid_detailed_timing_block {
+ 
+ #define DISPLAYID_VESA_MSO_OVERLAP	GENMASK(3, 0)
+ #define DISPLAYID_VESA_MSO_MODE		GENMASK(6, 5)
++#define DISPLAYID_VESA_DSC_BPP_INT	GENMASK(5, 0)
++#define DISPLAYID_VESA_DSC_BPP_FRACT GENMASK(3, 0)
+ 
+ struct displayid_vesa_vendor_specific_block {
+ 	struct displayid_block base;
+ 	u8 oui[3];
+ 	u8 data_structure_type;
+ 	u8 mso;
++	u8 dsc_bpp_int;
++	u8 dsc_bpp_fract;
+ } __packed;
+ 
+ /* DisplayID iteration */
+
+base-commit: 1528038385c0a706aac9ac165eeb24044fef6825
 -- 
-2.21.0
+2.35.1
 
