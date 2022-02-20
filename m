@@ -2,102 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3848DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 05:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F32C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 05:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbiBTFQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 00:16:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46552 "EHLO
+        id S231972AbiBTFQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 00:16:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiBTFPo (ORCPT
+        with ESMTP id S231256AbiBTFQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 00:15:44 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C81F44775
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:24 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id q1so1756603plx.4
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:23 -0800 (PST)
+        Sun, 20 Feb 2022 00:16:00 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FD645042
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:35 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id q11-20020a17090a304b00b001b94d25eaecso12239352pjl.4
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 21:15:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pDzj7KZknHyouw/r6qE4vjgFR7kon3SsiF5AQBFK5Gw=;
-        b=EFzLVl5Ix1bXx0C5RFyXdcz9Swcll0Zadz/75SV0gqKiGcE5XUTNNXtq9oNbfhzZ23
-         1K5JYnaeWCSXUdH/8TZ3CCpsNQ2PukgmrZTfFSJ/6gTFSOzJyvkNeyT6anVqCEgYtnCx
-         gJ4w8E5uGRgKMfSMeXX0RUk+1EzKnVMDlMyg24QnXxGZsY4zwgn+Tcqy+j4mD060gnWy
-         4SkUXrCkCE8+4wy8JPqxdv65pskmaYXPtS8mi6ITuyMu6rqM9adwq2UYIVlIEL6NcL6x
-         A+ozfsSVlnXlYDV9sBw+XHL8BRMs1veUccFYwQung4Ps7Dt0NB4Rk3SAwx3OeJL5Cdk6
-         cxeA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=64iTeZETh1Oj8/n7z7np/F/etWY1j31KhxPIick85Eg=;
+        b=Hjj26EPRbvFQBejGsBIyyk2tNc9EMzPxVBQttBqzoxeEPa3JA7s4858mE5xtvpNa/c
+         NISc7nW6w167wBwFzoJ5IC36GqLH13QBX9m2IY1EATVqZ/7rcq/AELNqoTK1fA8QmGFG
+         X3G8qz4dS9j2N2JwU+LdJ+zLns/OgdlglXEw0mXp5Ff7u5hW8eQHsMcH5kMBq2eItcoX
+         wtpMTE2PCtaUr6j6qVXgUPQMb3L3pvXT1YHLW142zD6nncHw4cAkldlVwUdML+pEIP2z
+         ujCKYzUTfGHbooYaB6eSi27so7VUHYlag1sMH7a8iW31UTVq7WYkEtdzH2WJx5rc+b+X
+         hpPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pDzj7KZknHyouw/r6qE4vjgFR7kon3SsiF5AQBFK5Gw=;
-        b=eHagkyc64BMqB9ADpRmlsWD4lFnVRNFa2L1WZStTQuG1wJjlE1brZ/AAGoJp83KNsG
-         C4qYlPo0msPf6XB+ofhQk96yp3QKxz2Hl5OP/xYPSS54EHt6YR9tX70BkzTrsdj8ARRy
-         KdGFJRgnt856khvNqUuQXgFierrqFqqmsqQq2MyFzHRUxPSsV7CutJNMClZ2LdZwyLGq
-         XtLuxPN/TaXOyc3b7h/g+Cbywn8PRDjg5Q9XiAQY2qvsXwP1/bN6PQJHRDKkDLfGnLqq
-         j574R813+5cutKBcDUYtLUiorb6/GMs/lYYYZPGtPKrET6RFNXgXU095NwDAZHTjJCti
-         Osyg==
-X-Gm-Message-State: AOAM531M9KdGGRo4eEobc2KQTcUoEn5v1xwp1G2GW6hLcIThC9TiZeRU
-        XHlFHfF11HtAZQ/Q29IzelkF8g==
-X-Google-Smtp-Source: ABdhPJzStZ5RaSbbvogMa/4zlhfjcCdnWmX8k5xjzbsDd67FoFMiQSOOChplCLzarh1NSzmb99VwTA==
-X-Received: by 2002:a17:90b:4d11:b0:1b8:b502:d190 with SMTP id mw17-20020a17090b4d1100b001b8b502d190mr19911800pjb.27.1645334123411;
-        Sat, 19 Feb 2022 21:15:23 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=64iTeZETh1Oj8/n7z7np/F/etWY1j31KhxPIick85Eg=;
+        b=P9rJbpqVY6xv3XpJf+LDFAMSdmNHy9HlYH048QfTBZwpGDAtgEnuYuKy6Le5ORMX4I
+         q15akGSAoL2A3zMv3ACEZc/QhD6DlKD8GKPKtsYGT0F8gfXY4dsyhKZG1uh/9r/92nCe
+         EBvnSmQ7YREBwfe5KT7WSZ2XgYdx7DSA+PW8XYOBunIuNufx1pZyNaoJNDSBnNjDRCLZ
+         SZFjezkiaNP66f8bd9CVrZlwRtbRd8z3VItAsjcwRieUS0dE2F8Zdrpp1/wKShr1sl+r
+         vJ6solkLFpQttgBOovpIWNFOsrjWQ9ESbeaY7nD3bX4BC9J1NQnk6beIH1j9In9mFLqx
+         X58Q==
+X-Gm-Message-State: AOAM5338YLBMH5vZ+g0jjw/nJEwb2Gdh8gTUrNRfN80jaXDhBuWJvmlW
+        WrqFH4Mf4ESTGbvqykl9pQMLDw==
+X-Google-Smtp-Source: ABdhPJwH6sHMbYw0bfibTBMFevu2APyyP5mfTzhGKY87iYxr9DGfr7SvZdOw18dmiDbafxIDfX+X4g==
+X-Received: by 2002:a17:902:7c01:b0:14f:44f2:4fa with SMTP id x1-20020a1709027c0100b0014f44f204famr14212219pll.36.1645334134898;
+        Sat, 19 Feb 2022 21:15:34 -0800 (PST)
 Received: from localhost.localdomain ([2409:8a28:e61:5860:2995:483c:273c:28ec])
-        by smtp.gmail.com with ESMTPSA id y23sm7737907pfa.67.2022.02.19.21.15.17
+        by smtp.gmail.com with ESMTPSA id y23sm7737907pfa.67.2022.02.19.21.15.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Feb 2022 21:15:22 -0800 (PST)
+        Sat, 19 Feb 2022 21:15:34 -0800 (PST)
 From:   Chengming Zhou <zhouchengming@bytedance.com>
 To:     mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
         bristot@redhat.com, zhaolei@cn.fujitsu.com, tj@kernel.org,
         lizefan.x@bytedance.com, hannes@cmpxchg.org
 Cc:     linux-kernel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Minye Zhu <zhuminye@bytedance.com>
-Subject: [PATCH v3 1/3] sched/cpuacct: fix charge percpu cpuusage
-Date:   Sun, 20 Feb 2022 13:14:24 +0800
-Message-Id: <20220220051426.5274-1-zhouchengming@bytedance.com>
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v3 3/3] sched/cpuacct: remove redundant RCU read lock
+Date:   Sun, 20 Feb 2022 13:14:26 +0800
+Message-Id: <20220220051426.5274-3-zhouchengming@bytedance.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220220051426.5274-1-zhouchengming@bytedance.com>
+References: <20220220051426.5274-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cpuacct_account_field() is always called by the current task
-itself, so it's ok to use __this_cpu_add() to charge the tick time.
+The cpuacct_account_field() and it's cgroup v2 wrapper
+cgroup_account_cputime_field() is only called from cputime
+in task_group_account_field(), which is already in RCU read-side
+critical section. So remove these redundant RCU read lock.
 
-But cpuacct_charge() maybe called by update_curr() in load_balance()
-on a random CPU, different from the CPU on which the task is running.
-So __this_cpu_add() will charge that cputime to a random incorrect CPU.
-
-Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
-Reported-by: Minye Zhu <zhuminye@bytedance.com>
+Suggested-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
- kernel/sched/cpuacct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/cgroup.h | 2 --
+ kernel/sched/cpuacct.c | 2 --
+ 2 files changed, 4 deletions(-)
 
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 9a109c6ac0e0..1e356c222756 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -804,11 +804,9 @@ static inline void cgroup_account_cputime_field(struct task_struct *task,
+ 
+ 	cpuacct_account_field(task, index, delta_exec);
+ 
+-	rcu_read_lock();
+ 	cgrp = task_dfl_cgroup(task);
+ 	if (cgroup_parent(cgrp))
+ 		__cgroup_account_cputime_field(cgrp, index, delta_exec);
+-	rcu_read_unlock();
+ }
+ 
+ #else	/* CONFIG_CGROUPS */
 diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index 3d06c5e4220d..307800586ac8 100644
+index f79f88456d72..d269ede84e85 100644
 --- a/kernel/sched/cpuacct.c
 +++ b/kernel/sched/cpuacct.c
-@@ -334,12 +334,13 @@ static struct cftype files[] = {
-  */
- void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+@@ -352,10 +352,8 @@ void cpuacct_account_field(struct task_struct *tsk, int index, u64 val)
  {
-+	unsigned int cpu = task_cpu(tsk);
  	struct cpuacct *ca;
  
- 	rcu_read_lock();
- 
- 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
--		__this_cpu_add(*ca->cpuusage, cputime);
-+		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
- 
- 	rcu_read_unlock();
+-	rcu_read_lock();
+ 	for (ca = task_ca(tsk); ca != &root_cpuacct; ca = parent_ca(ca))
+ 		__this_cpu_add(ca->cpustat->cpustat[index], val);
+-	rcu_read_unlock();
  }
+ 
+ struct cgroup_subsys cpuacct_cgrp_subsys = {
 -- 
 2.20.1
 
