@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE89FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 16:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244296AbiBTP7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 10:59:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32834 "EHLO
+        id S240962AbiBTQBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 11:01:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244286AbiBTP72 (ORCPT
+        with ESMTP id S229828AbiBTQBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 10:59:28 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612F1443D3;
-        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id l17so1329234plg.0;
-        Sun, 20 Feb 2022 07:59:07 -0800 (PST)
+        Sun, 20 Feb 2022 11:01:47 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893F9443C7;
+        Sun, 20 Feb 2022 08:01:24 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id e5so14248462lfr.9;
+        Sun, 20 Feb 2022 08:01:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
-        b=nhNXKjiu6EaOKVNgwNWDgMQAPqgMwsRFUEymL567UuWUK/arrTFPbe44ACR42cYIBL
-         bsN0eLNtzre4HgEeRuF8ScM8yxmTEfo2b/QbVuK9VD5j6gDvzMA0qfrn5zGdCT7n5fBR
-         myLeaYTe2aqFcjbJEqxFrWBr+5poGn3GlFM9xQ8vAYNWQJ01KmsBNXZOGnXeyjWB2lBr
-         L8OPTmlMzBsDz3M87LeFQtVljORl+JOQ0YQsELxbxgMckEycSdeX1WBRCvkcf9RHzpmx
-         /zpv3O2GTASPwelzwWD7l7Je6mHKpMpYv0WRF/8ZHcjhVSk8SqfFwHQVpIbku+sqcuKD
-         7CsQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kiCO7Y3o/yfvY4Cex2AEsXYa2jd9fcUopAAuMMIl7X8=;
+        b=UYW3P4C6klhBelzEbt4knsukbmG/vQrDalHcSOV/oA0N9z7KGI32MOaQM9QMiZ0y0b
+         0qeYVp/Jk640kEgKGDf+ig/zbygc7XKgV9roR+KLswYEb/5tsvPinZmZfipxppUr4WC5
+         LR4nrrxzta8WA2/vlM6MEgD5QSFH7uEf7/B8tlAh1IrBxvHQ2UdJ8AxGFv4utxkmJUOH
+         istYxxlm1f/h+v24iKa6hGkxxBteB1jMZTr8ZRRc28MitrNyMSza35qZ/XUDNMto4FvY
+         NyB7ioIyHTBNIjMZj1qjBF+br9vOdBhSxmG9wXurDHoqJ8o+biWqifbgDGHok/dKvKjv
+         wLUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pyq6u+oy+fqZeW/hecUnoAg2DOu5MbfwxNlJm6r1Xhc=;
-        b=T+S/0YM2LumXjw04abeU/w8S2IwXO6C41bA3eEjhIP6JA9ED6OZ0ZXmGnRWXO1WYeT
-         Ub0iBSHI8JhnTz6nucjuo8T1c64w9IQm0JJ4W/6ucHcT3kNcKBr4MR4dmxZVDUO0savY
-         HWS6ssozW5N7JjWlEMVtIw4HPIahXPp4y9QJZYJ4jwMMEg0JWoOELYyHQQe0zS2ApCA+
-         6rwyiY192R+OFN2iTBWwgJd3ieHO7QeYKelrBGo0Z/VtZCuPGuev1u/v6/zGOLqrWmAT
-         D59ZWZ8TCj7yYPzcztMNbGG8u9h+5CeTbume4aDxwK7AiKXxOzjn67YmgtuEtg7vLDOv
-         2I+g==
-X-Gm-Message-State: AOAM533mB7nho57eX2d1lUOWhn2mzQFdq0tQ5l8JrlaKWzgJmXnUpWXD
-        fjBuKdDxrnxkkczHR2CCeq4=
-X-Google-Smtp-Source: ABdhPJyDvTw5u1Ag3PqOeCX1fHbyL3QF88xpCu/Gh3BQO2dQKLD7HyGzmy1YoZhB7ui8yKZigMidAQ==
-X-Received: by 2002:a17:903:192:b0:14d:8b5a:5446 with SMTP id z18-20020a170903019200b0014d8b5a5446mr15649776plg.46.1645372746931;
-        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id o14sm5001927pfw.121.2022.02.20.07.59.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kiCO7Y3o/yfvY4Cex2AEsXYa2jd9fcUopAAuMMIl7X8=;
+        b=PEcsgbxc1eEKSOgpOPpaNbbeHkAWh2fBpfpALlHOnM/cG4hGTQ7oZ3Gmv697cl2rfC
+         n40hlpDHq15v7wnTlUnkAkuZX9a4K4ypayrQ2N+yfI6HXBxhP4apxwr+gQzbOG79SV4Y
+         ADDcLbUVfVWbj3D7YXtNaxV5hydQoDRfgZIeuIxgBFsz0tpd2vPEQpeQzMK/GAhobpkx
+         HTb71lwTR1GeloHmVZ7tCYqdh4VvhdHJEQWbmPmi0VbZzDGrL6xKHF2f4G66s8NF6xmI
+         r06mFs5zYAKD/6RyotdjOB8x5/U9nda3HhiYaufPkIgZMuT8MVpbX+e8M4Bzholsepvr
+         19Yw==
+X-Gm-Message-State: AOAM531hV0wuZ4TB3C/aAKayxfi0+4/mNTM8CIZSxCm4O6Bh2OGsmM/d
+        i4g3fWlBtA4CL1jWwZSdb4I=
+X-Google-Smtp-Source: ABdhPJwv9apys1DY/TwkeoLaXGUaOOzCI3U7YhVsxCvO6NPyAfRSsL06C6Isxw3fVxrX6fos67Xeyw==
+X-Received: by 2002:a05:6512:390a:b0:43f:62f8:efd5 with SMTP id a10-20020a056512390a00b0043f62f8efd5mr11391942lfu.0.1645372882809;
+        Sun, 20 Feb 2022 08:01:22 -0800 (PST)
+Received: from localhost.localdomain ([94.103.229.64])
+        by smtp.gmail.com with ESMTPSA id y11sm1018835ljj.122.2022.02.20.08.01.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 07:59:06 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: neigh: add skb drop reasons to arp_error_report()
-Date:   Sun, 20 Feb 2022 23:57:05 +0800
-Message-Id: <20220220155705.194266-4-imagedong@tencent.com>
+        Sun, 20 Feb 2022 08:01:22 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        kimi.h.kuparinen@gmail.com
+Cc:     linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Subject: [PATCH] HID: hid-thrustmaster: fix OOB read in thrustmaster_interrupts
+Date:   Sun, 20 Feb 2022 19:01:14 +0300
+Message-Id: <20220220160114.26882-1-paskripkin@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220220155705.194266-1-imagedong@tencent.com>
-References: <20220220155705.194266-1-imagedong@tencent.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Syzbot reported an slab-out-of-bounds Read in thrustmaster_probe() bug.
+The root case is in missing validation check of actual number of endpoints.
 
-When neighbour become invalid or destroyed, neigh_invalidate() will be
-called. neigh->ops->error_report() will be called if the neighbour's
-state is NUD_FAILED, and seems here is the only use of error_report().
-So we can tell that the reason of skb drops in arp_error_report() is
-SKB_DROP_REASON_NEIGH_FAILED.
+Code should not blindly access usb_host_interface::endpoint array, since
+it may contain less endpoints than code expects.
 
-Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
+Fix it by adding missing validaion check and print an error if
+number of endpoints do not match expected number
 
-Reviewed-by: Mengen Sun <mengensun@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Fixes: c49c33637802 ("HID: support for initialization of some Thrustmaster wheels")
+Reported-and-tested-by: syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- net/ipv4/arp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/hid-thrustmaster.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..8e4ca4738c43 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
- static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
- {
- 	dst_link_failure(skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- }
+diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
+index 03b935ff02d5..9da4240530dd 100644
+--- a/drivers/hid/hid-thrustmaster.c
++++ b/drivers/hid/hid-thrustmaster.c
+@@ -158,6 +158,12 @@ static void thrustmaster_interrupts(struct hid_device *hdev)
+ 		return;
+ 	}
  
- /* Create and send an arp packet. */
++	if (usbif->cur_altsetting->desc.bNumEndpoints < 2) {
++		kfree(send_buf);
++		hid_err(hdev, "Wrong number of endpoints?\n");
++		return;
++	}
++
+ 	ep = &usbif->cur_altsetting->endpoint[1];
+ 	b_ep = ep->desc.bEndpointAddress;
+ 
 -- 
 2.35.1
 
