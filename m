@@ -2,68 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 515ECC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:58:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5317C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 21:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245073AbiBTU6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 15:58:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47890 "EHLO
+        id S243127AbiBTVHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 16:07:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245056AbiBTU6f (ORCPT
+        with ESMTP id S234315AbiBTVHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 15:58:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600641402F
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:58:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E26B860F08
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 20:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5A3ADC340E8;
-        Sun, 20 Feb 2022 20:58:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645390690;
-        bh=yHTStGzuy/VD8j3BxZOw2zjTq0DsDGyg8tTLloi4OQ8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Q8MfKeXbeDzjSH9R4dW9ip4Tj+4U89CYW2sDHXsiJibAiTZjvIX03oBbRqb4TqSvh
-         Kkl/sgW91kyGewSOriirH8xhhh9Jze3f+eGzPerl6GHj2AQGerVhCZJTAzOrgCQWgA
-         BT5p3E5pGtRtp9JyMwcgvE1WZsAjlQL4ISyB+M5PLcZy0jTriP0G18gaSu/xDzkOas
-         sYsrZeuorX7RxXHJ9I7sI6BXC56nA0TCUnDlKsqSLQZHgAXo0311UPAe12VSImLih6
-         ibRivRpkFKIL3hRZmAif5rbKq2Ti7qo6ayAe3hrdrt1tB9BXperuGMzdtqwNcoxvtx
-         2MMuaKNwNGA3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 486E4E5D07D;
-        Sun, 20 Feb 2022 20:58:10 +0000 (UTC)
-Subject: Re: [GIT PULL] sched/urgent for 5.17
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YhIviC2M5OwHYcUY@zn.tnic>
-References: <YhIviC2M5OwHYcUY@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YhIviC2M5OwHYcUY@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/sched_urgent_for_v5.17_rc5
-X-PR-Tracked-Commit-Id: b1e8206582f9d680cff7d04828708c8b6ab32957
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0b0894ff78cc47bc72d53ec340e4898782189868
-Message-Id: <164539069028.9723.4798995575903734791.pr-tracker-bot@kernel.org>
-Date:   Sun, 20 Feb 2022 20:58:10 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        Sun, 20 Feb 2022 16:07:48 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC86647547
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 13:07:26 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id qx21so27978727ejb.13
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 13:07:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uOmlFrZp7vrKUK5Y6WvCp/ko6OikJNfPxlEXm5n9vhs=;
+        b=lrFAbfCiFLIXi0LAKP1ZAq+lBoLcQ6stIxid43XCseni3F7GbnDlpbBpaePMPeT9hm
+         E+ONQcfSghrEP1qf+qDGGdzIM41VHTCc7vN9dYcJ8AF52N2kfEsbGATNidU2ZG5Zgklu
+         YXrPye0Nx3hQ32dqyaOjW2XzuHKWW+MQIIflqHYXPs5DAmBSLDpHaC5kGrdOMDxxePhX
+         vww4Xz+fE5Qg6rNZb5DKj3CQOfZPh+YPMw0VFg+QdmIVIbxsDJdcOy1Badjsxydgj01Y
+         4faDeRSEgD5qqNReV3tUNgdaaAJf+jVzcSKY8ZeJjXVKZt4yY78nQaTl4eHo+ALFxGQu
+         jcmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uOmlFrZp7vrKUK5Y6WvCp/ko6OikJNfPxlEXm5n9vhs=;
+        b=SQqwhLPoUSoW7oMLU6BB5gTw7IBOnJM6W/O+tN2ig9BTlJ1IBM+h6xXMl7TPIseUHR
+         /m/RKyOyA27vgeD58DNDwMEOb6PqmeHbmVVPUPXZyCNfmQ1zlnv1raT4DQy38GPPMdAQ
+         d+n8NLnXpnaBMhB6aFtfRbR8m644rEUpcKm9lXH38xetjZGbmfGSEs2xcjpG4MafWbYV
+         cVfOiDXAnB30265/XWmYa5EfGVCJiBKfVBQU+B3dU9oxDf4fLJFVlrEV+q8lGTFzXsJt
+         iXn+u29TyuP6N8qq/DddcQjlxt9RX+RhaLruV2AC9pYt6Ox56EbXpOtL6cLPIYS9gAVk
+         7lwg==
+X-Gm-Message-State: AOAM533IbCOdDCLjGT7rFyBxcS8snqXiWHOsL1hadws0K2YPfrEld2fS
+        4PUE4c5gnS+QR7vdyyJmRzI=
+X-Google-Smtp-Source: ABdhPJyVabZx90O0oSxOrNaoDJGq9IKMVzfV8b/yQIMLwfip+pmFLLRmQZduqDULvxRnK9muJbuKaQ==
+X-Received: by 2002:a17:906:14db:b0:6cd:e55:6605 with SMTP id y27-20020a17090614db00b006cd0e556605mr13571909ejc.31.1645391245320;
+        Sun, 20 Feb 2022 13:07:25 -0800 (PST)
+Received: from localhost.localdomain (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id y29sm4508705ejk.199.2022.02.20.13.07.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Feb 2022 13:07:24 -0800 (PST)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     mripard@kernel.org, wens@csie.org, samuel@sholland.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: [PATCH] MAINTAINERS: Update Allwinner SoCs maintainers
+Date:   Sun, 20 Feb 2022 22:07:14 +0100
+Message-Id: <20220220210714.2484019-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 20 Feb 2022 13:09:44 +0100:
+Maxime is stepping down as a maintainer, I'll take more active role and
+Samuel joined the team.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/sched_urgent_for_v5.17_rc5
+Maxime, thank you for your effort! Samuel, welcome!
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0b0894ff78cc47bc72d53ec340e4898782189868
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thank you!
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index aa0f6cbb634e..c41979623f82 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1724,9 +1724,9 @@ S:	Maintained
+ F:	drivers/clk/sunxi/
+ 
+ ARM/Allwinner sunXi SoC support
+-M:	Maxime Ripard <mripard@kernel.org>
+ M:	Chen-Yu Tsai <wens@csie.org>
+-R:	Jernej Skrabec <jernej.skrabec@gmail.com>
++M:	Jernej Skrabec <jernej.skrabec@gmail.com>
++M:	Samuel Holland <samuel@sholland.org>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1
+
