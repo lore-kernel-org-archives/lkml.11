@@ -2,166 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D532AC3526E
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA21CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244873AbiBTUUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 15:20:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48116 "EHLO
+        id S244904AbiBTUUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 15:20:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244829AbiBTUUJ (ORCPT
+        with ESMTP id S237192AbiBTUUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 15:20:09 -0500
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DB44C43C;
-        Sun, 20 Feb 2022 12:19:48 -0800 (PST)
-Received: from localhost.localdomain (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id CECAFC83EA;
-        Sun, 20 Feb 2022 20:19:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1645388387; bh=PtzVpB/SENjrA1s6vvLVuenbJrvNZu+k8R5meRp1gB0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=b8aEsdLm6EBGJJ0AbtNA9d9ISEkvEMwx0E3F/hDZdFBwESfHybvfvNM8znImQxb28
-         nM4Si0P12j+vK8NwHKNnhpNPGw946tUg7acYMGMHKHk9HK55gsjcP9x4VyZ5Se/BZS
-         t38J6s1HZ2Q/58byGVC0AfoeNeN4MZo9PdFEY5ok=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Luca Weiss <luca@z3ntu.xyz>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rayyan Ansari <rayyan@ansari.sh>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/10] arm64: dts: qcom: Add PM8953 PMIC
-Date:   Sun, 20 Feb 2022 21:19:00 +0100
-Message-Id: <20220220201909.445468-8-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220220201909.445468-1-luca@z3ntu.xyz>
-References: <20220220201909.445468-1-luca@z3ntu.xyz>
+        Sun, 20 Feb 2022 15:20:20 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8264C783
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:19:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645388392; x=1676924392;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3PqThoQs7A3jRhv9b5IrLNFPWKtT2W4Mm8oW2k1KaJA=;
+  b=AtQ1+D9TVCl49EANde+SqHxUcw+kFjbJdsibHZGAS8XlFtbJ0nRoO/3A
+   Wo5owehucH9x4bo6ktgq5ZJJ93MbT1Ps/FyrYwNdAvoGXvaiLHbANTcNk
+   ahB78zZ7TaobpcTGaAUCtEnxu+uJe2IJLO40sk+mA7Bqo+swhG6i+2J24
+   aDdQoQLyYmcG/NPbvl4VRzTGafqZlN4Z3V7m9JEdKrIVlSZkhltSINkMr
+   k798sU0YvS8ixJFCLDnLmm9J0lp3RbWFKN9co5CWzUwYByEICUPBlioUU
+   O12YzyGzrjQMo/HW/fQjlVvK+RKMdhOGQ5w3W65SKNBAJeUN2wk367/CG
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="275989826"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="275989826"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 12:19:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="504624690"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 20 Feb 2022 12:19:50 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nLsgP-0000iA-QZ; Sun, 20 Feb 2022 20:19:49 +0000
+Date:   Mon, 21 Feb 2022 04:19:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
+Subject: [mcgrof:modules-next 6/10] kernel/module/strict_rwx.c:16:10: error:
+ implicit declaration of function 'PAGE_ALIGNED'
+Message-ID: <202202210447.UvDGgsQA-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Lypak <vladimir.lypak@gmail.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
+head:   c55dc78176e6fe97a9e92d24a7ff3015b14ac858
+commit: e5973a14d18785b893d383fbd9dc2f98edc16f1b [6/10] module: Move strict rwx support to a separate file
+config: arm64-randconfig-r005-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210447.UvDGgsQA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/commit/?id=e5973a14d18785b893d383fbd9dc2f98edc16f1b
+        git remote add mcgrof https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git
+        git fetch --no-tags mcgrof modules-next
+        git checkout e5973a14d18785b893d383fbd9dc2f98edc16f1b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Add a base DT for PM8953 PMIC, commonly used with MSM8953.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Reviewed-by: Rayyan Ansari <rayyan@ansari.sh>
+All errors (new ones prefixed by >>):
+
+>> kernel/module/strict_rwx.c:16:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:17:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->text_size));
+                   ^
+   kernel/module/strict_rwx.c:18:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
+                   ^
+   kernel/module/strict_rwx.c:26:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:27:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
+                   ^
+   kernel/module/strict_rwx.c:28:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
+                   ^
+   kernel/module/strict_rwx.c:36:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:37:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
+                   ^
+   kernel/module/strict_rwx.c:38:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->size));
+                   ^
+   9 errors generated.
+
+
+vim +/PAGE_ALIGNED +16 kernel/module/strict_rwx.c
+
+    12	
+    13	void frob_rodata(const struct module_layout *layout,
+    14			 int (*set_memory)(unsigned long start, int num_pages))
+    15	{
+  > 16		BUG_ON(!PAGE_ALIGNED(layout->base));
+    17		BUG_ON(!PAGE_ALIGNED(layout->text_size));
+    18		BUG_ON(!PAGE_ALIGNED(layout->ro_size));
+    19		set_memory((unsigned long)layout->base + layout->text_size,
+    20			   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
+    21	}
+    22	
+
 ---
-Changes in v2:
-- use generic node names for vadc
-- move rtc@6000 to correct location (sorted)
-- minor stylistic changes in temp-alarm@2400
-
- arch/arm64/boot/dts/qcom/pm8953.dtsi | 90 ++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pm8953.dtsi
-
-diff --git a/arch/arm64/boot/dts/qcom/pm8953.dtsi b/arch/arm64/boot/dts/qcom/pm8953.dtsi
-new file mode 100644
-index 000000000000..741c538a9cee
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pm8953.dtsi
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/* Copyright (c) 2022, The Linux Foundation. All rights reserved. */
-+
-+#include <dt-bindings/iio/qcom,spmi-vadc.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/input/linux-event-codes.h>
-+#include <dt-bindings/spmi/spmi.h>
-+
-+&spmi_bus {
-+	pmic@0 {
-+		compatible = "qcom,pm8953", "qcom,spmi-pmic";
-+		reg = <0 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm8953_pon: pon@800 {
-+			compatible = "qcom,pm8916-pon";
-+			reg = <0x800>;
-+			mode-bootloader = <0x2>;
-+			mode-recovery = <0x1>;
-+
-+			pwrkey {
-+				compatible = "qcom,pm8941-pwrkey";
-+				interrupts = <0x00 0x08 0 IRQ_TYPE_EDGE_BOTH>;
-+				debounce = <15625>;
-+				bias-pull-up;
-+				linux,code = <KEY_POWER>;
-+			};
-+
-+			pm8953_resin: resin {
-+				compatible = "qcom,pm8941-resin";
-+				interrupts = <0x00 0x08 1 IRQ_TYPE_EDGE_BOTH>;
-+				debounce = <15625>;
-+				bias-pull-up;
-+				status = "disabled";
-+			};
-+		};
-+
-+		temp-alarm@2400 {
-+			compatible = "qcom,spmi-temp-alarm";
-+			reg = <0x2400>;
-+			interrupts = <0x0 0x24 0x0 IRQ_TYPE_EDGE_RISING>;
-+			io-channels = <&pm8953_vadc VADC_DIE_TEMP>;
-+			io-channel-names = "thermal";
-+			#thermal-sensor-cells = <0>;
-+		};
-+
-+		pm8953_vadc: vadc@3100 {
-+			compatible = "qcom,spmi-vadc";
-+			reg = <0x3100>;
-+			interrupts = <0x00 0x31 0x00 0x01>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#io-channel-cells = <1>;
-+
-+			adc-chan@8 {
-+				reg = <VADC_DIE_TEMP>;
-+			};
-+			adc-chan@9 {
-+				reg = <VADC_REF_625MV>;
-+			};
-+			adc-chan@a {
-+				reg = <VADC_REF_1250MV>;
-+			};
-+			adc-chan@c {
-+				reg = <VADC_SPARE1>;
-+			};
-+			adc-chan@e {
-+				reg = <VADC_GND_REF>;
-+			};
-+			adc-chan@f {
-+				reg = <VADC_VDD_VADC>;
-+			};
-+		};
-+
-+		rtc@6000 {
-+			compatible = "qcom,pm8941-rtc";
-+			reg = <0x6000>, <0x6100>;
-+			reg-names = "rtc", "alarm";
-+			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
-+		};
-+	};
-+
-+	pmic@1 {
-+		compatible = "qcom,pm8953", "qcom,spmi-pmic";
-+		reg = <1 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+	};
-+};
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
