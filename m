@@ -2,112 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84960C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 23:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 23:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245280AbiBTXXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 18:23:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50170 "EHLO
+        id S245304AbiBTX10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 18:27:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245268AbiBTXXD (ORCPT
+        with ESMTP id S245298AbiBTX1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 18:23:03 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE412DCB;
-        Sun, 20 Feb 2022 15:22:41 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id p15so28458332ejc.7;
-        Sun, 20 Feb 2022 15:22:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+/6FVXbQ7tm987ktGB+50LSyqQ0w7Psn1nbQn39v9Mk=;
-        b=jh2B04F4bFkcklCxKRTTZz0yBhTx7u775Sqvphij1AvQP67vOcwiZ8O+cZNkibc0n0
-         LWAX/XeaLXXDQYPV2G8mZxF6BZmPFXlS1NDwUts88vpGhXC2PXF6dJRo5CrsMQRW+uyq
-         SgQ5LaPPGoC+01nVCq5mlzWVJthO76ECbX+x+PdJcNbwgMbh/5KH4uuAKCUuUhQ37xgp
-         dnsciCyQS5W5gFzgG7x8AIk1rUorxKQE2orvzMEnz9pFhNujB39Xyt1le0fGVpOB22mb
-         pyMCURUTQ0Pb1j3jeXg5NxzjXrwRqfpIZ1rwd3JTrX6dMUNWgJzqHy5E56PNvdPQ1+Fw
-         O+kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=+/6FVXbQ7tm987ktGB+50LSyqQ0w7Psn1nbQn39v9Mk=;
-        b=srxFT2afLF86HiB4OYAXTFDjtcwgwj9g9dETxd4OS23UtZvV91tUGGzWC4aodaDAxy
-         YfRHnZTCrCOpzwYRoGef+FqJZVwc1Z3zOaB4R0cCvPbd8qlYBYM1uCUG2F6doLHFv1Qg
-         ejLJSOz28aQIblpEm55711VDFQQKdILotbcrbxffTQD4K9b1DQtmsQSJ7rJj5BOY5lmd
-         CSApnahrmh5rRQdLt5eT/xrbswb3otrYrCCeo2woiMFkw5aLm7DL/P9euQcTg/NgTtv9
-         GUfLK0tB0fQdmTqHyNzAML3f/NT+/VY7jnt4LcUUSDVWGe+XfAdYREfc5V94FeKrPUvY
-         fCHg==
-X-Gm-Message-State: AOAM531bvutTOPQ4TzGCiob+7U/g/C+kchFrgbr9vVoZvxCem8Gmgic2
-        t8OyTtGkIZmntuJ3qxRogww=
-X-Google-Smtp-Source: ABdhPJxypxWpPrNCfXhZ4GXbRyH1nZn37fM7+e/ArYeJA2Y/LyCbU+ewjEVtcm9hgLeiVlyZ+9dAuQ==
-X-Received: by 2002:a17:906:7e52:b0:6cf:cf1a:17f with SMTP id z18-20020a1709067e5200b006cfcf1a017fmr13498500ejr.251.1645399360058;
-        Sun, 20 Feb 2022 15:22:40 -0800 (PST)
-Received: from localhost.localdomain (ip-046-005-230-144.um12.pools.vodafone-ip.de. [46.5.230.144])
-        by smtp.gmail.com with ESMTPSA id y27sm4611031ejd.19.2022.02.20.15.22.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 20 Feb 2022 15:22:39 -0800 (PST)
-From:   Edward Shishkin <edward.shishkin@gmail.com>
-To:     willy@infradead.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, reiserfs-devel@vger.kernel.org,
-        jack@suse.cz
-Cc:     Edward Shishkin <edward.shishkin@gmail.com>
-Subject: [PATCH] reiserfs: get rid of AOP_FLAG_CONT_EXPAND flag
-Date:   Mon, 21 Feb 2022 00:22:19 +0100
-Message-Id: <20220220232219.1235-1-edward.shishkin@gmail.com>
-X-Mailer: git-send-email 2.13.6
-In-Reply-To: <fbc744c9-e22f-138c-2da3-f76c3edfcc3d@gmail.com>
-References: <fbc744c9-e22f-138c-2da3-f76c3edfcc3d@gmail.com>
+        Sun, 20 Feb 2022 18:27:24 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6F7396BD
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 15:27:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645399620; x=1676935620;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tdcrbgAF2t7D8WDZNsEUel/uxqM0sq1Nc60cLU1SIFE=;
+  b=JYDlPVtpyaqzMnLo4XXpD8ETRKdSOE+yb861+GyqVSOyenvRNNI1rtNc
+   B3hsHGXqJB4SdQMLaBtbrvduhuuDJuEHyu80EPMKNyzP26UnDDxrHotRR
+   Pr3QvQcRKVoilWVgrKA8GZXfB3I2gxIzfSS4Dg+TbfVlAfCLqnLsxWHMx
+   F7kQrVvcNCZcSR9YROdKR0usljzZbW/eT2GIlDfikqa0Jc6VnDI466b1w
+   cNs9GWsV71H3w4oRP6ZkDrNK9aG38zYLdfbnYqq/Dxm5tKuGikcJr0AhR
+   fBOGvHHE97lJK5s8bwROFi2JoD5FT+Cog3/zaisdoQNKb49lkT3dQEpt8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="250228199"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="250228199"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 15:26:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="507433353"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 20 Feb 2022 15:26:57 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nLvbU-00010s-SG; Sun, 20 Feb 2022 23:26:56 +0000
+Date:   Mon, 21 Feb 2022 07:26:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>
+Subject: [mcgrof:modules-next 6/10]
+ arch/riscv/include/asm/set_memory.h:25:18: error: implicit declaration of
+ function 'PAGE_ALIGN'
+Message-ID: <202202210752.fpjFZ4sv-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Edward Shishkin <edward.shishkin@gmail.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
+head:   c55dc78176e6fe97a9e92d24a7ff3015b14ac858
+commit: e5973a14d18785b893d383fbd9dc2f98edc16f1b [6/10] module: Move strict rwx support to a separate file
+config: riscv-randconfig-r032-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210752.fpjFZ4sv-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/commit/?id=e5973a14d18785b893d383fbd9dc2f98edc16f1b
+        git remote add mcgrof https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git
+        git fetch --no-tags mcgrof modules-next
+        git checkout e5973a14d18785b893d383fbd9dc2f98edc16f1b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from kernel/module/strict_rwx.c:10:
+   In file included from include/linux/set_memory.h:9:
+>> arch/riscv/include/asm/set_memory.h:25:18: error: implicit declaration of function 'PAGE_ALIGN' [-Werror,-Wimplicit-function-declaration]
+           int num_pages = PAGE_ALIGN(end - start) >> PAGE_SHIFT;
+                           ^
+   kernel/module/strict_rwx.c:16:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:17:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->text_size));
+                   ^
+   kernel/module/strict_rwx.c:18:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
+                   ^
+   kernel/module/strict_rwx.c:26:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:27:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_size));
+                   ^
+   kernel/module/strict_rwx.c:28:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
+                   ^
+   kernel/module/strict_rwx.c:36:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->base));
+                   ^
+   kernel/module/strict_rwx.c:37:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
+                   ^
+   kernel/module/strict_rwx.c:38:10: error: implicit declaration of function 'PAGE_ALIGNED' [-Werror,-Wimplicit-function-declaration]
+           BUG_ON(!PAGE_ALIGNED(layout->size));
+                   ^
+   10 errors generated.
+
+
+vim +/PAGE_ALIGN +25 arch/riscv/include/asm/set_memory.h
+
+d3ab332a502123 Zong Li         2020-03-10   8  
+00cb41d5ad3189 Zong Li         2020-03-10   9  #ifndef __ASSEMBLY__
+d3ab332a502123 Zong Li         2020-03-10  10  /*
+d3ab332a502123 Zong Li         2020-03-10  11   * Functions to change memory attributes.
+d3ab332a502123 Zong Li         2020-03-10  12   */
+d3ab332a502123 Zong Li         2020-03-10  13  #ifdef CONFIG_MMU
+d3ab332a502123 Zong Li         2020-03-10  14  int set_memory_ro(unsigned long addr, int numpages);
+d3ab332a502123 Zong Li         2020-03-10  15  int set_memory_rw(unsigned long addr, int numpages);
+d3ab332a502123 Zong Li         2020-03-10  16  int set_memory_x(unsigned long addr, int numpages);
+d3ab332a502123 Zong Li         2020-03-10  17  int set_memory_nx(unsigned long addr, int numpages);
+19a00869028f4a Atish Patra     2020-11-04  18  int set_memory_rw_nx(unsigned long addr, int numpages);
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  19  static __always_inline int set_kernel_memory(char *startp, char *endp,
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  20  					     int (*set_memory)(unsigned long start,
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  21  							       int num_pages))
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  22  {
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  23  	unsigned long start = (unsigned long)startp;
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  24  	unsigned long end = (unsigned long)endp;
+c10bc260e7c030 Alexandre Ghiti 2021-06-24 @25  	int num_pages = PAGE_ALIGN(end - start) >> PAGE_SHIFT;
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  26  
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  27  	return set_memory(start, num_pages);
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  28  }
+d3ab332a502123 Zong Li         2020-03-10  29  #else
+d3ab332a502123 Zong Li         2020-03-10  30  static inline int set_memory_ro(unsigned long addr, int numpages) { return 0; }
+d3ab332a502123 Zong Li         2020-03-10  31  static inline int set_memory_rw(unsigned long addr, int numpages) { return 0; }
+d3ab332a502123 Zong Li         2020-03-10  32  static inline int set_memory_x(unsigned long addr, int numpages) { return 0; }
+d3ab332a502123 Zong Li         2020-03-10  33  static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
+19a00869028f4a Atish Patra     2020-11-04  34  static inline int set_memory_rw_nx(unsigned long addr, int numpages) { return 0; }
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  35  static inline int set_kernel_memory(char *startp, char *endp,
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  36  				    int (*set_memory)(unsigned long start,
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  37  						      int num_pages))
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  38  {
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  39  	return 0;
+c10bc260e7c030 Alexandre Ghiti 2021-06-24  40  }
+d3ab332a502123 Zong Li         2020-03-10  41  #endif
+d3ab332a502123 Zong Li         2020-03-10  42  
+
+:::::: The code at line 25 was first introduced by commit
+:::::: c10bc260e7c030364b5150aac7ebf048ddfb9502 riscv: Introduce set_kernel_memory helper
+
+:::::: TO: Alexandre Ghiti <alex@ghiti.fr>
+:::::: CC: Palmer Dabbelt <palmerdabbelt@google.com>
+
 ---
- fs/reiserfs/inode.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
-
-diff --git a/fs/reiserfs/inode.c b/fs/reiserfs/inode.c
-index f49b72ccac4c..e943930939f5 100644
---- a/fs/reiserfs/inode.c
-+++ b/fs/reiserfs/inode.c
-@@ -2763,13 +2763,6 @@ static int reiserfs_write_begin(struct file *file,
- 	int old_ref = 0;
- 
-  	inode = mapping->host;
--	*fsdata = NULL;
-- 	if (flags & AOP_FLAG_CONT_EXPAND &&
-- 	    (pos & (inode->i_sb->s_blocksize - 1)) == 0) {
-- 		pos ++;
--		*fsdata = (void *)(unsigned long)flags;
--	}
--
- 	index = pos >> PAGE_SHIFT;
- 	page = grab_cache_page_write_begin(mapping, index, flags);
- 	if (!page)
-@@ -2896,9 +2889,6 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
- 	unsigned start;
- 	bool locked = false;
- 
--	if ((unsigned long)fsdata & AOP_FLAG_CONT_EXPAND)
--		pos ++;
--
- 	reiserfs_wait_on_write_block(inode->i_sb);
- 	if (reiserfs_transaction_running(inode->i_sb))
- 		th = current->journal_info;
-@@ -3316,7 +3306,11 @@ int reiserfs_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 
- 		/* fill in hole pointers in the expanding truncate case. */
- 		if (attr->ia_size > inode->i_size) {
--			error = generic_cont_expand_simple(inode, attr->ia_size);
-+			loff_t pos = attr->ia_size;
-+
-+			if ((pos & (inode->i_sb->s_blocksize - 1)) == 0)
-+				pos++;
-+			error = generic_cont_expand_simple(inode, pos);
- 			if (REISERFS_I(inode)->i_prealloc_count > 0) {
- 				int err;
- 				struct reiserfs_transaction_handle th;
--- 
-2.21.3
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
