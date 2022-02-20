@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2073FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 06:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A21BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 06:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238639AbiBTGBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 01:01:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47570 "EHLO
+        id S239157AbiBTGBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 01:01:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234317AbiBTGBW (ORCPT
+        with ESMTP id S239384AbiBTGBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 01:01:22 -0500
-Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E184E38D
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 22:01:01 -0800 (PST)
-X-QQ-mid: bizesmtp71t1645336814toup6w7g
+        Sun, 20 Feb 2022 01:01:45 -0500
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF26554AB
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 22:01:22 -0800 (PST)
+X-QQ-mid: bizesmtp82t1645336866t5uc6nr6
 Received: from localhost.localdomain (unknown [180.102.102.45])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 20 Feb 2022 14:00:06 +0800 (CST)
+        id ; Sun, 20 Feb 2022 14:00:59 +0800 (CST)
 X-QQ-SSF: 01400000002000B0F000B00A0000000
-X-QQ-FEAT: DjV0wquoRWbFbMhTh/aiK/+4vF3oTrbzwjW7Ob/10jesuFazuUecCwYqC5XvK
-        Tew27FVHThUVjkWVIjlh9CMfNPNVjApeRa9kJ4qhIgB6phrxrsryM2LmykVnoTt+cLmFaGB
-        WAjl7CIdfGOHuToR2s7P5x9/JNp5JZEaEOsndqIvOb3VrNyvRFNNU/O4IFPEFf8jeMISz2c
-        2snBphFkZ4VcxKm7Y8oYt+eWesd9c02oWGMFGv5KckZVuOWfmfGiruJrYHis6fi18zRoPyO
-        03yhjr6bHBRBM/W1EmFVFL7ZS4zP3eG0AVywskqfz8vKcEnQ1pDL3f0I7F8ka0i2hjPr7je
-        1aH1sh6
+X-QQ-FEAT: X+oTZzR2YPgLP2/i7yIbDL5tLF5aCxs9hfHc/ADu78N1w7TWGQCEuREZ3QnOd
+        lvWEQkz9Bvyp1My9hZTgnhuRnXRx+DJjk019R6yAXzIQ/jJhHBT2xqqRgZ5PlPIH1MUBuq3
+        5Zq1dwnXK4HlJEIFkVskAK8MyvL5d8S0q6sFrxaNSg536XImV5mOT1G7LlgTlaxV7Oj2uyB
+        aT5T7HGmEXVyT3aLa8v/wbITINlJTO+S00KC2phEyV3EDIQAr7OCRy3Qs8L812G1PdxSwJr
+        EV0Mf1fRrU4jVBb2qFG9DrAE7U168SZHN1Z/kJGbY3I+9mtwWo66tpnBWpk9IVPUCBio03f
+        peI8bQZ4T3rVWjd42GDStccyEy5XKxksLjKw39v
 X-QQ-GoodBg: 2
 From:   tangmeng <tangmeng@uniontech.com>
-To:     James.Bottomley@HansenPartnership.com, deller@gmx.de,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com
-Cc:     linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, nizhen@uniontech.com,
-        zhanglianjie@uniontech.com, nixiaoming@huawei.com,
-        tangmeng <tangmeng@uniontech.com>
-Subject: [PATCH 01/11] kernel/parisc: move soft-power sysctl to its own file
-Date:   Sun, 20 Feb 2022 14:00:00 +0800
-Message-Id: <20220220060000.13079-1-tangmeng@uniontech.com>
+To:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        nizhen@uniontech.com, zhanglianjie@uniontech.com,
+        nixiaoming@huawei.com, linux-pm@vger.kernel.org,
+        linux-acpi@vger.kernel.org, tangmeng <tangmeng@uniontech.com>
+Subject: [PATCH 05/11] kernel/acpi: move acpi_video_flags sysctl to its own file
+Date:   Sun, 20 Feb 2022 14:00:53 +0800
+Message-Id: <20220220060053.13647-1-tangmeng@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -56,88 +57,80 @@ know what sysctl knobs you wish to add for your own piece of code, we
 just care about the core logic.
 
 All filesystem syctls now get reviewed by fs folks. This commit
-follows the commit of fs, move the soft-power sysctl to its own file,
-kernel/parisc/power.c.
+follows the commit of fs, move the acpi_video_flags sysctl to its
+own file, arch/x86/kernel/acpi/sleep.c.
 
 Signed-off-by: tangmeng <tangmeng@uniontech.com>
 ---
- drivers/parisc/power.c | 22 ++++++++++++++++++++++
- include/linux/sysctl.h |  1 -
- kernel/sysctl.c        |  9 ---------
- 3 files changed, 22 insertions(+), 10 deletions(-)
+ arch/x86/kernel/acpi/sleep.c | 21 ++++++++++++++++++++-
+ include/linux/acpi.h         |  1 -
+ kernel/sysctl.c              |  9 ---------
+ 3 files changed, 20 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
-index 456776bd8ee6..24e0ffbe460a 100644
---- a/drivers/parisc/power.c
-+++ b/drivers/parisc/power.c
-@@ -193,6 +193,26 @@ static struct notifier_block parisc_panic_block = {
- 	.priority	= INT_MAX,
- };
+diff --git a/arch/x86/kernel/acpi/sleep.c b/arch/x86/kernel/acpi/sleep.c
+index 1e97f944b47d..256f3c065605 100644
+--- a/arch/x86/kernel/acpi/sleep.c
++++ b/arch/x86/kernel/acpi/sleep.c
+@@ -20,7 +20,26 @@
+ #include "../../realmode/rm/wakeup.h"
+ #include "sleep.h"
  
-+static int pwrsw_enabled;
+-unsigned long acpi_realmode_flags;
++static unsigned long acpi_realmode_flags;
 +#ifdef CONFIG_SYSCTL
-+static struct ctl_table kern_parisc_power_table[] = {
++static struct ctl_table kern_acpi_table[] = {
 +	{
-+		.procname       = "soft-power",
-+		.data           = &pwrsw_enabled,
-+		.maxlen         = sizeof(int),
++		.procname       = "acpi_video_flags",
++		.data           = &acpi_realmode_flags,
++		.maxlen         = sizeof(unsigned long),
 +		.mode           = 0644,
-+		.proc_handler   = proc_dointvec,
++		.proc_handler   = proc_doulongvec_minmax,
 +	},
 +	{ }
 +};
 +
-+static void __init kernel_parisc_power_sysctls_init(void)
++static __init int kernel_acpi_sysctls_init(void)
 +{
-+	register_sysctl_init("kernel", kern_parisc_power_table);
++	register_sysctl_init("kernel", kern_acpi_table);
++	return 0;
 +}
-+#else
-+#define kernel_parisc_power_sysctls_init() do { } while (0)
++late_initcall(kernel_acpi_sysctls_init);
 +#endif /* CONFIG_SYSCTL */
  
- static int __init power_init(void)
- {
-@@ -233,6 +253,8 @@ static int __init power_init(void)
- 	atomic_notifier_chain_register(&panic_notifier_list,
- 			&parisc_panic_block);
- 
-+	kernel_parisc_power_sysctls_init();
-+
- 	return 0;
+ #if defined(CONFIG_SMP) && defined(CONFIG_64BIT)
+ static char temp_stack[4096];
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 6274758648e3..4f1d9cf579f5 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -349,7 +349,6 @@ static inline bool acpi_sci_irq_valid(void)
  }
  
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 6353d6db69b2..e00bf436d63b 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -242,7 +242,6 @@ int do_proc_douintvec(struct ctl_table *table, int write,
- 				  int write, void *data),
- 		      void *data);
+ extern int sbf_port;
+-extern unsigned long acpi_realmode_flags;
  
--extern int pwrsw_enabled;
- extern int unaligned_enabled;
- extern int unaligned_dump_stack;
- extern int no_unaligned_warning;
+ int acpi_register_gsi (struct device *dev, u32 gsi, int triggering, int polarity);
+ int acpi_gsi_to_irq (u32 gsi, unsigned int *irq);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 22037f03cd2b..d11390634321 100644
+index e6d99bbf9a9d..62499e3207aa 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1737,15 +1737,6 @@ static struct ctl_table kern_table[] = {
+@@ -1973,15 +1973,6 @@ static struct ctl_table kern_table[] = {
  		.proc_handler	= proc_dointvec,
  	},
  #endif
--#ifdef CONFIG_PARISC
+-#if	defined(CONFIG_ACPI_SLEEP) && defined(CONFIG_X86)
 -	{
--		.procname	= "soft-power",
--		.data		= &pwrsw_enabled,
--		.maxlen		= sizeof (int),
+-		.procname	= "acpi_video_flags",
+-		.data		= &acpi_realmode_flags,
+-		.maxlen		= sizeof (unsigned long),
 -		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
+-		.proc_handler	= proc_doulongvec_minmax,
 -	},
 -#endif
- #ifdef CONFIG_SYSCTL_ARCH_UNALIGN_ALLOW
+ #ifdef CONFIG_SYSCTL_ARCH_UNALIGN_NO_WARN
  	{
- 		.procname	= "unaligned-trap",
+ 		.procname	= "ignore-unaligned-usertrap",
 -- 
 2.20.1
 
