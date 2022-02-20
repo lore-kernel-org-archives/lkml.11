@@ -2,210 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07684C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 216EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 14:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242174AbiBTNvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 08:51:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51946 "EHLO
+        id S243974AbiBTOG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 09:06:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235018AbiBTNvq (ORCPT
+        with ESMTP id S243937AbiBTOGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 08:51:46 -0500
-X-Greylist: delayed 115 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 05:51:25 PST
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6365621813;
-        Sun, 20 Feb 2022 05:51:25 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.west.internal (Postfix) with ESMTP id 63AE62B00158;
-        Sun, 20 Feb 2022 08:49:27 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Sun, 20 Feb 2022 08:49:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Hzfm38
-        gwPt5b09qOmLkmmfY2IIYl8DekKzBTC8y6E/4=; b=Mh2eOvmHHkVx++fz80uns8
-        7+Y+xWxOHRMVpsAEIc1iX9iGRssSrqTt4DEoPDkKx1zMSVEFmktobYjSc+Q1vqpE
-        NB3k0jRzA8yiLumKKiNCTPhOv39knberB8iIy1iNXVam1m3xZ6RSDAXrqrZv8jX+
-        22yZfgzepiyULlT8Tz9i7x1r8X55zgZl8EZFYADfPMtKl/mzHfYyUHRn9F32L8x5
-        AKBkMSn9RahYlDyjeZLmzBXrhHBv5seX3OlpAlQfvr+eIxQRsqqhKWY76ow10uQ1
-        6Mdrffpszfy/cfGdr0ALfw3W1veNut0gsBQH0iw9CHa0rkPUs2n6BxamINmtawbw
-        ==
-X-ME-Sender: <xms:5kYSYlZgeDpGHPwBYlonXCSlDA0koRyD9axOwL3Z0YRw_CmQo-vWOw>
-    <xme:5kYSYsZkDLdYwizt3-sWnDo0Ek_-VY4wz4nUUXDRQm0KjWCCWcgIghGQQDlmgRR1H
-    gUdKOwZErNerA>
-X-ME-Received: <xmr:5kYSYn8kuaTIvJOQXtNXDSf_ZOaNsWIkXIB_zr2Ob-zXUb5UEpK2gIRWp0tu1j402tCpXi8AMuyBoBnqBS-_PsBDhHnIRE1I6n7OsbTNlbAh77k7t4A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeggdehkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofggtghogfesthekredtredtjeenucfhrhhomhepofgrrhgvkhcu
-    ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
-    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepgedvfefh
-    tdfgkeefveetkefhiedvuedvjeffuefggeefffdvueffvefgueelteehnecuffhomhgrih
-    hnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
-    gsrdgtohhm
-X-ME-Proxy: <xmx:5kYSYjoQloU_-2nKAY4zkNwVwTH0cnfqm9aPKAwL1aCC9pjApIe0Sg>
-    <xmx:5kYSYgrJNDHfSBhfWrXbh6aXi_ynQA1dHd5K9tXEFd7SIoILG-VPjg>
-    <xmx:5kYSYpQxN-LOWG68VKFpG8cBbHvCtcI2Y_kJqNdU2_BtkTjlS_xZ3A>
-    <xmx:5kYSYscqhqYX42m4acL8gaVOPiOG9sWqWL9OVERVct4UnFI7b5HIcb_l0sI>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 20 Feb 2022 08:49:25 -0500 (EST)
-From:   =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, stable@vger.kernel.org,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        xen-devel@lists.xenproject.org (moderated list:XEN HYPERVISOR INTERFACE),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-Subject: [PATCH] xen/netfront: destroy queues before real_num_tx_queues is zeroed
-Date:   Sun, 20 Feb 2022 14:42:01 +0100
-Message-Id: <20220220134202.2187485-1-marmarek@invisiblethingslab.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 20 Feb 2022 09:06:20 -0500
+X-Greylist: delayed 933 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 06:05:54 PST
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F07145ADF;
+        Sun, 20 Feb 2022 06:05:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=MZoKb9hkNy/YztJH3jvZm9vX6HmaFd7kAfLYZurpauA=; b=a8zes3mxnr/TOyTPcpl0nLcQ6H
+        uv2+tS8gusHLD+d2ffEPstRMlA3g9WBeDnVDwJqY1JSOmzx4+e4FK/IMy6r9aDhzzamvpeoByiojl
+        bh3Ta4EPsHbsTqOEheeLYoZVQAWOukImlI3boNy2daoocd/ZcSZ6fzBY7a47nbImQIsk4oV3lgZGK
+        /eG4HqADjHCm20tmUkUK41FtUUHE5KKGTS04JM6TjxBhIUhzn+zghyVFKkF7VjCaJM+UHKt3v1+i2
+        1+MyM5aFpHSxey2JqZ4HmtcglLt8JfjwZ9rwuuzqbwk8W6Z1rrbi7cVTtviXHMSshcqr4M6Ppd4eE
+        tT4ZfVAA==;
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1nLmbS-000DRK-Gf; Sun, 20 Feb 2022 14:50:18 +0100
+Received: from [62.216.202.16] (helo=[192.168.178.36])
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1nLmbS-000C96-21; Sun, 20 Feb 2022 14:50:18 +0100
+Message-ID: <0a606181-b51b-526a-7166-2f2a362dc8d6@metafoo.de>
+Date:   Sun, 20 Feb 2022 14:50:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Organization: Invisible Things Lab
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH] iio: core: provide a default value `label` property
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Nandor Han <nandor.han@vaisala.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220216135604.3435769-1-nandor.han@vaisala.com>
+ <20220220131809.1bc184e0@jic23-huawei>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20220220131809.1bc184e0@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26459/Sun Feb 20 10:22:37 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
-delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
-("net-sysfs: update the queue counts in the unregistration path"),
-unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
-facts together means, that xennet_destroy_queues() called from
-xennet_remove() cannot do its job, because it's called after
-unregister_netdev(). This results in kfree-ing queues that are still
-linked in napi, which ultimately crashes:
+On 2/20/22 14:18, Jonathan Cameron wrote:
+> On Wed, 16 Feb 2022 15:56:04 +0200
+> Nandor Han <nandor.han@vaisala.com> wrote:
+>
+>> The label property is used to correctly identify the same IIO device
+>> over reboots. The implementation requires that a value will be provided
+>> through device-tree. This sometime could requires many changes to
+>> device-trees when multiple devices want to use the label property.
+>> In order to prevent this, we could use the device-tree node
+>> name as default value. The device-tree node name is unique and
+>> also reflects the device which makes it a good choice as default value.
+>> This change is backward compatible since doesn't affect the users that
+>> do configure a label using the device-tree or the ones that are not
+>> using the labels at all.
+>>
+>> Use the device-tree node name as a default value for `label` property,
+>> in case there isn't one configured through device-tree.
+> Interesting idea.  However a few concerns come to mind.
+> 1) If we start having a default for this, then it will get used as ABI
+>     and if a label is applied later to the DT then we will end up breaking
+>     userspace scripts.
+> 2) If we do this it should be firmware agnostics (we need to fix
+>     the existing code to be such as well).
+> 3) Is the node name always unique (think multiple accelerometers on
+>     different i2c masters)?
+> 3) I'm fairly sure this information is readily available anyway.
+>     either via the of_node link for the iio\:deviceX
+>     So why not have your usespace use that instead of label?
+>     I'm not a fan of duplicating information that is readily available
+>     anyway - be it as name and reg in the of_node directory.
 
-    BUG: kernel NULL pointer dereference, address: 0000000000000000
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    PGD 0 P4D 0
-    Oops: 0000 [#1] PREEMPT SMP PTI
-    CPU: 1 PID: 52 Comm: xenwatch Tainted: G        W         5.16.10-1.32.fc32.qubes.x86_64+ #226
-    RIP: 0010:free_netdev+0xa3/0x1a0
-    Code: ff 48 89 df e8 2e e9 00 00 48 8b 43 50 48 8b 08 48 8d b8 a0 fe ff ff 48 8d a9 a0 fe ff ff 49 39 c4 75 26 eb 47 e8 ed c1 66 ff <48> 8b 85 60 01 00 00 48 8d 95 60 01 00 00 48 89 ef 48 2d 60 01 00
-    RSP: 0000:ffffc90000bcfd00 EFLAGS: 00010286
-    RAX: 0000000000000000 RBX: ffff88800edad000 RCX: 0000000000000000
-    RDX: 0000000000000001 RSI: ffffc90000bcfc30 RDI: 00000000ffffffff
-    RBP: fffffffffffffea0 R08: 0000000000000000 R09: 0000000000000000
-    R10: 0000000000000000 R11: 0000000000000001 R12: ffff88800edad050
-    R13: ffff8880065f8f88 R14: 0000000000000000 R15: ffff8880066c6680
-    FS:  0000000000000000(0000) GS:ffff8880f3300000(0000) knlGS:0000000000000000
-    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-    CR2: 0000000000000000 CR3: 00000000e998c006 CR4: 00000000003706e0
-    Call Trace:
-     <TASK>
-     xennet_remove+0x13d/0x300 [xen_netfront]
-     xenbus_dev_remove+0x6d/0xf0
-     __device_release_driver+0x17a/0x240
-     device_release_driver+0x24/0x30
-     bus_remove_device+0xd8/0x140
-     device_del+0x18b/0x410
-     ? _raw_spin_unlock+0x16/0x30
-     ? klist_iter_exit+0x14/0x20
-     ? xenbus_dev_request_and_reply+0x80/0x80
-     device_unregister+0x13/0x60
-     xenbus_dev_changed+0x18e/0x1f0
-     xenwatch_thread+0xc0/0x1a0
-     ? do_wait_intr_irq+0xa0/0xa0
-     kthread+0x16b/0x190
-     ? set_kthread_struct+0x40/0x40
-     ret_from_fork+0x22/0x30
-     </TASK>
+I'm not a big fan of this either for the above reasons.
 
-Fix this by calling xennet_destroy_queues() from xennet_close() too,
-when real_num_tx_queues is still available. This ensures that queues are
-destroyed when real_num_tx_queues is set to 0, regardless of how
-unregister_netdev() was called.
-
-Originally reported at
-https://github.com/QubesOS/qubes-issues/issues/7257
-
-Fixes: d7dac083414eb5bb9 ("net-sysfs: update the queue counts in the unregistration path")
-Cc: stable@vger.kernel.org # 5.16+
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-
----
-While this fixes the issue, I'm not sure if that is the correct thing
-to do. xennet_remove() calls xennet_destroy_queues() under rtnl_lock,
-which may be important here? Just moving xennet_destroy_queues() before
-unregister_netdev() in xennet_remove() did not helped - it crashed in
-another way (use-after-free in xennet_close()).
-
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
----
- drivers/net/xen-netfront.c | 33 +++++++++++++++++----------------
- 1 file changed, 17 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index d514d96027a6..5b69a930581e 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -828,6 +828,22 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
- 	return NETDEV_TX_OK;
- }
- 
-+static void xennet_destroy_queues(struct netfront_info *info)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
-+		struct netfront_queue *queue = &info->queues[i];
-+
-+		if (netif_running(info->netdev))
-+			napi_disable(&queue->napi);
-+		netif_napi_del(&queue->napi);
-+	}
-+
-+	kfree(info->queues);
-+	info->queues = NULL;
-+}
-+
- static int xennet_close(struct net_device *dev)
- {
- 	struct netfront_info *np = netdev_priv(dev);
-@@ -839,6 +855,7 @@ static int xennet_close(struct net_device *dev)
- 		queue = &np->queues[i];
- 		napi_disable(&queue->napi);
- 	}
-+	xennet_destroy_queues(np);
- 	return 0;
- }
- 
-@@ -2103,22 +2120,6 @@ static int write_queue_xenstore_keys(struct netfront_queue *queue,
- 	return err;
- }
- 
--static void xennet_destroy_queues(struct netfront_info *info)
--{
--	unsigned int i;
--
--	for (i = 0; i < info->netdev->real_num_tx_queues; i++) {
--		struct netfront_queue *queue = &info->queues[i];
--
--		if (netif_running(info->netdev))
--			napi_disable(&queue->napi);
--		netif_napi_del(&queue->napi);
--	}
--
--	kfree(info->queues);
--	info->queues = NULL;
--}
--
- 
- 
- static int xennet_create_page_pool(struct netfront_queue *queue)
--- 
-2.31.1
 
