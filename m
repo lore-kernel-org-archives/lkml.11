@@ -2,211 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13176C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243208AbiBTNKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 08:10:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49358 "EHLO
+        id S243473AbiBTNLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 08:11:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiBTNKo (ORCPT
+        with ESMTP id S229450AbiBTNLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 08:10:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9FAE4ECD8
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645362622;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b6YrPquBU92buiQBK2VYMrOOjoaD2yiLvOy0vH3f/vI=;
-        b=fmVvmlDxx8G349qVXRWPnCAGJdQjDrDZ15KpeS7BdbJajVCLO8lr9I0fZCP5uRLJyIAxTd
-        yJe49Sa6sASp3JOHj+4YO4ysva5cOft9Talu7tGODCdq6PJragG9mYqHdSbkq/WI6oz6Go
-        YGPS3k5cPLnSeo6w/bvvQ3vJ+NeCcy0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-192-SPT3iTPGMVqdpAIc1Jbnkg-1; Sun, 20 Feb 2022 08:10:12 -0500
-X-MC-Unique: SPT3iTPGMVqdpAIc1Jbnkg-1
-Received: by mail-wm1-f70.google.com with SMTP id v130-20020a1cac88000000b0037e3d70e7e1so4758176wme.1
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:10:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b6YrPquBU92buiQBK2VYMrOOjoaD2yiLvOy0vH3f/vI=;
-        b=5akoIx2UzH11aK2SNV2q2Z58hbpwYHUNEpoN62gL5KRLVQmwy/AorpuDWTrpB/JtqQ
-         dApZ+QW4FRWp8Yl8Ogd5AceVuqy9rUoBdF9Fy4CDPA8nUPJYEnMKXDKL4UiNwtSloeTf
-         cDZ4FGW8wqsmRWqI/1fZynWVGOhtch51UIuZDnQD89x6ciHOxHfCsOFtFYnCi1WU+zFz
-         KqGDDJzTSi0KvCCy6Ix4DI0MD2khbNkO8Xzw+jELrpNJKnDkAKb9MStt6dW6d7BE0bHx
-         QbQV1/BRJIgAKrUgqc7Z+fDQ6VGJWDmC06qd3eBznN+6h4ALM1sWM1HUaKbuFJkbLMJg
-         Sn6w==
-X-Gm-Message-State: AOAM530nfP6OUklAkhyfocswufoFhgLy84LHJzheOnyauIB+FqTiemHg
-        IA/9u+Yek7ssEXqTm/aIPAf/9yevvhYH8me+FXXwGXd2fSVD3trFSy916UTa/gDEREylZDz9PwO
-        THu6ugsPmC0T3xVWfpcIHSJOe
-X-Received: by 2002:adf:efc4:0:b0:1e4:ad27:22b3 with SMTP id i4-20020adfefc4000000b001e4ad2722b3mr12835132wrp.187.1645362610784;
-        Sun, 20 Feb 2022 05:10:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyxXYEuq3f25Np0QHfM1w3hJ8QsQijXfMcIZAJ2g8V4jxOmgrGl5S4LvenFt+Zu9EjQ0weJjQ==
-X-Received: by 2002:adf:efc4:0:b0:1e4:ad27:22b3 with SMTP id i4-20020adfefc4000000b001e4ad2722b3mr12835126wrp.187.1645362610498;
-        Sun, 20 Feb 2022 05:10:10 -0800 (PST)
-Received: from redhat.com ([2.55.134.183])
-        by smtp.gmail.com with ESMTPSA id a9sm29917517wrr.20.2022.02.20.05.10.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 05:10:09 -0800 (PST)
-Date:   Sun, 20 Feb 2022 08:10:06 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>,
-        jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-Message-ID: <20220220075826-mutt-send-email-mst@kernel.org>
-References: <20220219125100.835-1-hdanton@sina.com>
- <20220220014715.921-1-hdanton@sina.com>
- <20220220110941.980-1-hdanton@sina.com>
- <20220220071446-mutt-send-email-mst@kernel.org>
- <CACT4Y+Y_d2T4-TR2g_EPkaudWGxeEM8rrpQSkBANzCbme10ZtA@mail.gmail.com>
+        Sun, 20 Feb 2022 08:11:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90004ECDB;
+        Sun, 20 Feb 2022 05:11:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 208EA61170;
+        Sun, 20 Feb 2022 13:11:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F01FCC340E8;
+        Sun, 20 Feb 2022 13:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645362678;
+        bh=AcZOgu0tuVyGYdY45Zu3DvF/1IChW8HjkuF8aWEB+7I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GbzrqlkHlTXdq1wgMpkUMZQBNYkxxUdO6/mJpXzYNCOYmKzb7JpdWya9UlWN7NbJ4
+         Egnxx2krA4qM4Pq7nDQItkUUKNi/80wiIdyADYcwGuz539WzziWDmQtZHDcj72W0gQ
+         lvY97FZM6NbvyXNpxg+DYv9Yr1Udq9gQrWaymWvJStyVGc0D8wb5+vIWBwTdd7Nqfw
+         9Yc5Quwq7Yt2MIO3Tx0IknNFZWhZrPGaxbAllUx2zeDuC31D9Fd0dCKvEFEacbum7l
+         W32sYLXfYqqCintI/xHc7J6YlWtrXYbRR4qxP9nLON0xgl2WPbJjAT5LJ02q3mBKKS
+         ZHv9O3NeXD38g==
+Date:   Sun, 20 Feb 2022 13:18:09 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nandor Han <nandor.han@vaisala.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] iio: core: provide a default value `label` property
+Message-ID: <20220220131809.1bc184e0@jic23-huawei>
+In-Reply-To: <20220216135604.3435769-1-nandor.han@vaisala.com>
+References: <20220216135604.3435769-1-nandor.han@vaisala.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+Y_d2T4-TR2g_EPkaudWGxeEM8rrpQSkBANzCbme10ZtA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 20, 2022 at 01:31:02PM +0100, Dmitry Vyukov wrote:
-> On Sun, 20 Feb 2022 at 13:16, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > On Sat, 19 Feb 2022 05:01:10 -0800
-> > > > > > Hello,
-> > > > > >
-> > > > > > syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-> > > > > > kernel BUG in vhost_get_vq_desc
-> > > > >
-> > > > > The WARNING: CPU: 1 PID: 4052 at drivers/vhost/vhost.c:715 got quiesced.
-> > > > > >
-> > > > > > ------------[ cut here ]------------
-> > > > > > kernel BUG at drivers/vhost/vhost.c:2338!
-> > > > >
-> > > > > Given the mutex_lock(&vq->mutex) in vhost_vsock_handle_tx_kick(), this
-> > > > > report proves that the bug is bogus.
-> > > > >
-> > > > > > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> > > > > > CPU: 0 PID: 4071 Comm: vhost-4070 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
-> > > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > > > > > RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
-> > > > > > Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-> > > > > > RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
-> > > > > > RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> > > > > > RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
-> > > > > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> > > > > > R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
-> > > > > > R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
-> > > > > > FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-> > > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > > CR2: 0000000000000002 CR3: 000000001d077000 CR4: 00000000003506f0
-> > > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > > > Call Trace:
-> > > > > >  <TASK>
-> > > > > >  vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
-> > > > > >  vhost_worker+0x2e9/0x3e0 drivers/vhost/vhost.c:374
-> > > > > >  kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> > > > > >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > > > > >  </TASK>
-> > > > > > Modules linked in:
-> > > > > > ---[ end trace 0000000000000000 ]---
-> > > > > > RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
-> > > > > > Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-> > > > > > RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
-> > > > > > RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> > > > > > RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
-> > > > > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> > > > > > R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
-> > > > > > R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
-> > > > > > FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> > > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > > CR2: 00007fc7293991d0 CR3: 000000001d077000 CR4: 00000000003506e0
-> > > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > > >
-> > > > > >
-> > > > > > Tested on:
-> > > > > >
-> > > > > > commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
-> > > > > > git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-> > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=11e82d7a700000
-> > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-> > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
-> > > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > > > > patch:          https://syzkaller.appspot.com/x/patch.diff?x=11857326700000
-> > > > >
-> > > > > Attempted fix is bail out if anything eerie is detected in terms of the
-> > > > > notify flag.
-> > > >
-> > > Hello Mike,
-> > >
-> > > Thanks for taking a look at it.
-> > >
-> > > > I mean this will fix the warning for sure, but do we understand how
-> > > > it might have triggered?
-> > >
-> > > Based on what's fed to BUG_ON in the hunk below, it was the update of
-> > > used_flag behind our back that pulled the trigger.
-> > >
-> > > The bigger pain is, given the mutex_lock(&vq->mutex) in
-> > > vhost_vsock_handle_tx_kick(), I find nothing to do about it now after
-> > > scratching scalp twenty minutes other than detecting the update.
-> >
-> > Right. I think it's highly likely a use after free.
-> > How about poisoning the vq struct with some value before freeing
-> > so we can catch that?
+On Wed, 16 Feb 2022 15:56:04 +0200
+Nandor Han <nandor.han@vaisala.com> wrote:
+
+> The label property is used to correctly identify the same IIO device
+> over reboots. The implementation requires that a value will be provided
+> through device-tree. This sometime could requires many changes to
+> device-trees when multiple devices want to use the label property.
+> In order to prevent this, we could use the device-tree node
+> name as default value. The device-tree node name is unique and
+> also reflects the device which makes it a good choice as default value.
+> This change is backward compatible since doesn't affect the users that
+> do configure a label using the device-tree or the ones that are not
+> using the labels at all.
 > 
-> syzbot config enables KASAN, which catches most use-after-frees. So
-> unless there is something very special about this code, I wouldn't
-> assume this is a use-after-free.
-> Some racy use-after-frees may be caught as both use-after-frees and
-> other types of bugs with lower probability. I see 8 bugs on the syzbot
-> dashboard that mention "vhost" but none of the are use-after-frees.
+> Use the device-tree node name as a default value for `label` property,
+> in case there isn't one configured through device-tree.
+
+Interesting idea.  However a few concerns come to mind.
+1) If we start having a default for this, then it will get used as ABI
+   and if a label is applied later to the DT then we will end up breaking
+   userspace scripts.
+2) If we do this it should be firmware agnostics (we need to fix
+   the existing code to be such as well).
+3) Is the node name always unique (think multiple accelerometers on
+   different i2c masters)?
+3) I'm fairly sure this information is readily available anyway.
+   either via the of_node link for the iio\:deviceX 
+   So why not have your usespace use that instead of label?
+   I'm not a fan of duplicating information that is readily available
+   anyway - be it as name and reg in the of_node directory.
+
+Thanks,
+
+Jonathan
+
 > 
-
-Hmm okay.
-Well we also have the (non reproducible)
-        WARN_ON(!llist_empty(&dev->work_list));
-
-trigger.
-
-
-So I think what happens is that there's some worker still running
-when we call vhost_vq_reset.
-
-Here's what is supposed to stop it:
-
-        vhost_vsock_stop(vsock);
-        vhost_vsock_flush(vsock);
-        vhost_dev_stop(&vsock->dev);
-
-after this point, there should be no new work.
-               
-However I wonder why do we flush before we stop everything.
-Maybe this is what it's about.
-
-
-#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ f71077a4d84b 
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index d6ca1c7ad513..b31c3a78dbff 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -754,8 +754,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
- 
- 	vhost_vsock_stop(vsock);
--	vhost_vsock_flush(vsock);
- 	vhost_dev_stop(&vsock->dev);
-+	vhost_vsock_flush(vsock);
- 
- 	spin_lock_bh(&vsock->send_pkt_list_lock);
- 	while (!list_empty(&vsock->send_pkt_list)) {
+> Signed-off-by: Nandor Han <nandor.han@vaisala.com>
+> ---
+> 
+> Notes:
+>     Testing
+>     -------
+>     Using mx6sxsabresd dev board with device-tree:
+>     ```
+>     &adc1 {
+>         vref-supply = <&reg_vref_3v3>;
+>         label = "adc1";
+>         status = "okay";
+>     };
+>     
+>     &adc2 {
+>         vref-supply = <&reg_vref_3v3>;
+>         status = "okay";
+>     };
+>     ```
+>     1. Verify that label property is visible and readable:PASS
+>     > iio:device0 # ls -la label  
+>     -r--r--r--    1 root     root          4096 Jan  1 00:00 label
+>     > iio:device0 # cat label  
+>     adc1
+>     ```
+>     2. Verify that default label property is used for adc2 device: PASS
+>     ```
+>     > iio:device1 # cat label  
+>     adc@2284000
+>     ```
+> 
+>  drivers/iio/industrialio-core.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index e1ed44dec2ab..bd26df90ce41 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1895,6 +1895,7 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+>  {
+>  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+>  	const char *label;
+> +	const char *node_name;
+>  	int ret;
+>  
+>  	if (!indio_dev->info)
+> @@ -1906,8 +1907,13 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+>  		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+>  
+>  	label = of_get_property(indio_dev->dev.of_node, "label", NULL);
+> -	if (label)
+> +	if (label) {
+>  		indio_dev->label = label;
+> +	} else {
+> +		node_name = of_node_full_name(indio_dev->dev.of_node);
+> +		if (node_name)
+> +			indio_dev->label = node_name;
+> +	}
+>  
+>  	ret = iio_check_unique_scan_index(indio_dev);
+>  	if (ret < 0)
 
