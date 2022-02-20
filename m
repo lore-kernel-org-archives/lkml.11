@@ -2,126 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA86C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 15:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241687AbiBTPdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 10:33:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57080 "EHLO
+        id S240272AbiBTPo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 10:44:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232319AbiBTPde (ORCPT
+        with ESMTP id S236087AbiBTPoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 10:33:34 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64387369C4
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:33:13 -0800 (PST)
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F2CB33F1CA
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 15:33:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645371191;
-        bh=AIbRyeLNfvFJg7VRCeqPL8tDv5fvQyhxI4o53shpmgE=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=JnVOcFQGXl0uHF05zYFja0a22VaygreL71FZsAkgKA1sRNZZ6TFfPMNkRGyKaJu62
-         /lZZ2YjsH5er7UrMB2PN9LHC68+2g5tvRe4jm2sWt5D881Gc+efLHAam07jxxhIzUi
-         2zTuKhl7dpplH5LkgZQX5p5suQ81qYRdQAxmnc1bQtbqyIntpk8LayCPaQR+bAxQXj
-         8th+dzfSXl4bcYE4giBIwDJqGbiMmeQ+qdSrKHh8fjURzj8HIUAnXnq+Zh8Tg0KXLu
-         Fb7W23csfbBjuRUOxXbaMg0WWdQeGGleWDvbYmFxYCcSH22jKR8GbpWOqeMctX70gU
-         w72HDxSuumjkQ==
-Received: by mail-wr1-f71.google.com with SMTP id q8-20020adfb188000000b001e33a8cdbf4so6022913wra.16
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 07:33:11 -0800 (PST)
+        Sun, 20 Feb 2022 10:44:55 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835F542A19;
+        Sun, 20 Feb 2022 07:44:33 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id v28so3782203ljv.9;
+        Sun, 20 Feb 2022 07:44:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to;
+        bh=IcItXc+sNrCk2+Q4Jyfa3crAb0rYqmVxEFy4N4i47uU=;
+        b=RI1owrYqtNeZRwrAKKfUgRot+GcPpwydXGZXta9gNZfGegbchDMEgmkfTobvff9XOa
+         ztoU7p0V++IDCzv/9sgAK2hJXfPBb+BJQ57KrT5TOjfsI162Ddj4CUQxEtGviivvt72s
+         XK5kMP+hG+0kr6q4WtvC5s7VJHGs006bICQSlOxRFDL1BexOAo9y9YZY08DcfTgip8uY
+         ARzPRY2o1WD5SpY1cNGZ2M8y1h3ouh3fZVN6+K0hNrtzUVcsfJQkMSd/3Yn+hJ/u3NmG
+         OQC5K907g8q1d/Z4dFlTt1TB0tRIjpvW+x4nTr4/4ZRTvWeTksRPlvswzLOjb1bFIYNy
+         DK1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AIbRyeLNfvFJg7VRCeqPL8tDv5fvQyhxI4o53shpmgE=;
-        b=GZl+sOC4sKn4T5w3i+yra2JuqVT8OV6IKc/7wMry0MKzNMpZyCFa74ynHQB8vUNsBv
-         XRwbcnkgjuYRBbpUxiFUUYOzF48PLpYkHG0J0CqQF2I00VOrIjgqT9Q+SPhxsX+a91eQ
-         rZjgZZWigVJ4e4p3g0o657Vwga7mTW4ft6+05gBVBED+1iYwO03q9Oa0Eni/qCoQ/Vze
-         l6PrssRVsazWlLyUrQqkSZ/4n2bz/pkBNYnDgqspDvDVHvpQSauJtTYDxFl0euYlzSaU
-         6QxC2AwSbhfJiI3RdYaE729QGteFB6rbql4QJ4C42c8cPUIX6t9PpJ4PleTwOWyeMjiE
-         GdvQ==
-X-Gm-Message-State: AOAM533MIIQZ9dtADNbXOc4cj+IdQqLfle5Znm3CTC9y7Jyqe58kvMpe
-        Oku+S4RmdZyh/Ebg2ezK3asESKi2jxVHf9cMj+/LrVzNy0/3p0rh+8zDy+RgDY9vzUncTEDzKPZ
-        uBE8GyXIiE6Qlp3OvExn8EgLLWEyg9hWRRT5u60XLjQ==
-X-Received: by 2002:a05:600c:3d13:b0:37b:b8e5:ed80 with SMTP id bh19-20020a05600c3d1300b0037bb8e5ed80mr17813260wmb.183.1645371191710;
-        Sun, 20 Feb 2022 07:33:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzCtRKlz0JOjn2Q3UB31SmB1c1DuPa7CzF/yZujcaVE0jtuArXWTGSPrQnG/QGaa9mTDvdfNw==
-X-Received: by 2002:a05:600c:3d13:b0:37b:b8e5:ed80 with SMTP id bh19-20020a05600c3d1300b0037bb8e5ed80mr17813249wmb.183.1645371191472;
-        Sun, 20 Feb 2022 07:33:11 -0800 (PST)
-Received: from [192.168.0.117] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05600c300700b0037bf8c6ee5bsm5748991wmh.45.2022.02.20.07.33.10
+         :content-language:to:references:from:in-reply-to;
+        bh=IcItXc+sNrCk2+Q4Jyfa3crAb0rYqmVxEFy4N4i47uU=;
+        b=l0A71zM+0sGWAdLvrlE4HJS0endShJFn8H4j2or6fnSopMLmSr0cwQi+lJBb1X5Mpp
+         p6wT1hkdIEa0+exUkSPXxLjgkKvD+hd8WluULNqgKePndgAWHmTKf7iDFZYD36ufRit9
+         siKaEPTgQ3cE3dMAb5vwIRWx3qwXgk1RY4+U/6E12MfFougA2MZbr6UEz0Jk1InvabGt
+         eIClvJmAXLP/oo1aleKzAwxAOe4rW9mU4oFzbEPKRiQ0ASkOvloLzUVic4DzlcGnKP56
+         XLy+xhfBd5gso/h3rQMp7rke0yekMTwICgY6lxdcL2mpRlyOLcd9IGnyHtdeabthCPuh
+         X0DA==
+X-Gm-Message-State: AOAM532/0sEUlx803k5qz46WWHbX1dCT23m7oCTn6Dm0+Nmp6Joh1uZ0
+        dmZqga2usflrVE1hQyrgLxY=
+X-Google-Smtp-Source: ABdhPJwFUNXtcXfFkMdgXhgbQ4Y6ITGtpNl3UJPY5b45UdtubRh2rHcY2853wgdyMPNi4Jb/I1ZtvQ==
+X-Received: by 2002:a2e:9019:0:b0:22e:1b3:190d with SMTP id h25-20020a2e9019000000b0022e01b3190dmr12173130ljg.160.1645371871767;
+        Sun, 20 Feb 2022 07:44:31 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.229.64])
+        by smtp.gmail.com with ESMTPSA id j3sm854767lfr.132.2022.02.20.07.44.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 07:33:11 -0800 (PST)
-Message-ID: <fc8f6c95-e37f-0dc8-c50d-48cadffcaa98@canonical.com>
-Date:   Sun, 20 Feb 2022 16:33:10 +0100
+        Sun, 20 Feb 2022 07:44:31 -0800 (PST)
+Content-Type: multipart/mixed; boundary="------------j63aUzZwTrBB7psgfIP2n1nX"
+Message-ID: <cd08c05f-f648-071f-d8f5-0a022cd35b7b@gmail.com>
+Date:   Sun, 20 Feb 2022 18:44:29 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/3] clocksource/drivers/exynos_mct: bump up number of
- local timer
+ Thunderbird/91.5.1
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in thrustmaster_probe
 Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linux-samsung-soc@vger.kernel.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, pankaj.dubey@samsung.com,
-        m.szyprowski@samsung.com
-References: <20220220133824.33837-1-alim.akhtar@samsung.com>
- <CGME20220220132643epcas5p39d48a27bb3fcde2ea3a01a260b46e1a0@epcas5p3.samsung.com>
- <20220220133824.33837-3-alim.akhtar@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220220133824.33837-3-alim.akhtar@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     syzbot <syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com>,
+        alexandre.torgue@foss.st.com, benjamin.tissoires@redhat.com,
+        jikos@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, syzkaller-bugs@googlegroups.com
+References: <000000000000d181a205d874c066@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <000000000000d181a205d874c066@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/02/2022 14:38, Alim Akhtar wrote:
-> As per the dt binding, maximum number of local timer can be
-> up to 16. Increase the array size of the _name_ variable
-> which holds the number of local timer name per CPU to
-> reflect the binding. While at it, change the magic number to a
-> meaningful macro.
+This is a multi-part message in MIME format.
+--------------j63aUzZwTrBB7psgfIP2n1nX
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This still does not make sense. Let's say you have 16 local timers, so
-why the name of clock event device should be maximum 16? How are these
-related?
-
+On 2/20/22 18:27, syzbot wrote:
+> Hello,
 > 
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> ---
->  drivers/clocksource/exynos_mct.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> syzbot found the following issue on:
 > 
-> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-> index 0c7931f7f99a..8d63a9376701 100644
-> --- a/drivers/clocksource/exynos_mct.c
-> +++ b/drivers/clocksource/exynos_mct.c
-> @@ -66,6 +66,8 @@
->  #define MCT_L0_IRQ	4
->  /* Max number of IRQ as per DT binding document */
->  #define MCT_NR_IRQS	20
-> +/* Max number of local timers */
-> +#define MCT_NR_LOCAL_TIMERS	16
->  
->  enum {
->  	MCT_INT_SPI,
-> @@ -80,7 +82,7 @@ static int mct_irqs[MCT_NR_IRQS];
->  struct mct_clock_event_device {
->  	struct clock_event_device evt;
->  	unsigned long base;
-> -	char name[10];
-> +	char name[MCT_NR_LOCAL_TIMERS];
->  };
->  
->  static void exynos4_mct_write(unsigned int value, unsigned long offset)
+> HEAD commit:    c5d9ae265b10 Merge tag 'for-linus' of git://git.kernel.org..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14ccc65c700000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+> dashboard link: https://syzkaller.appspot.com/bug?extid=35eebd505e97d315d01c
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175ecbf2700000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=109973f2700000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+> 
+> usb 1-1: config 0 interface 0 altsetting 0 endpoint 0x81 has invalid wMaxPacketSize 0
+> usb 1-1: New USB device found, idVendor=044f, idProduct=b65d, bcdDevice= 0.40
+> usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+> usb 1-1: config 0 descriptor??
+> hid-thrustmaster 0003:044F:B65D.0001: unknown main item tag 0x0
+> hid-thrustmaster 0003:044F:B65D.0001: hidraw0: USB HID v0.00 Device [HID 044f:b65d] on usb-dummy_hcd.0-1/input0
+> ==================================================================
+> BUG: KASAN: slab-out-of-bounds in thrustmaster_interrupts drivers/hid/hid-thrustmaster.c:162 [inline]
+> BUG: KASAN: slab-out-of-bounds in thrustmaster_probe+0x8d5/0xb50 drivers/hid/hid-thrustmaster.c:330
+> Read of size 1 at addr ffff88807f1a59d2 by task kworker/1:1/35
+> 
+
+Looks like missing check for malicious device. Need to check number of 
+endpoints before accessing endpoints array
 
 
-Best regards,
-Krzysztof
+#syz test
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+
+
+
+
+
+With regards,
+Pavel Skripkin
+--------------j63aUzZwTrBB7psgfIP2n1nX
+Content-Type: text/plain; charset=UTF-8; name="ph"
+Content-Disposition: attachment; filename="ph"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaGlkL2hpZC10aHJ1c3RtYXN0ZXIuYyBiL2RyaXZlcnMv
+aGlkL2hpZC10aHJ1c3RtYXN0ZXIuYwppbmRleCAwM2I5MzVmZjAyZDUuLjI0NGMzYWE0ZDBj
+MyAxMDA2NDQKLS0tIGEvZHJpdmVycy9oaWQvaGlkLXRocnVzdG1hc3Rlci5jCisrKyBiL2Ry
+aXZlcnMvaGlkL2hpZC10aHJ1c3RtYXN0ZXIuYwpAQCAtMTU4LDYgKzE1OCwxMSBAQCBzdGF0
+aWMgdm9pZCB0aHJ1c3RtYXN0ZXJfaW50ZXJydXB0cyhzdHJ1Y3QgaGlkX2RldmljZSAqaGRl
+dikKIAkJcmV0dXJuOwogCX0KIAorCWlmICh1c2JpZi0+Y3VyX2FsdHNldHRpbmctPmRlc2Mu
+Yk51bUVuZHBvaW50cyA8IDIpIHsKKwkJaGlkX2VycihoZGV2LCAiV3JvbmcgbnVtYmVyIG9m
+IGVuZHBvaW50cz9cbiIpOworCQlyZXR1cm47CisJfQorCiAJZXAgPSAmdXNiaWYtPmN1cl9h
+bHRzZXR0aW5nLT5lbmRwb2ludFsxXTsKIAliX2VwID0gZXAtPmRlc2MuYkVuZHBvaW50QWRk
+cmVzczsKIAo=
+
+--------------j63aUzZwTrBB7psgfIP2n1nX--
