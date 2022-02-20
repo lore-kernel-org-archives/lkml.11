@@ -2,94 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4099CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA01C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240460AbiBTUjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 15:39:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37350 "EHLO
+        id S244933AbiBTUlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 15:41:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbiBTUjw (ORCPT
+        with ESMTP id S243846AbiBTUlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 15:39:52 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6142C4504B
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:39:30 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id b9so15011529lfv.7
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:39:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kKRB2WaBF2GQiP6qlxkilcBwOuI+2IkPQKIJsc3NqsQ=;
-        b=SX6+NI65ZhEZjT0l+lz22ObM1ZRomNOXQVzcDjpB5YASTsnX4Uuq5t6Cet7vkOLXks
-         aj3JuAWymCoQm7vmt2bwsxBatEGXFUsDHCXTKhDi7v5ho/LHIdE9nnZMOMw8fli5iDMi
-         6FKTFvq4sD7aOtt89az18DgLMAcPVrsdyNxh0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kKRB2WaBF2GQiP6qlxkilcBwOuI+2IkPQKIJsc3NqsQ=;
-        b=bY0jabPM7XGoIgf21jhiIKT/RiA7J6ttLzUwKXUarL3zmjDx9RKTOtER2EL2jWXjgF
-         ByC5TEfvluitzoyec46VKQIrmciMdN4wG7T2N3Y9ONlyqYNLqMpt3bKXwuDaOyGNgtEB
-         aRHNqhXmZk4C/nAVS6sztPqUabs2pgLWdRlP3rxzr//b6BZ7enOYtbo44+bmBpTBNdrG
-         DJwsPLKLfdY7KExWcwGxaj9ttSdkMMq+c2pppOKBZwFlqvxzBJ40761/ODwmUgcKin4g
-         h2bHFcqeqVdkx1xnUYtUc+8a/kf4B7v07o8AHbebMGnB+8ZALHw0PkZ03TMDNkFPGL/H
-         WLTg==
-X-Gm-Message-State: AOAM533sMYbmwqHYJPvUJo/773Juf9UjLdWViUk0abLvhjbgtClQa/Qw
-        SDnFOmUGVR6uUHLq313GBVKmxp6PbzZXuYos
-X-Google-Smtp-Source: ABdhPJyL1jrlNohak0kjM5ixte7RCBPyeT2spdN7/GiuSeDMNchNpHvnrW75vzrY/1hPuy6hPVs5lQ==
-X-Received: by 2002:ac2:4146:0:b0:441:efd2:365d with SMTP id c6-20020ac24146000000b00441efd2365dmr12267151lfi.100.1645389568487;
-        Sun, 20 Feb 2022 12:39:28 -0800 (PST)
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
-        by smtp.gmail.com with ESMTPSA id u7sm907512lfr.282.2022.02.20.12.39.27
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 12:39:27 -0800 (PST)
-Received: by mail-lf1-f48.google.com with SMTP id b11so14962940lfb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:39:27 -0800 (PST)
-X-Received: by 2002:ac2:4211:0:b0:438:2f1:83c4 with SMTP id
- y17-20020ac24211000000b0043802f183c4mr12074683lfh.435.1645389567567; Sun, 20
- Feb 2022 12:39:27 -0800 (PST)
+        Sun, 20 Feb 2022 15:41:14 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68894504B
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 12:40:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645389652; x=1676925652;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RMnD4wOL7OnLZUXpJW3NUpR+DX6XnJhawhtfZ6t3ZUw=;
+  b=BGW0cVHvnOR/8xbOZiCfIZEh3Q+aCED1ygL2PX5ZLDWr+7U0G+B0ZHyo
+   tpVv7xAoMWQygYCAj1OI5Vg5iQNSyacZFyBJU1lEAsn4F9jPJQdwWSmz4
+   +YRotFV31sFbabYassiQjjcKBPIDnhlafOYtr9URc8CifN8WAo+HlSXzm
+   I5DApB+g+ciZfFdSvQOW5uqFt+kKa5+u/Vx304uZpuCuYPVbujQYrChop
+   5UIGYY6VjE00nNNe1SRr2s9BkDLpL1BpmsS4HM+kAamPQ/Tozr0hHq9lp
+   IiB0Pp7OCkEtbttZjFHzxzIKvd1Gs0gk6a637F5kIdtcmz2IDlGKu1mbR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="314664743"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="314664743"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 12:40:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="490239414"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 20 Feb 2022 12:40:51 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nLt0k-0000jO-CU; Sun, 20 Feb 2022 20:40:50 +0000
+Date:   Mon, 21 Feb 2022 04:40:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ardb:arm64-ro-page-tables-pkvm-v5.17 27/28]
+ include/asm-generic/memory_model.h:26:56: error: invalid operands to binary
+ - (have 'pgtable_t' {aka 'pte_t *'} and 'struct page *')
+Message-ID: <202202210430.5h3lgiMQ-lkp@intel.com>
 MIME-Version: 1.0
-References: <YhIq94B0MpYGrEm2@zn.tnic> <CAHk-=whi4n6xvy99U-q_GrR_hHk8es4GtDKtywiL5nRFUWroAQ@mail.gmail.com>
- <YhKj08BBnevqtbch@zn.tnic>
-In-Reply-To: <YhKj08BBnevqtbch@zn.tnic>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 20 Feb 2022 12:39:11 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whvy0h0WfT8g=6rfws75xB94+yuALtSY1Gpx0bvnOqTFg@mail.gmail.com>
-Message-ID: <CAHk-=whvy0h0WfT8g=6rfws75xB94+yuALtSY1Gpx0bvnOqTFg@mail.gmail.com>
-Subject: Re: [GIT PULL] EDAC fix for 5.17
-To:     Borislav Petkov <bp@suse.de>
-Cc:     linux-edac <linux-edac@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 20, 2022 at 12:25 PM Borislav Petkov <bp@suse.de> wrote:
->
-> Yah, where do I start... so, about this, I think I can simplify it by
-> simply unconditionally aligning to 8.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git arm64-ro-page-tables-pkvm-v5.17
+head:   1faeabde0ba3c81ad666ab924ab79ef64843d40d
+commit: 5a6759851a4881d8ed981f899cea14c680c4fede [27/28] mm: HACK provide target address when migrating a PMD entry
+config: s390-randconfig-r044-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210430.5h3lgiMQ-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=5a6759851a4881d8ed981f899cea14c680c4fede
+        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
+        git fetch --no-tags ardb arm64-ro-page-tables-pkvm-v5.17
+        git checkout 5a6759851a4881d8ed981f899cea14c680c4fede
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Sounds good.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Then you could just do something like
+All errors (new ones prefixed by >>):
 
-        void *ptr = (void *)ALIGN_UP((unsigned long)*p, 8);
-        *p = ptr + size*n_memb;
-        return ptr;
+   In file included from arch/s390/include/asm/thread_info.h:26,
+                    from include/linux/thread_info.h:60,
+                    from arch/s390/include/asm/preempt.h:6,
+                    from include/linux/preempt.h:78,
+                    from include/linux/spinlock.h:55,
+                    from include/linux/mmzone.h:8,
+                    from include/linux/gfp.h:6,
+                    from include/linux/mm.h:10,
+                    from mm/huge_memory.c:8:
+   mm/huge_memory.c: In function '__split_huge_zero_page_pmd':
+>> include/asm-generic/memory_model.h:26:56: error: invalid operands to binary - (have 'pgtable_t' {aka 'pte_t *'} and 'struct page *')
+      26 | #define __page_to_pfn(page)     (unsigned long)((page) - vmemmap)
+         |                                                        ^
+   arch/s390/include/asm/page.h:101:37: note: in definition of macro '__pmd'
+     101 | #define __pmd(x)        ((pmd_t) { (x) } )
+         |                                     ^
+   arch/s390/include/asm/page.h:173:33: note: in expansion of macro 'pfn_to_phys'
+     173 | #define page_to_phys(page)      pfn_to_phys(page_to_pfn(page))
+         |                                 ^~~~~~~~~~~
+   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
+      52 | #define page_to_pfn __page_to_pfn
+         |                     ^~~~~~~~~~~~~
+   arch/s390/include/asm/page.h:173:45: note: in expansion of macro 'page_to_pfn'
+     173 | #define page_to_phys(page)      pfn_to_phys(page_to_pfn(page))
+         |                                             ^~~~~~~~~~~
+   mm/huge_memory.c:1956:42: note: in expansion of macro 'page_to_phys'
+    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                          ^~~~~~~~~~~~
+   mm/huge_memory.c:1956:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
+    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/s390/include/asm/page.h:101:37: note: in definition of macro '__pmd'
+     101 | #define __pmd(x)        ((pmd_t) { (x) } )
+         |                                     ^
+   mm/huge_memory.c:1956:66: note: each undeclared identifier is reported only once for each function it appears in
+    1956 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/s390/include/asm/page.h:101:37: note: in definition of macro '__pmd'
+     101 | #define __pmd(x)        ((pmd_t) { (x) } )
+         |                                     ^
+   mm/huge_memory.c: In function '__split_huge_pmd_locked':
+>> include/asm-generic/memory_model.h:26:56: error: invalid operands to binary - (have 'pgtable_t' {aka 'pte_t *'} and 'struct page *')
+      26 | #define __page_to_pfn(page)     (unsigned long)((page) - vmemmap)
+         |                                                        ^
+   arch/s390/include/asm/page.h:101:37: note: in definition of macro '__pmd'
+     101 | #define __pmd(x)        ((pmd_t) { (x) } )
+         |                                     ^
+   arch/s390/include/asm/page.h:173:33: note: in expansion of macro 'pfn_to_phys'
+     173 | #define page_to_phys(page)      pfn_to_phys(page_to_pfn(page))
+         |                                 ^~~~~~~~~~~
+   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
+      52 | #define page_to_pfn __page_to_pfn
+         |                     ^~~~~~~~~~~~~
+   arch/s390/include/asm/page.h:173:45: note: in expansion of macro 'page_to_pfn'
+     173 | #define page_to_phys(page)      pfn_to_phys(page_to_pfn(page))
+         |                                             ^~~~~~~~~~~
+   mm/huge_memory.c:2137:42: note: in expansion of macro 'page_to_phys'
+    2137 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                          ^~~~~~~~~~~~
+   mm/huge_memory.c:2137:66: error: 'PMD_TYPE_TABLE' undeclared (first use in this function)
+    2137 |         set_pmd_at(mm, haddr, pmd, __pmd(page_to_phys(pgtable) | PMD_TYPE_TABLE));
+         |                                                                  ^~~~~~~~~~~~~~
+   arch/s390/include/asm/page.h:101:37: note: in definition of macro '__pmd'
+     101 | #define __pmd(x)        ((pmd_t) { (x) } )
+         |                                     ^
 
-and that would be a lot simpler.
 
-> My gut feeling is telling me
-> 8-bytes alignment should simply work on everything. Because if it does,
-> all that crap becomes a lot simpler. But maybe I'm being too simplistic
-> here and there might be a corner-case where 8-bytes alignment just
-> doesn't work...
+vim +26 include/asm-generic/memory_model.h
 
-Well, if 8-byte alignment doesn't work, then the existing code (with
-the fix) doesn't work either, so..
+8f6aac419bd590 Christoph Lameter  2007-10-16  23  
+af901ca181d92a André Goddard Rosa 2009-11-14  24  /* memmap is virtually contiguous.  */
+8f6aac419bd590 Christoph Lameter  2007-10-16  25  #define __pfn_to_page(pfn)	(vmemmap + (pfn))
+32272a26974d20 Martin Schwidefsky 2008-12-25 @26  #define __page_to_pfn(page)	(unsigned long)((page) - vmemmap)
+8f6aac419bd590 Christoph Lameter  2007-10-16  27  
 
-                 Linus
+:::::: The code at line 26 was first introduced by commit
+:::::: 32272a26974d2027384fd4010cd1780fca425d94 [S390] __page_to_pfn warnings
+
+:::::: TO: Martin Schwidefsky <schwidefsky@de.ibm.com>
+:::::: CC: Martin Schwidefsky <schwidefsky@de.ibm.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
