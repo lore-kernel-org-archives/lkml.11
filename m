@@ -2,145 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5672C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C339C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241184AbiBTN13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 08:27:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57716 "EHLO
+        id S243855AbiBTN3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 08:29:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243837AbiBTN1S (ORCPT
+        with ESMTP id S230222AbiBTN3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 08:27:18 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CA435845
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:26:57 -0800 (PST)
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220220132651epoutp048dbf121aea9604cadaa9950cd57308dd~VgXyoNypa1461814618epoutp04Q
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 13:26:51 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220220132651epoutp048dbf121aea9604cadaa9950cd57308dd~VgXyoNypa1461814618epoutp04Q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1645363611;
-        bh=tSo2reU1UKCOdjcpnCsVa18TmwpMfYdF3qeO3szLFLk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nWVmLz4XRP1TPN3uH4xNGhsLeolr/8XkHQGhtptLq4hG/LxkzYafdRzOIcfU3lqhS
-         o7A7ReKEapGpO4/uIdwcLchATpShTNe9erZDiMo3E8jaff//uOv889NUmh5kgEODdT
-         9MrH5lblikju/LWAzR4LRS2YbZNEawcJxdDmi8TA=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220220132650epcas5p40eff534d30a733844e0838a3f6322d4c~VgXxuCVKU2772027720epcas5p4s;
-        Sun, 20 Feb 2022 13:26:50 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.180]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4K1mRn1kZbz4x9Pp; Sun, 20 Feb
-        2022 13:26:45 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        EB.EB.06423.39142126; Sun, 20 Feb 2022 22:26:43 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220220132643epcas5p39d48a27bb3fcde2ea3a01a260b46e1a0~VgXrsbyFZ0719107191epcas5p3l;
-        Sun, 20 Feb 2022 13:26:43 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220220132643epsmtrp1c95de1de4426b0fce5bf13fe49af6b7b~VgXrxaHRp0610706107epsmtrp1b;
-        Sun, 20 Feb 2022 13:26:43 +0000 (GMT)
-X-AuditID: b6c32a49-b13ff70000001917-ef-62124193a85e
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        0D.F0.08738.19142126; Sun, 20 Feb 2022 22:26:41 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220220132642epsmtip1032ae595d8aa0bbeedff726725dabe64~VgXqVOPN12018020180epsmtip1v;
-        Sun, 20 Feb 2022 13:26:42 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, pankaj.dubey@samsung.com,
-        m.szyprowski@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH v2 3/3] clocksource/drivers/exynos_mct: bump up number of
- local timer
-Date:   Sun, 20 Feb 2022 19:08:24 +0530
-Message-Id: <20220220133824.33837-3-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220220133824.33837-1-alim.akhtar@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrPKsWRmVeSWpSXmKPExsWy7bCmuu5kR6EkgykPhCwezNvGZjHvs6zF
-        xrc/mCw2Pb7GanF51xw2ixnn9zFZrD1yl91i0dYv7BabN01lduD0mNXQy+Zx59oeNo93586x
-        e2xeUu/Rt2UVo8fnTXIBbFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJ
-        uam2Si4+AbpumTlANykplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCkwK9IoTc4tL
-        89L18lJLrAwNDIxMgQoTsjNuTl/AVvCMo2LLs/dMDYxz2bsYOTkkBEwkpl9extzFyMUhJLCb
-        UWLx1ilQzidGiTXvNrBAOJ8ZJT6efs4K07J31QRWiMQuRomnL5uYQRJCAi1MEh8nCoDYbALa
-        Enenb2ECsUUE3CRuNHYwgTQwC1xjlPgz8RAjSEJYIFyi//8isKksAqoS52/cBhvEK2AjcfbT
-        B6gD5SVWbzgAFOfg4BSwlbjVaQwyR0LgHrtEa/dUJogaF4kdBx9B2cISr45vgeqVknjZ38YO
-        0ishkC3Rs8sYIlwjsXTeMRYI217iwJU5LCAlzAKaEut36YOEmQX4JHp/P2GC6OSV6GgTgqhW
-        lWh+dxWqU1piYnc3NEg8JJauec4ICZIJjBInWrawTGCUnYUwdQEj4ypGydSC4tz01GLTAsO8
-        1HJ4PCXn525iBKc0Lc8djHcffNA7xMjEwXiIUYKDWUmE98NB3iQh3pTEyqrUovz4otKc1OJD
-        jKbAEJvILCWanA9Mqnkl8YYmlgYmZmZmJpbGZoZK4ryn0zckCgmkJ5akZqemFqQWwfQxcXBK
-        NTBx205eJ/B/beTTSZ1xzMnp+evrxG7ILVFT33mZ5SZnv4GE+v6v/YlLmJ8tdeC71Lho7nUX
-        PbVljWYrPK6HOszfv/TQIUufxFmuXjciRHrcXxhcvrBA6U+jzs+wQylHGXwsDHyPcTyd8eL2
-        aTbJ1L1WLdo/GOYE/u1N6nt3RrnwXlRi54LdaUHtB1vrXl23Cv23QYj3ye9nFUt7ZtatuFls
-        2DbZX7GhZlEvb2W2MVv3jclMs9j8GHVt7u0OCV215kXf/CNVj+4pFa4KzvB1urBg+XJ7veMs
-        L2KOOz+uOxH+53T7PAY1Pd9fE/zCy1uy+TvKatl3NF3jmxz8+ETPzurXxqezp6Sk6LzpKb+W
-        E6HEUpyRaKjFXFScCABzetYD8gMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrELMWRmVeSWpSXmKPExsWy7bCSnO5ER6Ekg+tNZhYP5m1js5j3WdZi
-        49sfTBabHl9jtbi8aw6bxYzz+5gs1h65y26xaOsXdovNm6YyO3B6zGroZfO4c20Pm8e7c+fY
-        PTYvqffo27KK0ePzJrkAtigum5TUnMyy1CJ9uwSujJvTF7AVPOOo2PLsPVMD41z2LkZODgkB
-        E4m9qyawdjFycQgJ7GCU2PBhMytEQlri+sYJUEXCEiv/PQezhQSamCS2rRABsdkEtCXuTt/C
-        BGKLCHhItP27xwwyiFngHqPE75ZpjF2MHBzCAqESN/bwgtSwCKhKnL9xmxnE5hWwkTj76QPU
-        fHmJ1RsOMIOUcwrYStzqNIZYZSMx++5+5gmMfAsYGVYxSqYWFOem5xYbFhjlpZbrFSfmFpfm
-        pesl5+duYgQHo5bWDsY9qz7oHWJk4mA8xCjBwawkwvvhIG+SEG9KYmVValF+fFFpTmrxIUZp
-        DhYlcd4LXSfjhQTSE0tSs1NTC1KLYLJMHJxSDUzHf5U5vOCau7de+oZ9u1Sl0YV/++Iidt26
-        +0D3AI/XN+lVIkb/Xx1ubNJY80P32i0Gu7gNW1Tvrt4QLSKsuWmaS0XO33VrprRuCjc6kzvL
-        h6erfUP7lV8T3/foZ/HVlD0+8nnupI+snEGnFCTt3zR0d1bGHXjh9YnldN40i80tqXYFsbqS
-        Yu+bvnR53ghSOVl5gvUU1843p3zla6a93Rt75HLJlfUvbMJEWJap7PE9F+HLduyQdvDU61NP
-        f5v/N5iXLXVH28YdCw3ucHq78CzWWPqdQYZnVcB9Z41ah0beQvt//T/7LuqysCzYNTP51sTL
-        L05ymeXsWaYTYHi2riVj/v/w6DaWSBPjgr4L3b1KLMUZiYZazEXFiQDkHmSWtQIAAA==
-X-CMS-MailID: 20220220132643epcas5p39d48a27bb3fcde2ea3a01a260b46e1a0
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220220132643epcas5p39d48a27bb3fcde2ea3a01a260b46e1a0
-References: <20220220133824.33837-1-alim.akhtar@samsung.com>
-        <CGME20220220132643epcas5p39d48a27bb3fcde2ea3a01a260b46e1a0@epcas5p3.samsung.com>
+        Sun, 20 Feb 2022 08:29:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7F1253722
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:29:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645363764;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FRPntWvshfDenxbGxdVvIvxdTbXfXgHkAZlaR6+SGm0=;
+        b=VH3HdkYyPvBLDtLeEqe9KAlXsYuplPQiScXHswi4/CbxidUj6vkBv/AxZ3GkvypQr5455N
+        Hebko+DjHEjbi9sZLl9YaaT6rnVR73SKvtbNfAwomUH7TKWIBHRwqG5yK29E5ETpKRPA89
+        Obhy7eDWLabNZ1BI2qUJC5KJZ1RcE3Y=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-mwyC6lIpNgiCw2RTPe0iIA-1; Sun, 20 Feb 2022 08:29:23 -0500
+X-MC-Unique: mwyC6lIpNgiCw2RTPe0iIA-1
+Received: by mail-wr1-f72.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so5911894wrg.13
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:29:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FRPntWvshfDenxbGxdVvIvxdTbXfXgHkAZlaR6+SGm0=;
+        b=nPpbWarRWrYJZoI1uPU9BkxHiw3AvW/ZDGyNtHi8MnYOoN4++O4MALaY1Oz+NvkB6e
+         ZQrU6xnWQgg8UtJyM8H7aKsPQRZlvBwgx28Zv6kNk0i1I5B00CCEpf5NsGFjgNeT76e1
+         ss6YkL+WslaxNY9T3IVVL59yGf69i2ea5hg4DcqSvMkM/VBvpvXtuDEmfMNvr6IF6Xla
+         1pNIa3JkYjhERBnia9W1U06VcWsMxNqnSgt4nBB6bPPDPR9LVLizlUeKF6ivTjaDqAyX
+         QbqyUjwLjke1/PC52+33/xgTkEmELxTy9B43PKCKA3cxQaNiHS8L2X8D1oYJRnEnCerB
+         gNyQ==
+X-Gm-Message-State: AOAM531RzPp6ULaJp3fADAUYEH7hDhOOPnbzlFP7dCsEt4r7AEBLbmMu
+        SIR4LPA4LQrXtswUc2aaqAlbp8zYIhv+CHhsDJLZhQDdLl58sDoE8HLIEbZW5UDjq54+K+5b/QB
+        yWVKPOmsi1A2xNZrjReuTsB9F
+X-Received: by 2002:a05:600c:4f14:b0:353:32b7:b47 with SMTP id l20-20020a05600c4f1400b0035332b70b47mr18483386wmq.126.1645363761691;
+        Sun, 20 Feb 2022 05:29:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxFqaJMS2hBKIB06HWg2NFRkpvjpQmk4gxm+IRCWOoJb+dl4Li14prMspW5pcpFnWR6+WgJRw==
+X-Received: by 2002:a05:600c:4f14:b0:353:32b7:b47 with SMTP id l20-20020a05600c4f1400b0035332b70b47mr18483371wmq.126.1645363761278;
+        Sun, 20 Feb 2022 05:29:21 -0800 (PST)
+Received: from redhat.com ([2.55.134.183])
+        by smtp.gmail.com with ESMTPSA id p20-20020a7bcc94000000b0037d587d4841sm4724722wma.42.2022.02.20.05.29.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Feb 2022 05:29:20 -0800 (PST)
+Date:   Sun, 20 Feb 2022 08:29:17 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>,
+        jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
+Message-ID: <20220220075826-mutt-send-email-mst@kernel.org>
+References: <20220219125100.835-1-hdanton@sina.com>
+ <20220220014715.921-1-hdanton@sina.com>
+ <20220220110941.980-1-hdanton@sina.com>
+ <20220220071446-mutt-send-email-mst@kernel.org>
+ <CACT4Y+Y_d2T4-TR2g_EPkaudWGxeEM8rrpQSkBANzCbme10ZtA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+Y_d2T4-TR2g_EPkaudWGxeEM8rrpQSkBANzCbme10ZtA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220220132917.zwFWfG5esFlcAz2VPwrmDlRWRAkb3yCGyXiG4H6mhwQ@z>
 
-As per the dt binding, maximum number of local timer can be
-up to 16. Increase the array size of the _name_ variable
-which holds the number of local timer name per CPU to
-reflect the binding. While at it, change the magic number to a
-meaningful macro.
+On Sun, Feb 20, 2022 at 01:31:02PM +0100, Dmitry Vyukov wrote:
+> On Sun, 20 Feb 2022 at 13:16, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > On Sat, 19 Feb 2022 05:01:10 -0800
+> > > > > > Hello,
+> > > > > >
+> > > > > > syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+> > > > > > kernel BUG in vhost_get_vq_desc
+> > > > >
+> > > > > The WARNING: CPU: 1 PID: 4052 at drivers/vhost/vhost.c:715 got quiesced.
+> > > > > >
+> > > > > > ------------[ cut here ]------------
+> > > > > > kernel BUG at drivers/vhost/vhost.c:2338!
+> > > > >
+> > > > > Given the mutex_lock(&vq->mutex) in vhost_vsock_handle_tx_kick(), this
+> > > > > report proves that the bug is bogus.
+> > > > >
+> > > > > > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> > > > > > CPU: 0 PID: 4071 Comm: vhost-4070 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
+> > > > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > > > > > RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
+> > > > > > Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+> > > > > > RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
+> > > > > > RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+> > > > > > RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
+> > > > > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+> > > > > > R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
+> > > > > > R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
+> > > > > > FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> > > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > > > CR2: 0000000000000002 CR3: 000000001d077000 CR4: 00000000003506f0
+> > > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > > > Call Trace:
+> > > > > >  <TASK>
+> > > > > >  vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
+> > > > > >  vhost_worker+0x2e9/0x3e0 drivers/vhost/vhost.c:374
+> > > > > >  kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> > > > > >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> > > > > >  </TASK>
+> > > > > > Modules linked in:
+> > > > > > ---[ end trace 0000000000000000 ]---
+> > > > > > RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
+> > > > > > Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+> > > > > > RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
+> > > > > > RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+> > > > > > RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
+> > > > > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+> > > > > > R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
+> > > > > > R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
+> > > > > > FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> > > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > > > CR2: 00007fc7293991d0 CR3: 000000001d077000 CR4: 00000000003506e0
+> > > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > > > >
+> > > > > >
+> > > > > > Tested on:
+> > > > > >
+> > > > > > commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
+> > > > > > git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+> > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=11e82d7a700000
+> > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+> > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
+> > > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > > > > patch:          https://syzkaller.appspot.com/x/patch.diff?x=11857326700000
+> > > > >
+> > > > > Attempted fix is bail out if anything eerie is detected in terms of the
+> > > > > notify flag.
+> > > >
+> > > Hello Mike,
+> > >
+> > > Thanks for taking a look at it.
+> > >
+> > > > I mean this will fix the warning for sure, but do we understand how
+> > > > it might have triggered?
+> > >
+> > > Based on what's fed to BUG_ON in the hunk below, it was the update of
+> > > used_flag behind our back that pulled the trigger.
+> > >
+> > > The bigger pain is, given the mutex_lock(&vq->mutex) in
+> > > vhost_vsock_handle_tx_kick(), I find nothing to do about it now after
+> > > scratching scalp twenty minutes other than detecting the update.
+> >
+> > Right. I think it's highly likely a use after free.
+> > How about poisoning the vq struct with some value before freeing
+> > so we can catch that?
+> 
+> syzbot config enables KASAN, which catches most use-after-frees. So
+> unless there is something very special about this code, I wouldn't
+> assume this is a use-after-free.
+> Some racy use-after-frees may be caught as both use-after-frees and
+> other types of bugs with lower probability. I see 8 bugs on the syzbot
+> dashboard that mention "vhost" but none of the are use-after-frees.
+> 
 
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
----
- drivers/clocksource/exynos_mct.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Okay, for starters let's try to make sure whether what we are seeing is
+actually accessing a vsock that is being released.
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index 0c7931f7f99a..8d63a9376701 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -66,6 +66,8 @@
- #define MCT_L0_IRQ	4
- /* Max number of IRQ as per DT binding document */
- #define MCT_NR_IRQS	20
-+/* Max number of local timers */
-+#define MCT_NR_LOCAL_TIMERS	16
+
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ f71077a4d84b 
+
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index d6ca1c7ad513..2dbc64f072e8 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -58,6 +58,7 @@ struct vhost_vsock {
  
- enum {
- 	MCT_INT_SPI,
-@@ -80,7 +82,7 @@ static int mct_irqs[MCT_NR_IRQS];
- struct mct_clock_event_device {
- 	struct clock_event_device evt;
- 	unsigned long base;
--	char name[10];
-+	char name[MCT_NR_LOCAL_TIMERS];
+ 	u32 guest_cid;
+ 	bool seqpacket_allow;
++	bool dead;
  };
  
- static void exynos4_mct_write(unsigned int value, unsigned long offset)
--- 
-2.25.1
+ static u32 vhost_transport_get_local_cid(void)
+@@ -106,6 +107,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 
+ 	/* Avoid further vmexits, we're already processing the virtqueue */
+ 	vhost_disable_notify(&vsock->dev, vq);
++	WARN_ON(vsock->dead);
+ 
+ 	do {
+ 		struct virtio_vsock_pkt *pkt;
+@@ -128,6 +130,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 		list_del_init(&pkt->list);
+ 		spin_unlock_bh(&vsock->send_pkt_list_lock);
+ 
++		WARN_ON(vsock->dead);
+ 		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+ 					 &out, &in, NULL, NULL);
+ 		if (head < 0) {
+@@ -510,6 +513,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 		goto out;
+ 
+ 	vhost_disable_notify(&vsock->dev, vq);
++	WARN_ON(vsock->dead);
+ 	do {
+ 		if (!vhost_vsock_more_replies(vsock)) {
+ 			/* Stop tx until the device processes already
+@@ -519,6 +523,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 			goto no_more_replies;
+ 		}
+ 
++		WARN_ON(vsock->dead);
+ 		head = vhost_get_vq_desc(vq, vq->iov, ARRAY_SIZE(vq->iov),
+ 					 &out, &in, NULL, NULL);
+ 		if (head < 0)
+@@ -678,6 +683,7 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
+ 	}
+ 
+ 	vsock->guest_cid = 0; /* no CID assigned yet */
++	vsock->dead = false;
+ 
+ 	atomic_set(&vsock->queued_replies, 0);
+ 
+@@ -754,8 +760,9 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 
+ 	vhost_vsock_stop(vsock);
+-	vhost_vsock_flush(vsock);
+ 	vhost_dev_stop(&vsock->dev);
++	vhost_vsock_flush(vsock);
++	vsock->dead = true;
+ 
+ 	spin_lock_bh(&vsock->send_pkt_list_lock);
+ 	while (!list_empty(&vsock->send_pkt_list)) {
 
