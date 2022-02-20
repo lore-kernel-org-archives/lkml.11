@@ -2,120 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7704C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73531C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 20:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237687AbiBTUU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 15:20:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48190 "EHLO
+        id S231687AbiBTUUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 15:20:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244864AbiBTUUU (ORCPT
+        with ESMTP id S244834AbiBTUUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 15:20:20 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC454C787;
-        Sun, 20 Feb 2022 12:19:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645388394; x=1676924394;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hlNCeNeRCUKG5xiQPa/coq+l8HnadNht1MDbLYfKSWk=;
-  b=YjffgtgklNnK+v6RNeaa+uqVnHALHCG4LHYOnOuFtr5m/BmSzY3Nsl+x
-   xGfmOFkU9QOiUafi50UJ3XvFLNJj5aSlmRAzWMliBaAcvuIV0gesFZl9+
-   FvcuKEFkkS5wWbAg3qVPqZSVPimfsA8FScdwAbBTJtxlLKGPT7ZRhbJjZ
-   OfMxlsiANAt2FxmwQ8n5K2UWSzXsxL2856aX/UF2PyXZUzZ8lsr5wp69A
-   vN7iNysJ/vcQqf7MsaxIPhmJpM3GpzjUfExC++SdYKnbBVaI7jP6aPJQy
-   WvkmZvXGARqTbwjBaUoxQCFmNkwxG7ICTXQIqQhfkuZaWQY2ZnHsDJZM3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="250219138"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="250219138"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 12:19:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="636447450"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 20 Feb 2022 12:19:50 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nLsgP-0000iC-RB; Sun, 20 Feb 2022 20:19:49 +0000
-Date:   Mon, 21 Feb 2022 04:19:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 6/8] media: staging: tegra-vde: De-stage driver
-Message-ID: <202202210437.dSxqXeIm-lkp@intel.com>
-References: <20220220172950.3401-7-digetx@gmail.com>
+        Sun, 20 Feb 2022 15:20:12 -0500
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1470E4C780;
+        Sun, 20 Feb 2022 12:19:50 -0800 (PST)
+Received: from localhost.localdomain (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 8B239C83E9;
+        Sun, 20 Feb 2022 20:19:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1645388388; bh=VXX5F/h0hjht7uz/YF5YGs/QOjunaAi3MmCFODKAvGI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=TtzoKS+drxicpXWJbFgJuH4+tGnuaF5nx4AEs94a3P3PTZU2BZ+cHiJzCR13ryP0U
+         2v05SP6+jnc1kEjawXqA0mSKQJHNern4MnMaZTZ1ZjamcGITOxFw6T52tN4Y2ZMqtO
+         99kKFxcyb/J0eJIw2CMwu7J5KWE6yrALQ3OBuT+4=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Luca Weiss <luca@z3ntu.xyz>, Rob Herring <robh@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 09/10] dt-bindings: arm: qcom: Document sdm632 and fairphone,fp3 board
+Date:   Sun, 20 Feb 2022 21:19:02 +0100
+Message-Id: <20220220201909.445468-10-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220220201909.445468-1-luca@z3ntu.xyz>
+References: <20220220201909.445468-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220220172950.3401-7-digetx@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry,
+Add binding documentation for Fairphone 3 smartphone which is based on
+Snapdragon 632 (sm632).
 
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on media-tree/master]
-[also build test ERROR on tegra/for-next linus/master v5.17-rc4 next-20220217]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Dmitry-Osipenko/Add-V4L-stateless-video-decoder-API-support-to-NVIDIA-Tegra-driver/20220221-013333
-base:   git://linuxtv.org/media_tree.git master
-config: x86_64-randconfig-m001
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/dd010c4949a824dda7225b7074050b5736d3894a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Dmitry-Osipenko/Add-V4L-stateless-video-decoder-API-support-to-NVIDIA-Tegra-driver/20220221-013333
-        git checkout dd010c4949a824dda7225b7074050b5736d3894a
-        make W=1 ARCH=x86_64  randconfig
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 distclean
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> scripts/Makefile.clean:15: drivers/staging/media/tegra-vde/Makefile: No such file or directory
->> make[5]: *** No rule to make target 'drivers/staging/media/tegra-vde/Makefile'.
-   make[5]: Failed to remake makefile 'drivers/staging/media/tegra-vde/Makefile'.
-   make[4]: *** [scripts/Makefile.clean:68: drivers/staging/media/tegra-vde] Error 2
-   make[4]: Target '__clean' not remade because of errors.
-   make[3]: *** [scripts/Makefile.clean:68: drivers/staging/media] Error 2
-   make[3]: Target '__clean' not remade because of errors.
-   make[2]: *** [scripts/Makefile.clean:68: drivers/staging] Error 2
-   make[2]: Target '__clean' not remade because of errors.
-   make[1]: *** [Makefile:1838: _clean_drivers] Error 2
-   make[1]: Target 'distclean' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'distclean' not remade because of errors.
-
-
-vim +15 scripts/Makefile.clean
-
-2315c6e4227815 Sam Ravnborg   2005-07-25  12  
-2a691470345a00 Sam Ravnborg   2005-07-25  13  # The filename Kbuild has precedence over Makefile
-db8c1a7b2ca25f Sam Ravnborg   2005-07-27  14  kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
-db8c1a7b2ca25f Sam Ravnborg   2005-07-27 @15  include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
-^1da177e4c3f41 Linus Torvalds 2005-04-16  16  
-
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changes in v2:
+- no changes
+
+ Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index e8b1606bc849..129cdd246223 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -42,6 +42,7 @@ description: |
+         sc7180
+         sc7280
+         sdm630
++        sdm632
+         sdm660
+         sdm845
+         sdx55
+@@ -224,6 +225,11 @@ properties:
+               - google,senor
+           - const: qcom,sc7280
+ 
++      - items:
++          - enum:
++              - fairphone,fp3
++          - const: qcom,sdm632
++
+       - items:
+           - enum:
+               - xiaomi,lavender
+-- 
+2.35.1
+
