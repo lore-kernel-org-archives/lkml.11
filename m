@@ -2,176 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 11:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 11:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241270AbiBTL5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 06:57:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45386 "EHLO
+        id S242031AbiBTMAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 07:00:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237539AbiBTL5h (ORCPT
+        with ESMTP id S232313AbiBTMAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 06:57:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBFF2DD4;
-        Sun, 20 Feb 2022 03:57:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4276116C;
-        Sun, 20 Feb 2022 11:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46655C340E8;
-        Sun, 20 Feb 2022 11:57:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645358234;
-        bh=q/QZ+77EAZGS4K6gv46acDRSLF/0acLiMNlTnPSfmOo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IF12N46lgFOz1wG31rlO/0+lZT5Z0/qHI6hmiU36007UG9IokrwC6X2DS/Oq6hTLa
-         xbdkHIEsQ0wIxFv+nH3VCKtoRi9fx0Nr+gwA9GQVLcFQMH1dspavZNb0JS5POHe7Ly
-         U4tBB5gx+aKM0e0OyZ1p2ifu1oat0O8Kl2hjEbDCUtkAmCnRDu5iVB1nXw1bABcJWj
-         ysZlesMqS/2e59wOPkMUJsr0QAUWLTU09EMVE4+O1hZgjEH2dhKMIwKyFFByarGFC+
-         u+Db66tOFVdigxvylkRcFPS2WXbi4ZEZbCq5XRVx2hsb+rZJuXQD5oafMUy6SRc3lW
-         iHuOwtNqNkstQ==
-Date:   Sun, 20 Feb 2022 12:04:03 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/5] Add ADXL367 driver
-Message-ID: <20220220120336.193d17b0@jic23-huawei>
-In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
-References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 20 Feb 2022 07:00:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75684F46D
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 03:59:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645358379; x=1676894379;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gkh/Fm/JdPiXSYvQ/h8G+gEBnhiqCo/G2YHhv5hjl04=;
+  b=TRp0zlP9hJQV+VHM2YOrUerlfk1y/1sykx83Rh47FXKFyPUvdnpAPizA
+   GBHT7Vxnu24AcJFERslRASAV6qJDq3MhHcdzTH+nMzP5BvD9G5RHR8zTE
+   4Lc99JkvVQBsmXOQJByKXlQ/RDDZjI7V0Idm3a7i1lJ+QXPHhY387IAsM
+   Ae3cOkCE7C/+XR56n3N+6J70xht98FbGPrpFRwvr9AgPL38CFxyRSI3B3
+   a5aRNJPy+4StWavsJQOjHCQ/m4JyPFMg2U9Aaa0jHAJfjTPo54cmfRMUv
+   46dRCEcqSHQEaiS5f+nVA1KRB42UtmJoM8TvQVjWGWMR/c5dqLJWazfeB
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10263"; a="250186707"
+X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
+   d="scan'208";a="250186707"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 03:59:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
+   d="scan'208";a="682933606"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 20 Feb 2022 03:59:38 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nLksL-0000JO-Gq; Sun, 20 Feb 2022 11:59:37 +0000
+Date:   Sun, 20 Feb 2022 19:58:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: arch/mips/alchemy/board-gpr.c:78:13: warning: no previous prototype
+ for function 'board_setup'
+Message-ID: <202202201926.pBXsd3i7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 09:38:05 +0200
-Cosmin Tanislav <demonsingur@gmail.com> wrote:
+Hi Paul,
 
-> The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-> 
-> The ADXL367 does not alias input signals to achieve ultralow power
-> consumption, it samples the full bandwidth of the sensor at all
-> data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-> with a resolution of 0.25mg/LSB on the +-2 g range.
-> 
-> In addition to its ultralow power consumption, the ADXL367
-> has many features to enable true system level power reduction.
-> It includes a deep multimode output FIFO, a built-in micropower
-> temperature sensor, and an internal ADC for synchronous conversion
-> of an additional analog input.
+First bad commit (maybe != root cause):
 
-Looks good to me.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4f12b742eb2b3a850ac8be7dc4ed52976fc6cb0b
+commit: c434b9f80b0923e6460031b0fd964f8b0bf3c6a6 MIPS: Kconfig: add MIPS_GENERIC_KERNEL symbol
+date:   1 year, 5 months ago
+config: mips-randconfig-r016-20220220 (https://download.01.org/0day-ci/archive/20220220/202202201926.pBXsd3i7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c434b9f80b0923e6460031b0fd964f8b0bf3c6a6
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout c434b9f80b0923e6460031b0fd964f8b0bf3c6a6
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/alchemy/
 
-Series applied to the togreg branch of iio.git and pushed out as testing
-to let the autobuilders see if they can find anything we missed.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
+All warnings (new ones prefixed by >>):
 
-Jonathan
+>> arch/mips/alchemy/board-gpr.c:78:13: warning: no previous prototype for function 'board_setup' [-Wmissing-prototypes]
+   void __init board_setup(void)
+               ^
+   arch/mips/alchemy/board-gpr.c:78:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init board_setup(void)
+   ^
+   static 
+   1 warning generated.
 
-> 
-> V1 -> V2
->  * add support for vdd and vddio supplies
->  * lock fifo_watermark retrieval
->  * fix indentation of sysfs_emit for fifo_mode
->  * dt-bindings: add spi-max-frequency: true
->  * dt-bindings: remove cs-gpios property
->  * dt-bindings: remove status property
->  * dt-bindings: add support for vdd
-> 
-> V2 -> V3
->  * MAINTAINERS: use wildcard for adxl367
->  * dt-bindings: adxl367@addr -> accelerometer@addr
->  * put asm include after linux includes
->  * drop registers accessed implicitly
->  * fifo_full -> fifo_watermark
->  * print expected device id
->  * remove INDIO_BUFFER_HARDWARE
->  * inline ADXL367_EVENT macro
->  * inline ADXL367_14BIT_SCAN_INFO
->  * inline regulator enum
->  * remove of.h in spi driver
->  * cast const void * to const u8 * in spi read
->  * switch to trigger-less buffer
->  * increase reset time as advised by hardware team
->  * let iio framework validate available channel masks
->  * enable adc or temp channel automatically on single read
->  * wait for 100ms after enabling adc or temp for output
->    to settle on single read (waiting on hardware team input)
->  * enable adc or temp channel automatically on buffered read
->  * claim direct mode when setting range
->  * claim direct mode when setting odr
->  * claim direct mode when setting event config
->  * sort status masks in descending bit order
->  * hardcode indio_dev name
->  * add some comments regarding spi message layout
->  * use bulk_write for activity and inactivity threshold
->  * use bulk_write for inactivity time
->  * use bool as return type of fifo format finding function
->  * remove shift from channels scan type
-> 
-> V3 -> V4
->  * add a patch that introduces mag_referenced event type
->  * add a patch that documents mag_referenced event type
->  * add a patch that adds a note to the buffer/enable documentation
->    regarding configuration of other attributes during buffer capture
->  * remove unused adxl367_time_scale_tbl
->  * add static attribute to adxl367_write_raw_get_fmt
->  * return IRQ_HANDLED when FIFO read fails and print error message
->  * scale temperature value by 1000 to reach milli degrees C
->  * merge dev_to_iio_dev into useplace when indio_dev is not needed
->  * merge preenable into postenable and postdisable into predisable
->  * fix default inactivity threshold
->  * export probe symbol to namespace
->  * IIO_EV_TYPE_THRESH -> IIO_EV_TYPE_MAG_REFERENCED
->  * reset device and then verify dev id for 10ms
->  * share events by type so that they show up with iio_accel prefix in the
->    events subdirectory
->  * use a separate mask for extracting data
->    I previously removed the shift fron scan_type since the FIFO data does
->    not contain a shift but that broke single channel reads. Add it back
->    just for single channel reads.
-> 
-> V4 -> V5
->  * linux/module.h -> linux/mod_devicetable.h
->  * extract fifo_formats into separate array to allow arbitrary scan mask
->    order
->  * reorder channel_masks and fifo_formats
->  * prepend IIO_ to ADXL367 namespace
->  * use adxl367_fifo_formats array size to iterate over channel_masks table
-> 
-> Cosmin Tanislav (5):
->   iio: introduce mag_referenced
->   iio: ABI: document mag_referenced
->   iio: ABI: add note about configuring other attributes during buffer
->     capture
->   dt-bindings: iio: accel: add ADXL367
->   iio: accel: add ADXL367 driver
-> 
->  Documentation/ABI/testing/sysfs-bus-iio       |   30 +
->  .../bindings/iio/accel/adi,adxl367.yaml       |   79 +
->  MAINTAINERS                                   |    8 +
->  drivers/iio/accel/Kconfig                     |   27 +
->  drivers/iio/accel/Makefile                    |    3 +
->  drivers/iio/accel/adxl367.c                   | 1588 +++++++++++++++++
->  drivers/iio/accel/adxl367.h                   |   23 +
->  drivers/iio/accel/adxl367_i2c.c               |   90 +
->  drivers/iio/accel/adxl367_spi.c               |  164 ++
->  drivers/iio/industrialio-event.c              |    1 +
->  include/uapi/linux/iio/types.h                |    1 +
->  tools/iio/iio_event_monitor.c                 |    1 +
->  12 files changed, 2015 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
->  create mode 100644 drivers/iio/accel/adxl367.c
->  create mode 100644 drivers/iio/accel/adxl367.h
->  create mode 100644 drivers/iio/accel/adxl367_i2c.c
->  create mode 100644 drivers/iio/accel/adxl367_spi.c
-> 
 
+vim +/board_setup +78 arch/mips/alchemy/board-gpr.c
+
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  77  
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10 @78  void __init board_setup(void)
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  79  {
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  80  	printk(KERN_INFO "Trapeze ITS GPR board\n");
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  81  
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  82  	pm_power_off = gpr_power_off;
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  83  	_machine_halt = gpr_power_off;
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  84  	_machine_restart = gpr_reset;
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  85  
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  86  	/* Enable UART1/3 */
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  87  	alchemy_uart_enable(AU1000_UART3_PHYS_ADDR);
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  88  	alchemy_uart_enable(AU1000_UART1_PHYS_ADDR);
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  89  
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  90  	/* Take away Reset of UMTS-card */
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  91  	alchemy_gpio_direction_output(215, 1);
+8e026910fcd46c3 arch/mips/alchemy/board-gpr.c    Manuel Lauss        2011-11-10  92  }
+cb8f55b9207df96 arch/mips/alchemy/gpr/platform.c Wolfgang Grandegger 2010-07-15  93  
+
+:::::: The code at line 78 was first introduced by commit
+:::::: 8e026910fcd46c3cfcdf5cff7ebba013bb8ec85c MIPS: Alchemy: merge GPR/MTX-1/XXS1500 board code into single files
+
+:::::: TO: Manuel Lauss <manuel.lauss@googlemail.com>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
