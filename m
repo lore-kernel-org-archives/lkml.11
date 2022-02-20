@@ -2,117 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C9EC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 17:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 17:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244396AbiBTRd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 12:33:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48988 "EHLO
+        id S242712AbiBTReZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 12:34:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244435AbiBTRd0 (ORCPT
+        with ESMTP id S237027AbiBTReV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 12:33:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C5A2CC8B;
-        Sun, 20 Feb 2022 09:33:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 674B160DC7;
-        Sun, 20 Feb 2022 17:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE0DEC340E8;
-        Sun, 20 Feb 2022 17:33:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645378383;
-        bh=8q7//Sk7DHFweHerADNXnSPuOBjE/leZSiwsR8HLToM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Az3mXqslYQ92lmQIlaTq/BC85BuJjjAe20UaW2/gc8oimvfyByPi6QQmuYsThENGJ
-         1aiCEhYULxBNySZChcc31MIy+kzt2okGwshVYQfSsqdpSfQzZREfyYPcQsDJrWD2RV
-         hSqq4KLLPh4iVzaQX+FvF1r/3r/drSr+R8rACJ00/15yQjzy+xIyo7ZD1xv1myaOkB
-         5Ew7d3GB4/fmh8XmbwsvP2HtvQdW6KpKitjF3ll1r5x49vA5gIOQhtXqTvlgSOb8V0
-         J6OFpVLN2pbpaGCR/Ak8dbygkyRbD9gLvzt4hS5VNnTNIRPyNuckZPPkBefYefomvR
-         9fV3E6aGiZHeQ==
-Date:   Sun, 20 Feb 2022 17:39:55 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Antoniu Miclaus <antoniu.miclaus@analog.com>, robh+dt@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v8 2/4] dt-bindings:iio:frequency: add admv1014 binding
-Message-ID: <20220220173955.7e9804ae@jic23-huawei>
-In-Reply-To: <c7e39902-c85a-c601-8b9c-b2292ffeb46d@canonical.com>
-References: <20220215081216.67706-1-antoniu.miclaus@analog.com>
-        <20220215081216.67706-2-antoniu.miclaus@analog.com>
-        <c7e39902-c85a-c601-8b9c-b2292ffeb46d@canonical.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 20 Feb 2022 12:34:21 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF9E3465E
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 09:33:55 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nLq5p-0007yD-E6; Sun, 20 Feb 2022 18:33:53 +0100
+Message-ID: <978944b7-4e71-475a-2fe6-c414d3e8f64e@leemhuis.info>
+Date:   Sun, 20 Feb 2022 18:33:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-BS
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc:     "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Bug 215600 - Radeon - *ERROR* Failed waiting for UVD message
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1645378435;10777078;
+X-HE-SMSGID: 1nLq5p-0007yD-E6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 20 Feb 2022 13:16:41 +0100
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+Hi, this is your Linux kernel regression tracker.
 
-> On 15/02/2022 09:12, Antoniu Miclaus wrote:
-> > Add device tree bindings for the ADMV1014 Upconverter.
-> > 
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > Reviewed-by: Rob Herring <robh@kernel.org>  
-> 
-> Your subject seems still wrongly formatted.
-> > ---
-> > changes in v8:
-> >  - remove `clock-cells`
-> >  - rename device node to be more generic
-> >  - set 'maxItems' for clocks property
-> >  .../bindings/iio/frequency/adi,admv1014.yaml  | 134 ++++++++++++++++++
-> >  1 file changed, 134 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-> > 
-> > diff --git a/Documentation/d  
-> 
-> (...)
-> 
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    spi {
-> > +      #address-cells = <1>;
-> > +      #size-cells = <0>;
-> > +      converter@0{  
-> 
-> Missing space after address... I thought you will correct it while
-> changing node name.
-Fixed up.
+I noticed a regression report in bugzilla.kernel.org that afaics nobody
+acted upon since it was reported about a week ago, that's why I decided
+to forward it to the lists and all the relevant people. To quote
+https://bugzilla.kernel.org/show_bug.cgi?id=215600 :
 
+>  Richard Herbert 2022-02-12 22:13:07 UTC
+> 
+> Created attachment 300445 [details]
+> Details
+> 
+> When attempting to play some types of videos with VLC 3.0.16 (eg. *.flv, *.mp4), when running kernels 5.17-rc1 to 5.17-rc3, only the audio portion is heard and the VLC video screen remains black. Meanwhile, many of these entries are written per second to /var/log/syslog:
+> 
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_uvd_cs_parse [radeon]] *ERROR* Failed waiting for UVD message (-1)!
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_cs_ioctl [radeon]] *ERROR* Invalid command stream !
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_uvd_cs_parse [radeon]] *ERROR* Failed waiting for UVD message (-1)!
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_cs_ioctl [radeon]] *ERROR* Invalid command stream !
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_uvd_cs_parse [radeon]] *ERROR* Failed waiting for UVD message (-1)!
+> 2/12/22 3:41 PM	starbug	kernel	[drm:radeon_cs_ioctl [radeon]] *ERROR* Invalid command stream !
 > 
 > 
-> > +        compatible = "adi,admv1014";
-> > +        reg = <0>;
-> > +        spi-max-frequency = <1000000>;
-> > +        clocks = <&admv1014_lo>;
-> > +        clock-names = "lo_in";
-> > +        vcm-supply = <&vcm>;
-> > +        vcc-if-bb-supply = <&vcc_if_bb>;
-> > +        vcc-vga-supply = <&vcc_vga>;
-> > +        vcc-vva-supply = <&vcc_vva>;
-> > +        vcc-lna-3p3-supply = <&vcc_lna_3p3>;
-> > +        vcc-lna-1p5-supply = <&vcc_lna_1p5>;
-> > +        vcc-bg-supply = <&vcc_bg>;
-> > +        vcc-quad-supply = <&vcc_quad>;
-> > +        vcc-mixer-supply = <&vcc_mixer>;
-> > +        adi,quad-se-mode = "diff";
-> > +        adi,detector-enable;
-> > +        adi,p1db-compensation-enable;
-> > +      };
-> > +    };
-> > +...  
+> The problem doesn't occur in kernels of the 5.16 series.  It may have been introduced here:
 > 
 > 
-> Best regards,
-> Krzysztof
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/diff/drivers/gpu/drm/radeon/radeon_uvd.c?id=v5.16&id2=v5.17-rc1
+> 
+> 
+> Thanks!
 
+Could somebody take a look into this? Or was this discussed somewhere
+else already? Or even fixed?
+
+Anyway, to get this tracked:
+
+#regzbot introduced: v5.16..v5.17-rc1
+#regzbot from:  Richard Herbert <rherbert@sympatico.ca>
+#regzbot title: drm: radeon: no sound on video, *ERROR* Failed waiting
+for UVD message
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215600
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
