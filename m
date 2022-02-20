@@ -2,97 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B46EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 11:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 11:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241094AbiBTLvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 06:51:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33842 "EHLO
+        id S241270AbiBTL5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 06:57:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231391AbiBTLv1 (ORCPT
+        with ESMTP id S237539AbiBTL5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 06:51:27 -0500
-Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410BF4BFC0;
-        Sun, 20 Feb 2022 03:51:06 -0800 (PST)
-Received: from authenticated-user (box.trvn.ru [194.87.146.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        Sun, 20 Feb 2022 06:57:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBFF2DD4;
+        Sun, 20 Feb 2022 03:57:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by box.trvn.ru (Postfix) with ESMTPSA id 523E94013D;
-        Sun, 20 Feb 2022 16:50:52 +0500 (+05)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
-        t=1645357854; bh=Uf6HYUxn28IZAPxShVWn4wFM8oxeVc0cjXkSVYshVfk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gVXeiOMmpGlXWSmykXoo+2fcwzekUokom4ag3iZN+7jrGOVxbWaXFhG3x8C3/g4pN
-         sHZIkz+FHA6gxhZGEidKvC5I7oRrVv1Dv53959T3N6on/Zp8H+xc4mEXkfwpNKBDpM
-         d1OFZqyAM36UnHEaHcxFssKBiBJz/FRpl8AbLw5h9/ulStz1tnrpCvcQxHui4PKskJ
-         HlCMh5VzYBYDkE2oRD40mJpf80+GfbG77vwu1tYQR2UW6DmQGei5o6PhLnQyVYKITh
-         KGjlgKIlxFYEeHwb3usxB8GZrVZfGXYjcA51pb9wZ/nDtlvznnZbK1dwoD2z0twc2Y
-         IFxsYXmqQwgQg==
-From:   Nikita Travkin <nikita@trvn.ru>
-To:     thierry.reding@gmail.com, lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
-        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
-        masneyb@onstation.org, sean.anderson@seco.com,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Nikita Travkin <nikita@trvn.ru>
-Subject: [PATCH v6 0/2] Clock based PWM output driver
-Date:   Sun, 20 Feb 2022 16:50:28 +0500
-Message-Id: <20220220115030.23772-1-nikita@trvn.ru>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4276116C;
+        Sun, 20 Feb 2022 11:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46655C340E8;
+        Sun, 20 Feb 2022 11:57:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645358234;
+        bh=q/QZ+77EAZGS4K6gv46acDRSLF/0acLiMNlTnPSfmOo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IF12N46lgFOz1wG31rlO/0+lZT5Z0/qHI6hmiU36007UG9IokrwC6X2DS/Oq6hTLa
+         xbdkHIEsQ0wIxFv+nH3VCKtoRi9fx0Nr+gwA9GQVLcFQMH1dspavZNb0JS5POHe7Ly
+         U4tBB5gx+aKM0e0OyZ1p2ifu1oat0O8Kl2hjEbDCUtkAmCnRDu5iVB1nXw1bABcJWj
+         ysZlesMqS/2e59wOPkMUJsr0QAUWLTU09EMVE4+O1hZgjEH2dhKMIwKyFFByarGFC+
+         u+Db66tOFVdigxvylkRcFPS2WXbi4ZEZbCq5XRVx2hsb+rZJuXQD5oafMUy6SRc3lW
+         iHuOwtNqNkstQ==
+Date:   Sun, 20 Feb 2022 12:04:03 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] Add ADXL367 driver
+Message-ID: <20220220120336.193d17b0@jic23-huawei>
+In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
+References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series introduces an "adapter" driver that allows PWM consumers
-to control clock outputs with duty-cycle control.
+On Mon, 14 Feb 2022 09:38:05 +0200
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-Some platforms (e.g. some Qualcomm chipsets) have "General Purpose"
-clocks that can be muxed to GPIO outputs and used as PWM outputs.
-Those outputs may be connected to various peripherals such as
-leds in display backlight or haptic feedback motor driver.
+> The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+> 
+> The ADXL367 does not alias input signals to achieve ultralow power
+> consumption, it samples the full bandwidth of the sensor at all
+> data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
+> with a resolution of 0.25mg/LSB on the +-2 g range.
+> 
+> In addition to its ultralow power consumption, the ADXL367
+> has many features to enable true system level power reduction.
+> It includes a deep multimode output FIFO, a built-in micropower
+> temperature sensor, and an internal ADC for synchronous conversion
+> of an additional analog input.
 
-To avoid re-implementing every single PWM consumer driver with clk
-support (like in [1]) and don't put the burden of providing the PWM
-sources on the clock drivers (as was proposed in [2]), clk based
-pwm controller driver is introduced.
+Looks good to me.
 
-There is an existing driver that provides the opposite function
-in drivers/clk/clk-pwm.c with a compatible "pwm-clock" so the new
-driver uses the opposite naming scheme: drivers/pwm/pwm-clk.c
-and compatible "clk-pwm".
+Series applied to the togreg branch of iio.git and pushed out as testing
+to let the autobuilders see if they can find anything we missed.
 
-Changes in v2:
- - Fix filename in the DT schema.
- - Address Uwe's review comments.
-Changes in v3:
- - Fix node pattern in the core pwm schema.
- - Address Uwe's review comments.
-Changes in v4:
- - Drop the (incorrect) pwm schema change.
- - Use generic node name in the dt bindings example.
-Changes in v5:
- - Correct required properties.
- - add missed returns.
-Changes in v6:
- - Add missed error cleanup
- - Adjust limitations comment
+Thanks,
 
-Nikita Travkin (2):
-  dt-bindings: pwm: Document clk based PWM controller
-  pwm: Add clock based PWM output driver
+Jonathan
 
- .../devicetree/bindings/pwm/clk-pwm.yaml      |  46 ++++++
- drivers/pwm/Kconfig                           |  10 ++
- drivers/pwm/Makefile                          |   1 +
- drivers/pwm/pwm-clk.c                         | 139 ++++++++++++++++++
- 4 files changed, 196 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
- create mode 100644 drivers/pwm/pwm-clk.c
-
--- 
-2.34.1
+> 
+> V1 -> V2
+>  * add support for vdd and vddio supplies
+>  * lock fifo_watermark retrieval
+>  * fix indentation of sysfs_emit for fifo_mode
+>  * dt-bindings: add spi-max-frequency: true
+>  * dt-bindings: remove cs-gpios property
+>  * dt-bindings: remove status property
+>  * dt-bindings: add support for vdd
+> 
+> V2 -> V3
+>  * MAINTAINERS: use wildcard for adxl367
+>  * dt-bindings: adxl367@addr -> accelerometer@addr
+>  * put asm include after linux includes
+>  * drop registers accessed implicitly
+>  * fifo_full -> fifo_watermark
+>  * print expected device id
+>  * remove INDIO_BUFFER_HARDWARE
+>  * inline ADXL367_EVENT macro
+>  * inline ADXL367_14BIT_SCAN_INFO
+>  * inline regulator enum
+>  * remove of.h in spi driver
+>  * cast const void * to const u8 * in spi read
+>  * switch to trigger-less buffer
+>  * increase reset time as advised by hardware team
+>  * let iio framework validate available channel masks
+>  * enable adc or temp channel automatically on single read
+>  * wait for 100ms after enabling adc or temp for output
+>    to settle on single read (waiting on hardware team input)
+>  * enable adc or temp channel automatically on buffered read
+>  * claim direct mode when setting range
+>  * claim direct mode when setting odr
+>  * claim direct mode when setting event config
+>  * sort status masks in descending bit order
+>  * hardcode indio_dev name
+>  * add some comments regarding spi message layout
+>  * use bulk_write for activity and inactivity threshold
+>  * use bulk_write for inactivity time
+>  * use bool as return type of fifo format finding function
+>  * remove shift from channels scan type
+> 
+> V3 -> V4
+>  * add a patch that introduces mag_referenced event type
+>  * add a patch that documents mag_referenced event type
+>  * add a patch that adds a note to the buffer/enable documentation
+>    regarding configuration of other attributes during buffer capture
+>  * remove unused adxl367_time_scale_tbl
+>  * add static attribute to adxl367_write_raw_get_fmt
+>  * return IRQ_HANDLED when FIFO read fails and print error message
+>  * scale temperature value by 1000 to reach milli degrees C
+>  * merge dev_to_iio_dev into useplace when indio_dev is not needed
+>  * merge preenable into postenable and postdisable into predisable
+>  * fix default inactivity threshold
+>  * export probe symbol to namespace
+>  * IIO_EV_TYPE_THRESH -> IIO_EV_TYPE_MAG_REFERENCED
+>  * reset device and then verify dev id for 10ms
+>  * share events by type so that they show up with iio_accel prefix in the
+>    events subdirectory
+>  * use a separate mask for extracting data
+>    I previously removed the shift fron scan_type since the FIFO data does
+>    not contain a shift but that broke single channel reads. Add it back
+>    just for single channel reads.
+> 
+> V4 -> V5
+>  * linux/module.h -> linux/mod_devicetable.h
+>  * extract fifo_formats into separate array to allow arbitrary scan mask
+>    order
+>  * reorder channel_masks and fifo_formats
+>  * prepend IIO_ to ADXL367 namespace
+>  * use adxl367_fifo_formats array size to iterate over channel_masks table
+> 
+> Cosmin Tanislav (5):
+>   iio: introduce mag_referenced
+>   iio: ABI: document mag_referenced
+>   iio: ABI: add note about configuring other attributes during buffer
+>     capture
+>   dt-bindings: iio: accel: add ADXL367
+>   iio: accel: add ADXL367 driver
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio       |   30 +
+>  .../bindings/iio/accel/adi,adxl367.yaml       |   79 +
+>  MAINTAINERS                                   |    8 +
+>  drivers/iio/accel/Kconfig                     |   27 +
+>  drivers/iio/accel/Makefile                    |    3 +
+>  drivers/iio/accel/adxl367.c                   | 1588 +++++++++++++++++
+>  drivers/iio/accel/adxl367.h                   |   23 +
+>  drivers/iio/accel/adxl367_i2c.c               |   90 +
+>  drivers/iio/accel/adxl367_spi.c               |  164 ++
+>  drivers/iio/industrialio-event.c              |    1 +
+>  include/uapi/linux/iio/types.h                |    1 +
+>  tools/iio/iio_event_monitor.c                 |    1 +
+>  12 files changed, 2015 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+>  create mode 100644 drivers/iio/accel/adxl367.c
+>  create mode 100644 drivers/iio/accel/adxl367.h
+>  create mode 100644 drivers/iio/accel/adxl367_i2c.c
+>  create mode 100644 drivers/iio/accel/adxl367_spi.c
+> 
 
