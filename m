@@ -2,143 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89775C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 11:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 954EDC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 12:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243254AbiBTMAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 07:00:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51212 "EHLO
+        id S243329AbiBTMHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 07:07:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237539AbiBTMAB (ORCPT
+        with ESMTP id S229509AbiBTMHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 07:00:01 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2514F46E
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 03:59:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645358380; x=1676894380;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=V6t1s+N4Qo02wBaYneDR8yb6gI7yY2iEv7Z2/hqvKfo=;
-  b=cBJlThkY2k/pAnWfMPayMR3svlt8P3lyfWMqnUyIzCBls6pkW0OHdQi+
-   01iMeslE1kw+jhG7gZ5ZDVOVPdpPvLYJwHnFqvFe53v1Lvob1iqChIYho
-   5RLldu9+oDK2/nEuqarRG/Gu4wv9IUyl1S9AwCpGcVPaapyO5K3nwP5pu
-   wCN2MiKb4Y7eAji+6A7Zqj9i0DzeVrP7HLuFpjYjM6sCnIiIbQNq7V918
-   1Te9TwgwU9uvMz6FShaRe656g9kLpVxp0XOFf/lQzpK/+T/03a/BQFr6Q
-   Pzo9yOB6YvESdwnUUBmWCOCqpCFTjCvGvbtsjG3y1pR8cWqKAK28zVNpg
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10263"; a="275955628"
-X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
-   d="scan'208";a="275955628"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 03:59:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,383,1635231600"; 
-   d="scan'208";a="605967502"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 20 Feb 2022 03:59:38 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nLksL-0000JR-HN; Sun, 20 Feb 2022 11:59:37 +0000
-Date:   Sun, 20 Feb 2022 19:58:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Janne Grunau <j@jannau.net>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/090-spi-hid 11/11]
- drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous
- prototype for function 'spihid_get_data'
-Message-ID: <202202201900.zV3sUGeO-lkp@intel.com>
+        Sun, 20 Feb 2022 07:07:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAC540E7E;
+        Sun, 20 Feb 2022 04:07:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1E5CB80D44;
+        Sun, 20 Feb 2022 12:07:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A244EC340E8;
+        Sun, 20 Feb 2022 12:07:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645358845;
+        bh=qIYqNkqbYg9a12Wje7xqZ23YRGPPYOaM6TBHWPMsTmo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hXdd1RHH/37o9iwJYrMMk4SSFp7Gbzd/Bo81A3W/PeOocmOlGhd4g2ddemBYewlvW
+         tB4EYbYNk0fHGGIMfjbjEyQtu+Z0EXTZ8+hiLrXMRz6tGIJoOtL2UTOAxjfyhTfohu
+         jBGb9IbKpAe+5vGbqDz+beo7AUAJhHYbqOi54Jk5myhC8VJAvPeWl2spo0tINOc/Q3
+         UDodrX/Yy5P/0F3iRD83KACA0phn4EgpxTmMfqrIl+G/Yjb8FUk5vwDWYTwrc8yWeR
+         p14xGozYlNFR3lX7tQyjk62DA4Bs1z9tEPnPqyRlwQElkhdrybuFPECO3BlNVPgBIE
+         521wxzM9ryKDA==
+Date:   Sun, 20 Feb 2022 12:14:14 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 1/4] iio:frequency:admv1014: add support for ADMV1014
+Message-ID: <20220220121414.48d7a3b6@jic23-huawei>
+In-Reply-To: <20220215081216.67706-1-antoniu.miclaus@analog.com>
+References: <20220215081216.67706-1-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   6503ad96bc85209be90119188ff30d21612bbbf8
-commit: 6503ad96bc85209be90119188ff30d21612bbbf8 [11/11] WIP: HID: transport: spi: add Apple SPI transport
-config: arm64-randconfig-r005-20220220 (https://download.01.org/0day-ci/archive/20220220/202202201900.zV3sUGeO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/AsahiLinux/linux/commit/6503ad96bc85209be90119188ff30d21612bbbf8
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout 6503ad96bc85209be90119188ff30d21612bbbf8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/hid/spi-hid/
+On Tue, 15 Feb 2022 10:12:13 +0200
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> The ADMV1014 is a silicon germanium (SiGe), wideband,
+> microwave downconverter optimized for point to point microwave
+> radio designs operating in the 24 GHz to 44 GHz frequency range.
+> 
+> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADMV1014.pdf
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 
-All warnings (new ones prefixed by >>):
+Hi Antoniu.
 
->> drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous prototype for function 'spihid_get_data' [-Wmissing-prototypes]
-   struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-                        ^
-   drivers/hid/spi-hid/spi-hid-apple-core.c:259:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-   ^
-   static 
-   drivers/hid/spi-hid/spi-hid-apple-core.c:56:17: warning: variable 'spi_hid_apple_status_ok' is not needed and will not be emitted [-Wunneeded-internal-declaration]
-   static const u8 spi_hid_apple_status_ok[4] = { 0xac, 0x27, 0x68, 0xd5 };
-                   ^
-   2 warnings generated.
---
->> drivers/hid/spi-hid/spi-hid-apple-of.c:24:5: warning: no previous prototype for function 'spihid_apple_of_power_on' [-Wmissing-prototypes]
-   int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
-       ^
-   drivers/hid/spi-hid/spi-hid-apple-of.c:24:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
-   ^
-   static 
->> drivers/hid/spi-hid/spi-hid-apple-of.c:40:5: warning: no previous prototype for function 'spihid_apple_of_power_off' [-Wmissing-prototypes]
-   int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
-       ^
-   drivers/hid/spi-hid/spi-hid-apple-of.c:40:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
-   ^
-   static 
->> drivers/hid/spi-hid/spi-hid-apple-of.c:50:5: warning: no previous prototype for function 'spihid_apple_of_enable_irq' [-Wmissing-prototypes]
-   int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
-       ^
-   drivers/hid/spi-hid/spi-hid-apple-of.c:50:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
-   ^
-   static 
->> drivers/hid/spi-hid/spi-hid-apple-of.c:59:5: warning: no previous prototype for function 'spihid_apple_of_disable_irq' [-Wmissing-prototypes]
-   int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
-       ^
-   drivers/hid/spi-hid/spi-hid-apple-of.c:59:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
-   ^
-   static 
-   4 warnings generated.
+One really trivial point inline that I noticed whilst having 'one last look'.
 
+I'll fix it up whilst applying but please check I didn't mess up!
 
-vim +/spihid_get_data +259 drivers/hid/spi-hid/spi-hid-apple-core.c
+Series applied to the togreg branch of iio.git and initially pushed out as
+testing to let 0-day poke at it an see if it can find anything we missed.
 
-   258	
- > 259	struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-   260	{
-   261		switch (idev->id) {
-   262		case SPIHID_DEVICE_ID_KBD:
-   263			return container_of(idev, struct spihid_apple, kbd);
-   264		case SPIHID_DEVICE_ID_TP:
-   265			return container_of(idev, struct spihid_apple, tp);
-   266		default:
-   267			return NULL;
-   268		}
-   269	}
-   270	
+Thanks,
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Jonathan
+
+> ---
+> changes in v8:
+>  - remove clk-provider header
+>  drivers/iio/frequency/Kconfig    |  10 +
+>  drivers/iio/frequency/Makefile   |   1 +
+>  drivers/iio/frequency/admv1014.c | 823 +++++++++++++++++++++++++++++++
+>  3 files changed, 834 insertions(+)
+>  create mode 100644 drivers/iio/frequency/admv1014.c
+> 
+> diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
+> index 2c9e0559e8a4..493221f42077 100644
+> --- a/drivers/iio/frequency/Kconfig
+> +++ b/drivers/iio/frequency/Kconfig
+> @@ -50,6 +50,16 @@ config ADF4371
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called adf4371.
+>  
+> +config ADMV1014
+> +	tristate "Analog Devices ADMV1014 Microwave Downconverter"
+> +	depends on SPI && COMMON_CLK && 64BIT
+> +	help
+> +	  Say yes here to build support for Analog Devices ADMV1014
+> +	  24 GHz to 44 GHz, Wideband, Microwave Downconverter.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called admv1014.
+> +
+>  config ADRF6780
+>          tristate "Analog Devices ADRF6780 Microwave Upconverter"
+>          depends on SPI
+> diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
+> index ae3136c79202..5f0348e5eb53 100644
+> --- a/drivers/iio/frequency/Makefile
+> +++ b/drivers/iio/frequency/Makefile
+> @@ -7,4 +7,5 @@
+>  obj-$(CONFIG_AD9523) += ad9523.o
+>  obj-$(CONFIG_ADF4350) += adf4350.o
+>  obj-$(CONFIG_ADF4371) += adf4371.o
+> +obj-$(CONFIG_ADMV1014) += admv1014.o
+>  obj-$(CONFIG_ADRF6780) += adrf6780.o
+> diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
+> new file mode 100644
+> index 000000000000..06a60c246161
+> --- /dev/null
+> +++ b/drivers/iio/frequency/admv1014.c
+> @@ -0,0 +1,823 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * ADMV1014 driver
+> + *
+> + * Copyright 2022 Analog Devices Inc.
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/clk.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/device.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/notifier.h>
+> +#include <linux/property.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/units.h>
+> +
+> +#include <asm/unaligned.h>
+> +
+> +/* ADMV1014 Register Map */
+> +#define ADMV1014_REG_SPI_CONTROL		0x00
+> +#define ADMV1014_REG_ALARM			0x01
+> +#define ADMV1014_REG_ALARM_MASKS		0x02
+> +#define ADMV1014_REG_ENABLE			0x03
+> +#define ADMV1014_REG_QUAD			0x04
+> +#define ADMV1014_REG_LO_AMP_PHASE_ADJUST1	0x05
+> +#define ADMV1014_REG_MIXER			0x07
+> +#define ADMV1014_REG_IF_AMP			0x08
+> +#define ADMV1014_REG_IF_AMP_BB_AMP		0x09
+> +#define ADMV1014_REG_BB_AMP_AGC			0x0A
+> +#define ADMV1014_REG_VVA_TEMP_COMP		0x0B
+> +
+> +/* ADMV1014_REG_SPI_CONTROL Map */
+> +#define ADMV1014_PARITY_EN_MSK			BIT(15)
+> +#define ADMV1014_SPI_SOFT_RESET_MSK		BIT(14)
+> +#define ADMV1014_CHIP_ID_MSK			GENMASK(11, 4)
+> +#define ADMV1014_CHIP_ID			0x9
+> +#define ADMV1014_REVISION_ID_MSK		GENMASK(3, 0)
+> +
+> +/* ADMV1014_REG_ALARM Map */
+> +#define ADMV1014_PARITY_ERROR_MSK		BIT(15)
+> +#define ADMV1014_TOO_FEW_ERRORS_MSK		BIT(14)
+> +#define ADMV1014_TOO_MANY_ERRORS_MSK		BIT(13)
+> +#define ADMV1014_ADDRESS_RANGE_ERROR_MSK	BIT(12)
+> +
+> +/* ADMV1014_REG_ENABLE Map */
+> +#define ADMV1014_IBIAS_PD_MSK			BIT(14)
+> +#define ADMV1014_P1DB_COMPENSATION_MSK		GENMASK(13, 12)
+> +#define ADMV1014_IF_AMP_PD_MSK			BIT(11)
+> +#define ADMV1014_QUAD_BG_PD_MSK			BIT(9)
+> +#define ADMV1014_BB_AMP_PD_MSK			BIT(8)
+> +#define ADMV1014_QUAD_IBIAS_PD_MSK		BIT(7)
+> +#define ADMV1014_DET_EN_MSK			BIT(6)
+> +#define ADMV1014_BG_PD_MSK			BIT(5)
+> +
+> +/* ADMV1014_REG_QUAD Map */
+> +#define ADMV1014_QUAD_SE_MODE_MSK		GENMASK(9, 6)
+> +#define ADMV1014_QUAD_FILTERS_MSK		GENMASK(3, 0)
+> +
+> +/* ADMV1014_REG_LO_AMP_PHASE_ADJUST1 Map */
+> +#define ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK	GENMASK(15, 9)
+> +#define ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK	GENMASK(8, 2)
+> +
+> +/* ADMV1014_REG_MIXER Map */
+> +#define ADMV1014_MIXER_VGATE_MSK		GENMASK(15, 9)
+> +#define ADMV1014_DET_PROG_MSK			GENMASK(6, 0)
+> +
+> +/* ADMV1014_REG_IF_AMP Map */
+> +#define ADMV1014_IF_AMP_COARSE_GAIN_I_MSK	GENMASK(11, 8)
+> +#define ADMV1014_IF_AMP_FINE_GAIN_Q_MSK		GENMASK(7, 4)
+> +#define ADMV1014_IF_AMP_FINE_GAIN_I_MSK		GENMASK(3, 0)
+> +
+> +/* ADMV1014_REG_IF_AMP_BB_AMP Map */
+> +#define ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK	GENMASK(15, 12)
+> +#define ADMV1014_BB_AMP_OFFSET_Q_MSK		GENMASK(9, 5)
+> +#define ADMV1014_BB_AMP_OFFSET_I_MSK		GENMASK(4, 0)
+> +
+> +/* ADMV1014_REG_BB_AMP_AGC Map */
+> +#define ADMV1014_BB_AMP_REF_GEN_MSK		GENMASK(6, 3)
+> +#define ADMV1014_BB_AMP_GAIN_CTRL_MSK		GENMASK(2, 1)
+> +#define ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK	BIT(0)
+> +
+> +/* ADMV1014_REG_VVA_TEMP_COMP Map */
+> +#define ADMV1014_VVA_TEMP_COMP_MSK		GENMASK(15, 0)
+> +
+> +/* ADMV1014 Miscellaneous Defines */
+> +#define ADMV1014_READ				BIT(7)
+> +#define ADMV1014_REG_ADDR_READ_MSK		GENMASK(6, 1)
+> +#define ADMV1014_REG_ADDR_WRITE_MSK		GENMASK(22, 17)
+> +#define ADMV1014_REG_DATA_MSK			GENMASK(16, 1)
+> +#define ADMV1014_NUM_REGULATORS			9
+
+...
+
+> +
+> +static int admv1014_init(struct admv1014_state *st)
+> +{
+> +	unsigned int chip_id, enable_reg, enable_reg_msk;
+> +	struct spi_device *spi = st->spi;
+> +	int ret;
+> +
+> +	ret = regulator_bulk_enable(ADMV1014_NUM_REGULATORS, st->regulators);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to enable regulators");
+> +		return ret;
+> +	}
+> +
+> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->regulators);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(st->clkin);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_clk_disable, st->clkin);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->nb.notifier_call = admv1014_freq_change;
+> +	ret = devm_clk_notifier_register(&spi->dev, st->clkin, &st->nb);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_powerdown, st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Perform a software reset */
+> +	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
+> +					 ADMV1014_SPI_SOFT_RESET_MSK,
+> +					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 1));
+> +	if (ret) {
+> +		dev_err(&spi->dev, "ADMV1014 SPI software reset failed.\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
+> +					 ADMV1014_SPI_SOFT_RESET_MSK,
+> +					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 0));
+> +	if (ret) {
+> +		dev_err(&spi->dev, "ADMV1014 SPI software reset disable failed.\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = __admv1014_spi_write(st, ADMV1014_REG_VVA_TEMP_COMP, 0x727C);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Writing default Temperature Compensation value failed.\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = __admv1014_spi_read(st, ADMV1014_REG_SPI_CONTROL, &chip_id);
+> +	if (ret)
+> +		return ret;
+> +
+> +	chip_id = (chip_id & ADMV1014_CHIP_ID_MSK) >> 4;
+
+Trivial but this could be a FIELD_GET()
