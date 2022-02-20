@@ -2,108 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E02C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 13:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243834AbiBTNUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 08:20:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45966 "EHLO
+        id S243842AbiBTN1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 08:27:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232564AbiBTNUa (ORCPT
+        with ESMTP id S232564AbiBTN1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 08:20:30 -0500
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CD1424AD
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:20:08 -0800 (PST)
-Received: by mail-io1-f71.google.com with SMTP id d194-20020a6bcdcb000000b0063a4e3b9da6so8396925iog.6
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:20:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=PxiYsB68bMJBRDStT8Q66zeZicqp8GKsGnbo6+7iasQ=;
-        b=FPWmAhnX4v2ALcs/mQ68Fohw5noTkZfEjR51fD6Ch97PQBCdsyInoVPq7AKMwWSEOL
-         fp17FelfaZho4Ig5EtH6P+Xmm8Y8n9wv7MvYh0xzhMiYBZy8nFMFi/6bWp919xBBOhZL
-         IcirgZWJEEcgpnHuFdo41549/QkTIfxAhXhO53LCkaQwgE/bVFwbbrlWkEPzRA4L6zTU
-         O9bWYOZ/S5ZPmcEjdIDeCI2VYBpV4R+m7GlZcHqMTrxHNQIXC8Tb3DD+mfOApUWooAQO
-         mYvdj6GP1qtMAsdbwxDcv/YOCg5zZrgBmfh8SCxWg6eOTRDqlTIorqtgApC/VlON4Cwa
-         aHig==
-X-Gm-Message-State: AOAM5325yBB7bxMEJnR4wWhYakMHd4JaAEq3OnjCfTSt5WUN6FniKqT/
-        hzItYGbfaSwCjlalM0R4VOyQsuk8KHa6l/m3SnED8ZkOiQAw
-X-Google-Smtp-Source: ABdhPJx2l1wrYHFYY4RP7srumSWdJBEUIPsnZmkvsKnd9Yc/h9YUaWw+LHEEleAVlMSqm5hYUdy1AxyVqJpEwi5MCvM2hTowC+yR
-MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1594:b0:640:7236:e6ea with SMTP id
- e20-20020a056602159400b006407236e6eamr9868298iow.23.1645363207448; Sun, 20
- Feb 2022 05:20:07 -0800 (PST)
-Date:   Sun, 20 Feb 2022 05:20:07 -0800
-In-Reply-To: <20220220075826-mutt-send-email-mst@kernel.org>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000081acbc05d872f93c@google.com>
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-From:   syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
-To:     dvyukov@google.com, hdanton@sina.com, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        Sun, 20 Feb 2022 08:27:17 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B4C1D0D7
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 05:26:52 -0800 (PST)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220220132642epoutp041b12220f19609aa44e9fee5d649099e9~VgXqaQ1r41280912809epoutp04Y
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 13:26:42 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220220132642epoutp041b12220f19609aa44e9fee5d649099e9~VgXqaQ1r41280912809epoutp04Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1645363602;
+        bh=+HD+D2BQMpJSVzjCz+rHhjvbcjam5OKuDzCH7joqwW8=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=l5PVy6J4AuFpVUoRNYoR0Htao6iFNGLNMnFzP0U4G9DygsPjQsy3vZFU1lHyS+MGm
+         dkclNdbFRBB2mi/UTrMDk28LwLOiW+uYiq+5V5cYN3TQfvo6x1Z7mhB/S0sBBeKWOT
+         3/Hr+xS9nTxSZxf57VuWjKJ8Fzy7dqMSdF2eoqGY=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220220132641epcas5p3a51612aef12f9f3f7bb784be42478ac4~VgXpv1YiG3031930319epcas5p3C;
+        Sun, 20 Feb 2022 13:26:41 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.183]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4K1mRd5JJlz4x9Pp; Sun, 20 Feb
+        2022 13:26:37 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        29.EB.06423.B8142126; Sun, 20 Feb 2022 22:26:35 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220220132636epcas5p4f320ac6dff9621b75481bd71b1f33183~VgXlCPyWX2553925539epcas5p4p;
+        Sun, 20 Feb 2022 13:26:36 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220220132636epsmtrp1e71b6060479be13e4c8b6a4e351abb0f~VgXlIoP-w0610706107epsmtrp1Y;
+        Sun, 20 Feb 2022 13:26:36 +0000 (GMT)
+X-AuditID: b6c32a49-b01ff70000001917-e4-6212418bc4da
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        EE.AD.29871.A8142126; Sun, 20 Feb 2022 22:26:34 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220220132635epsmtip1402bbd39080b2d5b2f56d2cbed28a9b6~VgXjsfVTd2735827358epsmtip1O;
+        Sun, 20 Feb 2022 13:26:35 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, pankaj.dubey@samsung.com,
+        m.szyprowski@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH v2 1/3] clocksource/drivers/exynos_mct: Remove mct interrupt
+ index enum
+Date:   Sun, 20 Feb 2022 19:08:22 +0530
+Message-Id: <20220220133824.33837-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMKsWRmVeSWpSXmKPExsWy7bCmum63o1CSwYPdehYP5m1js5j3WdZi
+        49sfTBabHl9jtbi8aw6bxYzz+5gs1h65y26xaOsXdovNm6YyO3B6zGroZfO4c20Pm8e7c+fY
+        PTYvqffo27KK0ePzJrkAtqhsm4zUxJTUIoXUvOT8lMy8dFsl7+B453hTMwNDXUNLC3MlhbzE
+        3FRbJRefAF23zBygm5QUyhJzSoFCAYnFxUr6djZF+aUlqQoZ+cUltkqpBSk5BSYFesWJucWl
+        eel6eaklVoYGBkamQIUJ2Rkv5t1jL2jmrljzX7aB8TtHFyMnh4SAicTN409Yuhi5OIQEdjNK
+        vPlxjw3C+cQoMXXqGajMN0aJXU/WM8O09DxewgyR2MsocWnDdyinhUlie+cUVpAqNgFtibvT
+        tzCB2CICbhI3GjuYQIqYBa4xSvyZeIgRJCEsEClx9NBNMJtFQFXi4q0TYA28AjYSZ58tYYJY
+        Jy+xesMBsA0SAofYJT6cOMoIkXCRuP20gwXCFpZ4dXwLO4QtJfGyvw3I5gCysyV6dhlDhGsk
+        ls47BlVuL3HgyhwWkBJmAU2J9bv0QcLMAnwSvb+fMEF08kp0tAlBVKtKNL+7CtUpLTGxu5sV
+        wvaQ+PfsBVhcSCBW4u+dNuYJjDKzEIYuYGRcxSiZWlCcm55abFpgmJdaDo+b5PzcTYzg1KXl
+        uYPx7oMPeocYmTgYDzFKcDArifB+OMibJMSbklhZlVqUH19UmpNafIjRFBhKE5mlRJPzgckz
+        ryTe0MTSwMTMzMzE0tjMUEmc93T6hkQhgfTEktTs1NSC1CKYPiYOTqkGJpWTU7Q1gvP+cdr+
+        jvntxK0531L1vJLy1M6KzyalPVabtx1/GmTE6lgrL8txa4LOpHi/J8vynLX93m9ZE84dMmvR
+        x+LFe6R0Vs/+dH7vlmnWBtd81bTLEh9GPLf7XJBlPFUwJnW/0yrZnw8XM9vvUP5mZx157c+G
+        M3uDj6YISTqHsH3e9NDNUvy64rKdvcVXv3KzHb7WlhgV8vr2yhmaf5mntls0hE9fOX/rre6s
+        OLN7td8XM3ebLv52/bvHuvflzZEar9rvRK04NY9hy5Pzk98Kudz7JnreblvFrt3il7wapok8
+        tBGMO2SWw9l4wqMr9sNnjlU7zwa4Nr17fu7VYdVfCWWnus/KVil4XW0Nb1RiKc5INNRiLipO
+        BABdGD805gMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphluLIzCtJLcpLzFFi42LZdlhJTrfLUSjJYMkaQ4sH87axWcz7LGux
+        8e0PJotNj6+xWlzeNYfNYsb5fUwWa4/cZbdYtPULu8XmTVOZHTg9ZjX0snncubaHzePduXPs
+        HpuX1Hv0bVnF6PF5k1wAWxSXTUpqTmZZapG+XQJXxot599gLmrkr1vyXbWD8ztHFyMkhIWAi
+        0fN4CXMXIxeHkMBuRomj2/6zQySkJa5vnABlC0us/PecHaKoiUni8+lZbCAJNgFtibvTtzCB
+        2CICHhJt/+6BTWIWuMco8btlGiNIQlggXGLZuR4WEJtFQFXi4q0TYA28AjYSZ58tYYLYIC+x
+        esMB5gmMPAsYGVYxSqYWFOem5xYbFhjmpZbrFSfmFpfmpesl5+duYgQHmJbmDsbtqz7oHWJk
+        4mA8xCjBwawkwvvhIG+SEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tSs1NTC1KL
+        YLJMHJxSDUwO/v3bvHNs2FbHPrGP17mZskcwtXiK/JejbS9+1zT9S4uYp5yqeShBIibjSjv/
+        73My8+ufBmhud7hrc83jSt20ZWLeHNY3L13iYglamyV+2CsjeP3cns8rxLrP31suldbmezxp
+        w2l3o8KFrlafWxeX3c+6/qv+yhzD/SZSj/+ucgg0sOhQOMhUYmUcrLzo0YY5obOq302+yRpv
+        UBH3tH3fsr9GvMVXuQ8vWLrh38RLof7x8TtSlyruPJjeu+DH/rq9+/x5si4e3JO8Tr61p3b/
+        ypCOs//D919ft9NigvWMQj5vntrz0yW58wxUd8yfdMqi8lNfYlzpUXM9/SXsd2pWZr6Lubol
+        X+S4wIHqIy1KLMUZiYZazEXFiQAXywAdnwIAAA==
+X-CMS-MailID: 20220220132636epcas5p4f320ac6dff9621b75481bd71b1f33183
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220220132636epcas5p4f320ac6dff9621b75481bd71b1f33183
+References: <CGME20220220132636epcas5p4f320ac6dff9621b75481bd71b1f33183@epcas5p4.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+MCT driver define an enum which list global and local timer's
+irq index. Most of them are not used but MCT_G0_IRQ and
+MCT_L0_IRQ and these two are at a fixed offset/index.
+Get rid of this enum and use a #define for the used irq index.
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-kernel BUG in vhost_get_vq_desc
+No functional changes expected.
 
-------------[ cut here ]------------
-kernel BUG at drivers/vhost/vhost.c:2335!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 4048 Comm: vhost-4047 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
-Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 b7 59 28 fd e9 74 ff ff ff e8 5d c8 a1 fa <0f> 0b e8 56 c8 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-RSP: 0018:ffffc90001affb88 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff88801c9c5700 RSI: ffffffff86d715c3 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff86d706bc R11: 0000000000000000 R12: ffff888073b44d68
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888073b44bb0
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000002 CR3: 0000000079bfe000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
- vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vhost_get_vq_desc+0x1d43/0x22c0 drivers/vhost/vhost.c:2335
-Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 b7 59 28 fd e9 74 ff ff ff e8 5d c8 a1 fa <0f> 0b e8 56 c8 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
-RSP: 0018:ffffc90001affb88 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff88801c9c5700 RSI: ffffffff86d715c3 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff86d706bc R11: 0000000000000000 R12: ffff888073b44d68
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff888073b44bb0
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005619d349f018 CR3: 0000000079bfe000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+---
+ drivers/clocksource/exynos_mct.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
+* Changes since v1:
+- Seperate out bumping up of max mct irq and local timer number
+  as commented by Krzysztof
 
-Tested on:
-
-commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=161cf916700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=13500f0e700000
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+index 6db3d5511b0f..b3f3d27a837b 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -60,27 +60,17 @@
+ #define MCT_CLKEVENTS_RATING		350
+ #endif
+ 
++/* There are four Global timers starting with 0 offset */
++#define MCT_G0_IRQ	0
++/* Local timers count starts after global timer count */
++#define MCT_L0_IRQ	4
++#define MCT_NR_IRQS	12
++
+ enum {
+ 	MCT_INT_SPI,
+ 	MCT_INT_PPI
+ };
+ 
+-enum {
+-	MCT_G0_IRQ,
+-	MCT_G1_IRQ,
+-	MCT_G2_IRQ,
+-	MCT_G3_IRQ,
+-	MCT_L0_IRQ,
+-	MCT_L1_IRQ,
+-	MCT_L2_IRQ,
+-	MCT_L3_IRQ,
+-	MCT_L4_IRQ,
+-	MCT_L5_IRQ,
+-	MCT_L6_IRQ,
+-	MCT_L7_IRQ,
+-	MCT_NR_IRQS,
+-};
+-
+ static void __iomem *reg_base;
+ static unsigned long clk_rate;
+ static unsigned int mct_int_type;
+-- 
+2.25.1
 
