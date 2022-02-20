@@ -2,134 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE62C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 09:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0379CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 09:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243499AbiBTJWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 04:22:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48042 "EHLO
+        id S243514AbiBTJbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 04:31:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbiBTJWI (ORCPT
+        with ESMTP id S232421AbiBTJbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 04:22:08 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3480CCB;
-        Sun, 20 Feb 2022 01:21:47 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 097D65802C7;
-        Sun, 20 Feb 2022 04:21:47 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Sun, 20 Feb 2022 04:21:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=MQZZTj8nabcqXlOJo
-        8XpXYmPncZlkb2pDfrS1E/GCWs=; b=KPnK0JrrURZg2WB91bNRyRRM9j3C9wClc
-        a9v83tOZN9Uut3wzny0nLKGJ/f70x9a6yywbUUGMcW4inDsa3EjQKwxNIayD6eBZ
-        BQba8pBxL95XH2OWwCKBkidPeEatOhwZ1CKtNnrhKbttlBEkf/d9MRkXHubAZMzP
-        NW3IW3VFXwVxYJnSZBQQzeaQe8EJnDwWVhUjjHwGt6n1BE/nQAKIfLhoYa4qgqP+
-        ngyEPPZ1PeX8qdcWEQzgGvhNC4Tjz6+FvVlzWDO3fzDuGNSFSbW3SgAW7CuyX1Z/
-        iWq0qjIqgwNev9+byaMnUftAdHnJANOhwvhtfmOeHZg9j2MBqlAQA==
-X-ME-Sender: <xms:KggSYs6Kezvy_fa_YcLTi2eOf-NVF6TaXeSZ-_PBVVzOFVYqz9cCRA>
-    <xme:KggSYt5JLTQuSHcmOsoKTzTVrMo9BRHKzR0HRKnoNhceqaSdSICea1ob3YeWtXipE
-    Qyn5FrzBx6pnUM>
-X-ME-Received: <xmr:KggSYrc_rnvaO8qd7ASefAJ91OwmJ_mFGP4qF-xpS6JFDG_GzxS_Ix3X_C3mPTb5a1E7VKcdb78lIZmRCsrV-nOJLdM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeggddtfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:KggSYhL3Buph9p5ptNXVL7bQouavOosMF_G0afDYrkJtrI2WTAMl_g>
-    <xmx:KggSYgIjzYO1OwTGLggYYeswk-zZzdqJU1xQ_xMG5i_zsf1BM7o4RQ>
-    <xmx:KggSYixQiu74wM0c98Xpt3xlgHd23PpDTx6D6Vo1jcEImJGa_4Sh6A>
-    <xmx:KwgSYs_oP7bh9Ec1aAScZyPonKCqRAi2vzjDWQVy5YThHxx21NNmrw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 20 Feb 2022 04:21:45 -0500 (EST)
-Date:   Sun, 20 Feb 2022 11:21:43 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v3 4/5] net: dsa: mv88e6xxx: Add support for
- bridge port locked mode
-Message-ID: <YhIIJxxXP3JzD60/@shredder>
-References: <20220218155148.2329797-1-schultz.hans+netdev@gmail.com>
- <20220218155148.2329797-5-schultz.hans+netdev@gmail.com>
- <20220219100034.lh343dkmc4fbiad3@skbuf>
+        Sun, 20 Feb 2022 04:31:00 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE6D4C7A3
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 01:30:39 -0800 (PST)
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B565C4004C
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 09:30:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645349437;
+        bh=ZhlW2P314Xp7IVd+FJpw1KLggsQP1D5CsVCti6D2Xfc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=wZTOY5IaH5kq0+oFO0lKt9OSE3p72emJ+UiqiRFPamot4zo9xV+134BjzF5w8CJgi
+         bsSmhJwxTMLChB8hvA6ndf1sBWtreM7KNuc5YTysseRePpsH3QcSbAYxMfH0U1GRyu
+         oyhSUL4EWarmrc7iqmSIP+h6Z92lfJZoD5vPSYQvNapFf1FPLhAzhm+ge+TZ3BHzCv
+         hNsoC0ssHZrC/65+hMMSYvnCNTgtGzwGkToYEE2PjptMg+8rMxYUPVgArhiSgwqtxx
+         EHv0ZP/K4PViNrgmKT1FyZ4dS8bxoR8AKNhDliv67FutKcOozeWi6CqCGhPl1ut/fr
+         UkmH2Oufp94OQ==
+Received: by mail-wr1-f71.google.com with SMTP id q21-20020adfab15000000b001e57c9a342aso5680195wrc.6
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 01:30:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZhlW2P314Xp7IVd+FJpw1KLggsQP1D5CsVCti6D2Xfc=;
+        b=IHU6B0Ebh4+Cq/5LpUcPOZNoHDBm8Jqb5J2VqlQezwgoazwcQfmvcQKdSXNF8AZrRu
+         odhCf6715jXXMoeMAvxPo0tek4+605dT8KZDXcV+32HScjd3kIRLTr6QpegkW/13vRYs
+         VnmsPtY9tcyNIXy8Qj8bQ6elM5yum52CkZu1llTgZvZf3ebCh8KyRBwKZEso67Vvu10o
+         3lZ6yPI08jpgQGXYMGrqtsMZh+1ydobVieIXdX0Howg2NIYlEByDC+IbFYZH2/kOdSYZ
+         lmPCEg8GtzrNazBs5JNkdfi91njRDEUhCi0L7okBI/A2cQC8841kRyQeX6tV4kLmrC+F
+         rdrA==
+X-Gm-Message-State: AOAM533/+vZq6zAwXW7xVbPrsTc9FQ3T2grct9wsi9pes09xK1KGE9Rw
+        7WbKn+q6/RD997C6TxQUChH+w/jhttr+DokF3M/W/x97RFdfdcUMLhzg0RkUczlutaoNr9s7zSv
+        qUwc3eBda0u6GRo6C4riNsXL7QbUaD8UtxzEQQ/W/Dg==
+X-Received: by 2002:a5d:568a:0:b0:1e4:7cc8:fa6d with SMTP id f10-20020a5d568a000000b001e47cc8fa6dmr11679913wrv.48.1645349433180;
+        Sun, 20 Feb 2022 01:30:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzDPzoJ3r3Cf/g14eN02kggEVtqJQJJBBiuuP/xysWCL9EyAUqqQm+LFlX4Qx6fEQSqO5pRiw==
+X-Received: by 2002:a5d:568a:0:b0:1e4:7cc8:fa6d with SMTP id f10-20020a5d568a000000b001e47cc8fa6dmr11679891wrv.48.1645349432988;
+        Sun, 20 Feb 2022 01:30:32 -0800 (PST)
+Received: from [192.168.0.117] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id x7sm39145432wro.21.2022.02.20.01.30.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Feb 2022 01:30:32 -0800 (PST)
+Message-ID: <5d507fda-525e-4064-3add-0bb0cc23d016@canonical.com>
+Date:   Sun, 20 Feb 2022 10:30:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220219100034.lh343dkmc4fbiad3@skbuf>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 00/11] i2c: npcm: Bug fixes timeout, spurious
+ interrupts
+Content-Language: en-US
+To:     Tyrone Ting <warp5tw@gmail.com>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
+        wsa@kernel.org, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, christophe.leroy@csgroup.eu,
+        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
+        digetx@gmail.com, andriy.shevchenko@linux.intel.com,
+        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220220035321.3870-1-warp5tw@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220220035321.3870-1-warp5tw@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 12:00:34PM +0200, Vladimir Oltean wrote:
-> On Fri, Feb 18, 2022 at 04:51:47PM +0100, Hans Schultz wrote:
-> > diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-> > index ab41619a809b..46b7381899a0 100644
-> > --- a/drivers/net/dsa/mv88e6xxx/port.c
-> > +++ b/drivers/net/dsa/mv88e6xxx/port.c
-> > @@ -1234,6 +1234,39 @@ int mv88e6xxx_port_set_mirror(struct mv88e6xxx_chip *chip, int port,
-> >  	return err;
-> >  }
-> >  
-> > +int mv88e6xxx_port_set_lock(struct mv88e6xxx_chip *chip, int port,
-> > +			    bool locked)
-> > +{
-> > +	u16 reg;
-> > +	int err;
-> > +
-> > +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	reg &= ~MV88E6XXX_PORT_CTL0_SA_FILT_MASK;
-> > +	if (locked)
-> > +		reg |= MV88E6XXX_PORT_CTL0_SA_FILT_DROP_ON_LOCK;
-> > +
-> > +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, &reg);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	reg &= ~MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-> > +	if (locked)
-> > +		reg |= MV88E6XXX_PORT_ASSOC_VECTOR_LOCKED_PORT;
-> > +
-> > +	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ASSOC_VECTOR, reg);
+On 20/02/2022 04:53, Tyrone Ting wrote:
+> From: Tyrone Ting <kfting@nuvoton.com>
 > 
-> 	return mv88e6xxx_port_write(...);
-
-Not familiar with mv88e6xxx, but shouldn't there be a rollback of
-previous operations? Specifically mv88e6xxx_port_write()
-
+> This patchset includes the following fixes:
 > 
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	return 0;
-> > +}
+> - Add dt-bindings description for NPCM845.
+> - Bug fix for timeout calculation.
+> - Better handling of spurious interrupts.
+> - Fix for event type in slave mode.
+> - Removal of own slave addresses [2:10].
+> - Support for next gen BMC (NPCM845).
+> 
+> The NPCM I2C driver is tested on NPCM750 and NPCM845 evaluation boards.
+> 
+> Addressed comments from:
+>  - Jonathan Neuschäfer : https://lkml.org/lkml/2022/2/7/670
+>  - Krzysztof Kozlowski : https://lkml.org/lkml/2022/2/7/760
+
+How did you address the ABI change comment? I still see you break the
+ABI with the introduction of a new, required property.
+
+
+Best regards,
+Krzysztof
