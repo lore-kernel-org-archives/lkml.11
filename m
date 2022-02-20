@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7000C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 06:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2073FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 20 Feb 2022 06:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238071AbiBTGB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 01:01:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47500 "EHLO
+        id S238639AbiBTGBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 01:01:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235343AbiBTGBQ (ORCPT
+        with ESMTP id S234317AbiBTGBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 01:01:16 -0500
-Received: from smtpbg516.qq.com (smtpbg516.qq.com [203.205.250.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1DA4E38D
-        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 22:00:55 -0800 (PST)
-X-QQ-mid: bizesmtp89t1645336851t7aadi5n
+        Sun, 20 Feb 2022 01:01:22 -0500
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E184E38D
+        for <linux-kernel@vger.kernel.org>; Sat, 19 Feb 2022 22:01:01 -0800 (PST)
+X-QQ-mid: bizesmtp71t1645336814toup6w7g
 Received: from localhost.localdomain (unknown [180.102.102.45])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 20 Feb 2022 14:00:44 +0800 (CST)
+        id ; Sun, 20 Feb 2022 14:00:06 +0800 (CST)
 X-QQ-SSF: 01400000002000B0F000B00A0000000
-X-QQ-FEAT: F3yR32iATbi/mkLSpOZvYvncsiPLQQBpqaeLowKGG86n/yfoUl7HczKwqnGvv
-        AFWPx+giiUSNc8US0Rbd28oDJVUomiKnOUWitwatSMKDHPGqDMumpZqZfzJDxrovodrq43f
-        49BMtuG34fiwk4h+xaM2l2UXpZNlYx+xxYY15iIqSNg7oS8tx85P3VefeKbCmUBg1Yhz35Y
-        jlu5+RAb9yexYmgw85jyi8wQp6kUektl441hPSDvSAjdbRv7cL7lZ+Gbgh07RdNx28OApP5
-        7PLG2Xv9DaK0TQCsJb9FpjEHKvtXYC8q/uvPTU9L4xioHQG5gnPA/F9/bf5zGToG7HTKvhd
-        6c1+GVUZ1rsBHfwHA5h3YsFnUHZJAOaCODOnT/t
+X-QQ-FEAT: DjV0wquoRWbFbMhTh/aiK/+4vF3oTrbzwjW7Ob/10jesuFazuUecCwYqC5XvK
+        Tew27FVHThUVjkWVIjlh9CMfNPNVjApeRa9kJ4qhIgB6phrxrsryM2LmykVnoTt+cLmFaGB
+        WAjl7CIdfGOHuToR2s7P5x9/JNp5JZEaEOsndqIvOb3VrNyvRFNNU/O4IFPEFf8jeMISz2c
+        2snBphFkZ4VcxKm7Y8oYt+eWesd9c02oWGMFGv5KckZVuOWfmfGiruJrYHis6fi18zRoPyO
+        03yhjr6bHBRBM/W1EmFVFL7ZS4zP3eG0AVywskqfz8vKcEnQ1pDL3f0I7F8ka0i2hjPr7je
+        1aH1sh6
 X-QQ-GoodBg: 2
 From:   tangmeng <tangmeng@uniontech.com>
-To:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        nizhen@uniontech.com, zhanglianjie@uniontech.com,
-        nixiaoming@huawei.com, tangmeng <tangmeng@uniontech.com>
-Subject: [PATCH 04/11] kernel/fork: move threads-max sysctl to its own file
-Date:   Sun, 20 Feb 2022 14:00:41 +0800
-Message-Id: <20220220060041.13531-1-tangmeng@uniontech.com>
+To:     James.Bottomley@HansenPartnership.com, deller@gmx.de,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com
+Cc:     linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, nizhen@uniontech.com,
+        zhanglianjie@uniontech.com, nixiaoming@huawei.com,
+        tangmeng <tangmeng@uniontech.com>
+Subject: [PATCH 01/11] kernel/parisc: move soft-power sysctl to its own file
+Date:   Sun, 20 Feb 2022 14:00:00 +0800
+Message-Id: <20220220060000.13079-1-tangmeng@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign1
 X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,83 +56,88 @@ know what sysctl knobs you wish to add for your own piece of code, we
 just care about the core logic.
 
 All filesystem syctls now get reviewed by fs folks. This commit
-follows the commit of fs, move the threads-max sysctl to its
-own file, kernel/fork.c.
+follows the commit of fs, move the soft-power sysctl to its own file,
+kernel/parisc/power.c.
 
 Signed-off-by: tangmeng <tangmeng@uniontech.com>
 ---
- include/linux/sysctl.h |  3 ---
- kernel/fork.c          | 22 +++++++++++++++++++++-
- kernel/sysctl.c        |  7 -------
- 3 files changed, 21 insertions(+), 11 deletions(-)
+ drivers/parisc/power.c | 22 ++++++++++++++++++++++
+ include/linux/sysctl.h |  1 -
+ kernel/sysctl.c        |  9 ---------
+ 3 files changed, 22 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index e00bf436d63b..1d3467b5e2f3 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -295,7 +295,4 @@ static inline void do_sysctl_args(void)
- }
- #endif /* CONFIG_SYSCTL */
+diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+index 456776bd8ee6..24e0ffbe460a 100644
+--- a/drivers/parisc/power.c
++++ b/drivers/parisc/power.c
+@@ -193,6 +193,26 @@ static struct notifier_block parisc_panic_block = {
+ 	.priority	= INT_MAX,
+ };
  
--int sysctl_max_threads(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
--
- #endif /* _LINUX_SYSCTL_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index d75a528f7b21..0ac42feb3f71 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -3143,7 +3143,8 @@ int unshare_files(void)
- 	return 0;
- }
- 
--int sysctl_max_threads(struct ctl_table *table, int write,
++static int pwrsw_enabled;
 +#ifdef CONFIG_SYSCTL
-+static int sysctl_max_threads(struct ctl_table *table, int write,
- 		       void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	struct ctl_table t;
-@@ -3165,3 +3166,22 @@ int sysctl_max_threads(struct ctl_table *table, int write,
- 
- 	return 0;
- }
-+
-+static struct ctl_table kern_fork_table[] = {
++static struct ctl_table kern_parisc_power_table[] = {
 +	{
-+		.procname       = "threads-max",
-+		.data           = NULL,
++		.procname       = "soft-power",
++		.data           = &pwrsw_enabled,
 +		.maxlen         = sizeof(int),
 +		.mode           = 0644,
-+		.proc_handler   = sysctl_max_threads,
++		.proc_handler   = proc_dointvec,
 +	},
 +	{ }
 +};
 +
-+static __init int kernel_fork_sysctls_init(void)
++static void __init kernel_parisc_power_sysctls_init(void)
 +{
-+	register_sysctl_init("kernel", kern_fork_table);
-+	return 0;
++	register_sysctl_init("kernel", kern_parisc_power_table);
 +}
-+late_initcall(kernel_fork_sysctls_init);
++#else
++#define kernel_parisc_power_sysctls_init() do { } while (0)
 +#endif /* CONFIG_SYSCTL */
+ 
+ static int __init power_init(void)
+ {
+@@ -233,6 +253,8 @@ static int __init power_init(void)
+ 	atomic_notifier_chain_register(&panic_notifier_list,
+ 			&parisc_panic_block);
+ 
++	kernel_parisc_power_sysctls_init();
++
+ 	return 0;
+ }
+ 
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index 6353d6db69b2..e00bf436d63b 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -242,7 +242,6 @@ int do_proc_douintvec(struct ctl_table *table, int write,
+ 				  int write, void *data),
+ 		      void *data);
+ 
+-extern int pwrsw_enabled;
+ extern int unaligned_enabled;
+ extern int unaligned_dump_stack;
+ extern int no_unaligned_warning;
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 126d47e8224d..e6d99bbf9a9d 100644
+index 22037f03cd2b..d11390634321 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1829,13 +1829,6 @@ static struct ctl_table kern_table[] = {
- 		.proc_handler	= proc_do_cad_pid,
+@@ -1737,15 +1737,6 @@ static struct ctl_table kern_table[] = {
+ 		.proc_handler	= proc_dointvec,
  	},
  #endif
+-#ifdef CONFIG_PARISC
 -	{
--		.procname	= "threads-max",
--		.data		= NULL,
--		.maxlen		= sizeof(int),
+-		.procname	= "soft-power",
+-		.data		= &pwrsw_enabled,
+-		.maxlen		= sizeof (int),
 -		.mode		= 0644,
--		.proc_handler	= sysctl_max_threads,
+-		.proc_handler	= proc_dointvec,
 -	},
+-#endif
+ #ifdef CONFIG_SYSCTL_ARCH_UNALIGN_ALLOW
  	{
- 		.procname	= "usermodehelper",
- 		.mode		= 0555,
+ 		.procname	= "unaligned-trap",
 -- 
 2.20.1
 
