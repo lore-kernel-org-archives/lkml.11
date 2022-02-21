@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15486C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E838CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351169AbiBUJoB (ORCPT
+        id S1351270AbiBUJpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:44:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47998 "EHLO
+        Mon, 21 Feb 2022 04:45:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351564AbiBUJhZ (ORCPT
+        with ESMTP id S1351585AbiBUJh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:25 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79CB3A5CB;
-        Mon, 21 Feb 2022 01:16:01 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE093A5E1;
+        Mon, 21 Feb 2022 01:16:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E14A3CE0E76;
-        Mon, 21 Feb 2022 09:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F55C340E9;
-        Mon, 21 Feb 2022 09:15:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7412A60C1D;
+        Mon, 21 Feb 2022 09:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C61C340E9;
+        Mon, 21 Feb 2022 09:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434953;
-        bh=I+jBkflwt0aPUiUvWdQx+Obp5Zu9ym9Yrxeq3MFXuxg=;
+        s=korg; t=1645434961;
+        bh=iL+rlQ5kuc2Mat8DU3mcVFaTxdmYQC76utMHrm2gPHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2JabJm174fNJPTYP6endTaA6k55k3EVqQ/azSWewUUFMUam/rXvExTn7iT/GkPmb
-         MUIKYsK64VwZPrKrj9i1F4LM002mEBAB/8gfT5z7MtQJpJQZ4v7CjeOwo2J/MVRzkx
-         Vl5bZkh4TgZQvnHBZU7kVHBJMM/aDdq0WR6JDUHg=
+        b=adSllQ0PMtX4X0ASmout0mKAES/Nw+tsTsCZYeobMhzV6pUIqpuaXe2AtEBGtiWAV
+         eOLC3J3ZfsuF5wOxCQm/gGZyNdgrkICrBK3RRuD42IaPJtEG8LcplGBclom7Z9qwcY
+         3zwjqx5jnIja5rq7fj2oMvCpjwbaV2YRl62oDpWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mateusz Krzak <kszaquitto@gmail.com>,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/196] arm64: dts: meson-gx: add ATF BL32 reserved-memory region
-Date:   Mon, 21 Feb 2022 09:49:49 +0100
-Message-Id: <20220221084936.199519629@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 185/196] dmaengine: sh: rcar-dmac: Check for error num after setting mask
+Date:   Mon, 21 Feb 2022 09:50:17 +0100
+Message-Id: <20220221084937.125928023@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,43 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 76577c9137456febb05b0e17d244113196a98968 ]
+commit 2d21543efe332cd8c8f212fb7d365bc8b0690bfa upstream.
 
-Add an additional reserved memory region for the BL32 trusted firmware
-present in many devices that boot from Amlogic vendor u-boot.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220126044954.19069-2-christianshewitt@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dc312349e875 ("dmaengine: rcar-dmac: Widen DMA mask to 40 bits")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220106030939.2644320-1-jiasheng@iscas.ac.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-gx.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/dma/sh/rcar-dmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-index 6b457b2c30a4b..aa14ea017a613 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-@@ -49,6 +49,12 @@
- 			no-map;
- 		};
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1869,7 +1869,9 @@ static int rcar_dmac_probe(struct platfo
+ 	dmac->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, dmac);
+ 	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
+-	dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	if (ret)
++		return ret;
  
-+		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
-+		secmon_reserved_bl32: secmon@5300000 {
-+			reg = <0x0 0x05300000 0x0 0x2000000>;
-+			no-map;
-+		};
-+
- 		linux,cma {
- 			compatible = "shared-dma-pool";
- 			reusable;
--- 
-2.34.1
-
+ 	ret = rcar_dmac_parse_of(&pdev->dev, dmac);
+ 	if (ret < 0)
 
 
