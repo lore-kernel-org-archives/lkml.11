@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB95CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 06:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FABBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 06:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345365AbiBUGod (ORCPT
+        id S1345640AbiBUGpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 01:44:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41564 "EHLO
+        Mon, 21 Feb 2022 01:45:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345521AbiBUGoT (ORCPT
+        with ESMTP id S1345636AbiBUGoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 01:44:19 -0500
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C96F3BBC3;
-        Sun, 20 Feb 2022 22:42:18 -0800 (PST)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0532E1A2158;
-        Mon, 21 Feb 2022 07:42:17 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C25061A214E;
-        Mon, 21 Feb 2022 07:42:16 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 52EBF183ABE7;
-        Mon, 21 Feb 2022 14:42:15 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v4 2/2] PCI: imx6: Enable i.MX6QP PCIe power management support
-Date:   Mon, 21 Feb 2022 14:33:57 +0800
-Message-Id: <1645425237-4071-2-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645425237-4071-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1645425237-4071-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 21 Feb 2022 01:44:54 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1D649269
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 22:43:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645425796; x=1676961796;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ef2HXbSqDvS9Glrw6CB1QeV3AdDoUJ86lJQ/slSWZXw=;
+  b=NVAvfKIJQcH8vIMoxHpL2bKJ2ZmNc5XHLBLagQlQqb6B4RvKCaPFe5u8
+   MoHi3YqhgqzuN6ShSiAnZmUdVonoT2r706VJVI73p2k9Bq73DVJKlx5o2
+   jzcYefWxT7wi2sVB9M11/INvQpIRHPNuYgIkt1FX6uLhDP2n9RwbBjKJB
+   ZkGCR6qk26Xx0JocY9j3XFKYGnjSFA4poJvQDkXv30i/oQyziAo/FPGKK
+   Sv5hYND8vCTlUFCbHgNef0RBt029PWW8jlIgkaYHoaXRDTVyQdLPTeB2d
+   NSDemdP6td0aN81fv77f69Jvk1o7rgUUtWfvJ9T9QZi7ABEGzEA2+kp3Q
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="276037977"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="276037977"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 22:43:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="531734085"
+Received: from brentlu-brix.itwn.intel.com ([10.5.253.25])
+  by orsmga007.jf.intel.com with ESMTP; 20 Feb 2022 22:43:10 -0800
+From:   Brent Lu <brent.lu@intel.com>
+To:     alsa-devel@alsa-project.org
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, linux-kernel@vger.kernel.org,
+        Ajye Huang <ajye_huang@compal.corp-partner.google.com>,
+        Brent Lu <brent.lu@intel.com>,
+        Curtis Malainey <cujomalainey@chromium.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+Subject: [PATCH v2] ASoC: SOF: Intel: Add topology overwrite for Felwinter
+Date:   Mon, 21 Feb 2022 14:40:05 +0800
+Message-Id: <20220221064005.1752500-1-brent.lu@intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i.MX6QP PCIe supports the reset logic, thus it can reset itself to the
-initialized state when exit from L2 or L3 states.
+From: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
 
-Enable the i.MX6QP PCIe suspend/resume operations support.
+The Felwinter uses four max98360a amplifiers on corresponding CH0~CH3.
+There are four amps on the board connecting to headphone to SSP0 port,
+amp to SSP1,and the DAI format would be DSP_A,8-slots, 32 bit slot-width.
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+CH0: L(Woofer), CH1:R(Woofer), CH2:L(Tweeter), CH3:R(Tweeter)
+
+Signed-off-by: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
+Signed-off-by: Brent Lu <brent.lu@intel.com>
+Reviewed-by: Curtis Malainey <cujomalainey@chromium.org>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/soc/sof/sof-pci-dev.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 784801f2f9e6..62262483470a 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -995,6 +995,7 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- 	/* Others poke directly at IOMUXC registers */
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX6SX:
-+	case IMX6QP:
- 		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF);
-@@ -1307,7 +1308,8 @@ static const struct imx6_pcie_drvdata drvdata[] = {
- 	[IMX6QP] = {
- 		.variant = IMX6QP,
- 		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
--			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE,
-+			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
-+			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
- 		.dbi_length = 0x200,
+diff --git a/sound/soc/sof/sof-pci-dev.c b/sound/soc/sof/sof-pci-dev.c
+index 20c6ca37dbc4..61f2afd54c3e 100644
+--- a/sound/soc/sof/sof-pci-dev.c
++++ b/sound/soc/sof/sof-pci-dev.c
+@@ -67,6 +67,14 @@ static const struct dmi_system_id sof_tplg_table[] = {
+ 		},
+ 		.driver_data = "sof-adl-max98390-ssp2-rt5682-ssp0.tplg",
  	},
- 	[IMX7D] = {
++	{
++		.callback = sof_tplg_cb,
++		.matches = {
++			DMI_MATCH(DMI_PRODUCT_FAMILY, "Google_Brya"),
++			DMI_MATCH(DMI_OEM_STRING, "AUDIO_AMP-MAX98360_ALC5682VS_I2S_2WAY"),
++		},
++		.driver_data = "sof-adl-max98360a-rt5682-2way.tplg",
++	},
+ 
+ 	{}
+ };
 -- 
 2.25.1
 
