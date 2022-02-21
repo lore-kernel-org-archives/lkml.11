@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C1FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AADC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349495AbiBUJ0H (ORCPT
+        id S1349380AbiBUJZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49234 "EHLO
+        Mon, 21 Feb 2022 04:25:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348616AbiBUJQE (ORCPT
+        with ESMTP id S1348389AbiBUJLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:16:04 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D50D26137;
-        Mon, 21 Feb 2022 01:06:58 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C19324BF7;
+        Mon, 21 Feb 2022 01:03:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 979FFCE0E8C;
-        Mon, 21 Feb 2022 09:06:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722C0C340E9;
-        Mon, 21 Feb 2022 09:06:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 180966112B;
+        Mon, 21 Feb 2022 09:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F39FAC340E9;
+        Mon, 21 Feb 2022 09:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434415;
-        bh=ct/h/yADFUMU3unEw4AF7pARzuhFBvzMnHEBVlt9lHM=;
+        s=korg; t=1645434196;
+        bh=gFjfpEKQq4c/0WxeO/7I1zSuZlcfjjRpq/ieLwbVn4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dsGkhnIOAJHA4PaQ0YrJUwUs+qpIzQKS7LgPNCcAMmWUwmi/R7eR9Jok4qARjDFkC
-         gHO7fQoxdofpT6mGFPduFk9G0fAqAoVRjCkbHRK/OtXTJoYLU2sgf7oNNzHeDZN9C1
-         y38vcsWMq/vFIeDgPH4rPkkLiz8H/h7cqc9QM6uw=
+        b=DC0UlGvyJO1rMsA4Efn3NfFAKIZlVWAoL/gx++te0MMemERYdNA0IRtKBUAevaper
+         O35y3MQ5w2P9LznGT0sqe+UWUwrD5QTmWhuj6qPi1OTVxFFF9X4ViVYIkd9Fcdcbsv
+         EM3S4wRZaDgaW1Tsw722+Rkp18WqZEGzb7DfkNXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.10 120/121] i2c: brcmstb: fix support for DSL and CM variants
-Date:   Mon, 21 Feb 2022 09:50:12 +0100
-Message-Id: <20220221084925.257729514@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: [PATCH 5.10 045/121] kbuild: lto: merge module sections
+Date:   Mon, 21 Feb 2022 09:48:57 +0100
+Message-Id: <20220221084922.735443672@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,33 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+From: Sami Tolvanen <samitolvanen@google.com>
 
-commit 834cea3a252ed4847db076a769ad9efe06afe2d5 upstream.
+commit dd2776222abb9893e5b5c237a2c8c880d8854cee upstream.
 
-DSL and CM (Cable Modem) support 8 B max transfer size and have a custom
-DT binding for that reason. This driver was checking for a wrong
-"compatible" however which resulted in an incorrect setup.
+LLD always splits sections with LTO, which increases module sizes. This
+change adds linker script rules to merge the split sections in the final
+module.
 
-Fixes: e2e5a2c61837 ("i2c: brcmstb: Adding support for CM and DSL SoCs")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20201211184633.3213045-6-samitolvanen@google.com
+Cc: Stephen Boyd <swboyd@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-brcmstb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ scripts/module.lds.S |   24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/i2c/busses/i2c-brcmstb.c
-+++ b/drivers/i2c/busses/i2c-brcmstb.c
-@@ -674,7 +674,7 @@ static int brcmstb_i2c_probe(struct plat
+--- a/scripts/module.lds.S
++++ b/scripts/module.lds.S
+@@ -23,6 +23,30 @@ SECTIONS {
+ 	.init_array		0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }
  
- 	/* set the data in/out register size for compatible SoCs */
- 	if (of_device_is_compatible(dev->device->of_node,
--				    "brcmstb,brcmper-i2c"))
-+				    "brcm,brcmper-i2c"))
- 		dev->data_regsz = sizeof(u8);
- 	else
- 		dev->data_regsz = sizeof(u32);
+ 	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
++
++	__patchable_function_entries : { *(__patchable_function_entries) }
++
++	/*
++	 * With CONFIG_LTO_CLANG, LLD always enables -fdata-sections and
++	 * -ffunction-sections, which increases the size of the final module.
++	 * Merge the split sections in the final binary.
++	 */
++	.bss : {
++		*(.bss .bss.[0-9a-zA-Z_]*)
++		*(.bss..L*)
++	}
++
++	.data : {
++		*(.data .data.[0-9a-zA-Z_]*)
++		*(.data..L*)
++	}
++
++	.rodata : {
++		*(.rodata .rodata.[0-9a-zA-Z_]*)
++		*(.rodata..L*)
++	}
++
++	.text : { *(.text .text.[0-9a-zA-Z_]*) }
+ }
+ 
+ /* bring in arch-specific sections */
 
 
