@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FB5C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B351C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349442AbiBUJ1r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:27:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35898 "EHLO
+        id S243745AbiBUJ15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:27:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349110AbiBUJVB (ORCPT
+        with ESMTP id S1349208AbiBUJVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4BD35259;
-        Mon, 21 Feb 2022 01:07:55 -0800 (PST)
+        Mon, 21 Feb 2022 04:21:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E5E3587F;
+        Mon, 21 Feb 2022 01:08:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8ABF9CE0E93;
-        Mon, 21 Feb 2022 09:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D111C340E9;
-        Mon, 21 Feb 2022 09:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2FE0608C1;
+        Mon, 21 Feb 2022 09:08:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB04C340E9;
+        Mon, 21 Feb 2022 09:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434472;
-        bh=/N9KiyRHRNC1Xdut6D39Oz083rW0QRKFf+9KWMr8LOY=;
+        s=korg; t=1645434480;
+        bh=6TGHFzWoBF8VCHFHfVRCuz5fx3lT8j5ALTDaaJYk2OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxZlUJ+3VcrVJObtXcp70fhOxgKOTSvAT/AuRgFLRFllBzazjWTrGygAqvccwzwPl
-         X5z5szar2R8h/jxGIW0ZuKf71HjEHcIJQb8GvTIsZovpxCk0xtUqqQtWqsC8WV3rjD
-         kphMQ2Ah68SS9EeL56XcplalSdXZFRviN+MAt2oI=
+        b=upcEKe2OZWe8uiihWbEBmNY5gSBrKMp+7ockfU7Aer/cQhmfawGzRER/zLO6iJ2f7
+         s4XinmGMa5+OlCcIxfMFPZm6q2CunFIwsu5FreQarC0yJvG+Y9UGagToXjHaJrnJIL
+         g+k0raQ5BRtwnZ8aQTTgTcDKGOvtn+zPad128vlU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 020/196] btrfs: send: in case of IO error log it
-Date:   Mon, 21 Feb 2022 09:47:32 +0100
-Message-Id: <20220221084931.575990318@linuxfoundation.org>
+        =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 023/196] kunit: tool: Import missing importlib.abc
+Date:   Mon, 21 Feb 2022 09:47:35 +0100
+Message-Id: <20220221084931.669379418@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,35 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Michał Winiarski <michal.winiarski@intel.com>
 
-commit 2e7be9db125a0bf940c5d65eb5c40d8700f738b5 upstream.
+[ Upstream commit 235528072f28b3b0a1446279b7eaddda36dbf743 ]
 
-Currently if we get IO error while doing send then we abort without
-logging information about which file caused issue.  So log it to help
-with debugging.
+Python 3.10.0 contains:
+9e09849d20 ("bpo-41006: importlib.util no longer imports typing (GH-20938)")
 
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It causes importlib.util to no longer import importlib.abs, which leads
+to the following error when trying to use kunit with qemu:
+AttributeError: module 'importlib' has no attribute 'abc'. Did you mean: '_abc'?
+
+Add the missing import.
+
+Signed-off-by: Michał Winiarski <michal.winiarski@intel.com>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/send.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/kunit/kunit_kernel.py | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/send.c
-+++ b/fs/btrfs/send.c
-@@ -4978,6 +4978,10 @@ static int put_file_data(struct send_ctx
- 			lock_page(page);
- 			if (!PageUptodate(page)) {
- 				unlock_page(page);
-+				btrfs_err(fs_info,
-+			"send: IO error at offset %llu for inode %llu root %llu",
-+					page_offset(page), sctx->cur_ino,
-+					sctx->send_root->root_key.objectid);
- 				put_page(page);
- 				ret = -EIO;
- 				break;
+diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
+index 2c6f916ccbafa..0874e512d109b 100644
+--- a/tools/testing/kunit/kunit_kernel.py
++++ b/tools/testing/kunit/kunit_kernel.py
+@@ -6,6 +6,7 @@
+ # Author: Felix Guo <felixguoxiuping@gmail.com>
+ # Author: Brendan Higgins <brendanhiggins@google.com>
+ 
++import importlib.abc
+ import importlib.util
+ import logging
+ import subprocess
+-- 
+2.34.1
+
 
 
