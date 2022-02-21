@@ -2,111 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD83C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343755AbiBUJEg (ORCPT
+        id S1346924AbiBUJEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:04:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58392 "EHLO
+        Mon, 21 Feb 2022 04:04:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347297AbiBUJBN (ORCPT
+        with ESMTP id S1347321AbiBUJBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:13 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DE627CD6;
-        Mon, 21 Feb 2022 00:56:15 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 870DC580229;
-        Mon, 21 Feb 2022 03:55:36 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 21 Feb 2022 03:55:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=zcdXYKD7AIGXfsVFdjjk2+yAJ6zsZ8B0f4omWG
-        U4udk=; b=LVxkjzRmQ4i/fCDy8Ek6wbLyQWNE22E401IzR2k13N3Ew037DuZLmi
-        90/AdOlQQhkoKP0QzB4gbeJGr18LbcLmBzV8ka9qsNurIaBsjLYunuxvmyZG8Xi2
-        hLcPwTKTqhs5iEj1cbAVJhKsmISL69uUAPmvZnzjLsfXCwUTHeJOaNyswUWg6WJ+
-        miYx1ovsB7VqI0r55amRpSaRiZL0Ak7+bHM/EtrmlX+kUJi9Jkyj/DC+hxwrjDuV
-        7myTB+f8OwKY8/BErNQMSfa2Kuc2iJ4o5mLqbiQHcliVzv64PfEWmE5hrnhfaH0m
-        zs0da30wSrcgNKNjdJvOW/JA8pFGRJJg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=zcdXYKD7AIGXfsVFd
-        jjk2+yAJ6zsZ8B0f4omWGU4udk=; b=Q26jmJCQeassQD8bDmdKizI0QTqNcla26
-        Z/sXnrDLuGaL9HqS/i8YzFk2xmSMg5qT/kGsVZyoLqSTwsIyBqXyq8RkY1BwuSFt
-        QliDhtgjgX+f//x2hHtBd0x9iJ/e9wbClQ53Vq8ySt2L5I5z1MsYD9spxcgoRscu
-        QaDu5sly+LhYn7wj37qZFFT4P56NisZ7DFvxHeADJ2Yo3eCcecgr07VYmoM8WjSm
-        ivXsSrxXOySf62FF2HZLDdgb+1ARoSIGDx5b2+B8HLOZurpInf8VZT3E4HoqDgSz
-        I5T2YtcS/CmqQ8PBVPs8UiGfEjktjTOzHthV6fN+nwMwzPlzufzyw==
-X-ME-Sender: <xms:iFMTYkhhyhwq3q1gNDcLdP3q8C2Gcn0xGoGTIFTl5cf-mLt7sYkBUw>
-    <xme:iFMTYtA36Hu-MfKjDgBkfzvgPIo3849S-J6pti4CJExQLCHTJVSCWNEU_UEJ7qt-V
-    q_DIkav7joDmQTtBy4>
-X-ME-Received: <xmr:iFMTYsH7JC_CWS-AKr917Bjxwqh6SbbwsRdMCucyfFiuWAetY7p88YlWByv5qdFb009yJNgva4gF729RxR0r-7ZfzvNueqUeOdzPO1o>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeehgdduvddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
-    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:iFMTYlQDvgXohLsYkaWvn1BTfIex5vySL60NfMqFYxzkcJyz8UNl_Q>
-    <xmx:iFMTYhynmE5168aSv0qT-xR_Dqtkvj78qdTou6E4xuMW1lj21zzrFg>
-    <xmx:iFMTYj7r2HOg3-c1NHjZOOf6MpAPn-q2NINtiX1xYM_81dmCIx7vEA>
-    <xmx:iFMTYmo4J-9O2AlAD-UW1T9vmr3i44wDDqBByzDzzOKwQaNNj9QSMg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Feb 2022 03:55:35 -0500 (EST)
-Date:   Mon, 21 Feb 2022 09:55:34 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     robdclark@gmail.com, sean@poorly.run, airlied@linux.ie,
-        daniel@ffwll.ch, swboyd@chromium.org, bjorn.andersson@linaro.org,
-        dmitry.baryshkov@linaro.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/msm/dp: switch to devm_drm_of_get_bridge
-Message-ID: <20220221085534.qw2x6mge42uo4fl6@houat>
-References: <20220221073339.10742-1-jose.exposito89@gmail.com>
+        Mon, 21 Feb 2022 04:01:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B03527CED;
+        Mon, 21 Feb 2022 00:56:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5684F611C4;
+        Mon, 21 Feb 2022 08:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C7BC340F1;
+        Mon, 21 Feb 2022 08:55:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433732;
+        bh=0x8uk8ogZkTiQRkXjDuzshmOMcA8a04iiSihN0Uu/A4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rxcW3ioGgITJybH7lL7q5gMRfUp+J7626eGscxHb90shURn3K+6NCb491q1zEYu5q
+         3xeIIwA3ll7JXeGgZ3tf+GjINB2QLxPXFN8Om/lTyihIytZcYniWtwPgqMkygavOx4
+         go01vmsvHdGfjioyydqe7UkyDuZk8AUrlIl2VsPk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 08/58] selftests/zram: Skip max_comp_streams interface on newer kernel
+Date:   Mon, 21 Feb 2022 09:49:01 +0100
+Message-Id: <20220221084912.155685491@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
+References: <20220221084911.895146879@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kcae224eyodkfp6e"
-Content-Disposition: inline
-In-Reply-To: <20220221073339.10742-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
---kcae224eyodkfp6e
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
 
-On Mon, Feb 21, 2022 at 08:33:39AM +0100, Jos=E9 Exp=F3sito wrote:
-> The function "drm_of_find_panel_or_bridge" has been deprecated in
-> favor of "devm_drm_of_get_bridge".
->=20
-> Switch to the new function and reduce boilerplate.
->=20
-> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
+has switched to per-cpu streams. Even kernel still keep this interface for
+some reasons, but writing to max_comp_stream doesn't take any effect. So
+skip it on newer kernel ie 4.7.
 
-Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+The code that comparing kernel version is from xfstests testsuite ext4/053.
 
-Maxime
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---kcae224eyodkfp6e
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 9e73a4fb9b0aa..2c1d1c567f854 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -20,6 +20,9 @@ dev_mounted=-1
+ 
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++kernel_version=`uname -r | cut -d'.' -f1,2`
++kernel_major=${kernel_version%.*}
++kernel_minor=${kernel_version#*.}
+ 
+ trap INT
+ 
+@@ -34,6 +37,20 @@ check_prereqs()
+ 	fi
+ }
+ 
++kernel_gte()
++{
++	major=${1%.*}
++	minor=${1#*.}
++
++	if [ $kernel_major -gt $major ]; then
++		return 0
++	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
++		return 0
++	fi
++
++	return 1
++}
++
+ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+@@ -95,6 +112,13 @@ zram_max_streams()
+ {
+ 	echo "set max_comp_streams to zram device(s)"
+ 
++	kernel_gte 4.7
++	if [ $? -eq 0 ]; then
++		echo "The device attribute max_comp_streams was"\
++		               "deprecated in 4.7"
++		return 0
++	fi
++
+ 	local i=0
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
+-- 
+2.34.1
 
------BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYhNThgAKCRDj7w1vZxhR
-xQ/3AQDoqp/3uuiqU47wvaKsMT4OkQ8oU6uBZBmILyZXiEmPlAD8C7QMIh6RfG/2
-cMb7pXNT5FUCHu/NDIb0I9E7Cig+gw4=
-=WH80
------END PGP SIGNATURE-----
 
---kcae224eyodkfp6e--
