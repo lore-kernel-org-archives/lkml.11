@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B61EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354782AbiBUKIE (ORCPT
+        id S1352649AbiBUKIb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:08:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38332 "EHLO
+        Mon, 21 Feb 2022 05:08:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354094AbiBUJ6J (ORCPT
+        with ESMTP id S1353725AbiBUJ5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:58:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E7A49257;
-        Mon, 21 Feb 2022 01:27:30 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F0D245A0;
+        Mon, 21 Feb 2022 01:27:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACDDCB80ECF;
-        Mon, 21 Feb 2022 09:27:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3BEFC340E9;
-        Mon, 21 Feb 2022 09:27:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CC88B80EDF;
+        Mon, 21 Feb 2022 09:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8BBC33A37;
+        Mon, 21 Feb 2022 09:27:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435642;
-        bh=YPmrjZCA/qvxTOK2iFsBy8+N9NJ3GXDz4AwzbwadkqY=;
+        s=korg; t=1645435625;
+        bh=hHohSxgqCDRAYo2TzGlcEJxO0dJ5McJl7zKU55IAVrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OglP0Avy5MqEUcI3Mxg+EkSLiG2emylJa0H9q8L6rTe+vfAQciNHK8aCD+tTR/6/D
-         89gi9tj+zBxM9wjFgyz9Zq56he6/nOB6z0RLHznMT1VZ0EFbpDyAas11L/Ext2WL1Y
-         WAqLltQVBgzIkeIM183PuxL0+LKwCN2fxxYc8/FI=
+        b=dv0Y7sRbvF58dbo9491bPkaHcy6Q1hZy//JYrzEWtJ4a+YHpkpsVsjAI0IRpZzdt7
+         9tX/JwMps+zzHgRVXvoII/tERT4rxuWzKxX23vwYHArDJpTKi0dWkEh2yXEX3+/dLP
+         28mDuW/QTaeLBkEDmyXvh6pu1AGuCM71TdYkYdLo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 214/227] ACPI: PM: Revert "Only mark EC GPE for wakeup on Intel systems"
-Date:   Mon, 21 Feb 2022 09:50:33 +0100
-Message-Id: <20220221084941.931483278@linuxfoundation.org>
+Subject: [PATCH 5.16 218/227] xprtrdma: fix pointer derefs in error cases of rpcrdma_ep_create
+Date:   Mon, 21 Feb 2022 09:50:37 +0100
+Message-Id: <20220221084942.055792377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,87 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-[ Upstream commit d6ebb17ccc7b37872a32bc25b4a21f1e5af8c7e3 ]
+[ Upstream commit a9c10b5b3b67b3750a10c8b089b2e05f5e176e33 ]
 
-Testing on various upcoming OEM systems shows commit 7b167c4cb48e ("ACPI:
-PM: Only mark EC GPE for wakeup on Intel systems") was short
-sighted and the symptoms were indicative of other problems. Some OEMs
-do have the dedicated GPIOs for the power button but also rely upon
-an interrupt to the EC SCI to let the lid work.
+If there are failures then we must not leave the non-NULL pointers with
+the error value, otherwise `rpcrdma_ep_destroy` gets confused and tries
+free them, resulting in an Oops.
 
-The original commit showed spurious activity on Lenovo systems:
-     * On both Lenovo T14 and P14s the keyboard wakeup doesn't work, and
-       sometimes the power button event doesn't work.
-
-This was confirmed on my end at that time.
-
-However further development in the kernel showed that the issue was
-actually the IRQ for the GPIO controller was also shared with the EC SCI.
-This was actually fixed by commit 2d54067fcd23 ("pinctrl: amd: Fix
-wakeups when IRQ is shared with SCI").
-
-The original commit also showed problems with AC adapter:
-     * On HP 635 G7 detaching or attaching AC during suspend will cause
-       the system not to wakeup
-     * On Asus vivobook to prevent detaching AC causing resume problems
-     * On Lenovo 14ARE05 to prevent detaching AC causing resume problems
-     * On HP ENVY x360  to prevent detaching AC causing resume problems
-
-Detaching AC adapter causing problems appears to have been a problem
-because the EC SCI went off to notify the OS of the power adapter change
-but the SCI was ignored and there was no other way to wake up this system
-since GPIO controller wasn't properly enabled.  The wakeups were fixed by
-enabling the GPIO controller in commit acd47b9f28e5 ("pinctrl: amd: Handle
-wake-up interrupt").
-
-I've confirmed on a variety of OEM notebooks with the following test
-
- 1) echo 1 | sudo tee /sys/power/pm_debug_messages
- 2) sudo systemctl suspend
- 3) unplug AC adapter, make sure system is still asleep
- 4) wake system from lid (which is provided by ACPI SCI on some of them)
- 5) dmesg
-    a) see the EC GPE dispatched, timekeeping for X seconds (matching ~time
-       until AC adapter plug out)
-    b) see timekeeping for Y seconds until woke (matching ~time from AC
-       adapter until lid event)
- 6) Look at /sys/kernel/debug/amd_pmc/s0ix_stats
-    "Time (in us) in S0i3" = X + Y - firmware processing time
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
+Acked-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/s2idle.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ net/sunrpc/xprtrdma/verbs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index 1c48358b43ba3..e0185e841b2a3 100644
---- a/drivers/acpi/x86/s2idle.c
-+++ b/drivers/acpi/x86/s2idle.c
-@@ -424,15 +424,11 @@ static int lps0_device_attach(struct acpi_device *adev,
- 		mem_sleep_current = PM_SUSPEND_TO_IDLE;
+diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
+index 3d3673ba9e1e5..2a2e1514ac79a 100644
+--- a/net/sunrpc/xprtrdma/verbs.c
++++ b/net/sunrpc/xprtrdma/verbs.c
+@@ -436,6 +436,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 					      IB_POLL_WORKQUEUE);
+ 	if (IS_ERR(ep->re_attr.send_cq)) {
+ 		rc = PTR_ERR(ep->re_attr.send_cq);
++		ep->re_attr.send_cq = NULL;
+ 		goto out_destroy;
+ 	}
  
- 	/*
--	 * Some Intel based LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U don't
--	 * use intel-hid or intel-vbtn but require the EC GPE to be enabled while
--	 * suspended for certain wakeup devices to work, so mark it as wakeup-capable.
--	 *
--	 * Only enable on !AMD as enabling this universally causes problems for a number
--	 * of AMD based systems.
-+	 * Some LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U, require the
-+	 * EC GPE to be enabled while suspended for certain wakeup devices to
-+	 * work, so mark it as wakeup-capable.
- 	 */
--	if (!acpi_s2idle_vendor_amd())
--		acpi_ec_mark_gpe_for_wake();
-+	acpi_ec_mark_gpe_for_wake();
+@@ -444,6 +445,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 					      IB_POLL_WORKQUEUE);
+ 	if (IS_ERR(ep->re_attr.recv_cq)) {
+ 		rc = PTR_ERR(ep->re_attr.recv_cq);
++		ep->re_attr.recv_cq = NULL;
+ 		goto out_destroy;
+ 	}
+ 	ep->re_receive_count = 0;
+@@ -482,6 +484,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 	ep->re_pd = ib_alloc_pd(device, 0);
+ 	if (IS_ERR(ep->re_pd)) {
+ 		rc = PTR_ERR(ep->re_pd);
++		ep->re_pd = NULL;
+ 		goto out_destroy;
+ 	}
  
- 	return 0;
- }
 -- 
 2.34.1
 
