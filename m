@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C39C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5395DC35280
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354894AbiBUJ7B (ORCPT
+        id S1353705AbiBUJ5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:59:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
+        Mon, 21 Feb 2022 04:57:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237563AbiBUJul (ORCPT
+        with ESMTP id S1352624AbiBUJri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:50:41 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4E635252;
-        Mon, 21 Feb 2022 01:22:43 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1C43493;
+        Mon, 21 Feb 2022 01:20:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BAA29CE0E90;
-        Mon, 21 Feb 2022 09:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C78C36AE3;
-        Mon, 21 Feb 2022 09:22:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8579360EB3;
+        Mon, 21 Feb 2022 09:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FCEC340EB;
+        Mon, 21 Feb 2022 09:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435360;
-        bh=CuhhGfIoAjBxYF3sdqIAIwU0hvEMEeFHrD/RaIYIkJw=;
+        s=korg; t=1645435213;
+        bh=MG0LT0WpiF9RrSxHDVMgtYZYTt4Y0WHzXS5mZYOvIYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J4mNzXEB+M4vrCWpSUsC9Tpmk8l+AZTHa7hFNfBy2ljpgagMd5xF5fbe/A2sa+Yjp
-         W09EBrGT9iFoV0YJn6k7K6UtfrLhgQz5X8ljMxxm6u/qfBcefoTOVSrB/TJvX8AdME
-         1unFF+wQDPK9738FmdH/FceKIJTG8Qi3KWi57x78=
+        b=W5ACgQ2oD/xH3169Lc0d5P3WGA+AfujknAJI66njCk0kOL2DwF1XpnOn6eGQRg0ut
+         jImrk+dA2cXqKP+gs8myrwIZqOT+Hbhbnp47Dx1Tj4nGF5Ggr2D+DMvM3BK+u1dHt1
+         b4vNYTWuXYjzGbn4EHbyip0cb/9RTGlmhWQF/ito=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Matteo Martelli <matteomartelli3@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 136/227] ALSA: usb-audio: revert to IMPLICIT_FB_FIXED_DEV for M-Audio FastTrack Ultra
-Date:   Mon, 21 Feb 2022 09:49:15 +0100
-Message-Id: <20220221084939.372706963@linuxfoundation.org>
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 085/227] drm/i915: Fix mbus join config lookup
+Date:   Mon, 21 Feb 2022 09:48:24 +0100
+Message-Id: <20220221084937.698308163@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,45 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matteo Martelli <matteomartelli3@gmail.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 19d20c7a29bf2e46ff1ab8e8c4fcd2da8a4f38e2 upstream.
+commit 8d9d2a723d64b650f2e6423024ccb4a33f0cdc40 upstream.
 
-Commit 83b7dcbc51c930fc2079ab6c6fc9d719768321f1 introduced a generic
-implicit feedback parser, which fails to execute for M-Audio FastTrack
-Ultra sound cards. The issue is with the ENDPOINT_SYNCTYPE check in
-add_generic_implicit_fb() where the SYNCTYPE is ADAPTIVE instead of ASYNC.
-The reason is that the sync type of the FastTrack output endpoints are
-set to adaptive in the quirks table since commit
-65f04443c96dbda11b8fff21d6390e082846aa3c.
+The bogus loop from compute_dbuf_slices() was copied into
+check_mbus_joined() as well. So this lookup is wrong as well.
+Fix it.
 
-Fixes: 83b7dcbc51c9 ("ALSA: usb-audio: Add generic implicit fb parsing")
-Signed-off-by: Matteo Martelli <matteomartelli3@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220211224913.20683-2-matteomartelli3@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: stable@vger.kernel.org
+Fixes: f4dc00863226 ("drm/i915/adl_p: MBUS programming")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220207132700.481-2-ville.syrjala@linux.intel.com
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+(cherry picked from commit 053f2b85631316a9226f6340c1c0fd95634f7a5b)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/implicit.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/intel_pm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -47,13 +47,13 @@ struct snd_usb_implicit_fb_match {
- static const struct snd_usb_implicit_fb_match playback_implicit_fb_quirks[] = {
- 	/* Generic matching */
- 	IMPLICIT_FB_GENERIC_DEV(0x0499, 0x1509), /* Steinberg UR22 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2080), /* M-Audio FastTrack Ultra */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2081), /* M-Audio FastTrack Ultra */
- 	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2030), /* M-Audio Fast Track C400 */
- 	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2031), /* M-Audio Fast Track C600 */
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -4843,7 +4843,7 @@ static bool check_mbus_joined(u8 active_
+ {
+ 	int i;
  
- 	/* Fixed EP */
- 	/* FIXME: check the availability of generic matching */
-+	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2080, 0x81, 2), /* M-Audio FastTrack Ultra */
-+	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2081, 0x81, 2), /* M-Audio FastTrack Ultra */
- 	IMPLICIT_FB_FIXED_DEV(0x2466, 0x8010, 0x81, 2), /* Fractal Audio Axe-Fx III */
- 	IMPLICIT_FB_FIXED_DEV(0x31e9, 0x0001, 0x81, 2), /* Solid State Logic SSL2 */
- 	IMPLICIT_FB_FIXED_DEV(0x31e9, 0x0002, 0x81, 2), /* Solid State Logic SSL2+ */
+-	for (i = 0; i < dbuf_slices[i].active_pipes; i++) {
++	for (i = 0; dbuf_slices[i].active_pipes != 0; i++) {
+ 		if (dbuf_slices[i].active_pipes == active_pipes)
+ 			return dbuf_slices[i].join_mbus;
+ 	}
 
 
