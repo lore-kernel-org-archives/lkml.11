@@ -2,88 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DCFC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 942C7C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348525AbiBUJLX (ORCPT
+        id S1348623AbiBUJL0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:11:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44914 "EHLO
+        Mon, 21 Feb 2022 04:11:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347677AbiBUJHg (ORCPT
+        with ESMTP id S1347639AbiBUJHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:07:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B5531343;
-        Mon, 21 Feb 2022 00:59:59 -0800 (PST)
+        Mon, 21 Feb 2022 04:07:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E42D3123F;
+        Mon, 21 Feb 2022 00:59:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07D00B80EAF;
-        Mon, 21 Feb 2022 08:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71643C340E9;
-        Mon, 21 Feb 2022 08:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645433997;
-        bh=EDcnl/SXjNhFjt2tMyZWMrIk4KXM0og1BPFfteTgKWk=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=E6TMrjcjgWKg8e0p3Frb4HVh5bubGzKepDtd2OdOOi6nqqEIktYo1MbWIYol4HQiF
-         7t6mkT4A5fVYglEtRwYacRNJvkEDN9JiRHKVdYz6ueB7YcSy/EbN+0+2an6rUF5WAK
-         LRa2pJdBGd/Qpobem0KH4gz16QSdkq7W1OFe1TBqgs6ygFw91/3CB5vfC0V2JJsqQd
-         iuG3K7gGG0YNkPABL5GB35VOwyYcjyJVH32k8wRMH4cUALZ8RF4fISqEIPojlf8pbW
-         DwnJaQphtxeDqtcifeTxCJs6IhebXOBoQi5voFcWqNDkSzI9PVaEPG/S9vKYjUV81b
-         4eu/kxBnZELOA==
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7036261204;
+        Mon, 21 Feb 2022 08:59:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F964C340F1;
+        Mon, 21 Feb 2022 08:59:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433995;
+        bh=kMSEXPBoSwoQwmpkWwpG7HzOODbVad/ahoEiMcTEZ58=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rKscJb1nWELFbr8DZWxFFFaVEk2M4qFm1OhfRRueMHy9oPgwzGEKctqJcVwbVnCGq
+         ESH2fkIYCC0VQFhqQmjnawBtNkwSpJQfNM5qH2+EjRwmDjQWbU2ojapimotlpKqHmz
+         2vBc7N9tu2zP9gYWfBeFqmtTz4oV+ejowk/sbSiM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.4 57/80] mtd: rawnand: qcom: Fix clock sequencing in qcom_nandc_probe()
+Date:   Mon, 21 Feb 2022 09:49:37 +0100
+Message-Id: <20220221084917.446340483@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] brcmfmac: Replace zero-length arrays with
- flexible-array members
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220216194935.GA904103@embeddedor>
-References: <20220216194935.GA904103@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164543399279.995.3471133482847126442.kvalo@kernel.org>
-Date:   Mon, 21 Feb 2022 08:59:54 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use “flexible array members”[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
-> 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> 
-> Link: https://github.com/KSPP/linux/issues/78
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+commit 5c23b3f965bc9ee696bf2ed4bdc54d339dd9a455 upstream.
 
-Patch applied to wireless-next.git, thanks.
+Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
+partition parser was returning -EPROBE_DEFER waiting for the main smem
+driver to load.
 
-d8b1f4193e09 brcmfmac: Replace zero-length arrays with flexible-array members
+This caused the board to reset. Playing about with the probe() function
+shows that the problem lies in the core clock being switched off before the
+nandc_unalloc() routine has completed.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220216194935.GA904103@embeddedor/
+If we look at how qcom_nandc_remove() tears down allocated resources we see
+the expected order is
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+qcom_nandc_unalloc(nandc);
+
+clk_disable_unprepare(nandc->aon_clk);
+clk_disable_unprepare(nandc->core_clk);
+
+dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
+		   DMA_BIDIRECTIONAL, 0);
+
+Tweaking probe() to both bring up and tear-down in that order removes the
+reset if we end up deferring elsewhere.
+
+Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mtd/nand/raw/qcom_nandc.c |   14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -2,7 +2,6 @@
+ /*
+  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+  */
+-
+ #include <linux/clk.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
+@@ -2944,10 +2943,6 @@ static int qcom_nandc_probe(struct platf
+ 	if (!nandc->base_dma)
+ 		return -ENXIO;
+ 
+-	ret = qcom_nandc_alloc(nandc);
+-	if (ret)
+-		goto err_nandc_alloc;
+-
+ 	ret = clk_prepare_enable(nandc->core_clk);
+ 	if (ret)
+ 		goto err_core_clk;
+@@ -2956,6 +2951,10 @@ static int qcom_nandc_probe(struct platf
+ 	if (ret)
+ 		goto err_aon_clk;
+ 
++	ret = qcom_nandc_alloc(nandc);
++	if (ret)
++		goto err_nandc_alloc;
++
+ 	ret = qcom_nandc_setup(nandc);
+ 	if (ret)
+ 		goto err_setup;
+@@ -2967,15 +2966,14 @@ static int qcom_nandc_probe(struct platf
+ 	return 0;
+ 
+ err_setup:
++	qcom_nandc_unalloc(nandc);
++err_nandc_alloc:
+ 	clk_disable_unprepare(nandc->aon_clk);
+ err_aon_clk:
+ 	clk_disable_unprepare(nandc->core_clk);
+ err_core_clk:
+-	qcom_nandc_unalloc(nandc);
+-err_nandc_alloc:
+ 	dma_unmap_resource(dev, res->start, resource_size(res),
+ 			   DMA_BIDIRECTIONAL, 0);
+-
+ 	return ret;
+ }
+ 
+
 
