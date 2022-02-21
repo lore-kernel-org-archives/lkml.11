@@ -2,100 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E34EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232676AbiBUTIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 14:08:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47920 "EHLO
+        id S232691AbiBUTJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 14:09:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiBUTIq (ORCPT
+        with ESMTP id S232658AbiBUTJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 14:08:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545BF1A815;
-        Mon, 21 Feb 2022 11:08:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA40160AFA;
-        Mon, 21 Feb 2022 19:08:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0627BC340E9;
-        Mon, 21 Feb 2022 19:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645470500;
-        bh=uJ1xctqupYgShdlN9JXCmYcgnXakV3u7jjYy+e4wd+k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hre/vsXPfTZ8xdaa95piF3pIp0LNpldzkBh2GKZ7ftRIza5cMQ/rdZ+UiqhYCcHzx
-         XUBJ7XWEJ2ZG8VqeeRU0/avSuyZPUPploQKbqOi2vKFkM/CRJR1m1a4rKI1t7qW3yC
-         F3NOagO8mYy+KO0R0+uriC+QDBYZKdCqb9I/3rou+keA2HIi7vKFTdmh1L2FfapEb4
-         H+JdJKci+SIgOkjgcvnwlF/mulyci5NvP5C5wECaVj5oZD5SFgfl3TS9bkXVUeggy8
-         cgomnWhCpLR+EURWs1RT3pyv44VBLGUS2ZJQ1LTC/9Uro7PLeVyAna1YOqc04bdnYz
-         EFHeIFdLX2y0A==
-Date:   Mon, 21 Feb 2022 11:08:18 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH v4] random: absorb fast pool into input pool after fast
- load
-Message-ID: <YhPjIripJMsLynXn@sol.localdomain>
-References: <CAHmME9pCGHuhZW-HQD==2h0=YRk=Man0KU6+RAGiT0QD-PCNpg@mail.gmail.com>
- <20220221145816.2278732-1-Jason@zx2c4.com>
+        Mon, 21 Feb 2022 14:09:43 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F79B1A80D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:09:20 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id p19so36328317ybc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:09:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l8g4mPJl7yZGMKdsJ14ySAI3dRSwtq6Uc9uUcvHHcIM=;
+        b=bKvDNDqCla7cG6jmlE79n26yt7VBFgTq07oPlomZLdsroY6TS5IGyuT/IcQ2ayfXTn
+         Go9k1mSfIBy1hgtRK55S5L9TAkHBcRMnlmhTZvkbA5YdUYqKdFLHNgUkukVhZ50xiKPk
+         rQtDph8c8NQB5ryJxa5ydXWfdE2QyknvArecnL8drb4HIiYysKDov4BXvWlcgptvX1uY
+         oXWn5Wkogwgjf3FHS0RF5WbolDFy7Hard9j+gOvp1DnC+1uY8xb4nidGGKgOVChn9Cu1
+         SUMjf6fTlgxLV5yNp+zCCH6LKDYGu6MCSypdlGGh0IZpJadSKQ6/Q3s3HSpAte8cTA62
+         5faQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l8g4mPJl7yZGMKdsJ14ySAI3dRSwtq6Uc9uUcvHHcIM=;
+        b=zHpAboPilEkGGXH7/CrRfJrRmHaZ6yqnAUumclSxkBwUVZOrMJNxulEPaTesj8l+nW
+         6yqzbsWjMQMR5CIA27iwxKZQIaS0WiWU0MhgB81zOuuH/NRBTcCCfCdEGpu+6OTq9g1k
+         yJTLt55NLKI9g2FLgbReDzxxr/fi2Z2Y/P45V/6MG07VXW6IG/hOopWVKKTmz38oIN5F
+         rawdSqv+xHDOO+i4tvZ9O5cq5CmPboA9P0lf3WkpL+Kpc/99yf+tLjKG9zib9GhZ66YN
+         5xfF2x/faC/yIf4uApkMZ4IxCeTmwUCzQv96sWk4zZuBQjG1sjKVoKLKNxub9qBqoc2B
+         ezWw==
+X-Gm-Message-State: AOAM532iXNWmOU2NyyYOdDqhJiE/DvdjKZojk/2RxXLgRibFju03+iu4
+        RTsCyz1PZZdzTCWYGiYTODC8xmnSnPyJzpAVLoZO+A==
+X-Google-Smtp-Source: ABdhPJzMmNojJwJ8uebXW/vVelS+B7jNWLNzMD4tT1J8g0Z4pCv5rF1XWL7oeDFC+y7XYdBvhRZNk/fY9WEEpiziI5o=
+X-Received: by 2002:a25:1906:0:b0:61d:9576:754e with SMTP id
+ 6-20020a251906000000b0061d9576754emr19357895ybz.426.1645470558324; Mon, 21
+ Feb 2022 11:09:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221145816.2278732-1-Jason@zx2c4.com>
+References: <20220219174940.2570901-1-surenb@google.com> <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
+In-Reply-To: <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Mon, 21 Feb 2022 11:09:07 -0800
+Message-ID: <CAJuCfpE9KWdCczCjfT2zD4co4vxZ8SeMFU8nFQ2J1VBP5xubBw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] mm: count time in drain_all_pages during direct
+ reclaim as memory pressure
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org,
+        peterz@infradead.org, guro@fb.com, shakeelb@google.com,
+        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 03:58:16PM +0100, Jason A. Donenfeld wrote:
-> During crng_init == 0, we never credit entropy in add_interrupt_
-> randomness(), but instead dump it directly into the primary_crng. That's
-> fine, except for the fact that we then wind up throwing away that
-> entropy later when we switch to extracting from the input pool and
-> xoring into (and later in this series overwriting) the primary_crng key.
-> The two other early init sites -- add_hwgenerator_randomness()'s use
-> crng_fast_load() and add_device_ randomness()'s use of crng_slow_load()
-> -- always additionally give their inputs to the input pool. But not
-> add_interrupt_randomness().
-> 
-> This commit fixes that shortcoming by calling mix_pool_bytes() after
-> crng_fast_load() in add_interrupt_randomness(). That's partially
-> verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
-> handler. But this also only happens during early boot and then never
-> again after that. Plus it's a trylock so it has the same considerations
-> as calling crng_fast_load(), which we're already using.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-> Suggested-by: Eric Biggers <ebiggers@google.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> v4 has no changes except for a commit message nit, per Eric's request.
-> 
->  drivers/char/random.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index d31b0b3afe2e..f3179c67010b 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -850,6 +850,10 @@ void add_interrupt_randomness(int irq)
->  		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
->  			fast_pool->count = 0;
->  			fast_pool->last = now;
-> +			if (spin_trylock(&input_pool.lock)) {
-> +				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-> +				spin_unlock(&input_pool.lock);
-> +			}
->  		}
->  		return;
->  	}
-> -- 
+On Mon, Feb 21, 2022 at 12:55 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Sat 19-02-22 09:49:40, Suren Baghdasaryan wrote:
+> > When page allocation in direct reclaim path fails, the system will
+> > make one attempt to shrink per-cpu page lists and free pages from
+> > high alloc reserves. Draining per-cpu pages into buddy allocator can
+> > be a very slow operation because it's done using workqueues and the
+> > task in direct reclaim waits for all of them to finish before
+> > proceeding. Currently this time is not accounted as psi memory stall.
+> >
+> > While testing mobile devices under extreme memory pressure, when
+> > allocations are failing during direct reclaim, we notices that psi
+> > events which would be expected in such conditions were not triggered.
+> > After profiling these cases it was determined that the reason for
+> > missing psi events was that a big chunk of time spent in direct
+> > reclaim is not accounted as memory stall, therefore psi would not
+> > reach the levels at which an event is generated. Further investigation
+> > revealed that the bulk of that unaccounted time was spent inside
+> > drain_all_pages call.
+>
+> It would be cool to have some numbers here.
 
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+A typical case I was able to record when drain_all_pages path gets activated:
 
-- Eric
+__alloc_pages_slowpath took 44.644.613ns
+    __perform_reclaim 751.668ns (1.7%)
+    drain_all_pages took 43.887.167ns (98.3%)
+
+PSI in this case records the time spent in __perform_reclaim but
+ignores drain_all_pages, IOW it misses 98.3% of the time spent in
+__alloc_pages_slowpath. Sure, normally it's not often that this path
+is activated, but when it is, we miss reporting most of the stall.
+
+>
+> > Annotate drain_all_pages and unreserve_highatomic_pageblock during
+> > page allocation failure in the direct reclaim path so that delays
+> > caused by these calls are accounted as memory stall.
+>
+> If the draining is too slow and dependent on the current CPU/WQ
+> contention then we should address that. The original intention was that
+> having a dedicated WQ with WQ_MEM_RECLAIM would help to isolate the
+> operation from the rest of WQ activity. Maybe we need to fine tune
+> mm_percpu_wq. If that doesn't help then we should revise the WQ model
+> and use something else. Memory reclaim shouldn't really get stuck behind
+> other unrelated work.
+
+Agree. However even after improving this I think we should record the
+time spent in drain_all_pages as psi memstall. So, this patch I
+believe is still relevant.
+Thanks,
+Suren.
+
+> --
+> Michal Hocko
+> SUSE Labs
