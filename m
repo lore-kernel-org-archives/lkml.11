@@ -2,100 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF98C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344246AbiBUFRd (ORCPT
+        id S1344250AbiBUFSP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 00:17:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37684 "EHLO
+        Mon, 21 Feb 2022 00:18:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237897AbiBUFRa (ORCPT
+        with ESMTP id S235917AbiBUFSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 00:17:30 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A590B3A5EA
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 21:17:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645420628; x=1676956628;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QBxRq81C7ONLxFicA4U4nO1gGJGA1fiLHV4lwhK0ynU=;
-  b=STixCErAq4u06ehljr73S2I2QyD0KddyWrB9d2pM0z6k4OwOmyp5iEtC
-   7zI2mt6ZHMFt8ZLLUOwqR6/Seym1/dFKi36U7izuKcF4vNTjDPAKYXBvr
-   H+iPXf0MUR1UeXeZbJfNWF//HILCT0huJeLVjPvW5s7wFLXzDm4FwlwEH
-   bD8Vz+cclWYwON5RYPqh905MNJ81XU0q18RKOgAwEfCl4PcJEvag/ZuXR
-   tfoXSyc9v4NN2spA9l8bkiOAol+E2KCU4rzqRSQzVrkIkoUMQazgKsixX
-   cj5sM8F6GCtjh/Z2AsqFaQeqWBKYHAoahBEpL9JQ813DEIYI8TurWRgA/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="232059023"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="232059023"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 21:17:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="638430209"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 20 Feb 2022 21:17:07 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM14M-0001LD-Gc; Mon, 21 Feb 2022 05:17:06 +0000
-Date:   Mon, 21 Feb 2022 13:16:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/soc/apple/apple-pmgr-pwrstate.c:176:32: sparse: sparse:
- symbol 'apple_pmgr_reset_ops' was not declared. Should it be static?
-Message-ID: <202202211309.mUqlMP6u-lkp@intel.com>
+        Mon, 21 Feb 2022 00:18:14 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AD3B51E45
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 21:17:51 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-48-rzjpo12UN2CNecpn8fyA5Q-1; Mon, 21 Feb 2022 05:17:48 +0000
+X-MC-Unique: rzjpo12UN2CNecpn8fyA5Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 21 Feb 2022 05:17:45 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 21 Feb 2022 05:17:45 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Miaohe Lin' <linmiaohe@huawei.com>
+CC:     "vitaly.wool@konsulko.com" <vitaly.wool@konsulko.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+Subject: RE: [PATCH 6/9] mm/z3fold: move decrement of pool->pages_nr into
+ __release_z3fold_page()
+Thread-Topic: [PATCH 6/9] mm/z3fold: move decrement of pool->pages_nr into
+ __release_z3fold_page()
+Thread-Index: AQHYJXLUWbfrUcWr0kay123DGS2luaybEHRggAJBAQCAAB+8MA==
+Date:   Mon, 21 Feb 2022 05:17:45 +0000
+Message-ID: <03647389a32045f38ec18b090548a26d@AcuMS.aculab.com>
+References: <20220219092533.12596-1-linmiaohe@huawei.com>
+ <20220219092533.12596-7-linmiaohe@huawei.com>
+ <dba43259e1fe4e36a0bdbe97efaaca2f@AcuMS.aculab.com>
+ <baeab92c-d966-2dc2-d952-c7f3faf2a229@huawei.com>
+In-Reply-To: <baeab92c-d966-2dc2-d952-c7f3faf2a229@huawei.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-commit: 6df9d38f9146e83b473f0c9e57fb5fdf3fcc93e2 soc: apple: Add driver for Apple PMGR power state controls
-date:   3 months ago
-config: arm64-randconfig-s032-20220220 (https://download.01.org/0day-ci/archive/20220221/202202211309.mUqlMP6u-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6df9d38f9146e83b473f0c9e57fb5fdf3fcc93e2
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6df9d38f9146e83b473f0c9e57fb5fdf3fcc93e2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/soc/apple/
+RnJvbTogTWlhb2hlIExpbiA8bGlubWlhb2hlQGh1YXdlaS5jb20+DQo+IFNlbnQ6IDIxIEZlYnJ1
+YXJ5IDIwMjIgMDI6NTMNCj4gDQo+IE9uIDIwMjIvMi8yMCAwOjMzLCBEYXZpZCBMYWlnaHQgd3Jv
+dGU6DQo+ID4gRnJvbTogTWlhb2hlIExpbg0KPiA+PiBTZW50OiAxOSBGZWJydWFyeSAyMDIyIDA5
+OjI2DQo+ID4+DQo+ID4+IFRoZSB6M2ZvbGQgd2lsbCBhbHdheXMgZG8gYXRvbWljNjRfZGVjKCZw
+b29sLT5wYWdlc19ucikgd2hlbiB0aGUNCj4gPj4gX19yZWxlYXNlX3ozZm9sZF9wYWdlKCkgaXMg
+Y2FsbGVkLiBUaHVzIHdlIGNhbiBtb3ZlIGRlY3JlbWVudCBvZg0KPiA+PiBwb29sLT5wYWdlc19u
+ciBpbnRvIF9fcmVsZWFzZV96M2ZvbGRfcGFnZSgpIHRvIHNpbXBsaWZ5IHRoZSBjb2RlLg0KPiA+
+PiBBbHNvIHdlIGNhbiByZWR1Y2UgdGhlIHNpemUgb2YgejNmb2xkLm8gfjFrLg0KPiA+PiBXaXRo
+b3V0IHRoaXMgcGF0Y2g6DQo+ID4+ICAgIHRleHQJICAgZGF0YQkgICAgYnNzCSAgICBkZWMJICAg
+IGhleAlmaWxlbmFtZQ0KPiA+PiAgIDE1NDQ0CSAgIDEzNzYJICAgICAgOAkgIDE2ODI4CSAgIDQx
+YmMJbW0vejNmb2xkLm8NCj4gPj4gV2l0aCB0aGlzIHBhdGNoOg0KPiA+PiAgICB0ZXh0CSAgIGRh
+dGEJICAgIGJzcwkgICAgZGVjCSAgICBoZXgJZmlsZW5hbWUNCj4gPj4gICAxNTA0NAkgICAxMjQ4
+CSAgICAgIDgJICAxNjMwMAkgICAzZmFjCW1tL3ozZm9sZC5vDQo+ID4NCj4gPiBJIGNhbid0IHNl
+ZSBhbnl0aGluZyBvYnZpb3VzIGluIHRoaXMgcGF0Y2ggdGhhdCB3b3VsZCByZWR1Y2UgdGhlIHNp
+emUgbXVjaC4NCj4gPiBPVE9IIHRoZXJlIGFyZSBzb21lIGxhcmdlIGZ1bmN0aW9ucyB0aGF0IGFy
+ZSBwb2ludGxlc3NseSBtYXJrZWQgJ2lubGluZScuDQo+ID4gTWF5YmUgdGhlIGNvbXBpbGVyIG1h
+ZGUgYSBiZXR0ZXIgY2hvaWNlPw0KPiANCj4gSSB0aGluayBzbyB0b28uDQo+IA0KPiA+IEFsdGhv
+dWdoIGl0IGlzbid0IGFsIGFsbCBvYnZpb3VzIHdoeSB0aGUgJ2RhdGEnIHNpemUgY2hhbmdlcy4N
+Cj4gDQo+IEkgY2hlY2tlZCB0aGUgaGVhZGVyIG9mIHozZm9sZC5vLiBUaGUgc2l6ZSBvZiAuZGF0
+YSBpcyB1bmNoYW5nZWQgd2hpbGUNCj4gYWxpZ24gaXMgY2hhbmdlZCBmcm9tIDAwMDAzODE4IHRv
+IDAwMDAzNjg4LiBNYXliZSB0aGlzIGlzIHRoZSByZWFzb24NCj4gLmRhdGEgc2l6ZSBjaGFuZ2Vz
+Lg0KDQpZb3UgYXJlIG1pc3JlYWRpbmcgdGhlIGRvdWJsZSBsaW5lIGhlYWRlci4NCklmIGlzIE9m
+ZnNldCB0aGF0IGlzIGNoYW5naW5nLCBBbGlnbiBpbiA4IChhcyBleHBlY3RlZCkuDQoNCkl0IHdp
+bGwgYmUgYW5vdGhlciBzZWN0aW9uIHRoYXQgZ2V0cyBhZGRlZCB0byB0aGUgJ2RhdGEnIHNpemUN
+CnJlcG9ydGVkIGJ5ICdzaXplJy4NCg0KPiANCj4gU2VjdGlvbiBIZWFkZXJzOg0KPiAgIFtOcl0g
+TmFtZSAgICAgICAgICAgICAgVHlwZSAgICAgICAgICAgICBBZGRyZXNzICAgICAgICAgICBPZmZz
+ZXQNCj4gICAgICAgIFNpemUgICAgICAgICAgICAgIEVudFNpemUgICAgICAgICAgRmxhZ3MgIExp
+bmsgIEluZm8gIEFsaWduDQo+IA0KPiB3aXRoIHRoaXMgcGF0Y2g6DQo+IFsgM10gLmRhdGEgICAg
+ICAgICAgICAgUFJPR0JJVFMgICAgICAgICAwMDAwMDAwMDAwMDAwMDAwICAwMDAwMzY4OA0KPiAg
+ICAgICAgMDAwMDAwMDAwMDAwMDBjMCAgMDAwMDAwMDAwMDAwMDAwMCAgV0EgICAgICAgMCAgICAg
+MCAgICAgOA0KPiANCj4gd2l0aG91dCB0aGlzIHBhdGNoOg0KPiBbIDNdIC5kYXRhICAgICAgICAg
+ICAgIFBST0dCSVRTICAgICAgICAgMDAwMDAwMDAwMDAwMDAwMCAgMDAwMDM4MTgNCj4gICAgICAg
+IDAwMDAwMDAwMDAwMDAwYzAgIDAwMDAwMDAwMDAwMDAwMDAgIFdBICAgICAgIDAgICAgIDAgICAg
+IDgNCj4gDQo+ID4NCj4gPj4gU2lnbmVkLW9mZi1ieTogTWlhb2hlIExpbiA8bGlubWlhb2hlQGh1
+YXdlaS5jb20+DQo+ID4+IC0tLQ0KPiA+PiAgbW0vejNmb2xkLmMgfCA0MSArKysrKysrKysrKyst
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+PiAgMSBmaWxlIGNoYW5nZWQsIDEyIGlu
+c2VydGlvbnMoKyksIDI5IGRlbGV0aW9ucygtKQ0KPiA+Pg0KPiA+PiBkaWZmIC0tZ2l0IGEvbW0v
+ejNmb2xkLmMgYi9tbS96M2ZvbGQuYw0KPiA+PiBpbmRleCBhZGMwYjNmYTQ5MDYuLjE4YTY5N2Y2
+ZmUzMiAxMDA2NDQNCj4gPj4gLS0tIGEvbW0vejNmb2xkLmMNCj4gPj4gKysrIGIvbW0vejNmb2xk
+LmMNCj4gPj4gQEAgLTUyMCw2ICs1MjAsOCBAQCBzdGF0aWMgdm9pZCBfX3JlbGVhc2VfejNmb2xk
+X3BhZ2Uoc3RydWN0IHozZm9sZF9oZWFkZXIgKnpoZHIsIGJvb2wgbG9ja2VkKQ0KPiA+PiAgCWxp
+c3RfYWRkKCZ6aGRyLT5idWRkeSwgJnBvb2wtPnN0YWxlKTsNCj4gPj4gIAlxdWV1ZV93b3JrKHBv
+b2wtPnJlbGVhc2Vfd3EsICZwb29sLT53b3JrKTsNCj4gPj4gIAlzcGluX3VubG9jaygmcG9vbC0+
+c3RhbGVfbG9jayk7DQo+ID4+ICsNCj4gPj4gKwlhdG9taWM2NF9kZWMoJnBvb2wtPnBhZ2VzX25y
+KTsNCj4gPg0KPiA+IExvb2tzIGxpa2UgeW91IGNhbiBtb3ZlIHRoZSBkZWNyZW1lbnQgaW5zaWRl
+IHRoZSBsb2NrLg0KPiA+IElmIHlvdSBjYW4gZG8gdGhlIHNhbWUgZm9yIHRoZSBpbmNyZW1lbnQg
+eW91IGNhbiBhdm9pZCB0aGUNCj4gPiBleHBlbnNpdmUgbG9ja2VkIGJ1cyBjeWNsZS4NCj4gPg0K
+PiANCj4gYXRvbWljNjRfaW5jKCZwb29sLT5wYWdlc19ucik7IGlzIG9ubHkgZG9uZSB3aGVuIGlu
+aXQgYSBuZXcgb3IgcmV1c2VkIHozZm9sZF9wYWdlLg0KPiBUaGVyZSBpcyBubyBsb2NrIGFyb3Vu
+ZC4gSWYgd2UgaG9sZCBwb29sLT5sb2NrIHRoZXJlLCB0aGlzIHBvdGVudGlhbCBnYWluIG1pZ2h0
+IGJlDQo+IG51bGxpZmllZC4gT3IgYW0gSSBtaXNzIHNvbWV0aGluZyA/DQoNCkF0b21pYyBvcGVy
+YXRpb25zIGFyZW4ndCBtYWdpYy4NCkF0b21pYyBvcGVyYXRpb25zIGFyZSAoYXQgYmVzdCkgb25l
+IHNsb3cgbG9ja2VkIGJ1cyBjeWNsZS4NCkFjcXVpcmluZyBhIGxvY2sgaXMgdGhlIHNhbWUuDQpS
+ZWxlYXNpbmcgYSBsb2NrIG1pZ2h0IGJlIGNoZWFwZXIsIGJ1dCBpcyBwcm9iYWJseSBhIGxvY2tl
+ZCBidXMgY3ljbGUuDQoNClNvIGlmIHlvdSB1c2Ugc3RhdGVfbG9jayB0byBwcm90ZWN0IHBhZ2Vz
+X25yIHRoZW4geW91IGxvc2UgYW4gYXRvbWljDQpvcGVyYXRpb24gZm9yIHRoZSBkZWNyZW1lbnQg
+YW5kIGdhaW4gb25lIChmb3IgdGhlIHVubG9jaykgaW4gdGhlIGluY3JlbWVudC4NClRoYXQgaXMg
+ZXZlbiBvciBtYXliZSBhIHNsaWdodCBnYWluLg0KT1RPSCBhIDY0Yml0IGF0b21pYyBpcyBhIFBJ
+VEEgb24gc29tZSAzMmJpdCBzeXN0ZW1zLg0KKEluIGZhY3QgYW55IGF0b21pYyBpcyBhIFBJVEEg
+b24gc3BhcmMzMi4pDQoNCkFjdHVhbGx5IGRvZXMgdGhpcyBldmVuIG5lZWQgdG8gYmUgNjRiaXQs
+IHNob3VsZCBpdCBqdXN0IGJlICdsb25nJy4NClRoYXQgd2lsbCBtZWFuIHRoYXQgYW55ICdyZWFk
+JyBqdXN0IG5lZWRzIGEgc2ltcGxlIHNpbmdsZSBtZW1vcnkgcmVhZC4NCg0KSSd2ZSBqdXN0IGxv
+b2tlZCBhdCB0aGUgY29kZS4NClNvbWUgb2YgdGhlIG9uZSBsaW5lIHdyYXBwZXIgZnVuY3Rpb25z
+IGRvbid0IG1ha2UgdGhlIGNvZGUgYW55DQplYXNpZXIgdG8gcmVhZC4NClRoZXJlIGlzIG5vIHBv
+aW50IGhhdmluZyBpbmxpbmUgd3JhcHBlcnMgdG8gYWNxdWlyZSBsb2NrcyBpZiB5b3UNCm9ubHkg
+dXNlIHRoZW0gc29tZSBvZiB0aGUgdGltZS4NCg0KCURhdmlkDQoNCg0KPiANCj4gTWFueSB0aGFu
+a3MgZm9yIHlvdXIgcmV2aWV3IGFuZCByZXBseS4NCj4gDQo+ID4gCURhdmlkDQo+ID4NCj4gPj4g
+IH0NCj4gPj4NCj4gPj4gIHN0YXRpYyB2b2lkIHJlbGVhc2VfejNmb2xkX3BhZ2Uoc3RydWN0IGty
+ZWYgKnJlZikNCj4gPj4gQEAgLTczNywxMyArNzM5LDkgQEAgc3RhdGljIHN0cnVjdCB6M2ZvbGRf
+aGVhZGVyICpjb21wYWN0X3NpbmdsZV9idWRkeShzdHJ1Y3QgejNmb2xkX2hlYWRlciAqemhkcikN
+Cj4gPj4gIAlyZXR1cm4gbmV3X3poZHI7DQo+ID4+DQo+ID4+ICBvdXRfZmFpbDoNCj4gPj4gLQlp
+ZiAobmV3X3poZHIpIHsNCj4gPj4gLQkJaWYgKGtyZWZfcHV0KCZuZXdfemhkci0+cmVmY291bnQs
+IHJlbGVhc2VfejNmb2xkX3BhZ2VfbG9ja2VkKSkNCj4gPj4gLQkJCWF0b21pYzY0X2RlYygmcG9v
+bC0+cGFnZXNfbnIpOw0KPiA+PiAtCQllbHNlIHsNCj4gPj4gLQkJCWFkZF90b191bmJ1ZGRpZWQo
+cG9vbCwgbmV3X3poZHIpOw0KPiA+PiAtCQkJejNmb2xkX3BhZ2VfdW5sb2NrKG5ld196aGRyKTsN
+Cj4gPj4gLQkJfQ0KPiA+PiArCWlmIChuZXdfemhkciAmJiAha3JlZl9wdXQoJm5ld196aGRyLT5y
+ZWZjb3VudCwgcmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKSB7DQo+ID4+ICsJCWFkZF90b191
+bmJ1ZGRpZWQocG9vbCwgbmV3X3poZHIpOw0KPiA+PiArCQl6M2ZvbGRfcGFnZV91bmxvY2sobmV3
+X3poZHIpOw0KPiA+PiAgCX0NCj4gPj4gIAlyZXR1cm4gTlVMTDsNCj4gPj4NCj4gPj4gQEAgLTgx
+NiwxMCArODE0LDggQEAgc3RhdGljIHZvaWQgZG9fY29tcGFjdF9wYWdlKHN0cnVjdCB6M2ZvbGRf
+aGVhZGVyICp6aGRyLCBib29sIGxvY2tlZCkNCj4gPj4gIAlsaXN0X2RlbF9pbml0KCZ6aGRyLT5i
+dWRkeSk7DQo+ID4+ICAJc3Bpbl91bmxvY2soJnBvb2wtPmxvY2spOw0KPiA+Pg0KPiA+PiAtCWlm
+IChrcmVmX3B1dCgmemhkci0+cmVmY291bnQsIHJlbGVhc2VfejNmb2xkX3BhZ2VfbG9ja2VkKSkg
+ew0KPiA+PiAtCQlhdG9taWM2NF9kZWMoJnBvb2wtPnBhZ2VzX25yKTsNCj4gPj4gKwlpZiAoa3Jl
+Zl9wdXQoJnpoZHItPnJlZmNvdW50LCByZWxlYXNlX3ozZm9sZF9wYWdlX2xvY2tlZCkpDQo+ID4+
+ICAJCXJldHVybjsNCj4gPj4gLQl9DQo+ID4+DQo+ID4+ICAJaWYgKHRlc3RfYml0KFBBR0VfU1RB
+TEUsICZwYWdlLT5wcml2YXRlKSB8fA0KPiA+PiAgCSAgICB0ZXN0X2FuZF9zZXRfYml0KFBBR0Vf
+Q0xBSU1FRCwgJnBhZ2UtPnByaXZhdGUpKSB7DQo+ID4+IEBAIC04MjksOSArODI1LDcgQEAgc3Rh
+dGljIHZvaWQgZG9fY29tcGFjdF9wYWdlKHN0cnVjdCB6M2ZvbGRfaGVhZGVyICp6aGRyLCBib29s
+IGxvY2tlZCkNCj4gPj4NCj4gPj4gIAlpZiAoIXpoZHItPmZvcmVpZ25faGFuZGxlcyAmJiBidWRk
+eV9zaW5nbGUoemhkcikgJiYNCj4gPj4gIAkgICAgemhkci0+bWFwcGVkX2NvdW50ID09IDAgJiYg
+Y29tcGFjdF9zaW5nbGVfYnVkZHkoemhkcikpIHsNCj4gPj4gLQkJaWYgKGtyZWZfcHV0KCZ6aGRy
+LT5yZWZjb3VudCwgcmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKQ0KPiA+PiAtCQkJYXRvbWlj
+NjRfZGVjKCZwb29sLT5wYWdlc19ucik7DQo+ID4+IC0JCWVsc2Ugew0KPiA+PiArCQlpZiAoIWty
+ZWZfcHV0KCZ6aGRyLT5yZWZjb3VudCwgcmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKSB7DQo+
+ID4+ICAJCQljbGVhcl9iaXQoUEFHRV9DTEFJTUVELCAmcGFnZS0+cHJpdmF0ZSk7DQo+ID4+ICAJ
+CQl6M2ZvbGRfcGFnZV91bmxvY2soemhkcik7DQo+ID4+ICAJCX0NCj4gPj4gQEAgLTEwODksMTAg
+KzEwODMsOCBAQCBzdGF0aWMgaW50IHozZm9sZF9hbGxvYyhzdHJ1Y3QgejNmb2xkX3Bvb2wgKnBv
+b2wsIHNpemVfdCBzaXplLCBnZnBfdCBnZnAsDQo+ID4+ICAJCWlmICh6aGRyKSB7DQo+ID4+ICAJ
+CQlidWQgPSBnZXRfZnJlZV9idWRkeSh6aGRyLCBjaHVua3MpOw0KPiA+PiAgCQkJaWYgKGJ1ZCA9
+PSBIRUFETEVTUykgew0KPiA+PiAtCQkJCWlmIChrcmVmX3B1dCgmemhkci0+cmVmY291bnQsDQo+
+ID4+ICsJCQkJaWYgKCFrcmVmX3B1dCgmemhkci0+cmVmY291bnQsDQo+ID4+ICAJCQkJCSAgICAg
+cmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKQ0KPiA+PiAtCQkJCQlhdG9taWM2NF9kZWMoJnBv
+b2wtPnBhZ2VzX25yKTsNCj4gPj4gLQkJCQllbHNlDQo+ID4+ICAJCQkJCXozZm9sZF9wYWdlX3Vu
+bG9jayh6aGRyKTsNCj4gPj4gIAkJCQlwcl9lcnIoIk5vIGZyZWUgY2h1bmtzIGluIHVuYnVkZGll
+ZFxuIik7DQo+ID4+ICAJCQkJV0FSTl9PTigxKTsNCj4gPj4gQEAgLTEyMzksMTAgKzEyMzEsOCBA
+QCBzdGF0aWMgdm9pZCB6M2ZvbGRfZnJlZShzdHJ1Y3QgejNmb2xkX3Bvb2wgKnBvb2wsIHVuc2ln
+bmVkIGxvbmcgaGFuZGxlKQ0KPiA+Pg0KPiA+PiAgCWlmICghcGFnZV9jbGFpbWVkKQ0KPiA+PiAg
+CQlmcmVlX2hhbmRsZShoYW5kbGUsIHpoZHIpOw0KPiA+PiAtCWlmIChrcmVmX3B1dCgmemhkci0+
+cmVmY291bnQsIHJlbGVhc2VfejNmb2xkX3BhZ2VfbG9ja2VkX2xpc3QpKSB7DQo+ID4+IC0JCWF0
+b21pYzY0X2RlYygmcG9vbC0+cGFnZXNfbnIpOw0KPiA+PiArCWlmIChrcmVmX3B1dCgmemhkci0+
+cmVmY291bnQsIHJlbGVhc2VfejNmb2xkX3BhZ2VfbG9ja2VkX2xpc3QpKQ0KPiA+PiAgCQlyZXR1
+cm47DQo+ID4+IC0JfQ0KPiA+PiAgCWlmIChwYWdlX2NsYWltZWQpIHsNCj4gPj4gIAkJLyogdGhl
+IHBhZ2UgaGFzIG5vdCBiZWVuIGNsYWltZWQgYnkgdXMgKi8NCj4gPj4gIAkJcHV0X3ozZm9sZF9o
+ZWFkZXIoemhkcik7DQo+ID4+IEBAIC0xMzUzLDkgKzEzNDMsNyBAQCBzdGF0aWMgaW50IHozZm9s
+ZF9yZWNsYWltX3BhZ2Uoc3RydWN0IHozZm9sZF9wb29sICpwb29sLCB1bnNpZ25lZCBpbnQNCj4g
+cmV0cmllcykNCj4gPj4gIAkJCQlicmVhazsNCj4gPj4gIAkJCX0NCj4gPj4gIAkJCWlmICghejNm
+b2xkX3BhZ2VfdHJ5bG9jayh6aGRyKSkgew0KPiA+PiAtCQkJCWlmIChrcmVmX3B1dCgmemhkci0+
+cmVmY291bnQsDQo+ID4+IC0JCQkJCQlyZWxlYXNlX3ozZm9sZF9wYWdlKSkNCj4gPj4gLQkJCQkJ
+YXRvbWljNjRfZGVjKCZwb29sLT5wYWdlc19ucik7DQo+ID4+ICsJCQkJa3JlZl9wdXQoJnpoZHIt
+PnJlZmNvdW50LCByZWxlYXNlX3ozZm9sZF9wYWdlKTsNCj4gPj4gIAkJCQl6aGRyID0gTlVMTDsN
+Cj4gPj4gIAkJCQljb250aW51ZTsgLyogY2FuJ3QgZXZpY3QgYXQgdGhpcyBwb2ludCAqLw0KPiA+
+PiAgCQkJfQ0KPiA+PiBAQCAtMTM2NiwxMCArMTM1NCw4IEBAIHN0YXRpYyBpbnQgejNmb2xkX3Jl
+Y2xhaW1fcGFnZShzdHJ1Y3QgejNmb2xkX3Bvb2wgKnBvb2wsIHVuc2lnbmVkIGludA0KPiByZXRy
+aWVzKQ0KPiA+PiAgCQkJICovDQo+ID4+ICAJCQlpZiAoemhkci0+Zm9yZWlnbl9oYW5kbGVzIHx8
+DQo+ID4+ICAJCQkgICAgdGVzdF9hbmRfc2V0X2JpdChQQUdFX0NMQUlNRUQsICZwYWdlLT5wcml2
+YXRlKSkgew0KPiA+PiAtCQkJCWlmIChrcmVmX3B1dCgmemhkci0+cmVmY291bnQsDQo+ID4+ICsJ
+CQkJaWYgKCFrcmVmX3B1dCgmemhkci0+cmVmY291bnQsDQo+ID4+ICAJCQkJCQlyZWxlYXNlX3oz
+Zm9sZF9wYWdlX2xvY2tlZCkpDQo+ID4+IC0JCQkJCWF0b21pYzY0X2RlYygmcG9vbC0+cGFnZXNf
+bnIpOw0KPiA+PiAtCQkJCWVsc2UNCj4gPj4gIAkJCQkJejNmb2xkX3BhZ2VfdW5sb2NrKHpoZHIp
+Ow0KPiA+PiAgCQkJCXpoZHIgPSBOVUxMOw0KPiA+PiAgCQkJCWNvbnRpbnVlOyAvKiBjYW4ndCBl
+dmljdCBzdWNoIHBhZ2UgKi8NCj4gPj4gQEAgLTE0NDcsNyArMTQzMyw2IEBAIHN0YXRpYyBpbnQg
+ejNmb2xkX3JlY2xhaW1fcGFnZShzdHJ1Y3QgejNmb2xkX3Bvb2wgKnBvb2wsIHVuc2lnbmVkIGlu
+dA0KPiByZXRyaWVzKQ0KPiA+PiAgCQkJaWYgKGtyZWZfcHV0KCZ6aGRyLT5yZWZjb3VudCwNCj4g
+Pj4gIAkJCQkJcmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKSB7DQo+ID4+ICAJCQkJa21lbV9j
+YWNoZV9mcmVlKHBvb2wtPmNfaGFuZGxlLCBzbG90cyk7DQo+ID4+IC0JCQkJYXRvbWljNjRfZGVj
+KCZwb29sLT5wYWdlc19ucik7DQo+ID4+ICAJCQkJcmV0dXJuIDA7DQo+ID4+ICAJCQl9DQo+ID4+
+ICAJCQkvKg0KPiA+PiBAQCAtMTY2OSwxMCArMTY1NCw4IEBAIHN0YXRpYyB2b2lkIHozZm9sZF9w
+YWdlX3B1dGJhY2soc3RydWN0IHBhZ2UgKnBhZ2UpDQo+ID4+ICAJaWYgKCFsaXN0X2VtcHR5KCZ6
+aGRyLT5idWRkeSkpDQo+ID4+ICAJCWxpc3RfZGVsX2luaXQoJnpoZHItPmJ1ZGR5KTsNCj4gPj4g
+IAlJTklUX0xJU1RfSEVBRCgmcGFnZS0+bHJ1KTsNCj4gPj4gLQlpZiAoa3JlZl9wdXQoJnpoZHIt
+PnJlZmNvdW50LCByZWxlYXNlX3ozZm9sZF9wYWdlX2xvY2tlZCkpIHsNCj4gPj4gLQkJYXRvbWlj
+NjRfZGVjKCZwb29sLT5wYWdlc19ucik7DQo+ID4+ICsJaWYgKGtyZWZfcHV0KCZ6aGRyLT5yZWZj
+b3VudCwgcmVsZWFzZV96M2ZvbGRfcGFnZV9sb2NrZWQpKQ0KPiA+PiAgCQlyZXR1cm47DQo+ID4+
+IC0JfQ0KPiA+PiAgCXNwaW5fbG9jaygmcG9vbC0+bG9jayk7DQo+ID4+ICAJbGlzdF9hZGQoJnBh
+Z2UtPmxydSwgJnBvb2wtPmxydSk7DQo+ID4+ICAJc3Bpbl91bmxvY2soJnBvb2wtPmxvY2spOw0K
+PiA+PiAtLQ0KPiA+PiAyLjIzLjANCj4gPg0KPiA+IC0NCj4gPiBSZWdpc3RlcmVkIEFkZHJlc3Mg
+TGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQ
+VCwgVUsNCj4gPiBSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0KPiA+DQo+ID4gLg0K
+PiA+DQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/soc/apple/apple-pmgr-pwrstate.c:176:32: sparse: sparse: symbol 'apple_pmgr_reset_ops' was not declared. Should it be static?
-
-vim +/apple_pmgr_reset_ops +176 drivers/soc/apple/apple-pmgr-pwrstate.c
-
-   167	
-   168	static int apple_pmgr_reset_status(struct reset_controller_dev *rcdev, unsigned long id)
-   169	{
-   170		struct apple_pmgr_ps *ps = rcdev_to_apple_pmgr_ps(rcdev);
-   171		u32 reg = 0;
-   172	
-   173		regmap_read(ps->regmap, ps->offset, &reg);
-   174	
-   175		return !!(reg & APPLE_PMGR_RESET);
- > 176	}
-   177	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
