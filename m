@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 744E0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF53C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353752AbiBUJ5u (ORCPT
+        id S1353509AbiBUJ5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:57:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43536 "EHLO
+        Mon, 21 Feb 2022 04:57:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352593AbiBUJrh (ORCPT
+        with ESMTP id S1351314AbiBUJss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1595842EF4;
-        Mon, 21 Feb 2022 01:20:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:48 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C013732046;
+        Mon, 21 Feb 2022 01:22:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A05B260EB3;
-        Mon, 21 Feb 2022 09:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE5BC340EC;
-        Mon, 21 Feb 2022 09:20:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AB6C4CE0E8B;
+        Mon, 21 Feb 2022 09:22:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90422C340E9;
+        Mon, 21 Feb 2022 09:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435210;
-        bh=MCHtTJpifQkGD42L/6e6W90C2fxMXP0SRmYINnpTOuc=;
+        s=korg; t=1645435349;
+        bh=08eY0msXADLduerMwecp2drQdDRqyeIrBiLp/rfWPzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ly51+vqmFARuLaz0v2jxV8/hwi3ZymoLjez+TDAdhOo95xDJnQgQ5gq5i2QSg2Gw7
-         nmbut2GZfRhysJ6nPL9PFiFrOaKn0yUu3rBCsQWu3X50jc3OeBrSobK/VNojU3Gwwo
-         swcl1xmtzue89XkRvs+Sn5a8G2l2UDsS4ft5V3Po=
+        b=kGwe1pok6DOzsV7cSuKJKg6RAPkPk3IfMjXydpYlwZxNSbBp2H39b3xaNSFogokGD
+         Xq3NL2vLP9ECl72Nrb5WIcEzhrO81ycnpnMC8MroQCXUZMPVxIGt3EIlcyiabdDzAe
+         DKv+wQut285bQJRSwPxKjCC3Hr6BQql0lK2abRdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.16 084/227] drm/i915: Fix dbuf slice config lookup
-Date:   Mon, 21 Feb 2022 09:48:23 +0100
-Message-Id: <20220221084937.660836840@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 132/227] perf bpf: Defer freeing string after possible strlen() on it
+Date:   Mon, 21 Feb 2022 09:49:11 +0100
+Message-Id: <20220221084939.247694791@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,43 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 698bef8ff5d2edea5d1c9d6e5adf1bfed1e8a106 upstream.
+commit 31ded1535e3182778a1d0e5c32711f55da3bc512 upstream.
 
-Apparently I totally fumbled the loop condition when I
-removed the ARRAY_SIZE() stuff from the dbuf slice config
-lookup. Comparing the loop index with the active_pipes bitmask
-is utter nonsense, what we want to do is check to see if the
-mask is zero or not.
+This was detected by the gcc in Fedora Rawhide's gcc:
 
-Note that the code actually ended up working correctly despite
-the fumble, up until commit eef173954432 ("drm/i915: Allow
-!join_mbus cases for adlp+ dbuf configuration") when things
-broke for real.
+  50    11.01 fedora:rawhide                : FAIL gcc version 12.0.1 20220205 (Red Hat 12.0.1-0) (GCC)
+        inlined from 'bpf__config_obj' at util/bpf-loader.c:1242:9:
+    util/bpf-loader.c:1225:34: error: pointer 'map_opt' may be used after 'free' [-Werror=use-after-free]
+     1225 |                 *key_scan_pos += strlen(map_opt);
+          |                                  ^~~~~~~~~~~~~~~
+    util/bpf-loader.c:1223:9: note: call to 'free' here
+     1223 |         free(map_name);
+          |         ^~~~~~~~~~~~~~
+    cc1: all warnings being treated as errors
 
-Cc: stable@vger.kernel.org
-Fixes: 05e8155afe35 ("drm/i915: Use a sentinel to terminate the dbuf slice arrays")
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220207132700.481-1-ville.syrjala@linux.intel.com
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-(cherry picked from commit a28fde308c3c1c174249ff9559b57f24e6850086)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+So do the calculations on the pointer before freeing it.
+
+Fixes: 04f9bf2bac72480c ("perf bpf-loader: Add missing '*' for key_scan_pos")
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Link: https://lore.kernel.org/lkml/Yg1VtQxKrPpS3uNA@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/intel_pm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/bpf-loader.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -4860,7 +4860,7 @@ static u8 compute_dbuf_slices(enum pipe
- {
- 	int i;
+--- a/tools/perf/util/bpf-loader.c
++++ b/tools/perf/util/bpf-loader.c
+@@ -1214,9 +1214,10 @@ bpf__obj_config_map(struct bpf_object *o
+ 	pr_debug("ERROR: Invalid map config option '%s'\n", map_opt);
+ 	err = -BPF_LOADER_ERRNO__OBJCONF_MAP_OPT;
+ out:
+-	free(map_name);
+ 	if (!err)
+ 		*key_scan_pos += strlen(map_opt);
++
++	free(map_name);
+ 	return err;
+ }
  
--	for (i = 0; i < dbuf_slices[i].active_pipes; i++) {
-+	for (i = 0; dbuf_slices[i].active_pipes != 0; i++) {
- 		if (dbuf_slices[i].active_pipes == active_pipes &&
- 		    dbuf_slices[i].join_mbus == join_mbus)
- 			return dbuf_slices[i].dbuf_mask[pipe];
 
 
