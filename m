@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 589E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351293AbiBUJox (ORCPT
+        id S1351301AbiBUJo4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:44:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49238 "EHLO
+        Mon, 21 Feb 2022 04:44:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351818AbiBUJhk (ORCPT
+        with ESMTP id S1351941AbiBUJhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:40 -0500
+        Mon, 21 Feb 2022 04:37:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F665C33;
-        Mon, 21 Feb 2022 01:16:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F240112756;
+        Mon, 21 Feb 2022 01:16:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF65A608C4;
-        Mon, 21 Feb 2022 09:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4587C340E9;
-        Mon, 21 Feb 2022 09:16:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 701EA60EDF;
+        Mon, 21 Feb 2022 09:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5233FC340E9;
+        Mon, 21 Feb 2022 09:16:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434993;
-        bh=e9ZpdAT6Gyf/FwltTfaIsYCa4En2ZtPtS2zL1mxBgcM=;
+        s=korg; t=1645435001;
+        bh=TLRnoNr7YkE/mtc+aymV32xgU6REirLk430QnoMcCcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cZ47oBTGtVAQ7LyahY7mofgp+TVulSfm9Pu4/wOZ79ABEWSGjTxoInj6He6OwMMLi
-         ZKP8D36wGYfkMYabc30kOWyIogOoE2bC1CHfFq3+3bxJBkR6G3r5JVcX4e83ViZuOG
-         rmFayrMqd6sVM6uk44oiWD1foeLAoJoOVEJeB07A=
+        b=SbIcIRcyXc2SrL3xWijJjGcXwy4viYJbq5qcHsdMA/5cGwuf062jDOHuTOquHNdVY
+         Hpofc6c51eOPLasfyTokDkDTW35JjWlOPTWqjhYpQRf3y9o/dyfP+7my6CCIsBe+0U
+         vklMohTgH6fwRTvJfZHqq1W6XOU8twZOlADVgr/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 193/196] scsi: qedi: Fix ABBA deadlock in qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp()
-Date:   Mon, 21 Feb 2022 09:50:25 +0100
-Message-Id: <20220221084937.394936468@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 002/227] bpf: Introduce composable reg, ret and arg types.
+Date:   Mon, 21 Feb 2022 09:47:01 +0100
+Message-Id: <20220221084934.916327012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
-References: <20220221084930.872957717@linuxfoundation.org>
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,67 +49,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Hao Luo <haoluo@google.com>
 
-commit f10f582d28220f50099d3f561116256267821429 upstream.
+commit d639b9d13a39cf15639cbe6e8b2c43eb60148a73 upstream.
 
-This fixes a deadlock added with commit b40f3894e39e ("scsi: qedi: Complete
-TMF works before disconnect")
+There are some common properties shared between bpf reg, ret and arg
+values. For instance, a value may be a NULL pointer, or a pointer to
+a read-only memory. Previously, to express these properties, enumeration
+was used. For example, in order to test whether a reg value can be NULL,
+reg_type_may_be_null() simply enumerates all types that are possibly
+NULL. The problem of this approach is that it's not scalable and causes
+a lot of duplication. These properties can be combined, for example, a
+type could be either MAYBE_NULL or RDONLY, or both.
 
-Bug description from Jia-Ju Bai:
+This patch series rewrites the layout of reg_type, arg_type and
+ret_type, so that common properties can be extracted and represented as
+composable flag. For example, one can write
 
-qedi_process_tmf_resp()
-  spin_lock(&session->back_lock); --> Line 201 (Lock A)
-  spin_lock(&qedi_conn->tmf_work_lock); --> Line 230 (Lock B)
+ ARG_PTR_TO_MEM | PTR_MAYBE_NULL
 
-qedi_process_cmd_cleanup_resp()
-  spin_lock_bh(&qedi_conn->tmf_work_lock); --> Line 752 (Lock B)
-  spin_lock_bh(&conn->session->back_lock); --> Line 784 (Lock A)
+which is equivalent to the previous
 
-When qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp() are
-concurrently executed, the deadlock can occur.
+ ARG_PTR_TO_MEM_OR_NULL
 
-This patch fixes the deadlock by not holding the tmf_work_lock in
-qedi_process_cmd_cleanup_resp while holding the back_lock. The
-tmf_work_lock is only needed while we remove the tmf_work from the
-work_list.
+The type ARG_PTR_TO_MEM are called "base type" in this patch. Base
+types can be extended with flags. A flag occupies the higher bits while
+base types sits in the lower bits.
 
-Link: https://lore.kernel.org/r/20220208185448.6206-1-michael.christie@oracle.com
-Fixes: b40f3894e39e ("scsi: qedi: Complete TMF works before disconnect")
-Cc: Manish Rangankar <mrangankar@marvell.com>
-Cc: Nilesh Javali <njavali@marvell.com>
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Reported-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This patch in particular sets up a set of macro for this purpose. The
+following patches will rewrite arg_types, ret_types and reg_types
+respectively.
+
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-2-haoluo@google.com
+Cc: stable@vger.kernel.org # 5.16.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qedi/qedi_fw.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/linux/bpf.h          |   42 ++++++++++++++++++++++++++++++++++++++++++
+ include/linux/bpf_verifier.h |   13 +++++++++++++
+ 2 files changed, 55 insertions(+)
 
---- a/drivers/scsi/qedi/qedi_fw.c
-+++ b/drivers/scsi/qedi/qedi_fw.c
-@@ -772,11 +772,10 @@ static void qedi_process_cmd_cleanup_res
- 			qedi_cmd->list_tmf_work = NULL;
- 		}
- 	}
-+	spin_unlock_bh(&qedi_conn->tmf_work_lock);
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -297,6 +297,29 @@ bool bpf_map_meta_equal(const struct bpf
  
--	if (!found) {
--		spin_unlock_bh(&qedi_conn->tmf_work_lock);
-+	if (!found)
- 		goto check_cleanup_reqs;
--	}
+ extern const struct bpf_map_ops bpf_map_offload_ops;
  
- 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_SCSI_TM,
- 		  "TMF work, cqe->tid=0x%x, tmf flags=0x%x, cid=0x%x\n",
-@@ -807,7 +806,6 @@ static void qedi_process_cmd_cleanup_res
- 	qedi_cmd->state = CLEANUP_RECV;
- unlock:
- 	spin_unlock_bh(&conn->session->back_lock);
--	spin_unlock_bh(&qedi_conn->tmf_work_lock);
- 	wake_up_interruptible(&qedi_conn->wait_queue);
- 	return;
++/* bpf_type_flag contains a set of flags that are applicable to the values of
++ * arg_type, ret_type and reg_type. For example, a pointer value may be null,
++ * or a memory is read-only. We classify types into two categories: base types
++ * and extended types. Extended types are base types combined with a type flag.
++ *
++ * Currently there are no more than 32 base types in arg_type, ret_type and
++ * reg_types.
++ */
++#define BPF_BASE_TYPE_BITS	8
++
++enum bpf_type_flag {
++	/* PTR may be NULL. */
++	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
++
++	__BPF_TYPE_LAST_FLAG	= PTR_MAYBE_NULL,
++};
++
++/* Max number of base types. */
++#define BPF_BASE_TYPE_LIMIT	(1UL << BPF_BASE_TYPE_BITS)
++
++/* Max number of all types. */
++#define BPF_TYPE_LIMIT		(__BPF_TYPE_LAST_FLAG | (__BPF_TYPE_LAST_FLAG - 1))
++
+ /* function argument constraints */
+ enum bpf_arg_type {
+ 	ARG_DONTCARE = 0,	/* unused argument in helper function */
+@@ -343,7 +366,13 @@ enum bpf_arg_type {
+ 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
+ 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
+ 	__BPF_ARG_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_ARG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_ARG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
  
+ /* type of values returned from helper functions */
+ enum bpf_return_type {
+@@ -359,7 +388,14 @@ enum bpf_return_type {
+ 	RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL, /* returns a pointer to a valid memory or a btf_id or NULL */
+ 	RET_PTR_TO_MEM_OR_BTF_ID,	/* returns a pointer to a valid memory or a btf_id */
+ 	RET_PTR_TO_BTF_ID,		/* returns a pointer to a btf_id */
++	__BPF_RET_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_RET_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_RET_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
+ 
+ /* eBPF function prototype used by verifier to allow BPF_CALLs from eBPF programs
+  * to in-kernel helper functions and for adjusting imm32 field in BPF_CALL
+@@ -461,7 +497,13 @@ enum bpf_reg_type {
+ 	PTR_TO_FUNC,		 /* reg points to a bpf program function */
+ 	PTR_TO_MAP_KEY,		 /* reg points to a map element key */
+ 	__BPF_REG_TYPE_MAX,
++
++	/* This must be the last entry. Its purpose is to ensure the enum is
++	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	 */
++	__BPF_REG_TYPE_LIMIT	= BPF_TYPE_LIMIT,
+ };
++static_assert(__BPF_REG_TYPE_MAX <= BPF_BASE_TYPE_LIMIT);
+ 
+ /* The information passed from prog-specific *_is_valid_access
+  * back to the verifier.
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -536,5 +536,18 @@ int bpf_check_attach_target(struct bpf_v
+ 			    struct bpf_attach_target_info *tgt_info);
+ void bpf_free_kfunc_btf_tab(struct bpf_kfunc_btf_tab *tab);
+ 
++#define BPF_BASE_TYPE_MASK	GENMASK(BPF_BASE_TYPE_BITS - 1, 0)
++
++/* extract base type from bpf_{arg, return, reg}_type. */
++static inline u32 base_type(u32 type)
++{
++	return type & BPF_BASE_TYPE_MASK;
++}
++
++/* extract flags from an extended type. See bpf_type_flag in bpf.h. */
++static inline u32 type_flag(u32 type)
++{
++	return type & ~BPF_BASE_TYPE_MASK;
++}
+ 
+ #endif /* _LINUX_BPF_VERIFIER_H */
 
 
