@@ -2,106 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC295C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiBUS15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:27:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47768 "EHLO
+        id S230081AbiBUS0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:26:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbiBUS0O (ORCPT
+        with ESMTP id S230187AbiBUSUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:26:14 -0500
-Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A15C7F;
-        Mon, 21 Feb 2022 10:25:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-        :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Seqw0zUcjmCmt2PCKp9l6scFXw8yrx43pqaz3xR+wNg=; b=Rvml0oZlH1IiF0bNfoYSutVSlG
-        PXTBs92aGdAvMPiIHmUib/17nNihx6GIHgxBeSGR1KGQkcnE0z2JXnn4oiCFZHimDA6j7Dk306jAf
-        B5cB1TEYmtuVdBJHMUZquFbNh9O7l6Tm+5MWzTOYfySK12HdUEYNE2GL9dQG8g1ty4JVD9W0WwDLO
-        SalcxEPSfnw0711rJmu4cbqYNQQAeoZmhTm08+6c9K5TUPqvYknw6zP34AYGEoJXrU9Z+hQLtUv68
-        1hZPKuGoCKfkdGYe99dHWJBPcZImLYuwTMwq5sRsQo9u7+aA8DmK5mWto+HI6ps4TyVivJcOrc7Fa
-        ZolnBArw==;
-Received: from 15-28-196-88.dyn.estpak.ee ([88.196.28.15]:54283 helo=[10.0.2.15])
-        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <maukka@ext.kapsi.fi>)
-        id 1nMDMx-00029k-PM; Mon, 21 Feb 2022 20:25:08 +0200
-Message-ID: <72041ee7-a618-85d0-4687-76dae2b04bbc@ext.kapsi.fi>
-Date:   Mon, 21 Feb 2022 20:25:03 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
- <YhOD3eCm8mYHJ1HF@lunn.ch>
-From:   Mauri Sandberg <maukka@ext.kapsi.fi>
-In-Reply-To: <YhOD3eCm8mYHJ1HF@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 88.196.28.15
-X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
-Subject: Re: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
+        Mon, 21 Feb 2022 13:20:44 -0500
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 8CCB0215
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:13:34 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1645467215; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=WhphKfRy9g4NeVDixtg98cLVHh4lJkO88d2PT8ssf/A=; b=aceTTNHgRbpvVQiM3rl1d6TMwv98gRuFNrMt6M/yqBd2pAwjTsVvhBIcKfQsplhYx7TS1Iwj
+ CqWKZq4yjkE5YkXee4wRjyl9oLK/S8mTKWFvqr7a1ZwGlTrBS/rdEVT+LfuIdQ6gfxFV4y0w
+ wNv+ok+kVQsuQc2LPxIJsgrPOyM=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 6213d64db360e81798bd660b (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Feb 2022 18:13:33
+ GMT
+Sender: tdas=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7EDF3C43618; Mon, 21 Feb 2022 18:13:33 +0000 (UTC)
+Received: from hu-tdas-hyd.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: tdas)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 27229C4360C;
+        Mon, 21 Feb 2022 18:13:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 27229C4360C
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Taniya Das <tdas@codeaurora.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>
+Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+Subject: [PATCH v2 1/2] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
+Date:   Mon, 21 Feb 2022 23:43:21 +0530
+Message-Id: <20220221181322.5486-1-tdas@codeaurora.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Andrew,
+The display pixel clock has a requirement on certain newer platforms to
+support M/N as (2/3) and the final D value calculated results in
+underflow errors.
+As the current implementation does not check for D value is within
+the accepted range for a given M & N value. Update the logic to
+calculate the final D value based on the range.
 
-On 21.02.22 14:21, Andrew Lunn wrote:
-> On Mon, Feb 21, 2022 at 08:24:41AM +0200, Mauri Sandberg wrote:
->> Obtaining MAC address may be deferred in cases when the MAC is stored
->> in NVMEM block and it may now be ready upon the first retrieval attempt
->> returing EPROBE_DEFER. Handle it here and leave logic otherwise as it
->> was.
->>
->> Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
->> ---
->>   drivers/net/ethernet/marvell/mv643xx_eth.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
->> index 105247582684..0694f53981f2 100644
->> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
->> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
->> @@ -2740,7 +2740,10 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
->>   		return -EINVAL;
->>   	}
->>   
->> -	of_get_mac_address(pnp, ppd.mac_addr);
->> +	ret = of_get_mac_address(pnp, ppd.mac_addr);
->> +
->> +	if (ret == -EPROBE_DEFER)
->> +		return ret;
-> Hi Mauri
->
-> There appears to be a follow on issue. There can be multiple ports. So
-> it could be the first port does not use a MAC address from the NVMEM,
-> but the second one does. The first time in
-> mv643xx_eth_shared_of_add_port() is successful and a platform device
-> is added. The second port can then fail with -EPROBE_DEFER. That
-> causes the probe to fail, but the platform device will not be
-> removed. The next time the driver is probed, it will add a second
-> platform device for the first port, causing bad things to happen.
->
-> Please can you add code to remove the platform device when the probe
-> fails.
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+---
+ [v2]
+   * Update the if else check with clamp.
+   * Typecast the f->m to u32.
 
-I am looking at the vector 'port_platdev' that holds pointers to already 
-initialised ports. There is this mv643xx_eth_shared_of_remove(), which 
-probably could be utilised to remove them. Should I remove the platform 
-devices only in case of probe defer or always if probe fails?
+ drivers/clk/qcom/clk-rcg2.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index e1b1b426fae4..3a78a2a16cf8 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -264,7 +264,7 @@ static int clk_rcg2_determine_floor_rate(struct clk_hw *hw,
+
+ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ {
+-	u32 cfg, mask;
++	u32 cfg, mask, d_val, not2d_val, n_minus_m;
+ 	struct clk_hw *hw = &rcg->clkr.hw;
+ 	int ret, index = qcom_find_src_index(hw, rcg->parent_map, f->src);
+
+@@ -283,8 +283,17 @@ static int __clk_rcg2_configure(struct clk_rcg2 *rcg, const struct freq_tbl *f)
+ 		if (ret)
+ 			return ret;
+
++		/* Calculate 2d value */
++		d_val = f->n;
++
++		n_minus_m = f->n - f->m;
++		n_minus_m *= 2;
++
++		d_val = clamp(d_val, (u32)f->m, n_minus_m);
++		not2d_val = ~d_val & mask;
++
+ 		ret = regmap_update_bits(rcg->clkr.regmap,
+-				RCG_D_OFFSET(rcg), mask, ~f->n);
++				RCG_D_OFFSET(rcg), mask, not2d_val);
+ 		if (ret)
+ 			return ret;
+ 	}
+--
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
+of the Code Aurora Forum, hosted by the  Linux Foundation.
 
