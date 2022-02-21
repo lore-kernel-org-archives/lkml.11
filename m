@@ -2,184 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E669C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355936AbiBULRq (ORCPT
+        id S1355955AbiBULR5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:17:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41346 "EHLO
+        Mon, 21 Feb 2022 06:17:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355932AbiBULPS (ORCPT
+        with ESMTP id S1356007AbiBULPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:15:18 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D5E301
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:53:59 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id ci24-20020a17090afc9800b001bc3071f921so2639478pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:53:59 -0800 (PST)
+        Mon, 21 Feb 2022 06:15:42 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898936392
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:55:43 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id t4-20020a17090a3b4400b001bc40b548f9so1984887pjf.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:55:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aA5sKZP46Br2IXGSlOJ6tqSDR6UxBlE/5/p8sTxFW2A=;
-        b=TWXXfAQAoJokZM5wJBrVvEyYs+WaUxvPz/zifG36IeQ28CHce0CzCreiT2Lh78cklx
-         tSBjiq3VySZhLEMOmAiUqrEKlLPMUhTQX9D01txRno+rzAJ0/PBum81r1/qFAR9BcYhf
-         c7Y0wlGCn6ZCvmuSZbEre5JidSb/Lfd+0fr+oGqCQyahOo57+LHcEQbLb8SwYvsRUK+k
-         mHcYuRl/BAu6IeHexEL4G32rL5+GNPosCx3ZHoyit0PBwyt50XLsZ8idVJt9bFbB2UTx
-         M3RS4IIG1m3c3yIwATCQV4lDOaRg+enMG+GvFJRnfe9k6PjfS0dslpHqmztoZhSv4IRs
-         0m6A==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zBMxT6mUsrZF5CxDEWFMeByDYV1JnyiE3N8k2hcGECU=;
+        b=oqqOHqSypYg25IJxdVoI6B6JMbaJVEET4dh0ZwvKdM02nESkKShqcQcEAeJH4V0VCM
+         uXI9iuhFXbb++O9ukcBiCbNALAKfx5DpdMHwczy9DbTUsW44kL/lnka85qqWvRej0RPF
+         RnZ5VQi9/Mjq9HqVC0zMI/jx6jaX6l3eySLLacUi2cknQyzHpMuotUajsmC3GEpzlOin
+         o1tPkiMKwsJupC8oYXfyRQVBef8zEU0ZGw4rtAZoHwAnKLbd9vZK1AgZndTWoifXBC8/
+         AuESCa6BessImTSDHkf64leJzic5r/rVZzBOg5nQtxSNoV3iHs4YEsgn1YleKilaig88
+         BkCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aA5sKZP46Br2IXGSlOJ6tqSDR6UxBlE/5/p8sTxFW2A=;
-        b=zWKv1bG4Kth0xrvnEu8kBjuBX3i4Uk+72eb/DnCF/+FT9cfGqF1qehkY3J7qSrVdJS
-         pftl3rWu351z+zrfd3ZbsEvYs3E2w9n8f69Fm18yJrA3eahfhg5yEkCmZ++EEpAsrE9d
-         qdHnYxcnQ+csThWpYX7Q4YI+7E0oBO1Qtp0Y1uOpSK/Acogtww89zlFCYUReWgDDyoie
-         JcSxl6gHf9vIcQH83W8ad+yXkKvO2UvtXMJCCPwu7M09+QtmP7xJZx6jBLdDtFO2s4iZ
-         iWNZDg2PFw6EfOto90iPrnEMDHidjiOG6gwUQ3HfpiTTUUqZSUV3JHL54/ZL0u/KPAKW
-         FsaQ==
-X-Gm-Message-State: AOAM531KVcqa6CtXSl/d/9jI2UYgU9Yne4TFcRYv4y7W7+1SXoH8OReW
-        q3GNbdPVqyW3bwg7zHEn0Ms=
-X-Google-Smtp-Source: ABdhPJzkBcA6oUH/qAaVd478izfxy2f+MQeMcLSeJRQBVr6AW6QXp3xyg6hHzj0PclNb0Z1q3auSqQ==
-X-Received: by 2002:a17:90b:240f:b0:1b8:e0b1:9667 with SMTP id nr15-20020a17090b240f00b001b8e0b19667mr25349719pjb.244.1645440838606;
-        Mon, 21 Feb 2022 02:53:58 -0800 (PST)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id u6sm2214725pfk.203.2022.02.21.02.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:53:58 -0800 (PST)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     Roman Gushchin <guro@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: [PATCH 1/5] mm/sl[au]b: Unify __ksize()
-Date:   Mon, 21 Feb 2022 10:53:32 +0000
-Message-Id: <20220221105336.522086-2-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220221105336.522086-1-42.hyeyoo@gmail.com>
-References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zBMxT6mUsrZF5CxDEWFMeByDYV1JnyiE3N8k2hcGECU=;
+        b=THltHa8S4wBh8OVdVdmYyJPzXZ3bth6z2tgm7uZtBBlgN8hHnAUvW95dK56Oon6nTM
+         bGqs/MUFUeV6m5FRYp5k7vsY9Eee6YTfqSRZItL/WzqInUTcdYMY20BLLD4m0aAMBRk0
+         srGofZH7AVUkZ3qLp0lEAIY0MeBd/8D0RjBrXdatYiZijFEb+7evPMQoclCml0dQStog
+         pdKN5/tmfrDpnysbfNk1kGiEtRHB63bCYJ4ECBwdgNTlB2AsRYJKcJY8Utw35Itoko3j
+         Ekvt5xZkpn2pSLQoDEO1V1+4PCTTSy8kPgFEiePyXbEbmG8+hG4rdDAxLSm+2m1jUM8/
+         rl4g==
+X-Gm-Message-State: AOAM530MoyBas849IzMbgYnoGlJrs77itfzNSKTGIS3tDio9pUfyLaEi
+        INcN1YpP99eGQss5AtyKP87WFFw+fKZ1WAwCD5UTPQ==
+X-Google-Smtp-Source: ABdhPJzLPLl27GzyMzXw22z+KHCroSxZ4M5UCV0cxecdAaXbkaNvw97Gtw7SM49XgmH59JPQQgrNHNZqjAsxzIhWJ+U=
+X-Received: by 2002:a17:90a:db90:b0:1bc:529f:7071 with SMTP id
+ h16-20020a17090adb9000b001bc529f7071mr1589092pjv.40.1645440943069; Mon, 21
+ Feb 2022 02:55:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <yonglin.tan@outlook.com> <MEYP282MB237443EA389045F03FF2B48BFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+ <CAMZdPi9xN_gQRUz3C2MPoSu9O_byaHnydZm3spX3Buecb8_hng@mail.gmail.com> <MEYP282MB2374345FC80FFA7045D897FEFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+In-Reply-To: <MEYP282MB2374345FC80FFA7045D897FEFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 21 Feb 2022 11:55:07 +0100
+Message-ID: <CAMZdPi__Kf__hy4TGJ1sz=VA_PCZpKk_HPgXX8+AH3sv_8mkmg@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: To support SAHARA port for Qualcomm WWAN module.
+To:     =?UTF-8?B?6LCtIOawuOaelw==?= <yonglin.tan@outlook.com>
+Cc:     "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only SLOB need to implement __ksize() separately because SLOB records
-size in object header for kmalloc objects. Unify SLAB/SLUB's __ksize().
+On Mon, 21 Feb 2022 at 10:27, =E8=B0=AD =E6=B0=B8=E6=9E=97 <yonglin.tan@out=
+look.com> wrote:
+>
+> Dear Loic,
+>
+> The Qualcomm x24&x55&x6x platform are all using SAHARA port to collect me=
+mory dump log. User can use QLOG tool to collect the whole memory dump of d=
+evice while the device entered into Dump mode. The firehose protocol is use=
+d to download FW from the host, it's different from SAHARA. MHI CH 2&3 are =
+used as SAHARA CH but firehose use 34&35 CH.
 
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- mm/slab.c        | 23 -----------------------
- mm/slab_common.c | 29 +++++++++++++++++++++++++++++
- mm/slub.c        | 16 ----------------
- 3 files changed, 29 insertions(+), 39 deletions(-)
+Ah right, firehose programmer is loaded when entering EDL mode, not SBL.
 
-diff --git a/mm/slab.c b/mm/slab.c
-index ddf5737c63d9..eb73d2499480 100644
---- a/mm/slab.c
-+++ b/mm/slab.c
-@@ -4199,27 +4199,4 @@ void __check_heap_object(const void *ptr, unsigned long n,
- }
- #endif /* CONFIG_HARDENED_USERCOPY */
- 
--/**
-- * __ksize -- Uninstrumented ksize.
-- * @objp: pointer to the object
-- *
-- * Unlike ksize(), __ksize() is uninstrumented, and does not provide the same
-- * safety checks as ksize() with KASAN instrumentation enabled.
-- *
-- * Return: size of the actual memory used by @objp in bytes
-- */
--size_t __ksize(const void *objp)
--{
--	struct kmem_cache *c;
--	size_t size;
- 
--	BUG_ON(!objp);
--	if (unlikely(objp == ZERO_SIZE_PTR))
--		return 0;
--
--	c = virt_to_cache(objp);
--	size = c ? c->object_size : 0;
--
--	return size;
--}
--EXPORT_SYMBOL(__ksize);
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 23f2ab0713b7..488997db0d97 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -1245,6 +1245,35 @@ void kfree_sensitive(const void *p)
- }
- EXPORT_SYMBOL(kfree_sensitive);
- 
-+#ifndef CONFIG_SLOB
-+/**
-+ * __ksize -- Uninstrumented ksize.
-+ * @objp: pointer to the object
-+ *
-+ * Unlike ksize(), __ksize() is uninstrumented, and does not provide the same
-+ * safety checks as ksize() with KASAN instrumentation enabled.
-+ *
-+ * Return: size of the actual memory used by @objp in bytes
-+ */
-+size_t __ksize(const void *object)
-+{
-+	struct folio *folio;
-+
-+	if (unlikely(object == ZERO_SIZE_PTR))
-+		return 0;
-+
-+	folio = virt_to_folio(object);
-+
-+#ifdef CONFIG_SLUB
-+	if (unlikely(!folio_test_slab(folio)))
-+		return folio_size(folio);
-+#endif
-+
-+	return slab_ksize(folio_slab(folio)->slab_cache);
-+}
-+EXPORT_SYMBOL(__ksize);
-+#endif
-+
- /**
-  * ksize - get the actual amount of memory allocated for a given object
-  * @objp: Pointer to the object
-diff --git a/mm/slub.c b/mm/slub.c
-index 261474092e43..3a4458976ab7 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -4526,22 +4526,6 @@ void __check_heap_object(const void *ptr, unsigned long n,
- }
- #endif /* CONFIG_HARDENED_USERCOPY */
- 
--size_t __ksize(const void *object)
--{
--	struct folio *folio;
--
--	if (unlikely(object == ZERO_SIZE_PTR))
--		return 0;
--
--	folio = virt_to_folio(object);
--
--	if (unlikely(!folio_test_slab(folio)))
--		return folio_size(folio);
--
--	return slab_ksize(folio_slab(folio)->slab_cache);
--}
--EXPORT_SYMBOL(__ksize);
--
- void kfree(const void *x)
- {
- 	struct folio *folio;
--- 
-2.33.1
+>
+> The bus driver use " MHI_CHANNEL_CONFIG_UL&DL_SBL " to initiate SAHARA CH=
+ configs.
+>
+> The code is Quectel EM1XX channel config.
+> MHI_CHANNEL_CONFIG_DL_SBL(3, "SAHARA", 32, 0),
+>
+> For example,
+> - Once the device crashed due to some reasons.
+> - The module entered into DUMP mode(SBL Stage), and changed the EE to SBL=
+.
+> - Then the host should detect the change and re-enumerate the SAHARA port=
+.
+> - Then users can use QLOG tool to collect the Device Memory LOG by SAHARA=
+ Protocol via CH 2&3.
 
+OK, you should add that to the commit message.
+
+Also, instead of exposing the raw sahara protocol, can't this be
+integrated with the devcoredump framework
+(https://lwn.net/Articles/610887/)?
+
+Regards,
+Loic
