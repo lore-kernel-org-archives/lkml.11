@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6124C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353142AbiBUKJn (ORCPT
+        id S1353183AbiBUKJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:09:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57196 "EHLO
+        Mon, 21 Feb 2022 05:09:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353478AbiBUJ53 (ORCPT
+        with ESMTP id S1353455AbiBUJ51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7459E39694;
-        Mon, 21 Feb 2022 01:26:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E87C3917D;
+        Mon, 21 Feb 2022 01:25:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23A13B80EB8;
-        Mon, 21 Feb 2022 09:26:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 379ADC340E9;
-        Mon, 21 Feb 2022 09:26:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C6DB61016;
+        Mon, 21 Feb 2022 09:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC29C340E9;
+        Mon, 21 Feb 2022 09:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435568;
-        bh=CGKZKpHdtpHjqx8nLIub2ekK7SpErawCOlzQRha/BlY=;
+        s=korg; t=1645435551;
+        bh=ZD01o9rSSE8LUE0dVcK7GaEZOVJK7nnDEiRaEzbfzEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f3HNBXose7IfmENmIunnE5iGkcAE8MKnjtca9xMVrLb/uIdBA5EjGG4zHpX2eabJ1
-         lLbnK9hd+DMVfU/mfVHMjbj4GU3VKPTrkhoDATWtJitWTQbb6PmmDmc8oGGRFy+i5s
-         ESg6JhbG7O50NlGCX3cOBWO5KQcFAzSPJku4qzQ4=
+        b=nQQmFKu75P+uKWiZmVKVVMQp3pmTl2B5NC2DUZ4tCt6SlqUZ74oyuIXcOUgexIDRN
+         1cVHOLB+weIYLdShv9w3QJTM5M9S+ZMc7TvG38Zmh7gvDJ15K9YVmL4WHRw5gQYRiK
+         dRJH4R3WYZL4XjBEI6Qudm4dIoE7pJZNFEMXMP0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Seth Forshee <seth.forshee@digitalocean.com>,
-        Christoph Hellwig <hch@lst.de>, linux-fsdevel@vger.kernel.org,
-        Christian Brauner <brauner@kernel.org>
-Subject: [PATCH 5.16 182/227] tests: fix idmapped mount_setattr test
-Date:   Mon, 21 Feb 2022 09:50:01 +0100
-Message-Id: <20220221084940.869374838@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Anup Patel <anup@brainfault.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 203/227] irqchip/sifive-plic: Add missing thead,c900-plic match string
+Date:   Mon, 21 Feb 2022 09:50:22 +0100
+Message-Id: <20220221084941.566998100@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,45 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit d1c56bfdaca465bd1d0e913053a9c5cafe8b6a6c upstream.
+[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
 
-The test treated zero as a successful run when it really should treat
-non-zero as a successful run. A mount's idmapping can't change once it
-has been attached to the filesystem.
+The thead,c900-plic has been used in opensbi to distinguish
+PLIC [1]. Although PLICs have the same behaviors in Linux,
+they are different hardware with some custom initializing in
+firmware(opensbi).
 
-Link: https://lore.kernel.org/r/20220203131411.3093040-2-brauner@kernel.org
-Fixes: 01eadc8dd96d ("tests: add mount_setattr() selftests")
-Cc: Seth Forshee <seth.forshee@digitalocean.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: linux-fsdevel@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Qute opensbi patch commit-msg by Samuel:
+
+  The T-HEAD PLIC implementation requires setting a delegation bit
+  to allow access from S-mode. Now that the T-HEAD PLIC has its own
+  compatible string, set this bit automatically from the PLIC driver,
+  instead of reaching into the PLIC's MMIO space from another driver.
+
+[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Cc: Anup Patel <anup@brainfault.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Samuel Holland <samuel@sholland.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/mount_setattr/mount_setattr_test.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-sifive-plic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/tools/testing/selftests/mount_setattr/mount_setattr_test.c
-+++ b/tools/testing/selftests/mount_setattr/mount_setattr_test.c
-@@ -1236,7 +1236,7 @@ static int get_userns_fd(unsigned long n
- }
+diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+index 259065d271ef0..09cc98266d30f 100644
+--- a/drivers/irqchip/irq-sifive-plic.c
++++ b/drivers/irqchip/irq-sifive-plic.c
+@@ -398,3 +398,4 @@ static int __init plic_init(struct device_node *node,
  
- /**
-- * Validate that an attached mount in our mount namespace can be idmapped.
-+ * Validate that an attached mount in our mount namespace cannot be idmapped.
-  * (The kernel enforces that the mount's mount namespace and the caller's mount
-  *  namespace match.)
-  */
-@@ -1259,7 +1259,7 @@ TEST_F(mount_setattr_idmapped, attached_
- 
- 	attr.userns_fd	= get_userns_fd(0, 10000, 10000);
- 	ASSERT_GE(attr.userns_fd, 0);
--	ASSERT_EQ(sys_mount_setattr(open_tree_fd, "", AT_EMPTY_PATH, &attr, sizeof(attr)), 0);
-+	ASSERT_NE(sys_mount_setattr(open_tree_fd, "", AT_EMPTY_PATH, &attr, sizeof(attr)), 0);
- 	ASSERT_EQ(close(attr.userns_fd), 0);
- 	ASSERT_EQ(close(open_tree_fd), 0);
- }
+ IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+ IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
++IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+-- 
+2.34.1
+
 
 
