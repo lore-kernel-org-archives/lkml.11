@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2987C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347729AbiBUJHk (ORCPT
+        id S1347517AbiBUJHp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:07:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58524 "EHLO
+        Mon, 21 Feb 2022 04:07:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348198AbiBUJCZ (ORCPT
+        with ESMTP id S1348235AbiBUJC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036322B25E;
-        Mon, 21 Feb 2022 00:57:45 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17342BB04;
+        Mon, 21 Feb 2022 00:57:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71CE660FB6;
-        Mon, 21 Feb 2022 08:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D6DC36AE2;
-        Mon, 21 Feb 2022 08:57:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FF62B80EAD;
+        Mon, 21 Feb 2022 08:57:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61376C340F1;
+        Mon, 21 Feb 2022 08:57:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433844;
-        bh=fkywtcnuRfM9nJSw5O0w6qFGqmj7tRXqEy/urhu+8K0=;
+        s=korg; t=1645433865;
+        bh=VIQquFzGDHKbKcmGm6RKoojybnkJGoVldTQZYNSMAJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXXTtRL63d++7xbsOA9dSlmO3DwTCp5ugXj+MBaDpsFmWjFQUaBZKZqUbZiYjXZnz
-         kVkzNrING6jmO+lYdP09w9j5HLNkbBAJbYECGHeD3YBDD7TTHKdwGmhTtS/fUjSM7Z
-         UbVQ/bLeuJYo05TXbfb7UZD5vr4ky1MbBYG20mD8=
+        b=Ja8G5mscehQFq87qAGfOuWRV5/787vAvaIpMAHQ7tTAuwHP5/yENfx10zrc5yP3xs
+         QtuHdPYpv2w05SvnShnPCgnWu4s6tLqDlCPo6iwNXnZhV9EA3hGprbpumTR3j+u+l6
+         GaPPWS48DwinYUUHx3aRCf25XW30/r1yojl2w1F4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
-        <zboszor@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 55/58] ata: libata-core: Disable TRIM on M88V29
-Date:   Mon, 21 Feb 2022 09:49:48 +0100
-Message-Id: <20220221084913.646608512@linuxfoundation.org>
+Subject: [PATCH 5.4 11/80] net: ieee802154: at86rf230: Stop leaking skbs
+Date:   Mon, 21 Feb 2022 09:48:51 +0100
+Message-Id: <20220221084915.961912073@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
-References: <20220221084911.895146879@linuxfoundation.org>
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,38 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zoltán Böszörményi <zboszor@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
+[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
 
-This device is a CF card, or possibly an SSD in CF form factor.
-It supports NCQ and high speed DMA.
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. In the Tx case we then leak
+the skb structure.
 
-While it also advertises TRIM support, I/O errors are reported
-when the discard mount option fstrim is used. TRIM also fails
-when disabling NCQ and not just as an NCQ command.
+Free the skb structure upon error before returning when appropriate.
 
-TRIM must be disabled for this device.
+As the 'is_tx = 0' cannot be moved in the complete handler because of a
+possible race between the delay in switching to STATE_RX_AACK_ON and a
+new interrupt, we introduce an intermediate 'was_tx' boolean just for
+this purpose.
 
-Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+There is no Fixes tag applying here, many changes have been made on this
+area and the issue kind of always existed.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 46eacba2613b8..33d3728f36222 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4613,6 +4613,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 7d67f41387f55..4f5ef8a9a9a87 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -100,6 +100,7 @@ struct at86rf230_local {
+ 	unsigned long cal_timeout;
+ 	bool is_tx;
+ 	bool is_tx_from_off;
++	bool was_tx;
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+@@ -343,7 +344,11 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
  
- 	/* devices that don't properly handle TRIM commands */
- 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
-+	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+-	ieee802154_wake_queue(lp->hw);
++	if (lp->was_tx) {
++		lp->was_tx = 0;
++		dev_kfree_skb_any(lp->tx_skb);
++		ieee802154_wake_queue(lp->hw);
++	}
+ }
  
- 	/*
- 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+ static void
+@@ -352,7 +357,11 @@ at86rf230_async_error_recover(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
+ 
+-	lp->is_tx = 0;
++	if (lp->is_tx) {
++		lp->was_tx = 1;
++		lp->is_tx = 0;
++	}
++
+ 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+ 				     at86rf230_async_error_recover_complete);
+ }
 -- 
 2.34.1
 
