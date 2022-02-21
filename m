@@ -2,82 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAC3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE820C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348159AbiBUJOS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:14:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38024 "EHLO
+        id S243710AbiBUJOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:14:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347852AbiBUJJA (ORCPT
+        with ESMTP id S1347855AbiBUJJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:09:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B901001;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045FDFF4;
         Mon, 21 Feb 2022 01:01:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFB85B80EB2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95525611F4;
+        Mon, 21 Feb 2022 09:01:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D61CC340EB;
         Mon, 21 Feb 2022 09:01:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78AF6C340E9;
-        Mon, 21 Feb 2022 09:01:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645434079;
-        bh=NYiPPmkcgbIB486ZDMgYNzdhISRb4YtBP1UQO5TZvSY=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=d5Sj0OtiKgrrERQO/JouabE7GQ36P2igkec36oPi3x+7CwZA2nuzD6yl7hB6LhBO6
-         RXeQyqzc33frU6qvqWhLzY0CRps4oyefphBEiWKUNfcE4mGDi2RW64hi+kgjAmGeYi
-         s5HTN4JGW0wR6Vty88xEVCo7JXASOTcuyvITIaRmTqFwqgSDmN8Ruv/wMJy/GC2WQT
-         +Bogl7q4fHtNtOK+IQNz5x7CDWSUP3Q4RhqNuz9mdaslobBlvIv/lApbrWBKAA8djk
-         aRghhwbj2ZmkDFMS3S1tTYvuDQo2A8hXsXabR8+IMaqqIMc0yg6YWSkHxOwEhF3stU
-         Uck1HhuUMOH9w==
-Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645434081;
+        bh=25js9VCWbrkkR5tekcOAtjE8leOjYh28nQ5IV8FeWRs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uardooxO8ax9W4Y0fs+vi0oeRiNZetWNZnBwcoBkL4Ju1yvubUr2iSHSfDWcKMkKR
+         fNZoxUN3ilsqZ3aZdUs2jVCHYXYGUX6pxirn2YyM7SO0OFA9C4aR3kZXMtzskVzoZ5
+         n24ubacNiD2NdROr+T/eJXWigIls62vWS2GIk80U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.4 55/80] NFS: LOOKUP_DIRECTORY is also ok with symlinks
+Date:   Mon, 21 Feb 2022 09:49:35 +0100
+Message-Id: <20220221084917.380113774@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [next] rtw89: core.h: Replace zero-length array with
- flexible-array member
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220216195047.GA904198@embeddedor>
-References: <20220216195047.GA904198@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164543407352.995.16373174771394490326.kvalo@kernel.org>
-Date:   Mon, 21 Feb 2022 09:01:17 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-> There is a regular need in the kernel to provide a way to declare
-> having a dynamically sized set of trailing elements in a structure.
-> Kernel code should always use “flexible array members”[1] for these
-> cases. The older style of one-element or zero-length arrays should
-> no longer be used[2].
-> 
-> [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> 
-> Link: https://github.com/KSPP/linux/issues/78
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+commit e0caaf75d443e02e55e146fd75fe2efc8aed5540 upstream.
 
-Patch applied to wireless-next.git, thanks.
+Commit ac795161c936 (NFSv4: Handle case where the lookup of a directory
+fails) [1], part of Linux since 5.17-rc2, introduced a regression, where
+a symbolic link on an NFS mount to a directory on another NFS does not
+resolve(?) the first time it is accessed:
 
-2e2f63a19b0a rtw89: core.h: Replace zero-length array with flexible-array member
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Fixes: ac795161c936 ("NFSv4: Handle case where the lookup of a directory fails")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Tested-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/nfs/dir.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220216195047.GA904198@embeddedor/
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1641,14 +1641,14 @@ no_open:
+ 	if (!res) {
+ 		inode = d_inode(dentry);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+-		    !S_ISDIR(inode->i_mode))
++		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))
+ 			res = ERR_PTR(-ENOTDIR);
+ 		else if (inode && S_ISREG(inode->i_mode))
+ 			res = ERR_PTR(-EOPENSTALE);
+ 	} else if (!IS_ERR(res)) {
+ 		inode = d_inode(res);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+-		    !S_ISDIR(inode->i_mode)) {
++		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode))) {
+ 			dput(res);
+ 			res = ERR_PTR(-ENOTDIR);
+ 		} else if (inode && S_ISREG(inode->i_mode)) {
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
