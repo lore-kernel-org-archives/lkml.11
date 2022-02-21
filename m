@@ -2,157 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F82C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378170AbiBUOmU (ORCPT
+        id S1378172AbiBUOnR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:42:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52934 "EHLO
+        Mon, 21 Feb 2022 09:43:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378161AbiBUOmI (ORCPT
+        with ESMTP id S1344379AbiBUOnO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:42:08 -0500
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 52FF1306
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:41:43 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1645454503; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=X7DJq3qZnxS9ZNz4Hv7Z9IEBP+2GgBCe/ukmflBEl+U=; b=iZIzoHQXF7rR7z3zjhlc8Cy4nZBUGFRpncxYOO27BFN55vqrHKmU2XztgnlqUnug/HpA5u5u
- rGhLEg+jq5HEMzvIhIBrS5uATJttttucEo9YAjnkFlhDece4wMc9uXe/nav73vavCo6rdeYq
- s6pNsMeAPr0qakE4rWU8cP8fxN0=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 6213a4a639713d0712a0d9da (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Feb 2022 14:41:42
- GMT
-Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D2EC6C43619; Mon, 21 Feb 2022 14:41:41 +0000 (UTC)
-Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        Mon, 21 Feb 2022 09:43:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAE113E06;
+        Mon, 21 Feb 2022 06:42:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BED46C4361C;
-        Mon, 21 Feb 2022 14:41:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org BED46C4361C
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] arm64: dts: qcom: sc7280: Support gpu speedbin
-Date:   Mon, 21 Feb 2022 20:11:02 +0530
-Message-Id: <20220221201039.5.I4c2cb95f06f0c37038c80cc1ad20563fdf0618e2@changeid>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E105261052;
+        Mon, 21 Feb 2022 14:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0676EC340E9;
+        Mon, 21 Feb 2022 14:42:49 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QnJLh0k9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645454567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+WQhj2bKXmrHAlboGodRiAor51NQtRBFZD94x6/+vb4=;
+        b=QnJLh0k9n13zUM7Ht6ApQC16QTwAEj6ueaTWi4ayNv0y3JFTnhaW78p3HIWpQXmooYRYTv
+        HYGlNjzdv2l4Snh0O1cIPWq0PQ2IztNHs/Pn6u+iYvvjkNNxej+3TNPu42h2lMnYCJWDi9
+        L7DZepzuYtvyBsyZW32EfKEH3vIr1SQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8e046bba (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 21 Feb 2022 14:42:47 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id p19so34795873ybc.6;
+        Mon, 21 Feb 2022 06:42:46 -0800 (PST)
+X-Gm-Message-State: AOAM5327W52pTSTHApq/cO/AjI52DFAu3mIYwhUEd6Oda7wJGc+pszg8
+        Ig0/LwzwpDfWEO1Gvubs1aRgEZFxZ5rla+ebN+4=
+X-Google-Smtp-Source: ABdhPJwkU2f1EUQ8qcxRDppbN7rT/bIQ0Pert0HuvvnxBX0Zhhd7mmYS3O4mQe2fKjogzQCWvxx+Hbjsu+dUF8HlbjQ=
+X-Received: by 2002:a25:238d:0:b0:619:3e19:b06b with SMTP id
+ j135-20020a25238d000000b006193e19b06bmr18492362ybj.382.1645454565770; Mon, 21
+ Feb 2022 06:42:45 -0800 (PST)
+MIME-Version: 1.0
+References: <20220214184627.3048-1-Jason@zx2c4.com> <20220216232142.193220-1-Jason@zx2c4.com>
+ <YhMJAsiHsjCJU1A4@sol.localdomain>
+In-Reply-To: <YhMJAsiHsjCJU1A4@sol.localdomain>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 21 Feb 2022 15:42:34 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qptoGM=Xc+qJKN87OC6-RdnbJNSx3GCfLUz4p7qQwzuw@mail.gmail.com>
+Message-ID: <CAHmME9qptoGM=Xc+qJKN87OC6-RdnbJNSx3GCfLUz4p7qQwzuw@mail.gmail.com>
+Subject: Re: [PATCH v4] random: use simpler fast key erasure flow on per-cpu keys
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add speedbin fuse and additional OPPs for gpu to support sc7280 SKUs.
+On Mon, Feb 21, 2022 at 4:37 AM Eric Biggers <ebiggers@kernel.org> wrote:
+> The only oddity I noticed is that some new comments use the net coding style for
+> multi-line comments, and get reformatted to the standard style later in a later
+> patch.  It would be preferable to use the standard style from the beginning.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
+You can tell where I've been spending my time... :)
 
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 46 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+I'll fix this up.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 365a2e0..f8fc8b8 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -605,6 +605,11 @@
- 			power-domains = <&rpmhpd SC7280_MX>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
-+
-+			gpu_speed_bin: gpu_speed_bin@1e9 {
-+				reg = <0x1e9 0x2>;
-+				bits = <5 8>;
-+			};
- 		};
- 
- 		sdhc_1: sdhci@7c4000 {
-@@ -1762,6 +1767,9 @@
- 			interconnect-names = "gfx-mem";
- 			#cooling-cells = <2>;
- 
-+			nvmem-cells = <&gpu_speed_bin>;
-+			nvmem-cell-names = "speed_bin";
-+
- 			gpu_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
-@@ -1769,18 +1777,56 @@
- 					opp-hz = /bits/ 64 <315000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
- 					opp-peak-kBps = <1804000>;
-+					opp-supported-hw = <0x03>;
- 				};
- 
- 				opp-450000000 {
- 					opp-hz = /bits/ 64 <450000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
- 					opp-peak-kBps = <4068000>;
-+					opp-supported-hw = <0x03>;
- 				};
- 
- 				opp-550000000 {
- 					opp-hz = /bits/ 64 <550000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
- 					opp-peak-kBps = <6832000>;
-+					opp-supported-hw = <0x03>;
-+				};
-+
-+				opp-608000000 {
-+					opp-hz = /bits/ 64 <608000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L2>;
-+					opp-peak-kBps = <8368000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-700000000 {
-+					opp-hz = /bits/ 64 <700000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_NOM>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-812000000 {
-+					opp-hz = /bits/ 64 <812000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-840000000 {
-+					opp-hz = /bits/ 64 <840000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_TURBO>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-900000000 {
-+					opp-hz = /bits/ 64 <900000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
- 				};
- 			};
- 		};
--- 
-2.7.4
+Thanks a lot for your review on this patch and the couple dozen of others too.
 
+Jason
