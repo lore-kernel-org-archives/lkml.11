@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E99CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354809AbiBUKeE (ORCPT
+        id S1354969AbiBUKeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:34:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52280 "EHLO
+        Mon, 21 Feb 2022 05:34:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355040AbiBUKdZ (ORCPT
+        with ESMTP id S1354915AbiBUKde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:33:25 -0500
+        Mon, 21 Feb 2022 05:33:34 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968693700C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:53:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743437005
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:53:57 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nM5Nb-0007Aa-9r; Mon, 21 Feb 2022 10:53:15 +0100
+        id 1nM5Nb-0007AU-Ab; Mon, 21 Feb 2022 10:53:15 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nM5NZ-00FUfB-Po; Mon, 21 Feb 2022 10:53:13 +0100
+        id 1nM5NZ-00FUeI-Iu; Mon, 21 Feb 2022 10:53:13 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -34,16 +34,16 @@ To:     Mark Rutland <mark.rutland@arm.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
 Cc:     David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v1 8/8] ARM: dts: imx6qdl-victgo: add CAN termination support
-Date:   Mon, 21 Feb 2022 10:53:12 +0100
-Message-Id: <20220221095312.3692669-8-o.rempel@pengutronix.de>
+Subject: [PATCH v1 2/8] ARM: dts: imx6qdl-vicut1/vicutgo: Rename backlight to backlight_lcd
+Date:   Mon, 21 Feb 2022 10:53:06 +0100
+Message-Id: <20220221095312.3692669-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221095312.3692669-1-o.rempel@pengutronix.de>
 References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
@@ -59,53 +59,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Jander <david@protonic.nl>
 
-The gpio1 0 pin is controlling CAN termination, not USB H1 VBUS. So,
-remove wrong regulator and assign this gpio to new DT CAN termination
-property.
+We have two backlight sources on this boards. Use more specific name for
+the LCD backlight to see the difference.
 
 Signed-off-by: David Jander <david@protonic.nl>
+Signed-off-by: Robin van der Gracht <robin@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6dl-victgo.dts | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ arch/arm/boot/dts/imx6dl-victgo.dts   | 4 ++--
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
-index 7839021bc3eb..d66da630e0af 100644
+index e6134efbfabd..833340c30537 100644
 --- a/arch/arm/boot/dts/imx6dl-victgo.dts
 +++ b/arch/arm/boot/dts/imx6dl-victgo.dts
-@@ -160,15 +160,6 @@ reg_3v3: regulator-3v3 {
- 		regulator-max-microvolt = <3300000>;
+@@ -21,7 +21,7 @@ chosen {
+ 		stdout-path = &uart4;
  	};
  
--	reg_h1_vbus: regulator-h1-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "h1-vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		gpio = <&gpio1 0 GPIO_ACTIVE_HIGH>;
--		enable-active-high;
--	};
--
- 	reg_otg_vbus: regulator-otg-vbus {
- 		compatible = "regulator-fixed";
- 		regulator-name = "otg-vbus";
-@@ -312,6 +303,8 @@ IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
- &can1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_can1>;
-+	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
-+	termination-ohms = <150>;
- 	status = "okay";
- };
+-	backlight: backlight {
++	backlight_lcd: backlight {
+ 		compatible = "pwm-backlight";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_backlight>;
+@@ -100,7 +100,7 @@ led-2 {
  
-@@ -646,7 +639,6 @@ &uart5 {
- };
+ 	panel {
+ 		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight>;
++		backlight = <&backlight_lcd>;
+ 		power-supply = <&reg_3v3>;
  
- &usbh1 {
--	vbus-supply = <&reg_h1_vbus>;
- 	pinctrl-names = "default";
- 	phy_type = "utmi";
- 	dr_mode = "host";
+ 		port {
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index c1d06bc28c67..a1fbbc9c26b6 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -16,7 +16,7 @@ chosen {
+ 		stdout-path = &uart4;
+ 	};
+ 
+-	backlight: backlight {
++	backlight_lcd: backlight {
+ 		compatible = "pwm-backlight";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_backlight>;
+@@ -102,7 +102,7 @@ led-2 {
+ 
+ 	panel {
+ 		compatible = "kyo,tcg121xglp";
+-		backlight = <&backlight>;
++		backlight = <&backlight_lcd>;
+ 		power-supply = <&reg_3v3>;
+ 
+ 		port {
 -- 
 2.30.2
 
