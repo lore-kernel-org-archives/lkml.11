@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEC5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D46C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351687AbiBUJuc (ORCPT
+        id S1351707AbiBUJui (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:50:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41642 "EHLO
+        Mon, 21 Feb 2022 04:50:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351572AbiBUJqK (ORCPT
+        with ESMTP id S1351461AbiBUJp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:46:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850543FBD5;
-        Mon, 21 Feb 2022 01:18:32 -0800 (PST)
+        Mon, 21 Feb 2022 04:45:26 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4553F889;
+        Mon, 21 Feb 2022 01:18:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D95D60E2C;
-        Mon, 21 Feb 2022 09:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 009C5C340E9;
-        Mon, 21 Feb 2022 09:18:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6DEA9CE0E76;
+        Mon, 21 Feb 2022 09:18:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 590A6C340E9;
+        Mon, 21 Feb 2022 09:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435111;
-        bh=G/siQvji3HalXvhT5qhWku0cnOVs8mMRnHkwATbA3bA=;
+        s=korg; t=1645435102;
+        bh=E7FOSdbTRTgamGUuWjaPs4cyaZmb3dvKjzdHiR8bK6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HPh3MDVDNoawIor3Rm1UUGSkxQNBhnqHmdOwVSo0u6HnvCOjiblypbiQr39oqC57K
-         AJ4xuQfZy3gmPPlMTcJlKZLcseK6MvIhVUw1UatI5cYEweMTwfp2NbGSlurS3HsBYb
-         V8Rw8+38NHx0Qu9/9ypkOXMmRdirAAKW6+8lsv74=
+        b=j7GCHcvbU1S241NytxAuH+kfz2nSkayzYpW/v73rWmtgUmm3wooNMuTOGTATLKHPQ
+         74n9weEa6naK2p5MtkIBOuWk5Hu1/eD7XojI34Rr6asiEKzi1MShswohgw8G/a1saE
+         NKjxvURparNqiwqBwlswM6nQOmu7nPttMO8nP02E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 041/227] selftests/zram01.sh: Fix compression ratio calculation
-Date:   Mon, 21 Feb 2022 09:47:40 +0100
-Message-Id: <20220221084936.231242501@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.16 013/227] parisc: Show error if wrong 32/64-bit compiler is being used
+Date:   Mon, 21 Feb 2022 09:47:12 +0100
+Message-Id: <20220221084935.279675188@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,84 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
+commit b160628e9ebcdc85d0db9d7f423c26b3c7c179d0 upstream.
 
-zram01 uses `free -m` to measure zram memory usage. The results are no
-sense because they are polluted by all running processes on the system.
+It happens quite often that people use the wrong compiler to build the
+kernel:
 
-We Should only calculate the free memory delta for the current process.
-So use the third field of /sys/block/zram<id>/mm_stat to measure memory
-usage instead. The file is available since kernel 4.1.
+make ARCH=parisc   -> builds the 32-bit kernel
+make ARCH=parisc64 -> builds the 64-bit kernel
 
-orig_data_size(first): uncompressed size of data stored in this disk.
-compr_data_size(second): compressed size of data stored in this disk
-mem_used_total(third): the amount of memory allocated for this disk
+This patch adds a sanity check which errors out with an instruction how
+use the correct ARCH= option.
 
-Also remove useless zram cleanup call in zram_fill_fs and so we don't
-need to cleanup zram twice if fails.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
+ arch/parisc/include/asm/bitops.h |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index 114863d9fb876..e9e9eb777e2c7 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -33,8 +33,6 @@ zram_algs="lzo"
+--- a/arch/parisc/include/asm/bitops.h
++++ b/arch/parisc/include/asm/bitops.h
+@@ -12,6 +12,14 @@
+ #include <asm/barrier.h>
+ #include <linux/atomic.h>
  
- zram_fill_fs()
- {
--	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
--
- 	for i in $(seq 0 $(($dev_num - 1))); do
- 		echo "fill zram$i..."
- 		local b=0
-@@ -45,29 +43,17 @@ zram_fill_fs()
- 			b=$(($b + 1))
- 		done
- 		echo "zram$i can be filled with '$b' KB"
--	done
- 
--	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
--	local used_mem=$(($mem_free0 - $mem_free1))
-+		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
-+		local v=$((100 * 1024 * $b / $mem_used_total))
-+		if [ "$v" -lt 100 ]; then
-+			 echo "FAIL compression ratio: 0.$v:1"
-+			 ERR_CODE=-1
-+			 return
-+		fi
- 
--	local total_size=0
--	for sm in $zram_sizes; do
--		local s=$(echo $sm | sed 's/M//')
--		total_size=$(($total_size + $s))
-+		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- 	done
--
--	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
--
--	local v=$((100 * $total_size / $used_mem))
--
--	if [ "$v" -lt 100 ]; then
--		echo "FAIL compression ratio: 0.$v:1"
--		ERR_CODE=-1
--		zram_cleanup
--		return
--	fi
--
--	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- }
- 
- check_prereqs
--- 
-2.34.1
-
++/* compiler build environment sanity checks: */
++#if !defined(CONFIG_64BIT) && defined(__LP64__)
++#error "Please use 'ARCH=parisc' to build the 32-bit kernel."
++#endif
++#if defined(CONFIG_64BIT) && !defined(__LP64__)
++#error "Please use 'ARCH=parisc64' to build the 64-bit kernel."
++#endif
++
+ /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
+  * on use of volatile and __*_bit() (set/clear/change):
+  *	*_bit() want use of volatile.
 
 
