@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C526C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B25D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244088AbiBUJyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41610 "EHLO
+        id S1352392AbiBUJyV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:54:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352954AbiBUJsD (ORCPT
+        with ESMTP id S1352248AbiBUJrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C279B12E;
-        Mon, 21 Feb 2022 01:21:55 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CCC41639;
+        Mon, 21 Feb 2022 01:19:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 611D560B1E;
-        Mon, 21 Feb 2022 09:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E48C340E9;
-        Mon, 21 Feb 2022 09:21:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 701FE60F4E;
+        Mon, 21 Feb 2022 09:19:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FD0C340EB;
+        Mon, 21 Feb 2022 09:19:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435314;
-        bh=NiDEqgNTM0anrzgdi52tONruLfv+bKxdiq4x0ThFYBo=;
+        s=korg; t=1645435153;
+        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PfgtHJtcNo1rFu8njl4HMcGXKx69RU1tQ7vrwpBKwQiMVlhPNakmF8BJ2AMZ0XDsR
-         pfUjCrZ0gDhSU6wueH6e5EuvFHvX4lOBOK5ZP0Pz+9KuEGx0bIdncMY73JxAqEyAgN
-         tQwW1avt5uMK0/kr2nM70s9YtmuXfLPqcHWD1KfY=
+        b=1Q+DpLYsLywg7KMgsOHUY8euPwfPTEpRtHuGVUr+V8/3N9ANTiZZ+sDI4iKAAtJCQ
+         3leRcox1hkgqOFTbRsIRobH2fK/baSZ3mDH6m3lvAfya84iUrDrRRkLixQtbkVAhIO
+         RADhiYtLbSsQaJH8s1W8VQ+/jMCu/umIsAlMf5bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 121/227] bonding: fix data-races around agg_select_timer
-Date:   Mon, 21 Feb 2022 09:49:00 +0100
-Message-Id: <20220221084938.878108296@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 063/227] net: sparx5: do not refer to skb after passing it on
+Date:   Mon, 21 Feb 2022 09:48:02 +0100
+Message-Id: <20220221084936.969692755@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,138 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Steen Hegelund <steen.hegelund@microchip.com>
 
-commit 9ceaf6f76b203682bb6100e14b3d7da4c0bedde8 upstream.
+[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
 
-syzbot reported that two threads might write over agg_select_timer
-at the same time. Make agg_select_timer atomic to fix the races.
+Do not try to use any SKB fields after the packet has been passed up in the
+receive stack.
 
-BUG: KCSAN: data-race in bond_3ad_initiate_agg_selection / bond_3ad_state_machine_handler
-
-read to 0xffff8881242aea90 of 4 bytes by task 1846 on cpu 1:
- bond_3ad_state_machine_handler+0x99/0x2810 drivers/net/bonding/bond_3ad.c:2317
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-write to 0xffff8881242aea90 of 4 bytes by task 25910 on cpu 0:
- bond_3ad_initiate_agg_selection+0x18/0x30 drivers/net/bonding/bond_3ad.c:1998
- bond_open+0x658/0x6f0 drivers/net/bonding/bond_main.c:3967
- __dev_open+0x274/0x3a0 net/core/dev.c:1407
- dev_open+0x54/0x190 net/core/dev.c:1443
- bond_enslave+0xcef/0x3000 drivers/net/bonding/bond_main.c:1937
- do_set_master net/core/rtnetlink.c:2532 [inline]
- do_setlink+0x94f/0x2500 net/core/rtnetlink.c:2736
- __rtnl_newlink net/core/rtnetlink.c:3414 [inline]
- rtnl_newlink+0xfeb/0x13e0 net/core/rtnetlink.c:3529
- rtnetlink_rcv_msg+0x745/0x7e0 net/core/rtnetlink.c:5594
- netlink_rcv_skb+0x14e/0x250 net/netlink/af_netlink.c:2494
- rtnetlink_rcv+0x18/0x20 net/core/rtnetlink.c:5612
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x602/0x6d0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x728/0x850 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmsg+0x195/0x230 net/socket.c:2496
- __do_sys_sendmsg net/socket.c:2505 [inline]
- __se_sys_sendmsg net/socket.c:2503 [inline]
- __x64_sys_sendmsg+0x42/0x50 net/socket.c:2503
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000050 -> 0x0000004f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 25910 Comm: syz-executor.1 Tainted: G        W         5.17.0-rc4-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_3ad.c |   30 +++++++++++++++++++++++++-----
- include/net/bond_3ad.h         |    2 +-
- 2 files changed, 26 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -225,7 +225,7 @@ static inline int __check_agg_selection_
- 	if (bond == NULL)
- 		return 0;
- 
--	return BOND_AD_INFO(bond).agg_select_timer ? 1 : 0;
-+	return atomic_read(&BOND_AD_INFO(bond).agg_select_timer) ? 1 : 0;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index dc7e5ea6ec158..148d431fcde42 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+ 	skb->protocol = eth_type_trans(skb, netdev);
+-	netif_rx(skb);
+ 	netdev->stats.rx_bytes += skb->len;
+ 	netdev->stats.rx_packets++;
++	netif_rx(skb);
  }
  
- /**
-@@ -1995,7 +1995,7 @@ static void ad_marker_response_received(
-  */
- void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
- {
--	BOND_AD_INFO(bond).agg_select_timer = timeout;
-+	atomic_set(&BOND_AD_INFO(bond).agg_select_timer, timeout);
- }
- 
- /**
-@@ -2279,6 +2279,28 @@ void bond_3ad_update_ad_actor_settings(s
- }
- 
- /**
-+ * bond_agg_timer_advance - advance agg_select_timer
-+ * @bond:  bonding structure
-+ *
-+ * Return true when agg_select_timer reaches 0.
-+ */
-+static bool bond_agg_timer_advance(struct bonding *bond)
-+{
-+	int val, nval;
-+
-+	while (1) {
-+		val = atomic_read(&BOND_AD_INFO(bond).agg_select_timer);
-+		if (!val)
-+			return false;
-+		nval = val - 1;
-+		if (atomic_cmpxchg(&BOND_AD_INFO(bond).agg_select_timer,
-+				   val, nval) == val)
-+			break;
-+	}
-+	return nval == 0;
-+}
-+
-+/**
-  * bond_3ad_state_machine_handler - handle state machines timeout
-  * @work: work context to fetch bonding struct to work on from
-  *
-@@ -2313,9 +2335,7 @@ void bond_3ad_state_machine_handler(stru
- 	if (!bond_has_slaves(bond))
- 		goto re_arm;
- 
--	/* check if agg_select_timer timer after initialize is timed out */
--	if (BOND_AD_INFO(bond).agg_select_timer &&
--	    !(--BOND_AD_INFO(bond).agg_select_timer)) {
-+	if (bond_agg_timer_advance(bond)) {
- 		slave = bond_first_slave_rcu(bond);
- 		port = slave ? &(SLAVE_AD_INFO(slave)->port) : NULL;
- 
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -262,7 +262,7 @@ struct ad_system {
- struct ad_bond_info {
- 	struct ad_system system;	/* 802.3ad system structure */
- 	struct bond_3ad_stats stats;
--	u32 agg_select_timer;		/* Timer to select aggregator after all adapter's hand shakes */
-+	atomic_t agg_select_timer;		/* Timer to select aggregator after all adapter's hand shakes */
- 	u16 aggregator_identifier;
- };
- 
+ static int sparx5_inject(struct sparx5 *sparx5,
+-- 
+2.34.1
+
 
 
