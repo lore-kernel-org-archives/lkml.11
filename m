@@ -2,107 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356036AbiBULSZ (ORCPT
+        id S1356151AbiBULTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:18:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48142 "EHLO
+        Mon, 21 Feb 2022 06:19:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355944AbiBULPS (ORCPT
+        with ESMTP id S1355975AbiBULSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:15:18 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCFBB29
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:54:01 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id x11so12577214pll.10
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:54:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a0dsHEkkjYMDgDk/stCFwxaKiFUsmcZuEuqNP0XmmQ4=;
-        b=KQWzIh6iHJeXbHTKWVjQ9D41ZTsqUYpa1zh7KmZnFyY8LTHgMsfbPldAhLtHRazhbF
-         iyJ2tHidCoinbQysLDxGZ/K9/DSJmfxe+VR28huzDlGIgyZNW+M5fJNFDxTodOZuIoA7
-         o7F6WpsjI5aJlu4Ixla5LTpCWx4oKE+SVEbaMjEJ5oCbRqmSAMywCddBpedDxZMcmznC
-         SVjT2Eo3CdxQkHjEG5HCPm/iUKUF3BBORX0eRVMh+8DzOq+ZkzsconTuqcuubqDFfL+/
-         jZ0iM1Zi/NHOm+Fds1x1RfGt0SNXPgriZU6gQGSCT6GfnJbKY/HC8BJLP00wkdC/Rl0g
-         uHOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a0dsHEkkjYMDgDk/stCFwxaKiFUsmcZuEuqNP0XmmQ4=;
-        b=IQH/uI2Zr4b2PSa/D23QtNSG321LHfEhp40CV+XjRYKgD+bRF7viI/2m+xPsg21WDY
-         LPtrKl1zBHpbCMDsC/g6eVUYKmDhfTunu20CryUUkSvgxJJuB6482bV5puLnz0BB8aj/
-         WSxffEBF4zExp29vnbkx6dzjPfpxypIWHUjGYgJjrEsQlaXLP3VqYoJHSZ533F1iUHb1
-         GFhUjteH66pPe/ynf1LhnrfLvIfTd++B2Wqw5+8W9lNKDLrp5pBvTJZewqRQLSklo7Yp
-         j0CkutvGxkgdTcKg48fjz71ZleDqc1Vyvx+T6BfoS+XpsFrtzs14UpJ31VOx8iNxbtzA
-         FA/w==
-X-Gm-Message-State: AOAM532JWxYDUWaxlmgvOqqLFKNMQSO84ngdyeNaTwN3jJJ5IL5x5OEQ
-        XxNRsZVRBVfAtvdkjYwH05Q=
-X-Google-Smtp-Source: ABdhPJykGrMP/3jkaSti52P2kS6FzFtdySBLx2jd5Kbdy9BLiESNB++I0iuWS6uFkrxzJj+Drnww5g==
-X-Received: by 2002:a17:90b:1c83:b0:1b9:caa:8230 with SMTP id oo3-20020a17090b1c8300b001b90caa8230mr25247369pjb.26.1645440841051;
-        Mon, 21 Feb 2022 02:54:01 -0800 (PST)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id u6sm2214725pfk.203.2022.02.21.02.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:54:00 -0800 (PST)
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     linux-mm@kvack.org
-Cc:     Roman Gushchin <guro@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: [PATCH 2/5] mm/sl[auo]b: Do not export __ksize()
-Date:   Mon, 21 Feb 2022 10:53:33 +0000
-Message-Id: <20220221105336.522086-3-42.hyeyoo@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220221105336.522086-1-42.hyeyoo@gmail.com>
-References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+        Mon, 21 Feb 2022 06:18:07 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9794E17045;
+        Mon, 21 Feb 2022 02:59:50 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4K2K7m3q2Rz9sS0;
+        Mon, 21 Feb 2022 11:59:48 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
+        t=1645441185;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ts3xO7iS9U9SfAeEWkQWjBNYwpbAjQ3wgCVSJcLfnhQ=;
+        b=HSmc6rvwGLpQ4EZI3D9DVz4jcziDhHphq7t7akXMXy4smHhyuNEEx+brdHvcx2MlptDWl+
+        a63wJ16hqlnnfg0EYqiCidaFEECvZ0RDVRGRXe81hvNe4aagXHwUUCXWnpKfDqj5w+Clt0
+        ZHLxiji++RYchOYzddkxYeT6AitdkFdaQhWuXvcvcgkqj/WpIQGytYn2RA2uqPpBpPnULh
+        MJHX430LKadLGD0ditKPOGAwTxg8zfYZmjsrxe3ymKsSyrRwrz/ljTPSS8LC3fFPrDAXN5
+        vsfrx0J3ZRBHV9h9KmFCTJn9tDoAPbyzs1EW38JicQPZtPaQh0PpDevwy1D+wQ==
+Message-ID: <f76951929710e6f71e59c5ed10767a5f983db943.camel@sylv.io>
+Subject: Re: [PATCH v1 1/1] hwmon: (pmbus) Add regulator supply into macro
+From:   sylv <sylv@sylv.io>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+Date:   Mon, 21 Feb 2022 11:59:41 +0100
+In-Reply-To: <abfcdd863bb0166a6828c5742bf651eb9409c31b.camel@sylv.io>
+References: <cover.1645092563.git.sylv@sylv.io>
+         <d3563864d03a3d3450cf00b3be05465dc506e161.1645092563.git.sylv@sylv.io>
+         <15b95695-6fbc-1916-ff39-abf13e989fc4@roeck-us.net>
+         <abfcdd863bb0166a6828c5742bf651eb9409c31b.camel@sylv.io>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not export __ksize(). Only kasan calls __ksize() directly.
+On Thu, 2022-02-17 at 18:40 +0100, sylv wrote:
+> On Thu, 2022-02-17 at 09:36 -0800, Guenter Roeck wrote:
+> > On 2/17/22 02:23, Marcello Sylvester Bauer wrote:
+> > > Add optional regulator supply into PWBUS_REGULATOR macro. This
+> > > makes it
+> > 
+> > The code doesn't look optional to me. What exactly is optional ?
+> 
+> I mean, it is optional to add a supply. It should not cause errors if
+> you don't. I should probably reword this, too.
+> 
+> > 
+> > > possible to define a vin-supply in DT. Not defining a supply will
+> > > only
+> > > cause the following debug output:
+> > > 
+> > > ```
+> > > Looking up vin-supply property in node [...] failed
+> > > ```
+> > > 
+> > > Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+> > > ---
+> > >   drivers/hwmon/pmbus/pmbus.h | 1 +
+> > >   1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/hwmon/pmbus/pmbus.h
+> > > b/drivers/hwmon/pmbus/pmbus.h
+> > > index e0aa8aa46d8c..38f049d68d32 100644
+> > > --- a/drivers/hwmon/pmbus/pmbus.h
+> > > +++ b/drivers/hwmon/pmbus/pmbus.h
+> > > @@ -464,6 +464,7 @@ extern const struct regulator_ops
+> > > pmbus_regulator_ops;
+> > >   #define PMBUS_REGULATOR(_name, _id)                           \
+> > >         [_id] = {                                               \
+> > >                 .name = (_name # _id),                          \
+> > > +               .supply_name = "vin",                           \
+> > >                 .id = (_id),                                    \
+> > >                 .of_match = of_match_ptr(_name # _id),          \
+> > >                 .regulators_node = of_match_ptr("regulators"),  \
+> > 
+> > That seems to be quite far reaching. How does this affect / change
+> > behavior
+> > of existing systems which so far did not expect supply_name to be
+> > set
+> > ?
+> > 
+> > Guenter
+> 
 
-Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
----
- mm/slab_common.c | 1 -
- mm/slob.c        | 1 -
- 2 files changed, 2 deletions(-)
 
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 488997db0d97..f2c021b57579 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -1271,7 +1271,6 @@ size_t __ksize(const void *object)
- 
- 	return slab_ksize(folio_slab(folio)->slab_cache);
- }
--EXPORT_SYMBOL(__ksize);
- #endif
- 
- /**
-diff --git a/mm/slob.c b/mm/slob.c
-index 60c5842215f1..d8af6c54f133 100644
---- a/mm/slob.c
-+++ b/mm/slob.c
-@@ -588,7 +588,6 @@ size_t __ksize(const void *block)
- 	m = (unsigned int *)(block - align);
- 	return SLOB_UNITS(*m) * SLOB_UNIT;
- }
--EXPORT_SYMBOL(__ksize);
- 
- int __kmem_cache_create(struct kmem_cache *c, slab_flags_t flags)
- {
--- 
-2.33.1
+My goal is to make it optional to define a supply regulator so that it
+is possible to regulate the incoming voltage regulator.
+IIUIC, it is required to set a supply_name to tell the regulator core
+which supply it should look up from DT. (see: of_get_regulator 
+drivers/regulator/core.c:402)
+This should not cause a change of behavior even if no supply is
+defined. It would register a dummy regulator as supply instead.
 
+Am I right, or did I misunderstanding something?
+
+Thanks,
+Marcello
