@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D089C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353009AbiBUKJS (ORCPT
+        id S1353020AbiBUKJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:09:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56926 "EHLO
+        Mon, 21 Feb 2022 05:09:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353545AbiBUJ5c (ORCPT
+        with ESMTP id S1353552AbiBUJ5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A501D0EE;
-        Mon, 21 Feb 2022 01:26:45 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D90410FF6;
+        Mon, 21 Feb 2022 01:26:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 143F2B80EB1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E26C2B80EB8;
+        Mon, 21 Feb 2022 09:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0A4C340E9;
         Mon, 21 Feb 2022 09:26:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D8D9C340E9;
-        Mon, 21 Feb 2022 09:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435602;
-        bh=iL+rlQ5kuc2Mat8DU3mcVFaTxdmYQC76utMHrm2gPHM=;
+        s=korg; t=1645435605;
+        bh=mlCVfXCI/MPFLPPvRfg1e5hONyIiSJQMvH37hKzLE5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fRNVTid7wHocuqQVV8iw7RHWC4vFFSxNWYZAPnwn9MDpeMQVTkjF0cggugfbzphfh
-         SDMrKT3ZkVyXOZPuKeFN8009kgT0xNxcjN8DvDqzXwAUrDd0ZupiZNzpOYFoRU28Hx
-         q7h7kt+lEhhvHRzHvy5Fq9yFcb3oaKsJZGY35D3w=
+        b=VUcwi/LW5pFRT9MyBBVDxwSblD+ZkirQuVrNAyuWBzDelLFfVPwdzWWYd8F5p4RWa
+         NBOzIRhVKbXq6elo9py05UR6vlX3LDH5GyCWMYQheJe8kcE7zugldem9J/lCx2wHv4
+         m+cDxytqcIBpnQ9qqf9+b/cl78UTKC6if4Nahh8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.16 179/227] dmaengine: sh: rcar-dmac: Check for error num after setting mask
-Date:   Mon, 21 Feb 2022 09:49:58 +0100
-Message-Id: <20220221084940.760173692@linuxfoundation.org>
+        stable@vger.kernel.org, Brenda Streiff <brenda.streiff@ni.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 215/227] kconfig: let shell return enough output for deep path names
+Date:   Mon, 21 Feb 2022 09:50:34 +0100
+Message-Id: <20220221084941.962293917@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,37 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Brenda Streiff <brenda.streiff@ni.com>
 
-commit 2d21543efe332cd8c8f212fb7d365bc8b0690bfa upstream.
+[ Upstream commit 8a4c5b2a6d8ea079fa36034e8167de87ab6f8880 ]
 
-Because of the possible failure of the dma_supported(), the
-dma_set_mask_and_coherent() may return error num.
-Therefore, it should be better to check it and return the error if
-fails.
+The 'shell' built-in only returns the first 256 bytes of the command's
+output. In some cases, 'shell' is used to return a path; by bumping up
+the buffer size to 4096 this lets us capture up to PATH_MAX.
 
-Fixes: dc312349e875 ("dmaengine: rcar-dmac: Widen DMA mask to 40 bits")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220106030939.2644320-1-jiasheng@iscas.ac.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The specific case where I ran into this was due to commit 1e860048c53e
+("gcc-plugins: simplify GCC plugin-dev capability test"). After this
+change, we now use `$(shell,$(CC) -print-file-name=plugin)` to return
+a path; if the gcc path is particularly long, then the path ends up
+truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
+depends test always fail.
+
+Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/rcar-dmac.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ scripts/kconfig/preprocess.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/dma/sh/rcar-dmac.c
-+++ b/drivers/dma/sh/rcar-dmac.c
-@@ -1869,7 +1869,9 @@ static int rcar_dmac_probe(struct platfo
- 	dmac->dev = &pdev->dev;
- 	platform_set_drvdata(pdev, dmac);
- 	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
--	dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
-+	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
-+	if (ret)
-+		return ret;
- 
- 	ret = rcar_dmac_parse_of(&pdev->dev, dmac);
- 	if (ret < 0)
+diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
+index 0590f86df6e40..748da578b418c 100644
+--- a/scripts/kconfig/preprocess.c
++++ b/scripts/kconfig/preprocess.c
+@@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
+ static char *do_shell(int argc, char *argv[])
+ {
+ 	FILE *p;
+-	char buf[256];
++	char buf[4096];
+ 	char *cmd;
+ 	size_t nread;
+ 	int i;
+-- 
+2.34.1
+
 
 
