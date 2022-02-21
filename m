@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F480C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4909EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381645AbiBURYD (ORCPT
+        id S1381703AbiBUR0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:24:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57614 "EHLO
+        Mon, 21 Feb 2022 12:26:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356325AbiBURYA (ORCPT
+        with ESMTP id S236985AbiBUR0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:24:00 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8044FAE69
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:23:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645464217; x=1677000217;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3l0vzYKfBNnbTycsWQ7CSo9hdXKMkG+TtZm7tloWDuM=;
-  b=BA5Zvbt3t+oUJOiiinBwfU91B6EzY5B5sukLj4SEoxgTDdmnY03aNw9l
-   AWJF3hrkW62gYkGFjeh1p0w+Ht0uxVSZu23MswDcUQqw/Z1tRQoO7nagP
-   4cgoVMxT5FAv/+3Nv8gEU5WplUeFcB/uMJ9n9KlDf4L57vaITVPbYz97y
-   zKFUQxJ3wZM73xF8GNXC86jtqRBhcS2nPCVt1jBAkIJSiiaugShO+wVSe
-   GFuNpFkvSeFYQ5OVSeKJL63iAT5E9Zys5A+OyRl2etD6BdS+7PR31Wcaq
-   pZUD1gdiBenp/utWYNAq1XUXQfs9HERol1dqFSMDsip76cWJFepMXS4cM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="276139480"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="276139480"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:23:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="507700031"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 21 Feb 2022 09:23:35 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMCPP-0001p1-4q; Mon, 21 Feb 2022 17:23:35 +0000
-Date:   Tue, 22 Feb 2022 01:23:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: ERROR: modpost: "iwl_mei_is_connected"
- [drivers/net/wireless/intel/iwlwifi/iwlwifi.ko] undefined!
-Message-ID: <202202220159.LV6Fd9SI-lkp@intel.com>
+        Mon, 21 Feb 2022 12:26:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71FAE67;
+        Mon, 21 Feb 2022 09:26:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAAB36145B;
+        Mon, 21 Feb 2022 17:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E26DC340E9;
+        Mon, 21 Feb 2022 17:26:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645464384;
+        bh=qBj7d9tqvyTrDe+jWiLg29epXyfUz1hfeK++4JVGmVk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=M6kK0PUmEHFlsMnWb9+vjHramr2qb7w17MMGVH1XG7r33RWg1yWvRaKS2NMNNWZfN
+         3Ie7iVXOVTyipUk7BYbkGz7tcstInHR88fjKt3UCjVsXfU/wzkyI1sIKG96G67ltC7
+         MLVakHJI7Ae7Ux9jFq58fqBaW7B1NChs5PyvJJO1cJXbiOT0+xDDPt1ZHLR/duGjyK
+         nMuud5YTo60laoCJLEmNBGog0S0EMDsOfYg6fIyAiXhh5yYZ9nDjRmr5N7tpdhil56
+         dKZkrlXQci3XQnyGDp4IkTHtrPUAKrUyeQu7o95JfcQDowdAY6GVSzsV2M8KuHki+n
+         f+rPXNl5vTs+A==
+Date:   Mon, 21 Feb 2022 11:34:15 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] usbnet: gl620a: Replace one-element array with
+ flexible-array member
+Message-ID: <20220221173415.GA1149599@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-commit: 977df8bd5844c9370c26a9477418165b870da27c iwlwifi: work around reverse dependency on MEI
-date:   3 months ago
-config: x86_64-randconfig-c002-20220221 (https://download.01.org/0day-ci/archive/20220222/202202220159.LV6Fd9SI-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=977df8bd5844c9370c26a9477418165b870da27c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 977df8bd5844c9370c26a9477418165b870da27c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
 
->> ERROR: modpost: "iwl_mei_is_connected" [drivers/net/wireless/intel/iwlwifi/iwlwifi.ko] undefined!
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/usb/gl620a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/gl620a.c b/drivers/net/usb/gl620a.c
+index 13a9a83b8538..46af78caf457 100644
+--- a/drivers/net/usb/gl620a.c
++++ b/drivers/net/usb/gl620a.c
+@@ -56,7 +56,7 @@
+ 
+ struct gl_packet {
+ 	__le32		packet_length;
+-	char		packet_data [1];
++	char		packet_data[];
+ };
+ 
+ struct gl_header {
+-- 
+2.27.0
+
