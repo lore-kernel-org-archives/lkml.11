@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF28C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8330C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346471AbiBUJoS (ORCPT
+        id S1351045AbiBUJoW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:44:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46414 "EHLO
+        Mon, 21 Feb 2022 04:44:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351766AbiBUJhh (ORCPT
+        with ESMTP id S1352057AbiBUJiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664E0BF7F;
-        Mon, 21 Feb 2022 01:16:31 -0800 (PST)
+        Mon, 21 Feb 2022 04:38:01 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23361A3B6;
+        Mon, 21 Feb 2022 01:16:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03B1560018;
-        Mon, 21 Feb 2022 09:16:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1907C340E9;
-        Mon, 21 Feb 2022 09:16:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 08801CE0E76;
+        Mon, 21 Feb 2022 09:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B440C340EB;
+        Mon, 21 Feb 2022 09:16:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434990;
-        bh=fLBEvwjZl6oETJmxyI/GIW74xpXaTgB4d7oxT5SetqM=;
+        s=korg; t=1645435007;
+        bh=8VU1XlfUYGyslFEo6JXHCftwiWygtPw5POtD+4tXuZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yfBHbeCPzTLulUaeTcvjSwSvHfKCxkHj2YISFsm7JWXhnKbM9JBuy9IKrIBEAjosC
-         NIZ7jtgXtQs/Zb8zg72e5DxBo8Br9Gt6pO0eiP8i1Jt0msoKKOHsOGdHIWqaKaEVAo
-         gLUcxnOBuDZ4cbbHxkEfZqMxdcsAvvyF9JPqxA5Y=
+        b=uLry55QwhEl/S8rx2kvP2pMrvQqlt56ePghzRKx0BsiuaeLe88Shv+Dam58mkEaCU
+         y5tsqhZZJSomYDZBCOFCw/9HMGd1hwiNGkMiW78UkXFcy+MqOppxUy3H0+uBsjcSRX
+         y7XRVyx18+08BWSJpn0hV5JY70x5zfByGuBRu0hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Waiman Long <longman@redhat.com>,
-        Christian Brauner <brauner@kernel.org>
-Subject: [PATCH 5.15 192/196] copy_process(): Move fd_install() out of sighand->siglock critical section
-Date:   Mon, 21 Feb 2022 09:50:24 +0100
-Message-Id: <20220221084937.363586904@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 004/227] bpf: Replace RET_XXX_OR_NULL with RET_XXX | PTR_MAYBE_NULL
+Date:   Mon, 21 Feb 2022 09:47:03 +0100
+Message-Id: <20220221084934.979899415@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
-References: <20220221084930.872957717@linuxfoundation.org>
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,112 +49,199 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Hao Luo <haoluo@google.com>
 
-commit ddc204b517e60ae64db34f9832dc41dafa77c751 upstream.
+commit 3c4807322660d4290ac9062c034aed6b87243861 upstream.
 
-I was made aware of the following lockdep splat:
+We have introduced a new type to make bpf_ret composable, by
+reserving high bits to represent flags.
 
-[ 2516.308763] =====================================================
-[ 2516.309085] WARNING: HARDIRQ-safe -> HARDIRQ-unsafe lock order detected
-[ 2516.309433] 5.14.0-51.el9.aarch64+debug #1 Not tainted
-[ 2516.309703] -----------------------------------------------------
-[ 2516.310149] stress-ng/153663 [HC0[0]:SC0[0]:HE0:SE1] is trying to acquire:
-[ 2516.310512] ffff0000e422b198 (&newf->file_lock){+.+.}-{2:2}, at: fd_install+0x368/0x4f0
-[ 2516.310944]
-               and this task is already holding:
-[ 2516.311248] ffff0000c08140d8 (&sighand->siglock){-.-.}-{2:2}, at: copy_process+0x1e2c/0x3e80
-[ 2516.311804] which would create a new lock dependency:
-[ 2516.312066]  (&sighand->siglock){-.-.}-{2:2} -> (&newf->file_lock){+.+.}-{2:2}
-[ 2516.312446]
-               but this new dependency connects a HARDIRQ-irq-safe lock:
-[ 2516.312983]  (&sighand->siglock){-.-.}-{2:2}
-   :
-[ 2516.330700]  Possible interrupt unsafe locking scenario:
+One of the flag is PTR_MAYBE_NULL, which indicates a pointer
+may be NULL. When applying this flag to ret_types, it means
+the returned value could be a NULL pointer. This patch
+switches the qualified arg_types to use this flag.
+The ret_types changed in this patch include:
 
-[ 2516.331075]        CPU0                    CPU1
-[ 2516.331328]        ----                    ----
-[ 2516.331580]   lock(&newf->file_lock);
-[ 2516.331790]                                local_irq_disable();
-[ 2516.332231]                                lock(&sighand->siglock);
-[ 2516.332579]                                lock(&newf->file_lock);
-[ 2516.332922]   <Interrupt>
-[ 2516.333069]     lock(&sighand->siglock);
-[ 2516.333291]
-                *** DEADLOCK ***
-[ 2516.389845]
-               stack backtrace:
-[ 2516.390101] CPU: 3 PID: 153663 Comm: stress-ng Kdump: loaded Not tainted 5.14.0-51.el9.aarch64+debug #1
-[ 2516.390756] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[ 2516.391155] Call trace:
-[ 2516.391302]  dump_backtrace+0x0/0x3e0
-[ 2516.391518]  show_stack+0x24/0x30
-[ 2516.391717]  dump_stack_lvl+0x9c/0xd8
-[ 2516.391938]  dump_stack+0x1c/0x38
-[ 2516.392247]  print_bad_irq_dependency+0x620/0x710
-[ 2516.392525]  check_irq_usage+0x4fc/0x86c
-[ 2516.392756]  check_prev_add+0x180/0x1d90
-[ 2516.392988]  validate_chain+0x8e0/0xee0
-[ 2516.393215]  __lock_acquire+0x97c/0x1e40
-[ 2516.393449]  lock_acquire.part.0+0x240/0x570
-[ 2516.393814]  lock_acquire+0x90/0xb4
-[ 2516.394021]  _raw_spin_lock+0xe8/0x154
-[ 2516.394244]  fd_install+0x368/0x4f0
-[ 2516.394451]  copy_process+0x1f5c/0x3e80
-[ 2516.394678]  kernel_clone+0x134/0x660
-[ 2516.394895]  __do_sys_clone3+0x130/0x1f4
-[ 2516.395128]  __arm64_sys_clone3+0x5c/0x7c
-[ 2516.395478]  invoke_syscall.constprop.0+0x78/0x1f0
-[ 2516.395762]  el0_svc_common.constprop.0+0x22c/0x2c4
-[ 2516.396050]  do_el0_svc+0xb0/0x10c
-[ 2516.396252]  el0_svc+0x24/0x34
-[ 2516.396436]  el0t_64_sync_handler+0xa4/0x12c
-[ 2516.396688]  el0t_64_sync+0x198/0x19c
-[ 2517.491197] NET: Registered PF_ATMPVC protocol family
-[ 2517.491524] NET: Registered PF_ATMSVC protocol family
-[ 2591.991877] sched: RT throttling activated
+1. RET_PTR_TO_MAP_VALUE_OR_NULL
+2. RET_PTR_TO_SOCKET_OR_NULL
+3. RET_PTR_TO_TCP_SOCK_OR_NULL
+4. RET_PTR_TO_SOCK_COMMON_OR_NULL
+5. RET_PTR_TO_ALLOC_MEM_OR_NULL
+6. RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL
+7. RET_PTR_TO_BTF_ID_OR_NULL
 
-One way to solve this problem is to move the fd_install() call out of
-the sighand->siglock critical section.
+This patch doesn't eliminate the use of these names, instead
+it makes them aliases to 'RET_PTR_TO_XXX | PTR_MAYBE_NULL'.
 
-Before commit 6fd2fe494b17 ("copy_process(): don't use ksys_close()
-on cleanups"), the pidfd installation was done without holding both
-the task_list lock and the sighand->siglock. Obviously, holding these
-two locks are not really needed to protect the fd_install() call.
-So move the fd_install() call down to after the releases of both locks.
-
-Link: https://lore.kernel.org/r/20220208163912.1084752-1-longman@redhat.com
-Fixes: 6fd2fe494b17 ("copy_process(): don't use ksys_close() on cleanups")
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-4-haoluo@google.com
+Cc: stable@vger.kernel.org # 5.16.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/fork.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/linux/bpf.h   |   19 +++++++++++-------
+ kernel/bpf/helpers.c  |    2 -
+ kernel/bpf/verifier.c |   52 +++++++++++++++++++++++++-------------------------
+ 3 files changed, 39 insertions(+), 34 deletions(-)
 
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2353,10 +2353,6 @@ static __latent_entropy struct task_stru
- 		goto bad_fork_cancel_cgroup;
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -382,17 +382,22 @@ enum bpf_return_type {
+ 	RET_INTEGER,			/* function returns integer */
+ 	RET_VOID,			/* function doesn't return anything */
+ 	RET_PTR_TO_MAP_VALUE,		/* returns a pointer to map elem value */
+-	RET_PTR_TO_MAP_VALUE_OR_NULL,	/* returns a pointer to map elem value or NULL */
+-	RET_PTR_TO_SOCKET_OR_NULL,	/* returns a pointer to a socket or NULL */
+-	RET_PTR_TO_TCP_SOCK_OR_NULL,	/* returns a pointer to a tcp_sock or NULL */
+-	RET_PTR_TO_SOCK_COMMON_OR_NULL,	/* returns a pointer to a sock_common or NULL */
+-	RET_PTR_TO_ALLOC_MEM_OR_NULL,	/* returns a pointer to dynamically allocated memory or NULL */
+-	RET_PTR_TO_BTF_ID_OR_NULL,	/* returns a pointer to a btf_id or NULL */
+-	RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL, /* returns a pointer to a valid memory or a btf_id or NULL */
++	RET_PTR_TO_SOCKET,		/* returns a pointer to a socket */
++	RET_PTR_TO_TCP_SOCK,		/* returns a pointer to a tcp_sock */
++	RET_PTR_TO_SOCK_COMMON,		/* returns a pointer to a sock_common */
++	RET_PTR_TO_ALLOC_MEM,		/* returns a pointer to dynamically allocated memory */
+ 	RET_PTR_TO_MEM_OR_BTF_ID,	/* returns a pointer to a valid memory or a btf_id */
+ 	RET_PTR_TO_BTF_ID,		/* returns a pointer to a btf_id */
+ 	__BPF_RET_TYPE_MAX,
+ 
++	/* Extended ret_types. */
++	RET_PTR_TO_MAP_VALUE_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_MAP_VALUE,
++	RET_PTR_TO_SOCKET_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_SOCKET,
++	RET_PTR_TO_TCP_SOCK_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_TCP_SOCK,
++	RET_PTR_TO_SOCK_COMMON_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_SOCK_COMMON,
++	RET_PTR_TO_ALLOC_MEM_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_ALLOC_MEM,
++	RET_PTR_TO_BTF_ID_OR_NULL	= PTR_MAYBE_NULL | RET_PTR_TO_BTF_ID,
++
+ 	/* This must be the last entry. Its purpose is to ensure the enum is
+ 	 * wide enough to hold the higher bits reserved for bpf_type_flag.
+ 	 */
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -667,7 +667,7 @@ BPF_CALL_2(bpf_per_cpu_ptr, const void *
+ const struct bpf_func_proto bpf_per_cpu_ptr_proto = {
+ 	.func		= bpf_per_cpu_ptr,
+ 	.gpl_only	= false,
+-	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL,
++	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID | PTR_MAYBE_NULL,
+ 	.arg1_type	= ARG_PTR_TO_PERCPU_BTF_ID,
+ 	.arg2_type	= ARG_ANYTHING,
+ };
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6375,6 +6375,7 @@ static int check_helper_call(struct bpf_
+ 			     int *insn_idx_p)
+ {
+ 	const struct bpf_func_proto *fn = NULL;
++	enum bpf_return_type ret_type;
+ 	struct bpf_reg_state *regs;
+ 	struct bpf_call_arg_meta meta;
+ 	int insn_idx = *insn_idx_p;
+@@ -6508,13 +6509,13 @@ static int check_helper_call(struct bpf_
+ 	regs[BPF_REG_0].subreg_def = DEF_NOT_SUBREG;
+ 
+ 	/* update return register (already marked as written above) */
+-	if (fn->ret_type == RET_INTEGER) {
++	ret_type = fn->ret_type;
++	if (ret_type == RET_INTEGER) {
+ 		/* sets type to SCALAR_VALUE */
+ 		mark_reg_unknown(env, regs, BPF_REG_0);
+-	} else if (fn->ret_type == RET_VOID) {
++	} else if (ret_type == RET_VOID) {
+ 		regs[BPF_REG_0].type = NOT_INIT;
+-	} else if (fn->ret_type == RET_PTR_TO_MAP_VALUE_OR_NULL ||
+-		   fn->ret_type == RET_PTR_TO_MAP_VALUE) {
++	} else if (base_type(ret_type) == RET_PTR_TO_MAP_VALUE) {
+ 		/* There is no offset yet applied, variable or fixed */
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+ 		/* remember map_ptr, so that check_map_access()
+@@ -6528,28 +6529,27 @@ static int check_helper_call(struct bpf_
+ 		}
+ 		regs[BPF_REG_0].map_ptr = meta.map_ptr;
+ 		regs[BPF_REG_0].map_uid = meta.map_uid;
+-		if (fn->ret_type == RET_PTR_TO_MAP_VALUE) {
++		if (type_may_be_null(ret_type)) {
++			regs[BPF_REG_0].type = PTR_TO_MAP_VALUE_OR_NULL;
++		} else {
+ 			regs[BPF_REG_0].type = PTR_TO_MAP_VALUE;
+ 			if (map_value_has_spin_lock(meta.map_ptr))
+ 				regs[BPF_REG_0].id = ++env->id_gen;
+-		} else {
+-			regs[BPF_REG_0].type = PTR_TO_MAP_VALUE_OR_NULL;
+ 		}
+-	} else if (fn->ret_type == RET_PTR_TO_SOCKET_OR_NULL) {
++	} else if (base_type(ret_type) == RET_PTR_TO_SOCKET) {
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+ 		regs[BPF_REG_0].type = PTR_TO_SOCKET_OR_NULL;
+-	} else if (fn->ret_type == RET_PTR_TO_SOCK_COMMON_OR_NULL) {
++	} else if (base_type(ret_type) == RET_PTR_TO_SOCK_COMMON) {
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+ 		regs[BPF_REG_0].type = PTR_TO_SOCK_COMMON_OR_NULL;
+-	} else if (fn->ret_type == RET_PTR_TO_TCP_SOCK_OR_NULL) {
++	} else if (base_type(ret_type) == RET_PTR_TO_TCP_SOCK) {
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+ 		regs[BPF_REG_0].type = PTR_TO_TCP_SOCK_OR_NULL;
+-	} else if (fn->ret_type == RET_PTR_TO_ALLOC_MEM_OR_NULL) {
++	} else if (base_type(ret_type) == RET_PTR_TO_ALLOC_MEM) {
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+ 		regs[BPF_REG_0].type = PTR_TO_MEM_OR_NULL;
+ 		regs[BPF_REG_0].mem_size = meta.mem_size;
+-	} else if (fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL ||
+-		   fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID) {
++	} else if (base_type(ret_type) == RET_PTR_TO_MEM_OR_BTF_ID) {
+ 		const struct btf_type *t;
+ 
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+@@ -6568,28 +6568,28 @@ static int check_helper_call(struct bpf_
+ 				return -EINVAL;
+ 			}
+ 			regs[BPF_REG_0].type =
+-				fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID ?
+-				PTR_TO_MEM : PTR_TO_MEM_OR_NULL;
++				(ret_type & PTR_MAYBE_NULL) ?
++				PTR_TO_MEM_OR_NULL : PTR_TO_MEM;
+ 			regs[BPF_REG_0].mem_size = tsize;
+ 		} else {
+ 			regs[BPF_REG_0].type =
+-				fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID ?
+-				PTR_TO_BTF_ID : PTR_TO_BTF_ID_OR_NULL;
++				(ret_type & PTR_MAYBE_NULL) ?
++				PTR_TO_BTF_ID_OR_NULL : PTR_TO_BTF_ID;
+ 			regs[BPF_REG_0].btf = meta.ret_btf;
+ 			regs[BPF_REG_0].btf_id = meta.ret_btf_id;
+ 		}
+-	} else if (fn->ret_type == RET_PTR_TO_BTF_ID_OR_NULL ||
+-		   fn->ret_type == RET_PTR_TO_BTF_ID) {
++	} else if (base_type(ret_type) == RET_PTR_TO_BTF_ID) {
+ 		int ret_btf_id;
+ 
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+-		regs[BPF_REG_0].type = fn->ret_type == RET_PTR_TO_BTF_ID ?
+-						     PTR_TO_BTF_ID :
+-						     PTR_TO_BTF_ID_OR_NULL;
++		regs[BPF_REG_0].type = (ret_type & PTR_MAYBE_NULL) ?
++						     PTR_TO_BTF_ID_OR_NULL :
++						     PTR_TO_BTF_ID;
+ 		ret_btf_id = *fn->ret_btf_id;
+ 		if (ret_btf_id == 0) {
+-			verbose(env, "invalid return type %d of func %s#%d\n",
+-				fn->ret_type, func_id_name(func_id), func_id);
++			verbose(env, "invalid return type %u of func %s#%d\n",
++				base_type(ret_type), func_id_name(func_id),
++				func_id);
+ 			return -EINVAL;
+ 		}
+ 		/* current BPF helper definitions are only coming from
+@@ -6598,8 +6598,8 @@ static int check_helper_call(struct bpf_
+ 		regs[BPF_REG_0].btf = btf_vmlinux;
+ 		regs[BPF_REG_0].btf_id = ret_btf_id;
+ 	} else {
+-		verbose(env, "unknown return type %d of func %s#%d\n",
+-			fn->ret_type, func_id_name(func_id), func_id);
++		verbose(env, "unknown return type %u of func %s#%d\n",
++			base_type(ret_type), func_id_name(func_id), func_id);
+ 		return -EINVAL;
  	}
  
--	/* past the last point of failure */
--	if (pidfile)
--		fd_install(pidfd, pidfile);
--
- 	init_task_pid_links(p);
- 	if (likely(p->pid)) {
- 		ptrace_init_task(p, (clone_flags & CLONE_PTRACE) || trace);
-@@ -2405,6 +2401,9 @@ static __latent_entropy struct task_stru
- 	syscall_tracepoint_update(p);
- 	write_unlock_irq(&tasklist_lock);
- 
-+	if (pidfile)
-+		fd_install(pidfd, pidfile);
-+
- 	proc_fork_connector(p);
- 	sched_post_fork(p, args);
- 	cgroup_post_fork(p, args);
 
 
