@@ -2,67 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BDCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD34C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354375AbiBUP1o (ORCPT
+        id S1352031AbiBUP1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:27:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46910 "EHLO
+        Mon, 21 Feb 2022 10:27:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344601AbiBUP1k (ORCPT
+        with ESMTP id S1344601AbiBUP1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:27:40 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE5C1EAD0;
-        Mon, 21 Feb 2022 07:27:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645457237; x=1676993237;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YheXgA/w0kWmZiHgabea6UMdQrnEpsk76xiXGIY5Z1k=;
-  b=T6f/rUKmlfWk1EYChztwif94jiGGltUiEMHTIZZDd2B+IXJb6J1pbGWS
-   oNO7yJzxpLXLw5Rv8P/Xxy0AIoRaGARm0JQ38aVYIfLNjG+n60CkW9rH3
-   1fuFRsY/+VJCwYFnmhYjeQQgibgcGZY7hAZFobEFIuQBwJCubBlpqF6qG
-   UUpmCWJc3fKLqyANRa1OBT/u2pHakPsHCTk6StBsP84kvnpHWa+M1a57C
-   G1fkTWeR6XfsDc8eFSqD3PBM4bh1f3Hkkde8QmQukvaY6sZgaSWCDhkus
-   TOC4+YS8sQ4640RRylAb2E8znGSh1IFKVdziXhqB8S0MuWcsTliCgGhPl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="250346521"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="250346521"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 07:27:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="505116097"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 07:27:14 -0800
-Received: by lahna (sSMTP sendmail emulation); Mon, 21 Feb 2022 17:24:59 +0200
-Date:   Mon, 21 Feb 2022 17:24:59 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 2/4] pinctrl: alderlake: Add Raptor Lake-S ACPI ID
-Message-ID: <YhOrxJJ5F+gQk58Z@lahna>
-References: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
- <20220215152800.21104-2-andriy.shevchenko@linux.intel.com>
+        Mon, 21 Feb 2022 10:27:46 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EDB13CCE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:27:22 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id d27so27737841wrc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:27:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nv0eH0e7g8WkSmFjX1RSL2aoVO4qfLGoWioqkn/s04Q=;
+        b=SzS1kQVd6eOQ9thb7s9wnyOfj+bo8Cb2YS9H0qwQdPX3eig4P5HbhTJXadTFfDrSnc
+         rIw83tT/y9NpvKfF8HkB6sK4JmCyfx6o7kATb07icgBJgg5YnzJXcwD+R2LSG9BSTWfw
+         Zup8VT41n/kkT1p7TjAEb+/S1tmSbCThdsixos3JQzV1o+gGpTOTU3SVQ2HEkvp7aPGa
+         VkOtxTLPiPu0eZwVigSaHuBWUkOyXTIByg8gzvyROYxOBSlWeQvSSMYXJQwIGTuzcd3M
+         M35d6FXlR7GyaX+0JM2VsQ5PQ5f9wvWoba5QIwADbVBlknqbjKYeL+v/xn81WxQDorWc
+         6dAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nv0eH0e7g8WkSmFjX1RSL2aoVO4qfLGoWioqkn/s04Q=;
+        b=jH1he1oXOMUh4Bpj/5a/ex3qQ0Q6huVXwq5BmnhWYKI3xjgvAx0pOZL1vryHBai9nO
+         D8Os5ewdMpXN3GXBlvOK+1GXWuRdYlqRdGrDk+4kuP+6WXtugoKbKve3/BTc+bxyI3Jk
+         n2zXKCke6wMVZkNBaW3FSaF0jNHbZmBXRZlx2E4MQ6C2RtGk83FTmtxUkSKVfr/Mm6rf
+         GE+qTd1OT3hT/xHfIQn5hS/IyWPV99KcxRfsg2QjAWaxGBiwE9FksYH2JMSvHnEo9Z1r
+         D3xZ6cYL4CQ5uQSdrjgy2JRSTvIIyBb5rfOmhGXK67Y8wfEC5Bo97H6OsRbapx/Dbd94
+         9dfA==
+X-Gm-Message-State: AOAM532xmXpUuEI+5TiTLtgtRJqYv/83S47ky77egccjK3u4JE1fePg8
+        NOuMmsP0PtPpJ1G6B87exB5IGg==
+X-Google-Smtp-Source: ABdhPJwmIdJCjnM9fEqF+TMGGejDU8cw2ZcMVWpRXEWassnpvKyeS//y4XQ3Oo4skLwgTVH/2L/vTg==
+X-Received: by 2002:a05:6000:1b04:b0:1e7:3a09:6468 with SMTP id f4-20020a0560001b0400b001e73a096468mr15812862wrz.383.1645457241137;
+        Mon, 21 Feb 2022 07:27:21 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id m8sm8545039wms.4.2022.02.21.07.27.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 07:27:20 -0800 (PST)
+Message-ID: <d1d55fd2-68a8-9271-00c5-b395b085b50c@linaro.org>
+Date:   Mon, 21 Feb 2022 15:27:19 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220215152800.21104-2-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 01/10] ASoC: codecs: va-macro: add runtime pm support
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
+References: <20220221131037.8809-1-srinivas.kandagatla@linaro.org>
+ <20220221131037.8809-2-srinivas.kandagatla@linaro.org>
+ <YhOuvdsKu6zOg2p/@sirena.org.uk>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <YhOuvdsKu6zOg2p/@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 05:27:58PM +0200, Andy Shevchenko wrote:
-> Intel Raptor Lake-S PCH has the same GPIO hardware than Alder Lake-S PCH
-> but the ACPI ID is different. Add this new ACPI ID to the list of supported
-> devices.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Thanks Mark,
 
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+On 21/02/2022 15:24, Mark Brown wrote:
+> On Mon, Feb 21, 2022 at 01:10:28PM +0000, Srinivas Kandagatla wrote:
+> 
+>> +static int __maybe_unused va_macro_runtime_resume(struct device *dev)
+>> +{
+>> +	struct va_macro *va = dev_get_drvdata(dev);
+>> +
+>> +	clk_prepare_enable(va->clks[2].clk);
+> 
+> This magic number stuff is going to be excessively fragile, and the fact
+
+I agree, will try to clean this up properly in next spin.
+
+> that this is sometimes managed via the bulk APIs and sometimes not isn't
+> going to help either.  Either all the clocks should be managed here or
+> this should be pulled out of the array.
+> 
+> Also consider error checking.
+will do,
+
+--srin
