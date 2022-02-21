@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347878AbiBUJJg (ORCPT
+        id S1347747AbiBUJJk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:09:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43596 "EHLO
+        Mon, 21 Feb 2022 04:09:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347315AbiBUJFR (ORCPT
+        with ESMTP id S234441AbiBUJFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:05:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160A825C5C;
-        Mon, 21 Feb 2022 00:58:56 -0800 (PST)
+        Mon, 21 Feb 2022 04:05:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706F025C7A;
+        Mon, 21 Feb 2022 00:59:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E7DDB80EAC;
-        Mon, 21 Feb 2022 08:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AB6C340EB;
-        Mon, 21 Feb 2022 08:58:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D11461132;
+        Mon, 21 Feb 2022 08:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E86C0C340F1;
+        Mon, 21 Feb 2022 08:59:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433933;
-        bh=os7+BbduWHsodAPKLMmu7l+9ODhuHdAKJZMGcsnJXmk=;
+        s=korg; t=1645433941;
+        bh=wVBKcepK6ofvfIi4wuqL8gC+94QFVq/5PWNf8Z/HNFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKdP8wC2jHSeSkuxQUSGiB7u1IpNomttBI3r3LEOmVji8hnZaglew6NUAEWnsJqUQ
-         ps0zPODRCnBOnI/QueZobkiUGSjwvx52f+EvUO1avZ3cPeFLojWR/8eItdobKIUfrp
-         tEjdfFJ6W1m3S8aZQtqVVFkCi6AtKe8PqP5sJvNg=
+        b=sBgTiXg9k8eZo+pzcHrnZQr27lj3xKx62d1lIhBW0r3zYaYEZ2m4htWGx++eTZgDf
+         vQph05mmfSpB3hPlJeDxaA+YW529NoxrPQGwkl2YAa33x3yTZfPhtwk2In90D+kPbe
+         Py3/mCrWZL1BcNMgksvg2oR4DKto7Ip0tNJs74Qc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 34/80] vsock: remove vsock from connected table when connect is interrupted by a signal
-Date:   Mon, 21 Feb 2022 09:49:14 +0100
-Message-Id: <20220221084916.690373564@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.4 37/80] iwlwifi: pcie: gen2: fix locking when "HW not ready"
+Date:   Mon, 21 Feb 2022 09:49:17 +0100
+Message-Id: <20220221084916.785633438@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,46 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Seth Forshee <sforshee@digitalocean.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit b9208492fcaecff8f43915529ae34b3bcb03877c upstream.
+commit 4c29c1e27a1e178a219b3877d055e6dd643bdfda upstream.
 
-vsock_connect() expects that the socket could already be in the
-TCP_ESTABLISHED state when the connecting task wakes up with a signal
-pending. If this happens the socket will be in the connected table, and
-it is not removed when the socket state is reset. In this situation it's
-common for the process to retry connect(), and if the connection is
-successful the socket will be added to the connected table a second
-time, corrupting the list.
+If we run into this error path, we shouldn't unlock the mutex
+since it's not locked since. Fix this in the gen2 code as well.
 
-Prevent this by calling vsock_remove_connected() if a signal is received
-while waiting for a connection. This is harmless if the socket is not in
-the connected table, and if it is in the table then removing it will
-prevent list corruption from a double add.
-
-Note for backporting: this patch requires d5afa82c977e ("vsock: correct
-removal of socket from the list"), which is in all current stable trees
-except 4.9.y.
-
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Link: https://lore.kernel.org/r/20220217141312.2297547-1-sforshee@digitalocean.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: eda50cde58de ("iwlwifi: pcie: add context information support")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/iwlwifi.20220128142706.b8b0dfce16ef.Ie20f0f7b23e5911350a2766524300d2915e7b677@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/vmw_vsock/af_vsock.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1222,6 +1222,7 @@ static int vsock_stream_connect(struct s
- 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
- 			sock->state = SS_UNCONNECTED;
- 			vsock_transport_cancel_pkt(vsk);
-+			vsock_remove_connected(vsk);
- 			goto out_wait;
- 		} else if (timeout == 0) {
- 			err = -ETIMEDOUT;
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
+@@ -292,8 +292,7 @@ int iwl_trans_pcie_gen2_start_fw(struct
+ 	/* This may fail if AMT took ownership of the device */
+ 	if (iwl_pcie_prepare_card_hw(trans)) {
+ 		IWL_WARN(trans, "Exit HW not ready\n");
+-		ret = -EIO;
+-		goto out;
++		return -EIO;
+ 	}
+ 
+ 	iwl_enable_rfkill_int(trans);
 
 
