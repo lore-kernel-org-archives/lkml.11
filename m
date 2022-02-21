@@ -2,92 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C39C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A91C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376773AbiBUNxl (ORCPT
+        id S1376803AbiBUNx6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:53:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51170 "EHLO
+        Mon, 21 Feb 2022 08:53:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377098AbiBUNx3 (ORCPT
+        with ESMTP id S1376788AbiBUNxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:53:29 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41224BF7A;
-        Mon, 21 Feb 2022 05:53:02 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id lw4so33444023ejb.12;
-        Mon, 21 Feb 2022 05:53:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=El2FYnbFWqJ8MOcEYqcNQD/+HC9m/bKVYX0CqwB0WKY=;
-        b=UaYlQ5AKDy3ry1iI3lPRHhO5dQzDmKBfoRvlmUk/2DI4JQQMdoLX467rqqwpxhF7cW
-         VxIZcsfQccGv9H+99wSTFWDUISoeKy4ut9V+tdmUXOP6C7ssRqsahg+67Sr2rYWibQzX
-         BS9JQFuZSbtT2Y6S8KtFJuYVwOGXw8dYumX/oZstBfSWuxKgWu58mYHjbqVOs9/6m7en
-         8rCfq2Pi4qldA0RMqRHIm83jY3MgdYdzxp2edMyYBb5Q942cmytpAiuNw+aQx5/VCQJz
-         J6Rw/mKCfxguO+g+OcRw/ArU4cLuFNAXH29tum+/iG8ae6HZJgdiHrCIhYeoUXqZxFmt
-         adkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=El2FYnbFWqJ8MOcEYqcNQD/+HC9m/bKVYX0CqwB0WKY=;
-        b=5X52BxKZaFei29vj5xZS1/b0DZN+Ol9DzIKswpY6Exi1BOYgvw/kxMizQO/b3moDsf
-         LId5YwRgDL3UgnX03c55a3QRFBAPaOmO9q3Z1QkyuT/db3q9WsYx5KJSPAF/GX4QQXrt
-         AM2p9UwhcUIJ3mRHwcIDNl1lrLUPlIPzGo49+wA32WtuS5rB1uyGk8n4ZsOHRt+Eg/pC
-         41sSgbKHU8xY3RWDTSNbS8TSJEE3DbW8AclaCVFHToWyE1GbPsCAvVV/XcmzFQSQwlGM
-         ZWGX2aW5Om3KQw5oNHGWuGQuOcLQQouedvbSocJOu8Veb3YdEK49uDdKRH6weUC7mMvI
-         6opA==
-X-Gm-Message-State: AOAM532oGAngZziCiss0WQMt1tldHknVHcZy8QQQuAghH5/Od72VHSI2
-        FrHPpIlnhViplgqKT/P72wdTmNvd5R23EA==
-X-Google-Smtp-Source: ABdhPJwUjlffjPBP0V/IgMWBf3DmtadHWtnsx+jWBG0vCh0XG1ohzkpQP4E/gckz+q5KcEfPClkkZg==
-X-Received: by 2002:a17:906:2ac9:b0:6ce:dc0f:9139 with SMTP id m9-20020a1709062ac900b006cedc0f9139mr16060173eje.206.1645451580122;
-        Mon, 21 Feb 2022 05:53:00 -0800 (PST)
-Received: from ubuntu ([155.133.219.250])
-        by smtp.gmail.com with ESMTPSA id m17sm9053091edc.2.2022.02.21.05.52.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 05:52:59 -0800 (PST)
-Date:   Mon, 21 Feb 2022 14:52:59 +0100
-From:   Daniel Kestrel <kestrelseventyfour@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Kestrel <kestrelseventyfour@gmail.com>,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] dt-bindings: vendor-prefixes: Add AVM
-Message-ID: <20220221135259.GA7306@ubuntu>
+        Mon, 21 Feb 2022 08:53:48 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB9FDE9E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:53:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645451605; x=1676987605;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ErfHXPfkw5Ja9S/Lcj6RYf+Mflg/caQz6cN0PzobeDU=;
+  b=epajSyECE+nmk4J9PUVUlwidiHWg6YfypkWY1+Dfjfjs//nPJsgODVG2
+   EpwFR3C9NDjtDnnRfkfZJsdStpNAzOkXw4DoniItUYXozROBSZRbxhOAg
+   3HeCTHV8GPlatjzII8rhZSCQqiA2EltmG+ZYJzBvTPbc2uiefb5WFisgw
+   iI1NdatzjzrD/Pr5Z8dg9JVH6tUpE35bppKHGa/zp0doTycHNqSesla0s
+   QdIZ02GzEg9ycUfjsUq4WX9wd3aj3VCodiaObzEDd0l0JYRrIf3hY9ipG
+   1SL80EDX5qUM8EGzTh5wS6/Ds9uEyluFQyYRgXc1WU5rtKTedBw/j1q9T
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337942288"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="337942288"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 05:53:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="505082386"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 21 Feb 2022 05:53:18 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 13737161; Mon, 21 Feb 2022 15:53:34 +0200 (EET)
+Date:   Mon, 21 Feb 2022 16:53:34 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Cyrill Gorcunov <gorcunov@gmail.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv3 13/32] x86/tdx: Detect TDX at early kernel
+ decompression time
+Message-ID: <20220221135334.zzcozxu6vyskxjzo@black.fi.intel.com>
+References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
+ <20220218161718.67148-14-kirill.shutemov@linux.intel.com>
+ <YhN5edJQ+LkVc0us@grain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <YhN5edJQ+LkVc0us@grain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add vendor prefix for AVM Computersysteme Vertriebs GmbH (http://www.avm.de/en)
+On Mon, Feb 21, 2022 at 02:37:29PM +0300, Cyrill Gorcunov wrote:
+> On Fri, Feb 18, 2022 at 07:16:59PM +0300, Kirill A. Shutemov wrote:
+> ...
+> > 
+> > +
+> > +void early_tdx_detect(void)
+> > +{
+> > +	u32 eax, sig[3];
+> > +
+> > +	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
+> > +
+> > +	if (memcmp(TDX_IDENT, sig, 12))
+> > +		return;
+> 
+> Maybe worth to guard ourself, like
+> 
+> 	BUILD_BUG_ON(sizeof(sig) != (sizeof(TDX_IDENT)-1));
+> 	if (memcmp(TDX_IDENT, sig, sizeof(sig))
+> 		return;
 
-Signed-off-by: Daniel Kestrel <kestrelseventyfour@gmail.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Sure. Will do.
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 294093d45a23..0be52bb27f2b 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -153,6 +153,8 @@ patternProperties:
-     description: avia semiconductor
-   "^avic,.*":
-     description: Shanghai AVIC Optoelectronics Co., Ltd.
-+  "^avm,.*":
-+    description: AVM Computersysteme Vertriebs GmbH
-   "^avnet,.*":
-     description: Avnet, Inc.
-   "^awinic,.*":
 -- 
-2.17.1
-
+ Kirill A. Shutemov
