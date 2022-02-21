@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF802C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51265C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352056AbiBUJxY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:53:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42570 "EHLO
+        id S242322AbiBUJxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:53:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352899AbiBUJsB (ORCPT
+        with ESMTP id S1352895AbiBUJsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ABB192BB;
-        Mon, 21 Feb 2022 01:21:10 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:00 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33EBE1929D;
+        Mon, 21 Feb 2022 01:21:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7891BCE0E77;
-        Mon, 21 Feb 2022 09:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63F9FC340E9;
-        Mon, 21 Feb 2022 09:21:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93321CE0E80;
+        Mon, 21 Feb 2022 09:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE70C340E9;
+        Mon, 21 Feb 2022 09:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435267;
-        bh=oHyaj2IoqWn77jI/uHM8i2KP9/MKCnezer/d0gGGdE0=;
+        s=korg; t=1645435264;
+        bh=xBmtmWbsm2sQPARoBdA6CTtyQDm2ivem5Sp0G8zKxLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aA8cgiXk4GGjIrjpWsEm4mOkTym+ZCgB71tYIO+Oc5AMRnbZLTCvSHQxxg+09ZuHh
-         qPs4XmT4vRadsbTZI52/UPyq0jdDcGCjwRPM8Y957f2mxfPWcobKWYHZ2HZG3wn8ea
-         S6HwuCdbQd/FjruTYa9boe8+8mjEBl75ERujqFVs=
+        b=A2U6H8iYssXlriP2Fl+E5wuBTIOaEA80RR2W70rkvUSi0w/EfQ2AZLz2lE3UIsDVc
+         0I9exZ3KMNlLVdqkKL79BhYWc5EK4QAjrac/XqFY0nc/89mAQbPVt/jAeoLlCPRElK
+         ZUvqvN3LMUcjUTpVOzEAfXBlkefOEMvqEd/JuDzQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        David Pinilla Caparros <dpini@cloudflare.com>,
-        Ignat Korchagin <ignat@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 103/227] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
-Date:   Mon, 21 Feb 2022 09:48:42 +0100
-Message-Id: <20220221084938.300149913@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 102/227] ipv6: fix data-race in fib6_info_hw_flags_set / fib6_purge_rt
+Date:   Mon, 21 Feb 2022 09:48:41 +0100
+Message-Id: <20220221084938.266353429@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,97 +51,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ignat Korchagin <ignat@cloudflare.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 26394fc118d6115390bd5b3a0fb17096271da227 upstream.
+commit d95d6320ba7a51d61c097ffc3bcafcf70283414e upstream.
 
-Some time ago 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
-switched ipv6_get_lladdr() to __ipv6_get_lladdr(), which is rcu-unsafe
-version. That was OK, because idev->lock was held for these codepaths.
+Because fib6_info_hw_flags_set() is called without any synchronization,
+all accesses to gi6->offload, fi->trap and fi->offload_failed
+need some basic protection like READ_ONCE()/WRITE_ONCE().
 
-In 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") these external locks were
-removed, so we probably need to restore the original rcu-safe call.
+BUG: KCSAN: data-race in fib6_info_hw_flags_set / fib6_purge_rt
 
-Otherwise, we occasionally get a machine crashed/stalled with the following
-in dmesg:
+read to 0xffff8881087d5886 of 1 bytes by task 13953 on cpu 0:
+ fib6_drop_pcpu_from net/ipv6/ip6_fib.c:1007 [inline]
+ fib6_purge_rt+0x4f/0x580 net/ipv6/ip6_fib.c:1033
+ fib6_del_route net/ipv6/ip6_fib.c:1983 [inline]
+ fib6_del+0x696/0x890 net/ipv6/ip6_fib.c:2028
+ __ip6_del_rt net/ipv6/route.c:3876 [inline]
+ ip6_del_rt+0x83/0x140 net/ipv6/route.c:3891
+ __ipv6_dev_ac_dec+0x2b5/0x370 net/ipv6/anycast.c:374
+ ipv6_dev_ac_dec net/ipv6/anycast.c:387 [inline]
+ __ipv6_sock_ac_close+0x141/0x200 net/ipv6/anycast.c:207
+ ipv6_sock_ac_close+0x79/0x90 net/ipv6/anycast.c:220
+ inet6_release+0x32/0x50 net/ipv6/af_inet6.c:476
+ __sock_release net/socket.c:650 [inline]
+ sock_close+0x6c/0x150 net/socket.c:1318
+ __fput+0x295/0x520 fs/file_table.c:280
+ ____fput+0x11/0x20 fs/file_table.c:313
+ task_work_run+0x8e/0x110 kernel/task_work.c:164
+ tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+ exit_to_user_mode_prepare+0x160/0x190 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x20/0x40 kernel/entry/common.c:300
+ do_syscall_64+0x50/0xd0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-[ 3405.966610][T230589] general protection fault, probably for non-canonical address 0xdead00000000008c: 0000 [#1] SMP NOPTI
-[ 3405.982083][T230589] CPU: 44 PID: 230589 Comm: kworker/44:3 Tainted: G           O      5.15.19-cloudflare-2022.2.1 #1
-[ 3405.998061][T230589] Hardware name: SUPA-COOL-SERV
-[ 3406.009552][T230589] Workqueue: mld mld_ifc_work
-[ 3406.017224][T230589] RIP: 0010:__ipv6_get_lladdr+0x34/0x60
-[ 3406.025780][T230589] Code: 57 10 48 83 c7 08 48 89 e5 48 39 d7 74 3e 48 8d 82 38 ff ff ff eb 13 48 8b 90 d0 00 00 00 48 8d 82 38 ff ff ff 48 39 d7 74 22 <66> 83 78 32 20 77 1b 75 e4 89 ca 23 50 2c 75 dd 48 8b 50 08 48 8b
-[ 3406.055748][T230589] RSP: 0018:ffff94e4b3fc3d10 EFLAGS: 00010202
-[ 3406.065617][T230589] RAX: dead00000000005a RBX: ffff94e4b3fc3d30 RCX: 0000000000000040
-[ 3406.077477][T230589] RDX: dead000000000122 RSI: ffff94e4b3fc3d30 RDI: ffff8c3a31431008
-[ 3406.089389][T230589] RBP: ffff94e4b3fc3d10 R08: 0000000000000000 R09: 0000000000000000
-[ 3406.101445][T230589] R10: ffff8c3a31430000 R11: 000000000000000b R12: ffff8c2c37887100
-[ 3406.113553][T230589] R13: ffff8c3a39537000 R14: 00000000000005dc R15: ffff8c3a31431000
-[ 3406.125730][T230589] FS:  0000000000000000(0000) GS:ffff8c3b9fc80000(0000) knlGS:0000000000000000
-[ 3406.138992][T230589] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 3406.149895][T230589] CR2: 00007f0dfea1db60 CR3: 000000387b5f2000 CR4: 0000000000350ee0
-[ 3406.162421][T230589] Call Trace:
-[ 3406.170235][T230589]  <TASK>
-[ 3406.177736][T230589]  mld_newpack+0xfe/0x1a0
-[ 3406.186686][T230589]  add_grhead+0x87/0xa0
-[ 3406.195498][T230589]  add_grec+0x485/0x4e0
-[ 3406.204310][T230589]  ? newidle_balance+0x126/0x3f0
-[ 3406.214024][T230589]  mld_ifc_work+0x15d/0x450
-[ 3406.223279][T230589]  process_one_work+0x1e6/0x380
-[ 3406.232982][T230589]  worker_thread+0x50/0x3a0
-[ 3406.242371][T230589]  ? rescuer_thread+0x360/0x360
-[ 3406.252175][T230589]  kthread+0x127/0x150
-[ 3406.261197][T230589]  ? set_kthread_struct+0x40/0x40
-[ 3406.271287][T230589]  ret_from_fork+0x22/0x30
-[ 3406.280812][T230589]  </TASK>
-[ 3406.288937][T230589] Modules linked in: ... [last unloaded: kheaders]
-[ 3406.476714][T230589] ---[ end trace 3525a7655f2f3b9e ]---
+write to 0xffff8881087d5886 of 1 bytes by task 1912 on cpu 1:
+ fib6_info_hw_flags_set+0x155/0x3b0 net/ipv6/route.c:6230
+ nsim_fib6_rt_hw_flags_set drivers/net/netdevsim/fib.c:668 [inline]
+ nsim_fib6_rt_add drivers/net/netdevsim/fib.c:691 [inline]
+ nsim_fib6_rt_insert drivers/net/netdevsim/fib.c:756 [inline]
+ nsim_fib6_event drivers/net/netdevsim/fib.c:853 [inline]
+ nsim_fib_event drivers/net/netdevsim/fib.c:886 [inline]
+ nsim_fib_event_work+0x284f/0x2cf0 drivers/net/netdevsim/fib.c:1477
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x2c7/0x2e0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30
 
-Fixes: 88e2ca308094 ("mld: convert ifmcaddr6 to RCU")
-Reported-by: David Pinilla Caparros <dpini@cloudflare.com>
-Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+value changed: 0x22 -> 0x2a
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 1912 Comm: kworker/1:3 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events nsim_fib_event_work
+
+Fixes: 0c5fcf9e249e ("IPv6: Add "offload failed" indication to routes")
+Fixes: bb3c4ab93e44 ("ipv6: Add "offload" and "trap" indications to routes")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Amit Cohen <amcohen@nvidia.com>
+Cc: Ido Schimmel <idosch@nvidia.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220216173217.3792411-2-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/addrconf.h |    2 --
- net/ipv6/addrconf.c    |    4 ++--
- net/ipv6/mcast.c       |    2 +-
- 3 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/netdevsim/fib.c |    4 ++--
+ include/net/ip6_fib.h       |   10 ++++++----
+ net/ipv6/route.c            |   19 ++++++++++---------
+ 3 files changed, 18 insertions(+), 15 deletions(-)
 
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -109,8 +109,6 @@ struct inet6_ifaddr *ipv6_get_ifaddr(str
- int ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
- 		       const struct in6_addr *daddr, unsigned int srcprefs,
- 		       struct in6_addr *saddr);
--int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
--		      u32 banned_flags);
- int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
- 		    u32 banned_flags);
- bool inet_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1839,8 +1839,8 @@ out:
- }
- EXPORT_SYMBOL(ipv6_dev_get_saddr);
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -623,14 +623,14 @@ static int nsim_fib6_rt_append(struct ns
+ 		if (err)
+ 			goto err_fib6_rt_nh_del;
  
--int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
--		      u32 banned_flags)
-+static int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
-+			      u32 banned_flags)
- {
- 	struct inet6_ifaddr *ifp;
- 	int err = -EADDRNOTAVAIL;
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -1759,7 +1759,7 @@ static struct sk_buff *mld_newpack(struc
- 	skb_reserve(skb, hlen);
- 	skb_tailroom_reserve(skb, mtu, tlen);
+-		fib6_event->rt_arr[i]->trap = true;
++		WRITE_ONCE(fib6_event->rt_arr[i]->trap, true);
+ 	}
  
--	if (__ipv6_get_lladdr(idev, &addr_buf, IFA_F_TENTATIVE)) {
-+	if (ipv6_get_lladdr(dev, &addr_buf, IFA_F_TENTATIVE)) {
- 		/* <draft-ietf-magma-mld-source-05.txt>:
- 		 * use unspecified address as the source address
- 		 * when a valid link-local address is not available.
+ 	return 0;
+ 
+ err_fib6_rt_nh_del:
+ 	for (i--; i >= 0; i--) {
+-		fib6_event->rt_arr[i]->trap = false;
++		WRITE_ONCE(fib6_event->rt_arr[i]->trap, false);
+ 		nsim_fib6_rt_nh_del(fib6_rt, fib6_event->rt_arr[i]);
+ 	}
+ 	return err;
+--- a/include/net/ip6_fib.h
++++ b/include/net/ip6_fib.h
+@@ -189,14 +189,16 @@ struct fib6_info {
+ 	u32				fib6_metric;
+ 	u8				fib6_protocol;
+ 	u8				fib6_type;
++
++	u8				offload;
++	u8				trap;
++	u8				offload_failed;
++
+ 	u8				should_flush:1,
+ 					dst_nocount:1,
+ 					dst_nopolicy:1,
+ 					fib6_destroying:1,
+-					offload:1,
+-					trap:1,
+-					offload_failed:1,
+-					unused:1;
++					unused:4;
+ 
+ 	struct rcu_head			rcu;
+ 	struct nexthop			*nh;
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5767,11 +5767,11 @@ static int rt6_fill_node(struct net *net
+ 	}
+ 
+ 	if (!dst) {
+-		if (rt->offload)
++		if (READ_ONCE(rt->offload))
+ 			rtm->rtm_flags |= RTM_F_OFFLOAD;
+-		if (rt->trap)
++		if (READ_ONCE(rt->trap))
+ 			rtm->rtm_flags |= RTM_F_TRAP;
+-		if (rt->offload_failed)
++		if (READ_ONCE(rt->offload_failed))
+ 			rtm->rtm_flags |= RTM_F_OFFLOAD_FAILED;
+ 	}
+ 
+@@ -6229,19 +6229,20 @@ void fib6_info_hw_flags_set(struct net *
+ 	struct sk_buff *skb;
+ 	int err;
+ 
+-	if (f6i->offload == offload && f6i->trap == trap &&
+-	    f6i->offload_failed == offload_failed)
++	if (READ_ONCE(f6i->offload) == offload &&
++	    READ_ONCE(f6i->trap) == trap &&
++	    READ_ONCE(f6i->offload_failed) == offload_failed)
+ 		return;
+ 
+-	f6i->offload = offload;
+-	f6i->trap = trap;
++	WRITE_ONCE(f6i->offload, offload);
++	WRITE_ONCE(f6i->trap, trap);
+ 
+ 	/* 2 means send notifications only if offload_failed was changed. */
+ 	if (net->ipv6.sysctl.fib_notify_on_flag_change == 2 &&
+-	    f6i->offload_failed == offload_failed)
++	    READ_ONCE(f6i->offload_failed) == offload_failed)
+ 		return;
+ 
+-	f6i->offload_failed = offload_failed;
++	WRITE_ONCE(f6i->offload_failed, offload_failed);
+ 
+ 	if (!rcu_access_pointer(f6i->fib6_node))
+ 		/* The route was removed from the tree, do not send
 
 
