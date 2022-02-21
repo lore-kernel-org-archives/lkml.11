@@ -2,175 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36655C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353353AbiBUKYW (ORCPT
+        id S1354369AbiBUKYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:24:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58102 "EHLO
+        Mon, 21 Feb 2022 05:24:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353333AbiBUKX7 (ORCPT
+        with ESMTP id S1354654AbiBUKYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:23:59 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21683E5F4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:43:31 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 90CAB1F390;
-        Mon, 21 Feb 2022 09:43:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645436610; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u6LwIJ0VytGXZuwsUswyNAc7mSxg7aR+i+fci3dv+24=;
-        b=Vyo4LvhNcoc4NFfJpSdgCO5QQYUd32k5m59HD2fn2quVXOwBUjZCbOMQpePjSLUGc4aFyI
-        WD6C1pjVFdQ3ia+O4ZUiMizdKWum7Gev0KgZHErQFNo6kl5/6btTHEWwm5Id3swFh/Cks3
-        e0PBafErHfrigh4DKYkIh1HHduXdkzk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645436610;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u6LwIJ0VytGXZuwsUswyNAc7mSxg7aR+i+fci3dv+24=;
-        b=mtuTDiuoPCSpo0Jxcx9ykNIIeTkZQ3wXduUYp8PSo9Ta6AQhL/BUIWz9C2nSex45NrU4mz
-        tojZPCT1W+WZaHDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6E94E13A5C;
-        Mon, 21 Feb 2022 09:43:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 9glUGsJeE2K+DAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 21 Feb 2022 09:43:30 +0000
-Message-ID: <006330a3-8df9-dcd5-8ad6-fc23765a1266@suse.cz>
-Date:   Mon, 21 Feb 2022 10:43:30 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 1/1] mm/page_alloc: Do not prefetch buddies during bulk
- free
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Aaron Lu <aaron.lu@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220221094119.15282-1-mgorman@techsingularity.net>
- <20220221094119.15282-2-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220221094119.15282-2-mgorman@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mon, 21 Feb 2022 05:24:03 -0500
+X-Greylist: delayed 3599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 01:43:42 PST
+Received: from lgeamrelo11.lge.com (lgeamrelo12.lge.com [156.147.23.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEA303EA9F
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:43:42 -0800 (PST)
+Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
+        by 156.147.23.52 with ESMTP; 21 Feb 2022 17:43:40 +0900
+X-Original-SENDERIP: 156.147.1.126
+X-Original-MAILFROM: kyeongdon.kim@lge.com
+Received: from unknown (HELO localhost.localdomain) (10.159.40.99)
+        by 156.147.1.126 with ESMTP; 21 Feb 2022 17:43:40 +0900
+X-Original-SENDERIP: 10.159.40.99
+X-Original-MAILFROM: kyeongdon.kim@lge.com
+From:   Kyeongdon Kim <kyeongdon.kim@lge.com>
+To:     viro@zeniv.linux.org.uk
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kyeongdon.kim@lge.com
+Subject: [PATCH] pipe: use kmem_cache for pipe_inode_info
+Date:   Mon, 21 Feb 2022 17:43:37 +0900
+Message-Id: <20220221084337.207414-1-kyeongdon.kim@lge.com>
+X-Mailer: git-send-email 2.10.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 10:41, Mel Gorman wrote:
-> free_pcppages_bulk() has taken two passes through the pcp lists since
-> commit 0a5f4e5b4562 ("mm/free_pcppages_bulk: do not hold lock when picking
-> pages to free") due to deferring the cost of selecting PCP lists until
-> the zone lock is held.
-> 
-> As the list processing now takes place under the zone lock, it's less
-> clear that this will always benefit for two reasons.
-> 
-> 1. There is a guaranteed cost to calculating the buddy which definitely
->    has to be calculated again. However, as the zone lock is held and
->    there is no deferring of buddy merging, there is no guarantee that the
->    prefetch will have completed when the second buddy calculation takes
->    place and buddies are being merged.  With or without the prefetch, there
->    may be further stalls depending on how many pages get merged. In other
->    words, a stall due to merging is inevitable and at best only one stall
->    might be avoided at the cost of calculating the buddy location twice.
-> 
-> 2. As the zone lock is held, prefetch_nr makes less sense as once
->    prefetch_nr expires, the cache lines of interest have already been
->    merged.
-> 
-> The main concern is that there is a definite cost to calculating the
-> buddy location early for the prefetch and it is a "maybe win" depending
-> on whether the CPU prefetch logic and memory is fast enough. Remove the
-> prefetch logic on the basis that reduced instructions in a path is always
-> a saving where as the prefetch might save one memory stall depending on
-> the CPU and memory.
-> 
-> In most cases, this has marginal benefit as the calculations are a small
-> part of the overall freeing of pages. However, it was detectable on at
-> least one machine.
-> 
->                               5.17.0-rc3             5.17.0-rc3
->                     mm-highpcplimit-v2r1     mm-noprefetch-v1r1
-> Min       elapsed      630.00 (   0.00%)      610.00 (   3.17%)
-> Amean     elapsed      639.00 (   0.00%)      623.00 *   2.50%*
-> Max       elapsed      660.00 (   0.00%)      660.00 (   0.00%)
-> 
-> Suggested-by: Aaron Lu <aaron.lu@intel.com>
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Because kzalloc() is used,
+the allocation size of pipe_inode_info is fixex at 192bytes,
+but it's only use 144bytes per each.
+We can use kmem_cache_zalloc() to reduce some dynamic allocation size.
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Kyeongdon Kim <kyeongdon.kim@lge.com>
+---
+ fs/pipe.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-> ---
->  mm/page_alloc.c | 24 ------------------------
->  1 file changed, 24 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index de9f072d23bd..2d5cc098136d 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -1432,15 +1432,6 @@ static bool bulkfree_pcp_prepare(struct page *page)
->  }
->  #endif /* CONFIG_DEBUG_VM */
->  
-> -static inline void prefetch_buddy(struct page *page, unsigned int order)
-> -{
-> -	unsigned long pfn = page_to_pfn(page);
-> -	unsigned long buddy_pfn = __find_buddy_pfn(pfn, order);
-> -	struct page *buddy = page + (buddy_pfn - pfn);
-> -
-> -	prefetch(buddy);
-> -}
-> -
->  /*
->   * Frees a number of pages from the PCP lists
->   * Assumes all pages on list are in same zone.
-> @@ -1453,7 +1444,6 @@ static void free_pcppages_bulk(struct zone *zone, int count,
->  	int min_pindex = 0;
->  	int max_pindex = NR_PCP_LISTS - 1;
->  	unsigned int order;
-> -	int prefetch_nr = READ_ONCE(pcp->batch);
->  	bool isolated_pageblocks;
->  	struct page *page;
->  
-> @@ -1508,20 +1498,6 @@ static void free_pcppages_bulk(struct zone *zone, int count,
->  			if (bulkfree_pcp_prepare(page))
->  				continue;
->  
-> -			/*
-> -			 * We are going to put the page back to the global
-> -			 * pool, prefetch its buddy to speed up later access
-> -			 * under zone->lock. It is believed the overhead of
-> -			 * an additional test and calculating buddy_pfn here
-> -			 * can be offset by reduced memory latency later. To
-> -			 * avoid excessive prefetching due to large count, only
-> -			 * prefetch buddy for the first pcp->batch nr of pages.
-> -			 */
-> -			if (prefetch_nr) {
-> -				prefetch_buddy(page, order);
-> -				prefetch_nr--;
-> -			}
-> -
->  			/* MIGRATE_ISOLATE page should not go to pcplists */
->  			VM_BUG_ON_PAGE(is_migrate_isolate(mt), page);
->  			/* Pageblock could have been isolated meanwhile */
+diff --git a/fs/pipe.c b/fs/pipe.c
+index 7194683..3054816 100644
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -47,6 +47,9 @@
+  */
+ #define PIPE_MIN_DEF_BUFFERS 2
+ 
++/* SLAB cache for pipe inode */
++static struct kmem_cache *pipe_inode_cachep;
++
+ /*
+  * The max size that a non-root user is allowed to grow the pipe. Can
+  * be set by root in /proc/sys/fs/pipe-max-size
+@@ -786,7 +789,7 @@ struct pipe_inode_info *alloc_pipe_info(void)
+ 	unsigned long user_bufs;
+ 	unsigned int max_size = READ_ONCE(pipe_max_size);
+ 
+-	pipe = kzalloc(sizeof(struct pipe_inode_info), GFP_KERNEL_ACCOUNT);
++	pipe = kmem_cache_zalloc(pipe_inode_cachep, GFP_KERNEL_ACCOUNT);
+ 	if (pipe == NULL)
+ 		goto out_free_uid;
+ 
+@@ -820,7 +823,7 @@ struct pipe_inode_info *alloc_pipe_info(void)
+ 
+ out_revert_acct:
+ 	(void) account_pipe_buffers(user, pipe_bufs, 0);
+-	kfree(pipe);
++	kmem_cache_free(pipe_inode_cachep, pipe);
+ out_free_uid:
+ 	free_uid(user);
+ 	return NULL;
+@@ -847,7 +850,7 @@ void free_pipe_info(struct pipe_inode_info *pipe)
+ 	if (pipe->tmp_page)
+ 		__free_page(pipe->tmp_page);
+ 	kvfree(pipe->bufs);
+-	kfree(pipe);
++	kmem_cache_free(pipe_inode_cachep, pipe);
+ }
+ 
+ static struct vfsmount *pipe_mnt __read_mostly;
+@@ -1496,6 +1499,9 @@ static int __init init_pipe_fs(void)
+ #ifdef CONFIG_SYSCTL
+ 	register_sysctl_init("fs", fs_pipe_sysctls);
+ #endif
++	pipe_inode_cachep = kmem_cache_create("pipe_inode",
++					sizeof(struct pipe_inode_info),
++					0, SLAB_PANIC, NULL);
+ 	return err;
+ }
+ 
+-- 
+2.10.2
 
