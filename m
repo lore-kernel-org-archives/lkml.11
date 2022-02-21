@@ -2,90 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 525F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15230C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345964AbiBUHVH (ORCPT
+        id S1345972AbiBUHVQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:21:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56426 "EHLO
+        Mon, 21 Feb 2022 02:21:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343584AbiBUHVG (ORCPT
+        with ESMTP id S1345967AbiBUHVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:21:06 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2522B2E5
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:20:42 -0800 (PST)
-Received: from mail-wm1-f41.google.com ([209.85.128.41]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M5PRT-1nMroS1cpR-001PqP; Mon, 21 Feb 2022 08:20:41 +0100
-Received: by mail-wm1-f41.google.com with SMTP id i19so8925180wmq.5;
-        Sun, 20 Feb 2022 23:20:41 -0800 (PST)
-X-Gm-Message-State: AOAM533s+vhVgNtdN36REaLllpR6oEFpZfwle7ZIrCluLfHAFZdbJzl6
-        A0+PKUj+/UdmnX+6119Tb4iI2YrkZkeyZLE33W4=
-X-Google-Smtp-Source: ABdhPJwkhO738p7jfkIcVIpJAGPCBMxEsq4hdKYoj5i8JrWItb1GWjA9adOa10AzpY4ehuGHPz73wdTTBSk9y82K1Yw=
-X-Received: by 2002:a05:600c:4ecb:b0:37c:9125:ac03 with SMTP id
- g11-20020a05600c4ecb00b0037c9125ac03mr16542202wmq.98.1645428041077; Sun, 20
- Feb 2022 23:20:41 -0800 (PST)
+        Mon, 21 Feb 2022 02:21:15 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790B9C29;
+        Sun, 20 Feb 2022 23:20:52 -0800 (PST)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21L77WYl017047;
+        Sun, 20 Feb 2022 23:20:49 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=D9POKauQ93JR861ujroYZUErV9faV0QUX3Fz8jQG0GE=;
+ b=AJ0foANETjuHon2jo5/t0lzcjGAiBrao/7qleO078CrhcZOu+edA9MCjBzaLB/Tde1VG
+ nn48U+nB7IA0EL1WA8bAIUv8OAeFe+Wa/rUMDHP9WNoi7n11LGMiAm+QpxGTb3VdtJlH
+ F9F7Q93tcOhIGYWIIx2mmbDDP7jSt/oMimFDSRvKQi0Si+6qiG499nk/sz3agN2geXSs
+ j1MosPTqzB762WpYs2SesWxxxaCP+8ybHf6sNyRTjCdJwgjOjlT++j+ZqjO2RRnBCb/q
+ xolrPwNpEZv9qadkBGbbMPBJJMcugdaEd99Ngst4Jao1IyZDu+6QW0awAqDhYQGHgScm +g== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3ebpvntcwt-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 20 Feb 2022 23:20:49 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sun, 20 Feb
+ 2022 23:21:09 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Sun, 20 Feb 2022 23:21:09 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 6DA6C65E8B7;
+        Sun, 20 Feb 2022 22:45:12 -0800 (PST)
+From:   Rakesh Babu Saladi <rsaladi2@marvell.com>
+To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
+CC:     <rsaladi2@marvell.com>
+Subject: [net-next PATCH v2 0/2] RVU AF and NETDEV drivers' PTP updates.
+Date:   Mon, 21 Feb 2022 12:15:06 +0530
+Message-ID: <20220221064508.19148-1-rsaladi2@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <cover.1645407997.git.tonyhuang.sunplus@gmail.com> <20f858dfe999816cb05dfde5f89db48f3416358e.1645407997.git.tonyhuang.sunplus@gmail.com>
-In-Reply-To: <20f858dfe999816cb05dfde5f89db48f3416358e.1645407997.git.tonyhuang.sunplus@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 21 Feb 2022 08:20:25 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1FZQ2LQco8D263+YXjcSQvzU6RHAL8SKcKy8hiLnHY8g@mail.gmail.com>
-Message-ID: <CAK8P3a1FZQ2LQco8D263+YXjcSQvzU6RHAL8SKcKy8hiLnHY8g@mail.gmail.com>
-Subject: Re: [PATCH v9 2/2] misc: Add iop driver for Sunplus SP7021
-To:     Tony Huang <tonyhuang.sunplus@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
-        Tony Huang <tony.huang@sunplus.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:+flWuxabUjXSN9IPizb45Hbk5k0zd9jBEveS/y5AS5pVfLTOGNR
- vlhOk0HWrBtIcDO4ph7hzHmNg6LBPJr6ruYlFKAwqPPHgVwiXS3o3aeqWLgFch1dmkBMKww
- muWSaOlvimKggChUOBBODGKA6uEpkpRSw408xD9YxemE+ld+7eSzd7kWX+HygDLpYAseKQH
- vnmowe2F+ssGrkD6+n0dQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DJ7ZBQi7pDc=:+bkThK+4f7Zz3hMeUdom9J
- rBPJth0FagVycH8i0TPuB8R1AgpASaMoz1PI1K7TBYghuabS1sXaXttReqMEqF5uVrrmAshbg
- fFnDtmEvdQibGiR3/DH4ILLlCwaZ3tAvOxjbVH5t26vwR2E+z/t2FaZ96HxM5C7jySNk8Emo7
- DtW9gbAkqsPc22hAjsSDiCoqSx2aoAuuE7COEQvG8J8qqyvmck2Jsh7FT97UWrpRIIoDv/iK8
- MVnlJ2OwkniWGnDWXu6bKSTte3F0dffy8DMEQM0AD43vDx9ZrJ20z7bImga0A0M4p+P/di79B
- gqr1QVsNAONbnfE6i2h5boqloccX/Pzv8I7uYmciabsrhokTfuhtfSllcSeIOjjkte8BlYNRM
- 94W+DpXvhZG4sP7Zutq+N7SubTZP+jE+4wfb1Tiw/FM4A4tFb66P62dEzFmmWzST6aXW/DpeB
- oZEx9GYakHRuwXbe8LMjFeXRQh1b0L0yO5tE0SP6N/fJgCb34wTJALKYa/3IcxyOFPj981qE5
- dTZrS3unAgBipH0w/XuHbyQ1LXMIsL9+hs8r4GWjiLMue3ss9EbMWisqjWBYk9XdsPpIJ2asq
- yJPmy+RBwHzEEwqPjMlrL6XLmOKS7ML+W8T5P0tZseO8MPvZy9TXr1k4sAAyqvIx1LUe3vmtt
- 5UtQtjCx3CDih/0EEFZ3LdXREB+3u0fj1e8v8UTlfOTAeMGqAPYvm2zezFwEGcdo9/iU=
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: tnQ12jtt_tgGgionotusy7iwWjsPVS7g
+X-Proofpoint-GUID: tnQ12jtt_tgGgionotusy7iwWjsPVS7g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-21_02,2022-02-18_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 3:14 AM Tony Huang <tonyhuang.sunplus@gmail.com> wrote:
->
-> IOP(8051) embedded inside SP7021 which is used as
-> Processor for I/O control, monitor RTC interrupt and
-> cooperation with CPU & PMC in power management purpose.
-> The IOP core is DQ8051, so also named IOP8051,
-> it supports dedicated JTAG debug pins which share with SP7021.
-> In standby mode operation, the power spec reach 400uA.
->
-> Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
-> ---
-> Changes in v9:
->  - Remove custom attributes sysfs.
+Patch 1: Add suppot such that RVU drivers support new timestamp format.
+Patch 2: This patch adds workaround for PTP errata.
 
-You are now back to a driver that does nothing at all, please make it
-use at least one kernel subsystem that it can hook up to before
-you send it again.
+Changes made from  v1 to v2
+1. CC'd Richard Cochran to review PTP related patches.
+2. Removed a patch from the old patch series. Will submit the removed patch
+separately.
 
-Also, when listing the functionality above, describe which subsystems
-you want to use for those in the long run, this would make it clearer
-to see which direction you want to take this driver when you add
-back the features.
+Naveen Mamindlapalli (2):
+  octeontx2-pf: cn10k: add support for new ptp timestamp format
+  octeontx2-af: cn10k: add workaround for ptp errata
 
-         Arnd
+ .../net/ethernet/marvell/octeontx2/af/ptp.c   | 131 ++++++++++++++++--
+ .../net/ethernet/marvell/octeontx2/af/ptp.h   |   2 +
+ .../marvell/octeontx2/nic/otx2_common.h       |   3 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ptp.c |   8 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_ptp.h |  15 ++
+ .../marvell/octeontx2/nic/otx2_txrx.c         |   6 +-
+ 6 files changed, 155 insertions(+), 10 deletions(-)
+
+--
+2.17.1
