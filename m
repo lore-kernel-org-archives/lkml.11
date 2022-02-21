@@ -2,108 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF46C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50075C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbiBUS06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:26:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47152 "EHLO
+        id S230260AbiBUS1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:27:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232462AbiBUSYf (ORCPT
+        with ESMTP id S232426AbiBUSYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:24:35 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C650764C;
-        Mon, 21 Feb 2022 10:17:10 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id z66so12042661qke.10;
-        Mon, 21 Feb 2022 10:17:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=+6WNmmFYbJpblRf4ebgcnmUOGfCcohgKelAtqTglXiI=;
-        b=gXX8qGPgeWVTyIuIU/gzzSDs3Ny9HOZqbMc3B85PEyNP4Tw5riadydixZtGF0BxjPK
-         r8Jinbdn+wSuKJNjHs5CO/CEWu2ijk/RvGDmvxlxdikI6ZUM6E5nFhiGgNnrQst5LAuE
-         S95xnhzXJ1tilZd4xZNKlcEWiuXG4l5k4LtPgKAzeoqGwXW4bLsyuAsoOPIDN9661xwo
-         YpPOpvh32kpw8Apflfoky7vFvk8j4fczmLFxSoOH6gAFkUBMzlUU6N5gGdiDT+0ji0fr
-         jVAP1efNHjQmfP0IGK0gkQesBINHpLTARcUgVxdafdliDSq2uHN9xC5QdM+IBZoRJAQo
-         GGfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=+6WNmmFYbJpblRf4ebgcnmUOGfCcohgKelAtqTglXiI=;
-        b=FnNzxTo1sZWs4FfwUBkd3jM9hGlD7vyOeoIjmv9LbgndZzDuUt7hqfzpGC/jEfTi0B
-         zFfI6C+mJVf2nOIIWIH0Wdi6oDZ9wX7ql8GSpiYrngE5426FRHyJ9elGrDPeYyXc8Bh7
-         RKf6BDRNbkkcvpHcR+VNm90dz3vKICHFLips76Uujza2SDAwIlEftAPvIWcXaJxGmNtz
-         yoImryHLn21p6QwnSWGT7AMCvEyI8N22Qlc+58BtIVF2tpC9W0aFmlf8HBlRMy8aeH3u
-         LNqKaafKaLbhif6QNy7dfpBY7T5U3d1kMfuBDRZb7Fz84cCBF5YcQZLOnBBA6mHKT1JO
-         NMEA==
-X-Gm-Message-State: AOAM530EVi0B1fXtQfnXkR/ltxqBGQV5O0Z9hq7P/FmSh8ABqXfAEkbo
-        Be8VPETJ0WzwchHH/25uCa8=
-X-Google-Smtp-Source: ABdhPJww08+Oo0QuZczfCmmn6UwTWRG006Bnt5o6ILYM2wfGZyVsufWg3NZKQzkEb0hjygDAhvRLJQ==
-X-Received: by 2002:a05:620a:122c:b0:47d:875d:fffe with SMTP id v12-20020a05620a122c00b0047d875dfffemr12742218qkj.528.1645467429193;
-        Mon, 21 Feb 2022 10:17:09 -0800 (PST)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k6sm5666402qko.43.2022.02.21.10.17.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 10:17:08 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <6c099f84-ed6c-8608-df8f-74fbf2de7151@roeck-us.net>
-Date:   Mon, 21 Feb 2022 10:17:06 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220221084934.836145070@linuxfoundation.org>
- <0ceb2013-061c-700f-c386-3b180a96d59a@roeck-us.net>
- <YhPSX1/DbOcFPjnQ@kroah.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5.16 000/227] 5.16.11-rc1 review
-In-Reply-To: <YhPSX1/DbOcFPjnQ@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 21 Feb 2022 13:24:34 -0500
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id DB16C64EF
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:15:45 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1645467345; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=BavoGLppRRtQuuh4NjhSW9ieNl8URHL9Ejf/Z4d/Xxk=; b=IMKC5BgpN2q0F8m0IC85hLIqvQKaNQWM9GtI6Ili/sZpXNl9AFPKmazg0Q3Ewn4N+Nq6Qvj3
+ i4ARREYJlA62cQwf57C48B4/E+dKH0TAJnNXzWvHeETXUgG0lIbMp/WAsATPEo4LMoVJ2Bum
+ KfCY3edywVmP5x5vL97TxK/KxFs=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6213d653d9f69c7276a3775d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Feb 2022 18:13:39
+ GMT
+Sender: tdas=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id DA27EC4360C; Mon, 21 Feb 2022 18:13:38 +0000 (UTC)
+Received: from hu-tdas-hyd.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: tdas)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 834C0C4338F;
+        Mon, 21 Feb 2022 18:13:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 834C0C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
+From:   Taniya Das <tdas@codeaurora.org>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>
+Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+Subject: [PATCH v2 2/2] clk: qcom: clk-rcg2: Update the frac table for pixel clock
+Date:   Mon, 21 Feb 2022 23:43:22 +0530
+Message-Id: <20220221181322.5486-2-tdas@codeaurora.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220221181322.5486-1-tdas@codeaurora.org>
+References: <20220221181322.5486-1-tdas@codeaurora.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 09:56, Greg Kroah-Hartman wrote:
-> On Mon, Feb 21, 2022 at 09:17:51AM -0800, Guenter Roeck wrote:
->> On 2/21/22 00:46, Greg Kroah-Hartman wrote:
->>> This is the start of the stable review cycle for the 5.16.11 release.
->>> There are 227 patches in this series, all will be posted as a response
->>> to this one.  If anyone has any issues with these being applied, please
->>> let me know.
->>>
->>> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
->>> Anything received after that time might be too late.
->>>
->>
->> Building mips:malta_defconfig ... failed
->> --------------
->> Error log:
->> net/netfilter/xt_socket.c: In function 'socket_mt_destroy':
->> net/netfilter/xt_socket.c:224:17: error: implicit declaration of function 'nf_defrag_ipv6_disable'; did you mean 'nf_defrag_ipv4_disable'? [
->>
->> Inherited from upstream.
-> 
-> Ah, fun :(
-> 
-> I'll leave this for now, it's "just" a Kconfig dependancy issue.  Does
-> upstream know about it?
-> 
+Support the new numerator and denominator for pixel clock.
 
-Yes. And, no, it is not just a Kconfig dependency issue.
-NETFILTER_XT_MATCH_SOCKET does not historically and should
-not depend on IPV6. There is a missing #ifdef in
-net/netfilter/xt_socket.c.
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+---
+ drivers/clk/qcom/clk-rcg2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Guenter
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index 3a78a2a16cf8..cb5610c46882 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -729,6 +729,7 @@ static const struct frac_entry frac_table_pixel[] = {
+ 	{ 2, 9 },
+ 	{ 4, 9 },
+ 	{ 1, 1 },
++	{ 2, 3 },
+ 	{ }
+ };
+
+--
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
+of the Code Aurora Forum, hosted by the  Linux Foundation.
+
