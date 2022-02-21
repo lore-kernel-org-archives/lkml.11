@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED907C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245477AbiBUJsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:48:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57296 "EHLO
+        id S1346612AbiBUJss (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:48:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350858AbiBUJm1 (ORCPT
+        with ESMTP id S1351289AbiBUJn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:42:27 -0500
+        Mon, 21 Feb 2022 04:43:56 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B583E5C9;
-        Mon, 21 Feb 2022 01:17:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B193ED33;
+        Mon, 21 Feb 2022 01:18:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5215460F1A;
-        Mon, 21 Feb 2022 09:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A14C340F0;
-        Mon, 21 Feb 2022 09:17:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0405E60EB3;
+        Mon, 21 Feb 2022 09:18:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9BFC340E9;
+        Mon, 21 Feb 2022 09:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435066;
-        bh=ysQjc3cjbNtOKFPnq5TsGdaq+5xjsHmtSp9extAhfzg=;
+        s=korg; t=1645435080;
+        bh=Kp3T8Uq/wmdAQIvGZCoRhZ+9BMeChwVbO3ac4eqCP1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OTrxwbnWj7CA9MVZnMSzFevkZU62dXjQsPW/yl0gVv8hG1vqOFpkayvjNrrRjnWpp
-         6+MbczbJ4pbYIrAZhzMWmj9q2GAPlOb3BsYH2FL8o8Bv/j4n5xlT9KmnQ0EZ2IwQno
-         hLrK8fLZBqJASRKPHRHLyzGWElA2pn0x5hpsLVhE=
+        b=EA+N6a4Pfq9zRQewpyUp9jWba5SP6VenUsqInMExqYPhgQ2sY4qPfq23Jv9DQTLPO
+         6A8ludGkQYlZKmM2rNehLjDzKhp3AIz+9Zna0Nxbx55cDld/uI9+i5A2OEVMWJ6oku
+         OYVfeysvwv2UdGeduzmJSj8HDRceeOOqxxuciK5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuka Kawajiri <yukx00@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 032/227] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
-Date:   Mon, 21 Feb 2022 09:47:31 +0100
-Message-Id: <20220221084935.920191391@linuxfoundation.org>
+Subject: [PATCH 5.16 036/227] selftests: rtc: Increase test timeout so that all tests run
+Date:   Mon, 21 Feb 2022 09:47:35 +0100
+Message-Id: <20220221084936.067577664@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,63 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuka Kawajiri <yukx00@gmail.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
+[ Upstream commit f034cc1301e7d83d4ec428dd6b8ffb57ca446efb ]
 
-Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
+The timeout setting for the rtc kselftest is currently 90 seconds. This
+setting is used by the kselftest runner to stop running a test if it
+takes longer than the assigned value.
 
-Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
-Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+However, two of the test cases inside rtc set alarms. These alarms are
+set to the next beginning of the minute, so each of these test cases may
+take up to, in the worst case, 60 seconds.
+
+In order to allow for all test cases in rtc to run, even in the worst
+case, when using the kselftest runner, the timeout value should be
+increased to at least 120. Set it to 180, so there's some additional
+slack.
+
+Correct operation can be tested by running the following command right
+after the start of a minute (low second count), and checking that all
+test cases run:
+
+	./run_kselftest.sh -c rtc
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ tools/testing/selftests/rtc/settings | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
-index 17dd54d4b783c..e318b40949679 100644
---- a/drivers/platform/x86/touchscreen_dmi.c
-+++ b/drivers/platform/x86/touchscreen_dmi.c
-@@ -773,6 +773,21 @@ static const struct ts_dmi_data predia_basic_data = {
- 	.properties	= predia_basic_props,
- };
- 
-+static const struct property_entry rwc_nanote_p8_props[] = {
-+	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
-+	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
-+	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-+	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
-+	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
-+	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
-+	{ }
-+};
-+
-+static const struct ts_dmi_data rwc_nanote_p8_data = {
-+	.acpi_name = "MSSL1680:00",
-+	.properties = rwc_nanote_p8_props,
-+};
-+
- static const struct property_entry schneider_sct101ctm_props[] = {
- 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
- 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-@@ -1406,6 +1421,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
- 		},
- 	},
-+	{
-+		/* RWC NANOTE P8 */
-+		.driver_data = (void *)&rwc_nanote_p8_data,
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
-+			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
-+		},
-+	},
- 	{
- 		/* Schneider SCT101CTM */
- 		.driver_data = (void *)&schneider_sct101ctm_data,
+diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+index ba4d85f74cd6b..a953c96aa16e1 100644
+--- a/tools/testing/selftests/rtc/settings
++++ b/tools/testing/selftests/rtc/settings
+@@ -1 +1 @@
+-timeout=90
++timeout=180
 -- 
 2.34.1
 
