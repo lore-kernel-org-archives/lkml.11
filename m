@@ -2,330 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C51E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79ED6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358271AbiBUMqC (ORCPT
+        id S1358280AbiBUMqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:46:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39898 "EHLO
+        Mon, 21 Feb 2022 07:46:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358258AbiBUMpy (ORCPT
+        with ESMTP id S1358258AbiBUMqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:45:54 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B290DDE88;
-        Mon, 21 Feb 2022 04:45:30 -0800 (PST)
-Received: from [192.168.1.107] ([37.4.249.169]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N49xZ-1oLPnX3WhF-0107OZ; Mon, 21 Feb 2022 13:45:14 +0100
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH v5 03/11] dt-bindings: media: Add bindings for
- bcm2835-unicam
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
-        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
-        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
-        tomi.valkeinen@ideasonboard.com,
-        bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
- <20220208155027.891055-4-jeanmichel.hautbois@ideasonboard.com>
- <f58bf6a9-c63f-19ab-36c8-a9a7b9182859@i2se.com>
- <20220214093954.5y4jbqcddmwhgxr5@houat>
- <YgomyazKaV2QnfYQ@pendragon.ideasonboard.com>
- <7ba0d8e7-72b9-d139-f29f-45a803ca2fdb@i2se.com>
- <YhM6474MwSh6bjUe@pendragon.ideasonboard.com>
-Autocrypt: addr=stefan.wahren@i2se.com; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
- CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
- bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
- TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
- NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
- MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
- by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
- MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
- VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
- aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
- OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
- bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
- Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
- ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
- bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
- dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
- QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
- UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
- SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
- VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
- akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
- NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
- RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
- QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
- ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
- cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
- R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
- aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
- NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
- SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
- TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
- TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
- NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
- YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
- SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
- KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
- ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
- VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
- SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
- d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
- UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
- c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
- a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
- anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
- WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
- Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
- QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
- Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
- K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
- aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
- dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
- TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
- SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
- U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
- VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
- OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
- Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
- eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
- MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
- SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
- Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
- WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
- Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
- OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
- TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
- eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
- WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
- cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
- QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
- Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
- RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
- SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
- cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
- dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
- RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
- SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
- WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
- VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
- am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
- OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
- L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
- aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
- cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
- WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
- MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
- RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
- RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
- TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
- SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
- M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
- VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
- MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
- bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
- NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
- ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
- Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
- eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
- QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
- TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
- dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
- S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
- VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
- QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
- ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
- UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
- SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
- UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
- N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
- dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
- MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
- d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
- WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
- MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
- MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
- TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
- NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
- MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
- RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
- VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
- WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
- ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
- SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
- MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
- M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
- dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
- CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
- VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
- bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
- LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
-Message-ID: <4f809de2-24ee-dd9f-6354-2ce770a3ff4d@i2se.com>
-Date:   Mon, 21 Feb 2022 13:45:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 21 Feb 2022 07:46:33 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63978DF11
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:46:10 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id a19-20020a924453000000b002c224a576edso2674103ilm.4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:46:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=yPWJd1b8z0iPM5zMJgc694/UhDF9+VDq1uR945LDkrc=;
+        b=b9H0vAekglGxmdvPhXmByLhqoSlJibhv25y31S5zTRLlcPXrlqvAIocOG1NLRRkkLT
+         cswvWRf+PadzR9fjLCpe76wbJn15MQQApbsga4MgAaBRmN2mOfHh5XKAvbwxf8JKzcCN
+         5Aumcw8x6jyQNHSNvD3ge//5JuBqtCHkV4bA8krXOeZaIPcYbdmYsi+nLu1CA957YquW
+         /IlX8DYmokxHRNrme7z4Rx8b65OChX/0lk3WtNO5NCqTucvONA/mbOdTQexONlFlmdeS
+         IIUPSVNBhd0M0slrlwggvbb4jnVF39KnKMx+pehjQARcBC4img0eJbfKVJrEddej0X+/
+         xL7A==
+X-Gm-Message-State: AOAM5311ROXAroUNjpIDztifDhnusxOsyhzQ55dBtB5p1tAeHt7rvLgr
+        XpOERa3fyu40wX/J/eBNn4Ydb1pLX8U5S5z0424QSwcj7Y8S
+X-Google-Smtp-Source: ABdhPJwY2b6o8/9Ky2vrMJOF1SmW88pTRyG36vC4FVsvwgZmoEKmkfjKuTrdm9QNpF9K5OCdz+8MHoXpdE0vSpPLG2jFVFcySrwD
 MIME-Version: 1.0
-In-Reply-To: <YhM6474MwSh6bjUe@pendragon.ideasonboard.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:5i5hJGNCAi0RHpgQ/oDgG+YJPW2gBg7F88TYBOw6Ku7UjFI29UG
- scr8mTcmPpYFJ+huaQD/YndlBk0TMm8Ux57M1ZiyTKSYtJWfGYUgUS4Ge9DAT3IiPBq/29h
- E+3Qewt7BTAruBDZbQDAzPMSNd9oz53NYcGo4ddUqMaZngxeYRRlXK4pinI/QiJONpwaVGv
- S4gxKmDlJ3lXCeqjyOUBg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mRQMaee9rLQ=:YTGugKhZdOT3CPOM8cEOB+
- PDtIxgx45bjEMtUthkC+gs0Gl4Ww0F8GEGt247WpZpvvlQbiBpKknT97sE+CnU8JqgwkwjCjC
- jS3D2hdjI2wS8o1WHCgdRuVVfuHp+3mheOdlTp5zac2fcgr29DVL+THRp/D7Rz7af1HwQLFSH
- /IrRSNRUEJw5ub6+I6hWoUXnuZu4mefPrDJW7w+TPAcvtpc9PKF+06uUBEtfw8kQKvVZnu5Q3
- wY5ertlMHIB9V6YuOXToA8YMpaYFCITbW1bMX8TWNL7dF/T2hn88zDOVvMQwKnYwjpfTipmPJ
- qZ1fu6VOcu2kx4yjgJaJif2ACrQ1SJKsXnZGi7UMlkAhTVtq0n1gmORfC0VJpScya06aLuIHJ
- 2AytGfRhJ0SqJMMrBtfkfog5OHuo4RAoH9SQsg0bsMeiaKEl15hBo8xQe9dJS8AvdxGV+ftRu
- oK4fFJmvR8j/oePhp0f3gyynjKmgxFAcN457md+pzgX+GXYysx+dSwYX1l+eYR/xXWHt3IcsA
- GJUWGL2ILLtyijhEI/nSjLEpGKmzbBwhP2bLyB8XIm3YjJclr5JcNAGPx/LMREiCHBGp0Qxcj
- ExaUi6RCX/FxVa5tNPtWcx6mmeV6lc/LRatSPBmv7k7GhdBViV6FPqxsWP3kJJuaVFwiAB7HC
- Z1lr/xa5ze6VggbFeP/uvLwsa8SFPhDZHsJQqk0oEcJVF+jTVMbYuP4R1xWojOv4XBkDaY6XI
- y3HZyKOE53bU/SXH
+X-Received: by 2002:a92:3311:0:b0:2b8:245e:cf7f with SMTP id
+ a17-20020a923311000000b002b8245ecf7fmr16042922ilf.173.1645447569710; Mon, 21
+ Feb 2022 04:46:09 -0800 (PST)
+Date:   Mon, 21 Feb 2022 04:46:09 -0800
+In-Reply-To: <20220221085227.1356-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e3a59205d8869de0@google.com>
+Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
+From:   syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
+Hello,
 
-Am 21.02.22 um 08:10 schrieb Laurent Pinchart:
-> Hi Stefan,
->
-> On Mon, Feb 14, 2022 at 12:32:59PM +0100, Stefan Wahren wrote:
->> Am 14.02.22 um 10:54 schrieb Laurent Pinchart:
->>> On Mon, Feb 14, 2022 at 10:39:54AM +0100, Maxime Ripard wrote:
->>>> On Sun, Feb 13, 2022 at 04:48:45PM +0100, Stefan Wahren wrote:
->>>>> as someone with a little more insight to the clocks, i like to know your
->>>>> opinion about the bcm2835-unicam binding.
->>>>>
->>>>> Am 08.02.22 um 16:50 schrieb Jean-Michel Hautbois:
->>>>>> Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
->>>>>> camera interface.
->>>>>>
->>>>>> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
->>>>>> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
->>>>>> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
->>>>>> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
->>>>>>
->>>>>> ---
->>>>>> v4:
->>>>>> - make MAINTAINERS its own patch
->>>>>> - describe the reg and clocks correctly
->>>>>> - use a vendor entry for the number of data lanes
->>>>>> ---
->>>>>>  .../bindings/media/brcm,bcm2835-unicam.yaml   | 117 ++++++++++++++++++
->>>>>>  1 file changed, 117 insertions(+)
->>>>>>  create mode 100644 Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
->>>>>> new file mode 100644
->>>>>> index 000000000000..1938ace23b3d
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
->>>>>> @@ -0,0 +1,117 @@
->>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>>>> +%YAML 1.2
->>>>>> +---
->>>>>> +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
->>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>>> +
->>>>>> +title: Broadcom BCM283x Camera Interface (Unicam)
->>>>>> +
->>>>>> +maintainers:
->>>>>> +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
->>>>>> +
->>>>>> +description: |-
->>>>>> +  The Unicam block on BCM283x SoCs is the receiver for either
->>>>>> +  CSI-2 or CCP2 data from image sensors or similar devices.
->>>>>> +
->>>>>> +  The main platform using this SoC is the Raspberry Pi family of boards.  On
->>>>>> +  the Pi the VideoCore firmware can also control this hardware block, and
->>>>>> +  driving it from two different processors will cause issues.  To avoid this,
->>>>>> +  the firmware checks the device tree configuration during boot. If it finds
->>>>>> +  device tree nodes whose name starts with 'csi' then it will stop the firmware
->>>>>> +  accessing the block, and it can then safely be used via the device tree
->>>>>> +  binding.
->>>>>> +
->>>>>> +properties:
->>>>>> +  compatible:
->>>>>> +    const: brcm,bcm2835-unicam
->>>>>> +
->>>>>> +  reg:
->>>>>> +    items:
->>>>>> +      - description: Unicam block.
->>>>>> +      - description: Clock Manager Image (CMI) block.
->>>>>> +
->>>>>> +  reg-names:
->>>>>> +    items:
->>>>>> +      - const: unicam
->>>>>> +      - const: cmi
->>>>>> +
->>>>>> +  interrupts:
->>>>>> +    maxItems: 1
->>>>>> +
->>>>>> +  clocks:
->>>>>> +    items:
->>>>>> +      - description: Clock to drive the LP state machine of Unicam.
->>>>>> +      - description: Clock for the VPU (core clock).
->>>>>> +
->>>>>> +  clock-names:
->>>>>> +    items:
->>>>>> +      - const: lp
->>>>>> +      - const: vpu
->>>>>> +
->>>>> according to this patch [1], the unicam driver only needs the VPU clock
->>>>> reference just to enforce a minimum of 250 MHz. The firmware clock
->>>>> binding and its driver is specific to the bcm2711, but the Unicam IP
->>>>> exists since bcm2835.
->>>>>
->>>>> So do you think the clock part is correct or should be the VPU clock
->>>>> optional?
->>>> I think we should keep it mandatory. Indeed, that clock is shared with
->>>> the HVS that will change its rate on a regular basis, so even just
->>>> enforcing that 250MHz while it's on without a clock handle will be
->>>> fairly hard.
->>>>
->>>> Also, those are the constraints we have now, but having the clock handle
->>>> all the time will allow us to add any constraint we might need in the
->>>> future.
->>>>
->>>> And BCM2711 or not, the clock has probably always been there.
->>> Furthermore, regardless of what the driver needs, Unicam operates with
->>> the VPU clock, so I think it makes sense to reference it in the device
->>> tree.
->> okay, as a result we need a DTS patch for bcm2835-rpi.dtsi to enable the
->> firmware clocks and its driver in this series.
-> Can't we do that on top, enabling Unicam support for bcm2711 only first
-> ? I have no idea how to deal with firmware clocks on bcm2825, and I'm
-> not sure Jean-Michel even has a hardware platform to test it.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+WARNING in vhost_dev_cleanup
 
-sorry as being a bcm2835 maintainer so long, i'm not always aware of the
-ambiguous meaning of bcm2835. The bcm2835-rpi.dtsi is used by all
-Raspberry Pi generations. So it's sufficient to test it with a Raspberry
-Pi 4, but we would gain support for all generations.
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 4073 at drivers/vhost/vhost.c:718 vhost_dev_cleanup+0x900/0xc20 drivers/vhost/vhost.c:718
+Modules linked in:
+CPU: 1 PID: 4073 Comm: syz-executor336 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:vhost_dev_cleanup+0x900/0xc20 drivers/vhost/vhost.c:718
+Code: c7 85 90 01 00 00 00 00 00 00 e8 5b 48 a2 fa 48 89 ef 48 83 c4 28 5b 5d 41 5c 41 5d 41 5e 41 5f e9 35 b1 ff ff e8 40 48 a2 fa <0f> 0b e9 49 ff ff ff 48 8b 7c 24 10 e8 8f da e9 fa e9 93 f7 ff ff
+RSP: 0018:ffffc90001fa7ca0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
+RDX: ffff88807cadd700 RSI: ffffffff86d695e0 RDI: ffff8880764c00b0
+RBP: ffff8880764c0000 R08: 0000000000000000 R09: ffff8880764c00d3
+R10: ffffed100ec9801a R11: 0000000000000001 R12: ffff8880764c00d0
+R13: ffff8880764c0120 R14: ffff8880764c00d0 R15: 0000000000000002
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000002 CR3: 000000000b88e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ vhost_vsock_dev_release+0x3a4/0x4f0 drivers/vhost/vsock.c:778
+ __fput+0x286/0x9f0 fs/file_table.c:313
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xb29/0x2a30 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+ __do_sys_exit_group kernel/exit.c:946 [inline]
+ __se_sys_exit_group kernel/exit.c:944 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fd6d7a48ba9
+Code: Unable to access opcode bytes at RIP 0x7fd6d7a48b7f.
+RSP: 002b:00007ffcc430a878 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007fd6d7abd330 RCX: 00007fd6d7a48ba9
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 00007ffcc430aa68
+R10: 00007ffcc430aa68 R11: 0000000000000246 R12: 00007fd6d7abd330
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
 
-So my request is to move the changes from bcm2711 specific dtsi to the
-general dtsi. There is no need to touch any driver, please have a look
-at this patch [1] to see what i had in my mind. Just compile tested.
 
-I hope you understand, i want to have it for all generations in one step.
+Tested on:
 
-[1] -
-https://github.com/lategoodbye/rpi-zero/commit/67897cc22c03204e6464d00ff4ddac6bf5dc65dc
+commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=11dc90ea700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=14afd0b6700000
 
-> If you want to send a patch series to enable firmware clocks on bcm2835,
-> we'll be happy to rebase on top.
->
