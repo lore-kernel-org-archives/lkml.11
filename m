@@ -2,80 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E973C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB62C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245547AbiBUB5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 20:57:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38662 "EHLO
+        id S245563AbiBUB7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 20:59:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245530AbiBUB5B (ORCPT
+        with ESMTP id S232564AbiBUB7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 20:57:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5744F100C;
-        Sun, 20 Feb 2022 17:56:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E71F261003;
-        Mon, 21 Feb 2022 01:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBDE7C340E8;
-        Mon, 21 Feb 2022 01:56:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645408598;
-        bh=yq/OsN2UPgPqkLWDnB90Fn+UbNTw+6x3zjF9s9FDhHc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gC1VEDneoqZafgZU9gPv/kjrpPE2aYhKDXHjRda0CzsDlYrlPKRz/afdK5Wfvp4Hp
-         5/VYBmczFIQ9ec5pgbcLkhNT699e4rqY75++9l+EOHp0eaQFECBA0IbIKbRafiEZwN
-         A9lTUjj7PRL3x6py6peO6hiigXCVLbz5KFl1s14NOs+ZqNp6oYAzAsKq0j0awIjPnR
-         cKEn1X88kEp+v6zixbbTdrkjAxGDo/ZkPJRotBc85wPMn5EtM6wlTXN/4trJRhQXML
-         elIy55vz3FZa2YbWYi2SHZROEU2dZ0wnLlRm7TBI/Wb4ZH+X8xm4LQWeIPbgwrwBLd
-         H9jlp9Ijkcx2A==
-Date:   Mon, 21 Feb 2022 02:57:16 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Kleikamp <dave.kleikamp@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] KEYS: trusted: Avoid calling null function
- trusted_key_exit
-Message-ID: <YhLxfHcCccNUAiIl@kernel.org>
-References: <20220126184155.220814-1-dave.kleikamp@oracle.com>
- <YfGtVk/HQjgl1zSS@iki.fi>
- <cda221fd-6481-598f-03ba-29d0b79af8b7@oracle.com>
+        Sun, 20 Feb 2022 20:59:19 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3253A517D3;
+        Sun, 20 Feb 2022 17:58:56 -0800 (PST)
+X-UUID: dbe1d2847c304ffcbcd8cc4eb1e2eaa5-20220221
+X-UUID: dbe1d2847c304ffcbcd8cc4eb1e2eaa5-20220221
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <chun-jie.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 368339440; Mon, 21 Feb 2022 09:58:53 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 21 Feb 2022 09:58:51 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 21 Feb 2022 09:58:51 +0800
+From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Boichat <drinkcat@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v2 00/15] Mediatek MT8186 clock support
+Date:   Mon, 21 Feb 2022 09:52:43 +0800
+Message-ID: <20220221015258.913-1-chun-jie.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cda221fd-6481-598f-03ba-29d0b79af8b7@oracle.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:40:23AM -0600, Dave Kleikamp wrote:
-> On 1/26/22 2:21PM, Jarkko Sakkinen wrote:
-> > On Wed, Jan 26, 2022 at 12:41:55PM -0600, Dave Kleikamp wrote:
-> > > If one loads and unloads the trusted module, trusted_key_exit can be
-> > > NULL. Call it through static_call_cond() to avoid a kernel trap.
-> > > 
-> > > Fixes: 5d0682be3189 ("KEYS: trusted: Add generic trusted keys framework")
-> > > 
-> > > Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-> > 
-> > Please re-send with cc stable and the empty line removed and I'll pick it.
-> 
-> I re-sent a v2, but haven't seen any response from you.
-> 
-> I can send it again, or feel free to clean up those lines yourself.
-> 
-> Thanks,
-> Shaggy
+this patch series is based on 5.17-rc1 and depends on
+[1]"clk: mediatek: Cleanups and Improvements - Part 1"
 
-I've applied the patch. Thank you, and apologies for the latency.
+changes since v1:
+- combine dt-binding documents as a single patch
+- remove redundant example in binding document
+- change to dual license in binding document
+- add more clock error handle based on interface provided in [1]
 
-BR, Jarkko
+[1]https://patchwork.kernel.org/project/linux-mediatek/list/?series=612171
+
+Chun-Jie Chen (15):
+  dt-bindings: ARM: Mediatek: Add new document bindings of MT8186 clock
+  clk: mediatek: Add MT8186 mcusys clock support
+  clk: mediatek: Add MT8186 topckgen clock support
+  clk: mediatek: Add MT8186 infrastructure clock support
+  clk: mediatek: Add MT8186 apmixedsys clock support
+  clk: mediatek: Add MT8186 imp i2c wrapper clock support
+  clk: mediatek: Add MT8186 mfgsys clock support
+  clk: mediatek: Add MT8186 mmsys clock support
+  clk: mediatek: Add MT8186 wpesys clock support
+  clk: mediatek: Add MT8186 imgsys clock support
+  clk: mediatek: Add MT8186 vdecsys clock support
+  clk: mediatek: Add MT8186 vencsys clock support
+  clk: mediatek: Add MT8186 camsys clock support
+  clk: mediatek: Add MT8186 mdpsys clock support
+  clk: mediatek: Add MT8186 ipesys clock support
+
+ .../arm/mediatek/mediatek,mt8186-clock.yaml   |  56 ++
+ .../mediatek/mediatek,mt8186-sys-clock.yaml   |  54 ++
+ drivers/clk/mediatek/Kconfig                  |   8 +
+ drivers/clk/mediatek/Makefile                 |   5 +
+ drivers/clk/mediatek/clk-mt8186-apmixedsys.c  | 133 +++
+ drivers/clk/mediatek/clk-mt8186-cam.c         |  90 ++
+ drivers/clk/mediatek/clk-mt8186-img.c         |  68 ++
+ .../clk/mediatek/clk-mt8186-imp_iic_wrap.c    |  67 ++
+ drivers/clk/mediatek/clk-mt8186-infra_ao.c    | 216 +++++
+ drivers/clk/mediatek/clk-mt8186-ipe.c         |  55 ++
+ drivers/clk/mediatek/clk-mt8186-mcu.c         | 106 +++
+ drivers/clk/mediatek/clk-mt8186-mdp.c         |  80 ++
+ drivers/clk/mediatek/clk-mt8186-mfg.c         |  48 ++
+ drivers/clk/mediatek/clk-mt8186-mm.c          | 111 +++
+ drivers/clk/mediatek/clk-mt8186-topckgen.c    | 780 ++++++++++++++++++
+ drivers/clk/mediatek/clk-mt8186-vdec.c        |  88 ++
+ drivers/clk/mediatek/clk-mt8186-venc.c        |  51 ++
+ drivers/clk/mediatek/clk-mt8186-wpe.c         |  51 ++
+ include/dt-bindings/clock/mt8186-clk.h        | 445 ++++++++++
+ 19 files changed, 2512 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-apmixedsys.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-cam.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-img.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-infra_ao.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-ipe.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-mcu.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-mdp.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-mfg.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-mm.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-topckgen.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-vdec.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-venc.c
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-wpe.c
+ create mode 100644 include/dt-bindings/clock/mt8186-clk.h
+
+-- 
+2.18.0
+
