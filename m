@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA64C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348436AbiBUJSf (ORCPT
+        id S1347985AbiBUJSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33878 "EHLO
+        Mon, 21 Feb 2022 04:18:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348716AbiBUJLg (ORCPT
+        with ESMTP id S1348804AbiBUJLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E375627CFF;
-        Mon, 21 Feb 2022 01:04:00 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF22A286D4;
+        Mon, 21 Feb 2022 01:04:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EC826112F;
-        Mon, 21 Feb 2022 09:04:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A08C340EB;
-        Mon, 21 Feb 2022 09:03:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 22326CE0E69;
+        Mon, 21 Feb 2022 09:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09126C340E9;
+        Mon, 21 Feb 2022 09:04:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434239;
-        bh=shZDmquoMNV8wulGH1i1U7v5/XEgHVECCYKOWyjzupw=;
+        s=korg; t=1645434245;
+        bh=JFakvK8607UA2o62LWq8p0ThgIQUef2OWViBTDQfYQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fD4bZdcjLOJY9oOKNMZboejr9dALsRvbEF8p6UQ09TAApQ1k/diuI6JwG9di0XGYA
-         SR3ZOTGSVEHo8duiCakxEbMmDcdxc5nFDdiAl9jQzG4WW+mg71+hdi4QmBN5VSW8PX
-         xE52kewgWCAnLpQcfLKFC+cDuHfg52dy8wpzcuzI=
+        b=YszRTTEZknmUA5WIYSK9gEOLBWyhlfNnfvlPnoCUdIA+rIwA+QyUZHmaT1930NR/A
+         AgfOnuwM4GftUYG42VKIjV42sTkCqLX+eioRLtAWUOXoRwCvQHLbM6BJ8FeISv25k/
+         NPVzrHX6EQ6MXF3taP8DpNiYzZTotpeHWLzxJY0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Yuka Kawajiri <yukx00@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 028/121] selftests: openat2: Print also errno in failure messages
-Date:   Mon, 21 Feb 2022 09:48:40 +0100
-Message-Id: <20220221084922.128182873@linuxfoundation.org>
+Subject: [PATCH 5.10 020/121] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
+Date:   Mon, 21 Feb 2022 09:48:32 +0100
+Message-Id: <20220221084921.843959510@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,42 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Yuka Kawajiri <yukx00@gmail.com>
 
-[ Upstream commit e051cdf655fa016692008a446a060eff06222bb5 ]
+[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
 
-In E_func() macro, on error, print also errno in order to aid debugging.
+Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
 
-Cc: Aleksa Sarai <cyphar@cyphar.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
+Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/openat2/helpers.h | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/tools/testing/selftests/openat2/helpers.h b/tools/testing/selftests/openat2/helpers.h
-index a6ea27344db2d..ad5d0ba5b6ce9 100644
---- a/tools/testing/selftests/openat2/helpers.h
-+++ b/tools/testing/selftests/openat2/helpers.h
-@@ -62,11 +62,12 @@ bool needs_openat2(const struct open_how *how);
- 					(similar to chroot(2)). */
- #endif /* RESOLVE_IN_ROOT */
+diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
+index 59b7e90cd5875..ab6a9369649db 100644
+--- a/drivers/platform/x86/touchscreen_dmi.c
++++ b/drivers/platform/x86/touchscreen_dmi.c
+@@ -756,6 +756,21 @@ static const struct ts_dmi_data predia_basic_data = {
+ 	.properties	= predia_basic_props,
+ };
  
--#define E_func(func, ...)						\
--	do {								\
--		if (func(__VA_ARGS__) < 0)				\
--			ksft_exit_fail_msg("%s:%d %s failed\n", \
--					   __FILE__, __LINE__, #func);\
-+#define E_func(func, ...)						      \
-+	do {								      \
-+		errno = 0;						      \
-+		if (func(__VA_ARGS__) < 0)				      \
-+			ksft_exit_fail_msg("%s:%d %s failed - errno:%d\n",    \
-+					   __FILE__, __LINE__, #func, errno); \
- 	} while (0)
- 
- #define E_asprintf(...)		E_func(asprintf,	__VA_ARGS__)
++static const struct property_entry rwc_nanote_p8_props[] = {
++	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
++	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
++	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
++	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
++	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
++	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
++	{ }
++};
++
++static const struct ts_dmi_data rwc_nanote_p8_data = {
++	.acpi_name = "MSSL1680:00",
++	.properties = rwc_nanote_p8_props,
++};
++
+ static const struct property_entry schneider_sct101ctm_props[] = {
+ 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
+ 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
+@@ -1326,6 +1341,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
+ 		},
+ 	},
++	{
++		/* RWC NANOTE P8 */
++		.driver_data = (void *)&rwc_nanote_p8_data,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
++			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
++		},
++	},
+ 	{
+ 		/* Schneider SCT101CTM */
+ 		.driver_data = (void *)&schneider_sct101ctm_data,
 -- 
 2.34.1
 
