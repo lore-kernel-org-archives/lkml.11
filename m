@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 242B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F535C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349182AbiBUJYd (ORCPT
+        id S1349195AbiBUJYh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:24:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48418 "EHLO
+        Mon, 21 Feb 2022 04:24:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348240AbiBUJOr (ORCPT
+        with ESMTP id S1348996AbiBUJLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:14:47 -0500
+        Mon, 21 Feb 2022 04:11:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3936F9FDE;
-        Mon, 21 Feb 2022 01:06:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42CA2981B;
+        Mon, 21 Feb 2022 01:04:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAE2761267;
-        Mon, 21 Feb 2022 09:06:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B06E3C340E9;
-        Mon, 21 Feb 2022 09:06:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C860611D0;
+        Mon, 21 Feb 2022 09:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0D7C340E9;
+        Mon, 21 Feb 2022 09:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434398;
-        bh=R4TuLef2DSgjZ3rFzWIyayhSS9Db1ZXijWzAtPi6lX0=;
+        s=korg; t=1645434279;
+        bh=VYHruU6s7ovyeUStIRiMtr1mC9ghTv6y/HdCLaFw9KA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yKtfZBygJuBUqMPv8MGD0Hb4oxwd1aHI80wsX18h7u7Oe/ujppT2rpNEJUfEjM20f
-         hFYPT/9QAQ6AJ4xqF74+vmeaE/viwGJFMU7RH7Cnxi0aN9Gn+gw+GE306k2lgYV9E0
-         fQHE6A+SWTCDKyw4Xybpm9zw3kN+bxS3yjS8OmOg=
+        b=nBBgnmXdCJazfzO1GCgtFW/1HpPrH4ksl9Fu5Hti244TSQXz8W/+K2a6nWndp44i9
+         JMEHHYnkFptZmy2n1/EzaauEjm/7s0wZM/4kkfvbJcpHdstpNDV7sNunWz69fZCE5l
+         g9jwSb9zCK+LRRVEbTr9+/H2OmjKRizHVNoYV/As=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.10 115/121] dmaengine: stm32-dmamux: Fix PM disable depth imbalance in stm32_dmamux_probe
-Date:   Mon, 21 Feb 2022 09:50:07 +0100
-Message-Id: <20220221084925.077466840@linuxfoundation.org>
+        stable@vger.kernel.org, Mans Rullgard <mans@mansr.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fianelil <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 057/121] net: dsa: lan9303: fix reset on probe
+Date:   Mon, 21 Feb 2022 09:49:09 +0100
+Message-Id: <20220221084923.151899517@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,39 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Mans Rullgard <mans@mansr.com>
 
-commit e831c7aba950f3ae94002b10321279654525e5ec upstream.
+commit 6bb9681a43f34f2cab4aad6e2a02da4ce54d13c5 upstream.
 
-The pm_runtime_enable will increase power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+The reset input to the LAN9303 chip is active low, and devicetree
+gpio handles reflect this.  Therefore, the gpio should be requested
+with an initial state of high in order for the reset signal to be
+asserted.  Other uses of the gpio already use the correct polarity.
 
-Fixes: 4f3ceca254e0 ("dmaengine: stm32-dmamux: Add PM Runtime support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220108085336.11992-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: a1292595e006 ("net: dsa: add new DSA switch driver for the SMSC-LAN9303")
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fianelil <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220209145454.19749-1-mans@mansr.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-dmamux.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/dsa/lan9303-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/dma/stm32-dmamux.c
-+++ b/drivers/dma/stm32-dmamux.c
-@@ -292,10 +292,12 @@ static int stm32_dmamux_probe(struct pla
- 	ret = of_dma_router_register(node, stm32_dmamux_route_allocate,
- 				     &stm32_dmamux->dmarouter);
- 	if (ret)
--		goto err_clk;
-+		goto pm_disable;
- 
- 	return 0;
- 
-+pm_disable:
-+	pm_runtime_disable(&pdev->dev);
- err_clk:
- 	clk_disable_unprepare(stm32_dmamux->clk);
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1305,7 +1305,7 @@ static int lan9303_probe_reset_gpio(stru
+ 				     struct device_node *np)
+ {
+ 	chip->reset_gpio = devm_gpiod_get_optional(chip->dev, "reset",
+-						   GPIOD_OUT_LOW);
++						   GPIOD_OUT_HIGH);
+ 	if (IS_ERR(chip->reset_gpio))
+ 		return PTR_ERR(chip->reset_gpio);
  
 
 
