@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F835C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546BCC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349765AbiBUJMy (ORCPT
+        id S1349886AbiBUJNB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33976 "EHLO
+        Mon, 21 Feb 2022 04:13:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237527AbiBUJIz (ORCPT
+        with ESMTP id S1347802AbiBUJIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:08:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D97726AFB;
-        Mon, 21 Feb 2022 01:00:49 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B47324BEE;
+        Mon, 21 Feb 2022 01:00:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6F95B80E72;
-        Mon, 21 Feb 2022 09:00:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C05C340E9;
-        Mon, 21 Feb 2022 09:00:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC804611D0;
+        Mon, 21 Feb 2022 09:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A16FDC340E9;
+        Mon, 21 Feb 2022 09:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434046;
-        bh=mlCVfXCI/MPFLPPvRfg1e5hONyIiSJQMvH37hKzLE5Q=;
+        s=korg; t=1645434038;
+        bh=u38M8+BS6yGalTsAL/4IuTwBWdycbK9wF63yvlPbP9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qW75GoQ4YPEG9COf3cn1Oo+ci85bC6p43qrVlcFIBF4fXMoB86wl8Upr7EV9Zo2qt
-         kjlnYinzxYFjkLSaEb/+p+DmPJjj4OSN2L7kSW29ERJvxLuyU0M99WygL24EqcvsoB
-         tcceI8aGSwUWkmtcW4csmmhMmr74nrbWCEBJaW1w=
+        b=eKmXK0/DebGxzC/58CndaMX5OFTHkVbpYAwPICA4hCmU1gBPh65S71kerbZXoH3zI
+         9XIOsSSncK5Yj32SCd2/2xu020F+11wW1wtqrAMNKyX7viPWXjTsoU2PFtOJGt1Mu7
+         R9yIOL/r8jEs4lm0Ljz6gTgCt9wKgDd1oveThiUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brenda Streiff <brenda.streiff@ni.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Mateusz Krzak <kszaquitto@gmail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 74/80] kconfig: let shell return enough output for deep path names
-Date:   Mon, 21 Feb 2022 09:49:54 +0100
-Message-Id: <20220221084918.001380263@linuxfoundation.org>
+Subject: [PATCH 5.4 71/80] arm64: dts: meson-gx: add ATF BL32 reserved-memory region
+Date:   Mon, 21 Feb 2022 09:49:51 +0100
+Message-Id: <20220221084917.908941985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,41 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brenda Streiff <brenda.streiff@ni.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit 8a4c5b2a6d8ea079fa36034e8167de87ab6f8880 ]
+[ Upstream commit 76577c9137456febb05b0e17d244113196a98968 ]
 
-The 'shell' built-in only returns the first 256 bytes of the command's
-output. In some cases, 'shell' is used to return a path; by bumping up
-the buffer size to 4096 this lets us capture up to PATH_MAX.
+Add an additional reserved memory region for the BL32 trusted firmware
+present in many devices that boot from Amlogic vendor u-boot.
 
-The specific case where I ran into this was due to commit 1e860048c53e
-("gcc-plugins: simplify GCC plugin-dev capability test"). After this
-change, we now use `$(shell,$(CC) -print-file-name=plugin)` to return
-a path; if the gcc path is particularly long, then the path ends up
-truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
-depends test always fail.
-
-Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-2-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/kconfig/preprocess.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-index 0590f86df6e40..748da578b418c 100644
---- a/scripts/kconfig/preprocess.c
-+++ b/scripts/kconfig/preprocess.c
-@@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
- static char *do_shell(int argc, char *argv[])
- {
- 	FILE *p;
--	char buf[256];
-+	char buf[4096];
- 	char *cmd;
- 	size_t nread;
- 	int i;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+index ce230d6ac35cd..ad7bc0eec6682 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+@@ -41,6 +41,12 @@
+ 			no-map;
+ 		};
+ 
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
 -- 
 2.34.1
 
