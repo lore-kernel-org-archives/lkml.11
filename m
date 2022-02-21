@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351205AbiBUJnX (ORCPT
+        id S1351233AbiBUJn3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:43:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45564 "EHLO
+        Mon, 21 Feb 2022 04:43:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351326AbiBUJg7 (ORCPT
+        with ESMTP id S1351347AbiBUJhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:36:59 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461CF2DD75;
-        Mon, 21 Feb 2022 01:15:38 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96EC2E088;
+        Mon, 21 Feb 2022 01:15:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A53AFCE0E80;
-        Mon, 21 Feb 2022 09:15:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D77EC340EB;
-        Mon, 21 Feb 2022 09:15:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D3E60ED4;
+        Mon, 21 Feb 2022 09:15:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D7ADC340E9;
+        Mon, 21 Feb 2022 09:15:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434919;
-        bh=trq7hfvo0v26i3lCNeAC070KzvWAav8gLlhgw5P/0NE=;
+        s=korg; t=1645434939;
+        bh=7/FBbwrvHWUltZ4Jxxrkk2lhlNEV2NohBiXF+5Bj8II=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q5hSD51YCGKQ9aVVrpjbMuJ1Gj3xCI2o0KsWQGwyesfw9wAlwUS0DyhRpfp4C84MN
-         5fPGwsz2E++a2+CR0G9t9RfWHxXTz8KoMc8QfUhE5FiCVQ9BxZSv1yVtaKZHWhYFbB
-         q+uGwb8xyp6fecbORw7TZuiIvCGoLq41lh0OXlMo=
+        b=Zn03hV+92fPA/KDU27CMmNBNyzd1ncBfrkNfCnLRHACZ5gWsosX+hOSX1Ds+hzBb0
+         7fN4hK4dcOgo45fw4IJ/rwksyu+8Q0Fo6UGoBTivbi+g8BzQkrYIm+/t7dP+Pc/+v8
+         DA1H6mWGFDVn4huBc8b/5ooLExPsqGDiugsKBBy8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 177/196] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
-Date:   Mon, 21 Feb 2022 09:50:09 +0100
-Message-Id: <20220221084936.877029899@linuxfoundation.org>
+        stable@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 183/196] ucounts: Move RLIMIT_NPROC handling after set_user
+Date:   Mon, 21 Feb 2022 09:50:15 +0100
+Message-Id: <20220221084937.065172247@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,45 +48,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eliav Farber <farbere@amazon.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
+commit c923a8e7edb010da67424077cbf1a6f1396ebd2e upstream.
 
-Do alignment logic properly and use the "ptr" local variable for
-calculating the remainder of the alignment.
+During set*id() which cred->ucounts to charge the the current process
+to is not known until after set_cred_ucounts.  So move the
+RLIMIT_NPROC checking into a new helper flag_nproc_exceeded and call
+flag_nproc_exceeded after set_cred_ucounts.
 
-This became an issue because struct edac_mc_layer has a size that is not
-zero modulo eight, and the next offset that was prepared for the private
-data was unaligned, causing an alignment exception.
+This is very much an arbitrary subset of the places where we currently
+change the RLIMIT_NPROC accounting, designed to preserve the existing
+logic.
 
-The patch in Fixes: which broke this actually wanted to "what we
-actually care about is the alignment of the actual pointer that's about
-to be returned." But it didn't check that alignment.
+Fixing the existing logic will be the subject of another series of
+changes.
 
-Use the correct variable "ptr" for that.
-
-  [ bp: Massage commit message. ]
-
-Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
-Signed-off-by: Eliav Farber <farbere@amazon.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220216155832.680775-4-ebiederm@xmission.com
+Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/edac_mc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sys.c |   19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
---- a/drivers/edac/edac_mc.c
-+++ b/drivers/edac/edac_mc.c
-@@ -215,7 +215,7 @@ void *edac_align_ptr(void **p, unsigned
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -472,6 +472,16 @@ static int set_user(struct cred *new)
+ 	if (!new_user)
+ 		return -EAGAIN;
+ 
++	free_uid(new->user);
++	new->user = new_user;
++	return 0;
++}
++
++static void flag_nproc_exceeded(struct cred *new)
++{
++	if (new->ucounts == current_ucounts())
++		return;
++
+ 	/*
+ 	 * We don't fail in case of NPROC limit excess here because too many
+ 	 * poorly written programs don't check set*uid() return code, assuming
+@@ -480,14 +490,10 @@ static int set_user(struct cred *new)
+ 	 * failure to the execve() stage.
+ 	 */
+ 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
+-			new_user != INIT_USER)
++			new->user != INIT_USER)
+ 		current->flags |= PF_NPROC_EXCEEDED;
  	else
- 		return (char *)ptr;
+ 		current->flags &= ~PF_NPROC_EXCEEDED;
+-
+-	free_uid(new->user);
+-	new->user = new_user;
+-	return 0;
+ }
  
--	r = (unsigned long)p % align;
-+	r = (unsigned long)ptr % align;
+ /*
+@@ -562,6 +568,7 @@ long __sys_setreuid(uid_t ruid, uid_t eu
+ 	if (retval < 0)
+ 		goto error;
  
- 	if (r == 0)
- 		return (char *)ptr;
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
+@@ -624,6 +631,7 @@ long __sys_setuid(uid_t uid)
+ 	if (retval < 0)
+ 		goto error;
+ 
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
+@@ -703,6 +711,7 @@ long __sys_setresuid(uid_t ruid, uid_t e
+ 	if (retval < 0)
+ 		goto error;
+ 
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
 
 
