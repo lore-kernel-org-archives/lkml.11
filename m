@@ -2,91 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D002C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC64CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348626AbiBUJUI (ORCPT
+        id S1348671AbiBUJUP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:20:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36204 "EHLO
+        Mon, 21 Feb 2022 04:20:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349483AbiBUJMb (ORCPT
+        with ESMTP id S1349567AbiBUJMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:31 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819642C11A;
-        Mon, 21 Feb 2022 01:05:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 404D6CE0E95;
-        Mon, 21 Feb 2022 09:05:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22C1AC340F1;
-        Mon, 21 Feb 2022 09:05:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434317;
-        bh=+NypMh0wY0nz7uXsYrQe6An7AQyR/zc7KVML5M1wJ3g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lf8QxeuJmFrX+s9n4Dmug+uCduv/fUz15guguSP5S9GeUnE6jrjLF6y0x8Wz/X7Ur
-         X05a6VnztLFjCYT/4NOYKUT7D6FFwTRKB4d/L1mnM/oYn0FjyviAiVPKa1PNGz9s/g
-         H6KQTAgARaGFGxjDwn2zsiyqnhZi+3rjEo7udR6U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, david regan <dregan@mail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 086/121] mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
-Date:   Mon, 21 Feb 2022 09:49:38 +0100
-Message-Id: <20220221084924.113164302@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
-References: <20220221084921.147454846@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:12:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE5F02408A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:05:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645434328;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NYLLwD8bJ4Pq61ytGnPJ+l31crIWDd1Z3kl4/7tNe/4=;
+        b=Nl0tI8L/eX1Tn2R+aDCjTgHlxDdCHXltzbzPI1uCCDH+4zoq+XKQjuTfojQq5Eh/WJmje/
+        VIjK4GYys6pxTG2x6D+51ppzG+SF1jcyWljaoBC5vGZSNEafGLlCWynpNGj1FvBPdm9ZnM
+        qX118CsDm7RZ2XwgmZ4HPJLSFrSHBQw=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-359-C4k9ojZVMomPara1XiAD_A-1; Mon, 21 Feb 2022 04:05:26 -0500
+X-MC-Unique: C4k9ojZVMomPara1XiAD_A-1
+Received: by mail-ed1-f72.google.com with SMTP id j29-20020a508a9d000000b00412aa79f367so6936195edj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:05:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NYLLwD8bJ4Pq61ytGnPJ+l31crIWDd1Z3kl4/7tNe/4=;
+        b=YmVhN3NIH9fMbFo6zE67el3DQ98uD9/o5GbX+Tq6DTq2CgWKBTQBFSb8Z/8aYO/Y4q
+         gk8GdqYId2hrhVhda02zRGWdXX8D0w7OnyrlLRi8uBZOMK/Sx7IQmRNFvqJFRMctbG81
+         YE5Dkq9cqcQp6ccsp1tBCITb4fYCoG8gMYUfBgVcRIU+2SRuCOVESbP7G8plZgh8LD39
+         P/avYCSnEDuqtZx0ccU27eFd/5kL2EGn0no890ls74ubXDk5TnO4vc+wX6htSBTGFSyf
+         qU269VXLKWjy3YaHWhu18OA62BGJ5Yvy8Gh04vfOqJpnbGKgxbjqPVeJEtixTqr3+3hz
+         NmFw==
+X-Gm-Message-State: AOAM530bnAZnvOjeZqL+lAC/taWAkFGOfjhN2g2wuAVddc9ScLVU2J7a
+        RylnzwLM8D4/+XATpp0dEBJCbr2t9+OD7W5r5ujRMf66dzVJY9cg6sC+vIN7JiuVOnEWPmCbwmi
+        QdCdfkzoNllDDSkjo/vUXm4Be
+X-Received: by 2002:a05:6402:50cd:b0:410:5da3:b569 with SMTP id h13-20020a05640250cd00b004105da3b569mr20220310edb.188.1645434325285;
+        Mon, 21 Feb 2022 01:05:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwJ6zo5BL/OxFVP+iqo/I0uGmkJieugYJhKHOCIdg0T/R75w4YC0Dv+l9cjAI0fIIph8xqloA==
+X-Received: by 2002:a05:6402:50cd:b0:410:5da3:b569 with SMTP id h13-20020a05640250cd00b004105da3b569mr20220286edb.188.1645434325018;
+        Mon, 21 Feb 2022 01:05:25 -0800 (PST)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id h5sm5021885ejo.142.2022.02.21.01.05.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 01:05:24 -0800 (PST)
+Message-ID: <5ba6e52c-d7e9-39fc-cb84-963a403385ca@redhat.com>
+Date:   Mon, 21 Feb 2022 10:05:24 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 1/3] platform/x86/intel: pmt: Remove bin_attribute mmap
+ support to runtime pm
+Content-Language: en-US
+To:     "David E. Box" <david.e.box@linux.intel.com>,
+        mgross@linux.intel.com, rjw@rjwysocki.net,
+        srinivas.pandruvada@intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+References: <20220214213258.1929462-1-david.e.box@linux.intel.com>
+ <20220214213258.1929462-2-david.e.box@linux.intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220214213258.1929462-2-david.e.box@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: david regan <dregan@mail.com>
+Hi,
 
-commit 36415a7964711822e63695ea67fede63979054d9 upstream.
+On 2/14/22 22:32, David E. Box wrote:
+> PMT devices need to support runtime D3. However, binary attributes don't
+> provide access to open/release methods that could be used to control
+> runtime pm. Therefore, remove the mmap operation. The data may still be
+> accessed with read() calls.
+> 
+> Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+> ---
+> V0 comments:
+> 
+> I expect that this is an undesirable solution because of the ABI change.
+> I don't know if anyone is using this ABI outside of our Intel tools which
+> are willing to make this change. I'd rather find a solution to keep the
+> mmap support. I initially wrote a patch to simply add the missing open and
+> release callbacks to binary attributes but this was thought to be too heavy
+> handed in our internal review. I'm open to suggestions. Thanks.
 
-The brcmnand driver contains a bug in which if a page (example 2k byte)
-is read from the parallel/ONFI NAND and within that page a subpage (512
-byte) has correctable errors which is followed by a subpage with
-uncorrectable errors, the page read will return the wrong status of
-correctable (as opposed to the actual status of uncorrectable.)
+We really cannot go and break userspace API like this. Even if you are
+dropping mmap support from the Intel tools; and we assume that the Intel
+tools are the only consumer, then we still cannot drop mmap support
+because users may install a new kernel without updating the tools.
 
-The bug is in function brcmnand_read_by_pio where there is a check for
-uncorrectable bits which will be preempted if a previous status for
-correctable bits is detected.
+The never break userspace rule applies here and that is a very clear
+and hard rule.
 
-The fix is to stop checking for bad bits only if we already have a bad
-bits status.
+So please respin the series using the approach with open and release
+callbacks.
 
-Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
-Signed-off-by: david regan <dregan@mail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mtd/nand/raw/brcmnand/brcmnand.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you want to get rid of mmap in the future you need to follow the
+official deprecation process:
 
---- a/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-@@ -2062,7 +2062,7 @@ static int brcmnand_read_by_pio(struct m
- 					mtd->oobsize / trans,
- 					host->hwcfg.sector_size_1k);
- 
--		if (!ret) {
-+		if (ret != -EBADMSG) {
- 			*err_addr = brcmnand_get_uncorrecc_addr(ctrl);
- 
- 			if (*err_addr)
+1. Announce that mmap is going away
+2. Move the ABI doc with the mmap support to
+   Documentation/ABI/obsolete with a note explaining what is being
+   removed and why it is being removed. Since you are only removing mmap you
+   will want to keep the testing version with mmap removed and have the 2
+   point to each other
+3. Wait at least 1 year until after a kernel with the docs in the obsolete dir
+   has been released
+4. Remove the mmap API and move the Documentation/ABI/obsolete version
+   of the ABI doc to Documentation/ABI/removed
 
+Regards,
+
+Hans
+
+
+
+
+
+
+>  .../ABI/testing/sysfs-class-intel_pmt         | 24 +++++++-------
+>  drivers/platform/x86/intel/pmt/class.c        | 31 -------------------
+>  2 files changed, 12 insertions(+), 43 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-class-intel_pmt b/Documentation/ABI/testing/sysfs-class-intel_pmt
+> index ed4c886a21b1..4182f67dcef8 100644
+> --- a/Documentation/ABI/testing/sysfs-class-intel_pmt
+> +++ b/Documentation/ABI/testing/sysfs-class-intel_pmt
+> @@ -15,10 +15,10 @@ Description:
+>  		The telem<x> directory contains files describing an instance of
+>  		a PMT telemetry device that exposes hardware telemetry. Each
+>  		telem<x> directory has an associated telem file. This file
+> -		may be opened and mapped or read to access the telemetry space
+> -		of the device. The register layout of the telemetry space is
+> -		determined from an XML file that matches the PCI device id and
+> -		GUID for the device.
+> +		may be opened and read to access the telemetry space of the
+> +		device. The register layout of the telemetry space is determined
+> +		from an XML file that matches the PCI device id and GUID for the
+> +		device.
+>  
+>  What:		/sys/class/intel_pmt/telem<x>/telem
+>  Date:		October 2020
+> @@ -26,7 +26,7 @@ KernelVersion:	5.10
+>  Contact:	David Box <david.e.box@linux.intel.com>
+>  Description:
+>  		(RO) The telemetry data for this telemetry device. This file
+> -		may be mapped or read to obtain the data.
+> +		may be read to obtain the data.
+>  
+>  What:		/sys/class/intel_pmt/telem<x>/guid
+>  Date:		October 2020
+> @@ -43,7 +43,7 @@ KernelVersion:	5.10
+>  Contact:	David Box <david.e.box@linux.intel.com>
+>  Description:
+>  		(RO) The size of telemetry region in bytes that corresponds to
+> -		the mapping size for the telem file.
+> +		the size of the telem file.
+>  
+>  What:		/sys/class/intel_pmt/telem<x>/offset
+>  Date:		October 2020
+> @@ -51,7 +51,7 @@ KernelVersion:	5.10
+>  Contact:	David Box <david.e.box@linux.intel.com>
+>  Description:
+>  		(RO) The offset of telemetry region in bytes that corresponds to
+> -		the mapping for the telem file.
+> +		the size of the telem file.
+>  
+>  What:		/sys/class/intel_pmt/crashlog<x>
+>  Date:		October 2020
+> @@ -61,10 +61,10 @@ Description:
+>  		The crashlog<x> directory contains files for configuring an
+>  		instance of a PMT crashlog device that can perform crash data
+>  		recording. Each crashlog<x> device has an associated crashlog
+> -		file. This file can be opened and mapped or read to access the
+> -		resulting crashlog buffer. The register layout for the buffer
+> -		can be determined from an XML file of specified GUID for the
+> -		parent device.
+> +		file. This file can be opened and read to access the resulting
+> +		crashlog buffer. The register layout for the buffer can be
+> +		determined from an XML file of specified GUID for the parent
+> +		device.
+>  
+>  What:		/sys/class/intel_pmt/crashlog<x>/crashlog
+>  Date:		October 2020
+> @@ -72,7 +72,7 @@ KernelVersion:	5.10
+>  Contact:	David Box <david.e.box@linux.intel.com>
+>  Description:
+>  		(RO) The crashlog buffer for this crashlog device. This file
+> -		may be mapped or read to obtain the data.
+> +		may be read to obtain the data.
+>  
+>  What:		/sys/class/intel_pmt/crashlog<x>/guid
+>  Date:		October 2020
+> diff --git a/drivers/platform/x86/intel/pmt/class.c b/drivers/platform/x86/intel/pmt/class.c
+> index 1c9e3f3ea41c..85fc159961c1 100644
+> --- a/drivers/platform/x86/intel/pmt/class.c
+> +++ b/drivers/platform/x86/intel/pmt/class.c
+> @@ -68,36 +68,6 @@ intel_pmt_read(struct file *filp, struct kobject *kobj,
+>  	return count;
+>  }
+>  
+> -static int
+> -intel_pmt_mmap(struct file *filp, struct kobject *kobj,
+> -		struct bin_attribute *attr, struct vm_area_struct *vma)
+> -{
+> -	struct intel_pmt_entry *entry = container_of(attr,
+> -						     struct intel_pmt_entry,
+> -						     pmt_bin_attr);
+> -	unsigned long vsize = vma->vm_end - vma->vm_start;
+> -	struct device *dev = kobj_to_dev(kobj);
+> -	unsigned long phys = entry->base_addr;
+> -	unsigned long pfn = PFN_DOWN(phys);
+> -	unsigned long psize;
+> -
+> -	if (vma->vm_flags & (VM_WRITE | VM_MAYWRITE))
+> -		return -EROFS;
+> -
+> -	psize = (PFN_UP(entry->base_addr + entry->size) - pfn) * PAGE_SIZE;
+> -	if (vsize > psize) {
+> -		dev_err(dev, "Requested mmap size is too large\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> -	if (io_remap_pfn_range(vma, vma->vm_start, pfn,
+> -		vsize, vma->vm_page_prot))
+> -		return -EAGAIN;
+> -
+> -	return 0;
+> -}
+> -
+>  static ssize_t
+>  guid_show(struct device *dev, struct device_attribute *attr, char *buf)
+>  {
+> @@ -263,7 +233,6 @@ static int intel_pmt_dev_register(struct intel_pmt_entry *entry,
+>  	sysfs_bin_attr_init(&entry->pmt_bin_attr);
+>  	entry->pmt_bin_attr.attr.name = ns->name;
+>  	entry->pmt_bin_attr.attr.mode = 0440;
+> -	entry->pmt_bin_attr.mmap = intel_pmt_mmap;
+>  	entry->pmt_bin_attr.read = intel_pmt_read;
+>  	entry->pmt_bin_attr.size = entry->size;
+>  
 
