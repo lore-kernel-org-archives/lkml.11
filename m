@@ -2,266 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 048ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3AC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351821AbiBUJwi (ORCPT
+        id S1351842AbiBUJwm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:52:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42722 "EHLO
+        Mon, 21 Feb 2022 04:52:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352519AbiBUJrd (ORCPT
+        with ESMTP id S1352668AbiBUJro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:33 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C7A33E39
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:20:04 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A68851F387;
-        Mon, 21 Feb 2022 09:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645435203; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vows5rIq8NB9EKuadGo43DfNWEJHlzppC7LVrVHTBgc=;
-        b=pW6lHQLkdzG+ahR64XAyKHWDHzN73U8dUdeslc+bA1Ge0h2mVdPT+xQbMhQEWLCyXBiIUa
-        4eviHNM6hqJ7051fyuSf/9Mq2/ayXfluI1nnhYrNa25nJZMydD/ST8Y5Kf2UkfasRPMlBR
-        gxJEwjcJepGKw7pFUm7TtoxkY6lnN3I=
-Received: from suse.cz (unknown [10.100.201.86])
+        Mon, 21 Feb 2022 04:47:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7043AC0;
+        Mon, 21 Feb 2022 01:20:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 10409A3B8C;
-        Mon, 21 Feb 2022 09:20:03 +0000 (UTC)
-Date:   Mon, 21 Feb 2022 10:20:02 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Oscar Salvador <osalvador@suse.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Rafael Aquini <raquini@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Alexey Makhalov <amakhalov@vmware.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] arch/x86/mm/numa: Do not initialize nodes twice
-Message-ID: <YhNZQgGSZglGQvcg@dhcp22.suse.cz>
-References: <20220218224302.5282-1-osalvador@suse.de>
- <20220218224302.5282-2-osalvador@suse.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35FCE60F46;
+        Mon, 21 Feb 2022 09:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A00C340E9;
+        Mon, 21 Feb 2022 09:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645435215;
+        bh=u1VESbYTBB2j0uL6y0zoMIwdzny/GFPCUlEFzINx4XA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hyUbQ9j+rSPTWuvTmp56IkntTD2xbXHTGjsGVf/gZ7g7HHqeVUQ3mCpllq0rgcAhL
+         PLqXYN4iQtr0rBKkx4F0GczCq1elf5Dmxq2AkHvkPsC0kbFaJEJQTukOIHn/44Vpnh
+         rQiUZ8JOaxxxnxe72y3SGKHnsnKlRyS9e8/tSGXQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 086/227] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Mon, 21 Feb 2022 09:48:25 +0100
+Message-Id: <20220221084937.737285754@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218224302.5282-2-osalvador@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 18-02-22 23:43:02, Oscar Salvador wrote:
-> On x86, prior to ("mm: handle uninitialized numa nodes gracecully"),
-> NUMA nodes could be allocated at three different places.
-> 
-> - numa_register_memblks
-> - init_cpu_to_node
-> - init_gi_nodes
-> 
-> All these calls happen at setup_arch, and have the following order:
-> 
-> setup_arch
->   ...
->   x86_numa_init
->    numa_init
->     numa_register_memblks
->   ...
->   init_cpu_to_node
->    init_memory_less_node
->     alloc_node_data
->     free_area_init_memoryless_node
->   init_gi_nodes
->    init_memory_less_node
->     alloc_node_data
->     free_area_init_memoryless_node
-> 
-> numa_register_memblks() is only interested in those nodes which have memory,
-> so it skips over any memoryless node it founds.
-> Later on, when we have read ACPI's SRAT table, we call init_cpu_to_node()
-> and init_gi_nodes(), which initialize any memoryless node we might have
-> that have either CPU or Initiator affinity, meaning we allocate pg_data_t
-> struct for them and we mark them as ONLINE.
-> 
-> So far so good, but the thing is that after ("mm: handle uninitialized numa
-> nodes gracefully"), we allocate all possible NUMA nodes in free_area_init(),
-> meaning we have a picture like the following:
-> 
-> setup_arch
->   x86_numa_init
->    numa_init
->     numa_register_memblks  <-- allocate non-memoryless node
->   x86_init.paging.pagetable_init
->    ...
->     free_area_init
->      free_area_init_memoryless <-- allocate memoryless node
->   init_cpu_to_node
->    alloc_node_data             <-- allocate memoryless node with CPU
->    free_area_init_memoryless_node
->   init_gi_nodes
->    alloc_node_data             <-- allocate memoryless node with Initiator
->    free_area_init_memoryless_node
+From: Seth Forshee <sforshee@digitalocean.com>
 
-Thanks for diving into this and double checking after me. I misread the
-ordering and thought free_area_init is the last one to be called.
+commit b9208492fcaecff8f43915529ae34b3bcb03877c upstream.
 
-> free_area_init() already allocates all possible NUMA nodes, but
-> init_cpu_to_node() and init_gi_nodes() are clueless about that,
-> so they go ahead and allocate a new pg_data_t struct without
-> checking anything, meaning we end up allocating twice.
-> 
-> It should be mad clear that this only happens in the case where
-> memoryless NUMA node happens to have a CPU/Initiator affinity.
-> 
-> So get rid of init_memory_less_node() and just set the node online.
-> 
-> Note that setting the node online is needed, otherwise we choke
-> down the chain when bringup_nonboot_cpus() ends up calling
-> __try_online_node()->register_one_node()->... and we blow up in
-> bus_add_device(). Like can be seen here:
-> 
-> =========
-> [    0.585060] BUG: kernel NULL pointer dereference, address: 0000000000000060
-> [    0.586091] #PF: supervisor read access in kernel mode
-> [    0.586831] #PF: error_code(0x0000) - not-present page
-> [    0.586930] PGD 0 P4D 0
-> [    0.586930] Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC PTI
-> [    0.586930] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc4-1-default+ #45
-> [    0.586930] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.0.0-prebuilt.qemu-project.org 04/4
-> [    0.586930] RIP: 0010:bus_add_device+0x5a/0x140
-> [    0.586930] Code: 8b 74 24 20 48 89 df e8 84 96 ff ff 85 c0 89 c5 75 38 48 8b 53 50 48 85 d2 0f 84 bb 00 004
-> [    0.586930] RSP: 0000:ffffc9000022bd10 EFLAGS: 00010246
-> [    0.586930] RAX: 0000000000000000 RBX: ffff888100987400 RCX: ffff8881003e4e19
-> [    0.586930] RDX: ffff8881009a5e00 RSI: ffff888100987400 RDI: ffff888100987400
-> [    0.586930] RBP: 0000000000000000 R08: ffff8881003e4e18 R09: ffff8881003e4c98
-> [    0.586930] R10: 0000000000000000 R11: ffff888100402bc0 R12: ffffffff822ceba0
-> [    0.586930] R13: 0000000000000000 R14: ffff888100987400 R15: 0000000000000000
-> [    0.586930] FS:  0000000000000000(0000) GS:ffff88853fc00000(0000) knlGS:0000000000000000
-> [    0.586930] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.586930] CR2: 0000000000000060 CR3: 000000000200a001 CR4: 00000000001706b0
-> [    0.586930] Call Trace:
-> [    0.586930]  <TASK>
-> [    0.586930]  device_add+0x4c0/0x910
-> [    0.586930]  __register_one_node+0x97/0x2d0
-> [    0.586930]  __try_online_node+0x85/0xc0
-> [    0.586930]  try_online_node+0x25/0x40
-> [    0.586930]  cpu_up+0x4f/0x100
-> [    0.586930]  bringup_nonboot_cpus+0x4f/0x60
-> [    0.586930]  smp_init+0x26/0x79
-> [    0.586930]  kernel_init_freeable+0x130/0x2f1
-> [    0.586930]  ? rest_init+0x100/0x100
-> [    0.586930]  kernel_init+0x17/0x150
-> [    0.586930]  ? rest_init+0x100/0x100
-> [    0.586930]  ret_from_fork+0x22/0x30
-> [    0.586930]  </TASK>
-> [    0.586930] Modules linked in:
-> [    0.586930] CR2: 0000000000000060
-> [    0.586930] ---[ end trace 0000000000000000 ]---
-> =========
-> 
-> The reason is simple, by the time bringup_nonboot_cpus() gets called,
-> we did not register the node_subsys bus yet, so we crash when bus_add_device()
-> tries to dereference bus()->p.
-> 
-> The following shows the order of the calls:
-> 
-> kernel_init_freeable
->  smp_init
->   bringup_nonboot_cpus
->    ...
->      bus_add_device()      <- we did not register node_subsys yet
->  do_basic_setup
->   do_initcalls
->    postcore_initcall(register_node_type);
->     register_node_type
->      subsys_system_register
->       subsys_register
->        bus_register         <- register node_subsys bus
-> 
-> Why setting the node online saves us then? Well, simply because
-> __try_online_node() backs off when the node is online, meaning
-> we do not end up calling register_one_node() in the first place.
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-This is really a mess and a house built on sand. Thanks for looking into
-it and hopefully this can get cleaned up to a saner state.
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
 
-> This is subtle, broken and deserves a deep analysis and thought
-> about how to put this into shape, but for now let us have this
-> easy fix for the leaking memory issue.
-> 
-> Signed-off-by: Oscar Salvador <osalvador@suse.de>
-> Fixes: da4490c958ad ("mm: handle uninitialized numa nodes gracefully")
+Note for backporting: this patch requires d5afa82c977e ("vsock: correct
+removal of socket from the list"), which is in all current stable trees
+except 4.9.y.
 
-This sha1 is from linux-next very likely so it won't be persistent.
-Please drop it.
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lore.kernel.org/r/20220217141312.2297547-1-sforshee@digitalocean.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/vmw_vsock/af_vsock.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-Other than that
-Acked-by: Michal Hocko <mhocko@suse.com>
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1400,6 +1400,7 @@ static int vsock_connect(struct socket *
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 
-One nit below
 
-Thanks!
-
-> ---
->  arch/x86/mm/numa.c | 15 ++-------------
->  include/linux/mm.h |  1 -
->  mm/page_alloc.c    |  2 +-
->  3 files changed, 3 insertions(+), 15 deletions(-)
-> 
-> diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-> index c6b1213086d6..37039a6af8ae 100644
-> --- a/arch/x86/mm/numa.c
-> +++ b/arch/x86/mm/numa.c
-> @@ -738,17 +738,6 @@ void __init x86_numa_init(void)
->  	numa_init(dummy_numa_init);
->  }
->  
-> -static void __init init_memory_less_node(int nid)
-> -{
-> -	/* Allocate and initialize node data. Memory-less node is now online.*/
-> -	alloc_node_data(nid);
-> -	free_area_init_memoryless_node(nid);
-> -
-> -	/*
-> -	 * All zonelists will be built later in start_kernel() after per cpu
-> -	 * areas are initialized.
-> -	 */
-> -}
->  
->  /*
->   * A node may exist which has one or more Generic Initiators but no CPUs and no
-> @@ -768,7 +757,7 @@ void __init init_gi_nodes(void)
->  
->  	for_each_node_state(nid, N_GENERIC_INITIATOR)
->  		if (!node_online(nid))
-> -			init_memory_less_node(nid);
-> +			node_set_online(nid);
-
-I would stick a TODO here.
-			/*
-			 * Exclude this node from 
-			 * bringup_nonboot_cpus
-			 *  cpu_up
-			 *    __try_online_node
-			 *      register_one_node
-			 * because node_subsys is not initialized yet
-			 * TODO remove dependency on node_online()
-			 */
->  }
->  
->  /*
-> @@ -799,7 +788,7 @@ void __init init_cpu_to_node(void)
->  			continue;
->  
->  		if (!node_online(node))
-> -			init_memory_less_node(node);
-> +			node_set_online(node);
-
-and here as well.
--- 
-Michal Hocko
-SUSE Labs
