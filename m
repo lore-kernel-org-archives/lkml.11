@@ -2,147 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A795C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9777C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379026AbiBUPXW (ORCPT
+        id S1379029AbiBUPXg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:23:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41308 "EHLO
+        Mon, 21 Feb 2022 10:23:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238016AbiBUPXM (ORCPT
+        with ESMTP id S1379020AbiBUPXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:23:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A446BCA3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:22:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645456968;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=//ocvqSZP1Bqt7GMZm3TubXy/TDW1Bh0IsBpphamyS8=;
-        b=I0XcvEWMZ1fPOMjpGWJoTiBcbvyH+Fx/OHjWzUR2qeBCVRe7P3L7xElCGtX/UZHYORlK/i
-        oabhkGWS+PB5kuyjjk4yJjAqMEZW6NdQfIPWiziKzZgVHb0M6cZb49xAPq1DAaYuIjKDFj
-        C4Gv1fHHDcsekotdZtln4e4ly9/V/L4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-4DlDJiYIO-SqeWhcPpvP7w-1; Mon, 21 Feb 2022 10:22:45 -0500
-X-MC-Unique: 4DlDJiYIO-SqeWhcPpvP7w-1
-Received: by mail-wm1-f70.google.com with SMTP id ay41-20020a05600c1e2900b0037c5168b3c4so8150259wmb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:22:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=//ocvqSZP1Bqt7GMZm3TubXy/TDW1Bh0IsBpphamyS8=;
-        b=svyCUNUeemf+0+HQoggkZ/KrY8OCS4Z1hwoUcbgyMXMzMO/MjoyKQ9HCkqrBWh8032
-         s5GQN1eoxqvXtuorlNjvOAmcvJ6Yr9fGATAucaB+6ngTJqI83ggjeg7GQcxB0F39/TM4
-         YqYqt1Ggt55rG2bcaeRD4JgZNU4IZz2wVydVuqHDoYFiHnjv1A9GTO/XeW8fd0DdJTrb
-         cvHWZJIRgceqHMLSjTGUekxPB7p/PMUzwfC/QClhOfWidfZsn1gjCsbhoiYq2lb553qW
-         SGfwDN+IfS8XQaYXZfztSFNyW7x54mPtW6l5uxTedVdzpWU4fwBLFMqqmDHNT8CMk2uy
-         yY+g==
-X-Gm-Message-State: AOAM5334NrKQ9waqRKP9iqaIQfnS8HC/XybWPTnpUeiO8nqlJBIpTLdB
-        GZ+RdSfbpvoxSRMS1c5wSOvQmuKsdu/gxbjqxb2ILv2SYBcPyEdDtNDauOHnxaG214lUoSUfoei
-        l9UvxwD7CW6oTTYvufQ8YrvrV
-X-Received: by 2002:adf:f3cc:0:b0:1e7:4fd9:6fd3 with SMTP id g12-20020adff3cc000000b001e74fd96fd3mr15663038wrp.266.1645456964077;
-        Mon, 21 Feb 2022 07:22:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyRe76b/qP2XEzCDRn/yzRVG9vTAJA8nQ+6DymsN10XGTOpBA26zz1vt6D+IC5eOeVGMUheYA==
-X-Received: by 2002:adf:f3cc:0:b0:1e7:4fd9:6fd3 with SMTP id g12-20020adff3cc000000b001e74fd96fd3mr15663016wrp.266.1645456963802;
-        Mon, 21 Feb 2022 07:22:43 -0800 (PST)
-Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
-        by smtp.gmail.com with ESMTPSA id j5-20020a05600c410500b0037bc3e4b526sm7745956wmi.7.2022.02.21.07.22.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 07:22:43 -0800 (PST)
-Date:   Mon, 21 Feb 2022 16:22:40 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        Asias He <asias@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
- while releasing
-Message-ID: <20220221152240.nbdthe4grii577zd@sgarzare-redhat>
-References: <20220221114916.107045-1-sgarzare@redhat.com>
- <20220221094829-mutt-send-email-mst@kernel.org>
+        Mon, 21 Feb 2022 10:23:30 -0500
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49D6C1DA7C;
+        Mon, 21 Feb 2022 07:23:07 -0800 (PST)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nMAWk-00025w-00; Mon, 21 Feb 2022 16:23:02 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 22D4EC25F8; Mon, 21 Feb 2022 16:21:30 +0100 (CET)
+Date:   Mon, 21 Feb 2022 16:21:30 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Brian Cain <bcain@codeaurora.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Rich Felker <dalias@libc.org>,
+        David Miller <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>, linux-csky@vger.kernel.org,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        linux-ia64@vger.kernel.org,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>
+Subject: Re: [PATCH v2 09/18] mips: use simpler access_ok()
+Message-ID: <20220221152130.GA17373@alpha.franken.de>
+References: <20220216131332.1489939-1-arnd@kernel.org>
+ <20220216131332.1489939-10-arnd@kernel.org>
+ <20220221132456.GA7139@alpha.franken.de>
+ <CAK8P3a2usZWPDDDUcscwS0aVKsY6aLXFGFPqYNkm4hcDERim9w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220221094829-mutt-send-email-mst@kernel.org>
+In-Reply-To: <CAK8P3a2usZWPDDDUcscwS0aVKsY6aLXFGFPqYNkm4hcDERim9w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:03:39AM -0500, Michael S. Tsirkin wrote:
->On Mon, Feb 21, 2022 at 12:49:16PM +0100, Stefano Garzarella wrote:
->> vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
->> ownership. It expects current->mm to be valid.
->>
->> vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
->> the user has not done close(), so when we are in do_exit(). In this
->> case current->mm is invalid and we're releasing the device, so we
->> should clean it anyway.
->>
->> Let's check the owner only when vhost_vsock_stop() is called
->> by an ioctl.
->
->
->
->
->> Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
->> Cc: stable@vger.kernel.org
->> Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> ---
->>  drivers/vhost/vsock.c | 14 ++++++++------
->>  1 file changed, 8 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->> index d6ca1c7ad513..f00d2dfd72b7 100644
->> --- a/drivers/vhost/vsock.c
->> +++ b/drivers/vhost/vsock.c
->> @@ -629,16 +629,18 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
->>  	return ret;
->>  }
->>
->> -static int vhost_vsock_stop(struct vhost_vsock *vsock)
->> +static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
->
->>  {
->>  	size_t i;
->>  	int ret;
->>
->>  	mutex_lock(&vsock->dev.mutex);
->>
->> -	ret = vhost_dev_check_owner(&vsock->dev);
->> -	if (ret)
->> -		goto err;
->> +	if (check_owner) {
->> +		ret = vhost_dev_check_owner(&vsock->dev);
->> +		if (ret)
->> +			goto err;
->> +	}
->>
->>  	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
->>  		struct vhost_virtqueue *vq = &vsock->vqs[i];
->> @@ -753,7 +755,7 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
->>  	 * inefficient.  Room for improvement here. */
->>  	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
->>
->> -	vhost_vsock_stop(vsock);
->
->Let's add an explanation:
->
->When invoked from release we can not fail so we don't
->check return code of vhost_vsock_stop.
->We need to stop vsock even if it's not the owner.
+On Mon, Feb 21, 2022 at 03:31:23PM +0100, Arnd Bergmann wrote:
+> On Mon, Feb 21, 2022 at 2:24 PM Thomas Bogendoerfer
+> <tsbogend@alpha.franken.de> wrote:
+> > On Wed, Feb 16, 2022 at 02:13:23PM +0100, Arnd Bergmann wrote:
+> > >
+> > > diff --git a/arch/mips/include/asm/uaccess.h b/arch/mips/include/asm/uaccess.h
+> > > index db9a8e002b62..d7c89dc3426c 100644
+> >
+> > this doesn't work. For every access above maximum implemented virtual address
+> > space of the CPU an address error will be issued, but not a TLB miss.
+> > And address error isn't able to handle this situation.
+> 
+> Ah, so the __ex_table entry only catches TLB misses?
 
-Do you want me to send a v2 by adding this as a comment in the code?
+no, but there is no __ex_table handling in address error hanlder (yet).
 
-Thanks,
-Stefano
+> Does this mean it also traps for kernel memory accesses, or do those
+> work again?
 
+it will trap for every access.
+
+
+> If the addresses on mips64 are separate like on
+> sparc64 or s390, the entire access_ok() step could be replaced
+> by a fixup code in the exception handler. I suppose this depends on
+> CONFIG_EVA and you still need a limit check at least when EVA is
+> disabled.
+
+only EVA has seperate address spaces for kernel/user.
+
+> > Is there a reason to not also #define TASK_SIZE_MAX   __UA_LIMIT like
+> > for the 32bit case ?
+> >
+> 
+> For 32-bit, the __UA_LIMIT is a compile-time constant, so the check
+> ends up being trivial. On all other architectures, the same thing can
+> be done after the set_fs removal, so I was hoping it would work here
+> as well.
+
+ic
+
+> I suspect doing the generic (size <= limit) && (addr <= (limit - size))
+> check on mips64 with the runtime limit ends up slightly slower
+> than the current code that checks a bit mask instead. If you like,
+> I'll update it this way, otherwise I'd need help in form of a patch
+> that changes the exception handling so __get_user/__put_user
+> also return -EFAULT for an address error.
+
+that's what the patch does. For aligned accesses the patch should
+do the right thing, but it breaks unaligned get_user/put_user.
+Checking if the trapping vaddr is between end of CPU VM space and
+TASK_MAX_SIZE before exception handling should do the trick. I'll
+send a patch, if this works.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
