@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E858C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 166A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348872AbiBUJYU (ORCPT
+        id S1348896AbiBUJYY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:24:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36074 "EHLO
+        Mon, 21 Feb 2022 04:24:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349037AbiBUJL6 (ORCPT
+        with ESMTP id S1348028AbiBUJNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:58 -0500
+        Mon, 21 Feb 2022 04:13:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B3123BEC;
-        Mon, 21 Feb 2022 01:04:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5DABE7;
+        Mon, 21 Feb 2022 01:06:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 725656124D;
-        Mon, 21 Feb 2022 09:04:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D4CC340EB;
-        Mon, 21 Feb 2022 09:04:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 073CC6128D;
+        Mon, 21 Feb 2022 09:06:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F7AC340E9;
+        Mon, 21 Feb 2022 09:06:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434285;
-        bh=S/iVw1ZUHEf93QErcB6ZooCHz2LvyqWyuvWT1BdyIyU=;
+        s=korg; t=1645434395;
+        bh=YjtDjPFwIur/j4/JR3JIG1Cf8opy/OuXbnP9cBm5Tvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HRbBagm1gm05JOvwsipxf9z+PyMs6c79Nyx5JkhhwgkZ8+hUNeZTO12K4JsUPPlhb
-         QLLuh0nSBeCTXHwLnk2j7OHKQ4R+a+/gMARWA1M7f74JYI9JRKvznclYdt7lIJ7kqX
-         DdG165FDise4GCoN0mNrGfu5leNxFcvSnFPgPFmk=
+        b=arLAFjddSqJhWAF1OyBYsF1RlP0eHD2jsWcVI96lVVNhyQZWpjqNi9UXQ3hnhrnfO
+         X6w1HKKFefK+g6xyd869FmV8OdLkents3q2lSi4AwlLmWCeDY+eZ2o0IYAuLB9xCC5
+         kaRkwop56wR7gTo+4W01vjQc39XbiJ/CX8SdBXIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Christian Eggers <ceggers@arri.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 076/121] mtd: rawnand: gpmi: dont leak PM reference in error path
-Date:   Mon, 21 Feb 2022 09:49:28 +0100
-Message-Id: <20220221084923.785803592@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 114/121] dmaengine: sh: rcar-dmac: Check for error num after setting mask
+Date:   Mon, 21 Feb 2022 09:50:06 +0100
+Message-Id: <20220221084925.046231994@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,42 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 9161f365c91614e5a3f5c6dcc44c3b1b33bc59c0 upstream.
+commit 2d21543efe332cd8c8f212fb7d365bc8b0690bfa upstream.
 
-If gpmi_nfc_apply_timings() fails, the PM runtime usage counter must be
-dropped.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Fixes: f53d4c109a66 ("mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220125081619.6286-1-ceggers@arri.de
+Fixes: dc312349e875 ("dmaengine: rcar-dmac: Widen DMA mask to 40 bits")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220106030939.2644320-1-jiasheng@iscas.ac.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/dma/sh/rcar-dmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -2291,7 +2291,7 @@ static int gpmi_nfc_exec_op(struct nand_
- 		this->hw.must_apply_timings = false;
- 		ret = gpmi_nfc_apply_timings(this);
- 		if (ret)
--			return ret;
-+			goto out_pm;
- 	}
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1845,7 +1845,9 @@ static int rcar_dmac_probe(struct platfo
+ 	dmac->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, dmac);
+ 	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
+-	dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	if (ret)
++		return ret;
  
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
-@@ -2420,6 +2420,7 @@ unmap:
- 
- 	this->bch = false;
- 
-+out_pm:
- 	pm_runtime_mark_last_busy(this->dev);
- 	pm_runtime_put_autosuspend(this->dev);
- 
+ 	ret = rcar_dmac_parse_of(&pdev->dev, dmac);
+ 	if (ret < 0)
 
 
