@@ -2,86 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12901C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 430FBC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352658AbiBUJrl (ORCPT
+        id S1352751AbiBUJrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56766 "EHLO
+        Mon, 21 Feb 2022 04:47:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350943AbiBUJkl (ORCPT
+        with ESMTP id S1350933AbiBUJls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:40:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FF123CA55
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:17:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645435028;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4uMmEYUHbmX6rXgTsQ+VTDhgS4w4FUz1dvxMDB4NcL4=;
-        b=bwiUSjS5Zx+VGAAfYH2G/S0bATuthWZq1rXuATKU7mhhnPRNo1UJtaT5cLufyoKtdqBldp
-        ZeumfIoQyKnssYtuxUYlIqKtBCki1+yIpMZ2H45m1yf69H8vchjS5x+PCRre+/fjl7hBFk
-        sU/5GEZUOmANx+gy3dxnHW+/K2YYgLI=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-492-9uqGIGHHPvqPUMe9CnyZZQ-1; Mon, 21 Feb 2022 04:17:07 -0500
-X-MC-Unique: 9uqGIGHHPvqPUMe9CnyZZQ-1
-Received: by mail-ed1-f70.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so9813643edb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:17:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4uMmEYUHbmX6rXgTsQ+VTDhgS4w4FUz1dvxMDB4NcL4=;
-        b=EZQ3UWw9WVZs6khpZn0LdgZ/njD3ZK8NSxjr6H+bWQb+VNlNlEQweFokmyriYFVx3U
-         ewx5wQn0azKaRxP/xUn7GRKw9f8tKPBNrMMGXNPV3o93fFL9XL0Jpd1rqZuIkjCQWcaW
-         hkFzx7DBbeLZBPpDDMnA20oH7XgAa8usRjo2RZG4zcv31InVG+nYFHax051aHxpEDLmi
-         yZNbToVMlA/DXyYkgghwNZ8tIJICDpqW7cM6SRE5yGcgXLBof74Ea9kDoMNhAq5zoGTz
-         YSawsZXMFVRm3yx7dIGIyGiSfKIkmeXDKgMEfcKDH5lDWp3v3zmhxHmxodPLtsHV6eXZ
-         gqmQ==
-X-Gm-Message-State: AOAM532yIWs9uFwvmXOB5NdcpmrSkR8Z0u7Q8SctG0gNGRniDS3pWXud
-        UQmFXJO+gtPWwPOKMs1RGrNk58OPObSqzCkEevUw5SSelsUlfF3K2MUxSVNe651yJv2YhNpTs2G
-        oZoPsvTwPeJ2If1Q3OpA6XwRt
-X-Received: by 2002:a50:aac8:0:b0:410:ae77:c484 with SMTP id r8-20020a50aac8000000b00410ae77c484mr19984678edc.431.1645435025887;
-        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyBpEa0p3HrEYx+GIqbhwJ9nin5147rOk0KhJ0pTriV1JShySKOfRZ5XC7JzVwzygFMagfvqw==
-X-Received: by 2002:a50:aac8:0:b0:410:ae77:c484 with SMTP id r8-20020a50aac8000000b00410ae77c484mr19984657edc.431.1645435025651;
-        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
-Received: from redhat.com ([2.52.4.205])
-        by smtp.gmail.com with ESMTPSA id v23sm5048559ejy.177.2022.02.21.01.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
-Date:   Mon, 21 Feb 2022 04:17:02 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>,
-        jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-Message-ID: <20220221041626-mutt-send-email-mst@kernel.org>
-References: <20220221040745.1177-1-hdanton@sina.com>
- <20220221085227.1356-1-hdanton@sina.com>
+        Mon, 21 Feb 2022 04:41:48 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A373DA67;
+        Mon, 21 Feb 2022 01:17:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 57690CE0EA4;
+        Mon, 21 Feb 2022 09:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3780DC340FC;
+        Mon, 21 Feb 2022 09:17:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645435049;
+        bh=QVHi1Fo2w+5SF4nm3Aba/ncolOFBS7ktXZEtqMSRG1w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1CqfhpZwK4jQZxYvQ00zJtyE3UiZhXpW3Wa7rxmvCMkLA5c2+cwTUFgNflkBa8olk
+         J3vaioM0GCOuVYiox7CwvFqlc0yJPj2njqsSHgQbWF7HKHeNXoxywYMuZIDtOO9rBQ
+         gdwqtVNPiKASxvhtjZ3So7WjF2/0grcl5+DmvPDk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.16 026/227] parisc: Add ioread64_lo_hi() and iowrite64_lo_hi()
+Date:   Mon, 21 Feb 2022 09:47:25 +0100
+Message-Id: <20220221084935.708276643@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221085227.1356-1-hdanton@sina.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 04:52:27PM +0800, Hillf Danton wrote:
-> Another round of attempts to quiesce the
-> WARNING: CPU: 1 PID: 4069 at drivers/vhost/vhost.c:715 after the
-> BUG at drivers/vhost/vhost.c:2337 went home.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Could you pls clarify what do you mean by "went home" here?
+commit 18a1d5e1945385d9b5adc3fe11427ce4a9d2826e upstream.
 
-Thanks,
+It's a followup to the previous commit f15309d7ad5d ("parisc: Add
+ioread64_hi_lo() and iowrite64_hi_lo()") which does only half of
+the job. Add the rest, so we won't get a new kernel test robot
+reports.
 
--- 
-MST
+Fixes: f15309d7ad5d ("parisc: Add ioread64_hi_lo() and iowrite64_hi_lo()")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/parisc/lib/iomap.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+--- a/arch/parisc/lib/iomap.c
++++ b/arch/parisc/lib/iomap.c
+@@ -346,6 +346,16 @@ u64 ioread64be(const void __iomem *addr)
+ 	return *((u64 *)addr);
+ }
+ 
++u64 ioread64_lo_hi(const void __iomem *addr)
++{
++	u32 low, high;
++
++	low = ioread32(addr);
++	high = ioread32(addr + sizeof(u32));
++
++	return low + ((u64)high << 32);
++}
++
+ u64 ioread64_hi_lo(const void __iomem *addr)
+ {
+ 	u32 low, high;
+@@ -419,6 +429,12 @@ void iowrite64be(u64 datum, void __iomem
+ 	}
+ }
+ 
++void iowrite64_lo_hi(u64 val, void __iomem *addr)
++{
++	iowrite32(val, addr);
++	iowrite32(val >> 32, addr + sizeof(u32));
++}
++
+ void iowrite64_hi_lo(u64 val, void __iomem *addr)
+ {
+ 	iowrite32(val >> 32, addr + sizeof(u32));
+@@ -530,6 +546,7 @@ EXPORT_SYMBOL(ioread32);
+ EXPORT_SYMBOL(ioread32be);
+ EXPORT_SYMBOL(ioread64);
+ EXPORT_SYMBOL(ioread64be);
++EXPORT_SYMBOL(ioread64_lo_hi);
+ EXPORT_SYMBOL(ioread64_hi_lo);
+ EXPORT_SYMBOL(iowrite8);
+ EXPORT_SYMBOL(iowrite16);
+@@ -538,6 +555,7 @@ EXPORT_SYMBOL(iowrite32);
+ EXPORT_SYMBOL(iowrite32be);
+ EXPORT_SYMBOL(iowrite64);
+ EXPORT_SYMBOL(iowrite64be);
++EXPORT_SYMBOL(iowrite64_lo_hi);
+ EXPORT_SYMBOL(iowrite64_hi_lo);
+ EXPORT_SYMBOL(ioread8_rep);
+ EXPORT_SYMBOL(ioread16_rep);
+
 
