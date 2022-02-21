@@ -2,88 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D030C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbiBUSgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:36:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51474 "EHLO
+        id S231750AbiBUSga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:36:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232950AbiBUSei (ORCPT
+        with ESMTP id S233436AbiBUSfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:34:38 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41EDE08
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:32:17 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id f11so8146198ljq.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:32:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V53eWTyFzxXJsbz+KFVi3xpj3YJA4O3z/bAQ81RYVTo=;
-        b=bHLqVIqXmciNyNIryl4JvTW1k3xPS3riIMOsdTzw8F5qtWIlFN1PUlW1XUtMszynwQ
-         nOW9RAkEfmlrpOACs2jEptbmnWRadW1x98jfNTMPDdkq39kLfLJq5gfKZdgWu+Za8Jey
-         OpyfRrlzj+SEmphpzlP3Lg5eHyTGLoPPk9N74=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V53eWTyFzxXJsbz+KFVi3xpj3YJA4O3z/bAQ81RYVTo=;
-        b=KE6HwCXHrnal72dhRUkJrsIEGIwcTtdZZiIGSUvSjtNHgplZxm0ek+x0+1IayF/r1o
-         O6qiHWHDGO6DTsjG5coQm3p/t5ug2hhV6s3JUOq5GZrDMhayD3lUj31C5sSsUsdfKbHR
-         vl3dKBCNCVh1ZPW0xm48xUCwkbyoyqyNSvh2Hhol0fNOQ+OHFKHcPPJfFYdXrbwY7Wbi
-         WSlLp3VtioMKJUXJroQcDPaOEYrBhONL2UY+LtV7pHT5ABpMnF7Ac5FkarvmtxD/Tvbu
-         vYTH+n4ZoZhoO2yiQuxZV2o10lm1bPACDSb+z9Vtda0nkAEueQ5BziLKrcWnPo8UmZzW
-         skNg==
-X-Gm-Message-State: AOAM533hgFEf5UPnfjWqO+6gUS0f5FuFXdALELtiStXGfWHXqxPNOUti
-        qXFx1v5u0kOlbVfbfQ78Mt+o7AE41eXtP3t6
-X-Google-Smtp-Source: ABdhPJwScL+5BVbBJJb7Lzoi/D2/gv+60yyHeKtrixsBamUvcGXjTZeEBPLU/WsdsXmhk7LjAa1nDA==
-X-Received: by 2002:a2e:2a45:0:b0:246:430d:805 with SMTP id q66-20020a2e2a45000000b00246430d0805mr2608778ljq.439.1645468336069;
-        Mon, 21 Feb 2022 10:32:16 -0800 (PST)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id p20sm1175353lfr.175.2022.02.21.10.32.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 10:32:15 -0800 (PST)
-Received: by mail-lf1-f53.google.com with SMTP id j7so20246117lfu.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:32:15 -0800 (PST)
-X-Received: by 2002:ac2:4211:0:b0:438:2f1:83c4 with SMTP id
- y17-20020ac24211000000b0043802f183c4mr14986464lfh.435.1645468335096; Mon, 21
- Feb 2022 10:32:15 -0800 (PST)
-MIME-Version: 1.0
-References: <CAHk-=wiWZ=3dTuRq46KvQVpx-e7xqrnMAVB73dzj7g4Pbwc1zg@mail.gmail.com>
- <1778a683-30fa-9119-c3ce-2dddb5939809@roeck-us.net>
-In-Reply-To: <1778a683-30fa-9119-c3ce-2dddb5939809@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Feb 2022 10:31:59 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgyJOBhc9PQr-iAW7yYWoni8Gr+O30vtwDR--opn8hyTA@mail.gmail.com>
-Message-ID: <CAHk-=wgyJOBhc9PQr-iAW7yYWoni8Gr+O30vtwDR--opn8hyTA@mail.gmail.com>
-Subject: Re: Linux 5.17-rc5
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Rob Herring <robh@kernel.org>, Maxime Ripard <mripard@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mon, 21 Feb 2022 13:35:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBFB104;
+        Mon, 21 Feb 2022 10:35:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99C06614E6;
+        Mon, 21 Feb 2022 18:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 956B6C340E9;
+        Mon, 21 Feb 2022 18:35:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645468519;
+        bh=A8eGBs0IOGhdUIbBagURdQ0opD122swLCP3bkGa8hm4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fE32w3f+/8eLnpK2ZStSxCo+l+/5y5Lj3Xmq8CPy3s1NvHmKxTSJfpzLDy8FFHlVu
+         QsvCSs4Mv9d/VswE2Y/Z1tTDN8XWUv0fBsjYmOBuVb5VDn5Ad0MUUVRAd7CoZqPaLl
+         Hufd194LxN2HiNiFW4GsugIOQhKAdtMPOqRrIIabzn+q1RmMWX4kAu2n3r2TFKgzMp
+         vHOd6ifWbDKf/X+vT6FnDvZNvdgwDOfNayBRjCbgZ4W4YsQ5qDlyQqXTwGWns7Tk6Y
+         9Nie98aKOFAT0nEcs6p/xdi6FIRmjzN7US2XPx8GmH1wLsmeaUfmmbe5zAgguBQMwz
+         BQ61E0sLqZi5A==
+From:   broonie@kernel.org
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: linux-next: manual merge of the rcu tree with the tip tree
+Date:   Mon, 21 Feb 2022 18:17:18 +0000
+Message-Id: <20220221181718.453295-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:10 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> Oh, that is "just" the result of the netfilter build problem.
+Hi all,
 
-Oh, ok. I assumed it was some runtime failure since it was under the
-qemu rubric.
+Today's linux-next merge of the rcu tree got a conflict in:
 
-> The real question is why to patch introducing the problem made it
-> upstream even though the problem was reported several days before
-> the push request was sent.
+  kernel/rcu/tree_plugin.h
 
-Yeah, there's a separate gripe-thread for that. The fix is in the
-netfilter tree and has been there for a week...
+between commit:
 
-               Linus
+  04d4e665a6090 ("sched/isolation: Use single feature type while referring to housekeeping cpumask")
+
+from the tip tree and commit:
+
+  6a2c1d450a6a3 ("rcu: Replace cpumask_weight with cpumask_empty where appropriate")
+
+from the rcu tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+diff --cc kernel/rcu/tree_plugin.h
+index 65f25a32f6d75,6b9bcd45c7b21..0000000000000
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@@ -1214,10 -1219,11 +1219,11 @@@ static void rcu_boost_kthread_setaffini
+  		if ((mask & leaf_node_cpu_bit(rnp, cpu)) &&
+  		    cpu != outgoingcpu)
+  			cpumask_set_cpu(cpu, cm);
+ -	cpumask_and(cm, cm, housekeeping_cpumask(HK_FLAG_RCU));
+ +	cpumask_and(cm, cm, housekeeping_cpumask(HK_TYPE_RCU));
+- 	if (cpumask_weight(cm) == 0)
++ 	if (cpumask_empty(cm))
+ -		cpumask_copy(cm, housekeeping_cpumask(HK_FLAG_RCU));
+ +		cpumask_copy(cm, housekeeping_cpumask(HK_TYPE_RCU));
+  	set_cpus_allowed_ptr(t, cm);
++ 	mutex_unlock(&rnp->boost_kthread_mutex);
+  	free_cpumask_var(cm);
+  }
+  
