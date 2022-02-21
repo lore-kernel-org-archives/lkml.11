@@ -2,100 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0388AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B19C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbiBURv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:51:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55908 "EHLO
+        id S230126AbiBURze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 12:55:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231579AbiBURth (ORCPT
+        with ESMTP id S229976AbiBURwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:49:37 -0500
+        Mon, 21 Feb 2022 12:52:39 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12A3117A;
-        Mon, 21 Feb 2022 09:47:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C73DB53;
+        Mon, 21 Feb 2022 09:48:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645465634; x=1677001634;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=xpY7J7nzp9IuhJIMZ851JicROXwhZoI/6l0O+HJAEo8=;
-  b=GBRxerXbwmzIP4iSg2vDwF1rgS+bXrKjjW86h+5XXOKyFr2M7xlV77Tr
-   UDWFGbejeu4bBU8U+R5NxXN5Wewuw0gFzqxjjd9d8EgLqLjryN73UMXkJ
-   ms/UQSoWuKBsDIca70N3xbJKlAmS6wCfN+hapGXJthbZq8tP7iYkAjmjs
-   pC/Pbm0jQ6N/+F4hjYCRHwuJgxSfhRKszd/GpHGtafe51y/kqDQhL0t1l
-   qd1AIR4CY6f4RV6Z8r8N6o9P3FHpUlRKyrRYD/nNpZfa9Gfe7QU9b2eWt
-   8GoNf901lpihBfs0hPbYrbrlxj3Dw1AcbTwPfBUkuuxXoaivgGwCm2KnO
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="235089559"
+  t=1645465689; x=1677001689;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=vDI+NG/dV4Z+g4ONPVVEn1Ifl6BUxDwHQGb78BJ5Tuc=;
+  b=mutujD4gjSs35DQNyhBm6gZItJlCHFk/wZn5eoQlAgZrXIcybvxu+Eag
+   mRwdPoBvGqX2lIfUzvRaP9EQ0QP61m+M9CgwVx0GNimDS9c8QwUXeycYI
+   KI/9lgiNqQytPMELV1IzC8/yUUy3TkbpZQdq+r4GYkjUThuKRwptR2aI/
+   OZMaTDfDq0K3XPmy6PllhrD1eKF7QjeG84ukiCPh56VdR927U/aVoNyzE
+   28je5BLFurfIQg8E2jmVd8S7Fz3sGcwQni2bVevj8nNFBecP7vFX87siu
+   DTAB/eDAeLvFJa5VyrUwAExfFS9KmBz/PUznLUefRE4zyzWmRuXFutxCL
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="235089642"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="235089559"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:47:10 -0800
+   d="scan'208";a="235089642"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:48:08 -0800
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="505162234"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:47:05 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMClJ-006rzr-6u;
-        Mon, 21 Feb 2022 19:46:13 +0200
-Date:   Mon, 21 Feb 2022 19:46:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
-Message-ID: <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-3-clement.leger@bootlin.com>
+   d="scan'208";a="547415122"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.40])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:48:08 -0800
+Date:   Mon, 21 Feb 2022 09:50:20 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Tom Rix <trix@redhat.com>
+cc:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
+        "Wu, Hao" <hao.wu@intel.com>, "mdf@kernel.org" <mdf@kernel.org>,
+        "Xu, Yilun" <yilun.xu@intel.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>
+Subject: Re: [PATCH v1 7/7] fpga: dfl: pci: Add generic OFS PCI PID
+In-Reply-To: <3c9fce03-ef29-d80f-6639-0c237c28cf58@redhat.com>
+Message-ID: <alpine.DEB.2.22.394.2202210934570.117064@rhweight-WRK1>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com> <20220214112619.219761-8-tianfei.zhang@intel.com> <ed8f4b5f-5c92-f555-ed2d-c5b8f38d5372@redhat.com> <BN9PR11MB5483BC7EE52A47CEAEFC58A0E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
+ <3c9fce03-ef29-d80f-6639-0c237c28cf58@redhat.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221162652.103834-3-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: multipart/mixed; boundary="8323328-1306219232-1645465820=:117064"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:44PM +0100, Clément Léger wrote:
-> Add fwnode_get_match_data() which is meant to be used as
-> device_get_match_data for fwnode_operations.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-...
-
-> +const void *fwnode_get_match_data(const struct fwnode_handle *fwnode,
-> +				  const struct device *dev)
-> +{
-> +	const struct of_device_id *match;
-> +
-> +	match = fwnode_match_node(fwnode, dev->driver->of_match_table);
-> +	if (!match)
-> +		return NULL;
-> +
-> +	return match->data;
-> +}
-
-It's OF-centric API, why it has fwnode prefix? Can it leave in drivers/of instead?
+--8323328-1306219232-1645465820=:117064
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
 
 
--- 
-With Best Regards,
-Andy Shevchenko
 
+On Fri, 18 Feb 2022, Tom Rix wrote:
 
+>
+> On 2/18/22 1:03 AM, Zhang, Tianfei wrote:
+>> 
+>>> -----Original Message-----
+>>> From: Tom Rix <trix@redhat.com>
+>>> Sent: Wednesday, February 16, 2022 12:16 AM
+>>> To: Zhang, Tianfei <tianfei.zhang@intel.com>; Wu, Hao <hao.wu@intel.com>;
+>>> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; 
+>>> linux-fpga@vger.kernel.org;
+>>> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org
+>>> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>> Subject: Re: [PATCH v1 7/7] fpga: dfl: pci: Add generic OFS PCI PID
+>>> 
+>>> 
+>>> On 2/14/22 3:26 AM, Tianfei zhang wrote:
+>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> 
+>>>> Add the PCI product id for an Open FPGA Stack PCI card.
+>>> Is there a URL to the card ?
+>> This PCIe Device IDs have registered by Intel.
+> A URL is useful to introduce the board, Is there one ?
+>> 
+>>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+>>>> ---
+>>>>    drivers/fpga/dfl-pci.c | 4 ++++
+>>>>    1 file changed, 4 insertions(+)
+>>>> 
+>>>> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c index
+>>>> 83b604d6dbe6..cb2fbf3eb918 100644
+>>>> --- a/drivers/fpga/dfl-pci.c
+>>>> +++ b/drivers/fpga/dfl-pci.c
+>>>> @@ -76,12 +76,14 @@ static void cci_pci_free_irq(struct pci_dev *pcidev)
+>>>>    #define PCIE_DEVICE_ID_INTEL_PAC_D5005		0x0B2B
+>>>>    #define PCIE_DEVICE_ID_SILICOM_PAC_N5010	0x1000
+>>>>    #define PCIE_DEVICE_ID_SILICOM_PAC_N5011	0x1001
+>>>> +#define PCIE_DEVICE_ID_INTEL_OFS		0xbcce
+>>> INTEL_OFS is a generic name, pci id's map to specific cards
+>>> 
+>>> Is there a more specific name for this card ?
+>> I think using INTEL_OFS is better, because INTEL_OFS is the Generic 
+>> development platform can support multiple cards which using OFS 
+>> specification,
+>> like Intel PAC N6000 card.
+>
+> I would prefer something like PCIE_DEVICE_ID_INTEL_PAC_N6000 because it 
+> follows an existing pattern.Â  Make it easy on a developer, they will look at 
+> their board or box, see X and try to find something similar in the driver 
+> source.
+>
+> To use OSF_ * the name needs a suffix to differentiate it from future cards 
+> that will also use ofs.
+>
+> If this really is a generic id please explain in the doc patch how every 
+> future board with use this single id and how a driver could work around a hw 
+> problem in a specific board with a pci id covering multiple boards.
+>
+> Tom
+
+Hi Tom,
+
+The intent is to have a generic device id that can be used with many 
+different boards.  Currently, we have FPGA implementations for 3 different 
+boards using this generic id.  We may need a better name for device id 
+than OFS.  More precisely this generic device id means a PCI function that 
+is described by a Device Feature List (DFL).  How about 
+PCIE_DEVICE_ID_INTEL_DFL?
+
+With a DFL device id, the functionality of the PF/VF is determined by the 
+contents of the DFL.  Each Device Feature Header (DFH) in the DFL has a 
+revision field that can be used identify "broken" hw, or new functionality 
+added to a feature.  Additionally, since the DFL is typically used in a 
+FPGA, the broken hardware, can and should be fixed in most cases.
+
+Matthew
+>
+>> 
+>>> Tom
+>>>
+>>>>    /* VF Device */
+>>>>    #define PCIE_DEVICE_ID_VF_INT_5_X		0xBCBF
+>>>>    #define PCIE_DEVICE_ID_VF_INT_6_X		0xBCC1
+>>>>    #define PCIE_DEVICE_ID_VF_DSC_1_X		0x09C5
+>>>>    #define PCIE_DEVICE_ID_INTEL_PAC_D5005_VF	0x0B2C
+>>>> +#define PCIE_DEVICE_ID_INTEL_OFS_VF		0xbccf
+>>>>
+>>>>    static struct pci_device_id cci_pcie_id_tbl[] = {
+>>>>    	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_PF_INT_5_X),},
+>>> @@
+>>>> -95,6 +97,8 @@ static struct pci_device_id cci_pcie_id_tbl[] = {
+>>>>    	{PCI_DEVICE(PCI_VENDOR_ID_INTEL,
+>>> PCIE_DEVICE_ID_INTEL_PAC_D5005_VF),},
+>>>>    	{PCI_DEVICE(PCI_VENDOR_ID_SILICOM_DENMARK,
+>>> PCIE_DEVICE_ID_SILICOM_PAC_N5010),},
+>>>>    	{PCI_DEVICE(PCI_VENDOR_ID_SILICOM_DENMARK,
+>>>> PCIE_DEVICE_ID_SILICOM_PAC_N5011),},
+>>>> +	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCIE_DEVICE_ID_INTEL_OFS),},
+>>>> +	{PCI_DEVICE(PCI_VENDOR_ID_INTEL,
+>>> PCIE_DEVICE_ID_INTEL_OFS_VF),},
+>>>>    	{0,}
+>>>>    };
+>>>>    MODULE_DEVICE_TABLE(pci, cci_pcie_id_tbl);
+>
+>
+--8323328-1306219232-1645465820=:117064--
