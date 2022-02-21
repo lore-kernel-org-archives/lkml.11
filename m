@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D52C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FB4C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353819AbiBUKLg (ORCPT
+        id S1353751AbiBUKLb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:11:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57298 "EHLO
+        Mon, 21 Feb 2022 05:11:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353502AbiBUJ53 (ORCPT
+        with ESMTP id S1353504AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB748D;
-        Mon, 21 Feb 2022 01:26:29 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231D1F20;
+        Mon, 21 Feb 2022 01:26:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B49B60F8C;
-        Mon, 21 Feb 2022 09:26:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 337A0C340E9;
-        Mon, 21 Feb 2022 09:26:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB9C0B80EB9;
+        Mon, 21 Feb 2022 09:26:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00ECDC340E9;
+        Mon, 21 Feb 2022 09:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435588;
-        bh=42zi/zigIyIUQ1oqsPKN7CLx5IlCRHcYsWZ5A3UZKvg=;
+        s=korg; t=1645435591;
+        bh=3klJNZS5cTv0/+dhcZrqlbPKPKUl1hoZQNAt892OVZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xwxlS6l8PdgXLhcc7De8Y+jd5TpTkWUAz7INUaaKoR40P/6z2o/f3B0oDkCl54j7E
-         iRmgcYO3EeEijY1UgnKWc2SySWAercv4qzGfb5lk47JvOwfGKfmqbip8QIFcDYJYL4
-         LDwXDCtBvGY652G2X5IObxm7TGajO7N2Mxt0Pil0=
+        b=Z1gAxmVCQiWhvSx9MtGMjMfX6GJFWy97nKK0P677n3QlCw9dwvs+Nt1gWnOksFl/M
+         tXzO6TyKhsiQt7EbXOhPoNHU6X8r/ScVtqW/CzNvxNxggGtA4Of5/nw7q4tQ1rpf4l
+         p2LQg9/NsqWYYZ2KNb/X0ba0Ef3H9mhh44Z+nb4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.16 184/227] i2c: qcom-cci: dont put a device tree node before i2c_add_adapter()
-Date:   Mon, 21 Feb 2022 09:50:03 +0100
-Message-Id: <20220221084940.937091035@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sanjay R Mehta <sanju.mehta@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.16 185/227] dmaengine: ptdma: Fix the error handling path in pt_core_init()
+Date:   Mon, 21 Feb 2022 09:50:04 +0100
+Message-Id: <20220221084940.967470358@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,71 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 02a4a69667a2ad32f3b52ca906f19628fbdd8a01 upstream.
+commit 3c62fd3406e0b2277c76a6984d3979c7f3f1d129 upstream.
 
-There is a minor chance for a race, if a pointer to an i2c-bus subnode
-is stored and then reused after releasing its reference, and it would
-be sufficient to get one more reference under a loop over children
-subnodes.
+In order to free resources correctly in the error handling path of
+pt_core_init(), 2 goto's have to be switched. Otherwise, some resources
+will leak and we will try to release things that have not been allocated
+yet.
 
-Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Also move a dev_err() to a place where it is more meaningful.
+
+Fixes: fa5d823b16a9 ("dmaengine: ptdma: Initial driver for the AMD PTDMA")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Sanjay R Mehta <sanju.mehta@amd.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/41a963a35173f89c874f5c44df5530dc09fea8da.1644044244.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-qcom-cci.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/dma/ptdma/ptdma-dev.c |   17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/i2c/busses/i2c-qcom-cci.c
-+++ b/drivers/i2c/busses/i2c-qcom-cci.c
-@@ -558,7 +558,7 @@ static int cci_probe(struct platform_dev
- 		cci->master[idx].adap.quirks = &cci->data->quirks;
- 		cci->master[idx].adap.algo = &cci_algo;
- 		cci->master[idx].adap.dev.parent = dev;
--		cci->master[idx].adap.dev.of_node = child;
-+		cci->master[idx].adap.dev.of_node = of_node_get(child);
- 		cci->master[idx].master = idx;
- 		cci->master[idx].cci = cci;
- 
-@@ -643,8 +643,10 @@ static int cci_probe(struct platform_dev
- 			continue;
- 
- 		ret = i2c_add_adapter(&cci->master[i].adap);
--		if (ret < 0)
-+		if (ret < 0) {
-+			of_node_put(cci->master[i].adap.dev.of_node);
- 			goto error_i2c;
-+		}
+--- a/drivers/dma/ptdma/ptdma-dev.c
++++ b/drivers/dma/ptdma/ptdma-dev.c
+@@ -207,7 +207,7 @@ int pt_core_init(struct pt_device *pt)
+ 	if (!cmd_q->qbase) {
+ 		dev_err(dev, "unable to allocate command queue\n");
+ 		ret = -ENOMEM;
+-		goto e_dma_alloc;
++		goto e_destroy_pool;
  	}
  
- 	pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
-@@ -656,8 +658,10 @@ static int cci_probe(struct platform_dev
+ 	cmd_q->qidx = 0;
+@@ -229,8 +229,10 @@ int pt_core_init(struct pt_device *pt)
  
- error_i2c:
- 	for (--i ; i >= 0; i--) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
- 			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
- 	}
- error:
- 	disable_irq(cci->irq);
-@@ -673,8 +677,10 @@ static int cci_remove(struct platform_de
- 	int i;
+ 	/* Request an irq */
+ 	ret = request_irq(pt->pt_irq, pt_core_irq_handler, 0, dev_name(pt->dev), pt);
+-	if (ret)
+-		goto e_pool;
++	if (ret) {
++		dev_err(dev, "unable to allocate an IRQ\n");
++		goto e_free_dma;
++	}
  
- 	for (i = 0; i < cci->data->num_masters; i++) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
- 			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
- 		cci_halt(cci, i);
- 	}
+ 	/* Update the device registers with queue information. */
+ 	cmd_q->qcontrol &= ~CMD_Q_SIZE;
+@@ -250,21 +252,20 @@ int pt_core_init(struct pt_device *pt)
+ 	/* Register the DMA engine support */
+ 	ret = pt_dmaengine_register(pt);
+ 	if (ret)
+-		goto e_dmaengine;
++		goto e_free_irq;
  
+ 	/* Set up debugfs entries */
+ 	ptdma_debugfs_setup(pt);
+ 
+ 	return 0;
+ 
+-e_dmaengine:
++e_free_irq:
+ 	free_irq(pt->pt_irq, pt);
+ 
+-e_dma_alloc:
++e_free_dma:
+ 	dma_free_coherent(dev, cmd_q->qsize, cmd_q->qbase, cmd_q->qbase_dma);
+ 
+-e_pool:
+-	dev_err(dev, "unable to allocate an IRQ\n");
++e_destroy_pool:
+ 	dma_pool_destroy(pt->cmd_q.dma_pool);
+ 
+ 	return ret;
 
 
