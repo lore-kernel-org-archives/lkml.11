@@ -2,377 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 840FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69206C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345983AbiBUIy1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:54:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42142 "EHLO
+        id S241402AbiBUIyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:54:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345626AbiBUIxS (ORCPT
+        with ESMTP id S1345663AbiBUIxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:53:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1D8100D;
-        Mon, 21 Feb 2022 00:52:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 21 Feb 2022 03:53:19 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13C9192BB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:49 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFE4DB80EB1;
-        Mon, 21 Feb 2022 08:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1610BC340E9;
-        Mon, 21 Feb 2022 08:52:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433564;
-        bh=lWQyRUsHNeogGgSlwf5ifeyPlKhUtf9p/geX3mGnQv8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bK2P5fc5vne9YLH4FC/04QTGcEqgzIVEzSXaI0P5T3uQY7x6XgIvmPZs2aDZqXwKS
-         Mv1bmb/bBpt5iyjkNIS3COzfi72EcVUHK21hQVc6qqzJClZz8LIJWeWueKsch4jJif
-         kNPhwwqWpb5aHJ/hMqGjTWI25IO3SlCCQrqiMhek=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 10/45] selftests/zram: Adapt the situation that /dev/zram0 is being used
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084910.803183268@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
-References: <20220221084910.454824160@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 1BE072223E;
+        Mon, 21 Feb 2022 09:52:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645433567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Yom6dh+Jyd2Ptl27L6qolXTGIY0AoDGxM0ycUJadzo=;
+        b=Ar6n0agiO6uqRE9Q39+aDqvZa3Rr8fpz5b26+EZyBNwllIMRk6Y/y90nY+0BEM6LfIkib3
+        ZTjMrZBDWBXZGpPbFAxYF2sQ4HD6NBGWJ5TI4VzkiSFeDCsFm8tKaTUy9NH8l/G6GvITpL
+        1szebn2s7Y3mFNcfIDctR5s0a1CpD1I=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 01/32] mtd: spi-nor: atmel: unify function names
+Date:   Mon, 21 Feb 2022 09:52:05 +0100
+Message-Id: <20220221085236.1452024-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
+References: <20220221085236.1452024-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+To avoid name clashes unify all the function and static object names and
+use one of the following prefixes which should be sufficiently unique:
+ - <vendor>_nor_
+ - <flash_family>_nor_
+ - <flash_part>_
 
-[ Upstream commit 01dabed20573804750af5c7bf8d1598a6bf7bf6e ]
+There are no functional changes.
 
-If zram-generator package is installed and works, then we can not remove
-zram module because zram swap is being used. This case needs a clean zram
-environment, change this test by using hot_add/hot_remove interface. So
-even zram device is being used, we still can add zram device and remove
-them in cleanup.
-
-The two interface was introduced since kernel commit 6566d1a32bf7("zram:
-add dynamic device add/remove functionality") in v4.2-rc1. If kernel
-supports these two interface, we use hot_add/hot_remove to slove this
-problem, if not, just check whether zram is being used or built in, then
-skip it on old kernel.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- tools/testing/selftests/zram/zram.sh     |  15 +---
- tools/testing/selftests/zram/zram01.sh   |   3 +-
- tools/testing/selftests/zram/zram02.sh   |   1 -
- tools/testing/selftests/zram/zram_lib.sh | 110 +++++++++++++----------
- 4 files changed, 66 insertions(+), 63 deletions(-)
+ drivers/mtd/spi-nor/atmel.c | 81 +++++++++++++++++++------------------
+ 1 file changed, 42 insertions(+), 39 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram.sh b/tools/testing/selftests/zram/zram.sh
-index 232e958ec4547..b0b91d9b0dc21 100755
---- a/tools/testing/selftests/zram/zram.sh
-+++ b/tools/testing/selftests/zram/zram.sh
-@@ -2,9 +2,6 @@
- # SPDX-License-Identifier: GPL-2.0
- TCID="zram.sh"
- 
--# Kselftest framework requirement - SKIP code is 4.
--ksft_skip=4
--
- . ./zram_lib.sh
- 
- run_zram () {
-@@ -18,14 +15,4 @@ echo ""
- 
- check_prereqs
- 
--# check zram module exists
--MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--if [ -f $MODULE_PATH ]; then
--	run_zram
--elif [ -b /dev/zram0 ]; then
--	run_zram
--else
--	echo "$TCID : No zram.ko module or /dev/zram0 device file not found"
--	echo "$TCID : CONFIG_ZRAM is not set"
--	exit $ksft_skip
--fi
-+run_zram
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index ac6e4ddd2604e..8abc9965089d1 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -42,7 +42,7 @@ zram_algs="lzo"
- 
- zram_fill_fs()
+diff --git a/drivers/mtd/spi-nor/atmel.c b/drivers/mtd/spi-nor/atmel.c
+index d6d889ce8876..656dd80a0be7 100644
+--- a/drivers/mtd/spi-nor/atmel.c
++++ b/drivers/mtd/spi-nor/atmel.c
+@@ -16,12 +16,12 @@
+  * is to unlock the whole flash array on startup. Therefore, we have to support
+  * exactly this operation.
+  */
+-static int atmel_at25fs_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int at25fs_nor_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "fill zram$i..."
- 		local b=0
- 		while [ true ]; do
-@@ -76,7 +76,6 @@ zram_mount
- 
- zram_fill_fs
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram02.sh b/tools/testing/selftests/zram/zram02.sh
-index 74569b883737f..3768cfd2e5f83 100755
---- a/tools/testing/selftests/zram/zram02.sh
-+++ b/tools/testing/selftests/zram/zram02.sh
-@@ -45,7 +45,6 @@ zram_set_memlimit
- zram_makeswap
- zram_swapoff
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 2c1d1c567f854..130d193cbd727 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -14,10 +14,12 @@
- # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
- # Modified: Naresh Kamboju <naresh.kamboju@linaro.org>
- 
--MODULE=0
- dev_makeswap=-1
- dev_mounted=-1
--
-+dev_start=0
-+dev_end=-1
-+module_load=-1
-+sys_control=-1
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
- kernel_version=`uname -r | cut -d'.' -f1,2`
-@@ -55,57 +57,72 @@ zram_cleanup()
- {
- 	echo "zram cleanup"
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_makeswap); do
- 		swapoff /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $dev_mounted); do
-+	for i in $(seq $dev_start $dev_mounted); do
- 		umount /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo 1 > /sys/block/zram${i}/reset
- 		rm -rf zram$i
- 	done
- 
--}
-+	if [ $sys_control -eq 1 ]; then
-+		for i in $(seq $dev_start $dev_end); do
-+			echo $i > /sys/class/zram-control/hot_remove
-+		done
-+	fi
- 
--zram_unload()
--{
--	if [ $MODULE -ne 0 ] ; then
--		echo "zram rmmod zram"
-+	if [ $module_load -eq 1 ]; then
- 		rmmod zram > /dev/null 2>&1
- 	fi
+ 	return -EOPNOTSUPP;
  }
  
- zram_load()
+-static int atmel_at25fs_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int at25fs_nor_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
--	# check zram module exists
--	MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--	if [ -f $MODULE_PATH ]; then
--		MODULE=1
--		echo "create '$dev_num' zram device(s)"
--		modprobe zram num_devices=$dev_num
--		if [ $? -ne 0 ]; then
--			echo "failed to insert zram module"
--			exit 1
--		fi
--
--		dev_num_created=$(ls /dev/zram* | wc -w)
-+	echo "create '$dev_num' zram device(s)"
-+
-+	# zram module loaded, new kernel
-+	if [ -d "/sys/class/zram-control" ]; then
-+		echo "zram modules already loaded, kernel supports" \
-+			"zram-control interface"
-+		dev_start=$(ls /dev/zram* | wc -w)
-+		dev_end=$(($dev_start + $dev_num - 1))
-+		sys_control=1
-+
-+		for i in $(seq $dev_start $dev_end); do
-+			cat /sys/class/zram-control/hot_add > /dev/null
-+		done
-+
-+		echo "all zram devices (/dev/zram$dev_start~$dev_end" \
-+			"successfully created"
-+		return 0
-+	fi
+ 	int ret;
  
--		if [ "$dev_num_created" -ne "$dev_num" ]; then
--			echo "unexpected num of devices: $dev_num_created"
--			ERR_CODE=-1
-+	# detect old kernel or built-in
-+	modprobe zram num_devices=$dev_num
-+	if [ ! -d "/sys/class/zram-control" ]; then
-+		if grep -q '^zram' /proc/modules; then
-+			rmmod zram > /dev/null 2>&1
-+			if [ $? -ne 0 ]; then
-+				echo "zram module is being used on old kernel" \
-+					"without zram-control interface"
-+				exit $ksft_skip
-+			fi
- 		else
--			echo "zram load module successful"
-+			echo "test needs CONFIG_ZRAM=m on old kernel without" \
-+				"zram-control interface"
-+			exit $ksft_skip
- 		fi
--	elif [ -b /dev/zram0 ]; then
--		echo "/dev/zram0 device file found: OK"
--	else
--		echo "ERROR: No zram.ko module or no /dev/zram0 device found"
--		echo "$TCID : CONFIG_ZRAM is not set"
--		exit 1
-+		modprobe zram num_devices=$dev_num
- 	fi
-+
-+	module_load=1
-+	dev_end=$(($dev_num - 1))
-+	echo "all zram devices (/dev/zram0~$dev_end) successfully created"
+@@ -37,28 +37,28 @@ static int atmel_at25fs_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	return ret;
  }
  
- zram_max_streams()
-@@ -119,7 +136,7 @@ zram_max_streams()
- 		return 0
- 	fi
- 
--	local i=0
-+	local i=$dev_start
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
- 		echo $max_s > $sys_path || \
-@@ -131,7 +148,7 @@ zram_max_streams()
- 			echo "FAIL can't set max_streams '$max_s', get $max_stream"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$max_streams' ($i/$dev_num)"
-+		echo "$sys_path = '$max_streams'"
- 	done
- 
- 	echo "zram max streams: OK"
-@@ -141,15 +158,16 @@ zram_compress_alg()
+-static int atmel_at25fs_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int at25fs_nor_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
- 	echo "test that we can set compression algorithm"
+ 	return -EOPNOTSUPP;
+ }
  
--	local algs=$(cat /sys/block/zram0/comp_algorithm)
-+	local i=$dev_start
-+	local algs=$(cat /sys/block/zram${i}/comp_algorithm)
- 	echo "supported algs: $algs"
--	local i=0
-+
- 	for alg in $zram_algs; do
- 		local sys_path="/sys/block/zram${i}/comp_algorithm"
- 		echo "$alg" >	$sys_path || \
- 			echo "FAIL can't set '$alg' to $sys_path"
- 		i=$(($i + 1))
--		echo "$sys_path = '$alg' ($i/$dev_num)"
-+		echo "$sys_path = '$alg'"
- 	done
+-static const struct spi_nor_locking_ops atmel_at25fs_locking_ops = {
+-	.lock = atmel_at25fs_lock,
+-	.unlock = atmel_at25fs_unlock,
+-	.is_locked = atmel_at25fs_is_locked,
++static const struct spi_nor_locking_ops at25fs_nor_locking_ops = {
++	.lock = at25fs_nor_lock,
++	.unlock = at25fs_nor_unlock,
++	.is_locked = at25fs_nor_is_locked,
+ };
  
- 	echo "zram set compression algorithm: OK"
-@@ -158,14 +176,14 @@ zram_compress_alg()
- zram_set_disksizes()
+-static void atmel_at25fs_late_init(struct spi_nor *nor)
++static void at25fs_nor_late_init(struct spi_nor *nor)
  {
- 	echo "set disk size to zram device(s)"
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_sizes; do
- 		local sys_path="/sys/block/zram${i}/disksize"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
+-	nor->params->locking_ops = &atmel_at25fs_locking_ops;
++	nor->params->locking_ops = &at25fs_nor_locking_ops;
+ }
  
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
+-static const struct spi_nor_fixups atmel_at25fs_fixups = {
+-	.late_init = atmel_at25fs_late_init,
++static const struct spi_nor_fixups at25fs_nor_fixups = {
++	.late_init = at25fs_nor_late_init,
+ };
  
- 	echo "zram set disksizes: OK"
-@@ -175,14 +193,14 @@ zram_set_memlimit()
+ /**
+- * atmel_set_global_protection - Do a Global Protect or Unprotect command
++ * atmel_nor_set_global_protection - Do a Global Protect or Unprotect command
+  * @nor:	pointer to 'struct spi_nor'
+  * @ofs:	offset in bytes
+  * @len:	len in bytes
+@@ -66,8 +66,8 @@ static const struct spi_nor_fixups atmel_at25fs_fixups = {
+  *
+  * Return: 0 on success, -error otherwise.
+  */
+-static int atmel_set_global_protection(struct spi_nor *nor, loff_t ofs,
+-				       uint64_t len, bool is_protect)
++static int atmel_nor_set_global_protection(struct spi_nor *nor, loff_t ofs,
++					   uint64_t len, bool is_protect)
  {
- 	echo "set memory limit to zram device(s)"
+ 	int ret;
+ 	u8 sr;
+@@ -116,17 +116,20 @@ static int atmel_set_global_protection(struct spi_nor *nor, loff_t ofs,
+ 	return spi_nor_write_sr(nor, nor->bouncebuf, 1);
+ }
  
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_mem_limits; do
- 		local sys_path="/sys/block/zram${i}/mem_limit"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
+-static int atmel_global_protect(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int atmel_nor_global_protect(struct spi_nor *nor, loff_t ofs,
++				    uint64_t len)
+ {
+-	return atmel_set_global_protection(nor, ofs, len, true);
++	return atmel_nor_set_global_protection(nor, ofs, len, true);
+ }
  
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
+-static int atmel_global_unprotect(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int atmel_nor_global_unprotect(struct spi_nor *nor, loff_t ofs,
++				      uint64_t len)
+ {
+-	return atmel_set_global_protection(nor, ofs, len, false);
++	return atmel_nor_set_global_protection(nor, ofs, len, false);
+ }
  
- 	echo "zram set memory limit: OK"
-@@ -191,8 +209,8 @@ zram_set_memlimit()
- zram_makeswap()
+-static int atmel_is_global_protected(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int atmel_nor_is_global_protected(struct spi_nor *nor, loff_t ofs,
++					 uint64_t len)
  {
- 	echo "make swap with zram device(s)"
--	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	local i=$dev_start
-+	for i in $(seq $dev_start $dev_end); do
- 		mkswap /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -215,7 +233,7 @@ zram_makeswap()
- zram_swapoff()
- {
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_end); do
- 		swapoff /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -229,7 +247,7 @@ zram_swapoff()
+ 	int ret;
  
- zram_makefs()
+@@ -140,47 +143,47 @@ static int atmel_is_global_protected(struct spi_nor *nor, loff_t ofs, uint64_t l
+ 	return ((nor->bouncebuf[0] & ATMEL_SR_GLOBAL_PROTECT_MASK) == ATMEL_SR_GLOBAL_PROTECT_MASK);
+ }
+ 
+-static const struct spi_nor_locking_ops atmel_global_protection_ops = {
+-	.lock = atmel_global_protect,
+-	.unlock = atmel_global_unprotect,
+-	.is_locked = atmel_is_global_protected,
++static const struct spi_nor_locking_ops atmel_nor_global_protection_ops = {
++	.lock = atmel_nor_global_protect,
++	.unlock = atmel_nor_global_unprotect,
++	.is_locked = atmel_nor_is_global_protected,
+ };
+ 
+-static void atmel_global_protection_late_init(struct spi_nor *nor)
++static void atmel_nor_global_protection_late_init(struct spi_nor *nor)
  {
--	local i=0
-+	local i=$dev_start
- 	for fs in $zram_filesystems; do
- 		# if requested fs not supported default it to ext2
- 		which mkfs.$fs > /dev/null 2>&1 || fs=ext2
-@@ -248,7 +266,7 @@ zram_makefs()
- zram_mount()
- {
- 	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "mount /dev/zram$i"
- 		mkdir zram$i
- 		mount /dev/zram$i zram$i > /dev/null || \
+-	nor->params->locking_ops = &atmel_global_protection_ops;
++	nor->params->locking_ops = &atmel_nor_global_protection_ops;
+ }
+ 
+-static const struct spi_nor_fixups atmel_global_protection_fixups = {
+-	.late_init = atmel_global_protection_late_init,
++static const struct spi_nor_fixups atmel_nor_global_protection_fixups = {
++	.late_init = atmel_nor_global_protection_late_init,
+ };
+ 
+-static const struct flash_info atmel_parts[] = {
++static const struct flash_info atmel_nor_parts[] = {
+ 	/* Atmel -- some are (confusingly) marketed as "DataFlash" */
+ 	{ "at25fs010",  INFO(0x1f6601, 0, 32 * 1024,   4)
+ 		FLAGS(SPI_NOR_HAS_LOCK)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_at25fs_fixups },
++		.fixups = &at25fs_nor_fixups },
+ 	{ "at25fs040",  INFO(0x1f6604, 0, 64 * 1024,   8)
+ 		FLAGS(SPI_NOR_HAS_LOCK)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_at25fs_fixups },
++		.fixups = &at25fs_nor_fixups },
+ 	{ "at25df041a", INFO(0x1f4401, 0, 64 * 1024,   8)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at25df321",  INFO(0x1f4700, 0, 64 * 1024,  64)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at25df321a", INFO(0x1f4701, 0, 64 * 1024,  64)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at25df641",  INFO(0x1f4800, 0, 64 * 1024, 128)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at25sl321",	INFO(0x1f4216, 0, 64 * 1024, 64)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ 	{ "at26f004",   INFO(0x1f0400, 0, 64 * 1024,  8)
+@@ -188,21 +191,21 @@ static const struct flash_info atmel_parts[] = {
+ 	{ "at26df081a", INFO(0x1f4501, 0, 64 * 1024, 16)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at26df161a", INFO(0x1f4601, 0, 64 * 1024, 32)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at26df321",  INFO(0x1f4700, 0, 64 * 1024, 64)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K)
+-		.fixups = &atmel_global_protection_fixups },
++		.fixups = &atmel_nor_global_protection_fixups },
+ 	{ "at45db081d", INFO(0x1f2500, 0, 64 * 1024, 16)
+ 		NO_SFDP_FLAGS(SECT_4K) },
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_atmel = {
+ 	.name = "atmel",
+-	.parts = atmel_parts,
+-	.nparts = ARRAY_SIZE(atmel_parts),
++	.parts = atmel_nor_parts,
++	.nparts = ARRAY_SIZE(atmel_nor_parts),
+ };
 -- 
-2.34.1
-
-
+2.30.2
 
