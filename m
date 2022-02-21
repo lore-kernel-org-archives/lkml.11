@@ -2,137 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357878AbiBUMS1 (ORCPT
+        id S1357901AbiBUMTk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:18:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52968 "EHLO
+        Mon, 21 Feb 2022 07:19:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358226AbiBUMQu (ORCPT
+        with ESMTP id S1357853AbiBUMT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:16:50 -0500
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60117.outbound.protection.outlook.com [40.107.6.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F22E275C2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:12:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LSVf9W627+tB+qxWrnWffHmFit7Be+vLNjmjJSYE9ZbWzFfHhlCBG1hQsTkEC+DuF381E4HQqmZtDmPmKv3VUMw8Iln2rrj3U2+4dlYo1ppSbEsXNq9u0NvsfygyrVTfhSBEOvhNNV41sZsj9S4hxOuDdIvgNiBYX1C522KTbsRANHTFnAEd5xMYQbkepyg8LjJ8m0yfngUGW/0J4WlNGQw47Nxz4xe0zp1OVCuVOT4t2hJBbiqhsO84FOD/vesFiDbCqnMo88zc0SIOme/W14iaDfjYfQadCDVv7jC1ho2qRKwHzssRarm1N0E6JCyCQ+vMZGsfWdGwHhs6NqA2qQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N9q19MsdBwzaIFaFAvKPVLdZTQngOWacJywV389jJQM=;
- b=ZnKIMmNWvo+ZEcrX4ZjOX1Vxm+Zn5Derx6ryph/mXPc2lepPgim8DNgaih3zaUjtmsD/LwVFuJyE3kessPhC8SUsEwurcYHLdSWze0kGS9b5v6pnRuoFWOHlqwVkFGudHpP8XTvDFXchzGdSqf9tLD/a6YvvHZUb6g6I2TCyocyckZBPyAp1l/TV/t1+nnOVhjjy47NwZEjZjXDmx0YplY6BF9P6yC80K8hyPuPSFBYI6hTjxkAvBDr5deSuXOBEld7yiUiueX5Vu8OF/kPBbO2iMfrfxX5DlOjaxRJwWs817SGEZPPzpBhO7vhKGO/nyFhuXRiV45rj2a3R4oC2yg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=syrmia.com; dmarc=pass action=none header.from=syrmia.com;
- dkim=pass header.d=syrmia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=syrmia.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N9q19MsdBwzaIFaFAvKPVLdZTQngOWacJywV389jJQM=;
- b=w2n0mpRYZdPxALFtch54UQVlbpeo6nF6lqIgW3W0GoecYJDvthUuSnFtzhsJFkRQAkT+pwIWyq/wnaQkVyNJE+I4GP/SkE6tF12ocXiIB97N042GINPiXAt00CeatcoICC2d6fLG01xSa7lLlOvzrMKx+BTw8JsPeoGIQt+G2a0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=syrmia.com;
-Received: from VI1PR03MB3503.eurprd03.prod.outlook.com (2603:10a6:803:30::15)
- by VI1PR03MB4381.eurprd03.prod.outlook.com (2603:10a6:803:53::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.27; Mon, 21 Feb
- 2022 12:12:41 +0000
-Received: from VI1PR03MB3503.eurprd03.prod.outlook.com
- ([fe80::4c4c:16e9:4c39:b97e]) by VI1PR03MB3503.eurprd03.prod.outlook.com
- ([fe80::4c4c:16e9:4c39:b97e%6]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 12:12:41 +0000
-From:   Nemanja Rakovic <nemanja.rakovic@syrmia.com>
-Cc:     Nemanja Rakovic <nemanja.rakovic@syrmia.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-kernel@vger.kernel.org, dragan.mladjenovic@syrmia.com,
-        elver@google.com
-Subject: [PATCH V3] mips-next: Enable KCSAN
-Date:   Mon, 21 Feb 2022 13:12:25 +0100
-Message-Id: <20220221121225.8699-1-nemanja.rakovic@syrmia.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0268.eurprd08.prod.outlook.com
- (2603:10a6:803:dc::41) To VI1PR03MB3503.eurprd03.prod.outlook.com
- (2603:10a6:803:30::15)
+        Mon, 21 Feb 2022 07:19:29 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5268CCEF
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:16:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645445779; x=1676981779;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8hVLrnAnBGBdpP5SQ/9ADmMHt7FI1CBjOU1y3Dq+Z6k=;
+  b=BzPUURULbtYdVVQ7cMCT32dETHossNtQKF3X+M8Bf8vDjwSrtsdJIiv+
+   ZBfHF96zHxYOfkwRGrW6IUjZczv8PWXFDwQwQYoshuKqBiJ7GXBLn6NKS
+   utAV9dzCrFSNnQw/81JltNnVJ6iwiqA76A3ODHPbZDx7zm83oAxi1blTx
+   Wxd9uq1KuWDEBvg8MgF8PJR8kWUQnuOarzjaNSFQllNwzqBVGxQRjg1UW
+   tqQagz2GHMPCxsx7AKI+jwT2aDCV0uYFXR8oioIcgLYUgQnCcQ+X+6w7v
+   R9TgGbiQkzqMqiJMvaxRLQibr+2S1dxlnSe0gCMRAv7eklj+iWbZlGLm5
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="235038646"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="235038646"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 04:16:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="775981651"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2022 04:16:15 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM7by-0001Zy-3Q; Mon, 21 Feb 2022 12:16:14 +0000
+Date:   Mon, 21 Feb 2022 20:15:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Michael Walle <michael@walle.cc>, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v3 12/32] mtd: spi-nor: spansion: unify function names
+Message-ID: <202202212013.sOSFyoNv-lkp@intel.com>
+References: <20220221085236.1452024-13-michael@walle.cc>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8451c37c-a77f-4729-e754-08d9f533754a
-X-MS-TrafficTypeDiagnostic: VI1PR03MB4381:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR03MB43819B40704AB5C08C021ED18F3A9@VI1PR03MB4381.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OQJy731BksSVuxgT3okhetQtFmhFHeob8ZBI3JVIqay7Ck9CSt/wlaTNzJrEZ6CpcFkAMlFxZ5kWo1kS69EHjvepJ6tjBKz3jt9ahLTBlDJttKcQwb6H5ynE5dUhJCmBy5PWHbIbFqGPTxNbi3K7Me6PjEDYuW83mPhnjdCSPota18xrUHhhSNPfFyJieheY2m+SRvH6QUKv0M2RLqCmSq+Zsfsud8DR45TKoyfOcW7lZqhwRRCW1KcybDs2zQ6YyIl8ETLIAEDoCqNNYzdQ752zpF0qea8Thix/Q0D+nDoNHr8PDCZN3epyTTxxaoB42lmFaAubxx4Tq8N2328FycvRD3OMzFw/5oxbqw2hc+64zfN6aiuIleIUxyIGFcNy+f8rmEFIVn54cXpXl8I+eHJc2idfkr9548OEu3GU7+zRmK6Y58KTw2DDlaCB7Lqr5V8xHkRAv6sLDZbfxMArIX7KlaxXl/yqCrOHes1R1j08g+FE/FEw6yr33rolDi/R5mz/AHgpzlXB7V1+jokKweDmnv89Gpsu5KlxCj0tPCqHs0uMMCP8OH+YzzO6+P42Rl8/rTlsEUu9tm3x0kZf3hqNy922i0zRmMPPzyFv+K7HjPUT6jr12iYC9DPVWDaMTIc8AG58+ecqRxIeEkmXEElpjK3y0TbryEqWzh5UwIge46+gyKGIaV3rLGo1VlX8PHWuMD6pFcyVp5vGU/tOjvgeo+SXvAwVUyOevNdCvAQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB3503.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6666004)(36756003)(6506007)(2616005)(1076003)(66946007)(6512007)(5660300002)(4326008)(316002)(109986005)(508600001)(66556008)(66476007)(6486002)(83380400001)(26005)(186003)(44832011)(8676002)(4744005)(8936002)(38100700002)(38350700002)(2906002)(52116002)(54906003)(86362001)(266003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wFfyXMvjTa8bBXHYQMi3pV7Z4h8S0wpUavox9mIviRU64c72O258blFw+3i9?=
- =?us-ascii?Q?IuUT3qbkiExEaD3+KWYD9enm+BnBI48TG9ipm09TIrE46hyV191lZBkZM7cz?=
- =?us-ascii?Q?DNm9ObGisjz7e6RxqjksRWprIFw5NloVu4X6a9pWLjubaN4U6YfkXeuragX3?=
- =?us-ascii?Q?91HUefiaIOuGHZTcCUL72eFQ/A/UusJ8vobQyOi8yX3EqVzZUf7VIBuAX0nT?=
- =?us-ascii?Q?qJAV2knnFwULv750nKGbmS99SjbxFHj/s98PRHKqYLuKog/se4WTYT+ze5eX?=
- =?us-ascii?Q?ZPKSJ4DUOOjNCKRF3Le3BDVJfDztNTD6dKAbW3wOA4eowLELWB34gc96s1RU?=
- =?us-ascii?Q?DmTwhUtzioHRDP3t9t/xnOZd75c3ZiGry+RG3kR+sMYbIB5RKHzpwaHIppEm?=
- =?us-ascii?Q?zWEXaZPoMNVNkgOwJ4LGn+aiUJTfmzkglPJ7CzyjLE4khNsRjkGWhMl4Wd6V?=
- =?us-ascii?Q?BjG5QQtOb2GVoGvQ3S/uhTkvc+hLA3VmX1ZOtCFNFE6cP+UFJBaSgvoXFY3z?=
- =?us-ascii?Q?6R8bF8kZ04OSSna3+fX65zF4yPsEuVKD8hdcH/S1cj3uxboLYVum17EVo0Ak?=
- =?us-ascii?Q?csfk4luh2PN7c4i1hRPx+1HJluiniScaf8t2TFvag+KwxYAXMv/elpyetYVP?=
- =?us-ascii?Q?+ikByLtZgl9vCoXAxJemdXla/kJK2rsEYSU0GvITBiZ+zQAJjSps+7I8LBlk?=
- =?us-ascii?Q?gepDSDZTdWTk0oyeWBsULqYRjnAe41deknbnI0qHgRX/C1wLMHf6bU/EITwc?=
- =?us-ascii?Q?8TnP6DbWYgLDZraB3KbLgbyv3Qe1+nE5+Qfc2GAtfc3ErRf2AyBfHTP1/lZX?=
- =?us-ascii?Q?8UkSq0reP7y19lvNKBah39cEo+nSgCDz/TCCXq6nVpBw+X9oWBDkVgWYrwSF?=
- =?us-ascii?Q?kuWxBir+PMeOofAVJVHKwGtF1rEKpnW/CSGLltUVTC4ycmbhRCRobHZfbNc8?=
- =?us-ascii?Q?BBxC/Mu6rO46Vx42ID4X2P3e+1OPjTjHQGJ0LNMFaC9267fK30wtvqLW7tCk?=
- =?us-ascii?Q?V8FKcWFGeOebMx0QUBN8Fr9P0rdBP7dOaxqlY8/Mb3ClwdNJ0R0gr0TatzT6?=
- =?us-ascii?Q?UUFLKSJMz+2xmC1sdGNq0o9Udf+OROUBw9BqW5aq1P87n5Vr8OuND0RuWrqY?=
- =?us-ascii?Q?EhUW97Ijn0OkkWerqFO1cSZw/X/K3EefagvQ0BGFag+XxNmLu+bUNY1l7k/O?=
- =?us-ascii?Q?Gg0DA2FTy2Jn3PR20LsTaK/6+bKWeGT+foV2SaUneC7FSSm4J1izQKfQ+KHq?=
- =?us-ascii?Q?9inOubZ1OIlZnHeEn6fmIVsCOapMQabmQ3WbSPP1HsSY7tU43zXg2nJB26uf?=
- =?us-ascii?Q?62myMefWuE+s8sFQ9IfYXN9Xd+M4u9WZSOUvVZiTgBIMR+jZL0LRE2B0nTPp?=
- =?us-ascii?Q?JxH9xHEfD61ldz/VQtGT7QMPrIqzXzT9fD9y4MoWQ872rA7hIozBo8zFFBs/?=
- =?us-ascii?Q?Rw2J29CGvWwRoLzVFxr8MjDgTV/EcgNWpt2Hh4R+dXw3MRCZ8Dbg03aTXdfc?=
- =?us-ascii?Q?irMEGOTZptGDCR4rEjZCR+Vpd0hOtaP6kfJxtiKbLjEEa1/KEK0CiNe03Mjm?=
- =?us-ascii?Q?S82rCF1qhiCFri4kjP9IMIqIuuDv0VM6SbGhmV3pQpNfXSJRx5PeeBKlP83J?=
- =?us-ascii?Q?mE6DwTRmcgM1tHEonBpHM2lJcjcKohIP5WKxOyHD/PF5JWpwFgA2dG+MXdMb?=
- =?us-ascii?Q?xCEp6juJ1EuLR4qk6pHxVUzrYKU=3D?=
-X-OriginatorOrg: syrmia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8451c37c-a77f-4729-e754-08d9f533754a
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB3503.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 12:12:41.1178
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 19214a73-c1ab-4e19-8f59-14bdcb09a66e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6mmkaU4TvT7iicG5ZDmWu73NE9Pef/K2ECO4P+12WuHWRJ/a/3LFKHkDYXssqdYxZp9X2X078FnSR7RXbk9fSuKgrjSWyq1uE1gfEWcegmw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB4381
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221085236.1452024-13-michael@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replaces KASAN_SANITIZE with KCSAN_SANITIZE in
-boot/compressed/Makefile.
+Hi Michael,
 
-Fixes: e0a8b93efa23 mips: Enable KCSAN
-Signed-off-by: Nemanja Rakovic <nemanja.rakovic@syrmia.com>
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on mtd/spi-nor/next]
+[also build test ERROR on tip/master linux/master linus/master v5.17-rc5 next-20220217]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Michael-Walle/mtd-spi-nor-move-vendor-specific-code-into-vendor-modules/20220221-165728
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next
+config: x86_64-randconfig-a003-20220221 (https://download.01.org/0day-ci/archive/20220221/202202212013.sOSFyoNv-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/f8aeae6008aa9a304aacb1914911dcb3a895da53
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Michael-Walle/mtd-spi-nor-move-vendor-specific-code-into-vendor-modules/20220221-165728
+        git checkout f8aeae6008aa9a304aacb1914911dcb3a895da53
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/mtd/spi-nor/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/mtd/spi-nor/spansion.c:232:14: error: 's25fs_s_fixups' undeclared here (not in a function); did you mean 's25fs_s_nor_fixups'?
+     232 |   .fixups = &s25fs_s_fixups, },
+         |              ^~~~~~~~~~~~~~
+         |              s25fs_s_nor_fixups
+   drivers/mtd/spi-nor/spansion.c:201:36: warning: 's25fs_s_nor_fixups' defined but not used [-Wunused-const-variable=]
+     201 | static const struct spi_nor_fixups s25fs_s_nor_fixups = {
+         |                                    ^~~~~~~~~~~~~~~~~~
+
+
+vim +232 drivers/mtd/spi-nor/spansion.c
+
+5587fa489747a8 Sergei Shtylyov 2020-04-20  204  
+f8aeae6008aa9a Michael Walle   2022-02-21  205  static const struct flash_info spansion_nor_parts[] = {
+0173c32a0ebd42 Boris Brezillon 2020-03-13  206  	/* Spansion/Cypress -- single (large) sector size only, at least
+0173c32a0ebd42 Boris Brezillon 2020-03-13  207  	 * for the chips listed here (without boot sectors).
+0173c32a0ebd42 Boris Brezillon 2020-03-13  208  	 */
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  209  	{ "s25sl032p",  INFO(0x010215, 0x4d00,  64 * 1024,  64)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  210  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  211  	{ "s25sl064p",  INFO(0x010216, 0x4d00,  64 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  212  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  213  	{ "s25fl128s0", INFO6(0x012018, 0x4d0080, 256 * 1024, 64)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  214  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  215  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  216  	{ "s25fl128s1", INFO6(0x012018, 0x4d0180, 64 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  217  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  218  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  219  	{ "s25fl256s0", INFO6(0x010219, 0x4d0080, 256 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  220  		FLAGS(USE_CLSR)
+5eefc2dc03192c Tudor Ambarus   2021-12-07  221  		NO_SFDP_FLAGS(SPI_NOR_SKIP_SFDP | SPI_NOR_DUAL_READ |
+5eefc2dc03192c Tudor Ambarus   2021-12-07  222  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  223  	{ "s25fl256s1", INFO6(0x010219, 0x4d0180, 64 * 1024, 512)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  224  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  225  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  226  	{ "s25fl512s",  INFO6(0x010220, 0x4d0080, 256 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  227  		FLAGS(SPI_NOR_HAS_LOCK | USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  228  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  229  	{ "s25fs128s1", INFO6(0x012018, 0x4d0181, 64 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  230  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  231  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+c26d0d87f175b8 Yicong Yang     2020-04-22 @232  		.fixups = &s25fs_s_fixups, },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  233  	{ "s25fs256s0", INFO6(0x010219, 0x4d0081, 256 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  234  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  235  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  236  	{ "s25fs256s1", INFO6(0x010219, 0x4d0181, 64 * 1024, 512)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  237  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  238  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  239  	{ "s25fs512s",  INFO6(0x010220, 0x4d0081, 256 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  240  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  241  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+5587fa489747a8 Sergei Shtylyov 2020-04-20  242  		.fixups = &s25fs_s_fixups, },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  243  	{ "s25sl12800", INFO(0x012018, 0x0300, 256 * 1024,  64) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  244  	{ "s25sl12801", INFO(0x012018, 0x0301,  64 * 1024, 256) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  245  	{ "s25fl129p0", INFO(0x012018, 0x4d00, 256 * 1024,  64)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  246  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  247  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  248  	{ "s25fl129p1", INFO(0x012018, 0x4d01,  64 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  249  		FLAGS(USE_CLSR)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  250  		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  251  	{ "s25sl004a",  INFO(0x010212,      0,  64 * 1024,   8) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  252  	{ "s25sl008a",  INFO(0x010213,      0,  64 * 1024,  16) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  253  	{ "s25sl016a",  INFO(0x010214,      0,  64 * 1024,  32) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  254  	{ "s25sl032a",  INFO(0x010215,      0,  64 * 1024,  64) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  255  	{ "s25sl064a",  INFO(0x010216,      0,  64 * 1024, 128) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  256  	{ "s25fl004k",  INFO(0xef4013,      0,  64 * 1024,   8)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  257  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  258  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  259  	{ "s25fl008k",  INFO(0xef4014,      0,  64 * 1024,  16)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  260  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  261  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  262  	{ "s25fl016k",  INFO(0xef4015,      0,  64 * 1024,  32)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  263  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  264  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  265  	{ "s25fl064k",  INFO(0xef4017,      0,  64 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  266  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  267  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  268  	{ "s25fl116k",  INFO(0x014015,      0,  64 * 1024,  32)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  269  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  270  			      SPI_NOR_QUAD_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  271  	{ "s25fl132k",  INFO(0x014016,      0,  64 * 1024,  64)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  272  		NO_SFDP_FLAGS(SECT_4K) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  273  	{ "s25fl164k",  INFO(0x014017,      0,  64 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  274  		NO_SFDP_FLAGS(SECT_4K) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  275  	{ "s25fl204k",  INFO(0x014013,      0,  64 * 1024,   8)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  276  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  277  	{ "s25fl208k",  INFO(0x014014,      0,  64 * 1024,  16)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  278  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  279  	{ "s25fl064l",  INFO(0x016017,      0,  64 * 1024, 128)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  280  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  281  		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  282  	{ "s25fl128l",  INFO(0x016018,      0,  64 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  283  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  284  		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  285  	{ "s25fl256l",  INFO(0x016019,      0,  64 * 1024, 512)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  286  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  287  		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  288  	{ "cy15x104q",  INFO6(0x042cc2, 0x7f7f7f, 512 * 1024, 1)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  289  		FLAGS(SPI_NOR_NO_ERASE) },
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  290  	{ "s28hs512t",   INFO(0x345b1a,      0, 256 * 1024, 256)
+ec1c0e996035c8 Tudor Ambarus   2021-12-07  291  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_OCTAL_DTR_READ |
+c3266af101f28e Pratyush Yadav  2020-10-05  292  			      SPI_NOR_OCTAL_DTR_PP)
+c3266af101f28e Pratyush Yadav  2020-10-05  293  		.fixups = &s28hs512t_fixups,
+c3266af101f28e Pratyush Yadav  2020-10-05  294  	},
+0173c32a0ebd42 Boris Brezillon 2020-03-13  295  };
+0173c32a0ebd42 Boris Brezillon 2020-03-13  296  
+
 ---
- arch/mips/boot/compressed/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
-index a35f78212ea9..6cc28173bee8 100644
---- a/arch/mips/boot/compressed/Makefile
-+++ b/arch/mips/boot/compressed/Makefile
-@@ -38,7 +38,7 @@ KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
- KCOV_INSTRUMENT		:= n
- GCOV_PROFILE := n
- UBSAN_SANITIZE := n
--KASAN_SANITIZE			:= n
-+KCSAN_SANITIZE			:= n
- 
- # decompressor objects (linked with vmlinuz)
- vmlinuzobjs-y := $(obj)/head.o $(obj)/decompress.o $(obj)/string.o $(obj)/bswapsi.o
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
