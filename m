@@ -2,59 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49680C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380935AbiBUQnf (ORCPT
+        id S1380979AbiBUQoQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:43:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57604 "EHLO
+        Mon, 21 Feb 2022 11:44:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiBUQnc (ORCPT
+        with ESMTP id S1380940AbiBUQoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:43:32 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 219881EC6B;
-        Mon, 21 Feb 2022 08:43:09 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 507BA92009C; Mon, 21 Feb 2022 17:43:07 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 49BE692009B;
-        Mon, 21 Feb 2022 16:43:07 +0000 (GMT)
-Date:   Mon, 21 Feb 2022 16:43:07 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
-cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        chenhuacai@kernel.org, tsbogend@alpha.franken.de
-Subject: Re: [RFC PATCH 3/3] MIPS: io.h: Remove barriers before MMIO accessors
- for CPU without WB
-In-Reply-To: <20220221145531.10479-4-jiaxun.yang@flygoat.com>
-Message-ID: <alpine.DEB.2.21.2202211612440.56785@angie.orcam.me.uk>
-References: <20220221145531.10479-1-jiaxun.yang@flygoat.com> <20220221145531.10479-4-jiaxun.yang@flygoat.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Mon, 21 Feb 2022 11:44:07 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A67220E8;
+        Mon, 21 Feb 2022 08:43:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645461820; x=1676997820;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HrHAf6gEsOAhEpFdK8CdrZ0sJZ9UBBtJ6ScL1EPZiy0=;
+  b=1SRJSbbTYOY3q9ifajm7BjSJmBvWpraTrmsgqCaYHAZMjQqcmnnAvCha
+   +1pijPaBC9I97Mx8TLLBow+LSJlXfl/X24zl2T1bJuGcq7R4SOUZFwIMo
+   OcdOmx2qeVAGjrRbtvK8Tjo66+NSk5vywecaEO9AYFiQPMwUD44iuHqAI
+   naOHJUGnrYILkKGA784W9gwHxfJASKkM9JBLOFkc5t6qpOsRJD4obnrYA
+   IDq4DsTCvc8zttizvDSR9CpOaSbxlL88zi5LSNZfYtwcVeJmMEU2bO5QG
+   6wAuKGsq+RadtyEcYOS1qX2sSIWQBJqOv04c8PxNOkyV7SmUA6rlMw24P
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="163022563"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Feb 2022 09:43:39 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 21 Feb 2022 09:43:39 -0700
+Received: from [10.12.68.158] (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 21 Feb 2022 09:43:38 -0700
+Message-ID: <994b754f-a8b0-2504-0803-d12fa9975ff5@microchip.com>
+Date:   Mon, 21 Feb 2022 17:43:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] clk: lan966x: Fix linking error
+Content-Language: en-US
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>
+CC:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <kavyasree.kotagiri@microchip.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220219141536.460812-1-horatiu.vultur@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220219141536.460812-1-horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Feb 2022, Jiaxun Yang wrote:
+On 19/02/2022 at 15:15, Horatiu Vultur wrote:
+> If the config options HAS_IOMEM is not set then the driver fails to link
+> with the following error:
+> clk-lan966x.c:(.text+0x950): undefined reference to
+> `devm_platform_ioremap_resource'
+> 
+> Therefor add missing dependencies: HAS_IOMEM and OF.
+> 
+> Fixes: 54104ee02333 ("clk: lan966x: Add lan966x SoC clock driver")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-> Commit 3d474da ("MIPS: Enforce strong ordering for MMIO accessors")
+Reviewed-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
- Please follow the canonical commit reference format including a 12-digit 
-hexadecimal hash reference (`scripts/checkpatch.pl' would have pointed it 
-out).
+> ---
+>   drivers/clk/Kconfig | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+> index 4a8451f61f37..6f03c29c40be 100644
+> --- a/drivers/clk/Kconfig
+> +++ b/drivers/clk/Kconfig
+> @@ -232,6 +232,8 @@ config COMMON_CLK_GEMINI
+>   
+>   config COMMON_CLK_LAN966X
+>   	bool "Generic Clock Controller driver for LAN966X SoC"
+> +	depends on HAS_IOMEM
+> +	depends on OF
+>   	help
+>   	  This driver provides support for Generic Clock Controller(GCK) on
+>   	  LAN966X SoC. GCK generates and supplies clock to various peripherals
 
-> SYNC based barrier is very heavy on Loongson and MTI cores as it will
-> issue a SYNC command on their bus and invalidate all present instrutions
-> in pipeline. We should generally avoid that.
 
- Use whatever lighterweight barrier instruction you have available for 
-your specific platforms then that fulfills the ordering enforcement 
-required here for your specific platforms of concern that you have 
-identified and know well rather than across the board.  The reason for 
-this is this is an optimisation and the default barrier model needs to 
-ensure correct execution with any implementation.
-
-  Maciej
+-- 
+Nicolas Ferre
