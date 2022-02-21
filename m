@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 862F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12256C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347248AbiBUJFU (ORCPT
+        id S1347327AbiBUJFW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:05:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60040 "EHLO
+        Mon, 21 Feb 2022 04:05:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347642AbiBUJBi (ORCPT
+        with ESMTP id S1347692AbiBUJBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9266435;
-        Mon, 21 Feb 2022 00:56:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:01:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BCD289BC;
+        Mon, 21 Feb 2022 00:56:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34F9961206;
-        Mon, 21 Feb 2022 08:56:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F3FC340E9;
-        Mon, 21 Feb 2022 08:56:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDD7611E9;
+        Mon, 21 Feb 2022 08:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96979C340EB;
+        Mon, 21 Feb 2022 08:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433808;
-        bh=oQnpziJx3hOw14sJEPgcvF6w7v96hYdi1wqcsp84XMA=;
+        s=korg; t=1645433786;
+        bh=NRCPCKCJdTDy5kEECWVvGM5CbdqXXjskW/KnRRKYGMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zDEw6QB9kdjIbuFx3EdI1FZguAgHJ20lPgr9XlVNoI6Q5sTub/QN92cokndmFX9ix
-         L5kyVc8uw2jIoq1VDEAkAlbgCCdjtu3mBAo3zHifXhh1emdeoSPPAOthVrDZra6jpo
-         I0gs49Xzvli9zkJwBGJ+0lDTybNUp6s8gnE+pRRw=
+        b=XkFvxyNgCRJZYpoePLa3iUpXf88RvSlcXuSudulQc+uDPwqDiGcfnr+LiNMpr10fM
+         aqPvFMIJcAlZTNNvsPOPq3617GXV9hHouGY7S5QDZrtfbVjkKzAkTo7wp0Gr4ky9kq
+         W0VjHDngRBXcFpAkMs4Cr+tr3OoDlhyLWcrm8Y3c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Juan Vazquez <juvazq@linux.microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 48/58] Drivers: hv: vmbus: Fix memory leak in vmbus_add_channel_kobj
-Date:   Mon, 21 Feb 2022 09:49:41 +0100
-Message-Id: <20220221084913.425983021@linuxfoundation.org>
+        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 4.19 41/58] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
+Date:   Mon, 21 Feb 2022 09:49:34 +0100
+Message-Id: <20220221084913.205914156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,54 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Eliav Farber <farbere@amazon.com>
 
-[ Upstream commit 8bc69f86328e87a0ffa79438430cc82f3aa6a194 ]
+commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+Do alignment logic properly and use the "ptr" local variable for
+calculating the remainder of the alignment.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+This became an issue because struct edac_mc_layer has a size that is not
+zero modulo eight, and the next offset that was prepared for the private
+data was unaligned, causing an alignment exception.
 
-Fix memory leak by calling kobject_put().
+The patch in Fixes: which broke this actually wanted to "what we
+actually care about is the alignment of the actual pointer that's about
+to be returned." But it didn't check that alignment.
 
-Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Juan Vazquez <juvazq@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220203173008.43480-1-linmq006@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Use the correct variable "ptr" for that.
+
+  [ bp: Massage commit message. ]
+
+Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hv/vmbus_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/edac/edac_mc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index aab21c1534a10..51fe219c91fc3 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -1556,8 +1556,10 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- 	kobj->kset = dev->channels_kset;
- 	ret = kobject_init_and_add(kobj, &vmbus_chan_ktype, NULL,
- 				   "%u", relid);
--	if (ret)
-+	if (ret) {
-+		kobject_put(kobj);
- 		return ret;
-+	}
+--- a/drivers/edac/edac_mc.c
++++ b/drivers/edac/edac_mc.c
+@@ -265,7 +265,7 @@ void *edac_align_ptr(void **p, unsigned
+ 	else
+ 		return (char *)ptr;
  
- 	ret = sysfs_create_group(kobj, &vmbus_chan_group);
+-	r = (unsigned long)p % align;
++	r = (unsigned long)ptr % align;
  
-@@ -1566,6 +1568,7 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- 		 * The calling functions' error handling paths will cleanup the
- 		 * empty channel directory.
- 		 */
-+		kobject_put(kobj);
- 		dev_err(device, "Unable to set up channel sysfs files\n");
- 		return ret;
- 	}
--- 
-2.34.1
-
+ 	if (r == 0)
+ 		return (char *)ptr;
 
 
