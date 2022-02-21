@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 809E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347504AbiBUJHd (ORCPT
+        id S1347660AbiBUJHf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:07:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39592 "EHLO
+        Mon, 21 Feb 2022 04:07:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347956AbiBUJCG (ORCPT
+        with ESMTP id S1348062AbiBUJCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529A02A269;
-        Mon, 21 Feb 2022 00:57:20 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B380222BEE;
+        Mon, 21 Feb 2022 00:57:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C71A0B80EBF;
-        Mon, 21 Feb 2022 08:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89F4C340E9;
-        Mon, 21 Feb 2022 08:56:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1810EB80EBA;
+        Mon, 21 Feb 2022 08:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36564C340E9;
+        Mon, 21 Feb 2022 08:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433819;
-        bh=7IndvWW4knO7Gv/XnMSiVo1b4ySFdFkngxlqkb3PxxU=;
+        s=korg; t=1645433847;
+        bh=r+bNCJC5D6dgqgospRgsdedmZ0Hcm+1d/jSHPYZYSUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PGI5X1nsE4VYXenumFdFKsrdLLblBsVWtLTJMLlXMB9ZBsLNIW21lZm5DS299crBg
-         6mdRXAYZFI0hLVVtqkAc+xQKm9nOBR0ve9GrEBWsynOAn6dbKc9ZuTW4WGzErRqiGG
-         gNB/O8op02VtMifeWjZqgBEfUJz24JC5S69L8rSw=
+        b=Dy0KwiqiXpyFY3MwuFBj2Ebtfk+Nj7QRC85coKOYM8eGD80BrFtBEVQu3e4d6YYvN
+         4IL4GcG45n3GSIqNs5o9rqy0Cut/J+TtfgQDL9Gi+tEr5UAxoLFfmMI6x4d++qaLuN
+         SfJYlxCZFWaC+AEOXqilMgWGW6gaZi3UVQTmzAGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 4.19 21/58] mmc: block: fix read single on recovery logic
-Date:   Mon, 21 Feb 2022 09:49:14 +0100
-Message-Id: <20220221084912.568235816@linuxfoundation.org>
+        stable@vger.kernel.org, JaeSang Yoo <jsyoo5b@gmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 56/58] tracing: Fix tp_printk option related with tp_printk_stop_on_boot
+Date:   Mon, 21 Feb 2022 09:49:49 +0100
+Message-Id: <20220221084913.683951906@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,83 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Löhle <CLoehle@hyperstone.com>
+From: JaeSang Yoo <js.yoo.5b@gmail.com>
 
-commit 54309fde1a352ad2674ebba004a79f7d20b9f037 upstream.
+[ Upstream commit 3203ce39ac0b2a57a84382ec184c7d4a0bede175 ]
 
-On reads with MMC_READ_MULTIPLE_BLOCK that fail,
-the recovery handler will use MMC_READ_SINGLE_BLOCK for
-each of the blocks, up to MMC_READ_SINGLE_RETRIES times each.
-The logic for this is fixed to never report unsuccessful reads
-as success to the block layer.
+The kernel parameter "tp_printk_stop_on_boot" starts with "tp_printk" which is
+the same as another kernel parameter "tp_printk". If "tp_printk" setup is
+called before the "tp_printk_stop_on_boot", it will override the latter
+and keep it from being set.
 
-On command error with retries remaining, blk_update_request was
-called with whatever value error was set last to.
-In case it was last set to BLK_STS_OK (default), the read will be
-reported as success, even though there was no data read from the device.
-This could happen on a CRC mismatch for the response,
-a card rejecting the command (e.g. again due to a CRC mismatch).
-In case it was last set to BLK_STS_IOERR, the error is reported correctly,
-but no retries will be attempted.
+This is similar to other kernel parameter issues, such as:
+  Commit 745a600cf1a6 ("um: console: Ignore console= option")
+or init/do_mounts.c:45 (setup function of "ro" kernel param)
 
-Fixes: 81196976ed946c ("mmc: block: Add blk-mq support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/bc706a6ab08c4fe2834ba0c05a804672@hyperstone.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by checking for a "_" right after the "tp_printk" and if that
+exists do not process the parameter.
+
+Link: https://lkml.kernel.org/r/20220208195421.969326-1-jsyoo5b@gmail.com
+
+Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
+[ Fixed up change log and added space after if condition ]
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/block.c |   28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ kernel/trace/trace.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1678,31 +1678,31 @@ static void mmc_blk_read_single(struct m
- 	struct mmc_card *card = mq->card;
- 	struct mmc_host *host = card->host;
- 	blk_status_t error = BLK_STS_OK;
--	int retries = 0;
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 17e337a22c239..19a6b088f1e72 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -232,6 +232,10 @@ __setup("trace_clock=", set_trace_boot_clock);
  
- 	do {
- 		u32 status;
- 		int err;
-+		int retries = 0;
- 
--		mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
-+		while (retries++ <= MMC_READ_SINGLE_RETRIES) {
-+			mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
- 
--		mmc_wait_for_req(host, mrq);
-+			mmc_wait_for_req(host, mrq);
- 
--		err = mmc_send_status(card, &status);
--		if (err)
--			goto error_exit;
--
--		if (!mmc_host_is_spi(host) &&
--		    !mmc_blk_in_tran_state(status)) {
--			err = mmc_blk_fix_state(card, req);
-+			err = mmc_send_status(card, &status);
- 			if (err)
- 				goto error_exit;
--		}
- 
--		if (mrq->cmd->error && retries++ < MMC_READ_SINGLE_RETRIES)
--			continue;
-+			if (!mmc_host_is_spi(host) &&
-+			    !mmc_blk_in_tran_state(status)) {
-+				err = mmc_blk_fix_state(card, req);
-+				if (err)
-+					goto error_exit;
-+			}
- 
--		retries = 0;
-+			if (!mrq->cmd->error)
-+				break;
-+		}
- 
- 		if (mrq->cmd->error ||
- 		    mrq->data->error ||
+ static int __init set_tracepoint_printk(char *str)
+ {
++	/* Ignore the "tp_printk_stop_on_boot" param */
++	if (*str == '_')
++		return 0;
++
+ 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
+ 		tracepoint_printk = 1;
+ 	return 1;
+-- 
+2.34.1
+
 
 
