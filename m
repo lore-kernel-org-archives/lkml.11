@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5E6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350449AbiBUJdL (ORCPT
+        id S1350360AbiBUJdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:33:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
+        Mon, 21 Feb 2022 04:33:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349054AbiBUJYu (ORCPT
+        with ESMTP id S1349303AbiBUJZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:24:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A539694;
+        Mon, 21 Feb 2022 04:25:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1E639699;
         Mon, 21 Feb 2022 01:10:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DCA26097C;
-        Mon, 21 Feb 2022 09:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5725BC340E9;
-        Mon, 21 Feb 2022 09:10:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD9D608C4;
+        Mon, 21 Feb 2022 09:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79A41C340E9;
+        Mon, 21 Feb 2022 09:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434628;
-        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
+        s=korg; t=1645434626;
+        bh=64VlcYegJ7J3ajnlObHc0xZ4ibsZb9NovkvekZYyx/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=admmjWX/ssQoqz+uoIMyxR4wFmQJwqOHmnhzo8b3Wv7YiiGWIMU4q5cbvdDoZX7Q+
-         XGnjsYfsOLaXg9tAenriKZTE5NORKm2bq1gUxHjkUFAWu+s7d3fBhhuqTMEFasbAza
-         kA3Zci7V02gpmFtAWE/4PF0NziYpl2J1XNS/K9KY=
+        b=CDuHZrw4vynd7iesf82NmKOe8TclrpyOA4WGq+1/wfRfV9cEy3Sg/ny1n2AoVOssG
+         PeLYSLDmgOcLzVKIs0V9nNRbWC4C+W2/4+A1HOpB8tm0sT3IF4D5cXb1Fxz3Xl8JIy
+         YAPpdO49MDeRi4GVSBkxf0d5PAvXxblIOqSXFvnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/196] net: sparx5: do not refer to skb after passing it on
-Date:   Mon, 21 Feb 2022 09:47:59 +0100
-Message-Id: <20220221084932.504706572@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.15 073/196] drm/i915/ttm: tweak priority hint selection
+Date:   Mon, 21 Feb 2022 09:48:25 +0100
+Message-Id: <20220221084933.386477663@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,40 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
+From: Matthew Auld <matthew.auld@intel.com>
 
-[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
+commit 0bdc0a0699929c814a8aecd55d2accb8c11beae2 upstream.
 
-Do not try to use any SKB fields after the packet has been passed up in the
-receive stack.
+For some reason we are selecting PRIO_HAS_PAGES when we don't have
+mm.pages, and vice versa.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+v2(Thomas):
+  - Add missing fixes tag
+
+Fixes: 213d50927763 ("drm/i915/ttm: Introduce a TTM i915 gem object backend")
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220209111652.468762-1-matthew.auld@intel.com
+(cherry picked from commit ba2c5d15022a565da187d90e2fe44768e33e5034)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index dc7e5ea6ec158..148d431fcde42 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
- 	eth_skb_pad(skb);
- 	skb->protocol = eth_type_trans(skb, netdev);
--	netif_rx(skb);
- 	netdev->stats.rx_bytes += skb->len;
- 	netdev->stats.rx_packets++;
-+	netif_rx(skb);
- }
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -759,11 +759,9 @@ static void i915_ttm_adjust_lru(struct d
+ 	if (obj->mm.madv != I915_MADV_WILLNEED) {
+ 		bo->priority = I915_TTM_PRIO_PURGE;
+ 	} else if (!i915_gem_object_has_pages(obj)) {
+-		if (bo->priority < I915_TTM_PRIO_HAS_PAGES)
+-			bo->priority = I915_TTM_PRIO_HAS_PAGES;
++		bo->priority = I915_TTM_PRIO_NO_PAGES;
+ 	} else {
+-		if (bo->priority > I915_TTM_PRIO_NO_PAGES)
+-			bo->priority = I915_TTM_PRIO_NO_PAGES;
++		bo->priority = I915_TTM_PRIO_HAS_PAGES;
+ 	}
  
- static int sparx5_inject(struct sparx5 *sparx5,
--- 
-2.34.1
-
+ 	ttm_bo_move_to_lru_tail(bo, bo->resource, NULL);
 
 
