@@ -2,271 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7687DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiBURp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:45:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50996 "EHLO
+        id S229734AbiBURqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 12:46:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiBURnM (ORCPT
+        with ESMTP id S229645AbiBURpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:43:12 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B87275D1;
-        Mon, 21 Feb 2022 09:42:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645465351; x=1677001351;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=cXvdgGsEYjDDo8W85DMQeWzgALSB8YnpM/5dMY4R+Us=;
-  b=M+tfwcTH1EBdhD28eiZzvkhzQJgZDilhw3zu6VAFp6vG7sidCSEfX+os
-   9hgjkkDA1aLXqkqlf3MNMIhLBcj+h9Iy+l3fUg25bDo5MVGF++BHLxFhX
-   XrmBSeq1HjhL7bb11wzSav0iL4o+3lpXvWXGXdRJwLiEa8hJF71KLEI8q
-   EbrdAQfrFsXVsT2pp6r66lkTti8SVHDRqBT6roF9QkkT+cHGnAalpxxxG
-   HwS/eL3oeP3IT42tFEUMpzhc7ReE3hJMuZp/1P6QpeJwWTVgpDnP/chuc
-   Zw3nevysfGIq+427NzdQWmbEtcAw8jkexX9AAXnaJ22b4uiFX5Jw9Q500
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251732018"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251732018"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:42:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="638624692"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:42:17 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMCgf-006rvG-59;
-        Mon, 21 Feb 2022 19:41:25 +0200
-Date:   Mon, 21 Feb 2022 19:41:24 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhPOxL++yhNHh+xH@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        Mon, 21 Feb 2022 12:45:33 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FB9113D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:45:08 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id u7so8225984ljk.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=hGws8VeC3tIONMbk0280O7wxxVhyCbiHV3e2/1KcqOo=;
+        b=M8uNRRjYG17Dxw4dNTNI8cyfXoY0brICmbxY1sKwZcx8ovw3m4YFAjAkiX32bHmOQx
+         WbbMZvzKyJJR81nJ4F81z7aHsD25vUo3UghqLuSzlE6pFBm5qoF/HHW+Mr/f7KeBP5AH
+         dMqxKliQFafbzZxb+K2eLbFKKneV97hnQy5/Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=hGws8VeC3tIONMbk0280O7wxxVhyCbiHV3e2/1KcqOo=;
+        b=yUv0/UcBXqN5BuA1aIv5S0OtsYWP2moI6KRamYN/EZkkVhxQkdeJY5x59scBOu8c1K
+         VKEezx92vvYWFDaLF8EsrU0cRYG2nGOMR/GjHc8qvayHwnWH56Qr0W90QtccexP+xiCH
+         jSd+CCj6QUFInLEc2RRkg1cbni3Udeh0ZJ7cW60TgjsNCd33aOLEGlCpie/BeRBYA62N
+         KgR6MFzsqYpuJlUJLNo+MzBZFIhhNVGK6yU+YGgRdPc7wWaTwTn5Xr0rp2tf+bhom6ID
+         xjLxnIVD7auSQfmNdNtasqH0Uq0hS3hm7GLVCG6U9/WNOJXMI1qVBug1c38kjpPNkUGf
+         3CFA==
+X-Gm-Message-State: AOAM533OUX6yCJGO1xuT6jftpbPkJKhJcOOIPUZjRSQA3eKI89ARDGu0
+        SsTeQtlRmu76Q7AaOjPkmo3GqZOnK6aNEJ3q
+X-Google-Smtp-Source: ABdhPJyGMFvwQhIGoiMXS7pF5wZHML5bFemssxRcdN69WPV6lTqtIeYLx5eIYPy2X8tkVRyZSP/HNQ==
+X-Received: by 2002:a05:651c:17a3:b0:245:f39e:f2d2 with SMTP id bn35-20020a05651c17a300b00245f39ef2d2mr15402594ljb.490.1645465506873;
+        Mon, 21 Feb 2022 09:45:06 -0800 (PST)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
+        by smtp.gmail.com with ESMTPSA id s9sm1167484lfi.137.2022.02.21.09.45.04
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 09:45:05 -0800 (PST)
+Received: by mail-lj1-f169.google.com with SMTP id bn33so15734590ljb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:45:04 -0800 (PST)
+X-Received: by 2002:a2e:3013:0:b0:246:2ca9:365e with SMTP id
+ w19-20020a2e3013000000b002462ca9365emr9237427ljw.291.1645465504568; Mon, 21
+ Feb 2022 09:45:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221162652.103834-1-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 21 Feb 2022 09:44:48 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiWZ=3dTuRq46KvQVpx-e7xqrnMAVB73dzj7g4Pbwc1zg@mail.gmail.com>
+Message-ID: <CAHk-=wiWZ=3dTuRq46KvQVpx-e7xqrnMAVB73dzj7g4Pbwc1zg@mail.gmail.com>
+Subject: Re: Linux 5.17-rc5
+To:     Guenter Roeck <linux@roeck-us.net>, Rob Herring <robh@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:42PM +0100, Clément Léger wrote:
-> The purpose of this work is to allow i2c muxes and adapters to be
-> usable with devices that are described with software_node. A solution
-> for this is to use the fwnode API which works with both device-tree,
-> ACPI and software node. In this series, functions are added to retrieve
-> i2c_adapter from fwnode and to create new mux adapters from fwnode.
-> 
-> This series is part of a larger changeset that touches multiple
-> subsystems. series will be sent separately for each subsystems since
-> the amount of modified file is quite large. The following cover letter
-> gives an overview of this work:
-> 
-> ---
-> 
-> The LAN966X SoC can either run it's own Linux system or be plugged in
-> a PCIe slot as a PCIe switch. When running with a Linux system, a
-> device-tree description is used to describe the system. However, when
-> plugged in a PCIe slot (on a x86), there is no device-tree support and
-> the peripherals that are present must be described in some other way.
-> 
-> Reusing the existing drivers is of course mandatory and they should
-> also be able to work without device-tree description. We decided to
-> describe this card using software nodes and a MFD device. Indeed, the
-> MFD subsystem allows to describe such systems using struct mfd_cells
-> and mfd_add_devices(). This support also allows to attach a
-> software_node description which might be used by fwnode API in drivers
-> and subsystems.
-> 
-> We thought about adding CONFIG_OF to x86 and potentially describe this
-> card using device-tree overlays but it introduce other problems that
-> also seems difficult to solve (overlay loading without base
-> device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
-> often enabled on x86 to say the least.
+[ Fixed the subject line - you answered the wrong email.]
 
-Why it can't be described by SSDT overlay (if the x86 platform in question is
-ACPI based)?
+On Sun, Feb 20, 2022 at 6:47 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> Build results:
+>         total: 155 pass: 152 fail: 3
 
-> TLDR: I know the series touches a lot of different files and has big
-> implications, but it turns out software_nodes looks the "best" way of
-> achieving this goal and has the advantage of converting some subsystems
-> to be node agnostics, also allowing some ACPI factorization. Criticism
-> is of course welcome as I might have overlooked something way simpler !
-> 
-> ---
-> 
-> This series introduce a number of changes in multiple subsystems to
-> allow registering and using devices that are described with a
-> software_node description attached to a mfd_cell, making them usable
-> with the fwnode API. It was needed to modify many subsystem where
-> CONFIG_OF was tightly integrated through the use of of_xlate()
-> functions and other of_* calls. New calls have been added to use fwnode
-> API and thus be usable with a wider range of nodes. Functions that are
-> used to get the devices (pinctrl_get, clk_get and so on) also needed
-> to be changed to use the fwnode API internally.
-> 
-> For instance, the clk framework has been modified to add a
-> fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
-> has been added. This function will register a clock using
-> fwnode_xlate() callback. Note that since the fwnode API is compatible
-> with devices that have a of_node member set, it will still be possible
-> to use the driver and get the clocks with CONFIG_OF enabled
-> configurations.
+Grr. Things are going in the wrong direction here.
 
-How does this all is compatible with ACPI approaches?
-I mean we usually do not reintroduce 1:1 DT schemas in ACPI.
+At least the two new cases look trivial, and that ppc fix is finally
+in linux-next.
 
-I think the CCF should be converted to use fwnode APIs and meanwhile
-we may discuss how to deal with clocks on ACPI platforms, because
-it may be a part of the power management methods.
+> Qemu test results:
+>         total: 488 pass: 427 fail: 61
+> Failed tests:
+>         arm:orangepi-pc:multi_v7_defconfig:usb1:net,nic:sun8i-h3-orangepi-pc:rootfs
 
-> In some subsystems, it was possible to keep OF related function by
-> wrapping the fwnode ones. It is not yet sure if both support
-> (device-tree and fwnode) should still continue to coexists. For instance
-> if fwnode_xlate() and of_xlate() should remain since the fwnode version
-> also supports device-tree. Removing of_xlate() would of course require
-> to modify all drivers that uses it.
-> 
-> Here is an excerpt of the lan966x description when used as a PCIe card.
-> The complete description is visible at [2]. This part only describe the
-> flexcom controller and the fixed-clock that is used as an input clock.
-> 
-> static const struct property_entry ddr_clk_props[] = {
->         PROPERTY_ENTRY_U32("clock-frequency", 30000000),
+Adding some devicetree and otherwise involved people to the cc, can we
+*finally* get this fixed? It's been around for all of this release,
+and Guenter has done a fair amount of bisecting and testing, chasing
+down lockdep reports etc.
 
->         PROPERTY_ENTRY_U32("#clock-cells", 0),
+I've been ignoring this on the assumption that it will just get fixed,
+but it's starting to be pretty late in the game now..
 
-Why this is used?
+>         <almost all mips tests>
 
->         {}
-> };
-> 
-> static const struct software_node ddr_clk_node = {
->         .name = "ddr_clk",
->         .properties = ddr_clk_props,
-> };
-> 
-> static const struct property_entry lan966x_flexcom_props[] = {
->         PROPERTY_ENTRY_U32("atmel,flexcom-mode", ATMEL_FLEXCOM_MODE_TWI),
->         PROPERTY_ENTRY_REF("clocks", &ddr_clk_node),
->         {}
-> };
-> 
-> static const struct software_node lan966x_flexcom_node = {
->         .name = "lan966x-flexcom",
->         .properties = lan966x_flexcom_props,
-> };
-> 
-> ...
-> 
-> static struct resource lan966x_flexcom_res[] = {
->         [0] = {
->                 .flags = IORESOURCE_MEM,
->                 .start = LAN966X_DEV_ADDR(FLEXCOM_0_FLEXCOM_REG),
->                 .end = LAN966X_DEV_ADDR(FLEXCOM_0_FLEXCOM_REG),
->         },
-> };
-> 
-> ...
-> 
-> static struct mfd_cell lan966x_pci_mfd_cells[] = {
->         ...
->         [LAN966X_DEV_DDR_CLK] = {
->                 .name = "of_fixed_clk",
->                 .swnode = &ddr_clk_node,
->         },
->         [LAN966X_DEV_FLEXCOM] = {
->                 .name = "atmel_flexcom",
->                 .num_resources = ARRAY_SIZE(lan966x_flexcom_res),
->                 .resources = lan966x_flexcom_res,
->                 .swnode = &lan966x_flexcom_node,
->         },
->         ...
-> },
-> 
-> And finally registered using:
-> 
-> ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO,
->                            lan966x_pci_mfd_cells,
->                            ARRAY_SIZE(lan966x_pci_mfd_cells), pci_base, irq_base,
->                            irq_domain);
-> 
-> With the modifications that have been made on this tree, it is now
-> possible to probe such description using existing platform drivers,
-> providing that they have been modified a bit to retrieve properties
-> using fwnode API and using the fwnode_xlate() callback instead of
-> of_xlate().
-> 
-> This series has been tested on a x86 kernel build without CONFIG_OF.
-> Another kernel was also built with COMPILE_TEST and CONFIG_OF support
-> to build as most drivers as possible. It was also tested on a sparx5
-> arm64 with CONFIG_OF. However, it was not tested with an ACPI
-> description evolved enough to validate all the changes.
-> 
-> A branch containing all theses modifications can be seen at [1] along
-> with a PCIe driver [2] which describes the card using software nodes.
-> Modifications that are on this branch are not completely finished (ie,
-> subsystems modifications for fwnode have not been factorized with OF
-> for all of them) in absence of feedback on the beginning of this work
-> from the community.
-> 
-> [1] https://github.com/clementleger/linux/tree/fwnode_support
-> [2] https://github.com/clementleger/linux/blob/fwnode_support/drivers/mfd/lan966x_pci_mfd.c
-> 
-> Clément Léger (10):
->   property: add fwnode_match_node()
->   property: add fwnode_get_match_data()
->   base: swnode: use fwnode_get_match_data()
->   property: add a callback parameter to fwnode_property_match_string()
->   property: add fwnode_property_read_string_index()
->   i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
->   i2c: of: use fwnode_get_i2c_adapter_by_node()
->   i2c: mux: pinctrl: remove CONFIG_OF dependency and use fwnode API
->   i2c: mux: add support for fwnode
->   net: sfp: add support for fwnode
-> 
->  drivers/base/property.c             | 133 ++++++++++++++++++++++++++--
->  drivers/base/swnode.c               |   1 +
->  drivers/i2c/Makefile                |   1 +
->  drivers/i2c/i2c-core-fwnode.c       |  40 +++++++++
->  drivers/i2c/i2c-core-of.c           |  30 -------
->  drivers/i2c/i2c-mux.c               |  39 ++++----
->  drivers/i2c/muxes/Kconfig           |   1 -
->  drivers/i2c/muxes/i2c-mux-pinctrl.c |  21 ++---
->  drivers/net/phy/sfp.c               |  44 +++------
->  include/linux/i2c.h                 |   7 +-
->  include/linux/property.h            |   9 ++
->  11 files changed, 225 insertions(+), 101 deletions(-)
->  create mode 100644 drivers/i2c/i2c-core-fwnode.c
-> 
-> -- 
-> 2.34.1
-> 
+Gaah. And what happened here? There aren't even any MIPS changes in
+rc5, so clearly something went sideways that just must have happened
+to affect your mips qemu tests. Added Thomas Bogendoerfer despite the
+lack of commits.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+               Linus
