@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6321EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239387AbiBUKJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:09:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37384 "EHLO
+        id S1352985AbiBUKJQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:09:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353799AbiBUJ5y (ORCPT
+        with ESMTP id S1353589AbiBUJ5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443F245079;
-        Mon, 21 Feb 2022 01:27:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F6B1EAF0;
+        Mon, 21 Feb 2022 01:27:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC9BBB80EB1;
-        Mon, 21 Feb 2022 09:27:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0082AC340E9;
-        Mon, 21 Feb 2022 09:27:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C446101C;
+        Mon, 21 Feb 2022 09:27:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 327E7C58339;
+        Mon, 21 Feb 2022 09:27:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435628;
-        bh=BOnIhtOxhnn7VldcjnILH2G5d8hO49/zPZe3pqe3v6o=;
+        s=korg; t=1645435622;
+        bh=6suctJEObTMyjXIebBno+7Rimc7/9sHGbBTfa2mh2BM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BP/cwVEwdxw/U528roGuI4zh6ZnF0NCeoVERWm40wPCt0SkVHmoPNJTVaQjrAbMhQ
-         qacQGWK91yCRFJgcGW1E+wpTG+9XJHwGzcq1VAwI/YP5Vg9cT7ALmFUWo9oZ6Wq+pp
-         niJ5iWrBRlwyosR6hAaSmsc11ycM5NNbm7AsDT+I=
+        b=UwhH+lSiAe1a9bxpHd9AALGYsFf6KguKFKhyyEz9qNrHNEkgNQDNHBGK1EluF4Hsh
+         CwpODIgY5xDRXx5BmyUhIZZi3jwqTN0ou/M9aIaYvx4E5QCJ1hDaPhzf7OOuuiMSHE
+         a9SXmjE/NPbdY194fY+bI9yARq998KlMb5cwLvKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 219/227] drm/rockchip: dw_hdmi: Do not leave clock enabled in error case
-Date:   Mon, 21 Feb 2022 09:50:38 +0100
-Message-Id: <20220221084942.085289547@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 217/227] soc: aspeed: lpc-ctrl: Block error printing on probe defer cases
+Date:   Mon, 21 Feb 2022 09:50:36 +0100
+Message-Id: <20220221084942.026902311@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,54 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
 
-[ Upstream commit c0cfbb122275da1b726481de5a8cffeb24e6322b ]
+[ Upstream commit 301a5d3ad2432d7829f59432ca0a93a6defbb9a1 ]
 
-The driver returns an error when devm_phy_optional_get() fails leaving
-the previously enabled clock turned on. Change order and enable the
-clock only after the phy has been acquired.
+Add a checking code when it gets -EPROBE_DEFER while getting a clock
+resource. In this case, it doesn't need to print out an error message
+because the probing will be re-visited.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220126145549.617165-3-s.hauer@pengutronix.de
+Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Reviewed-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Link: https://lore.kernel.org/r/20211104173709.222912-1-jae.hyun.yoo@intel.com
+Link: https://lore.kernel.org/r/20220201070118.196372-1-joel@jms.id.au'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/soc/aspeed/aspeed-lpc-ctrl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-index 830bdd5e9b7ce..8677c82716784 100644
---- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-@@ -529,13 +529,6 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
+diff --git a/drivers/soc/aspeed/aspeed-lpc-ctrl.c b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+index 72771e018c42e..258894ed234b3 100644
+--- a/drivers/soc/aspeed/aspeed-lpc-ctrl.c
++++ b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
+@@ -306,10 +306,9 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
  	}
  
--	ret = clk_prepare_enable(hdmi->vpll_clk);
--	if (ret) {
--		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
--			      ret);
--		return ret;
+ 	lpc_ctrl->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(lpc_ctrl->clk)) {
+-		dev_err(dev, "couldn't get clock\n");
+-		return PTR_ERR(lpc_ctrl->clk);
 -	}
--
- 	hdmi->phy = devm_phy_optional_get(dev, "hdmi");
- 	if (IS_ERR(hdmi->phy)) {
- 		ret = PTR_ERR(hdmi->phy);
-@@ -544,6 +537,13 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
- 	}
- 
-+	ret = clk_prepare_enable(hdmi->vpll_clk);
-+	if (ret) {
-+		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
-+			      ret);
-+		return ret;
-+	}
-+
- 	drm_encoder_helper_add(encoder, &dw_hdmi_rockchip_encoder_helper_funcs);
- 	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
- 
++	if (IS_ERR(lpc_ctrl->clk))
++		return dev_err_probe(dev, PTR_ERR(lpc_ctrl->clk),
++				     "couldn't get clock\n");
+ 	rc = clk_prepare_enable(lpc_ctrl->clk);
+ 	if (rc) {
+ 		dev_err(dev, "couldn't enable clock\n");
 -- 
 2.34.1
 
