@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7163EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873C1C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350868AbiBUJgI (ORCPT
+        id S1350886AbiBUJgN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48062 "EHLO
+        Mon, 21 Feb 2022 04:36:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345134AbiBUJ1X (ORCPT
+        with ESMTP id S1348860AbiBUJ1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:23 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8776344;
-        Mon, 21 Feb 2022 01:11:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799BD6369;
+        Mon, 21 Feb 2022 01:11:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 56CBECE0E79;
-        Mon, 21 Feb 2022 09:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B83C340E9;
-        Mon, 21 Feb 2022 09:11:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1538D60B1B;
+        Mon, 21 Feb 2022 09:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66E4C340E9;
+        Mon, 21 Feb 2022 09:11:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434709;
-        bh=mc0aKOxSsDuTXpmJoC/IG9w3zf1N4r0QHjUEA7j//a4=;
+        s=korg; t=1645434715;
+        bh=nq4RGDjMqlFVwtDTrTSQfcMRT5Kyveke7zxrDBK+h7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EAQbweblt57duCKMUIgnBPpaCUpksBKhzn/jvBZDRjdZnHdLptyMrqWWxXqokdYP+
-         ZMzYA+b2dKMsJq8BgKtRsju2Zs4NdIZ18TjigdBnnz18x92UKC2nT97mp0/hq4yQti
-         6nUVYZg6pDkFB0X5Vxx95/zq0bGMc5WHLy9dnoYs=
+        b=fndYfZffTN7QVZaRi+qDxPJsAloo6J8ToOP1ialIM2LsGaT2yx0eFaej6D21/Pt1I
+         ljLAZSwSW+rW3dhZmD+Tm18TcJvNPnoEz1bqZE7+tjbh/TnolQESoZUql4ScxVG9fw
+         dxUIZGHbxiaEj9dx9bRbzW677cS1aztZL//KLP0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gatis Peisenieks <gatis@mikrotik.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 103/196] atl1c: fix tx timeout after link flap on Mikrotik 10/25G NIC
-Date:   Mon, 21 Feb 2022 09:48:55 +0100
-Message-Id: <20220221084934.382608307@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 105/196] dpaa2-switch: fix default return of dpaa2_switch_flower_parse_mirror_key
+Date:   Mon, 21 Feb 2022 09:48:57 +0100
+Message-Id: <20220221084934.442475821@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,35 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gatis Peisenieks <gatis@mikrotik.com>
+From: Tom Rix <trix@redhat.com>
 
-commit bf8e59fd315f304eb538546e35de6dc603e4709f upstream.
+commit 2a36ed7c1cd55742503bed81d2cc0ea83bd0ad0c upstream.
 
-If NIC had packets in tx queue at the moment link down event
-happened, it could result in tx timeout when link got back up.
+Clang static analysis reports this representative problem
+dpaa2-switch-flower.c:616:24: warning: The right operand of '=='
+  is a garbage value
+  tmp->cfg.vlan_id == vlan) {
+                   ^  ~~~~
+vlan is set in dpaa2_switch_flower_parse_mirror_key(). However
+this function can return success without setting vlan.  So
+change the default return to -EOPNOTSUPP.
 
-Since device has more than one tx queue we need to reset them
-accordingly.
-
-Fixes: 057f4af2b171 ("atl1c: add 4 RX/TX queue support for Mikrotik 10/25G NIC")
-Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
-Link: https://lore.kernel.org/r/20220211065123.4187615-1-gatis@mikrotik.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 0f3faece5808 ("dpaa2-switch: add VLAN based mirroring")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -900,7 +900,7 @@ static void atl1c_clean_tx_ring(struct a
- 		atl1c_clean_buffer(pdev, buffer_info);
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
+@@ -532,6 +532,7 @@ static int dpaa2_switch_flower_parse_mir
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
+ 	struct flow_dissector *dissector = rule->match.dissector;
+ 	struct netlink_ext_ack *extack = cls->common.extack;
++	int ret = -EOPNOTSUPP;
+ 
+ 	if (dissector->used_keys &
+ 	    ~(BIT(FLOW_DISSECTOR_KEY_BASIC) |
+@@ -561,9 +562,10 @@ static int dpaa2_switch_flower_parse_mir
+ 		}
+ 
+ 		*vlan = (u16)match.key->vlan_id;
++		ret = 0;
  	}
  
--	netdev_reset_queue(adapter->netdev);
-+	netdev_tx_reset_queue(netdev_get_tx_queue(adapter->netdev, queue));
+-	return 0;
++	return ret;
+ }
  
- 	/* Zero out Tx-buffers */
- 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
+ static int
 
 
