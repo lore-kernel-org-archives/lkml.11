@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B76C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345611AbiBUIwp (ORCPT
+        id S1345604AbiBUIwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:52:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43750 "EHLO
+        Mon, 21 Feb 2022 03:52:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345227AbiBUIwV (ORCPT
+        with ESMTP id S1345458AbiBUIw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3E6CE6;
-        Mon, 21 Feb 2022 00:51:53 -0800 (PST)
+        Mon, 21 Feb 2022 03:52:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512A9E0A;
+        Mon, 21 Feb 2022 00:51:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 552FBB80EB4;
-        Mon, 21 Feb 2022 08:51:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CA4C340EB;
-        Mon, 21 Feb 2022 08:51:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01AF4B80EAC;
+        Mon, 21 Feb 2022 08:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 146C3C340F1;
+        Mon, 21 Feb 2022 08:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433510;
-        bh=UaSgY94cpIw3Kq+VL3L3kwDcvctXgZSVInyJ4w1tZ9A=;
+        s=korg; t=1645433516;
+        bh=zTb5/TrdAZinHH8UjTKuhV+YCXbhk4t2JVwIfm/NAu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TG7LpX/y1CKLtQaiDnZJ8xyp5jHbHsK3JCx8Ras9Y6WRdgxyXo+3x8w8T9mQbos+X
-         qQPF63t+02BTA1CwXvFxG0J8R82yMSOD480vSHMCQtY8gp8Hq5LGugZ/yBJcHPNY9L
-         aw8o0hOKAORJwfe9nB5FxWVO9Ez2EZz12tV2MoCA=
+        b=Ep+I0q1d9zGjdDtdvI8avL8fpIHVREUdWKGi4QWQGXpMhszyZOTqknTsQEvo3MMNh
+         m57cPkqyfFP51SI2QKtN6Ih7wYdqvUCUXj2OGVc+zl8v9QkoZgnGXzMhwBAwyEKQkD
+         jmGZBqxYXwWr0oCGWnScWeb5dF9QYzJgQsCeyzs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.9 03/33] serial: parisc: GSC: fix build when IOSAPIC is not set
-Date:   Mon, 21 Feb 2022 09:48:56 +0100
-Message-Id: <20220221084908.679203081@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 05/33] parisc: Fix sglist access in ccio-dma.c
+Date:   Mon, 21 Feb 2022 09:48:58 +0100
+Message-Id: <20220221084908.739027464@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -53,54 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit 6e8793674bb0d1135ca0e5c9f7e16fecbf815926 upstream.
+commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
 
-There is a build error when using a kernel .config file from
-'kernel test robot' for a different build problem:
+This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
+It ensures that only the allocated entries of the sglist are accessed.
 
-hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
-(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
-
-when:
-  CONFIG_GSC=y
-  CONFIG_SERIO_GSCPS2=y
-  CONFIG_SERIAL_8250_GSC=y
-  CONFIG_PCI is not set
-    and hence PCI_LBA is not set.
-  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
-
-Make the use of iosapic_serial_irq() conditional to fix the build error.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-parisc@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Suggested-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
 Cc: stable@vger.kernel.org
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_gsc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/parisc/ccio-dma.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_gsc.c
-+++ b/drivers/tty/serial/8250/8250_gsc.c
-@@ -30,7 +30,7 @@ static int __init serial_init_chip(struc
- 	unsigned long address;
- 	int err;
- 
--#ifdef CONFIG_64BIT
-+#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
- 	if (!dev->irq && (dev->id.sversion == 0xad))
- 		dev->irq = iosapic_serial_irq(dev);
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1008,7 +1008,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 	ioc->usg_calls++;
  #endif
+ 
+-	while(sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
+ 
+ #ifdef CCIO_COLLECT_STATS
+ 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+@@ -1016,6 +1016,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 		ccio_unmap_page(dev, sg_dma_address(sglist),
+ 				  sg_dma_len(sglist), direction, 0);
+ 		++sglist;
++		nents--;
+ 	}
+ 
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
 
 
