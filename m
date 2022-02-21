@@ -2,176 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF26CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A00EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232640AbiBUTHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 14:07:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40720 "EHLO
+        id S232662AbiBUTIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 14:08:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232618AbiBUTGv (ORCPT
+        with ESMTP id S232649AbiBUTIF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 14:06:51 -0500
-Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7262413D0A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:06:27 -0800 (PST)
-Received: by mail-oo1-xc2f.google.com with SMTP id y15-20020a4a650f000000b0031c19e9fe9dso11444095ooc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:06:27 -0800 (PST)
+        Mon, 21 Feb 2022 14:08:05 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C718513F25
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:07:41 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id qx21so35566128ejb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:07:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mKYaMuXCaSDbgjwH5cDbyrb4SD5Y9F+pgT6HwHOAhw4=;
-        b=UayZoVpBKx73lHes9iSu/MRvaEOhZYEQ0s336NxWMNl0hTE8xxqgGUfeNvZRpbJdno
-         bOXRl6PkW8QImlSkKym03EpeC3YUqykYUDzXJEAjDMnB7u6ql+oPbHK9HEsdVwtY/+C/
-         nmuUkEiG2Sl3O+QCGNRlSv3D/YOZKHwFp6gT5CNkRsSapZG88rQf7n6cwMhEw/em7yHn
-         tP6rxY2fRy05sFM6IvlXbTZRYrjvqNN6/WHXbLLxKES1yx+79e8gfw9mp/jIgZeDAFZV
-         xBs2Ud8HzCJrTLNVQ1+x/cMlh8ji2v4uhcUQHMGrv+jYpYKwGMCo4jD4zxHD8X1dwqjB
-         z7IQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RB+KnGP4vjA0xEYG3QLBV10Oe0XhSXLPzGOpTKcC0fY=;
+        b=K4a5HCHQ7nMPlxRuuLiM+TEcOdIH2u4Ivlw02dABkJWLEtElRDBMXHD3RESCh/OdSt
+         Bnoei2Jrw75XrR4m2W+CgqK6BV9c1M7NKPCk3cC+SU8KngQv+S39l8TPMUqldOaPA+o4
+         a0QngcOYe4VzptVwY6+Tg5WqerVbT/J1+zbAjdKb6t9L9CDz7igCjUh63mByyT6GTtIu
+         ghiOzW0aS/tegRFhNpYMDDVDsvm3f8Ne3lyWnyBHru+O3Bza+d9+UsMi2poWspKQ/0Ry
+         kkAcIGeJAHOQLpj+xH0iKjdgjOy+sGjnXs/2WxbCpPCApGSNdS9xSgI3lKqpbEpPtumI
+         FhnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mKYaMuXCaSDbgjwH5cDbyrb4SD5Y9F+pgT6HwHOAhw4=;
-        b=ZjpxbiGoTnK0HVAq1Mb/aqWu3YdG3W37Jbl30UJH1VOEg1HgYbPl0Po3/CLhBIiN8T
-         6xqd6cr3XvaxEEKhDUU7hDSnfWNtFyZCjg+DwCvcPE6ODtTDzgl+eM5DN+BoYY3vmdnS
-         FGwFeLfA4POAYkC6xxPK2aveaDg9Wp6DADgBbCtAr/aMqEsGHAPOEY3FhP7SHcQhAZOv
-         D3zi+7BdSnR06AGD8DyUZpk5T5tNiyMpmCdYdkjDHqV7n1RJdLiqCNEGBdurjNKd//U1
-         j6MF8ZPt5biU23YwS6L5DayaM2VHrqAkRdQaunE972EIrGTzqnGazcHSbQ2b1h2nE35X
-         hr5g==
-X-Gm-Message-State: AOAM532UmY4t7QYlwmmxPKNTmKfFafgphyuFF8KnbxmI+grQqA6+nbg3
-        pjfOMMPlNUTuA0bldwQ4ONoJ6A==
-X-Google-Smtp-Source: ABdhPJxZkhpfXyfMIR6pZATfsUiV6WfNFnMWVkBrVLoHBjm225+ktGOVREx1Vzzq++JUcijZyrDVVQ==
-X-Received: by 2002:a4a:1506:0:b0:2da:ee84:9759 with SMTP id 6-20020a4a1506000000b002daee849759mr6514311oon.65.1645470386741;
-        Mon, 21 Feb 2022 11:06:26 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id j32sm4357309ota.59.2022.02.21.11.06.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 11:06:25 -0800 (PST)
-Date:   Mon, 21 Feb 2022 11:08:28 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v2 1/6] device property: Helper to match multiple
- connections
-Message-ID: <YhPjLOJchd4l+095@ripper>
-References: <20220208031944.3444-1-bjorn.andersson@linaro.org>
- <20220208031944.3444-2-bjorn.andersson@linaro.org>
- <YgOz6K55Oi2Si4pU@smile.fi.intel.com>
- <Yg/s3eKB2wLEQTgY@ripper>
- <YhIjHjMrhUpM0ucV@smile.fi.intel.com>
- <YhMbLsvF8p/ce+mg@ripper>
- <YhPJmiFSH8s94il7@smile.fi.intel.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RB+KnGP4vjA0xEYG3QLBV10Oe0XhSXLPzGOpTKcC0fY=;
+        b=ILwju+K354GKHzfVxS5+qISxPS8OVy6LVr62EvO9C/LWo7w2/eAGgwxx8IkOuDxN3J
+         eMzAlePEdk6UebyjuOqHKnEY3v1wflb7D9grw/JrwkpqZ2KztHILSOUdONR2mbWhbsZl
+         E+nSR1EUNDXfy0aZ9Ts6CYY8DJI4ujmNpkA7ve3TVzIXt3bquGOrE7/THzRr8s2a/xU+
+         4WKgHBzJHwHzzdn0tfBlc++WcZPaYVXIRcPEYFqNbhtuYTXTYIJdTcWCcyoUY1R2hsjN
+         NWnoUck1vAcRRSWhkABzFK8t+1thWMF0eygs3kglSJzFZYL/7yIbJBAgMkPdsAR6dAWZ
+         L3OA==
+X-Gm-Message-State: AOAM531wz9Sly6P3VBqGOxFmZo++yVJFWhbR2KRsRIc1CAXbIzTDQLS+
+        5ef2qwG2j/gMAH+nzNYJDIc=
+X-Google-Smtp-Source: ABdhPJzsNn3FN3IHD5Uiz1ak9lTE+NTulWsnCooaEKsILTt0Ty1qKTletT1JXuKhptwRDKjeaguxzw==
+X-Received: by 2002:a17:906:a384:b0:6ce:c3f4:c59a with SMTP id k4-20020a170906a38400b006cec3f4c59amr16279290ejz.580.1645470460317;
+        Mon, 21 Feb 2022 11:07:40 -0800 (PST)
+Received: from [192.168.0.253] (ip5f5abb8f.dynamic.kabel-deutschland.de. [95.90.187.143])
+        by smtp.gmail.com with ESMTPSA id q5sm5357733ejc.115.2022.02.21.11.07.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 11:07:39 -0800 (PST)
+Message-ID: <28f888c4-e77e-3b2d-a65f-9596ff70c519@gmail.com>
+Date:   Mon, 21 Feb 2022 20:07:38 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhPJmiFSH8s94il7@smile.fi.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 1/3] staging: r8188eu: remove 5 GHz channels from
+ ch_freq_map
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220220154847.7521-1-straube.linux@gmail.com>
+ <20220220154847.7521-2-straube.linux@gmail.com> <YhPIVFmStJOMI0QZ@kroah.com>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <YhPIVFmStJOMI0QZ@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 21 Feb 09:19 PST 2022, Andy Shevchenko wrote:
-
-> On Sun, Feb 20, 2022 at 08:55:10PM -0800, Bjorn Andersson wrote:
-> > On Sun 20 Feb 03:16 PST 2022, Andy Shevchenko wrote:
-> > > On Fri, Feb 18, 2022 at 11:00:45AM -0800, Bjorn Andersson wrote:
-> > > > On Wed 09 Feb 04:30 PST 2022, Andy Shevchenko wrote:
-> > > > > On Mon, Feb 07, 2022 at 07:19:39PM -0800, Bjorn Andersson wrote:
+On 2/21/22 18:13, Greg KH wrote:
+> On Sun, Feb 20, 2022 at 04:48:45PM +0100, Michael Straube wrote:
+>> This driver is for chips that operate only in the 2.4 GHz band.
 > 
-> ...
-> 
-> > > > > > +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
-> > > > > > +				   const char *con_id, void *data,
-> > > > > > +				   devcon_match_fn_t match,
-> > > > > > +				   void **matches, unsigned int matches_len)
-> > > > > > +{
-> > > > > > +	unsigned int count;
-> > > > > > +
-> > > > > > +	if (!fwnode || !match || !matches)
-> > > > > 
-> > > > > !matches case may be still useful to get the count and allocate memory by
-> > > > > caller. Please, consider this case.
-> > > > 
-> > > > As discussed in previous version, and described in the commit message,
-> > > > the returned value of "match" is a opaque pointer to something which
-> > > > has to be passed back to the caller in order to be cleaned up.
-> > > > 
-> > > > E.g. the typec mux code returns a pointer to a typec_mux/switch object
-> > > > with a refcounted struct device within, or an ERR_PTR().
-> > > > 
-> > > > So unfortunately we can must gather the results into matches and pass it
-> > > > back to the caller to take consume or clean up.
-> > > 
-> > > It's fine. You have **matches, means pointer of an opaque pointer.
-> > > What I'm talking about is memory allocation for and array of _pointers_.
-> > > That's what caller very much aware of and can allocate on heap. So, please
-> > > consider this case.
-> > 
-> > I'm sorry, but I'm not sure what you're looking for.
-> > 
-> > 
-> > I still interpret your comment as that it would be nice to be able to do
-> > something like:
-> > 
-> > count = fwnode_connection_find_matches(fwnode, "orientation-switch",
-> > 				       NULL, typec_switch_match, NULL, 0);
-> > 
-> > based on the returned value the caller could allocate an array of
-> > "count" pointers and then call the function again to actually fill out
-> > the count elements.
-> 
-> Yes, that's what I want from the generic fwnode APIs.
-> (Keyword: generic)
-> 
-> > The problem with this is that, typec_switch_match() does:
-> 
-> As you stated, the problem is in the typec_switch_match(). So, it's not related
-> to the fwnode, but how you are using it.
-> 
-> > void *typec_switch_match(fwnode, id, data) {
-> > 	struct device *dev = find_struct_device(fwnode, id);
-> > 	if (!dev)
-> > 		return NULL;
-> > 	get_device(dev);
-> > 	return container_of(dev, struct typec_switch, dev);
-> > }
-> > 
-> > So if we call the match function and if that finds a "dev" it will
-> > return a struct typec_switch with a refcounted struct device within.
-> 
-> fwnode (as being an abstraction on top of the others) has no knowledge
-> about this. And more important should not know that.
-> 
-> > We can see if that's NULL or not and will be able to return a "count",
-> > but we have no way of releasing the reference acquired - we must return
-> > the void pointer back to the client, so that it can release it.
-> 
-> The caller (if it wants to!) may create different callbacks for count and real
-> matching, no?
+> How do we know that?
 > 
 
-Ahh, yeah you're right, we can shift this responsibility onto the caller
-and thereby allow them to implement the count as well. Makes sense!
+The documentation that I've found for RTL8188EU and RTL8188ETV says
+that both are 2.4 Ghz only chips.
 
-Thanks,
-Bjorn
+Also the old rtl8188eu driver had a TODO item to remove code that is
+only valid for 5 GHz.
 
-> > My claim is that this is not a problem, because this works fine with any
-> > reasonable size of fwnode graphs we might run into - and the client will
-> > in general have a sense of the worst case number of matches (in this
-> > series its 3, as there's 3 types of lanes that can be switched/muxed
-> > coming out of a USB connector).
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+So I thought this can be removed. Did I miss something?
+
+regards,
+
+Michael
