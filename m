@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2965C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFCBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353289AbiBUKKj (ORCPT
+        id S1353394AbiBUKKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:10:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55786 "EHLO
+        Mon, 21 Feb 2022 05:10:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353353AbiBUJ5W (ORCPT
+        with ESMTP id S1353333AbiBUJ5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC95C4706A;
-        Mon, 21 Feb 2022 01:25:25 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A4047043;
+        Mon, 21 Feb 2022 01:25:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 741DCB80EB1;
-        Mon, 21 Feb 2022 09:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE7B5C340E9;
-        Mon, 21 Feb 2022 09:25:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B09B60FE0;
+        Mon, 21 Feb 2022 09:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E904AC340F3;
+        Mon, 21 Feb 2022 09:25:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435523;
-        bh=PnNy4pm/URP5p1SyrTpSnRUcVuoyh4EpAMxfQCUSi8A=;
+        s=korg; t=1645435520;
+        bh=MpEIPhkzQOZpoFUN2LKDl0Xl8eV+Srl14bKJWpvSQxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWDGa4bNKIF/0bxN3Eu/7DoM4QzPkO8jq5BKMAQCZ9YjH7rAt5yKCX/N32Z++yBjM
-         TrzKBCm1GehY6yomAcSofB/kzSuBCYFs5UoGvKeLWGQMrixJy8efZkcsN69DEPWsHX
-         8OGfc878HbsQZ4Cqxn0KBoMIPu425xo0wEKI++6I=
+        b=2M60zFv0Iw07WenHzxFt4OseJUQY4wRLOHteXPWai4AjFy1p2MYAA82soXbLMbIht
+         MdoKuTVCxBl8GqAyVRdO6+WdQyXAM99UBMXODglW7plfCDOT13+8QfQfU/+V/r2dAH
+         +tiqNUR/sq9TMPHDpyKvFO8sFmMtf5vcPBEFRQz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Juan Vazquez <juvazq@linux.microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 194/227] Drivers: hv: vmbus: Fix memory leak in vmbus_add_channel_kobj
-Date:   Mon, 21 Feb 2022 09:50:13 +0100
-Message-Id: <20220221084941.269900791@linuxfoundation.org>
+        Paul Cercueil <paul@crapouillou.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 193/227] mtd: rawnand: ingenic: Fix missing put_device in ingenic_ecc_get
+Date:   Mon, 21 Feb 2022 09:50:12 +0100
+Message-Id: <20220221084941.231450046@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,50 +53,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8bc69f86328e87a0ffa79438430cc82f3aa6a194 ]
+[ Upstream commit ba1b71b008e97fd747845ff3a818420b11bbe830 ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+If of_find_device_by_node() succeeds, ingenic_ecc_get() doesn't have
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
-
-Fix memory leak by calling kobject_put().
-
-Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
+Fixes: 15de8c6efd0e ("mtd: rawnand: ingenic: Separate top-level and SoC specific code")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Juan Vazquez <juvazq@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220203173008.43480-1-linmq006@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211230072751.21622-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/vmbus_drv.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/ingenic/ingenic_ecc.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 392c1ac4f8193..44bd0b6ff5059 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -2027,8 +2027,10 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- 	kobj->kset = dev->channels_kset;
- 	ret = kobject_init_and_add(kobj, &vmbus_chan_ktype, NULL,
- 				   "%u", relid);
--	if (ret)
-+	if (ret) {
-+		kobject_put(kobj);
- 		return ret;
+diff --git a/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c b/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
+index efe0ffe4f1abc..9054559e52dda 100644
+--- a/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
++++ b/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
+@@ -68,9 +68,14 @@ static struct ingenic_ecc *ingenic_ecc_get(struct device_node *np)
+ 	struct ingenic_ecc *ecc;
+ 
+ 	pdev = of_find_device_by_node(np);
+-	if (!pdev || !platform_get_drvdata(pdev))
++	if (!pdev)
+ 		return ERR_PTR(-EPROBE_DEFER);
+ 
++	if (!platform_get_drvdata(pdev)) {
++		put_device(&pdev->dev);
++		return ERR_PTR(-EPROBE_DEFER);
 +	}
++
+ 	ecc = platform_get_drvdata(pdev);
+ 	clk_prepare_enable(ecc->clk);
  
- 	ret = sysfs_create_group(kobj, &vmbus_chan_group);
- 
-@@ -2037,6 +2039,7 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- 		 * The calling functions' error handling paths will cleanup the
- 		 * empty channel directory.
- 		 */
-+		kobject_put(kobj);
- 		dev_err(device, "Unable to set up channel sysfs files\n");
- 		return ret;
- 	}
 -- 
 2.34.1
 
