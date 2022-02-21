@@ -2,146 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 910ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355464AbiBULHW (ORCPT
+        id S1355707AbiBULJ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:07:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36654 "EHLO
+        Mon, 21 Feb 2022 06:09:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiBULFj (ORCPT
+        with ESMTP id S1355672AbiBULJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:05:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A546F3FBE5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:33:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645439618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2s850PTFKMgt+79nojpojufcF5kfxJ20TLZLutPamXM=;
-        b=DUogjPZ+45IGi5Mlx1LyGCtdOUlgnTXLDSO4awkw+SCbGxhRalrOwSuYqJPQNO2tsVGvSP
-        nYcMixkW3+VV8LCj5NlzcGrh/rhU6zYHrRWpMnd0E3S6vaY94jan2H1W+fNMkzQi/8lega
-        yv3lbUcox/SshM0Ev1WB4cKFvpjydAg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-322-k1gX53XgNweS7itiC_n6RQ-1; Mon, 21 Feb 2022 05:33:35 -0500
-X-MC-Unique: k1gX53XgNweS7itiC_n6RQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A28F814243;
-        Mon, 21 Feb 2022 10:33:34 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AB236F9D0;
-        Mon, 21 Feb 2022 10:33:32 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        Maxim Levitsky <mlevitsk@redhat.com>, stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
-Subject: [PATCH] KVM: nSVM: fix nested tsc scaling when not enabled but MSR_AMD64_TSC_RATIO set
-Date:   Mon, 21 Feb 2022 12:33:31 +0200
-Message-Id: <20220221103331.58956-1-mlevitsk@redhat.com>
-In-Reply-To: <0a0b61c5c071415f213a4704ebd73e65761ec1a3.camel@redhat.com>
-References: <0a0b61c5c071415f213a4704ebd73e65761ec1a3.camel@redhat.com>
+        Mon, 21 Feb 2022 06:09:42 -0500
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C987C3FD94
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:38:27 -0800 (PST)
+Received: from fsav314.sakura.ne.jp (fsav314.sakura.ne.jp [153.120.85.145])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 21LAcAgn000134;
+        Mon, 21 Feb 2022 19:38:10 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav314.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp);
+ Mon, 21 Feb 2022 19:38:10 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 21LAcAlI000131
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 21 Feb 2022 19:38:10 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <3a20c799-c18e-dd3a-3161-fee6bca1491e@I-love.SAKURA.ne.jp>
+Date:   Mon, 21 Feb 2022 19:38:09 +0900
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: [PATCH] workqueue: Use private WQ for schedule_on_each_cpu() API
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>
+Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+        lkp@lists.01.org, kernel test robot <oliver.sang@intel.com>
+References: <20220221083358.GC835@xsang-OptiPlex-9020>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <20220221083358.GC835@xsang-OptiPlex-9020>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For compatibility with userspace the MSR_AMD64_TSC_RATIO can be set
-even when the feature is not exposed to the guest, which breaks assumptions
-that it has the default value in this case.
+Since schedule_on_each_cpu() calls schedule_work_on() and flush_work(),
+we should avoid using system_wq in order to avoid unexpected locking
+dependency.
 
-Fixes: 5228eb96a487 ("KVM: x86: nSVM: implement nested TSC scaling")
-Cc: stable@vger.kernel.org
+  [T1] Running RCU-tasks wait API self tests
+  [T9] Please do not flush events WQ.
+  [T9] CPU: 0 PID: 9 Comm: rcu_tasks_rude_ Not tainted 5.16.0-06523-g29bd199e4e73 #1
+  [T9] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+  [T9] Call Trace:
+  [T9]  <TASK>
+  [T9]  dump_stack_lvl+0x45/0x59
+  [T9]  check_flush_dependency.cold+0x18/0x49
+  [T9]  __flush_work+0x202/0xa00
+  [T9]  schedule_on_each_cpu+0x1d8/0x300
+  [T9]  rcu_tasks_kthread+0x21f/0x580
+  [T9]  kthread+0x3a4/0x480
+  [T9]  ret_from_fork+0x22/0x30
+  [T9]  </TASK>
+  [T1] Performance Events: unsupported p6 CPU model 42 no PMU driver, software events only.
 
-Reported-by: Dāvis Mosāns <davispuh@gmail.com>
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 ---
- arch/x86/kvm/svm/nested.c | 10 ++++------
- arch/x86/kvm/svm/svm.c    |  5 +++--
- arch/x86/kvm/svm/svm.h    |  1 +
- 3 files changed, 8 insertions(+), 8 deletions(-)
+Tejun, are you OK with https://lkml.kernel.org/r/2f887679-c783-bf18-a2aa-aa9a709bfb38@I-love.SAKURA.ne.jp ?
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 1218b5a342fc..a2e2436057dc 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -574,14 +574,12 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	vcpu->arch.tsc_offset = kvm_calc_nested_tsc_offset(
- 			vcpu->arch.l1_tsc_offset,
- 			svm->nested.ctl.tsc_offset,
--			svm->tsc_ratio_msr);
-+			svm_get_l2_tsc_multiplier(vcpu));
- 
- 	svm->vmcb->control.tsc_offset = vcpu->arch.tsc_offset;
- 
--	if (svm->tsc_ratio_msr != kvm_default_tsc_scaling_ratio) {
--		WARN_ON(!svm->tsc_scaling_enabled);
-+	if (svm_get_l2_tsc_multiplier(vcpu) != kvm_default_tsc_scaling_ratio)
- 		nested_svm_update_tsc_ratio_msr(vcpu);
--	}
- 
- 	svm->vmcb->control.int_ctl             =
- 		(svm->nested.ctl.int_ctl & int_ctl_vmcb12_bits) |
-@@ -867,8 +865,7 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 		vmcb_mark_dirty(svm->vmcb, VMCB_INTERCEPTS);
- 	}
- 
--	if (svm->tsc_ratio_msr != kvm_default_tsc_scaling_ratio) {
--		WARN_ON(!svm->tsc_scaling_enabled);
-+	if (svm_get_l2_tsc_multiplier(vcpu) != kvm_default_tsc_scaling_ratio) {
- 		vcpu->arch.tsc_scaling_ratio = vcpu->arch.l1_tsc_scaling_ratio;
- 		svm_write_tsc_multiplier(vcpu, vcpu->arch.tsc_scaling_ratio);
- 	}
-@@ -1264,6 +1261,7 @@ void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu)
+ kernel/workqueue.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 8e6e64372441..6ebc6cb15c1c 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -3345,10 +3345,16 @@ int schedule_on_each_cpu(work_func_t func)
  {
- 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	int cpu;
+ 	struct work_struct __percpu *works;
++	struct workqueue_struct *wq;
  
-+	WARN_ON_ONCE(!svm->tsc_scaling_enabled);
- 	vcpu->arch.tsc_scaling_ratio =
- 		kvm_calc_nested_tsc_multiplier(vcpu->arch.l1_tsc_scaling_ratio,
- 					       svm->tsc_ratio_msr);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 975be872cd1a..5cf6bb5bfd3e 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -911,11 +911,12 @@ static u64 svm_get_l2_tsc_offset(struct kvm_vcpu *vcpu)
- 	return svm->nested.ctl.tsc_offset;
+ 	works = alloc_percpu(struct work_struct);
+ 	if (!works)
+ 		return -ENOMEM;
++	wq = alloc_workqueue("events_sync", 0, 0);
++	if (!wq) {
++		free_percpu(works);
++		return -ENOMEM;
++	}
+ 
+ 	cpus_read_lock();
+ 
+@@ -3363,6 +3369,7 @@ int schedule_on_each_cpu(work_func_t func)
+ 		flush_work(per_cpu_ptr(works, cpu));
+ 
+ 	cpus_read_unlock();
++	destroy_workqueue(wq);
+ 	free_percpu(works);
+ 	return 0;
  }
- 
--static u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu)
-+u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
--	return svm->tsc_ratio_msr;
-+	return svm->tsc_scaling_enabled ? svm->tsc_ratio_msr :
-+	       kvm_default_tsc_scaling_ratio;
- }
- 
- static void svm_write_tsc_offset(struct kvm_vcpu *vcpu, u64 offset)
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 852b12aee03d..006571dd30df 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -542,6 +542,7 @@ int nested_svm_check_exception(struct vcpu_svm *svm, unsigned nr,
- 			       bool has_error_code, u32 error_code);
- int nested_svm_exit_special(struct vcpu_svm *svm);
- void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu);
-+u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu);
- void svm_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 multiplier);
- void nested_copy_vmcb_control_to_cache(struct vcpu_svm *svm,
- 				       struct vmcb_control_area *control);
 -- 
-2.26.3
+2.32.0
+
 
