@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AD8C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF7EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352238AbiBUJrQ (ORCPT
+        id S1352557AbiBUJrf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49264 "EHLO
+        Mon, 21 Feb 2022 04:47:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350821AbiBUJj5 (ORCPT
+        with ESMTP id S1350846AbiBUJkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:39:57 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C756A17045;
-        Mon, 21 Feb 2022 01:17:17 -0800 (PST)
+        Mon, 21 Feb 2022 04:40:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895E732EEE;
+        Mon, 21 Feb 2022 01:17:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E6A79CE0E76;
-        Mon, 21 Feb 2022 09:17:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8424C340E9;
-        Mon, 21 Feb 2022 09:17:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E81EFCE0E88;
+        Mon, 21 Feb 2022 09:17:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8715C340E9;
+        Mon, 21 Feb 2022 09:17:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435024;
-        bh=CYOTbDCLUGrJotI7Jyz4UqYmv4jCCN8nYYgwmy1/Vig=;
+        s=korg; t=1645435038;
+        bh=jYwiTOzuxOogEwmmZu7c9TjY0pi0EyrysgTTXTM6OZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qj0RiCK9UCU+YZFJsIduJRgKEdfXeiI6OLni+3n2bbBOkupl/fQ/y0+XvgwCogH2r
-         Mmp3fDDQs4E6CDj7h6LoFSOd5SVG4yBlBo4REaCk5hrE731d85IUYwcnURLv5DnF1w
-         zaMd/kUp7tJd0rBoNAbCr24tZCI6tVxtSJlPZEM0=
+        b=wp6DdanR5PfhX5M2ZSY018gKGChmh/qd35NEKSY/P4CXrCpZnxMmx2yVx06Xy993j
+         YSxeHCP4ykEOvF/AQx0nBK/bDz1cGqqd6PYorDlRmiMD+CTDkavX4aZOmVLrm0xW9E
+         5By53FY8wiptYYjUuuCYSYTo7G5FIovwj0V20Xwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Loehle <cloehle@hyperstone.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.16 018/227] mmc: block: fix read single on recovery logic
-Date:   Mon, 21 Feb 2022 09:47:17 +0100
-Message-Id: <20220221084935.445409606@linuxfoundation.org>
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 023/227] selftests: kvm: Remove absent target file
+Date:   Mon, 21 Feb 2022 09:47:22 +0100
+Message-Id: <20220221084935.613639074@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,83 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Löhle <CLoehle@hyperstone.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-commit 54309fde1a352ad2674ebba004a79f7d20b9f037 upstream.
+commit 0316dbb9a017d3231f86e0188376f067ec26a59c upstream.
 
-On reads with MMC_READ_MULTIPLE_BLOCK that fail,
-the recovery handler will use MMC_READ_SINGLE_BLOCK for
-each of the blocks, up to MMC_READ_SINGLE_RETRIES times each.
-The logic for this is fixed to never report unsuccessful reads
-as success to the block layer.
+There is no vmx_pi_mmio_test file. Remove it to get rid of error while
+creation of selftest archive:
 
-On command error with retries remaining, blk_update_request was
-called with whatever value error was set last to.
-In case it was last set to BLK_STS_OK (default), the read will be
-reported as success, even though there was no data read from the device.
-This could happen on a CRC mismatch for the response,
-a card rejecting the command (e.g. again due to a CRC mismatch).
-In case it was last set to BLK_STS_IOERR, the error is reported correctly,
-but no retries will be attempted.
+rsync: [sender] link_stat "/kselftest/kvm/x86_64/vmx_pi_mmio_test" failed: No such file or directory (2)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
 
-Fixes: 81196976ed946c ("mmc: block: Add blk-mq support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/bc706a6ab08c4fe2834ba0c05a804672@hyperstone.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 6a58150859fd ("selftest: KVM: Add intra host migration tests")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Message-Id: <20220210172352.1317554-1-usama.anjum@collabora.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/block.c |   28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ tools/testing/selftests/kvm/Makefile |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1682,31 +1682,31 @@ static void mmc_blk_read_single(struct m
- 	struct mmc_card *card = mq->card;
- 	struct mmc_host *host = card->host;
- 	blk_status_t error = BLK_STS_OK;
--	int retries = 0;
- 
- 	do {
- 		u32 status;
- 		int err;
-+		int retries = 0;
- 
--		mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
-+		while (retries++ <= MMC_READ_SINGLE_RETRIES) {
-+			mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
- 
--		mmc_wait_for_req(host, mrq);
-+			mmc_wait_for_req(host, mrq);
- 
--		err = mmc_send_status(card, &status);
--		if (err)
--			goto error_exit;
--
--		if (!mmc_host_is_spi(host) &&
--		    !mmc_ready_for_data(status)) {
--			err = mmc_blk_fix_state(card, req);
-+			err = mmc_send_status(card, &status);
- 			if (err)
- 				goto error_exit;
--		}
- 
--		if (mrq->cmd->error && retries++ < MMC_READ_SINGLE_RETRIES)
--			continue;
-+			if (!mmc_host_is_spi(host) &&
-+			    !mmc_ready_for_data(status)) {
-+				err = mmc_blk_fix_state(card, req);
-+				if (err)
-+					goto error_exit;
-+			}
- 
--		retries = 0;
-+			if (!mrq->cmd->error)
-+				break;
-+		}
- 
- 		if (mrq->cmd->error ||
- 		    mrq->data->error ||
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -75,7 +75,6 @@ TEST_GEN_PROGS_x86_64 += x86_64/tsc_msrs
+ TEST_GEN_PROGS_x86_64 += x86_64/vmx_pmu_msrs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
+ TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
+-TEST_GEN_PROGS_x86_64 += x86_64/vmx_pi_mmio_test
+ TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
+ TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
+ TEST_GEN_PROGS_x86_64 += demand_paging_test
 
 
