@@ -2,191 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2170CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355974AbiBULSG (ORCPT
+        id S1356015AbiBULSO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:18:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48110 "EHLO
+        Mon, 21 Feb 2022 06:18:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356204AbiBULP5 (ORCPT
+        with ESMTP id S1345915AbiBULPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:15:57 -0500
-Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90045.outbound.protection.outlook.com [40.107.9.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7651C65D2;
-        Mon, 21 Feb 2022 02:57:31 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AQBuYB0BBBvbvSFON8K6zAWdFEmE3lGHS9ZzdSqsT/ay76I7ucGp3oyVtbKtlnWZPvkwvpWYsGmyQsP/OtiRejRkiV6/gvFwXCtcRei9dG3UsfgFXYgFaYjxm7SraWHD+0ghfQn7EG0oPgP9UtkqS/dnIz6OeT+0yuPEjdgl4/ddbjToX1NmaohuhpxhzLcd3t70+GpE9pAZpYxnY71IOSTxLlNBgbT674D6ZN+//7bbvwmV4E9AZObQ6HZJEdRuiuXGMCZjRiHP0o+TWXMp4NVf2trkmi07eceSYTyFcJcx78ZEoEsPMAlq+MpECtDRRFHIC91UKMmQqhkDbS9R1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mT+nMQSLBUVfpEZBUGY5+i07IH/pd8VMllHSx3LOS6E=;
- b=BUAPVL1CbVaPzPRIGS1LiTrgN92FrPdS+8KEBEfCfm82JdLVHGPHqJQZRuCdY1r0r3KW5QMiMja4U43qlzoXc+tPNlfKcLF3+sWevmJ6nbWoZQwfASWJdZ8dKUgkaIjw6O2DOx4A//EPmtw5Nu6srZSMgpwtlJOjA8fAzZyYqljuLe/5qc82uR7DOl/pCesyfs/ZtJWNC5nnv6PN4fzcV7ugB+CF3poYQV8F9HZn7Ilb55fZr/xSIZhi7k1dZtiZNaIGsMREOV66dOVHAspnmJauSyFOIzuxfpoFJeN/FlS/IbNjXSDxy5YoxJtHyQjDOXwg90qjWcr85KcUL1F6Ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PR1P264MB1599.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1b7::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Mon, 21 Feb
- 2022 10:57:29 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::8142:2e6f:219b:646d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::8142:2e6f:219b:646d%4]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 10:57:29 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Aaron Tomlin <atomlin@redhat.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>
-CC:     "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Subject: Re: [PATCH v6 05/13] module: Move latched RB-tree support to a
- separate file
-Thread-Topic: [PATCH v6 05/13] module: Move latched RB-tree support to a
- separate file
-Thread-Index: AQHYJQ4Li2kl3i7sqEmfjQGnKmZO06yd2YUA
-Date:   Mon, 21 Feb 2022 10:57:29 +0000
-Message-ID: <97c7654d-bb44-8539-1646-1cfdaddeee7e@csgroup.eu>
-References: <20220218212511.887059-1-atomlin@redhat.com>
- <20220218212511.887059-6-atomlin@redhat.com>
-In-Reply-To: <20220218212511.887059-6-atomlin@redhat.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e25b55d3-5772-45dc-9134-08d9f528f410
-x-ms-traffictypediagnostic: PR1P264MB1599:EE_
-x-microsoft-antispam-prvs: <PR1P264MB15995A7B52E6A8D3BB1914A5ED3A9@PR1P264MB1599.FRAP264.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fcpHH7nlUdTASV0UMt26UzokY+DuH20Q1+3S03IpMxiQId2ajr7N7AxHsaWbT69f2MYe3uqrZgx+W6VGjZery/O4yAWOoNdPSTAuGISfWktY7PzGwK2judiPDwHWE2Z/ODN9lE1E5/eH+IJjklNMzJTmn6lhetCbDUjG4xBS+tpNuy9lKyATZBspZyxhpX6tgCdNCN4rbhTNBSTXRFFOUcwclQfuNBt+zRvnJtQ6tnXCGXaqKRzGzXGIz84QB5DJPC7IHByawbUZHrCXl4TOGTRagH25PVuwU/+OKa2Tn6wQ04REDCCg/L9mz2vkuyyEsWNnMuGaZPNy4De6WnluZ0griMEcUcn5KbWJRiqLf6LKGY/ecSGURhemOjQhagf8I6ZDRa0FqBxLGhEZX5EHpN5gE4Q3W67NZPEVVzr8RZpe2PJvXj8TQ9o2zQD4/Dy/XSaHdowUAnYYBk8VCnBMRSYijP3MtI/yFnLU/zfUwtAx806De1mhcn0sh32sf1KN0BbMb4tcKwCgCmmbd3eGwmn59L2B7nsu7IXTxYoLxtM19wAVkxfve+DGpoeuQtUxnXBSLRVx3FDWjIJPzEesSxNFIaYWrCYxaHxuROKJxJd7pL7ksQLsgQWXmJoIsUeR0o5BVH4iKBxPwH0WSosn9Gb/CwHqAPUMYmLKKA5+x1nEtcTwhmmPdm6+C6GrS73b/TDynawyptllH6UgaxjbF8eVdi2wdPPVCokwP7Gd3VeV9QAO9KQm3Ky+ukPaS44cpAQuGPa0u1eMu1HhcVi9ag==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(83380400001)(2906002)(54906003)(36756003)(66574015)(6512007)(316002)(44832011)(26005)(508600001)(38100700002)(71200400001)(7416002)(6486002)(186003)(31686004)(8936002)(38070700005)(91956017)(8676002)(4326008)(66946007)(66556008)(66476007)(66446008)(64756008)(122000001)(31696002)(5660300002)(76116006)(6506007)(2616005)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dlI0YVl2aXQrWUtTbDRmZjhLREdOWjJZR1VDcEtwZmMrUklrNFJPUWZLS1JO?=
- =?utf-8?B?dEs2c21KemkycFM5cHBZSzJtd3d4bCs2NTBJU2YzOXh3cDZNRFY5R3dhci80?=
- =?utf-8?B?TFlYc2xtdHZGaTFSSlFrYUhJbkpMZmw2WFZFZE8zSEJObnI1Y000OGEwbEJU?=
- =?utf-8?B?WDloYk5KS2JJTkYvVGF5TTllTFd6STJVNlhEckNmbjA5NGJDVGpoZWRKdTJJ?=
- =?utf-8?B?eG9OR1d6M01icFc5UE9teDhGWkVBc2Rjc2hJWGJyOHlpVnFzVlMxWXlBeVVw?=
- =?utf-8?B?cVNzT2NodnFXWmVRWEhjQWhzNEhmVHdXS2JYWVBDbWRsYXpHSG01cmNHZXUw?=
- =?utf-8?B?OVd0N3REK2NkOE96akoyV1JtZGlxWDVka1cwWnQ5aW5zLzFJL0pTam9zbGVP?=
- =?utf-8?B?Q3lrQzdoWEZhbTZNaWt5Smx0YlFrTUUva0VpTkxSNFVMTll6Z3lTdFp1ZnAz?=
- =?utf-8?B?bDlpVm9KWEg2THJYa0ZRMDh0VzVkNEkzdnlUZStxcDNhaEZWbExoWUsvK1Nk?=
- =?utf-8?B?OXFuZ05rVVlTcSt4c0pSZU9GWWdqVklKQnFtZ0NIY0pZd1hnN29qZnBlcDhi?=
- =?utf-8?B?YTZMZ25ubXRFdXdEeFhBRDRwb2dCajI3TW9CQkFhV3VlVzAwWmw2OC9UTncw?=
- =?utf-8?B?OU9GWENyWi80bG5Scjg2UGlCazFFWnE3UW40WWRQNmpGMUFOcHBTUllTbTVI?=
- =?utf-8?B?Sk8rSDV3aTEwbnE2TERFeU1BU1BHVnpXK2w5M0hIdDZ0NElwRlpTUGtkZTlz?=
- =?utf-8?B?RmtpcW5nZllINTFoU2lIYWJiM1lTb29lZDFuZkI1N2tRZi9aSnIvRUVHR0dv?=
- =?utf-8?B?YkdJK3RMUjJyaEYrdWM0UzE2Y0tGM254K0hkMmRRRndmb0w4NUNWVVM4SnNC?=
- =?utf-8?B?ODhmZU5Jd3dlNHBpWkovUVJqVVVjNjRUTHJSMkI4ODJZbVhXV2xVdDc2MDR3?=
- =?utf-8?B?d2VJaDlsVWZxMFpXVGJpSFBKaWQxZ1V4S2tkK3JvY0JXU3Z1QVNTT0JqQ3Bm?=
- =?utf-8?B?c01pRmdSblE0Ui9JSlQzNDlINTROQlBhdGl3bmtFaldsVGEwT28xVEhKeFFI?=
- =?utf-8?B?Vmc4NlRiZkdqK3M3Tm9rNExuMXh0RFNlZDY2aDhWYVMvMW1wK0p2SmJiQ3Qx?=
- =?utf-8?B?anRsaWFpNGh5aTZvLzVSbTZiREZLeFBWV0krbHV6eGMxVUFhU21uZ2NyeGxP?=
- =?utf-8?B?Vjl5WjFKQXhPaUlsd2RFQmhsOWRYOW1zWFpCUlVkY21RTExtNjl1M2c4bXc4?=
- =?utf-8?B?dTlvRFpNTmZUV1owU0RYa2NnK1czRkNOZG1keFZHejkraVZVODVHVzBwSWhw?=
- =?utf-8?B?eFFrdzFiL2thZ0plOVRMWlhmS016NGVzbGo0NnZWSFJaRlVkRCtuVll3Z080?=
- =?utf-8?B?aDNKTTJWeWdzaUw5THcwWHArcS90STVFVTMxMHFSVnlZeTgvNmhPcUZFYko4?=
- =?utf-8?B?d3pIZ0k2SHF2UW15NjlOU3ROdVh4dHZwNzl3aVRIakxqNWlySmgramRVbW1O?=
- =?utf-8?B?U08zVmppVDVQbEorSDZQUi9BalRMaGdkb2tTQm5jZ2FtMFpnei9QNWtMa1pV?=
- =?utf-8?B?TkJZMG9QUlpBNmpjVDlFVkJRS09FQ2R0dDQ5cGZsVkJyL2Z0cG1FTndKY1cv?=
- =?utf-8?B?aERSWjJMdnlwQUErMEtwSW1DbWtSekxacnMwdmtJTWZ1aXlPNlllTGtqM2dj?=
- =?utf-8?B?Vkx3Tk9UT2VydXYzNGhycEF6Z3k0ME1wTUZwSWRYY0NHVXZqRDBkZFJLVzI5?=
- =?utf-8?B?c29qcXd2V0JSQlJHcDJwM25ORlJoVWErWXpaSFhwbE83RWtRWDRrdG92N0dr?=
- =?utf-8?B?b1FyU1N2blh6TnhzYWVBYjlQMmp2YUVhTEU0SDZGZktzU1hhQ1JTMlp1VW5R?=
- =?utf-8?B?K1I3Rm1lUDhmcXpreCtIakliR1ZTUkZPYUE3VElnNWFaTFR5eTFabFZ5T1NQ?=
- =?utf-8?B?UGpaTWU4S3ZqSGRKdnVTVlYzRko1dmROQ0NVcWQxU3d1cERSQlphKzF2UkRC?=
- =?utf-8?B?TnNycTIrWXB1dU9yRHhocHhjbDFFdlVJSVRMazNVM2l6ai9mVjFBL0tCL0tY?=
- =?utf-8?B?aGxUek1zMUxJNTJZeGRaOXRmblAyMy9jVzBQRHBLOGVxTjVOSFdsUy9QdWFL?=
- =?utf-8?B?WlYxT1F6MUJPNGNmV3Z4cVVpUlFENnBPelRQblBQbk12c2NKaVFUQmw2U04x?=
- =?utf-8?B?VVZJbUhpUzg3UWxpN0JrRVB6TENDVkFiQlQ1NmJPcnZtelgyQ1p3bEdsQnY1?=
- =?utf-8?Q?S2Ut3PiXVjqMe6blzhdAiJ/OqNj1h8bHUWpUaPyFfA=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A722A2C2FD93A44291E7F54471963C67@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Mon, 21 Feb 2022 06:15:20 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FB0D57
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:54:06 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id i10so12612857plr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:54:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2UEo/Stc+iYNXbwbi51AqwpgyfC/DeYqJj3Sep1UETg=;
+        b=TQt9smYJlqZvzDOc9o4bZM6zroYbhcyVxV0DCbsexdb+fnHDrG3ZNC1Q19EAk0Ao63
+         62jNfhPKSpSYPZTo+tuDPbrYVI4z300rrE2lkOz0yuGIFjjjg2R8aSc/LGuUyT6n3/wa
+         tEWUlZkuCKsHGUD7VwVlHgOJDLPU97mLW2j0c0+kdZeCY5TJr7TPVUi0+R1hqlrfuTmd
+         h/X2ZsALJKksPfhJw9pnNn3+Er5/IYKz2nhA93DkEGGq3O1L+pd5bROH6NkpKr2NIVif
+         ch3qRTEBpyHSOR5lP5Kk1eLqF5vseOBeoEP2WSgyUfOIDrJDCoGFqzsdpLf2IkArULuB
+         cEIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2UEo/Stc+iYNXbwbi51AqwpgyfC/DeYqJj3Sep1UETg=;
+        b=KM4dxW/Hw3V/dQnx665FCV/+96jZqmooRnofV3YAPrqldvU6kMyL5s/CSqUcxfTN5C
+         N7qdojZOvshU/W3YIVLVP5q2gLy3tMcoRFa5cE0w6tZBnBgek0+7vDL19ieHUHtF9/Ee
+         /CMKGqPwXsjnpJagnU350EC0R1r7QxSTwsyY/ex8h82rcYssaKEeJFDuwsfuw33u1/KX
+         lEaBzf4Yyu2YbgV1q5SEpVrtVlDUwsPb7GVn8HhVL723lD20gnzF95EF3CNNHum5tcLx
+         TfUJJHQoZACMnPmqQ9VYlqllrKWb3RRw7GveH/QdzXqTJr4OT2PBIvRz9imN7vLKZfUK
+         XD6g==
+X-Gm-Message-State: AOAM532vW3Z3wdJt3rTI9qU7uf2HeW7yKsYZhUJYLUA6vHY3fN/LdSy7
+        mwh5dhjCuEd5mtZniipLUMM=
+X-Google-Smtp-Source: ABdhPJyoPW7XVnrEz+Uimph+0Op7tRbd6nES2sCgwyi1ygR/jFYNy8MlQDyqUcT1S8O4S6ye7lb0dQ==
+X-Received: by 2002:a17:90b:2390:b0:1b9:c392:ab8d with SMTP id mr16-20020a17090b239000b001b9c392ab8dmr20876794pjb.30.1645440845915;
+        Mon, 21 Feb 2022 02:54:05 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id u6sm2214725pfk.203.2022.02.21.02.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 02:54:05 -0800 (PST)
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     linux-mm@kvack.org
+Cc:     Roman Gushchin <guro@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Subject: [PATCH 4/5] mm/slub: Limit min_partial only in cache creation
+Date:   Mon, 21 Feb 2022 10:53:35 +0000
+Message-Id: <20220221105336.522086-5-42.hyeyoo@gmail.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: e25b55d3-5772-45dc-9134-08d9f528f410
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2022 10:57:29.0921
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZEUJEpQBcd8kn8tAFjizSlA8Xc/YCkkTGMTynVpVH3XJWsaAVYFtXNIPPOKDVSaLWgNMpIxtPWQDW3kVC2UZqh4ABXeiVB+D+fze/rvp7Kg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1599
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCkxlIDE4LzAyLzIwMjIgw6AgMjI6MjUsIEFhcm9uIFRvbWxpbiBhIMOpY3JpdMKgOg0KPiBO
-byBmdW5jdGlvbmFsIGNoYW5nZS4NCj4gDQo+IFRoaXMgcGF0Y2ggbWlncmF0ZXMgbW9kdWxlIGxh
-dGNoZWQgUkItdHJlZSBzdXBwb3J0DQo+IChlLmcuIHNlZSBfX21vZHVsZV9hZGRyZXNzKCkpIGZy
-b20gY29yZSBtb2R1bGUgY29kZQ0KPiBpbnRvIGtlcm5lbC9tb2R1bGUvdHJlZV9sb29rdXAuYy4N
-Cj4gDQo+IFNpZ25lZC1vZmYtYnk6IEFhcm9uIFRvbWxpbiA8YXRvbWxpbkByZWRoYXQuY29tPg0K
-PiAtLS0NCj4gICBrZXJuZWwvbW9kdWxlL01ha2VmaWxlICAgICAgfCAgIDMgKw0KPiAgIGtlcm5l
-bC9tb2R1bGUvaW50ZXJuYWwuaCAgICB8ICAzMyArKysrKysrKysNCj4gICBrZXJuZWwvbW9kdWxl
-L21haW4uYyAgICAgICAgfCAxMzAgKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-DQo+ICAga2VybmVsL21vZHVsZS90cmVlX2xvb2t1cC5jIHwgMTA5ICsrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKw0KPiAgIDQgZmlsZXMgY2hhbmdlZCwgMTQ5IGluc2VydGlvbnMoKyksIDEy
-NiBkZWxldGlvbnMoLSkNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQga2VybmVsL21vZHVsZS90cmVl
-X2xvb2t1cC5jDQoNCg0KICAgQ0MgICAgICBrZXJuZWwvbW9kdWxlL21haW4ubw0Ka2VybmVsL21v
-ZHVsZS9tYWluLmM6MzcyMzo2OiB3YXJuaW5nOiBubyBwcmV2aW91cyBwcm90b3R5cGUgZm9yIA0K
-J21vZHVsZV9sYXlvdXQnIFstV21pc3NpbmctcHJvdG90eXBlc10NCiAgMzcyMyB8IHZvaWQgbW9k
-dWxlX2xheW91dChzdHJ1Y3QgbW9kdWxlICptb2QsDQogICAgICAgfCAgICAgIF5+fn5+fn5+fn5+
-fn4NCiAgIENDICAgICAga2VybmVsL21vZHVsZS9zdHJpY3Rfcnd4Lm8NCkluIGZpbGUgaW5jbHVk
-ZWQgZnJvbSBrZXJuZWwvbW9kdWxlL3N0cmljdF9yd3guYzoxMjoNCmtlcm5lbC9tb2R1bGUvaW50
-ZXJuYWwuaDoxNDA6MTM6IHdhcm5pbmc6ICdtb2RfdHJlZV9yZW1vdmUnIGRlZmluZWQgYnV0IA0K
-bm90IHVzZWQgWy1XdW51c2VkLWZ1bmN0aW9uXQ0KICAgMTQwIHwgc3RhdGljIHZvaWQgbW9kX3Ry
-ZWVfcmVtb3ZlKHN0cnVjdCBtb2R1bGUgKm1vZCkgeyB9DQogICAgICAgfCAgICAgICAgICAgICBe
-fn5+fn5+fn5+fn5+fn4NCmtlcm5lbC9tb2R1bGUvaW50ZXJuYWwuaDoxMzk6MTM6IHdhcm5pbmc6
-ICdtb2RfdHJlZV9yZW1vdmVfaW5pdCcgZGVmaW5lZCANCmJ1dCBub3QgdXNlZCBbLVd1bnVzZWQt
-ZnVuY3Rpb25dDQogICAxMzkgfCBzdGF0aWMgdm9pZCBtb2RfdHJlZV9yZW1vdmVfaW5pdChzdHJ1
-Y3QgbW9kdWxlICptb2QpIHsgfQ0KICAgICAgIHwgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+
-fn5+fn4NCmtlcm5lbC9tb2R1bGUvaW50ZXJuYWwuaDoxMzg6MTM6IHdhcm5pbmc6ICdtb2RfdHJl
-ZV9pbnNlcnQnIGRlZmluZWQgYnV0IA0Kbm90IHVzZWQgWy1XdW51c2VkLWZ1bmN0aW9uXQ0KICAg
-MTM4IHwgc3RhdGljIHZvaWQgbW9kX3RyZWVfaW5zZXJ0KHN0cnVjdCBtb2R1bGUgKm1vZCkgeyB9
-DQogICAgICAgfCAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn4NCiAgIENDICAgICAga2VybmVs
-L21vZHVsZS9rYWxsc3ltcy5vDQpJbiBmaWxlIGluY2x1ZGVkIGZyb20ga2VybmVsL21vZHVsZS9r
-YWxsc3ltcy5jOjEyOg0Ka2VybmVsL21vZHVsZS9pbnRlcm5hbC5oOjE0MDoxMzogd2FybmluZzog
-J21vZF90cmVlX3JlbW92ZScgZGVmaW5lZCBidXQgDQpub3QgdXNlZCBbLVd1bnVzZWQtZnVuY3Rp
-b25dDQogICAxNDAgfCBzdGF0aWMgdm9pZCBtb2RfdHJlZV9yZW1vdmUoc3RydWN0IG1vZHVsZSAq
-bW9kKSB7IH0NCiAgICAgICB8ICAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fg0Ka2VybmVsL21v
-ZHVsZS9pbnRlcm5hbC5oOjEzOToxMzogd2FybmluZzogJ21vZF90cmVlX3JlbW92ZV9pbml0JyBk
-ZWZpbmVkIA0KYnV0IG5vdCB1c2VkIFstV3VudXNlZC1mdW5jdGlvbl0NCiAgIDEzOSB8IHN0YXRp
-YyB2b2lkIG1vZF90cmVlX3JlbW92ZV9pbml0KHN0cnVjdCBtb2R1bGUgKm1vZCkgeyB9DQogICAg
-ICAgfCAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn5+fn5+fg0Ka2VybmVsL21vZHVsZS9pbnRl
-cm5hbC5oOjEzODoxMzogd2FybmluZzogJ21vZF90cmVlX2luc2VydCcgZGVmaW5lZCBidXQgDQpu
-b3QgdXNlZCBbLVd1bnVzZWQtZnVuY3Rpb25dDQogICAxMzggfCBzdGF0aWMgdm9pZCBtb2RfdHJl
-ZV9pbnNlcnQoc3RydWN0IG1vZHVsZSAqbW9kKSB7IH0NCiAgICAgICB8ICAgICAgICAgICAgIF5+
-fn5+fn5+fn5+fn5+fg0KICAgQ0MgICAgICBrZXJuZWwvbW9kdWxlL3Byb2Nmcy5vDQpJbiBmaWxl
-IGluY2x1ZGVkIGZyb20ga2VybmVsL21vZHVsZS9wcm9jZnMuYzoxMzoNCmtlcm5lbC9tb2R1bGUv
-aW50ZXJuYWwuaDoxNDA6MTM6IHdhcm5pbmc6ICdtb2RfdHJlZV9yZW1vdmUnIGRlZmluZWQgYnV0
-IA0Kbm90IHVzZWQgWy1XdW51c2VkLWZ1bmN0aW9uXQ0KICAgMTQwIHwgc3RhdGljIHZvaWQgbW9k
-X3RyZWVfcmVtb3ZlKHN0cnVjdCBtb2R1bGUgKm1vZCkgeyB9DQogICAgICAgfCAgICAgICAgICAg
-ICBefn5+fn5+fn5+fn5+fn4NCmtlcm5lbC9tb2R1bGUvaW50ZXJuYWwuaDoxMzk6MTM6IHdhcm5p
-bmc6ICdtb2RfdHJlZV9yZW1vdmVfaW5pdCcgZGVmaW5lZCANCmJ1dCBub3QgdXNlZCBbLVd1bnVz
-ZWQtZnVuY3Rpb25dDQogICAxMzkgfCBzdGF0aWMgdm9pZCBtb2RfdHJlZV9yZW1vdmVfaW5pdChz
-dHJ1Y3QgbW9kdWxlICptb2QpIHsgfQ0KICAgICAgIHwgICAgICAgICAgICAgXn5+fn5+fn5+fn5+
-fn5+fn5+fn4NCmtlcm5lbC9tb2R1bGUvaW50ZXJuYWwuaDoxMzg6MTM6IHdhcm5pbmc6ICdtb2Rf
-dHJlZV9pbnNlcnQnIGRlZmluZWQgYnV0IA0Kbm90IHVzZWQgWy1XdW51c2VkLWZ1bmN0aW9uXQ0K
-ICAgMTM4IHwgc3RhdGljIHZvaWQgbW9kX3RyZWVfaW5zZXJ0KHN0cnVjdCBtb2R1bGUgKm1vZCkg
-eyB9DQogICAgICAgfCAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fn4NCg0KDQpDaHJpc3RvcGhl
+SLUB sets number of minimum partial slabs for node (min_partial) using
+set_min_partial(). SLUB holds at least min_partial slabs even if they're empty
+to avoid excessive use of page allocator.
+
+set_min_partial() limits value of min_partial between MIN_PARTIAL and
+MAX_PARTIAL. As set_min_partial() can be called by min_partial_store()
+too, Only limit value of min_partial in kmem_cache_open() so that it
+can be changed to value that a user wants.
+
+Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+---
+ mm/slub.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index 3a4458976ab7..a4964deccb61 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -4002,10 +4002,6 @@ static int init_kmem_cache_nodes(struct kmem_cache *s)
+ 
+ static void set_min_partial(struct kmem_cache *s, unsigned long min)
+ {
+-	if (min < MIN_PARTIAL)
+-		min = MIN_PARTIAL;
+-	else if (min > MAX_PARTIAL)
+-		min = MAX_PARTIAL;
+ 	s->min_partial = min;
+ }
+ 
+@@ -4184,6 +4180,8 @@ static int calculate_sizes(struct kmem_cache *s, int forced_order)
+ 
+ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+ {
++	int min_partial;
++
+ 	s->flags = kmem_cache_flags(s->size, flags, s->name);
+ #ifdef CONFIG_SLAB_FREELIST_HARDENED
+ 	s->random = get_random_long();
+@@ -4215,7 +4213,10 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+ 	 * The larger the object size is, the more slabs we want on the partial
+ 	 * list to avoid pounding the page allocator excessively.
+ 	 */
+-	set_min_partial(s, ilog2(s->size) / 2);
++	min_partial = min(MAX_PARTIAL, ilog2(s->size) / 2);
++	min_partial = max(MIN_PARTIAL, min_partial);
++
++	set_min_partial(s, min_partial);
+ 
+ 	set_cpu_partial(s);
+ 
+-- 
+2.33.1
+
