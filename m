@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83536C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F5BC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357715AbiBUMLQ (ORCPT
+        id S1357737AbiBUML1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:11:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40902 "EHLO
+        Mon, 21 Feb 2022 07:11:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357333AbiBUMIz (ORCPT
+        with ESMTP id S1357314AbiBUMI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:08:55 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37376205C1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:31 -0800 (PST)
+        Mon, 21 Feb 2022 07:08:56 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB05B205C4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:32 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 9ABC02247C;
-        Mon, 21 Feb 2022 13:08:29 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E631E2241C;
+        Mon, 21 Feb 2022 13:08:30 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645445309;
+        t=1645445311;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CHaJ1Kn9aqC7sMskqgvZF6XdFCXYYKaOSB+d24RXhTQ=;
-        b=asgYEsGn40VsutVgM7g5KqJTNW+7Vv+GdkQYG+YLkKFmpAcEKn0v+JoNrCI0Bb6doa5rR6
-        cgHyiA1BRY4Xno8cTSx92k3I/overFY5S0Hdq/dhPSjvUgHKkHl1t7o9KfnBrnb55Gg/Dx
-        zidYenizFsL+ml7llhUMH+VCdjtvDWY=
+        bh=LCG5WjAb8jKXfmQ33jcmEfNf6/A/+yTO2aUg5X+3Xwo=;
+        b=edZRLZlaHb4i4+7LpJcvcLyOZYBN1M17ElH4vtPeYFF2tr6ytMbqfd6KNW/TnWGMl1JLu9
+        UY5WOLFjEhGQsHODAErWcQtwrvOO1hk/osTsJmVhfR9AggmNdikdwP4rfEIkdSO2Qc/VLG
+        13yT2iZlp73vKLSciWmhsy93FB2YDfg=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,9 +40,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 25/32] mtd: spi-nor: micron-st: convert USE_FSR to a manufacturer flag
-Date:   Mon, 21 Feb 2022 13:08:02 +0100
-Message-Id: <20220221120809.1531502-26-michael@walle.cc>
+Subject: [PATCH v4 28/32] mtd: spi-nor: move all spansion specifics into spansion.c
+Date:   Mon, 21 Feb 2022 13:08:05 +0100
+Message-Id: <20220221120809.1531502-29-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221120809.1531502-1-michael@walle.cc>
 References: <20220221120809.1531502-1-michael@walle.cc>
@@ -52,213 +52,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that all functions using that flag are local to the micron module,
-we can convert the flag to a manufacturer one.
+The clear status register flags is only available on spansion flashes.
+Move all the functions around that into the spanion module.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/core.c      |  3 --
- drivers/mtd/spi-nor/core.h      |  3 --
- drivers/mtd/spi-nor/micron-st.c | 93 +++++++++++++++++++++------------
- 3 files changed, 60 insertions(+), 39 deletions(-)
+ drivers/mtd/spi-nor/core.c     | 49 ------------------------
+ drivers/mtd/spi-nor/spansion.c | 70 ++++++++++++++++++++++++++++++++++
+ include/linux/mtd/spi-nor.h    |  1 -
+ 3 files changed, 70 insertions(+), 50 deletions(-)
 
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 5b56d718692b..ac0faedebafe 100644
+index ac0faedebafe..e2b8b0a438ce 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -2499,9 +2499,6 @@ static void spi_nor_init_flags(struct spi_nor *nor)
- 
- 	if (flags & USE_CLSR)
- 		nor->flags |= SNOR_F_USE_CLSR;
--
--	if (flags & USE_FSR)
--		nor->flags |= SNOR_F_USE_FSR;
+@@ -554,33 +554,6 @@ int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
+ 	return ret;
  }
  
+-/**
+- * spi_nor_clear_sr() - Clear the Status Register.
+- * @nor:	pointer to 'struct spi_nor'.
+- */
+-static void spi_nor_clear_sr(struct spi_nor *nor)
+-{
+-	int ret;
+-
+-	if (nor->spimem) {
+-		struct spi_mem_op op =
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),
+-				   SPI_MEM_OP_NO_ADDR,
+-				   SPI_MEM_OP_NO_DUMMY,
+-				   SPI_MEM_OP_NO_DATA);
+-
+-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+-
+-		ret = spi_mem_exec_op(nor->spimem, &op);
+-	} else {
+-		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLSR,
+-						       NULL, 0);
+-	}
+-
+-	if (ret)
+-		dev_dbg(nor->dev, "error %d clearing SR\n", ret);
+-}
+-
  /**
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index fabc01ae9a81..a02bf54289fb 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -12,7 +12,6 @@
- #define SPI_NOR_MAX_ID_LEN	6
+  * spi_nor_sr_ready() - Query the Status Register to see if the flash is ready
+  * for new commands.
+@@ -595,28 +568,6 @@ int spi_nor_sr_ready(struct spi_nor *nor)
+ 	if (ret)
+ 		return ret;
  
- enum spi_nor_option_flags {
--	SNOR_F_USE_FSR		= BIT(0),
- 	SNOR_F_HAS_SR_TB	= BIT(1),
- 	SNOR_F_NO_OP_CHIP_ERASE	= BIT(2),
- 	SNOR_F_USE_CLSR		= BIT(4),
-@@ -349,7 +348,6 @@ struct spi_nor_fixups {
-  *   NO_CHIP_ERASE:           chip does not support chip erase.
-  *   SPI_NOR_NO_FR:           can't do fastread.
-  *   USE_CLSR:                use CLSR command.
-- *   USE_FSR:                 use flag status register
-  *
-  * @no_sfdp_flags:  flags that indicate support that can be discovered via SFDP.
-  *                  Used when SFDP tables are not defined in the flash. These
-@@ -401,7 +399,6 @@ struct flash_info {
- #define NO_CHIP_ERASE			BIT(7)
- #define SPI_NOR_NO_FR			BIT(8)
- #define USE_CLSR			BIT(9)
--#define USE_FSR				BIT(10)
+-	if (nor->flags & SNOR_F_USE_CLSR &&
+-	    nor->bouncebuf[0] & (SR_E_ERR | SR_P_ERR)) {
+-		if (nor->bouncebuf[0] & SR_E_ERR)
+-			dev_err(nor->dev, "Erase Error occurred\n");
+-		else
+-			dev_err(nor->dev, "Programming Error occurred\n");
+-
+-		spi_nor_clear_sr(nor);
+-
+-		/*
+-		 * WEL bit remains set to one when an erase or page program
+-		 * error occurs. Issue a Write Disable command to protect
+-		 * against inadvertent writes that can possibly corrupt the
+-		 * contents of the memory.
+-		 */
+-		ret = spi_nor_write_disable(nor);
+-		if (ret)
+-			return ret;
+-
+-		return -EIO;
+-	}
+-
+ 	return !(nor->bouncebuf[0] & SR_WIP);
+ }
  
- 	u8 no_sfdp_flags;
- #define SPI_NOR_SKIP_SFDP		BIT(0)
-diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-index 8877b122cf42..f693f8720541 100644
---- a/drivers/mtd/spi-nor/micron-st.c
-+++ b/drivers/mtd/spi-nor/micron-st.c
-@@ -8,6 +8,9 @@
+diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
+index 1a0e7214d9e5..38eeb0913ab2 100644
+--- a/drivers/mtd/spi-nor/spansion.c
++++ b/drivers/mtd/spi-nor/spansion.c
+@@ -8,6 +8,7 @@
  
  #include "core.h"
  
-+/* flash_info mfr_flag. Used to read proprietary FSR register. */
-+#define USE_FSR		BIT(0)
-+
- #define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
- #define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
- #define SPINOR_OP_MT_DTR_RD	0xfd	/* Fast Read opcode in DTR mode */
-@@ -140,15 +143,17 @@ static const struct spi_nor_fixups mt35xu512aba_fixups = {
- 
- static const struct flash_info micron_nor_parts[] = {
- 	{ "mt35xu512aba", INFO(0x2c5b1a, 0, 128 * 1024, 512)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_OCTAL_READ |
- 			   SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP)
- 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES | SPI_NOR_IO_MODE_EN_VOLATILE)
--		.fixups = &mt35xu512aba_fixups},
-+		MFR_FLAGS(USE_FSR)
-+		.fixups = &mt35xu512aba_fixups
-+	},
- 	{ "mt35xu02g", INFO(0x2c5b1c, 0, 128 * 1024, 2048)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_OCTAL_READ)
--		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-+		FIXUP_FLAGS(SPI_NOR_4B_OPCODES)
-+		MFR_FLAGS(USE_FSR)
-+	},
++#define SPINOR_OP_CLSR		0x30	/* Clear status register 1 */
+ #define SPINOR_OP_RD_ANY_REG			0x65	/* Read any register */
+ #define SPINOR_OP_WR_ANY_REG			0x71	/* Write any register */
+ #define SPINOR_REG_CYPRESS_CFR2V		0x00800003
+@@ -294,6 +295,72 @@ static const struct flash_info spansion_nor_parts[] = {
+ 	},
  };
  
- static const struct flash_info st_nor_parts[] = {
-@@ -164,57 +169,79 @@ static const struct flash_info st_nor_parts[] = {
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
- 	{ "n25q128a11",  INFO(0x20bb18, 0, 64 * 1024,  256)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB | SPI_NOR_4BIT_BP |
--		      SPI_NOR_BP3_SR_BIT6 | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		      SPI_NOR_BP3_SR_BIT6)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q128a13",  INFO(0x20ba18, 0, 64 * 1024,  256)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB | SPI_NOR_4BIT_BP |
--		      SPI_NOR_BP3_SR_BIT6 | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		      SPI_NOR_BP3_SR_BIT6)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25ql256a",  INFO6(0x20ba19, 0x104400, 64 * 1024,  512)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
--		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-+		FIXUP_FLAGS(SPI_NOR_4B_OPCODES)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q256a",    INFO(0x20ba19, 0, 64 * 1024,  512)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
--			      SPI_NOR_QUAD_READ) },
-+			      SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25qu256a",  INFO6(0x20bb19, 0x104400, 64 * 1024,  512)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
--		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-+		FIXUP_FLAGS(SPI_NOR_4B_OPCODES)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q256ax1",  INFO(0x20bb19, 0, 64 * 1024,  512)
--		FLAGS(USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25ql512a",  INFO6(0x20ba20, 0x104400, 64 * 1024, 1024)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
--		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-+		FIXUP_FLAGS(SPI_NOR_4B_OPCODES)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q512ax3",  INFO(0x20ba20, 0, 64 * 1024, 1024)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB | SPI_NOR_4BIT_BP |
--		      SPI_NOR_BP3_SR_BIT6 | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		      SPI_NOR_BP3_SR_BIT6)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25qu512a",  INFO6(0x20bb20, 0x104400, 64 * 1024, 1024)
--		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
--		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
-+		FIXUP_FLAGS(SPI_NOR_4B_OPCODES)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q512a",    INFO(0x20bb20, 0, 64 * 1024, 1024)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB | SPI_NOR_4BIT_BP |
--		      SPI_NOR_BP3_SR_BIT6 | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		      SPI_NOR_BP3_SR_BIT6)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q00",      INFO(0x20ba21, 0, 64 * 1024, 2048)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB | SPI_NOR_4BIT_BP |
--		      SPI_NOR_BP3_SR_BIT6 | NO_CHIP_ERASE | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		      SPI_NOR_BP3_SR_BIT6 | NO_CHIP_ERASE)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "n25q00a",     INFO(0x20bb21, 0, 64 * 1024, 2048)
--		FLAGS(NO_CHIP_ERASE | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		FLAGS(NO_CHIP_ERASE)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25ql02g",   INFO(0x20ba22, 0, 64 * 1024, 4096)
--		FLAGS(NO_CHIP_ERASE | USE_FSR)
--		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
-+		FLAGS(NO_CHIP_ERASE)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 	{ "mt25qu02g",   INFO(0x20bb22, 0, 64 * 1024, 4096)
--		FLAGS(NO_CHIP_ERASE | USE_FSR)
-+		FLAGS(NO_CHIP_ERASE)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
--			      SPI_NOR_QUAD_READ) },
-+			      SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_FSR)
-+	},
- 
- 	{ "m25p05",  INFO(0x202010,  0,  32 * 1024,   2) },
- 	{ "m25p10",  INFO(0x202011,  0,  32 * 1024,   4) },
-@@ -409,7 +436,7 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
- 
- static void micron_st_nor_late_init(struct spi_nor *nor)
++/**
++ * spi_nor_clear_sr() - Clear the Status Register.
++ * @nor:	pointer to 'struct spi_nor'.
++ */
++static void spi_nor_clear_sr(struct spi_nor *nor)
++{
++	int ret;
++
++	if (nor->spimem) {
++		struct spi_mem_op op =
++			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),
++				   SPI_MEM_OP_NO_ADDR,
++				   SPI_MEM_OP_NO_DUMMY,
++				   SPI_MEM_OP_NO_DATA);
++
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
++
++		ret = spi_mem_exec_op(nor->spimem, &op);
++	} else {
++		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLSR,
++						       NULL, 0);
++	}
++
++	if (ret)
++		dev_dbg(nor->dev, "error %d clearing SR\n", ret);
++}
++
++/**
++ * spi_nor_sr_ready_and_clear() - Query the Status Register to see if the flash
++ * is ready for new commands and clear it.
++ * @nor:	pointer to 'struct spi_nor'.
++ *
++ * Return: 1 if ready, 0 if not ready, -errno on errors.
++ */
++static int spi_nor_sr_ready_and_clear(struct spi_nor *nor)
++{
++	int ret;
++
++	ret = spi_nor_read_sr(nor, nor->bouncebuf);
++	if (ret)
++		return ret;
++
++	if (nor->bouncebuf[0] & (SR_E_ERR | SR_P_ERR)) {
++		if (nor->bouncebuf[0] & SR_E_ERR)
++			dev_err(nor->dev, "Erase Error occurred\n");
++		else
++			dev_err(nor->dev, "Programming Error occurred\n");
++
++		spi_nor_clear_sr(nor);
++
++		/*
++		 * WEL bit remains set to one when an erase or page program
++		 * error occurs. Issue a Write Disable command to protect
++		 * against inadvertent writes that can possibly corrupt the
++		 * contents of the memory.
++		 */
++		ret = spi_nor_write_disable(nor);
++		if (ret)
++			return ret;
++
++		return -EIO;
++	}
++
++	return !(nor->bouncebuf[0] & SR_WIP);
++}
++
+ static void spansion_nor_late_init(struct spi_nor *nor)
  {
--	if (nor->flags & SNOR_F_USE_FSR)
-+	if (nor->info->mfr_flags & USE_FSR)
- 		nor->params->ready = spi_nor_fsr_ready;
+ 	if (nor->params->size > SZ_16M) {
+@@ -302,6 +369,9 @@ static void spansion_nor_late_init(struct spi_nor *nor)
+ 		nor->erase_opcode = SPINOR_OP_SE;
+ 		nor->mtd.erasesize = nor->info->sector_size;
+ 	}
++
++	if (nor->flags & SNOR_F_USE_CLSR)
++		nor->params->ready = spi_nor_sr_ready_and_clear;
  }
  
+ static const struct spi_nor_fixups spansion_nor_fixups = {
+diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
+index 4622251a79ff..5e25a7b75ae2 100644
+--- a/include/linux/mtd/spi-nor.h
++++ b/include/linux/mtd/spi-nor.h
+@@ -90,7 +90,6 @@
+ 
+ /* Used for Spansion flashes only. */
+ #define SPINOR_OP_BRWR		0x17	/* Bank register write */
+-#define SPINOR_OP_CLSR		0x30	/* Clear status register 1 */
+ 
+ /* Used for Micron flashes only. */
+ #define SPINOR_OP_RD_EVCR      0x65    /* Read EVCR register */
 -- 
 2.30.2
 
