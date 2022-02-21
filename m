@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B25C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA92C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbiBUTt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 14:49:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33836 "EHLO
+        id S233195AbiBUTxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 14:53:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231753AbiBUTtw (ORCPT
+        with ESMTP id S229884AbiBUTxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 14:49:52 -0500
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4032251A;
-        Mon, 21 Feb 2022 11:49:28 -0800 (PST)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.94)
-          with esmtps (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1nMEgT-000rHd-Bl; Mon, 21 Feb 2022 20:49:21 +0100
-Received: from p57ae5149.dip0.t-ipconnect.de ([87.174.81.73] helo=[192.168.178.35])
-          by inpost2.zedat.fu-berlin.de (Exim 4.94)
-          with esmtpsa (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1nMEgT-003cYB-4v; Mon, 21 Feb 2022 20:49:21 +0100
-Message-ID: <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
-Date:   Mon, 21 Feb 2022 20:49:20 +0100
+        Mon, 21 Feb 2022 14:53:03 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3AD22524;
+        Mon, 21 Feb 2022 11:52:39 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id l8so13729182pls.7;
+        Mon, 21 Feb 2022 11:52:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nz5j6wJSA8JcyV5jdjTaNW3K3w+wwFqJxUa50on0g14=;
+        b=pks27cVXL7wlimgj3wPbw7CahjiXrq8XGprix4y3zT7tQF59wV18wJonjgkqghy+Sj
+         X6Ex+gLtGkZOgOXBPUtRJnm67LfD0+JP3uvmoAP1T1af/j6hiKl3v2uaIuYvT9fR/R9H
+         K+bgVnDtbyb8aU/gDQ0OjoXlUWxDxTTB+/PwI1JsXMBVwyw+HgzDpfwXjo990yd1KZFY
+         uIXsgQihD1iPkhzcxCyrLbMXnRpFh0jIhx7rME9TMZcWcMJYyGUxPj7ImhBib3tDojwm
+         F8IsYaxR6kqXQ0KQqAktxGcI2qYPCa4U3weDRR8ToNy3uJqhwKLhT+BI0e/yofVIoF7Y
+         VW+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nz5j6wJSA8JcyV5jdjTaNW3K3w+wwFqJxUa50on0g14=;
+        b=ib15lKdY6uViDY1iy6hhV2a38q07K8zero9ydLp6P4xAixgnqs599n6ncQw1ybVmwx
+         tLkQJK1WK2YbDXQ6XZZEh/lQ55spRWSqtIDIKw5kIfzD0gng3RWlziSAdz/20WmHv26H
+         ZZcL9/Wd8qBREiR1GziOS4zUolL1TM2ktRdacGG+Z4w0M2dGv+gbZjtokFnWx0L8EsTO
+         pJ0ipr5WKT06sBe5qFTH2qnDK8pzFTnxKwSI9xmAXVRKzSocESX7tJZbJGvodrNTIgkB
+         IWgAAdBH8ExgTSWQahK0pxq+kNZnf50UDfwzgfe/7zRhp7SXH25M5lLSOK7lhjrbnCXf
+         owvw==
+X-Gm-Message-State: AOAM5329R5yEsFkQXXh8lUkl6pgj+H+R/MPXM/SD5lVtyM4NsUY1MXNF
+        IoQuMBKjJ0DOBg56c7ai19s=
+X-Google-Smtp-Source: ABdhPJyBYs7hrijAk9kpBwi66arawYeQyJwkygWr4nCOBfwSI6OJhP+5wGn9yWJ/yin4Sf19R00I8A==
+X-Received: by 2002:a17:902:76ca:b0:14d:8c80:dbda with SMTP id j10-20020a17090276ca00b0014d8c80dbdamr20488200plt.152.1645473158384;
+        Mon, 21 Feb 2022 11:52:38 -0800 (PST)
+Received: from [192.168.0.2] (c-73-158-10-71.hsd1.ca.comcast.net. [73.158.10.71])
+        by smtp.googlemail.com with ESMTPSA id c13sm14342723pfi.177.2022.02.21.11.52.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 11:52:37 -0800 (PST)
+Message-ID: <70c598ed-315d-0232-9b92-06ba672a22d1@gmail.com>
+Date:   Mon, 21 Feb 2022 11:52:35 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+ Thunderbird/91.5.0
+Subject: Re: Linux 5.17-rc5
 Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Anthony Yznaga <anthony.yznaga@oracle.com>
-Cc:     matoro_bugzilla_kernel@matoro.tk,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        linux-ia64@vger.kernel.org,
-        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+To:     Eric Dumazet <edumazet@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Woody Suwalski <wsuwalski@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info>
- <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
- <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+        Netdev <netdev@vger.kernel.org>
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+ <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com>
+ <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
+ <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+From:   Robert Gadsdon <rhgadsdon@gmail.com>
+In-Reply-To: <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 87.174.81.73
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees!
+On 2/21/22 10:01, Eric Dumazet wrote:
+> I am pretty sure Pablo fixed this one week ago.
+> https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git/commit/?id=2874b7911132f6975e668f6849c8ac93bc4e1f35
 
-On 2/21/22 08:42, Kees Cook wrote:
->>>> Reverting this commit resolves the issue up to and including git tip,
->>>> with no (visible) issues.
->>>>
->>>> Hardware:  HP Integrity rx2800 i2 Kernel config attached.
->>>
->>> Could somebody take a look into this? Or was this discussed somewhere
->>> else already? Or even fixed?
->>>
->>> Anyway, to get this tracked:
->>>
->>> #regzbot introduced: 5f501d555653f8968011a1e65ebb121c8b43c144
->>> #regzbot from: matoro <matoro_bugzilla_kernel@matoro.tk>
->>> #regzbot title: gcc segv at startup on ia64
->>> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215601
-> 
-> Does this fix it?
-> 
-> https://www.ozlabs.org/~akpm/mmotm/broken-out/elf-fix-overflow-in-total-mapping-size-calculation.patch
+Applied this patch, and the problem is fixed, now..
 
-I have applied this patch on top of 038101e6b2cd5c55f888f85db42ea2ad3aecb4b6 and it doesn't
-fix the problem for me. Reverting 5f501d555653f8968011a1e65ebb121c8b43c144, however, fixes
-the problem.
+Thanks..
 
-FWIW, this problem doesn't just affect GCC but systemd keeps segfaulting with this change as well.
-
-Adrian
-
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Robert Gadsdon.
+February 21st 2022.
 
