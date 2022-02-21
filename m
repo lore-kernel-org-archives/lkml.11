@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9717DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E64D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347542AbiBUJGz (ORCPT
+        id S1343698AbiBUJHD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:06:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41914 "EHLO
+        Mon, 21 Feb 2022 04:07:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348431AbiBUJCu (ORCPT
+        with ESMTP id S1348422AbiBUJCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451132C658;
-        Mon, 21 Feb 2022 00:58:06 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADA42C64C;
+        Mon, 21 Feb 2022 00:58:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1E0FB80EB5;
-        Mon, 21 Feb 2022 08:57:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C5A8C340E9;
-        Mon, 21 Feb 2022 08:57:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18B7CB80EB6;
+        Mon, 21 Feb 2022 08:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD4FC340F1;
+        Mon, 21 Feb 2022 08:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433833;
-        bh=MBWNJWbtH9kFyIszuJHOKyr4znqOnXDjPczikbGkrgc=;
+        s=korg; t=1645433881;
+        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v635CVn72lKZJxi0IWCmA/J9EbkG9ADB0aG8qN0o8jU0+rbt0aZgxheQ7niX9+i2l
-         H8Aq6UclqSn7Dr9j0FK5flo6ZumIOEP4IpuzYz9kCNrPa19KebTuTnjTQ+++974ZI4
-         G8TE3KimpNh2nBZaB034GreSwXu/CC7g2Fm1z3YM=
+        b=MVJGgM1/TqRqNajntrmNviImMIf8mQ5+XL+PpZaPZHBQQTNEAoUYAVUvyU9w7kmnD
+         2WSSIYTXZVUyuqgi1VsTaMXtt+/UZvTTzLr4OQTpwJ1YalljWk88E/IibXGbifPe65
+         dYZNOIKkcTqd8wKKoKY29L82NkzDqpEeRvYkecqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 4.19 26/58] net: ieee802154: ca8210: Fix lifs/sifs periods
-Date:   Mon, 21 Feb 2022 09:49:19 +0100
-Message-Id: <20220221084912.731620573@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.4 07/80] parisc: Fix sglist access in ccio-dma.c
+Date:   Mon, 21 Feb 2022 09:48:47 +0100
+Message-Id: <20220221084915.835383796@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
-References: <20220221084911.895146879@linuxfoundation.org>
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit bdc120a2bcd834e571ce4115aaddf71ab34495de upstream.
+commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
 
-These periods are expressed in time units (microseconds) while 40 and 12
-are the number of symbol durations these periods will last. We need to
-multiply them both with the symbol_duration in order to get these
-values in microseconds.
+This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
+It ensures that only the allocated entries of the sglist are accessed.
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220201180629.93410-2-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/ca8210.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/parisc/ccio-dma.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2975,8 +2975,8 @@ static void ca8210_hw_setup(struct ieee8
- 	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
- 	ca8210_hw->phy->cca_ed_level = -9800;
- 	ca8210_hw->phy->symbol_duration = 16;
--	ca8210_hw->phy->lifs_period = 40;
--	ca8210_hw->phy->sifs_period = 12;
-+	ca8210_hw->phy->lifs_period = 40 * ca8210_hw->phy->symbol_duration;
-+	ca8210_hw->phy->sifs_period = 12 * ca8210_hw->phy->symbol_duration;
- 	ca8210_hw->flags =
- 		IEEE802154_HW_AFILT |
- 		IEEE802154_HW_OMIT_CKSUM |
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 	ioc->usg_calls++;
+ #endif
+ 
+-	while(sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
+ 
+ #ifdef CCIO_COLLECT_STATS
+ 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 		ccio_unmap_page(dev, sg_dma_address(sglist),
+ 				  sg_dma_len(sglist), direction, 0);
+ 		++sglist;
++		nents--;
+ 	}
+ 
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
 
 
