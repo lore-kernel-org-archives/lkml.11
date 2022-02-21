@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C938DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380047AbiBUQRy (ORCPT
+        id S1380064AbiBUQR6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:17:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40434 "EHLO
+        Mon, 21 Feb 2022 11:17:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380033AbiBUQQf (ORCPT
+        with ESMTP id S1380028AbiBUQQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:16:35 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D506275E4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:16:12 -0800 (PST)
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 720093F1D9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:16:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645460170;
-        bh=cguSXJTSK/jUGjEgH9bI1vq5RLn1H9fQDOjhSSVs79w=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=a4EFzjDZUur7R7YNccmSMOVcwfl4gTQIls+xPg+ySJ51J5QrxGwvagPfe4kbyGx5I
-         NN6aPlKjb+yHetwTWJXbAVk5kOTvfXBc45bq1wbyw790NZ6sWRlRuAmPGb6sk6h1NI
-         43noR0Nmq1rYj8hIwl/uAKicu28qE/G4EXrHA1y0kT36VdzTohP7XmUwgQlSv+yZiQ
-         /1V4PBj/TkKasACCiYEjR+TqHJd3hEZR3J0xli7M2f3lLulJbOMqwXNy6SqSfj5YkC
-         NhpKyw5BtZ/6XyUdhG3jtdjLWrHgH0t9snVJLeGdwwI9zFkoIT8ZJGHelxXGfgw9yO
-         RU5Zeykrqc8Pg==
-Received: by mail-wm1-f71.google.com with SMTP id q127-20020a1ca785000000b0037faac72dcbso82011wme.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:16:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cguSXJTSK/jUGjEgH9bI1vq5RLn1H9fQDOjhSSVs79w=;
-        b=kHTTHjB4WMU5tDzbXQ5DiesLnZ4GR3kHekNdZL4rx3ycIeMH0gjn3k7s7vFnpOT1Vq
-         Dvc41DdKvloIp2SP7VvsPV3OXPDox++Nqb4sil9rHAcDph1KVKHaXDvHlZu9oLMkfMrB
-         Mj8dawm8enXhl+MvO2uyJMQ9jnsgzZxy1iO28CSCYKs6MT74ThbOGpHubr0f0OK6lDOb
-         TgUnGc+9apKMIlWJWB6SH3XaEkhh0rS/0cOW2tWLT87no0cWz2OpXlI3AijPG93SIYlW
-         VOBLofiBsjaIIulmu/iPD9FjuPZCEsrWfwO6NrTJNkyBGfeQBraSeiOPvYUrv54TbCb9
-         5+fw==
-X-Gm-Message-State: AOAM533/ol7SiqRvBcbXC9RKBXG9GazBUoRgONrd7W4cPSH2EJDyVxG0
-        Ho0Wr1Nbsp0KYNHD7yjRovvDZHLgzfEGovdz8Pe+NEq7FipGSDRjFP4tB5S5kiyUNB0LEWa7iyW
-        x1dF3ER25rrNWpOpju228LU7PPoga294eIKzshmLr/A==
-X-Received: by 2002:adf:f14e:0:b0:1e4:a64c:c1f8 with SMTP id y14-20020adff14e000000b001e4a64cc1f8mr16542827wro.512.1645460170155;
+        Mon, 21 Feb 2022 11:16:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26F723BD4;
         Mon, 21 Feb 2022 08:16:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYgUE7MZQmI+ZQcdzJiIN1T9Ug6obXjiEHel6BWLTa8oJLZK8xZY9nQ5A4HYo6se/kNAsxNA==
-X-Received: by 2002:adf:f14e:0:b0:1e4:a64c:c1f8 with SMTP id y14-20020adff14e000000b001e4a64cc1f8mr16542818wro.512.1645460169981;
-        Mon, 21 Feb 2022 08:16:09 -0800 (PST)
-Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
-        by smtp.gmail.com with ESMTPSA id r2sm10098731wmq.24.2022.02.21.08.16.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 08:16:09 -0800 (PST)
-From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Nick Hu <nickhu@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: [PATCH -fixes v2 3/4] riscv: Fix DEBUG_VIRTUAL false warnings
-Date:   Mon, 21 Feb 2022 17:12:31 +0100
-Message-Id: <20220221161232.2168364-4-alexandre.ghiti@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
-References: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71219B81257;
+        Mon, 21 Feb 2022 16:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D660C340E9;
+        Mon, 21 Feb 2022 16:16:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645460168;
+        bh=euPL0GBRCfpCN8phARKMntVhEH6dKpLAsKtD82PXfsA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FZ1LJJMhltL2kh4dbHEPvaVOLcjc04w7OWNlEfaJnYBjcjk8yrD7r5UfjJBu8mUoe
+         Do9MThcOlmiIdaWYt/AG4W5q3PJ8YecsKWU3yQa1Qq0IIRRuahDYE4Bih8q2yz95La
+         WU5tqCmzIXnPH8wBd/PPuinJiSXZGRW2TMLHSrAcTnxGjSSCoWH1lwkUB08Qs0JCnr
+         Q0+UU2zgFzloTkFvuNHH1AyQYTdKqZbr2ITP1GRCVq1yDe+TtKZl7PlSi9t/tYJl5V
+         3/lIIpehWfH/DDAYDxQqcfk9gWfZiQgO3Y+SLyCsxhaMxHyjJ0FzHOTqKSqQA09gjX
+         oZvF9XQOwYvaA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nMBM6-009LNo-5D; Mon, 21 Feb 2022 16:16:06 +0000
+Date:   Mon, 21 Feb 2022 16:16:05 +0000
+Message-ID: <878ru442m2.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     <arnd@arndb.de>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
+        <jagan@amarulasolutions.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH 0/2] ARM: dts: stm32: Correct masks for GIC PPI interrupts on stm32mp
+In-Reply-To: <20220221133750.20297-1-alexandre.torgue@foss.st.com>
+References: <20220221133750.20297-1-alexandre.torgue@foss.st.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: alexandre.torgue@foss.st.com, arnd@arndb.de, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-kernel@vger.kernel.org, marex@denx.de, jagan@amarulasolutions.com, manivannan.sadhasivam@linaro.org, marcin.sloniewski@gmail.com, a.fatoum@pengutronix.de
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KERN_VIRT_SIZE used to encompass the kernel mapping before it was
-redefined when moving the kasan mapping next to the kernel mapping to only
-match the maximum amount of physical memory.
+On Mon, 21 Feb 2022 13:37:48 +0000,
+Alexandre Torgue <alexandre.torgue@foss.st.com> wrote:
+> 
+> Using GIC_CPU_MASK_SIMPLE(x), x should reflect the number of CPUs.
+> 
+> regards
+> alex
+> 
+> Alexandre Torgue (2):
+>   ARM: dts: stm32: Correct masks for GIC PPI interrupts on stm32mp13
+>   ARM: dts: stm32: Correct masks for GIC PPI interrupts on stm32mp15
+> 
+>  arch/arm/boot/dts/stm32mp131.dtsi | 8 ++++----
+>  arch/arm/boot/dts/stm32mp151.dtsi | 8 ++++----
+>  arch/arm/boot/dts/stm32mp153.dtsi | 7 +++++++
+>  3 files changed, 15 insertions(+), 8 deletions(-)
 
-Then, kernel mapping addresses that go through __virt_to_phys are now
-declared as wrong which is not true, one can use __virt_to_phys on such
-addresses.
+FWIW:
 
-Fix this by redefining the condition that matches wrong addresses.
+Acked-by: Marc Zyngier <maz@kernel.org>
 
-Fixes: f7ae02333d13 ("riscv: Move KASAN mapping next to the kernel mapping")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
----
- arch/riscv/mm/physaddr.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+	M.
 
-diff --git a/arch/riscv/mm/physaddr.c b/arch/riscv/mm/physaddr.c
-index e7fd0c253c7b..19cf25a74ee2 100644
---- a/arch/riscv/mm/physaddr.c
-+++ b/arch/riscv/mm/physaddr.c
-@@ -8,12 +8,10 @@
- 
- phys_addr_t __virt_to_phys(unsigned long x)
- {
--	phys_addr_t y = x - PAGE_OFFSET;
--
- 	/*
- 	 * Boundary checking aginst the kernel linear mapping space.
- 	 */
--	WARN(y >= KERN_VIRT_SIZE,
-+	WARN(!is_linear_mapping(x) && !is_kernel_mapping(x),
- 	     "virt_to_phys used for non-linear address: %pK (%pS)\n",
- 	     (void *)x, (void *)x);
- 
 -- 
-2.32.0
-
+Without deviation from the norm, progress is not possible.
