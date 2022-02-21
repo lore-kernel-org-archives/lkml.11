@@ -2,105 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7194EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235675AbiBUWgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 17:36:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40692 "EHLO
+        id S235702AbiBUWhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 17:37:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiBUWge (ORCPT
+        with ESMTP id S235086AbiBUWhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 17:36:34 -0500
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98F712A9E;
-        Mon, 21 Feb 2022 14:36:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1645482971; x=1677018971;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=k0dyxPOLVR5U+xrHOAfkTufymjKXrO3oXF6kdc2fxWo=;
-  b=MMe9o6LVxq2265BCyfjRU4ER/vH/sSs42jSszL2FIoz4o+lG8Nymz208
-   5UKUIZZIdBQh0y7rxRAufBG6MyAHQYE/Ftfd6Dlz51uV+gi4wiQbWCgr5
-   EroH1jdfFzYSHuHoFhK1XnHGELbc/aWPUrfPu86S79ChHBE4MohA4BgL/
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.88,386,1635206400"; 
-   d="scan'208";a="64956749"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 21 Feb 2022 22:36:08 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id 00C4CC0A6C;
-        Mon, 21 Feb 2022 22:36:02 +0000 (UTC)
-Received: from EX13D02UWC002.ant.amazon.com (10.43.162.6) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 21 Feb 2022 22:35:56 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D02UWC002.ant.amazon.com (10.43.162.6) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 21 Feb 2022 22:35:56 +0000
-Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
- (172.19.181.128) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1497.28 via Frontend Transport; Mon, 21 Feb 2022 22:35:55
- +0000
-Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id C73CC1796; Mon, 21 Feb 2022 22:35:55 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
-        <leo.yan@linaro.org>
-CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        "Will Deacon" <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "James Clark" <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>
-Subject: [PATCH v2 0/2] perf: arm-spe: Decode SPE source and use for perf c2c
-Date:   Mon, 21 Feb 2022 22:28:44 +0000
-Message-ID: <20220221222853.953-1-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 21 Feb 2022 17:37:17 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F752E22
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 14:36:53 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4D7051EC02DD;
+        Mon, 21 Feb 2022 23:36:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645483007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=9GPOSFJdlvNVfhtJwpSJothTg8wq6LHibcLqRGT+qKc=;
+        b=p/xh+xeA0eimJktPhI4pVZUi3CfBsliye4Yo3dsXzoF4twNsEAsrzWrfJmGSnCcx42POK9
+        oW2QsMAsGY81FoXrE72azAw8sJxkP+R+pAgWTi5p45M1AZ5jt0OsDf/vj4pG+O4qYSp+vA
+        yXvhnnN+BgZgikrKegtL8ve4OIXyoYc=
+Date:   Mon, 21 Feb 2022 23:36:55 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com,
+        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
+        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
+        jpoimboe@redhat.com, knsathya@kernel.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Subject: Re: [PATCHv3.1 2.1/2] x86/coco: Add API to handle encryption mask
+Message-ID: <YhQUB2dIQJ/Ov3zp@zn.tnic>
+References: <YhAWcPbzgUGcJZjI@zn.tnic>
+ <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
+ <20220219001305.22883-2-kirill.shutemov@linux.intel.com>
+ <YhP+kES/UVx7RwYz@zn.tnic>
+ <20220221221049.p5zvappg4s2mjem7@black.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220221221049.p5zvappg4s2mjem7@black.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When synthesizing data from SPE, augment the type with source information
-for Arm Neoverse cores so we can detect situtions like cache line contention
-and transfers on Arm platforms. 
+On Tue, Feb 22, 2022 at 01:10:49AM +0300, Kirill A. Shutemov wrote:
+> I'm not sure it is a good idea. It leaves room for code between these two
+> calls. I believe they conceptually has to initialized in one shot. That's
+> the only way we get consistent state.
 
-This changes enables the expected behavior of perf c2c on a system with SPE where
-lines that are shared among multiple cores show up in perf c2c output. 
+Really, where?
 
-These changes switch to use mem_lvl_num to encode the level information instead
-of mem_lvl which is being deprecated, but I haven't found other users of
-mem_lvl_num. 
+My expectation would be that those things are set early enough during
+boot, in your case in tdx_early_init(), for example, where stuff gets
+initialized - not where it is used.
 
-Changes in v2:
-  * Split the synht_data_source functions into a generic and neoverse version
-  * Use mem_lvl_num instead of mem_lvl
-  * Modify c2c to support mem_lvl_num + HITM
-
-Ali Saidi (2):
-  perf arm-spe: Use SPE data source for neoverse cores
-  perf mem: Support HITM for when mem_lvl_num is used
-
- .../util/arm-spe-decoder/arm-spe-decoder.c    |   1 +
- .../util/arm-spe-decoder/arm-spe-decoder.h    |  12 ++
- tools/perf/util/arm-spe.c                     | 106 +++++++++++++++---
- tools/perf/util/mem-events.c                  |  14 ++-
- 4 files changed, 114 insertions(+), 19 deletions(-)
+If you worry about having inconsistent state, then you're doing the init
+not early enough.
 
 -- 
-2.32.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
