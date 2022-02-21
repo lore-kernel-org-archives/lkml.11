@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05520C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FCFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351938AbiBUJxB (ORCPT
+        id S1350791AbiBUJxI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:53:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42464 "EHLO
+        Mon, 21 Feb 2022 04:53:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352884AbiBUJsA (ORCPT
+        with ESMTP id S1352873AbiBUJr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:00 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A34192B7;
-        Mon, 21 Feb 2022 01:20:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4C747CE0E7A;
-        Mon, 21 Feb 2022 09:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F84C340E9;
-        Mon, 21 Feb 2022 09:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435249;
-        bh=bYmxFUxu5FgBnwgvdPY3DcQ50JmfRGtEJ/k/w9849Q0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O/9qnWVRnyPdyO1f+4r2brJ+qvbuRMpAI0+cX3xOBIB1V8TKL+QOatWp4N0nnsno4
-         OHdTCSdqe8Zr24dPIxkePAEUBLK+WBfBdKbS0+KFmcnGj5UMNm3L6/dvXB7BonjVKO
-         deClWiHyNT8A8F/wZgEzATHLst2QaCNF+0fzbshY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 097/227] netfilter: xt_socket: fix a typo in socket_mt_destroy()
-Date:   Mon, 21 Feb 2022 09:48:36 +0100
-Message-Id: <20220221084938.106083394@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:47:59 -0500
+Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2107212AD1;
+        Mon, 21 Feb 2022 01:20:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=21K6b
+        QK4EXcP3BVHdL/u5JSVHo7V8smrScHkWUXOPzA=; b=iz1g4SJzVmBsTIvOgZIpG
+        BR9jPGFeHtMH5ZsqJYje0RSSzN6flZoIQ2KMl+gm+ALyOfkU0HxggVXvV4MM2hws
+        cfVjhGq31lOQd3V67F6VOKZCD03dbMDHd1K/uV5gf/vqwp+PHWMKlwYEAlrJTWiY
+        sGwnT2IP9pjcpoQCnLmEKQ=
+Received: from slark_xiao$163.com ( [112.97.59.12] ) by
+ ajax-webmail-wmsvr114 (Coremail) ; Mon, 21 Feb 2022 17:20:05 +0800 (CST)
+X-Originating-IP: [112.97.59.12]
+Date:   Mon, 21 Feb 2022 17:20:05 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Johan Hovold" <johan@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re:Re: Re: [PATCH] USB: serial: option: add support for DW5829e
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <YhNWV5lXm0d7lyfL@hovoldconsulting.com>
+References: <20220209031535.9668-1-slark_xiao@163.com>
+ <YgPPNVzyg7Gypzv9@hovoldconsulting.com>
+ <62feaf3.248f.17ee1ac3017.Coremail.slark_xiao@163.com>
+ <YhNWV5lXm0d7lyfL@hovoldconsulting.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <14f5bdc0.3675.17f1b94b947.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: csGowADHytBGWRNi3mYUAA--.52023W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwSuZFc7V+6LlAABsC
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-
-commit 75063c9294fb239bbe64eb72141b6871fe526d29 upstream.
-
-Calling nf_defrag_ipv4_disable() instead of nf_defrag_ipv6_disable()
-was probably not the intent.
-
-I found this by code inspection, while chasing a possible issue in TPROXY.
-
-Fixes: de8c12110a13 ("netfilter: disable defrag once its no longer needed")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/netfilter/xt_socket.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/net/netfilter/xt_socket.c
-+++ b/net/netfilter/xt_socket.c
-@@ -221,7 +221,7 @@ static void socket_mt_destroy(const stru
- 	if (par->family == NFPROTO_IPV4)
- 		nf_defrag_ipv4_disable(par->net);
- 	else if (par->family == NFPROTO_IPV6)
--		nf_defrag_ipv4_disable(par->net);
-+		nf_defrag_ipv6_disable(par->net);
- }
- 
- static struct xt_match socket_mt_reg[] __read_mostly = {
-
-
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDItMjEgMTc6MDc6MzUsICJKb2hhbiBIb3ZvbGQiIDxq
+b2hhbkBrZXJuZWwub3JnPiB3cm90ZToKPk9uIFRodSwgRmViIDEwLCAyMDIyIGF0IDExOjI3OjQ1
+QU0gKzA4MDAsIFNsYXJrIFhpYW8gd3JvdGU6Cj4+IEF0IDIwMjItMDItMDkgMjI6Mjc6MDEsICJK
+b2hhbiBIb3ZvbGQiIDxqb2hhbkBrZXJuZWwub3JnPiB3cm90ZToKPj4gPk9uIFdlZCwgRmViIDA5
+LCAyMDIyIGF0IDExOjE1OjM1QU0gKzA4MDAsIFNsYXJrIFhpYW8gd3JvdGU6Cj4KPj4gPj4gRFc1
+ODI5ZSBSTU5FVCBtb2RlOgo+PiA+PiBUOiAgQnVzPTA0IExldj0wMSBQcm50PTAxIFBvcnQ9MDEg
+Q250PTAxIERldiM9ICA1IFNwZD01MDAwIE14Q2g9IDAKPj4gPj4gRDogIFZlcj0gMy4xMCBDbHM9
+ZWYobWlzYyApIFN1Yj0wMiBQcm90PTAxIE14UFM9IDkgI0NmZ3M9ICAxCj4+ID4+IFA6ICBWZW5k
+b3I9NDEzYyBQcm9kSUQ9ODFlNiBSZXY9MDMuMTgKPj4gPj4gUzogIE1hbnVmYWN0dXJlcj1EZWxs
+IEluYy4KPj4gPj4gUzogIFByb2R1Y3Q9RFc1ODI5ZSBTbmFwZHJhZ29uIFgyMCBMVEUKPj4gPj4g
+UzogIFNlcmlhbE51bWJlcj0wMTIzNDU2Nzg5QUJDREVGCj4+ID4+IEM6ICAjSWZzPSA2IENmZyM9
+IDEgQXRyPWEwIE14UHdyPTg5Nm1BCj4+ID4+IEk6ICBJZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENs
+cz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9ZmYgRHJpdmVyPXFtaV93d2FuCj4+ID4+IEk6ICBJZiM9
+MHgxIEFsdD0gMCAjRVBzPSAxIENscz0wMyhISUQgICkgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPXVz
+YmhpZAo+PiA+PiBJOiAgSWYjPTB4MiBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj0w
+MCBQcm90PTAwIERyaXZlcj1vcHRpb24KPj4gPj4gSTogIElmIz0weDMgQWx0PSAwICNFUHM9IDMg
+Q2xzPWZmKHZlbmQuKSBTdWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+ID4+IEk6ICBJZiM9
+MHg0IEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPW9w
+dGlvbgo+PiA+PiBJOiAgSWYjPTB4NSBBbHQ9IDAgI0VQcz0gMiBDbHM9ZmYodmVuZC4pIFN1Yj1m
+ZiBQcm90PWZmIERyaXZlcj1vcHRpb24KPgo+PiA+PiBEVzU4MjllLWVTSU0gUk1ORVQgbW9kZToK
+Pj4gPj4gVDogIEJ1cz0wNCBMZXY9MDEgUHJudD0wMSBQb3J0PTAxIENudD0wMSBEZXYjPSAgNyBT
+cGQ9NTAwMCBNeENoPSAwCj4+ID4+IEQ6ICBWZXI9IDMuMTAgQ2xzPWVmKG1pc2MgKSBTdWI9MDIg
+UHJvdD0wMSBNeFBTPSA5ICNDZmdzPSAgMQo+PiA+PiBQOiAgVmVuZG9yPTQxM2MgUHJvZElEPTgx
+ZTQgUmV2PTAzLjE4Cj4+ID4+IFM6ICBNYW51ZmFjdHVyZXI9RGVsbCBJbmMuCj4+ID4+IFM6ICBQ
+cm9kdWN0PURXNTgyOWUtZVNJTSBTbmFwZHJhZ29uIFgyMCBMVEUKPj4gPj4gUzogIFNlcmlhbE51
+bWJlcj0wMTIzNDU2Nzg5QUJDREVGCj4+ID4+IEM6ICAjSWZzPSA2IENmZyM9IDEgQXRyPWEwIE14
+UHdyPTg5Nm1BCj4+ID4+IEk6ICBJZiM9MHgwIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikg
+U3ViPWZmIFByb3Q9ZmYgRHJpdmVyPXFtaV93d2FuCj4+ID4+IEk6ICBJZiM9MHgxIEFsdD0gMCAj
+RVBzPSAxIENscz0wMyhISUQgICkgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPXVzYmhpZAo+PiA+PiBJ
+OiAgSWYjPTB4MiBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj0wMCBQcm90PTAwIERy
+aXZlcj1vcHRpb24KPj4gPj4gSTogIElmIz0weDMgQWx0PSAwICNFUHM9IDMgQ2xzPWZmKHZlbmQu
+KSBTdWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+ID4+IEk6ICBJZiM9MHg0IEFsdD0gMCAj
+RVBzPSAzIENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPW9wdGlvbgo+PiA+PiBJ
+OiAgSWYjPTB4NSBBbHQ9IDAgI0VQcz0gMiBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PWZmIERy
+aXZlcj1vcHRpb24KPgo+PiA+PiAgI2RlZmluZSBLWU9DRVJBX1ZFTkRPUl9JRAkJCTB4MGM4OAo+
+PiA+PiAgI2RlZmluZSBLWU9DRVJBX1BST0RVQ1RfS1BDNjUwCQkJMHgxN2RhCj4+ID4+IEBAIC0x
+MDYzLDYgKzEwNjUsMTAgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB1c2JfZGV2aWNlX2lkIG9wdGlv
+bl9pZHNbXSA9IHsKPj4gPj4gIAkgIC5kcml2ZXJfaW5mbyA9IFJTVkQoMCkgfCBSU1ZEKDEpIHwg
+UlNWRCg2KSB9LAo+PiA+PiAgCXsgVVNCX0RFVklDRShERUxMX1ZFTkRPUl9JRCwgREVMTF9QUk9E
+VUNUXzU4MjFFX0VTSU0pLAo+PiA+PiAgCSAgLmRyaXZlcl9pbmZvID0gUlNWRCgwKSB8IFJTVkQo
+MSkgfCBSU1ZEKDYpIH0sCj4+ID4+ICsJeyBVU0JfREVWSUNFX0lOVEVSRkFDRV9DTEFTUyhERUxM
+X1ZFTkRPUl9JRCwgREVMTF9QUk9EVUNUXzU4MjlFLCAweGZmKSwKPj4gPj4gKwkgIC5kcml2ZXJf
+aW5mbyA9IFJTVkQoNikgfSwKPj4gPj4gKwl7IFVTQl9ERVZJQ0VfSU5URVJGQUNFX0NMQVNTKERF
+TExfVkVORE9SX0lELCBERUxMX1BST0RVQ1RfNTgyOUVfRVNJTSwgMHhmZiksCj4+ID4+ICsJICAu
+ZHJpdmVyX2luZm8gPSBSU1ZEKDYpIH0sCj4+ID4KPj4gPkl0IGxvb2tzIGxpa2UgdGhlc2UgZW50
+cmllcyB3aWxsIGNhdXNlIHRoZSBkcml2ZXIgdG8gYmluZCBhbHNvIHRvIHRoZQo+PiA+UU1JIHBv
+cnQgaG93ZXZlci4KPj4gPgo+Cj4+IEFjdHVhbGx5IG5vdCwgIGN1cnJlbnRseSBSTU5FVCBwb3J0
+IHdvdWxkIGxvYWQgdGhlIHFtaV93d2FuIGRyaXZlcgo+PiBzdWNjZXNzZnVsbHkgZXZlbiB0aGUg
+Y2xhc3Mgb2YgUU1JIGlzIGFsc28gMHhmZi4KPgo+VGhhdCdzIG5vdCBndWFyYW50ZWVkIHNvIFJN
+TkVUIG1vZGUgY291bGQgYnJlYWsgZGVwZW5kaW5nIG9uIHByb2JlCj5vcmRlciB3aXRoIHRoZSBh
+Ym92ZSBlbnRyaWVzLgo+Cj4+IERvIHlvdSBtZWFuIEkgc2hvdWxkIGFkZCBSU1ZEKDApIHRvIHJl
+ZHVjZSBjb25mdXNpb24/Cj4KPllvdSBuZWVkIHRvIHJlc2VydmUgaXQgZm9yIGNvcnJlY3RuZXNz
+IChvciByZXN0cnVjdHVyZSB0aGUgZW50cmllcyBpbgo+c29tZSBvdGhlciB3YXkgdG8gYWNoaWV2
+ZSB0aGUgc2FtZSByZXN1bHQpLgo+IApZZXMsIHNvIEkgcmUtc2VuZCBhIFYyIHZlcnNpb24gdG8g
+cmVzZXJ2ZSBpbnRlcmZhY2UgMCwxLDYuIFBsZWFzZSBoZWxwIHRha2UgYSBsb29rIG9uIHRoYXQu
+ClRoYW5rcy4KPj4gPj4gIAl7IFVTQl9ERVZJQ0UoQU5ZREFUQV9WRU5ET1JfSUQsIEFOWURBVEFf
+UFJPRFVDVF9BRFVfRTEwMEEpIH0sCS8qIEFEVS1FMTAwLCBBRFUtMzEwICovCj4+ID4+ICAJeyBV
+U0JfREVWSUNFKEFOWURBVEFfVkVORE9SX0lELCBBTllEQVRBX1BST0RVQ1RfQURVXzUwMEEpIH0s
+Cj4+ID4+ICAJeyBVU0JfREVWSUNFKEFOWURBVEFfVkVORE9SX0lELCBBTllEQVRBX1BST0RVQ1Rf
+QURVXzYyMFVXKSB9LAo+Cj5Kb2hhbgo=
