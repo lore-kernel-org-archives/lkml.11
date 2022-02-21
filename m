@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9B4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F44C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232322AbiBUSMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:12:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40446 "EHLO
+        id S232267AbiBUSNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:13:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiBUSKm (ORCPT
+        with ESMTP id S232231AbiBUSL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:10:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E8425C71;
-        Mon, 21 Feb 2022 10:00:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ED1AB816FC;
-        Mon, 21 Feb 2022 18:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFCEBC340E9;
-        Mon, 21 Feb 2022 18:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645466403;
-        bh=RuobRZ3E8jrPNKhyG/2lgwwr/3tmYkSCyeq+C5N5NoQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w6oNiPh4+XjmZaI+eTNi9LoDFvkC/JZVszV/Kn3Fz/5NDDxBy9YJtUMNOiMbpr5IU
-         YOBxA3BFSE6tO8UpMZ9Rz/fPBPYsSBDupRU78Bs+JDGqk2PAKYP+To+0iWSnqKaCit
-         VPoj9iBoW41aTfJF7hCUt2EFzKNrpZr/K0O9NusI=
-Date:   Mon, 21 Feb 2022 19:00:00 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/196] 5.15.25-rc1 review
-Message-ID: <YhPTIFmCxjnELRyP@kroah.com>
-References: <20220221084930.872957717@linuxfoundation.org>
- <d72c8af1-e93d-44ae-15e0-737302523961@roeck-us.net>
+        Mon, 21 Feb 2022 13:11:26 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C274113D23;
+        Mon, 21 Feb 2022 10:01:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645466509; x=1677002509;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=sPqVwHORdIP+AJZPTEY+6JZ34Z1q+gC7lEhyccc3C9s=;
+  b=idiQfNBX1z29w3l1eyKvEtrDaFm7KOkZ0BPo/FaXf6XKNp0vkKs+6DOS
+   WT5qgwJQrulGfijUv+ibkRnn6g6wjAWUJvwtfYt+mpiEKl+GyDx5SlkzU
+   /wUR2kTusnsI/5jvxRVJdSPcNvfPcIhjYaLap6wCAwHoAkDUH5+jX/eyT
+   uyzgpsGfPqAo5q4eKKxH29mqe4Sih0U3MU4JKwdGK79o1bdsP+vwhlF7F
+   9fteBMvTIotyu/6GHCdT8jqJUxDDP0/ZolDlUeVnOudd6NONpZBWjjHxp
+   uyDM6pJhpGUXmRv+opFdcISA5lAwHZ0/2u5fjCTfQCq3ztt+Nw8elIV6s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="235091315"
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="235091315"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 10:01:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="547418308"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 10:01:44 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMCzU-006sBe-2m;
+        Mon, 21 Feb 2022 20:00:52 +0200
+Date:   Mon, 21 Feb 2022 20:00:51 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 06/10] i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
+Message-ID: <YhPTUxvaqd+1/23a@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <20220221162652.103834-7-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <d72c8af1-e93d-44ae-15e0-737302523961@roeck-us.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220221162652.103834-7-clement.leger@bootlin.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 09:15:52AM -0800, Guenter Roeck wrote:
-> On 2/21/22 00:47, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.15.25 release.
-> > There are 196 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> > 
-> > Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
-> > Anything received after that time might be too late.
-> > 
-> 
-> 
-> Building arm:allmodconfig ... failed
-> Building arm64:allmodconfig ... failed
-> --------------
-> Error log:
-> drivers/tee/optee/core.c: In function 'optee_probe':
-> drivers/tee/optee/core.c:726:20: error: operation on 'rc' may be undefined
+On Mon, Feb 21, 2022 at 05:26:48PM +0100, Clément Léger wrote:
+> Add fwnode_find_i2c_adapter_by_node() which allows to retrieve a i2c
+> adapter using a fwnode. Since dev_fwnode() uses the fwnode provided by
+> the of_node member of the device, this will also work for devices were
+> the of_node has been set and not the fwnode field.
+
+...
+
+> +static int fwnode_dev_or_parent_node_match(struct device *dev, const void *data)
+> +{
+
+> +	if (dev_fwnode(dev) == data)
+> +		return 1;
+
+This can use corresponding match function from bus.h.
+
+> +	if (dev->parent)
+> +		return dev_fwnode(dev->parent) == data;
+> +
+> +	return 0;
+
+The same.
+
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Jens, did you build the 5.15 patch you sent?
-
-This line looks a bit odd:
-
-+               rc = rc = PTR_ERR(ctx);
-
-And given that rc is an int, that is not guaranteed to hold a pointer
-here :(
-
-thanks,
-
-greg k-h
