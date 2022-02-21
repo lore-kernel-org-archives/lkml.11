@@ -2,87 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B89C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F02EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346474AbiBUHml (ORCPT
+        id S1346467AbiBUHmp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:42:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
+        Mon, 21 Feb 2022 02:42:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346461AbiBUHmi (ORCPT
+        with ESMTP id S1346478AbiBUHml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:42:38 -0500
-X-Greylist: delayed 1931 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 23:42:15 PST
-Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463E12DA
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:42:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ezO+Ykxw2lF1+hzaNXBvIIokwHtrg1e//PjeuJdwFNw=; b=ONX2M/tcAQIUSGst0+pxsQpg5d
-        vniSTTFX+LNxdunbhn6voPqd9r2Gvu7U7QT96U9D84bQAliRWOIbIZa+kvQN33v24OOXHcFjdCu8O
-        10FWeUvL0MeUL0M2BkimsAFHPKFGProWUjFeh9KDrk16xotBta22sY15BIrqoyUq1hOPViHJQpgqV
-        hrwi4aefsfkBcitv/iCVxI0s6d5sQHida4YSPhQAKWfPM9y24dCZFA0YV20FBEdQhiKNZndOoInvb
-        h2uZsiO93lfQjzDhyb7BVbHYBerq+SVjzT2CYXa8qMl0SK3NR7bywbuZF8LPNxm+IyZG5bKK/WZEZ
-        CaC/97nA==;
-Received: from 15-28-196-88.dyn.estpak.ee ([88.196.28.15]:49910 helo=localhost)
-        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <maukka@ext.kapsi.fi>)
-        id 1nM287-0002PA-8S; Mon, 21 Feb 2022 08:25:04 +0200
-Received: by localhost (sSMTP sendmail emulation); Mon, 21 Feb 2022 08:24:52 +0200
-From:   Mauri Sandberg <maukka@ext.kapsi.fi>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauri Sandberg <maukka@ext.kapsi.fi>
-Date:   Mon, 21 Feb 2022 08:24:41 +0200
-Message-Id: <20220221062441.2685-1-maukka@ext.kapsi.fi>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Feb 2022 02:42:41 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD83CEA
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:42:18 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id x11so12198597pll.10
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:42:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=dLxIZoeQL5QeHlz0THvMUsIZQRWOGlgrKYRsHiIufA8=;
+        b=AjM75lU/aJ1KzHzY1OS7/JQ/sF6o/a954sUrCH7fUe8N7WKDbLF0YdiJuqaRxLWcim
+         HsldS2aEtNBpR5e1vpE3ApFGp4TIIpvOj1wYgmHqw55raD7mj6lrXiB0EaQqVkl/hkd3
+         Wl0jhAwl/LTQRojnDaDsNCFX5x2JLCtvT8MGg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=dLxIZoeQL5QeHlz0THvMUsIZQRWOGlgrKYRsHiIufA8=;
+        b=qLx0zM9qqM+tireThWdRN05igbOmc3/KNJATZ6pgacK6TaUhgsOaoIwNdcK3Q7qLIH
+         JW02Wlc+myUMFt9FMuuKf3an+0JFuL6Vgu0YYgqdIx+JoRi6J/f2ixvs+mcX/xt3klIj
+         oQSxPc1zHIf8WFFlWEsRNj+xbZONSKeFituf93wyuQJvUUyVskwhHXUbar0qPH2N6DGZ
+         M2HOls/bO678EkLxKZiHpnnhPmys6ZZpsIBRdyzo6q/MOK5M8GudtLxpti5kEhViT6ML
+         JHUhEKvWuhNPIvIhiMxTNuzkIceKIrwck7VRC+NlRFOM/9BVf0TYjyZ4RWh1+7dtNXuP
+         9Jvg==
+X-Gm-Message-State: AOAM533Lw8ZnTJ2EbahG92HN1zvz//pFMoz25xaC2Pwg46OPVfg0EMx3
+        uip93NIuU5tGAgBKpdX1v/bGNw==
+X-Google-Smtp-Source: ABdhPJw3sMUzvqOO9UfAnEOtXQLPiJFMTKPdJbS/nuB2oWposPJlERR9b9/rEuIUH27bdiXzpxACgg==
+X-Received: by 2002:a17:90b:30cb:b0:1bb:fa5e:68a with SMTP id hi11-20020a17090b30cb00b001bbfa5e068amr9639855pjb.5.1645429337899;
+        Sun, 20 Feb 2022 23:42:17 -0800 (PST)
+Received: from ?IPv6:::1? ([2600:6c55:6300:7238:34b8:edf8:24ec:9845])
+        by smtp.gmail.com with ESMTPSA id l17sm11871636pfu.61.2022.02.20.23.42.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Feb 2022 23:42:17 -0800 (PST)
+Date:   Sun, 20 Feb 2022 23:42:13 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>
+CC:     matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+User-Agent: K-9 Mail for Android
+In-Reply-To: <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info> <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+Message-ID: <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 88.196.28.15
-X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
-Subject: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Obtaining MAC address may be deferred in cases when the MAC is stored
-in NVMEM block and it may now be ready upon the first retrieval attempt
-returing EPROBE_DEFER. Handle it here and leave logic otherwise as it
-was.
 
-Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
----
- drivers/net/ethernet/marvell/mv643xx_eth.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-index 105247582684..0694f53981f2 100644
---- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-+++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-@@ -2740,7 +2740,10 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
- 		return -EINVAL;
- 	}
- 
--	of_get_mac_address(pnp, ppd.mac_addr);
-+	ret = of_get_mac_address(pnp, ppd.mac_addr);
-+
-+	if (ret == -EPROBE_DEFER)
-+		return ret;
- 
- 	mv643xx_eth_property(pnp, "tx-queue-size", ppd.tx_queue_size);
- 	mv643xx_eth_property(pnp, "tx-sram-addr", ppd.tx_sram_addr);
+On February 20, 2022 9:19:46 AM PST, Thorsten Leemhuis <regressions@leemhu=
+is=2Einfo> wrote:
+>[reply to get Anthony on board, I screwed up when copy and pasting his
+>email address when sending below mail; sorry for the noise!]
+>
+>On 20=2E02=2E22 18:12, Thorsten Leemhuis wrote:
+>> Hi, this is your Linux kernel regression tracker=2E
+>>=20
+>> I noticed a regression report in bugzilla=2Ekernel=2Eorg that afaics no=
+body
+>> acted upon since it was reported about a week ago, that's why I'm hereb=
+y
+>> forwarding it to the lists and the relevant people=2E To quote
+>> https://bugzilla=2Ekernel=2Eorg/show_bug=2Ecgi?id=3D215601 :
+>>=20
+>>> On ia64, after 5f501d555653f8968011a1e65ebb121c8b43c144, the gcc
+>>> binary crashes with SIGSEGV at startup (i=2Ee=2E, during ELF loading)=
+=2E
+>>> Only gcc exhibits the crash (including g++, etc), other toolchain
+>>> components (such as ld, ldd, etc) do not, and neither does any other
+>>> binary from what I can tell=2E  I also haven't observed the issue on
+>>> any other architecture=2E
+>>>
+>>> Reverting this commit resolves the issue up to and including git tip,
+>>> with no (visible) issues=2E
+>>>
+>>> Hardware:  HP Integrity rx2800 i2 Kernel config attached=2E
+>>=20
+>> Could somebody take a look into this? Or was this discussed somewhere
+>> else already? Or even fixed?
+>>=20
+>> Anyway, to get this tracked:
+>>=20
+>> #regzbot introduced: 5f501d555653f8968011a1e65ebb121c8b43c144
+>> #regzbot from: matoro <matoro_bugzilla_kernel@matoro=2Etk>
+>> #regzbot title: gcc segv at startup on ia64
+>> #regzbot link: https://bugzilla=2Ekernel=2Eorg/show_bug=2Ecgi?id=3D2156=
+01
 
-base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
--- 
-2.25.1
+Does this fix it?
 
+https://www=2Eozlabs=2Eorg/~akpm/mmotm/broken-out/elf-fix-overflow-in-tota=
+l-mapping-size-calculation=2Epatch
+
+-Kees
+
+
+>>=20
+>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat=
+)
+>>=20
+>> P=2ES=2E: As the Linux kernel's regression tracker I'm getting a lot of
+>> reports on my table=2E I can only look briefly into most of them and la=
+ck
+>> knowledge about most of the areas they concern=2E I thus unfortunately
+>> will sometimes get things wrong or miss something important=2E I hope
+>> that's not the case here; if you think it is, don't hesitate to tell me
+>> in a public reply, it's in everyone's interest to set the public record
+>> straight=2E
+>>=20
+
+--=20
+Kees Cook
