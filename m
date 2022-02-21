@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E54C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347474AbiBUJGg (ORCPT
+        id S1347484AbiBUJGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:06:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58048 "EHLO
+        Mon, 21 Feb 2022 04:06:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348285AbiBUJCh (ORCPT
+        with ESMTP id S1348312AbiBUJCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC2A2BB2A;
-        Mon, 21 Feb 2022 00:57:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1862B2C106;
+        Mon, 21 Feb 2022 00:57:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325F761222;
-        Mon, 21 Feb 2022 08:57:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15890C340E9;
-        Mon, 21 Feb 2022 08:57:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC9D061152;
+        Mon, 21 Feb 2022 08:57:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E60C340EB;
+        Mon, 21 Feb 2022 08:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433870;
-        bh=ASK1MwfeL/CNuiui8+LcMzQGd1hoU+FW4p1Qlh7aswc=;
+        s=korg; t=1645433873;
+        bh=HKrIBi5m5CFXzZ+6/xBVUfB/8hJp8GunVilEDIKwwTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khI57OgDHUSYCpZK8cXxjvGmWjeDmdWfU5S0KlFfuEkUQv8eZQ7A5wwVyqIlmVenH
-         lBqZaVFa9QowWrh5LeX6X8ueq9aUOADPBJzqAjjdY+t3AMKf/uI9pQgpFzUXFyPEgd
-         nzDpyQEWqMtQuchqsr01NPfU8Hc/mAHfVcyVWO5c=
+        b=tR0Ia0+XftoxZ2Nev8SPakCUk9LBtiQ2LkYGqgxi+G2dWHO9sIMj18JWG8NZsid41
+         4r2j4YnL1SOsGWRRpf4som3kDMZvRVgBNyhHqCir3JCAoVw/ZpNhbq9jJlSyeplN0m
+         ibv3Ukrf0sRmFyOkIHScgwc1FxziZg6Y5+OqqDl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 03/80] Revert "svm: Add warning message for AVIC IPI invalid target"
-Date:   Mon, 21 Feb 2022 09:48:43 +0100
-Message-Id: <20220221084915.677311913@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 04/80] serial: parisc: GSC: fix build when IOSAPIC is not set
+Date:   Mon, 21 Feb 2022 09:48:44 +0100
+Message-Id: <20220221084915.714278330@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -49,38 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit dd4589eee99db8f61f7b8f7df1531cad3f74a64d upstream.
+commit 6e8793674bb0d1135ca0e5c9f7e16fecbf815926 upstream.
 
-Remove a WARN on an "AVIC IPI invalid target" exit, the WARN is trivial
-to trigger from guest as it will fail on any destination APIC ID that
-doesn't exist from the guest's perspective.
+There is a build error when using a kernel .config file from
+'kernel test robot' for a different build problem:
 
-Don't bother recording anything in the kernel log, the common tracepoint
-for kvm_avic_incomplete_ipi() is sufficient for debugging.
+hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
 
-This reverts commit 37ef0c4414c9743ba7f1af4392f0a27a99649f2a.
+when:
+  CONFIG_GSC=y
+  CONFIG_SERIO_GSCPS2=y
+  CONFIG_SERIAL_8250_GSC=y
+  CONFIG_PCI is not set
+    and hence PCI_LBA is not set.
+  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
 
+Make the use of iosapic_serial_irq() conditional to fix the build error.
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-parisc@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Suggested-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220204214205.3306634-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/tty/serial/8250/8250_gsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/svm.c
-+++ b/arch/x86/kvm/svm.c
-@@ -4585,8 +4585,6 @@ static int avic_incomplete_ipi_intercept
- 		break;
- 	}
- 	case AVIC_IPI_FAILURE_INVALID_TARGET:
--		WARN_ONCE(1, "Invalid IPI target: index=%u, vcpu=%d, icr=%#0x:%#0x\n",
--			  index, svm->vcpu.vcpu_id, icrh, icrl);
- 		break;
- 	case AVIC_IPI_FAILURE_INVALID_BACKING_PAGE:
- 		WARN_ONCE(1, "Invalid backing page\n");
+--- a/drivers/tty/serial/8250/8250_gsc.c
++++ b/drivers/tty/serial/8250/8250_gsc.c
+@@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
+ 	unsigned long address;
+ 	int err;
+ 
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
+ 	if (!dev->irq && (dev->id.sversion == 0xad))
+ 		dev->irq = iosapic_serial_irq(dev);
+ #endif
 
 
