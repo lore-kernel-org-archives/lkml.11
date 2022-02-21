@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC923C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351444AbiBUJtQ (ORCPT
+        id S1351457AbiBUJtY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:49:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34306 "EHLO
+        Mon, 21 Feb 2022 04:49:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351363AbiBUJn7 (ORCPT
+        with ESMTP id S1351185AbiBUJoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:43:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194DB3EF36;
-        Mon, 21 Feb 2022 01:18:07 -0800 (PST)
+        Mon, 21 Feb 2022 04:44:22 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0C43F31D;
+        Mon, 21 Feb 2022 01:18:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A85F960F1E;
-        Mon, 21 Feb 2022 09:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8914DC340E9;
-        Mon, 21 Feb 2022 09:18:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 608F8CE0E88;
+        Mon, 21 Feb 2022 09:18:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F38C340E9;
+        Mon, 21 Feb 2022 09:18:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435086;
-        bh=5qhkVxfItGQQNxvUKf+JzHc+TAsYK+cLdIQAogmQhQ4=;
+        s=korg; t=1645435088;
+        bh=VIQquFzGDHKbKcmGm6RKoojybnkJGoVldTQZYNSMAJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQICsgqYSs6dhmIDybBLzIwMQvTj5PCFrJh0fiuMHPnPkirYI22PvGRNpymMVefow
-         hbxnjfPsGjB8pUWYF7AwoS8ALuEMXdZ+E4nwTYkisxh/2NrN2jvhHbW2c08hzsyKcM
-         TXsEiB+cNwDTV9OH74Pr2Bdn/G9na0A7TH3beK+k=
+        b=M1yNxDePhFYgDq+PgrRCFTjRv75TkBonTuhcpVBl1idHgCzpqDnQC2wGvzxxsuyeG
+         GGfg5l8cS4Rg8bmlqpcTRNHbZMBFQa9uY1VS1sSZJwsvi4rvsbT81C7/2mPCwcJr3g
+         usNpxdcaSBpzeyKDiAHYHA/1WFyljTSKpy9iX1zY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 038/227] selftests: netfilter: reduce zone stress test running time
-Date:   Mon, 21 Feb 2022 09:47:37 +0100
-Message-Id: <20220221084936.127082941@linuxfoundation.org>
+Subject: [PATCH 5.16 039/227] net: ieee802154: at86rf230: Stop leaking skbs
+Date:   Mon, 21 Feb 2022 09:47:38 +0100
+Message-Id: <20220221084936.161035574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,69 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit c858620d2ae3489409af593f005a48a8a324da3d ]
+[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
 
-This selftests needs almost 3 minutes to complete, reduce the
-insertes zones to 1000.  Test now completes in about 20 seconds.
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. In the Tx case we then leak
+the skb structure.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Free the skb structure upon error before returning when appropriate.
+
+As the 'is_tx = 0' cannot be moved in the complete handler because of a
+possible race between the delay in switching to STATE_RX_AACK_ON and a
+new interrupt, we introduce an intermediate 'was_tx' boolean just for
+this purpose.
+
+There is no Fixes tag applying here, many changes have been made on this
+area and the issue kind of always existed.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/netfilter/nft_zones_many.sh | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_zones_many.sh b/tools/testing/selftests/netfilter/nft_zones_many.sh
-index 04633119b29a0..5a8db0b48928f 100755
---- a/tools/testing/selftests/netfilter/nft_zones_many.sh
-+++ b/tools/testing/selftests/netfilter/nft_zones_many.sh
-@@ -9,7 +9,7 @@ ns="ns-$sfx"
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 7d67f41387f55..4f5ef8a9a9a87 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -100,6 +100,7 @@ struct at86rf230_local {
+ 	unsigned long cal_timeout;
+ 	bool is_tx;
+ 	bool is_tx_from_off;
++	bool was_tx;
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+@@ -343,7 +344,11 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
  
--zones=20000
-+zones=2000
- have_ct_tool=0
- ret=0
+-	ieee802154_wake_queue(lp->hw);
++	if (lp->was_tx) {
++		lp->was_tx = 0;
++		dev_kfree_skb_any(lp->tx_skb);
++		ieee802154_wake_queue(lp->hw);
++	}
+ }
  
-@@ -75,10 +75,10 @@ EOF
+ static void
+@@ -352,7 +357,11 @@ at86rf230_async_error_recover(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
  
- 	while [ $i -lt $max_zones ]; do
- 		local start=$(date +%s%3N)
--		i=$((i + 10000))
-+		i=$((i + 1000))
- 		j=$((j + 1))
- 		# nft rule in output places each packet in a different zone.
--		dd if=/dev/zero of=/dev/stdout bs=8k count=10000 2>/dev/null | ip netns exec "$ns" socat STDIN UDP:127.0.0.1:12345,sourceport=12345
-+		dd if=/dev/zero of=/dev/stdout bs=8k count=1000 2>/dev/null | ip netns exec "$ns" socat STDIN UDP:127.0.0.1:12345,sourceport=12345
- 		if [ $? -ne 0 ] ;then
- 			ret=1
- 			break
-@@ -86,7 +86,7 @@ EOF
- 
- 		stop=$(date +%s%3N)
- 		local duration=$((stop-start))
--		echo "PASS: added 10000 entries in $duration ms (now $i total, loop $j)"
-+		echo "PASS: added 1000 entries in $duration ms (now $i total, loop $j)"
- 	done
- 
- 	if [ $have_ct_tool -eq 1 ]; then
-@@ -128,11 +128,11 @@ test_conntrack_tool() {
- 			break
- 		fi
- 
--		if [ $((i%10000)) -eq 0 ];then
-+		if [ $((i%1000)) -eq 0 ];then
- 			stop=$(date +%s%3N)
- 
- 			local duration=$((stop-start))
--			echo "PASS: added 10000 entries in $duration ms (now $i total)"
-+			echo "PASS: added 1000 entries in $duration ms (now $i total)"
- 			start=$stop
- 		fi
- 	done
+-	lp->is_tx = 0;
++	if (lp->is_tx) {
++		lp->was_tx = 1;
++		lp->is_tx = 0;
++	}
++
+ 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+ 				     at86rf230_async_error_recover_complete);
+ }
 -- 
 2.34.1
 
