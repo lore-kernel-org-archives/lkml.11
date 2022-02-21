@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0734C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B31C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352686AbiBUJ4W (ORCPT
+        id S1352725AbiBUJ42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:56:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42608 "EHLO
+        Mon, 21 Feb 2022 04:56:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352916AbiBUJsC (ORCPT
+        with ESMTP id S1352919AbiBUJsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:48:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D018924590;
-        Mon, 21 Feb 2022 01:21:21 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260C419C02;
+        Mon, 21 Feb 2022 01:21:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D240ECE0E89;
-        Mon, 21 Feb 2022 09:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB0BC340EC;
-        Mon, 21 Feb 2022 09:21:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9538ACE0E89;
+        Mon, 21 Feb 2022 09:21:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7622CC340E9;
+        Mon, 21 Feb 2022 09:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435278;
-        bh=2okCbzb+8btK/pWqiwqGxhM4vD/yRs/35UwQ0lDpdPk=;
+        s=korg; t=1645435284;
+        bh=lIrrySYVtcncVdCuEiZ4YiYeeNz35RMRuhzq2z1xfFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kr7ODH7YwdzWvE67ik4VKiRDTf/oKH1WL03MrYKvtkkk0F2GxCZIg9+Ntjm85Xv2t
-         AzJAe2Sf/lItQp1Xjvds2QvZZDV818hZwnSofip7URynDkxrlSn06ZBgGhkZ/M58Dx
-         BetpIFoShNjz9OcMUEWutBS+PCDMIa1nXAwPOMU0=
+        b=MVgLvreSF++hSu3wdPZT9TpuVkBItMnVMUFsoxi1zwG3QCL8CojULlv4p/O5+OOJS
+         TAR/eTpFeSzcwaVNJCKNfCwe2Bn0pdIe0OTtiSPRx1hQv7bfsGVLue/sPw+tHKHOB6
+         IQq6lzGx65Pr6nTIU59CIGvZbs1LoBB0Dpd+e0kU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.16 106/227] mac80211: mlme: check for null after calling kmemdup
-Date:   Mon, 21 Feb 2022 09:48:45 +0100
-Message-Id: <20220221084938.397787007@linuxfoundation.org>
+Subject: [PATCH 5.16 108/227] cfg80211: fix race in netlink owner interface destruction
+Date:   Mon, 21 Feb 2022 09:48:47 +0100
+Message-Id: <20220221084938.458981899@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,118 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit a72c01a94f1d285a274219d36e2a17b4846c0615 upstream.
+commit f0a6fd1527067da537e9c48390237488719948ed upstream.
 
-As the possible failure of the alloc, the ifmgd->assoc_req_ies might be
-NULL pointer returned from kmemdup().
-Therefore it might be better to free the skb and return error in order
-to fail the association, like ieee80211_assoc_success().
-Also, the caller, ieee80211_do_assoc(), needs to deal with the return
-value from ieee80211_send_assoc().
+My previous fix here to fix the deadlock left a race where
+the exact same deadlock (see the original commit referenced
+below) can still happen if cfg80211_destroy_ifaces() already
+runs while nl80211_netlink_notify() is still marking some
+interfaces as nl_owner_dead.
 
-Fixes: 4d9ec73d2b78 ("cfg80211: Report Association Request frame IEs in association events")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220105081559.2387083-1-jiasheng@iscas.ac.cn
-[fix some paths to be errors, not success]
+The race happens because we have two loops here - first we
+dev_close() all the netdevs, and then we destroy them. If we
+also have two netdevs (first one need only be a wdev though)
+then we can find one during the first iteration, close it,
+and go to the second iteration -- but then find two, and try
+to destroy also the one we didn't close yet.
+
+Fix this by only iterating once.
+
+Reported-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Fixes: ea6b2098dd02 ("cfg80211: fix locking in netlink owner interface destruction")
+Tested-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/r/20220201130951.22093-1-johannes@sipsolutions.net
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/mlme.c |   29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ net/wireless/core.c |   17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -664,7 +664,7 @@ static void ieee80211_add_he_ie(struct i
- 	ieee80211_ie_build_he_6ghz_cap(sdata, skb);
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -5,7 +5,7 @@
+  * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
+  * Copyright 2013-2014  Intel Mobile Communications GmbH
+  * Copyright 2015-2017	Intel Deutschland GmbH
+- * Copyright (C) 2018-2021 Intel Corporation
++ * Copyright (C) 2018-2022 Intel Corporation
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -332,29 +332,20 @@ static void cfg80211_event_work(struct w
+ void cfg80211_destroy_ifaces(struct cfg80211_registered_device *rdev)
+ {
+ 	struct wireless_dev *wdev, *tmp;
+-	bool found = false;
+ 
+ 	ASSERT_RTNL();
+ 
+-	list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
++	list_for_each_entry_safe(wdev, tmp, &rdev->wiphy.wdev_list, list) {
+ 		if (wdev->nl_owner_dead) {
+ 			if (wdev->netdev)
+ 				dev_close(wdev->netdev);
+-			found = true;
+-		}
+-	}
+-
+-	if (!found)
+-		return;
+ 
+-	wiphy_lock(&rdev->wiphy);
+-	list_for_each_entry_safe(wdev, tmp, &rdev->wiphy.wdev_list, list) {
+-		if (wdev->nl_owner_dead) {
++			wiphy_lock(&rdev->wiphy);
+ 			cfg80211_leave(rdev, wdev);
+ 			rdev_del_virtual_intf(rdev, wdev);
++			wiphy_unlock(&rdev->wiphy);
+ 		}
+ 	}
+-	wiphy_unlock(&rdev->wiphy);
  }
  
--static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
-+static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
- {
- 	struct ieee80211_local *local = sdata->local;
- 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
-@@ -684,6 +684,7 @@ static void ieee80211_send_assoc(struct
- 	enum nl80211_iftype iftype = ieee80211_vif_type_p2p(&sdata->vif);
- 	const struct ieee80211_sband_iftype_data *iftd;
- 	struct ieee80211_prep_tx_info info = {};
-+	int ret;
- 
- 	/* we know it's writable, cast away the const */
- 	if (assoc_data->ie_len)
-@@ -697,7 +698,7 @@ static void ieee80211_send_assoc(struct
- 	chanctx_conf = rcu_dereference(sdata->vif.chanctx_conf);
- 	if (WARN_ON(!chanctx_conf)) {
- 		rcu_read_unlock();
--		return;
-+		return -EINVAL;
- 	}
- 	chan = chanctx_conf->def.chan;
- 	rcu_read_unlock();
-@@ -748,7 +749,7 @@ static void ieee80211_send_assoc(struct
- 			(iftd ? iftd->vendor_elems.len : 0),
- 			GFP_KERNEL);
- 	if (!skb)
--		return;
-+		return -ENOMEM;
- 
- 	skb_reserve(skb, local->hw.extra_tx_headroom);
- 
-@@ -1029,15 +1030,22 @@ skip_rates:
- 		skb_put_data(skb, assoc_data->ie + offset, noffset - offset);
- 	}
- 
--	if (assoc_data->fils_kek_len &&
--	    fils_encrypt_assoc_req(skb, assoc_data) < 0) {
--		dev_kfree_skb(skb);
--		return;
-+	if (assoc_data->fils_kek_len) {
-+		ret = fils_encrypt_assoc_req(skb, assoc_data);
-+		if (ret < 0) {
-+			dev_kfree_skb(skb);
-+			return ret;
-+		}
- 	}
- 
- 	pos = skb_tail_pointer(skb);
- 	kfree(ifmgd->assoc_req_ies);
- 	ifmgd->assoc_req_ies = kmemdup(ie_start, pos - ie_start, GFP_ATOMIC);
-+	if (!ifmgd->assoc_req_ies) {
-+		dev_kfree_skb(skb);
-+		return -ENOMEM;
-+	}
-+
- 	ifmgd->assoc_req_ies_len = pos - ie_start;
- 
- 	drv_mgd_prepare_tx(local, sdata, &info);
-@@ -1047,6 +1055,8 @@ skip_rates:
- 		IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_CTL_REQ_TX_STATUS |
- 						IEEE80211_TX_INTFL_MLME_CONN_TX;
- 	ieee80211_tx_skb(sdata, skb);
-+
-+	return 0;
- }
- 
- void ieee80211_send_pspoll(struct ieee80211_local *local,
-@@ -4491,6 +4501,7 @@ static int ieee80211_do_assoc(struct iee
- {
- 	struct ieee80211_mgd_assoc_data *assoc_data = sdata->u.mgd.assoc_data;
- 	struct ieee80211_local *local = sdata->local;
-+	int ret;
- 
- 	sdata_assert_lock(sdata);
- 
-@@ -4511,7 +4522,9 @@ static int ieee80211_do_assoc(struct iee
- 	sdata_info(sdata, "associate with %pM (try %d/%d)\n",
- 		   assoc_data->bss->bssid, assoc_data->tries,
- 		   IEEE80211_ASSOC_MAX_TRIES);
--	ieee80211_send_assoc(sdata);
-+	ret = ieee80211_send_assoc(sdata);
-+	if (ret)
-+		return ret;
- 
- 	if (!ieee80211_hw_check(&local->hw, REPORTS_TX_ACK_STATUS)) {
- 		assoc_data->timeout = jiffies + IEEE80211_ASSOC_TIMEOUT;
+ static void cfg80211_destroy_iface_wk(struct work_struct *work)
 
 
