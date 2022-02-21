@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344981AbiBUJZe (ORCPT
+        id S1349103AbiBUJZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33976 "EHLO
+        Mon, 21 Feb 2022 04:25:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348467AbiBUJLT (ORCPT
+        with ESMTP id S1348466AbiBUJLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:11:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3BF2558B;
-        Mon, 21 Feb 2022 01:03:28 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E24205D7;
+        Mon, 21 Feb 2022 01:03:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F956112B;
-        Mon, 21 Feb 2022 09:03:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32F71C340E9;
-        Mon, 21 Feb 2022 09:03:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 59C0DCE0E6D;
+        Mon, 21 Feb 2022 09:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC03C340F3;
+        Mon, 21 Feb 2022 09:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434207;
-        bh=R5X8/FUlzd8jvkjp+N2CQAhYJtz6zR/mssnbBS5jf7Y=;
+        s=korg; t=1645434204;
+        bh=CMmA/IivKrWnzV7tqHqyjVNnVmgLacPECP9NWZX5YPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gFmpQKY7jb1sribYlOPeXkOVYk+moaRcTj0ZbqQEHpSt3ZrY5fN/FRdfj8lLCRkyC
-         zuhV48DapI+9Mp0bg/4uXqnaK2Yq9hT+SBq+9R0WK1Z9OAPc96oUXbuXIQFyhGke5k
-         lm6/gQ8wYK3EqygOY30XyUFDnwGSSbLSt68EcS8M=
+        b=FcimDmGgHfUcKA2pTKyG67D8wPY7VQWA1NLz6WTrAtfK9p2g9ZrLFprgOoZxaHWzO
+         EYlVIPfz9koavYIPSxwXqryK7osSuQ7i5oeROf6wCT4DKRpYFfWJ6AN4q5tv1tPJ1E
+         EwvzFRndaCL1PgoUmxvG4PZp0K2lJZGqFF3g7EwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.10 049/121] drm/i915/opregion: check port number bounds for SWSCI display power state
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084922.867983562@linuxfoundation.org>
+        Nicholas Bishop <nicholasbishop@google.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.10 048/121] drm/radeon: Fix backlight control on iMac 12,1
+Date:   Mon, 21 Feb 2022 09:49:00 +0100
+Message-Id: <20220221084922.835388437@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -53,59 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Nicholas Bishop <nicholasbishop@google.com>
 
-commit ea958422291de248b9e2eaaeea36004e84b64043 upstream.
+commit 364438fd629f7611a84c8e6d7de91659300f1502 upstream.
 
-The mapping from enum port to whatever port numbering scheme is used by
-the SWSCI Display Power State Notification is odd, and the memory of it
-has faded. In any case, the parameter only has space for ports numbered
-[0..4], and UBSAN reports bit shift beyond it when the platform has port
-F or more.
+The iMac 12,1 does not use the gmux driver for backlight, so the radeon
+backlight device is needed to set the brightness.
 
-Since the SWSCI functionality is supposed to be obsolete for new
-platforms (i.e. ones that might have port F or more), just bail out
-early if the mapped and mangled port number is beyond what the Display
-Power State Notification can support.
-
-Fixes: 9c4b0a683193 ("drm/i915: add opregion function to notify bios of encoder enable/disable")
-Cc: <stable@vger.kernel.org> # v3.13+
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4800
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/cc363f42d6b5a5932b6d218fefcc8bdfb15dbbe5.1644489329.git.jani.nikula@intel.com
-(cherry picked from commit 24a644ebbfd3b13cda702f98907f9dd123e34bf9)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1838
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_opregion.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/gpu/drm/radeon/atombios_encoders.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/display/intel_opregion.c
-+++ b/drivers/gpu/drm/i915/display/intel_opregion.c
-@@ -361,6 +361,21 @@ int intel_opregion_notify_encoder(struct
- 		port++;
- 	}
+--- a/drivers/gpu/drm/radeon/atombios_encoders.c
++++ b/drivers/gpu/drm/radeon/atombios_encoders.c
+@@ -197,7 +197,8 @@ void radeon_atom_backlight_init(struct r
+ 	 * so don't register a backlight device
+ 	 */
+ 	if ((rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE) &&
+-	    (rdev->pdev->device == 0x6741))
++	    (rdev->pdev->device == 0x6741) &&
++	    !dmi_match(DMI_PRODUCT_NAME, "iMac12,1"))
+ 		return;
  
-+	/*
-+	 * The port numbering and mapping here is bizarre. The now-obsolete
-+	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
-+	 * special case, but port F and beyond are not. The functionality is
-+	 * supposed to be obsolete for new platforms. Just bail out if the port
-+	 * number is out of bounds after mapping.
-+	 */
-+	if (port > 4) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
-+			    intel_encoder->base.base.id, intel_encoder->base.name,
-+			    port_name(intel_encoder->port), port);
-+		return -EINVAL;
-+	}
-+
- 	if (!enable)
- 		parm |= 4 << 8;
- 
+ 	if (!radeon_encoder->enc_priv)
 
 
