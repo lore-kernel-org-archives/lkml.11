@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 672E4C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0B9C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353762AbiBUKCS (ORCPT
+        id S1353824AbiBUKCV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57108 "EHLO
+        Mon, 21 Feb 2022 05:02:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352013AbiBUJxA (ORCPT
+        with ESMTP id S1352103AbiBUJwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669981D317;
-        Mon, 21 Feb 2022 01:23:20 -0800 (PST)
+        Mon, 21 Feb 2022 04:52:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD76366BB;
+        Mon, 21 Feb 2022 01:23:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19146B80EAF;
-        Mon, 21 Feb 2022 09:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CFACC340E9;
-        Mon, 21 Feb 2022 09:23:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C3BCB80EB6;
+        Mon, 21 Feb 2022 09:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61129C340F0;
+        Mon, 21 Feb 2022 09:23:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435397;
-        bh=SH5kv4+d2g9ytmY1kPDcn0mQvYvUQiU/BXUGy5MogX8=;
+        s=korg; t=1645435395;
+        bh=w5JvrDHpQHi9hP3iLoc3bRhVvq0c0cSFfbvoy6Wvri0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lLall1nHhA8Xk+mWFHTLsBqhGTflRMRNa8/6or2CFMOVJJuOkE0V58KoRac46C71u
-         vDKgfQSCjrfZ+vudBgPaAS3B+9PdzzKP/LaD0tUl0g4bw+7ytqU9WoUXHBK3ZSmqMb
-         D9ym82nU50ETN/iWmSFg2dD7ZuayU6d1fN925RsE=
+        b=xSjEvJmdH2TjCO8WM5rqgaz/aWYAkT8teXzFUK2HLnZkcbne4U9CN8NYN2MpqM1bI
+         AC9h+tDtISf2wI5zqzmjf11FE/Z3o/svvDBFxiGYg9NCla/pzBShb415fVyMWKw+am
+         GWl1NGPHgw7LRP+9x8CCGavil0P9dSJ3fmSptNqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 117/227] mctp: fix use after free
-Date:   Mon, 21 Feb 2022 09:48:56 +0100
-Message-Id: <20220221084938.753002243@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Zhang Changzhong <zhangchangzhong@huawei.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 116/227] bonding: force carrier update when releasing slave
+Date:   Mon, 21 Feb 2022 09:48:55 +0100
+Message-Id: <20220221084938.721469800@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,47 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-commit 7e5b6a5c8c44310784c88c1c198dde79f6402f7b upstream.
+commit a6ab75cec1e461f8a35559054c146c21428430b8 upstream.
 
-Clang static analysis reports this problem
-route.c:425:4: warning: Use of memory after it is freed
-  trace_mctp_key_acquire(key);
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-When mctp_key_add() fails, key is freed but then is later
-used in trace_mctp_key_acquire().  Add an else statement
-to use the key only when mctp_key_add() is successful.
+In __bond_release_one(), bond_set_carrier() is only called when bond
+device has no slave. Therefore, if we remove the up slave from a master
+with two slaves and keep the down slave, the master will remain up.
 
-Fixes: 4f9e1ba6de45 ("mctp: Add tracepoints for tag/key handling")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by moving bond_set_carrier() out of if (!bond_has_slaves(bond))
+statement.
+
+Reproducer:
+$ insmod bonding.ko mode=0 miimon=100 max_bonds=2
+$ ifconfig bond0 up
+$ ifenslave bond0 eth0 eth1
+$ ifconfig eth0 down
+$ ifenslave -d bond0 eth1
+$ cat /proc/net/bonding/bond0
+
+Fixes: ff59c4563a8d ("[PATCH] bonding: support carrier state for master")
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Link: https://lore.kernel.org/r/1645021088-38370-1-git-send-email-zhangchangzhong@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mctp/route.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/bonding/bond_main.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -414,13 +414,14 @@ static int mctp_route_input(struct mctp_
- 			 * this function.
- 			 */
- 			rc = mctp_key_add(key, msk);
--			if (rc)
-+			if (rc) {
- 				kfree(key);
-+			} else {
-+				trace_mctp_key_acquire(key);
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2377,10 +2377,9 @@ static int __bond_release_one(struct net
+ 		bond_select_active_slave(bond);
+ 	}
  
--			trace_mctp_key_acquire(key);
--
--			/* we don't need to release key->lock on exit */
--			mctp_key_unref(key);
-+				/* we don't need to release key->lock on exit */
-+				mctp_key_unref(key);
-+			}
- 			key = NULL;
+-	if (!bond_has_slaves(bond)) {
+-		bond_set_carrier(bond);
++	bond_set_carrier(bond);
++	if (!bond_has_slaves(bond))
+ 		eth_hw_addr_random(bond_dev);
+-	}
  
- 		} else {
+ 	unblock_netpoll_tx();
+ 	synchronize_rcu();
 
 
