@@ -2,132 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79761C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B89C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346451AbiBUHm1 (ORCPT
+        id S1346474AbiBUHml (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:42:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42662 "EHLO
+        Mon, 21 Feb 2022 02:42:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346461AbiBUHmZ (ORCPT
+        with ESMTP id S1346461AbiBUHmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:42:25 -0500
-X-Greylist: delayed 81 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 23:42:02 PST
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4E7C6E;
-        Sun, 20 Feb 2022 23:42:02 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DFEAD2223A;
-        Mon, 21 Feb 2022 08:41:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645429320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PNyPUPlg2sD5m6/vUiOjIJFOgcgNo3fxUw6jJlZsrWw=;
-        b=XZr2EMNdXSgxh1QoOI58hFDyj7wwKCjs6EG6mkG+ypuMak04iI9DXeZ81g/mzy1VsnlXNP
-        T1f0g1gBOeLHAlD2JQyVk/gnmADU2U6Nf7DAVPfmarZsr1eF64SvkN9a2DtWNBa6G7QtOG
-        tP9M3cJN5jH/izduyqoBWnIMqs1Bkp0=
+        Mon, 21 Feb 2022 02:42:38 -0500
+X-Greylist: delayed 1931 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 23:42:15 PST
+Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463E12DA
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:42:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ezO+Ykxw2lF1+hzaNXBvIIokwHtrg1e//PjeuJdwFNw=; b=ONX2M/tcAQIUSGst0+pxsQpg5d
+        vniSTTFX+LNxdunbhn6voPqd9r2Gvu7U7QT96U9D84bQAliRWOIbIZa+kvQN33v24OOXHcFjdCu8O
+        10FWeUvL0MeUL0M2BkimsAFHPKFGProWUjFeh9KDrk16xotBta22sY15BIrqoyUq1hOPViHJQpgqV
+        hrwi4aefsfkBcitv/iCVxI0s6d5sQHida4YSPhQAKWfPM9y24dCZFA0YV20FBEdQhiKNZndOoInvb
+        h2uZsiO93lfQjzDhyb7BVbHYBerq+SVjzT2CYXa8qMl0SK3NR7bywbuZF8LPNxm+IyZG5bKK/WZEZ
+        CaC/97nA==;
+Received: from 15-28-196-88.dyn.estpak.ee ([88.196.28.15]:49910 helo=localhost)
+        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <maukka@ext.kapsi.fi>)
+        id 1nM287-0002PA-8S; Mon, 21 Feb 2022 08:25:04 +0200
+Received: by localhost (sSMTP sendmail emulation); Mon, 21 Feb 2022 08:24:52 +0200
+From:   Mauri Sandberg <maukka@ext.kapsi.fi>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauri Sandberg <maukka@ext.kapsi.fi>
+Date:   Mon, 21 Feb 2022 08:24:41 +0200
+Message-Id: <20220221062441.2685-1-maukka@ext.kapsi.fi>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Feb 2022 08:41:59 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     p.yadav@ti.com, broonie@kernel.org, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        nicolas.ferre@microchip.com, zhengxunli@mxic.com.tw,
-        jaimeliao@mxic.com.tw
-Subject: Re: [PATCH 4/4] mtd: spi-nor: core: Introduce SPI_NOR_DTR_BSWAP16
- no_sfdp_flag
-In-Reply-To: <20220218145900.1440045-5-tudor.ambarus@microchip.com>
-References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
- <20220218145900.1440045-5-tudor.ambarus@microchip.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <95b0cc336da1d7b867f62a3e6b09436d@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 88.196.28.15
+X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
+Subject: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
+X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
+X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-18 15:59, schrieb Tudor Ambarus:
-> Introduce SPI_NOR_DTR_BSWAP16 flag for flashes that don't define the
-> mandatory BFPT table. When set it indicates that the byte order of 
-> 16-bit
-> words is swapped when read in 8D-8D-8D mode compared to 1-1-1 mode.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  drivers/mtd/spi-nor/core.c | 5 ++++-
->  drivers/mtd/spi-nor/core.h | 5 ++++-
->  2 files changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index 453d8c54d062..c3128a8e1544 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -2572,7 +2572,7 @@ static void spi_nor_no_sfdp_init_params(struct
-> spi_nor *nor)
->  {
->  	struct spi_nor_flash_parameter *params = nor->params;
->  	struct spi_nor_erase_map *map = &params->erase_map;
-> -	const u8 no_sfdp_flags = nor->info->no_sfdp_flags;
-> +	const u16 no_sfdp_flags = nor->info->no_sfdp_flags;
->  	u8 i, erase_mask;
-> 
->  	if (no_sfdp_flags & SPI_NOR_DUAL_READ) {
-> @@ -2613,6 +2613,9 @@ static void spi_nor_no_sfdp_init_params(struct
-> spi_nor *nor)
->  					SPINOR_OP_PP, SNOR_PROTO_8_8_8_DTR);
->  	}
-> 
-> +	if (no_sfdp_flags & SPI_NOR_DTR_BSWAP16)
-> +		nor->flags |= SNOR_F_DTR_BSWAP16;
-> +
->  	/*
->  	 * Sector Erase settings. Sort Erase Types in ascending order, with 
-> the
->  	 * smallest erase size starting at BIT(0).
-> diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-> index 7c077d41c335..1cb887437193 100644
-> --- a/drivers/mtd/spi-nor/core.h
-> +++ b/drivers/mtd/spi-nor/core.h
-> @@ -362,6 +362,8 @@ struct spi_nor_fixups {
->   *   SPI_NOR_OCTAL_READ:      flash supports Octal Read.
->   *   SPI_NOR_OCTAL_DTR_READ:  flash supports octal DTR Read.
->   *   SPI_NOR_OCTAL_DTR_PP:    flash supports Octal DTR Page Program.
-> + *   SPI_NOR_DTR_BSWAP16:     the byte order of 16-bit words is 
-> swapped when
-> + *			      read or written in DTR mode compared to STR mode.
->   *
->   * @fixup_flags:    flags that indicate support that can be discovered 
-> via SFDP
->   *                  ideally, but can not be discovered for this
-> particular flash
-> @@ -404,7 +406,7 @@ struct flash_info {
->  #define USE_FSR				BIT(10)
->  #define SPI_NOR_XSR_RDY			BIT(11)
-> 
-> -	u8 no_sfdp_flags;
-> +	u16 no_sfdp_flags;
->  #define SPI_NOR_SKIP_SFDP		BIT(0)
->  #define SECT_4K				BIT(1)
->  #define SECT_4K_PMC			BIT(2)
-> @@ -413,6 +415,7 @@ struct flash_info {
->  #define SPI_NOR_OCTAL_READ		BIT(5)
->  #define SPI_NOR_OCTAL_DTR_READ		BIT(6)
->  #define SPI_NOR_OCTAL_DTR_PP		BIT(7)
-> +#define SPI_NOR_DTR_BSWAP16		BIT(8)
-> 
->  	u8 fixup_flags;
->  #define SPI_NOR_4B_OPCODES		BIT(0)
+Obtaining MAC address may be deferred in cases when the MAC is stored
+in NVMEM block and it may now be ready upon the first retrieval attempt
+returing EPROBE_DEFER. Handle it here and leave logic otherwise as it
+was.
 
-Reviewed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
+---
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
--michael
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index 105247582684..0694f53981f2 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -2740,7 +2740,10 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
+ 		return -EINVAL;
+ 	}
+ 
+-	of_get_mac_address(pnp, ppd.mac_addr);
++	ret = of_get_mac_address(pnp, ppd.mac_addr);
++
++	if (ret == -EPROBE_DEFER)
++		return ret;
+ 
+ 	mv643xx_eth_property(pnp, "tx-queue-size", ppd.tx_queue_size);
+ 	mv643xx_eth_property(pnp, "tx-sram-addr", ppd.tx_sram_addr);
+
+base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
+-- 
+2.25.1
+
