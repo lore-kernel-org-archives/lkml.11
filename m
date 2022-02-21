@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CDB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2651CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbiBUJ2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:28:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
+        id S1349846AbiBUJ2i (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:28:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349603AbiBUJVe (ORCPT
+        with ESMTP id S1349596AbiBUJVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:21:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477A52459B;
-        Mon, 21 Feb 2022 01:08:33 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E16032051;
+        Mon, 21 Feb 2022 01:08:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3E46097C;
-        Mon, 21 Feb 2022 09:08:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA708C340E9;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F1FECE0E8C;
         Mon, 21 Feb 2022 09:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA7F4C340EB;
+        Mon, 21 Feb 2022 09:08:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434512;
-        bh=Y4lticyda0JJhfUxP3JKpsyz7hPDielaAkyHNjgAZRI=;
+        s=korg; t=1645434509;
+        bh=oHwyv9i4nomRFDXyb1ov4PujWD+EPAnMLWxspRvR/Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqKw7Hmp5McxSTGsbOqsqtoulxSmlAurPupO5Wt3vs5FAA5zs9JrY88ZAHK88T90V
-         +2vznecNpvVc7N0A3KqJLCvaTl0bRSUKdKHZPTnIR5n9ocDQCrAoXSuIoh6HgwJueV
-         zoo95AW0MsCF48LUG43SnrO89A9xrnAI2S/XaotI=
+        b=LwSZTPXYy7xn4Sq70AHwe9wZcA3qm02wUS95Gph6qylr/HW5uvrTQjned64BND15/
+         H/vTIY5hkZ09w6lDFIdX1r4AOh0x6hjoaN1brHzAUJzlOkYpjoA192MPS/uvbFJG+J
+         9bzBWeJRRHdcdioWCiOP5yaPX03jmyqk8p4oHRCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
+        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 033/196] selftests: skip mincore.check_file_mmap when fs lacks needed support
-Date:   Mon, 21 Feb 2022 09:47:45 +0100
-Message-Id: <20220221084932.046085132@linuxfoundation.org>
+Subject: [PATCH 5.15 032/196] selftests: openat2: Skip testcases that fail with EOPNOTSUPP
+Date:   Mon, 21 Feb 2022 09:47:44 +0100
+Message-Id: <20220221084932.010338765@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -53,62 +53,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit dae1d8ac31896988e7313384c0370176a75e9b45 ]
+[ Upstream commit ac9e0a250bb155078601a5b999aab05f2a04d1ab ]
 
-Report mincore.check_file_mmap as SKIP instead of FAIL if the underlying
-filesystem lacks support of O_TMPFILE or fallocate since such failures
-are not really related to mincore functionality.
+Skip testcases that fail since the requested valid flags combination is not
+supported by the underlying filesystem.
 
-Cc: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/mincore/mincore_selftest.c      | 20 +++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ tools/testing/selftests/openat2/openat2_test.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/mincore/mincore_selftest.c b/tools/testing/selftests/mincore/mincore_selftest.c
-index e54106643337b..4c88238fc8f05 100644
---- a/tools/testing/selftests/mincore/mincore_selftest.c
-+++ b/tools/testing/selftests/mincore/mincore_selftest.c
-@@ -207,15 +207,21 @@ TEST(check_file_mmap)
+diff --git a/tools/testing/selftests/openat2/openat2_test.c b/tools/testing/selftests/openat2/openat2_test.c
+index 1bddbe934204c..7fb902099de45 100644
+--- a/tools/testing/selftests/openat2/openat2_test.c
++++ b/tools/testing/selftests/openat2/openat2_test.c
+@@ -259,6 +259,16 @@ void test_openat2_flags(void)
+ 		unlink(path);
  
- 	errno = 0;
- 	fd = open(".", O_TMPFILE | O_RDWR, 0600);
--	ASSERT_NE(-1, fd) {
--		TH_LOG("Can't create temporary file: %s",
--			strerror(errno));
-+	if (fd < 0) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Can't create temporary file: %s",
-+			       strerror(errno));
+ 		fd = sys_openat2(AT_FDCWD, path, &test->how);
++		if (fd < 0 && fd == -EOPNOTSUPP) {
++			/*
++			 * Skip the testcase if it failed because not supported
++			 * by FS. (e.g. a valid O_TMPFILE combination on NFS)
++			 */
++			ksft_test_result_skip("openat2 with %s fails with %d (%s)\n",
++					      test->name, fd, strerror(-fd));
++			goto next;
 +		}
-+		SKIP(goto out_free, "O_TMPFILE not supported by filesystem.");
++
+ 		if (test->err >= 0)
+ 			failed = (fd < 0);
+ 		else
+@@ -303,7 +313,7 @@ void test_openat2_flags(void)
+ 		else
+ 			resultfn("openat2 with %s fails with %d (%s)\n",
+ 				 test->name, test->err, strerror(-test->err));
+-
++next:
+ 		free(fdpath);
+ 		fflush(stdout);
  	}
- 	errno = 0;
- 	retval = fallocate(fd, 0, 0, FILE_SIZE);
--	ASSERT_EQ(0, retval) {
--		TH_LOG("Error allocating space for the temporary file: %s",
--			strerror(errno));
-+	if (retval) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Error allocating space for the temporary file: %s",
-+			       strerror(errno));
-+		}
-+		SKIP(goto out_close, "fallocate not supported by filesystem.");
- 	}
- 
- 	/*
-@@ -271,7 +277,9 @@ TEST(check_file_mmap)
- 	}
- 
- 	munmap(addr, FILE_SIZE);
-+out_close:
- 	close(fd);
-+out_free:
- 	free(vec);
- }
- 
 -- 
 2.34.1
 
