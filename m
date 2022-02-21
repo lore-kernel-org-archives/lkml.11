@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0711C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14216C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353828AbiBUJ54 (ORCPT
+        id S1354417AbiBUJ63 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:57:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43756 "EHLO
+        Mon, 21 Feb 2022 04:58:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352570AbiBUJrf (ORCPT
+        with ESMTP id S1351632AbiBUJtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:35 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657C142ED4;
-        Mon, 21 Feb 2022 01:20:10 -0800 (PST)
+        Mon, 21 Feb 2022 04:49:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5AB34B8B;
+        Mon, 21 Feb 2022 01:22:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C7720CE0E80;
-        Mon, 21 Feb 2022 09:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7153C340E9;
-        Mon, 21 Feb 2022 09:20:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C915160F3C;
+        Mon, 21 Feb 2022 09:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC204C340EB;
+        Mon, 21 Feb 2022 09:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435207;
-        bh=fuV+g5ItwfrMizpj8gb/qGp+Ga0dQF92sjKhMTC425I=;
+        s=korg; t=1645435357;
+        bh=4/IQDapPhOfUHZ8I/bXCAqRqXgprEmYdeOsY8JUFMrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTOnPh2DE5i3i4snh+A/NWgTbHbM/VKutKXYf/vPfMfNEbazTlNkl8hWGwnUKPjgO
-         GlQnUgNh2dOhNVKfhuMReUB9Klwng1tBmhk1fMsgZg7tQRT1lU1W2YPkQInAmZSPVc
-         z+ll20F4U9oq9UfA/MHdeDSKgQgMeSH7SrbTudYs=
+        b=nemIO3vDO6nbq3rN5HagG0zNwCMK9Cd3sJrcTn4GppDJ6DqNwHBaFySmBU6Swi9rF
+         oi81m0RG2L5gHQ9ZMX39Kid+cjVW1AVYIV8/tSv76ruorQ9/ZGIumh6qrxjy/sW72W
+         xmy0fQaazfpRW5XQxYbNbSCHkSz3fHQCQ5lhJU94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 075/227] KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state
-Date:   Mon, 21 Feb 2022 09:48:14 +0100
-Message-Id: <20220221084937.368558831@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 135/227] ALSA: usb-audio: Dont abort resume upon errors
+Date:   Mon, 21 Feb 2022 09:49:14 +0100
+Message-Id: <20220221084939.341918784@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,49 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit e8efa4ff00374d2e6f47f6e4628ca3b541c001af upstream.
+commit 9a5adeb28b77416446658e75bdef3bbe5fb92a83 upstream.
 
-While usually, restoring the smm state makes the KVM enter
-the nested guest thus a different vmcb (vmcb02 vs vmcb01),
-KVM should still mark it as dirty, since hardware
-can in theory cache multiple vmcbs.
+The default mixer resume code treats the errors at restoring the
+modified mixer items as a fatal error, and it returns back to the
+caller.  This ends up in the resume failure, and the device will be
+come unavailable, although basically those errors are intermittent and
+can be safely ignored.
 
-Failure to do so, combined with lack of setting the
-nested_run_pending (which is fixed in the next patch),
-might make KVM re-enter vmcb01, which was just exited from,
-with completely different set of guest state registers
-(SMM vs non SMM) and without proper dirty bits set,
-which results in the CPU reusing stale IDTR pointer
-which leads to a guest shutdown on any interrupt.
+The problem itself has been present from the beginning, but it didn't
+hit usually because the code tries to resume only the modified items.
+But now with the recent commit to forcibly initialize each item at the
+probe time, the problem surfaced more often, hence it appears as a
+regression.
 
-On the real hardware this usually doesn't happen,
-but when running nested, L0's KVM does check and
-honour few dirty bits, causing this issue to happen.
+This patch fixes the regression simply by ignoring the errors at
+resume.
 
-This patch fixes boot of hyperv and SMM enabled
-windows VM running nested on KVM.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: stable@vger.kernel.org
-Message-Id: <20220207155447.840194-4-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: b96681bd5827 ("ALSA: usb-audio: Initialize every feature unit once at probe time")
+Cc: <stable@vger.kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215561
+Link: https://lore.kernel.org/r/20220214125711.20531-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/svm.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/usb/mixer.c |    9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4449,6 +4449,8 @@ static int svm_leave_smm(struct kvm_vcpu
- 	 * Enter the nested guest now
- 	 */
+--- a/sound/usb/mixer.c
++++ b/sound/usb/mixer.c
+@@ -3678,17 +3678,14 @@ static int restore_mixer_value(struct us
+ 				err = snd_usb_set_cur_mix_value(cval, c + 1, idx,
+ 							cval->cache_val[idx]);
+ 				if (err < 0)
+-					return err;
++					break;
+ 			}
+ 			idx++;
+ 		}
+ 	} else {
+ 		/* master */
+-		if (cval->cached) {
+-			err = snd_usb_set_cur_mix_value(cval, 0, 0, *cval->cache_val);
+-			if (err < 0)
+-				return err;
+-		}
++		if (cval->cached)
++			snd_usb_set_cur_mix_value(cval, 0, 0, *cval->cache_val);
+ 	}
  
-+	vmcb_mark_all_dirty(svm->vmcb01.ptr);
-+
- 	vmcb12 = map.hva;
- 	nested_load_control_from_vmcb12(svm, &vmcb12->control);
- 	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
+ 	return 0;
 
 
