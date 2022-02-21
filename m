@@ -2,85 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235637AbiBUXZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 18:25:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40328 "EHLO
+        id S236512AbiBUX0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 18:26:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231261AbiBUXZw (ORCPT
+        with ESMTP id S231261AbiBUX0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 18:25:52 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02E52458B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:25:28 -0800 (PST)
+        Mon, 21 Feb 2022 18:26:19 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4908124BFE;
+        Mon, 21 Feb 2022 15:25:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645485928; x=1677021928;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2Gv3hpY5QZY53Ir15UzbMUvC3S5cQYGic9ErfjLXk7c=;
-  b=MS1izsLQsG52k5GYDKKkwSrmQ/5ujH9yLNtcsmgnLLjM1Oi3AWlIHioQ
-   IUnDfKgU6edy/vljBdH393TZAx6P1Isg9DSt7HJbBk720PgzjCKuuGU10
-   Cwn7B1UqzN3S+OyLJ7dQc3g6C3ZxnIwv0FdewL9ilbckNQzg3kdjuGScT
-   S+4snctdD8eVZLV+jaCbJUdwsILcPhAbMxk8USI7dVTVHXy/L26YoYit6
-   NGMktnVUQm7evJq+YgFqnfj6XpFC8OwppLbdyNlBDlIWrdvGTYFMR5sYJ
-   ZZTemYxldlWRng8sdT5fnxoXPFcJhpJJKAaEQdJxEHqHxTm4CQAmYODYh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="250400864"
+  t=1645485955; x=1677021955;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TXFKi+FO7tpuHFgos+IuWF/gtek8UCE3SDD93kgS1+Q=;
+  b=XPuGCmcbyTix7vx9Bc7n6Tl0R09RuOJS1o7yzCk+DXrwtTw0OxDAJNC2
+   azwvX8BkvrnTx6LT/QVeZyv1Daw9OUlB7pQfyrh85XkVVI0+dOdHsyIvd
+   OxaA20lwLD96UZYB5K0L7XA1fmQTg5++Y1xYlytkrCxb/y3qdvmx0329l
+   idDoIJt2j0fH1dvUeazTppE3WACdmxcMFtZVb+bpAXu5s5Cq7afkmA5Fi
+   ywE97ezVzsG1b9TmA+unWngIHpN8SuGSVdRzo0lhUMXcXrF5rhtore1yg
+   GPU/9PCpHMIXZMn8BUJLb8SPVTaj5miekJ5KmhkWbMj4oM+A1IOwtbLSt
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="338011867"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="250400864"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:25:28 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="338011867"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:25:55 -0800
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="638695715"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 15:25:22 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 8923A12C; Tue, 22 Feb 2022 01:25:38 +0200 (EET)
-Date:   Tue, 22 Feb 2022 02:25:38 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com,
-        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
-        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
-        jpoimboe@redhat.com, knsathya@kernel.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
-        pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
-Subject: Re: [PATCHv3.1 2.1/2] x86/coco: Add API to handle encryption mask
-Message-ID: <20220221232538.3pd3w63s5v3us5xt@black.fi.intel.com>
-References: <YhAWcPbzgUGcJZjI@zn.tnic>
- <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
- <20220219001305.22883-2-kirill.shutemov@linux.intel.com>
- <YhP+kES/UVx7RwYz@zn.tnic>
- <20220221221049.p5zvappg4s2mjem7@black.fi.intel.com>
- <YhQUB2dIQJ/Ov3zp@zn.tnic>
+   d="scan'208";a="706396966"
+Received: from lab-ah.igk.intel.com ([10.91.215.196])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:25:51 -0800
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+To:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, netdev <netdev@vger.kernel.org>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v3 00/11] drm/i915: use ref_tracker library for tracking wakerefs
+Date:   Tue, 22 Feb 2022 00:25:31 +0100
+Message-Id: <20220221232542.1481315-1-andrzej.hajda@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhQUB2dIQJ/Ov3zp@zn.tnic>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 11:36:55PM +0100, Borislav Petkov wrote:
-> On Tue, Feb 22, 2022 at 01:10:49AM +0300, Kirill A. Shutemov wrote:
-> > I'm not sure it is a good idea. It leaves room for code between these two
-> > calls. I believe they conceptually has to initialized in one shot. That's
-> > the only way we get consistent state.
-> 
-> Really, where?
+Hi,
 
-I'm talking about potential issue if cc_set_vendor() and cc_set_mask()
-would drift apart.
+Appearance of ref_tracker library allows to drop custom solution for wakeref
+tracking used in i915 and reuse the library.
+For this few adjustements has been made to ref_tracker, details in patches.
+I hope changes are OK for original author.
 
-But, okay, I see that you don't feel it an issue. Will do your way.
+The patchset has been rebased on top of drm-tip to allow test changes by CI.
+Patches marked "[DO NOT MERGE]" are cherry-picked from linux-next (they are
+not yet in drm-tip), to allow build and run CI on the patchset (it works only
+on drm-tip tree).
+
+Added CC to netdev as the only user of the library atm.
+
+v2:
+  - replaced list_sort with ref_tracker_dir_stats, to avoid potentially
+    extensive sorting, if number of reports is expected to be big enough (???)
+    we can replace linear search in ref_tracker_dir_stats.stacks with binary
+    heap (min_heap),
+  - refactored gfp flags,
+  - fixed i915 handling of no-tracking flag.
+v3:
+  - fixed mess with duplicated mails
+
+Regards
+Andrzej
+
+
+Andrzej Hajda (6):
+  lib/ref_tracker: add unlocked leak print helper
+  lib/ref_tracker: __ref_tracker_dir_print improve printing
+  lib/ref_tracker: add printing to memory buffer
+  lib/ref_tracker: remove warnings in case of allocation failure
+  drm/i915: Correct type of wakeref variable
+  drm/i915: replace Intel internal tracker with kernel core ref_tracker
+
+Chris Wilson (2):
+  drm/i915: Separate wakeref tracking
+  drm/i915: Track leaked gt->wakerefs
+
+Eric Dumazet (3):
+  [DO NOT MERGE] ref_tracker: implement use-after-free detection
+  [DO NOT MERGE] ref_tracker: add a count of untracked references
+  [DO NOT MERGE] ref_tracker: remove filter_irq_stacks() call
+
+ drivers/gpu/drm/i915/Kconfig.debug            |  19 ++
+ drivers/gpu/drm/i915/Makefile                 |   1 +
+ .../drm/i915/display/intel_display_power.c    |   2 +-
+ .../gpu/drm/i915/gem/i915_gem_execbuffer.c    |   7 +-
+ .../i915/gem/selftests/i915_gem_coherency.c   |  10 +-
+ .../drm/i915/gem/selftests/i915_gem_mman.c    |  14 +-
+ drivers/gpu/drm/i915/gt/intel_breadcrumbs.c   |  13 +-
+ .../gpu/drm/i915/gt/intel_breadcrumbs_types.h |   3 +-
+ drivers/gpu/drm/i915/gt/intel_engine_pm.c     |   6 +-
+ drivers/gpu/drm/i915/gt/intel_engine_types.h  |   2 +
+ .../drm/i915/gt/intel_execlists_submission.c  |   2 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.c         |  12 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h         |  36 ++-
+ drivers/gpu/drm/i915/gt/intel_gt_pm_debugfs.c |   4 +-
+ drivers/gpu/drm/i915/gt/selftest_engine_cs.c  |  20 +-
+ drivers/gpu/drm/i915/gt/selftest_gt_pm.c      |   5 +-
+ drivers/gpu/drm/i915/gt/selftest_reset.c      |  10 +-
+ drivers/gpu/drm/i915/gt/selftest_rps.c        |  17 +-
+ drivers/gpu/drm/i915/gt/selftest_slpc.c       |  10 +-
+ .../gpu/drm/i915/gt/uc/intel_guc_submission.c |  11 +-
+ drivers/gpu/drm/i915/i915_pmu.c               |  16 +-
+ drivers/gpu/drm/i915/intel_runtime_pm.c       | 239 ++----------------
+ drivers/gpu/drm/i915/intel_runtime_pm.h       |  10 +-
+ drivers/gpu/drm/i915/intel_wakeref.c          |  10 +-
+ drivers/gpu/drm/i915/intel_wakeref.h          | 112 +++++++-
+ include/linux/ref_tracker.h                   |  35 ++-
+ lib/ref_tracker.c                             | 198 ++++++++++++---
+ 27 files changed, 480 insertions(+), 344 deletions(-)
 
 -- 
- Kirill A. Shutemov
+2.25.1
+
