@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345490AbiBUIxJ (ORCPT
+        id S1345572AbiBUIxO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:53:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43148 "EHLO
+        Mon, 21 Feb 2022 03:53:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345564AbiBUIwd (ORCPT
+        with ESMTP id S1345606AbiBUIwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BC52A3;
-        Mon, 21 Feb 2022 00:52:05 -0800 (PST)
+        Mon, 21 Feb 2022 03:52:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEAEDCF;
+        Mon, 21 Feb 2022 00:52:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 862A960FB6;
-        Mon, 21 Feb 2022 08:52:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7160BC340E9;
-        Mon, 21 Feb 2022 08:52:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6A83B80EAC;
+        Mon, 21 Feb 2022 08:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9135C340E9;
+        Mon, 21 Feb 2022 08:52:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433525;
-        bh=0x8uk8ogZkTiQRkXjDuzshmOMcA8a04iiSihN0Uu/A4=;
+        s=korg; t=1645433533;
+        bh=5sLu45vTwCyC0fAQEh4BeyyVfv4gE8u5PKzwexJXSbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYK2BW2NFwuMvEKPpVQfzkG9Q+BpnSvYtqK56jS8cYWMmEafeiBiVurJEdUO/jhzq
-         V98hoKWpyjRdglavTGxG7g76Kub2AYlocN3HzDc1lAZ/81PlWG67iGqYw5Ez/PCyTd
-         PqtYIyvy810JVLXZtXgY4BNHuNCa5rG+NP+qQuQ0=
+        b=Rm8cV1dnfppoLkR+1+eMQZa78sWSUG+D1z9g000jV8ieFnAedQAhzh5Kn87GqFT+j
+         hnOMMFSqttma8cb+uRZjZW4OhXyhaKd5gQQ3vGidUf4DqgoWbO+hDhwoLgta1eZfV4
+         3eb8dXrsfLQGoeav1q1kqXAi5HarzHzRGTRigLJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 08/33] selftests/zram: Skip max_comp_streams interface on newer kernel
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084908.832464802@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.9 25/33] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_range()
+Date:   Mon, 21 Feb 2022 09:49:18 +0100
+Message-Id: <20220221084909.583090885@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -50,75 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
+commit 650204ded3703b5817bd4b6a77fa47d333c4f902 upstream.
 
-Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
-has switched to per-cpu streams. Even kernel still keep this interface for
-some reasons, but writing to max_comp_stream doesn't take any effect. So
-skip it on newer kernel ie 4.7.
+When writing out a stereo control we discard the change notification from
+the first channel, meaning that events are only generated based on changes
+to the second channel. Ensure that we report a change if either channel
+has changed.
 
-The code that comparing kernel version is from xfstests testsuite ext4/053.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220201155629.120510-4-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ sound/soc/soc-ops.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 9e73a4fb9b0aa..2c1d1c567f854 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -20,6 +20,9 @@ dev_mounted=-1
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -528,7 +528,7 @@ int snd_soc_put_volsw_range(struct snd_k
+ 	unsigned int mask = (1 << fls(max)) - 1;
+ 	unsigned int invert = mc->invert;
+ 	unsigned int val, val_mask;
+-	int ret;
++	int err, ret;
  
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+kernel_version=`uname -r | cut -d'.' -f1,2`
-+kernel_major=${kernel_version%.*}
-+kernel_minor=${kernel_version#*.}
+ 	if (invert)
+ 		val = (max - ucontrol->value.integer.value[0]) & mask;
+@@ -537,9 +537,10 @@ int snd_soc_put_volsw_range(struct snd_k
+ 	val_mask = mask << shift;
+ 	val = val << shift;
  
- trap INT
+-	ret = snd_soc_component_update_bits(component, reg, val_mask, val);
+-	if (ret < 0)
+-		return ret;
++	err = snd_soc_component_update_bits(component, reg, val_mask, val);
++	if (err < 0)
++		return err;
++	ret = err;
  
-@@ -34,6 +37,20 @@ check_prereqs()
- 	fi
- }
+ 	if (snd_soc_volsw_is_stereo(mc)) {
+ 		if (invert)
+@@ -549,8 +550,12 @@ int snd_soc_put_volsw_range(struct snd_k
+ 		val_mask = mask << shift;
+ 		val = val << shift;
  
-+kernel_gte()
-+{
-+	major=${1%.*}
-+	minor=${1#*.}
-+
-+	if [ $kernel_major -gt $major ]; then
-+		return 0
-+	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
- zram_cleanup()
- {
- 	echo "zram cleanup"
-@@ -95,6 +112,13 @@ zram_max_streams()
- {
- 	echo "set max_comp_streams to zram device(s)"
+-		ret = snd_soc_component_update_bits(component, rreg, val_mask,
++		err = snd_soc_component_update_bits(component, rreg, val_mask,
+ 			val);
++		/* Don't discard any error code or drop change flag */
++		if (ret == 0 || err < 0) {
++			ret = err;
++		}
+ 	}
  
-+	kernel_gte 4.7
-+	if [ $? -eq 0 ]; then
-+		echo "The device attribute max_comp_streams was"\
-+		               "deprecated in 4.7"
-+		return 0
-+	fi
-+
- 	local i=0
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
--- 
-2.34.1
-
+ 	return ret;
 
 
