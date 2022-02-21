@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2EAC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BBCC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353198AbiBUKBY (ORCPT
+        id S1352870AbiBUKBF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:01:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50554 "EHLO
+        Mon, 21 Feb 2022 05:01:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352283AbiBUJxt (ORCPT
+        with ESMTP id S1352323AbiBUJxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07FA36E10;
-        Mon, 21 Feb 2022 01:23:31 -0800 (PST)
+        Mon, 21 Feb 2022 04:53:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8754A1D33A;
+        Mon, 21 Feb 2022 01:23:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F387B80EA1;
-        Mon, 21 Feb 2022 09:23:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CFCFC340E9;
-        Mon, 21 Feb 2022 09:23:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2729860F6E;
+        Mon, 21 Feb 2022 09:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118A7C340E9;
+        Mon, 21 Feb 2022 09:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435409;
-        bh=wJmGrICC3wKZT0xL+U7a9yjc8m1LvWGA1Zirvk0fbuw=;
+        s=korg; t=1645435420;
+        bh=TYuvVS3fFqWieGFmsqv7QYOngtgAFJf28ruJSp8ojrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DRE38Fu6jObPNBavMaqFtZ15VoSqolYwAS+QuRT5zGipQHwCubQkEu7BAt7sYgthj
-         hD7OfVYMgIMg6PoZ8LKaxfNha78PalKqjEMTP6B+LAO7N0DgId7ABrvg0Eqs/v68tT
-         Ruueg4Ii8WFyEPmqNG3uHv5zlYqK1iJlrlAAKFbs=
+        b=xM7tF3S59AZJ6vOM2f2GeN/ngr3ST6NtCRX1kfn4JdnDT2BWRkR3xXR7cA/lQfukH
+         bAh8QaR9gxt0coHVe41yXapMizT+S2NMZHMWefRAi96xp8j/BJr2YZRrrGWCyYx07H
+         2AoWttPUpj7jTDTSZ87P1HkLmGg1VKu6OKW0xQSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 154/227] tipc: fix wrong notification node addresses
-Date:   Mon, 21 Feb 2022 09:49:33 +0100
-Message-Id: <20220221084939.947633132@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivasa Rao Mandadapu <srivasam@codeaurora.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 158/227] ASoC: qcom: Actually clear DMA interrupt register for HDMI
+Date:   Mon, 21 Feb 2022 09:49:37 +0100
+Message-Id: <20220221084940.074411279@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,64 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit c08e58438d4a709fb451b6d7d33432cc9907a2a8 upstream.
+commit c8d251f51ee61df06ee0e419348d8c9160bbfb86 upstream.
 
-The previous bug fix had an unfortunate side effect that broke
-distribution of binding table entries between nodes. The updated
-tipc_sock_addr struct is also used further down in the same
-function, and there the old value is still the correct one.
+In commit da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg
+overwriting") we changed regmap_write() to regmap_update_bits() so that
+we can avoid overwriting bits that we didn't intend to modify.
+Unfortunately this change breaks the case where a register is writable
+but not readable, which is exactly how the HDMI irq clear register is
+designed (grep around LPASS_HDMITX_APP_IRQCLEAR_REG to see how it's
+write only). That's because regmap_update_bits() tries to read the
+register from the hardware and if it isn't readable it looks in the
+regmap cache to see what was written there last time to compare against
+what we want to write there. Eventually, we're unable to modify this
+register at all because the bits that we're trying to set are already
+set in the cache.
 
-Fixes: 032062f363b4 ("tipc: fix wrong publisher node address in link publications")
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Link: https://lore.kernel.org/r/20220216020009.3404578-1-jmaloy@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This is doubly bad for the irq clear register because you have to write
+the bit to clear an interrupt. Given the irq is level triggered, we see
+an interrupt storm upon plugging in an HDMI cable and starting audio
+playback. The irq storm is so great that performance degrades
+significantly, leading to CPU soft lockups.
+
+Fix it by using regmap_write_bits() so that we really do write the bits
+in the clear register that we want to. This brings the number of irqs
+handled by lpass_dma_interrupt_handler() down from ~150k/sec to ~10/sec.
+
+Fixes: da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg overwriting")
+Cc: Srinivasa Rao Mandadapu <srivasam@codeaurora.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/20220209232520.4017634-1-swboyd@chromium.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/node.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/soc/qcom/lpass-platform.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -403,7 +403,7 @@ static void tipc_node_write_unlock(struc
- 	u32 flags = n->action_flags;
- 	struct list_head *publ_list;
- 	struct tipc_uaddr ua;
--	u32 bearer_id;
-+	u32 bearer_id, node;
+--- a/sound/soc/qcom/lpass-platform.c
++++ b/sound/soc/qcom/lpass-platform.c
+@@ -524,7 +524,7 @@ static int lpass_platform_pcmops_trigger
+ 			return -EINVAL;
+ 		}
  
- 	if (likely(!flags)) {
- 		write_unlock_bh(&n->lock);
-@@ -414,6 +414,7 @@ static void tipc_node_write_unlock(struc
- 		   TIPC_LINK_STATE, n->addr, n->addr);
- 	sk.ref = n->link_id;
- 	sk.node = tipc_own_addr(net);
-+	node = n->addr;
- 	bearer_id = n->link_id & 0xffff;
- 	publ_list = &n->publ_list;
- 
-@@ -423,17 +424,17 @@ static void tipc_node_write_unlock(struc
- 	write_unlock_bh(&n->lock);
- 
- 	if (flags & TIPC_NOTIFY_NODE_DOWN)
--		tipc_publ_notify(net, publ_list, sk.node, n->capabilities);
-+		tipc_publ_notify(net, publ_list, node, n->capabilities);
- 
- 	if (flags & TIPC_NOTIFY_NODE_UP)
--		tipc_named_node_up(net, sk.node, n->capabilities);
-+		tipc_named_node_up(net, node, n->capabilities);
- 
- 	if (flags & TIPC_NOTIFY_LINK_UP) {
--		tipc_mon_peer_up(net, sk.node, bearer_id);
-+		tipc_mon_peer_up(net, node, bearer_id);
- 		tipc_nametbl_publish(net, &ua, &sk, sk.ref);
+-		ret = regmap_update_bits(map, reg_irqclr, val_irqclr, val_irqclr);
++		ret = regmap_write_bits(map, reg_irqclr, val_irqclr, val_irqclr);
+ 		if (ret) {
+ 			dev_err(soc_runtime->dev, "error writing to irqclear reg: %d\n", ret);
+ 			return ret;
+@@ -665,7 +665,7 @@ static irqreturn_t lpass_dma_interrupt_h
+ 	return -EINVAL;
  	}
- 	if (flags & TIPC_NOTIFY_LINK_DOWN) {
--		tipc_mon_peer_down(net, sk.node, bearer_id);
-+		tipc_mon_peer_down(net, node, bearer_id);
- 		tipc_nametbl_withdraw(net, &ua, &sk, sk.ref);
+ 	if (interrupts & LPAIF_IRQ_PER(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
+@@ -676,7 +676,7 @@ static irqreturn_t lpass_dma_interrupt_h
  	}
- }
+ 
+ 	if (interrupts & LPAIF_IRQ_XRUN(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
+@@ -688,7 +688,7 @@ static irqreturn_t lpass_dma_interrupt_h
+ 	}
+ 
+ 	if (interrupts & LPAIF_IRQ_ERR(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
 
 
