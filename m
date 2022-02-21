@@ -2,64 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5821BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346476AbiBUHpC (ORCPT
+        id S1346488AbiBUHpb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:45:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48964 "EHLO
+        Mon, 21 Feb 2022 02:45:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344588AbiBUHpA (ORCPT
+        with ESMTP id S1344588AbiBUHp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:45:00 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979FB2196;
-        Sun, 20 Feb 2022 23:44:37 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BA42C2223A;
-        Mon, 21 Feb 2022 08:44:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645429475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CYxJg6RXHwuQQPHgm7btkpehETiBp1YmrUpCpg1PZHg=;
-        b=SmDq0SK53YoVS9qM7butDx4U4t9guXFj6hquSPFA6/Q7Cd9xxqpQT8lxQcQhwMawAvCoKO
-        yB4iq/kf6bsLDi1j/XEvL1wtdzpM/ajbmDRu37+xBVtrar6+9P93R/JXKT/JCDRAwXSNz6
-        1oEpPYgWdDnKfVwT4qgTtvZbNDybl7E=
+        Mon, 21 Feb 2022 02:45:29 -0500
+X-Greylist: delayed 909 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 23:45:07 PST
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E772196
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:45:07 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645428593; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=cSUHjQiTcSwtx64/5MvdEDCDfwEdsQ8DnI4eT/Ru73rZFhj3B8bRQokV/eO156GLXUpY14xz7kFur4N+P+ilLAwJb1VsPjUiaIq9D9w4U5vLP1RqwgxanPWuOplwqWUNW2i6vMly2q/cf/i9sa8uqBluQ4YWDN2ykCO4+mGnxy0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645428593; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=WpclscLdg4+WAoyb8IIA896IqzboZChEQYLndl0uwSU=; 
+        b=X6IdzbtzjnkrYMOjOHip8uOnSZEvNfYbyEVRH9Y1xSEcWUxHa3R/RJDZrDl3VWLWpi+XJ0zXL2+ceHLFStjXPU88IPV9Oei6m7sHDmmQ8Z21FMYIIPra4Lu5xMXondzfQhToaV/Wr2+zsuYMKa0K/PxOTr1rrjZcm36wvXkbADI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645428593;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Transfer-Encoding;
+        bh=WpclscLdg4+WAoyb8IIA896IqzboZChEQYLndl0uwSU=;
+        b=ytBYL2yKVzoUkxXCq42rN3Pi+CaM1wgx9quhTwRDHdR+QpSx0iQTzyT53JNfZPHS
+        +9tDH2tUZL9myKReTohQmKN46nUe4Lf2R57pNiQu7P5lKzLh8oIBMf1TCuDjYCdcXAe
+        bXfdS77iT8fKTdV8imIgYJt9ZOl7VJLAH1u8FfoM=
+Received: from localhost.localdomain (49.207.207.8 [49.207.207.8]) by mx.zohomail.com
+        with SMTPS id 1645428590793991.2120447421995; Sun, 20 Feb 2022 23:29:50 -0800 (PST)
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     mail@anirudhrb.com,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] vhost: handle zero regions in vhost_set_memory
+Date:   Mon, 21 Feb 2022 12:58:51 +0530
+Message-Id: <20220221072852.31820-1-mail@anirudhrb.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Feb 2022 08:44:35 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     p.yadav@ti.com, broonie@kernel.org, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        nicolas.ferre@microchip.com, zhengxunli@mxic.com.tw,
-        jaimeliao@mxic.com.tw
-Subject: Re: [PATCH 0/4] spi-mem: Allow specifying the byte order in DTR mode
-In-Reply-To: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
-References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <44f655d027b49b87065915f6ba2744d2@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-18 15:58, schrieb Tudor Ambarus:
-> Fortunately there are controllers
-> that can swap back the bytes at runtime, fixing the endiannesses. 
-> Provide
-> a way for the upper layers to specify the byte order in DTR mode.
+Return early when userspace sends zero regions in the VHOST_SET_MEM_TABLE
+ioctl.
 
-Are there any patches for the atmel-quadspi yet? What happens if
-the controller doesn't support it? Will there be a software fallback?
+Otherwise, this causes an erroneous entry to be added to the iotlb. This
+entry has a range size of 0 (due to u64 overflow). This then causes
+iotlb_access_ok() to loop indefinitely resulting in a hung thread.
+Syzbot has reported this here:
 
--michael
+https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+
+Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+---
+ drivers/vhost/vhost.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe2..821aba60eac2 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1428,6 +1428,8 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
+ 		return -EFAULT;
+ 	if (mem.padding)
+ 		return -EOPNOTSUPP;
++	if (mem.nregions == 0)
++		return 0;
+ 	if (mem.nregions > max_mem_regions)
+ 		return -E2BIG;
+ 	newmem = kvzalloc(struct_size(newmem, regions, mem.nregions),
+-- 
+2.35.1
+
