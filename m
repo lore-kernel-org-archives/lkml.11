@@ -2,161 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A2EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B528DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381629AbiBURUp (ORCPT
+        id S1381651AbiBURU6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:20:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51524 "EHLO
+        Mon, 21 Feb 2022 12:20:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381608AbiBURUl (ORCPT
+        with ESMTP id S1381645AbiBURUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:20:41 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206D5C5E;
-        Mon, 21 Feb 2022 09:20:18 -0800 (PST)
+        Mon, 21 Feb 2022 12:20:50 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C14CFB;
+        Mon, 21 Feb 2022 09:20:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645464018; x=1677000018;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=d5MBD6jseNDfERr7Px+b+BKh2csyDhPOjHVWEWXUWp0=;
-  b=PMNt1bh2YdTAgOcfTGN5Higc428uAc7YoEcSlhJaAsU55sUBY76cEALN
-   fo2/VUyJh3jokrQYzihp4YW7CRNx5hPC81Huv/LjDCj39F3A8asExt2B0
-   /4CkL5Oj9U/iPOUTu7pcb2GIkP33Ph6zX5nVDfPV+06s73FO6D9XOs0zD
-   CICNNTPSmktZ4vZr/50bGrCqFAMyD7TaBjyTPPdIrtJRXQxSjfgwbBgpW
-   p+krrkk2tfID6lJNqambxdWUBJwD2k0Trdu1YVeLAeU17UVkoxi9dtRl7
-   V5hRHbBakNDrQvEpxh3snDAkI79dQCLRgWt2ZRJYCXAdRfhKOdzV/6WJl
+  t=1645464027; x=1677000027;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=EldFeMO1JNlmFZXwAPC3sgE5GEkGvYBt67wpkTkIudo=;
+  b=Sr33qjWxAPXhDIZjEIhYg7GsLhYFNA2b6Rt6mhIB/FcqWG41/l/rBSrH
+   6zOS5+kRYn8yLL07h5SXlmP0iUwOGVGIKPrEI24PxlANxZJ7ewfwPvr9b
+   P/sNDB2nNQjm9RPmaZdAAqiG3iiWmM+Z4Oli3FDafBccWY7ZuKM2tZylo
+   02MYBo74JkB2b3HQ3hd6MqxiOIYxalPIo/b0S6jtX8epkM3jzGu0pt9sD
+   L3E+TIM89eMAiWrTh/anKwhRd8tf/tp9mhW9a3LmbHHMqfgUoRZNnUv52
+   e+R/cWZDIQGYxup8UwRgZutd9wmJCVaSnYoNw+C6J5I2ZTrqjWJaGfJ2Y
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251729331"
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251497629"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251729331"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:20:17 -0800
+   d="scan'208";a="251497629"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:20:26 -0800
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="490502556"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:20:14 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMCLK-006rcp-SM;
-        Mon, 21 Feb 2022 19:19:22 +0200
-Date:   Mon, 21 Feb 2022 19:19:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: Re: [PATCH v2 1/6] device property: Helper to match multiple
- connections
-Message-ID: <YhPJmiFSH8s94il7@smile.fi.intel.com>
-References: <20220208031944.3444-1-bjorn.andersson@linaro.org>
- <20220208031944.3444-2-bjorn.andersson@linaro.org>
- <YgOz6K55Oi2Si4pU@smile.fi.intel.com>
- <Yg/s3eKB2wLEQTgY@ripper>
- <YhIjHjMrhUpM0ucV@smile.fi.intel.com>
- <YhMbLsvF8p/ce+mg@ripper>
+   d="scan'208";a="627429277"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.40])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:20:25 -0800
+Date:   Mon, 21 Feb 2022 09:22:29 -0800 (PST)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Tom Rix <trix@redhat.com>
+cc:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
+        "Wu, Hao" <hao.wu@intel.com>, "mdf@kernel.org" <mdf@kernel.org>,
+        "Xu, Yilun" <yilun.xu@intel.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>
+Subject: Re: [PATCH v1 3/7] fpga: dfl: Allow for ports with no local bar
+ space.
+In-Reply-To: <efee5ac0-4c3a-085d-9b9d-0c8ade022f30@redhat.com>
+Message-ID: <alpine.DEB.2.22.394.2202210912260.117064@rhweight-WRK1>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com> <20220214112619.219761-4-tianfei.zhang@intel.com> <0fdd3d0d-d280-8104-eccc-8fa8d8a992c2@redhat.com> <BN9PR11MB548314968CBC0CA5E446B366E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
+ <efee5ac0-4c3a-085d-9b9d-0c8ade022f30@redhat.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhMbLsvF8p/ce+mg@ripper>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 20, 2022 at 08:55:10PM -0800, Bjorn Andersson wrote:
-> On Sun 20 Feb 03:16 PST 2022, Andy Shevchenko wrote:
-> > On Fri, Feb 18, 2022 at 11:00:45AM -0800, Bjorn Andersson wrote:
-> > > On Wed 09 Feb 04:30 PST 2022, Andy Shevchenko wrote:
-> > > > On Mon, Feb 07, 2022 at 07:19:39PM -0800, Bjorn Andersson wrote:
-
-...
-
-> > > > > +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
-> > > > > +				   const char *con_id, void *data,
-> > > > > +				   devcon_match_fn_t match,
-> > > > > +				   void **matches, unsigned int matches_len)
-> > > > > +{
-> > > > > +	unsigned int count;
-> > > > > +
-> > > > > +	if (!fwnode || !match || !matches)
-> > > > 
-> > > > !matches case may be still useful to get the count and allocate memory by
-> > > > caller. Please, consider this case.
-> > > 
-> > > As discussed in previous version, and described in the commit message,
-> > > the returned value of "match" is a opaque pointer to something which
-> > > has to be passed back to the caller in order to be cleaned up.
-> > > 
-> > > E.g. the typec mux code returns a pointer to a typec_mux/switch object
-> > > with a refcounted struct device within, or an ERR_PTR().
-> > > 
-> > > So unfortunately we can must gather the results into matches and pass it
-> > > back to the caller to take consume or clean up.
-> > 
-> > It's fine. You have **matches, means pointer of an opaque pointer.
-> > What I'm talking about is memory allocation for and array of _pointers_.
-> > That's what caller very much aware of and can allocate on heap. So, please
-> > consider this case.
-> 
-> I'm sorry, but I'm not sure what you're looking for.
-> 
-> 
-> I still interpret your comment as that it would be nice to be able to do
-> something like:
-> 
-> count = fwnode_connection_find_matches(fwnode, "orientation-switch",
-> 				       NULL, typec_switch_match, NULL, 0);
-> 
-> based on the returned value the caller could allocate an array of
-> "count" pointers and then call the function again to actually fill out
-> the count elements.
-
-Yes, that's what I want from the generic fwnode APIs.
-(Keyword: generic)
-
-> The problem with this is that, typec_switch_match() does:
-
-As you stated, the problem is in the typec_switch_match(). So, it's not related
-to the fwnode, but how you are using it.
-
-> void *typec_switch_match(fwnode, id, data) {
-> 	struct device *dev = find_struct_device(fwnode, id);
-> 	if (!dev)
-> 		return NULL;
-> 	get_device(dev);
-> 	return container_of(dev, struct typec_switch, dev);
-> }
-> 
-> So if we call the match function and if that finds a "dev" it will
-> return a struct typec_switch with a refcounted struct device within.
-
-fwnode (as being an abstraction on top of the others) has no knowledge
-about this. And more important should not know that.
-
-> We can see if that's NULL or not and will be able to return a "count",
-> but we have no way of releasing the reference acquired - we must return
-> the void pointer back to the client, so that it can release it.
-
-The caller (if it wants to!) may create different callbacks for count and real
-matching, no?
-
-> My claim is that this is not a problem, because this works fine with any
-> reasonable size of fwnode graphs we might run into - and the client will
-> in general have a sense of the worst case number of matches (in this
-> series its 3, as there's 3 types of lanes that can be switched/muxed
-> coming out of a USB connector).
-
--- 
-With Best Regards,
-Andy Shevchenko
 
 
+On Fri, 18 Feb 2022, Tom Rix wrote:
+
+>
+> On 2/17/22 11:31 PM, Zhang, Tianfei wrote:
+>> 
+>>> -----Original Message-----
+>>> From: Tom Rix <trix@redhat.com>
+>>> Sent: Tuesday, February 15, 2022 11:06 PM
+>>> To: Zhang, Tianfei <tianfei.zhang@intel.com>; Wu, Hao <hao.wu@intel.com>;
+>>> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; 
+>>> linux-fpga@vger.kernel.org;
+>>> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org
+>>> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>> Subject: Re: [PATCH v1 3/7] fpga: dfl: Allow for ports with no local bar 
+>>> space.
+>>> 
+>>> 
+>>> On 2/14/22 3:26 AM, Tianfei zhang wrote:
+>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>>
+>>>>   From a fpga partial reconfiguration standpoint, a port may not be
+>>>> connected any local BAR space.  The port could be connected to a
+>>>> different PCIe Physical Function (PF) or Virtual Function (VF), in
+>>>> which case another driver instance would manage the endpoint.
+>>> It is not clear if this is part of iofs or a bug fix.
+>> This is the new implementation/feature of IOFS.
+>> On IOFS support multiple methods to access the AFU.
+>> 1. Legacy Model. This is used for N3000 and N5000 card.
+>> In this model the entire AFU region is a unit of PR, and there is a Port 
+>> device connected to this AFU.
+>> On DFL perspective, there is "Next AFU" point to the AFU, and the "BarID" 
+>> is  the PCIe Bar ID of AFU.
+>> In this model, we can use the AFU APIs to access the entire AFU resource, 
+>> like MMIO.
+>> 2. Micro-Personas in AFU.
+>> IOFS intruding new model for PR and AFU access.
+>> Micro-Personas allow the RTL developer to designate their own AFU-defined 
+>> PR regions.
+>> In this model the unit of PR is not the entire AFU, instead
+>> the unit of PR can be any size block or blocks inside the AFU.
+>> 3. Multiple VFs per PR slot.
+>> In this method, we can instance multiple VFs over SRIOV for one PR slot, 
+>> and access the AFU resource
+>> by different VFs in virtualization usage. In this case, the Port device 
+>> would not connected to AFU (the BarID of Port device
+>> should be set to invalid), so this patch want to support this use model.
+>
+> What I am looking for is how the older cards using (my term) dfl 1 will still 
+> work with dfl 2 and vice versa.
+>
+> No where do I see a version check for dfl 2 nor a pci id check so either this 
+> just works or backward compatibility has not be considered.
+>
+> Please add a backward compatibility section to the doc patch
+>
+>> 
+>>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+>>>> ---
+>>>>    drivers/fpga/dfl-pci.c | 8 ++++++++
+>>>>    1 file changed, 8 insertions(+)
+>>>> 
+>>>> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c index
+>>>> 4d68719e608f..8abd9b408403 100644
+>>>> --- a/drivers/fpga/dfl-pci.c
+>>>> +++ b/drivers/fpga/dfl-pci.c
+>>>> @@ -243,6 +243,7 @@ static int find_dfls_by_default(struct pci_dev 
+>>>> *pcidev,
+>>>>    		v = readq(base + FME_HDR_CAP);
+>>>>    		port_num = FIELD_GET(FME_CAP_NUM_PORTS, v);
+>>>> 
+>>>> +		dev_info(&pcidev->dev, "port_num = %d\n", port_num);
+>>>>    		WARN_ON(port_num > MAX_DFL_FPGA_PORT_NUM);
+>>>>
+>>>>    		for (i = 0; i < port_num; i++) {
+>>>> @@ -258,6 +259,13 @@ static int find_dfls_by_default(struct pci_dev 
+>>>> *pcidev,
+>>>>    			 */
+>>>>    			bar = FIELD_GET(FME_PORT_OFST_BAR_ID, v);
+>>>>    			offset = FIELD_GET(FME_PORT_OFST_DFH_OFST, v);
+>>>> +			if (bar >= PCI_STD_NUM_BARS) {
+>>> Is bar set to a better magic number that pci_std_num_bars ? maybe 0xff's
+>>> 
+>>> How do you tell between this case and broken hw ?
+>> Yes, I agree that magic number is better, Currently the RTL using 
+>> PCI_STD_NUM_BARS for an invalid PCIe bar number.
+>
+> How do you tell between this case and broken hw ?
+>
+> Tom
+
+The field, FME_PORT_OFST_BAR_ID, is a three bit field, which is pretty 
+common for BARs on PCI.  PCI_STD_NUM_BARS is defined as 6.  Current HW 
+implementations are filing this field with the value, 7, which is close to 
+the suggestion of 0xff's.  How about we define the following magic 
+number?
+#define NO_LOCAL_PORT_BAR	7
+
+We should also change the dev_info to be a dev_dbg and more precise to 
+something like the following:
+
+ 	if (bar == NO_LOCAL_PORT_BAR) {
+ 		dev_dbg(&pcidev->dev, "No local port BAR space.\n");
+ 		continue;
+ 	}
+
+>
+>>> Move up a line and skip getting an offset that will not be used.
+>> Yes, this line is not necessary, I will remove it on next version patch.
+>> 
+>>>> +				dev_info(&pcidev->dev, "skipping port without
+>>> local BAR space %d\n",
+>>>> +					 bar);
+>>>> +				continue;
+>>>> +			} else {
+>>>> +				dev_info(&pcidev->dev, "BAR %d offset %u\n",
+>>> bar, offset);
+>>>> +			}
+>>>>    			start = pci_resource_start(pcidev, bar) + offset;
+>>>>    			len = pci_resource_len(pcidev, bar) - offset;
+>>>> 
+>>> Is similar logic needed for else-if (port) block below this ?
+>> I think, the else-if is not necessary. I will remove it on next version 
+>> patch.
+>>> Tom
+>
+>
