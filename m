@@ -2,101 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF82C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379976AbiBUQOI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:14:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38446 "EHLO
+        id S234414AbiBUQOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 11:14:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235938AbiBUQOF (ORCPT
+        with ESMTP id S1379972AbiBUQOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:14:05 -0500
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE17BF56
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:13:42 -0800 (PST)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2d646fffcc2so143749207b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:13:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WXjHQX1AtlViHFaHWd6Iva+LTxgoLMRJ8aez/lEDXws=;
-        b=H29Z+yo8CnxLWxuAHti4RuiHYpPkOmKT5Q9C9W/QzMzIxgoTQRRazAZMYv6iGkxDD/
-         RZsqiQqSHU8PBCbKORaDfFJYwAOUlcfHB5RQ8Y+bW8kVSfPPmTvEpqijsfqk2tr5KNBL
-         Ms/zzzK0auvHhSbEcmmLuWf30ymx51y94UKRMJKSICUJ2vESLM8n/M35hJ94761Q1HeA
-         jzYX4iIm4m6Mxj8koAVOn3c0JhMNX8us8n/H4ypGL+NjWDT+fcek2WLQKlapkI/CQXKr
-         E7D/hAUb2r8v+qwectFWhQ6EnG2TJA6yfOkHkT1bONQ7nDBMLro34ct1yMQ1KuWiOeFz
-         eOqw==
+        Mon, 21 Feb 2022 11:14:35 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02E62715D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:14:11 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D7FE840326
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:14:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645460048;
+        bh=PQyFtNV3tW1qRmwZ8HqaxvUDcyO7BHPqZZLC0geQ1k0=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=Pw8zIvxw8A6Tu9811T0MQ/EKgt2aY0nsNu+pz29KErjTymjyH3xZuOREbWsZtGj1L
+         BU/x6aRF6Sd0KxpS3NfSmIrth+ezrzOwZM3cgPUWzNy4iDv5A9x5dKybHFt7bsMXLm
+         NG83fDsWrbvFDtL8hjVAadebzmnvKtR7LIx79MWea08Y68hZuaQYOjp0NfVuXjmUyC
+         fqQeJHJbJc9f8MEOW5Kld+Q244pFQLqTRKYpAq9j836uf3g9JvAazwI+gKyD1ndmnx
+         JoNM6iBvXS7PTK3wwoUTNZVYUSAsoYR0+atuHFHvRGAJNdvoyp6hSq5H1TMciAeoBp
+         MBtvmiDI3o9Dw==
+Received: by mail-wm1-f69.google.com with SMTP id r8-20020a7bc088000000b0037bbf779d26so4574637wmh.7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:14:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WXjHQX1AtlViHFaHWd6Iva+LTxgoLMRJ8aez/lEDXws=;
-        b=gTeQZeQKev+DpQMJEV7x3w4EOShPHeysR5xju37CjkcVVg1kaoVdDTLRl3vOXPxODx
-         t27pBHW7vOZe6751FLZ9zDlsZgFMneUcpJd+/Dzua2HD21lZhnxfKhlyjAvohG/3muMr
-         CPc4zx//K61r9n6g7R+SiWR2eBfZ9JPkhXjiaibMrrac9tATKLwYLqND68WNmJbO8LRL
-         HdXRScHUh63+ThVmgVbI5ZAFpuXp8XvRfvLKbaLvubOuGoELGqm6RlxWQbHE0cHsnG4m
-         oh4R/roU4Fogcvf/0pt1EVcBbbffCpurXAK2jWUnDcpcxSdULbl5y4GebksuGr6f9Vnu
-         K7Dw==
-X-Gm-Message-State: AOAM532/VNMb2RxgICJrCQi9Sa7f+X4f5aSJxL+3qVwlmXYCdUab3o40
-        fiIBhJiDeKJ+lub0IpHnGNCy1DvmOT3+RG4Epoouig==
-X-Google-Smtp-Source: ABdhPJw5U/qXF+ljM3+m5p6sV0+H7RK8foGv2De7rZsl9ijk7+Y3Lz4D947ss/tnnBgFW7icUbb8tyBd3qbBzkTfY1s=
-X-Received: by 2002:a81:1408:0:b0:2d0:7c31:97dc with SMTP id
- 8-20020a811408000000b002d07c3197dcmr20092237ywu.216.1645460021600; Mon, 21
- Feb 2022 08:13:41 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PQyFtNV3tW1qRmwZ8HqaxvUDcyO7BHPqZZLC0geQ1k0=;
+        b=3ow821xtATbkuFzNTH+qkiFvg6MyxIWBzvWqp6Cq/Ulpqut+9QFAPLrXpzpgRzpXn5
+         YC+b7m8aqGaq0DXyG0nggAwcO+X16omyj+TzrHubbbCml0ouFI9vmirE2pypjLO9cIsr
+         3whAquvejIv/dErJpoUJT4am14cSqKQec//hPXKZLu7YeuXtfzOoo8YfcbDn4jTaE+X4
+         IS9wWnfwfzJotSGU4iRQtTbIw5Sz4OWlsnLRgr91m2wuLEVBbMpFQuf8Fm0UWD4MZoM3
+         NuM1zyxLpLxYSTKjTzF0Z1/HrpfdRayJF8pTnQQlJribT8a5VadS0J2qqz+Ja2OiN8NJ
+         imEw==
+X-Gm-Message-State: AOAM532IPjJrTa/cKYG/hDgdRz0l71qGrlz7RvLStC9oHbtqJEGYRKO4
+        p3TVLJrhUtySRusbP6qANmTGUNUFRXE5GHwWWM/VuI+bmcMihQPOFg7fypkgYPFWN+8i+Hf6bT7
+        oDx+mAkGjtel8lDHQPeiyoM7ZvQp4UJCr/A4w1O5JGg==
+X-Received: by 2002:a5d:59ae:0:b0:1dd:66c3:c67b with SMTP id p14-20020a5d59ae000000b001dd66c3c67bmr15950149wrr.400.1645460048037;
+        Mon, 21 Feb 2022 08:14:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwNwlTRPQUvSp/uTF60wmHJDYNhgiXOGL05nzjrbLdn6G2rJra00RbHGeqsfRNSqcTRx5zKzA==
+X-Received: by 2002:a5d:59ae:0:b0:1dd:66c3:c67b with SMTP id p14-20020a5d59ae000000b001dd66c3c67bmr15950135wrr.400.1645460047868;
+        Mon, 21 Feb 2022 08:14:07 -0800 (PST)
+Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
+        by smtp.gmail.com with ESMTPSA id o4sm32504065wrc.52.2022.02.21.08.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 08:14:07 -0800 (PST)
+From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH -fixes v2 1/4] riscv: Fix is_linear_mapping with recent move of KASAN region
+Date:   Mon, 21 Feb 2022 17:12:29 +0100
+Message-Id: <20220221161232.2168364-2-alexandre.ghiti@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
+References: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
 MIME-Version: 1.0
-References: <20220221084934.836145070@linuxfoundation.org>
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Mon, 21 Feb 2022 21:43:05 +0530
-Message-ID: <CAG=yYwnpcxnZ1yXQSHHa-6SEUv60PFD48w8K9sVPU3pROCn0HQ@mail.gmail.com>
-Subject: Re: [PATCH 5.16 000/227] 5.16.11-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        torvalds@linux-foundation.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 3:13 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.16.11 release.
-> There are 227 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.11-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
->
-hello,
+KASAN region was recently moved between the linear mapping and the
+kernel mapping, is_linear_mapping used to check the validity of an
+address by using the start of the kernel mapping, which is now wrong.
 
-Compiled  and booted  5.16.11-rc1+ on  VivoBook 15_ASUS Laptop X507UAR.
-NO new  regression or regressions  from dmesg.
+Fix this by using the maximum size of the physical memory.
 
+Fixes: f7ae02333d13 ("riscv: Move KASAN mapping next to the kernel mapping")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+---
+ arch/riscv/include/asm/page.h    | 2 +-
+ arch/riscv/include/asm/pgtable.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-
-
+diff --git a/arch/riscv/include/asm/page.h b/arch/riscv/include/asm/page.h
+index 160e3a1e8f8b..004372f8da54 100644
+--- a/arch/riscv/include/asm/page.h
++++ b/arch/riscv/include/asm/page.h
+@@ -119,7 +119,7 @@ extern phys_addr_t phys_ram_base;
+ 	((x) >= kernel_map.virt_addr && (x) < (kernel_map.virt_addr + kernel_map.size))
+ 
+ #define is_linear_mapping(x)	\
+-	((x) >= PAGE_OFFSET && (!IS_ENABLED(CONFIG_64BIT) || (x) < kernel_map.virt_addr))
++	((x) >= PAGE_OFFSET && (!IS_ENABLED(CONFIG_64BIT) || (x) < PAGE_OFFSET + KERN_VIRT_SIZE))
+ 
+ #define linear_mapping_pa_to_va(x)	((void *)((unsigned long)(x) + kernel_map.va_pa_offset))
+ #define kernel_mapping_pa_to_va(y)	({						\
+diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+index 7e949f25c933..e3549e50de95 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -13,6 +13,7 @@
+ 
+ #ifndef CONFIG_MMU
+ #define KERNEL_LINK_ADDR	PAGE_OFFSET
++#define KERN_VIRT_SIZE		(UL(-1))
+ #else
+ 
+ #define ADDRESS_SPACE_END	(UL(-1))
 -- 
-software engineer
-rajagiri school of engineering and technology  -  autonomous
+2.32.0
+
