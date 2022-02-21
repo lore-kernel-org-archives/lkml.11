@@ -2,135 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1583BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3160C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356291AbiBULZk (ORCPT
+        id S1356322AbiBUL10 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:25:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54610 "EHLO
+        Mon, 21 Feb 2022 06:27:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356207AbiBULYq (ORCPT
+        with ESMTP id S1356308AbiBUL0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:24:46 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE58C41;
-        Mon, 21 Feb 2022 03:19:47 -0800 (PST)
-Date:   Mon, 21 Feb 2022 11:19:44 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645442385;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3C9EMptlshmlFrp7KuOawjBBSEBh/nqa78XFkZiqeqg=;
-        b=HI2b8Q3dMU51MXjCEthE0Q13fYsDYsj+x6c+oszZql/Ze/Gni5c9C7Q39PLiHyZ4H3IlUB
-        +R2RHT+/IzD5Dr3z3lwJ1VP20a5Pdz1emf9aWnHb8rCPqH/en4c1JS2QJEgHszOfzfnmdV
-        ZUkn4pWW6fK4EZ3oA2wXJe5aCoeFKkpw7a4XwpF8XgPUIylEAN90yur63ashQY6waBkll/
-        UiLmVId5jjBsqWKEwrV4Ae9Zmls2/Q4QdCru7oMYgxvPc7ujrCmB5Xs7EpjZe7IK6Eey7U
-        JHpotVejFa5dGg04+R7qWZhLaktDrvmfqln6SXwnJfe18YxMzOItspM5JDff+Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645442385;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3C9EMptlshmlFrp7KuOawjBBSEBh/nqa78XFkZiqeqg=;
-        b=2htBa3reRHwcoJSJga/TPWCsolqoeZpXy0Y9VhXwdQoLKDh8gc5OBQLij8SeclcVsuOVtI
-        2NsRT91qMoeJyOAw==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: irq/core] genirq: Provide generic_handle_irq_safe()
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        x86@kernel.org, linux-kernel@vger.kernel.org, maz@kernel.org
-In-Reply-To: <20220211181500.1856198-2-bigeasy@linutronix.de>
-References: <20220211181500.1856198-2-bigeasy@linutronix.de>
+        Mon, 21 Feb 2022 06:26:40 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAE92712
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:24:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645442658; x=1676978658;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4lDTi0Ymb7VmmGXBYtiWCetSs8DKqsvQl3orMu6vIQ4=;
+  b=kLZURpOv2K6V6WyM7huCFU3ZnLHuDEba1xNzsRVNAoVGuS+YB/3u+zro
+   2DD7evIxITw+1fnWKiMcamqAl0dPIHTCEvbs7xV1/mjhNeHPllzCjldnf
+   yoAiJ0Tp81wYu5WGCeJlRFQIhYzucNB12u9Fufi78XXXgC6SpYF1S2Mgz
+   czOCH1SXh1aajowwqrybTWr7IJ7x3CY0FuEBV9DiP8j2UQUF17zr4QskO
+   fiHPouiJUwjuZAKIxLQvMYX4kiHqBCYNJWXLwveA+1qeF9s1glgUpxrE3
+   P4CFr9K4qy/lA+nUa0Hc7w6JyJMXq8uQS1nATqOCUuiRNDtLwvH4A6JRz
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="249070825"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="249070825"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 03:24:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="547297985"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 21 Feb 2022 03:24:13 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM6nd-0001Xg-54; Mon, 21 Feb 2022 11:24:13 +0000
+Date:   Mon, 21 Feb 2022 19:24:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Beau Belgrave <beaub@linux.microsoft.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [ammarfaizi2-block:rostedt/linux-trace/for-next 22/32]
+ kernel/trace/trace_events_user.c:392:38: sparse: sparse: Using plain integer
+ as NULL pointer
+Message-ID: <202202211917.j3vO1UWa-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <164544238423.16921.14685093775166733539.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/core branch of tip:
+tree:   https://github.com/ammarfaizi2/linux-block rostedt/linux-trace/for-next
+head:   864ea0e10cc90416a01b46f0d47a6f26dc020820
+commit: aa3b2b4c669205200615dd8a2cc4af4f81fd0335 [22/32] user_events: Add print_fmt generation support for basic types
+config: x86_64-randconfig-s032-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211917.j3vO1UWa-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/aa3b2b4c669205200615dd8a2cc4af4f81fd0335
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block rostedt/linux-trace/for-next
+        git checkout aa3b2b4c669205200615dd8a2cc4af4f81fd0335
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/
 
-Commit-ID:     509853f9e1e7b1490dc79f735a5dbafc9298f40d
-Gitweb:        https://git.kernel.org/tip/509853f9e1e7b1490dc79f735a5dbafc9298f40d
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Fri, 11 Feb 2022 19:14:54 +01:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Mon, 21 Feb 2022 11:31:06 +01:00
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-genirq: Provide generic_handle_irq_safe()
 
-Provide generic_handle_irq_safe() which can used from any context.
+sparse warnings: (new ones prefixed by >>)
+>> kernel/trace/trace_events_user.c:392:38: sparse: sparse: Using plain integer as NULL pointer
+   kernel/trace/trace_events_user.c:413:40: sparse: sparse: Using plain integer as NULL pointer
+   kernel/trace/trace_events_user.c:858:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:858:16: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:858:16: sparse:    void *
+   kernel/trace/trace_events_user.c:922:13: sparse: sparse: cast removes address space '__user' of expression
+   kernel/trace/trace_events_user.c:922:13: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *buf @@     got char * @@
+   kernel/trace/trace_events_user.c:922:13: sparse:     expected void [noderef] __user *buf
+   kernel/trace/trace_events_user.c:922:13: sparse:     got char *
+   kernel/trace/trace_events_user.c:938:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:938:16: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:938:16: sparse:    void *
+   kernel/trace/trace_events_user.c:965:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:965:9: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:965:9: sparse:    void *
 
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/20220211181500.1856198-2-bigeasy@linutronix.de
+vim +392 kernel/trace/trace_events_user.c
+
+   361	
+   362	static const char *user_field_format(const char *type)
+   363	{
+   364		if (strcmp(type, "s64") == 0)
+   365			return "%lld";
+   366		if (strcmp(type, "u64") == 0)
+   367			return "%llu";
+   368		if (strcmp(type, "s32") == 0)
+   369			return "%d";
+   370		if (strcmp(type, "u32") == 0)
+   371			return "%u";
+   372		if (strcmp(type, "int") == 0)
+   373			return "%d";
+   374		if (strcmp(type, "unsigned int") == 0)
+   375			return "%u";
+   376		if (strcmp(type, "s16") == 0)
+   377			return "%d";
+   378		if (strcmp(type, "u16") == 0)
+   379			return "%u";
+   380		if (strcmp(type, "short") == 0)
+   381			return "%d";
+   382		if (strcmp(type, "unsigned short") == 0)
+   383			return "%u";
+   384		if (strcmp(type, "s8") == 0)
+   385			return "%d";
+   386		if (strcmp(type, "u8") == 0)
+   387			return "%u";
+   388		if (strcmp(type, "char") == 0)
+   389			return "%d";
+   390		if (strcmp(type, "unsigned char") == 0)
+   391			return "%u";
+ > 392		if (strstr(type, "char[") != 0)
+   393			return "%s";
+   394	
+   395		/* Unknown, likely struct, allowed treat as 64-bit */
+   396		return "%llu";
+   397	}
+   398	
+
 ---
- include/linux/irqdesc.h |  1 +
- kernel/irq/irqdesc.c    | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
-
-diff --git a/include/linux/irqdesc.h b/include/linux/irqdesc.h
-index 93d270c..a775845 100644
---- a/include/linux/irqdesc.h
-+++ b/include/linux/irqdesc.h
-@@ -160,6 +160,7 @@ static inline void generic_handle_irq_desc(struct irq_desc *desc)
- 
- int handle_irq_desc(struct irq_desc *desc);
- int generic_handle_irq(unsigned int irq);
-+int generic_handle_irq_safe(unsigned int irq);
- 
- #ifdef CONFIG_IRQ_DOMAIN
- /*
-diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
-index 2267e65..346d283 100644
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -662,6 +662,29 @@ int generic_handle_irq(unsigned int irq)
- }
- EXPORT_SYMBOL_GPL(generic_handle_irq);
- 
-+/**
-+ * generic_handle_irq_safe - Invoke the handler for a particular irq from any
-+ *			     context.
-+ * @irq:	The irq number to handle
-+ *
-+ * Returns:	0 on success, a negative value on error.
-+ *
-+ * This function can be called from any context (IRQ or process context). It
-+ * will report an error if not invoked from IRQ context and the irq has been
-+ * marked to enforce IRQ-context only.
-+ */
-+int generic_handle_irq_safe(unsigned int irq)
-+{
-+	unsigned long flags;
-+	int ret;
-+
-+	local_irq_save(flags);
-+	ret = handle_irq_desc(irq_to_desc(irq));
-+	local_irq_restore(flags);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
-+
- #ifdef CONFIG_IRQ_DOMAIN
- /**
-  * generic_handle_domain_irq - Invoke the handler for a HW irq belonging
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
