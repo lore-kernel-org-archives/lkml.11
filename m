@@ -2,104 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E84C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344086AbiBUIkz (ORCPT
+        id S1344140AbiBUIlg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:40:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55930 "EHLO
+        Mon, 21 Feb 2022 03:41:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343972AbiBUIkq (ORCPT
+        with ESMTP id S1344090AbiBUIle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:40:46 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202CC3F;
-        Mon, 21 Feb 2022 00:40:22 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R791e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0V51uqPX_1645432819;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V51uqPX_1645432819)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 21 Feb 2022 16:40:20 +0800
-Date:   Mon, 21 Feb 2022 16:40:18 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     jgg@ziepe.ca, liangwenpeng@huawei.com,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        liweihang@huawei.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot <syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
- smc_pnet_apply_ib
-Message-ID: <YhNP8vU0FueNeDPr@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <000000000000b772b805d8396f14@google.com>
- <2691692.BEx9A2HvPv@leap>
+        Mon, 21 Feb 2022 03:41:34 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F413F73
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:41:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645432871; x=1676968871;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Du4bp4MXJE1id8FkmcvDPXmNJoGlJfxo8VUBgob2eL8=;
+  b=dbCVRBKHsFyETGiK1EZ2reF8wW743rV8Fovnno+llxD99lODuTIIQwwW
+   TAd/GR+DmIU8YlQh/dFWyipCmLMk+EWgyuLo/ct1S6G8VPyr1eNb79oaW
+   lwjVuzQ3ovauC6PwL8Jjs7BNtyniarPPNDiS5lwB5J7VpQGj6vs6O9DqT
+   WdMkbtiC9HCUCXPpNBuR7QX7Cymh99hi+Z/qKiTOxS6x1oVL8Y+ROB0eC
+   VMrDfSPyT3edLhTz8BVZ/Bgg4baK975dAfITmJnoejRG7PdlkGADncujF
+   TWgSSU2iQmuN5gGW9A9+M3WjepDKOO59CdCO+aLZ4OD4g0fZkj33tEOyU
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238878676"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="238878676"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 00:41:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="638481729"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 00:41:09 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM4Fo-0001QW-Ks; Mon, 21 Feb 2022 08:41:08 +0000
+Date:   Mon, 21 Feb 2022 16:40:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:axboe/linux-block/m1/2022-02-19 491/552]
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:
+ sparse: incorrect type in assignment (different base types)
+Message-ID: <202202211631.TQArYv6u-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2691692.BEx9A2HvPv@leap>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 07:05:31PM +0100, Fabio M. De Francesco wrote:
-> On giovedì 17 febbraio 2022 17:41:22 CET syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following issue on:
-> > 
-> > HEAD commit:    c832962ac972 net: bridge: multicast: notify switchdev driv..
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=16b157bc700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=4f322a6d84e991c38775
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > 
-> > Unfortunately, I don't have any reproducer for this issue yet.
-> > 
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-> > 
-> > infiniband syz1: set down
-> > infiniband syz1: added lo
-> > RDS/IB: syz1: added
-> > smc: adding ib device syz1 with port count 1
-> > BUG: sleeping function called from invalid context at kernel/locking/mutex.c:577
-> > in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 17974, name: syz-executor.3
-> > preempt_count: 1, expected: 0
-> > RCU nest depth: 0, expected: 0
-> > 6 locks held by syz-executor.3/17974:
-> >  #0: ffffffff90865838 (&rdma_nl_types[idx].sem){.+.+}-{3:3}, at: rdma_nl_rcv_msg+0x161/0x690 drivers/infiniband/core/netlink.c:164
-> >  #1: ffffffff8d04edf0 (link_ops_rwsem){++++}-{3:3}, at: nldev_newlink+0x25d/0x560 drivers/infiniband/core/nldev.c:1707
-> >  #2: ffffffff8d03e650 (devices_rwsem){++++}-{3:3}, at: enable_device_and_get+0xfc/0x3b0 drivers/infiniband/core/device.c:1321
-> >  #3: ffffffff8d03e510 (clients_rwsem){++++}-{3:3}, at: enable_device_and_get+0x15b/0x3b0 drivers/infiniband/core/device.c:1329
-> >  #4: ffff8880482c85c0 (&device->client_data_rwsem){++++}-{3:3}, at: add_client_context+0x3d0/0x5e0 drivers/infiniband/core/device.c:718
-> >  #5: ffff8880230a4118 (&pnettable->lock){++++}-{2:2}, at: smc_pnetid_by_table_ib+0x18c/0x470 net/smc/smc_pnet.c:1159
-> > Preemption disabled at:
-> > [<0000000000000000>] 0x0
-> > CPU: 1 PID: 17974 Comm: syz-executor.3 Not tainted 5.17.0-rc3-syzkaller-00170-gc832962ac972 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Call Trace:
-> >  <TASK>
-> >  __dump_stack lib/dump_stack.c:88 [inline]
-> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> >  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9576
-> >  __mutex_lock_common kernel/locking/mutex.c:577 [inline]
-> >  __mutex_lock+0x9f/0x12f0 kernel/locking/mutex.c:733
-> >  smc_pnet_apply_ib+0x28/0x160 net/smc/smc_pnet.c:251
-> >  smc_pnetid_by_table_ib+0x2ae/0x470 net/smc/smc_pnet.c:1164
-> 
-> If I recall it well, read_lock() disables preemption. 
-> 
-> smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib() 
-> which, in turn, calls mutex_lock(&smc_ib_devices.mutex). Therefore the code 
-> acquires a mutex while in atomic and we get a SAC bug.
-> 
-> Actually, even if my argument is correct(?), I don't know if the read_lock() 
-> in smc_pnetid_by_table_ib() can be converted to a sleeping lock like a mutex or 
-> a semaphore.
- 
-I think it is okay to use mutex, because this path is not so hot and no
-limit to require spinlocks. pnettable is accessed by netlink, syscall
-and netdevice notifier.
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1/2022-02-19
+head:   b781e0ccdc0c9a931571d15db09d45b7258b9905
+commit: cc508fcd22b7d2522a7ace5baaf236db384f1160 [491/552] brcmfmac: cfg80211: Add support for scan params v2
+config: i386-randconfig-s001-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211631.TQArYv6u-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/cc508fcd22b7d2522a7ace5baaf236db384f1160
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1/2022-02-19
+        git checkout cc508fcd22b7d2522a7ace5baaf236db384f1160
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/wireless/broadcom/brcm80211/brcmfmac/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le16 [usertype] version @@     got int @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:     expected restricted __le16 [usertype] version
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1087:28: sparse:     got int
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __le32 [usertype] scan_type @@     got int @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse:     expected restricted __le32 [usertype] scan_type
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1149:38: sparse:     got int
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned char [usertype] scan_type @@     got restricted __le32 [usertype] scan_type @@
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse:     expected unsigned char [usertype] scan_type
+   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:790:30: sparse:     got restricted __le32 [usertype] scan_type
+
+vim +1087 drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+
+  1069	
+  1070	static void brcmf_escan_prep(struct brcmf_cfg80211_info *cfg,
+  1071				     struct brcmf_scan_params_v2_le *params_le,
+  1072				     struct cfg80211_scan_request *request)
+  1073	{
+  1074		u32 n_ssids;
+  1075		u32 n_channels;
+  1076		s32 i;
+  1077		s32 offset;
+  1078		u16 chanspec;
+  1079		char *ptr;
+  1080		int length;
+  1081		struct brcmf_ssid_le ssid_le;
+  1082	
+  1083		eth_broadcast_addr(params_le->bssid);
+  1084	
+  1085		length = BRCMF_SCAN_PARAMS_V2_FIXED_SIZE;
+  1086	
+> 1087		params_le->version = BRCMF_SCAN_PARAMS_VERSION_V2;
+  1088		params_le->bss_type = DOT11_BSSTYPE_ANY;
+  1089		params_le->scan_type = BRCMF_SCANTYPE_ACTIVE;
+  1090		params_le->channel_num = 0;
+  1091		params_le->nprobes = cpu_to_le32(-1);
+  1092		params_le->active_time = cpu_to_le32(-1);
+  1093		params_le->passive_time = cpu_to_le32(-1);
+  1094		params_le->home_time = cpu_to_le32(-1);
+  1095		memset(&params_le->ssid_le, 0, sizeof(params_le->ssid_le));
+  1096	
+  1097		/* Scan abort */
+  1098		if (!request) {
+  1099			length += sizeof(u16);
+  1100			params_le->channel_num = cpu_to_le32(1);
+  1101			params_le->channel_list[0] = cpu_to_le16(-1);
+  1102			params_le->length = cpu_to_le16(length);
+  1103			return;
+  1104		}
+  1105	
+  1106		n_ssids = request->n_ssids;
+  1107		n_channels = request->n_channels;
+  1108	
+  1109		/* Copy channel array if applicable */
+  1110		brcmf_dbg(SCAN, "### List of channelspecs to scan ### %d\n",
+  1111			  n_channels);
+  1112		if (n_channels > 0) {
+  1113			length += roundup(sizeof(u16) * n_channels, sizeof(u32));
+  1114			for (i = 0; i < n_channels; i++) {
+  1115				chanspec = channel_to_chanspec(&cfg->d11inf,
+  1116							       request->channels[i]);
+  1117				brcmf_dbg(SCAN, "Chan : %d, Channel spec: %x\n",
+  1118					  request->channels[i]->hw_value, chanspec);
+  1119				params_le->channel_list[i] = cpu_to_le16(chanspec);
+  1120			}
+  1121		} else {
+  1122			brcmf_dbg(SCAN, "Scanning all channels\n");
+  1123		}
+  1124	
+  1125		/* Copy ssid array if applicable */
+  1126		brcmf_dbg(SCAN, "### List of SSIDs to scan ### %d\n", n_ssids);
+  1127		if (n_ssids > 0) {
+  1128			offset = offsetof(struct brcmf_scan_params_v2_le, channel_list) +
+  1129					n_channels * sizeof(u16);
+  1130			offset = roundup(offset, sizeof(u32));
+  1131			length += sizeof(ssid_le) * n_ssids,
+  1132			ptr = (char *)params_le + offset;
+  1133			for (i = 0; i < n_ssids; i++) {
+  1134				memset(&ssid_le, 0, sizeof(ssid_le));
+  1135				ssid_le.SSID_len =
+  1136						cpu_to_le32(request->ssids[i].ssid_len);
+  1137				memcpy(ssid_le.SSID, request->ssids[i].ssid,
+  1138				       request->ssids[i].ssid_len);
+  1139				if (!ssid_le.SSID_len)
+  1140					brcmf_dbg(SCAN, "%d: Broadcast scan\n", i);
+  1141				else
+  1142					brcmf_dbg(SCAN, "%d: scan for  %.32s size=%d\n",
+  1143						  i, ssid_le.SSID, ssid_le.SSID_len);
+  1144				memcpy(ptr, &ssid_le, sizeof(ssid_le));
+  1145				ptr += sizeof(ssid_le);
+  1146			}
+  1147		} else {
+  1148			brcmf_dbg(SCAN, "Performing passive scan\n");
+> 1149			params_le->scan_type = BRCMF_SCANTYPE_PASSIVE;
+  1150		}
+  1151		params_le->length = cpu_to_le16(length);
+  1152		/* Adding mask to channel numbers */
+  1153		params_le->channel_num =
+  1154			cpu_to_le32((n_ssids << BRCMF_SCAN_PARAMS_NSSID_SHIFT) |
+  1155				(n_channels & BRCMF_SCAN_PARAMS_COUNT_MASK));
+  1156	}
+  1157	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
