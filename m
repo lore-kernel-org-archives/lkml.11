@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3B1C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9216BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352257AbiBUJv3 (ORCPT
+        id S1351646AbiBUJu4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:51:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42726 "EHLO
+        Mon, 21 Feb 2022 04:50:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352145AbiBUJrL (ORCPT
+        with ESMTP id S1351665AbiBUJqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:11 -0500
+        Mon, 21 Feb 2022 04:46:24 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FAC40E72;
-        Mon, 21 Feb 2022 01:19:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374443FD91;
+        Mon, 21 Feb 2022 01:18:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4AA260F4E;
-        Mon, 21 Feb 2022 09:19:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DCFC340E9;
-        Mon, 21 Feb 2022 09:19:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9EB960F51;
+        Mon, 21 Feb 2022 09:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1B0C340F5;
+        Mon, 21 Feb 2022 09:18:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435145;
-        bh=oaexEo1n/fmSwflUo0Lwc/rDGF0py2hBb4yzWuhSC9c=;
+        s=korg; t=1645435117;
+        bh=TXTiTY4Ys45f9GxVHtZc35Xx0/63xfUWdOIcjcLwCA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxQ/hxrDTRsrVIMRmqT2mx9LOtuRHanvkFKxBCs5na0oMKLrVyWZhGWLZFsCQofg7
-         ulAZGKvoRmMY616E6a3Au12iNvVi8BN1S+JcPrVDBMHiH1k5npSkjO5zQpP12nQj6v
-         otmXAsE5TEF08AqrwE5bZfhFI0a4OgqbDb5Id6P0=
+        b=rSOPhYZouQNsJtY7gL+uCOc3sFaeo5NE4pjKuR/aoYXAzzB3MawRiqCwKVGJL0ccK
+         Mv/a6d49e5rsGCXEwnVYNjmpHLU2dWxF1js4P1adFLtsI/Z+5oxphPTCdFWTPy9abW
+         j01a+SdDUyFkE29GZzTouk1wtDX+9RhSvAJW6JJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 060/227] nvme: fix a possible use-after-free in controller reset during load
-Date:   Mon, 21 Feb 2022 09:47:59 +0100
-Message-Id: <20220221084936.873953605@linuxfoundation.org>
+Subject: [PATCH 5.16 051/227] vfs: make sync_filesystem return errors from ->sync_fs
+Date:   Mon, 21 Feb 2022 09:47:50 +0100
+Message-Id: <20220221084936.569402281@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,61 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Darrick J. Wong <djwong@kernel.org>
 
-[ Upstream commit 0fa0f99fc84e41057cbdd2efbfe91c6b2f47dd9d ]
+[ Upstream commit 5679897eb104cec9e99609c3f045a0c20603da4c ]
 
-Unlike .queue_rq, in .submit_async_event drivers may not check the ctrl
-readiness for AER submission. This may lead to a use-after-free
-condition that was observed with nvme-tcp.
+Strangely, sync_filesystem ignores the return code from the ->sync_fs
+call, which means that syscalls like syncfs(2) never see the error.
+This doesn't seem right, so fix that.
 
-The race condition may happen in the following scenario:
-1. driver executes its reset_ctrl_work
-2. -> nvme_stop_ctrl - flushes ctrl async_event_work
-3. ctrl sends AEN which is received by the host, which in turn
-   schedules AEN handling
-4. teardown admin queue (which releases the queue socket)
-5. AEN processed, submits another AER, calling the driver to submit
-6. driver attempts to send the cmd
-==> use-after-free
-
-In order to fix that, add ctrl state check to validate the ctrl
-is actually able to accept the AER submission.
-
-This addresses the above race in controller resets because the driver
-during teardown should:
-1. change ctrl state to RESETTING
-2. flush async_event_work (as well as other async work elements)
-
-So after 1,2, any other AER command will find the
-ctrl state to be RESETTING and bail out without submitting the AER.
-
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/sync.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1af8a4513708a..9a6586c69afe8 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4258,7 +4258,14 @@ static void nvme_async_event_work(struct work_struct *work)
- 		container_of(work, struct nvme_ctrl, async_event_work);
+diff --git a/fs/sync.c b/fs/sync.c
+index 3ce8e2137f310..c7690016453e4 100644
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -29,7 +29,7 @@
+  */
+ int sync_filesystem(struct super_block *sb)
+ {
+-	int ret;
++	int ret = 0;
  
- 	nvme_aen_uevent(ctrl);
--	ctrl->ops->submit_async_event(ctrl);
-+
-+	/*
-+	 * The transport drivers must guarantee AER submission here is safe by
-+	 * flushing ctrl async_event_work after changing the controller state
-+	 * from LIVE and before freeing the admin queue.
-+	*/
-+	if (ctrl->state == NVME_CTRL_LIVE)
-+		ctrl->ops->submit_async_event(ctrl);
+ 	/*
+ 	 * We need to be protected against the filesystem going from
+@@ -52,15 +52,21 @@ int sync_filesystem(struct super_block *sb)
+ 	 * at a time.
+ 	 */
+ 	writeback_inodes_sb(sb, WB_REASON_SYNC);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 0);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 0);
++		if (ret)
++			return ret;
++	}
+ 	ret = sync_blockdev_nowait(sb->s_bdev);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	sync_inodes_sb(sb);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
+ 	return sync_blockdev(sb->s_bdev);
  }
- 
- static bool nvme_ctrl_pp_status(struct nvme_ctrl *ctrl)
+ EXPORT_SYMBOL(sync_filesystem);
 -- 
 2.34.1
 
