@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DD9C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348719AbiBUJLg (ORCPT
+        id S1349829AbiBUJM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:11:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55702 "EHLO
+        Mon, 21 Feb 2022 04:12:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347594AbiBUJHG (ORCPT
+        with ESMTP id S1347815AbiBUJIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:07:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED8B26559;
-        Mon, 21 Feb 2022 00:59:51 -0800 (PST)
+        Mon, 21 Feb 2022 04:08:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B4924BF1;
+        Mon, 21 Feb 2022 01:00:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60908B80E72;
-        Mon, 21 Feb 2022 08:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A34C340EB;
-        Mon, 21 Feb 2022 08:59:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D7A6112F;
+        Mon, 21 Feb 2022 09:00:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54AFBC340E9;
+        Mon, 21 Feb 2022 09:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433990;
-        bh=OSHo2PJpIYtB2DIHy0v4CkW2SRFnO9seM4Vk8G09WJg=;
+        s=korg; t=1645434043;
+        bh=5SuNCyN1ucx3MHaix2jpGqYdlOWZFws5YQAJ4LO3rCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g68thwJ+7dv2NFCxMA5oYOJ9I+Xveu3XhpxqnzGnW6PNr7UCPA/RhXeOd/DUm+KI9
-         Z4memPoVhvInZqFRacDDQdsXR46uDpxGqRxWUGKDzM0vgOh4b+K9hVfWlMJsu3U3qK
-         S66Zs5COmJSsuz0g2MJF46tosML+52ua212nImCI=
+        b=nIrRdtPRFAyfRLn8EfUrt2/2kM5AwIbfgOUWR6ERCCe2J+57nT3IUkk39ABR9zKNk
+         W6dR/nbllCiZsHDzIlbOlnhoWPo3irYqOMTBR6vLG7mPfhyeh7AcPq41tHKo9pldEt
+         uVGWCh1+sLYSP5d92zaN4tydBsQGdo0mqLbSkis4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 12/80] selftests/zram: Skip max_comp_streams interface on newer kernel
-Date:   Mon, 21 Feb 2022 09:48:52 +0100
-Message-Id: <20220221084915.993795854@linuxfoundation.org>
+Subject: [PATCH 5.4 73/80] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
+Date:   Mon, 21 Feb 2022 09:49:53 +0100
+Message-Id: <20220221084917.971077969@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,73 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
+[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
 
-Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
-has switched to per-cpu streams. Even kernel still keep this interface for
-some reasons, but writing to max_comp_stream doesn't take any effect. So
-skip it on newer kernel ie 4.7.
+The BL32/TEE reserved-memory region is now inherited from the common
+family dtsi (meson-g12-common) so we can drop it from board files.
 
-The code that comparing kernel version is from xfstests testsuite ext4/053.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
+ arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
+ 2 files changed, 16 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 6f872f266fd11..f47fc0f27e99e 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -11,6 +11,9 @@ dev_mounted=-1
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index b8d9e92197ac8..c76bf498ee388 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -157,14 +157,6 @@
+ 		regulator-always-on;
+ 	};
  
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+kernel_version=`uname -r | cut -d'.' -f1,2`
-+kernel_major=${kernel_version%.*}
-+kernel_minor=${kernel_version#*.}
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 29ac78ddc057e..85fb59060cdff 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -164,14 +164,6 @@
+ 		regulator-always-on;
+ 	};
  
- trap INT
- 
-@@ -25,6 +28,20 @@ check_prereqs()
- 	fi
- }
- 
-+kernel_gte()
-+{
-+	major=${1%.*}
-+	minor=${1#*.}
-+
-+	if [ $kernel_major -gt $major ]; then
-+		return 0
-+	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
- zram_cleanup()
- {
- 	echo "zram cleanup"
-@@ -86,6 +103,13 @@ zram_max_streams()
- {
- 	echo "set max_comp_streams to zram device(s)"
- 
-+	kernel_gte 4.7
-+	if [ $? -eq 0 ]; then
-+		echo "The device attribute max_comp_streams was"\
-+		               "deprecated in 4.7"
-+		return 0
-+	fi
-+
- 	local i=0
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
 -- 
 2.34.1
 
