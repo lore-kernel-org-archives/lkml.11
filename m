@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71678C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352190AbiBUJy1 (ORCPT
+        id S1352230AbiBUJye (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41680 "EHLO
+        Mon, 21 Feb 2022 04:54:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352497AbiBUJrc (ORCPT
+        with ESMTP id S1352521AbiBUJrd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EEE33E25;
-        Mon, 21 Feb 2022 01:20:02 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCF533E8E;
+        Mon, 21 Feb 2022 01:20:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DDB660EB3;
-        Mon, 21 Feb 2022 09:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C32C340E9;
-        Mon, 21 Feb 2022 09:20:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F66060B1E;
+        Mon, 21 Feb 2022 09:20:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAF60C340E9;
+        Mon, 21 Feb 2022 09:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435201;
-        bh=5oevNkWltuZ5z9s8IhiJQ2Gtu7X4d4URKOU16CHikIM=;
+        s=korg; t=1645435204;
+        bh=OSHo2PJpIYtB2DIHy0v4CkW2SRFnO9seM4Vk8G09WJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G6IFTIkFBXs+UXGUyV4L+NPdC3OikZeLtx78B6/fPVYxzDA75cLElT/hv896ig3vj
-         HHui1GF6BuYb+yKwhLzLoQ9km3ZkD8pb3CmIo0JzbvBJu06MGt2W1L5mlPOq2/spgj
-         K9POCU+ikTP7TfpRFgKlEt72v+1l8lv8OgtZtZLg=
+        b=i7XJABFyNBCCh7qRL5X9MoKI2z+qSpcnEwSGMqs1DznJbYalBwHUBYY4Cjqx6z+xv
+         qYImAPrXxD+bjme+1W13JH/Fl1iOeQwGFpkojvCiDRobBtY5eqP6olWAIa4sWi8m8Q
+         VsLf3T4K+oc6DWZ6s/RNgbraU16I6LZ8eSb9dT4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julian Braha <julianbraha@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 049/227] pinctrl: bcm63xx: fix unmet dependency on REGMAP for GPIO_REGMAP
-Date:   Mon, 21 Feb 2022 09:47:48 +0100
-Message-Id: <20220221084936.506928008@linuxfoundation.org>
+Subject: [PATCH 5.16 040/227] selftests/zram: Skip max_comp_streams interface on newer kernel
+Date:   Mon, 21 Feb 2022 09:47:39 +0100
+Message-Id: <20220221084936.197002900@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,47 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julian Braha <julianbraha@gmail.com>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-[ Upstream commit 3a5286955bf5febc3d151bcb2c5e272e383b64aa ]
+[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
 
-When PINCTRL_BCM63XX is selected,
-and REGMAP is not selected,
-Kbuild gives the following warning:
+Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
+has switched to per-cpu streams. Even kernel still keep this interface for
+some reasons, but writing to max_comp_stream doesn't take any effect. So
+skip it on newer kernel ie 4.7.
 
-WARNING: unmet direct dependencies detected for GPIO_REGMAP
-  Depends on [n]: GPIOLIB [=y] && REGMAP [=n]
-  Selected by [y]:
-  - PINCTRL_BCM63XX [=y] && PINCTRL [=y]
+The code that comparing kernel version is from xfstests testsuite ext4/053.
 
-This is because PINCTRL_BCM63XX
-selects GPIO_REGMAP without selecting or depending on
-REGMAP, despite GPIO_REGMAP depending on REGMAP.
-
-This unmet dependency bug was detected by Kismet,
-a static analysis tool for Kconfig. Please advise
-if this is not the appropriate solution.
-
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
-Link: https://lore.kernel.org/r/20220117062557.89568-1-julianbraha@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/bcm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/pinctrl/bcm/Kconfig b/drivers/pinctrl/bcm/Kconfig
-index 8fc1feedd8617..5116b014e2a4f 100644
---- a/drivers/pinctrl/bcm/Kconfig
-+++ b/drivers/pinctrl/bcm/Kconfig
-@@ -35,6 +35,7 @@ config PINCTRL_BCM63XX
- 	select PINCONF
- 	select GENERIC_PINCONF
- 	select GPIOLIB
-+	select REGMAP
- 	select GPIO_REGMAP
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 6f872f266fd11..f47fc0f27e99e 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -11,6 +11,9 @@ dev_mounted=-1
  
- config PINCTRL_BCM6318
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++kernel_version=`uname -r | cut -d'.' -f1,2`
++kernel_major=${kernel_version%.*}
++kernel_minor=${kernel_version#*.}
+ 
+ trap INT
+ 
+@@ -25,6 +28,20 @@ check_prereqs()
+ 	fi
+ }
+ 
++kernel_gte()
++{
++	major=${1%.*}
++	minor=${1#*.}
++
++	if [ $kernel_major -gt $major ]; then
++		return 0
++	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
++		return 0
++	fi
++
++	return 1
++}
++
+ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+@@ -86,6 +103,13 @@ zram_max_streams()
+ {
+ 	echo "set max_comp_streams to zram device(s)"
+ 
++	kernel_gte 4.7
++	if [ $? -eq 0 ]; then
++		echo "The device attribute max_comp_streams was"\
++		               "deprecated in 4.7"
++		return 0
++	fi
++
+ 	local i=0
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
 -- 
 2.34.1
 
