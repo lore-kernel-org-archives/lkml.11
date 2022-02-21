@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F584C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3253AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352173AbiBUJvR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:51:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42384 "EHLO
+        id S235055AbiBUJvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:51:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351941AbiBUJqt (ORCPT
+        with ESMTP id S1352246AbiBUJrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:46:49 -0500
+        Mon, 21 Feb 2022 04:47:16 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE724585;
-        Mon, 21 Feb 2022 01:18:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2623F4162F;
+        Mon, 21 Feb 2022 01:19:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 47502CE0E8B;
-        Mon, 21 Feb 2022 09:18:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54ED6C340F0;
-        Mon, 21 Feb 2022 09:18:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 970BDCE0E92;
+        Mon, 21 Feb 2022 09:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE1BC340E9;
+        Mon, 21 Feb 2022 09:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435125;
-        bh=LqAIqUeUEKgW92UTw1yJ3kk8qc1HcfhyXlsTFk6oZNk=;
+        s=korg; t=1645435151;
+        bh=uOGHB0PhJWRjRJyytDv6xrbR6xnITxBkeN0s7zIIQGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tVa+XLOcQ7GsTHnJ1MgSB6L3yDxWIKpHyORoeZRd58PmiK2r9sSg9uq6snK78NsGq
-         vtthuPYb2/QjITGhs4qSqQLt0VCAyYrHtFOFcLQCqohdl4mkVIcixZmdpsFGM1ZXYX
-         t3JIv7nqucBd6js/mBqGsviJt595UxisKCTg6wEU=
+        b=vHGwT+O2xFhPS8bv8rHRublq1r55XaTHtLFUEtkGQGc578xnMSCuPrDFIWA0HKXuL
+         Au4w3BJvSk0tdfmoxPx+yyCFHzIOQQtigAOpsaYZqFSQvUHw2UfJeJdHNvq3j+tT1N
+         6X/V4wz3+aMfCTBer8sOlXaBFkrMk50X0Otu0hQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 054/227] kselftest: Fix vdso_test_abi return status
-Date:   Mon, 21 Feb 2022 09:47:53 +0100
-Message-Id: <20220221084936.670132478@linuxfoundation.org>
+Subject: [PATCH 5.16 062/227] nvme-rdma: fix possible use-after-free in transport error_recovery work
+Date:   Mon, 21 Feb 2022 09:48:01 +0100
+Message-Id: <20220221084936.938754076@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -54,290 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincenzo Frascino <vincenzo.frascino@arm.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit ec049891b2dc16591813eacaddc476b3d27c8c14 ]
+[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
 
-vdso_test_abi contains a batch of tests that verify the validity of the
-vDSO ABI.
+While nvme_rdma_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-When a vDSO symbol is not found the relevant test is skipped reporting
-KSFT_SKIP. All the tests return values are then added in a single
-variable which is checked to verify failures. This approach can have
-side effects which result in reporting the wrong kselftest exit status.
-
-Fix vdso_test_abi verifying the return code of each test separately.
-
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Reported-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/vDSO/vdso_test_abi.c | 135 +++++++++----------
- 1 file changed, 62 insertions(+), 73 deletions(-)
+ drivers/nvme/host/rdma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
-index 3d603f1394af4..883ca85424bc5 100644
---- a/tools/testing/selftests/vDSO/vdso_test_abi.c
-+++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
-@@ -33,110 +33,114 @@ typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
- typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
- typedef time_t (*vdso_time_t)(time_t *t);
+diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
+index 850f84d204d05..9c55e4be8a398 100644
+--- a/drivers/nvme/host/rdma.c
++++ b/drivers/nvme/host/rdma.c
+@@ -1200,6 +1200,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
+ 			struct nvme_rdma_ctrl, err_work);
  
--static int vdso_test_gettimeofday(void)
-+#define VDSO_TEST_PASS_MSG()	"\n%s(): PASS\n", __func__
-+#define VDSO_TEST_FAIL_MSG(x)	"\n%s(): %s FAIL\n", __func__, x
-+#define VDSO_TEST_SKIP_MSG(x)	"\n%s(): SKIP: Could not find %s\n", __func__, x
-+
-+static void vdso_test_gettimeofday(void)
- {
- 	/* Find gettimeofday. */
- 	vdso_gettimeofday_t vdso_gettimeofday =
- 		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
- 
- 	if (!vdso_gettimeofday) {
--		printf("Could not find %s\n", name[0]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[0]));
-+		return;
- 	}
- 
- 	struct timeval tv;
- 	long ret = vdso_gettimeofday(&tv, 0);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)tv.tv_sec, (long long)tv.tv_usec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[0]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[0]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_gettime(clockid_t clk_id)
-+static void vdso_test_clock_gettime(clockid_t clk_id)
- {
- 	/* Find clock_gettime. */
- 	vdso_clock_gettime_t vdso_clock_gettime =
- 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
- 
- 	if (!vdso_clock_gettime) {
--		printf("Could not find %s\n", name[1]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[1]));
-+		return;
- 	}
- 
- 	struct timespec ts;
- 	long ret = vdso_clock_gettime(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The time is %lld.%06lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The time is %lld.%06lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[1]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[1]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_time(void)
-+static void vdso_test_time(void)
- {
- 	/* Find time. */
- 	vdso_time_t vdso_time =
- 		(vdso_time_t)vdso_sym(version, name[2]);
- 
- 	if (!vdso_time) {
--		printf("Could not find %s\n", name[2]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[2]));
-+		return;
- 	}
- 
- 	long ret = vdso_time(NULL);
- 
- 	if (ret > 0) {
--		printf("The time in hours since January 1, 1970 is %lld\n",
-+		ksft_print_msg("The time in hours since January 1, 1970 is %lld\n",
- 				(long long)(ret / 3600));
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
- 	} else {
--		printf("%s failed\n", name[2]);
--		return KSFT_FAIL;
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[2]));
- 	}
--
--	return KSFT_PASS;
- }
- 
--static int vdso_test_clock_getres(clockid_t clk_id)
-+static void vdso_test_clock_getres(clockid_t clk_id)
- {
-+	int clock_getres_fail = 0;
-+
- 	/* Find clock_getres. */
- 	vdso_clock_getres_t vdso_clock_getres =
- 		(vdso_clock_getres_t)vdso_sym(version, name[3]);
- 
- 	if (!vdso_clock_getres) {
--		printf("Could not find %s\n", name[3]);
--		return KSFT_SKIP;
-+		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[3]));
-+		return;
- 	}
- 
- 	struct timespec ts, sys_ts;
- 	long ret = vdso_clock_getres(clk_id, &ts);
- 
- 	if (ret == 0) {
--		printf("The resolution is %lld %lld\n",
--		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-+		ksft_print_msg("The vdso resolution is %lld %lld\n",
-+			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
- 	} else {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
-+		clock_getres_fail++;
- 	}
- 
- 	ret = syscall(SYS_clock_getres, clk_id, &sys_ts);
- 
--	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec)) {
--		printf("%s failed\n", name[3]);
--		return KSFT_FAIL;
--	}
-+	ksft_print_msg("The syscall resolution is %lld %lld\n",
-+			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
- 
--	return KSFT_PASS;
-+	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
-+		clock_getres_fail++;
-+
-+	if (clock_getres_fail > 0) {
-+		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[3]));
-+	} else {
-+		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
-+	}
- }
- 
- const char *vdso_clock_name[12] = {
-@@ -158,36 +162,23 @@ const char *vdso_clock_name[12] = {
-  * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
-  * with different values for clock_id.
-  */
--static inline int vdso_test_clock(clockid_t clock_id)
-+static inline void vdso_test_clock(clockid_t clock_id)
- {
--	int ret0, ret1;
--
--	ret0 = vdso_test_clock_gettime(clock_id);
--	/* A skipped test is considered passed */
--	if (ret0 == KSFT_SKIP)
--		ret0 = KSFT_PASS;
--
--	ret1 = vdso_test_clock_getres(clock_id);
--	/* A skipped test is considered passed */
--	if (ret1 == KSFT_SKIP)
--		ret1 = KSFT_PASS;
-+	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);
- 
--	ret0 += ret1;
-+	vdso_test_clock_gettime(clock_id);
- 
--	printf("clock_id: %s", vdso_clock_name[clock_id]);
--
--	if (ret0 > 0)
--		printf(" [FAIL]\n");
--	else
--		printf(" [PASS]\n");
--
--	return ret0;
-+	vdso_test_clock_getres(clock_id);
- }
- 
-+#define VDSO_TEST_PLAN	16
-+
- int main(int argc, char **argv)
- {
- 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
--	int ret;
-+
-+	ksft_print_header();
-+	ksft_set_plan(VDSO_TEST_PLAN);
- 
- 	if (!sysinfo_ehdr) {
- 		printf("AT_SYSINFO_EHDR is not present!\n");
-@@ -201,44 +192,42 @@ int main(int argc, char **argv)
- 
- 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
- 
--	ret = vdso_test_gettimeofday();
-+	vdso_test_gettimeofday();
- 
- #if _POSIX_TIMERS > 0
- 
- #ifdef CLOCK_REALTIME
--	ret += vdso_test_clock(CLOCK_REALTIME);
-+	vdso_test_clock(CLOCK_REALTIME);
- #endif
- 
- #ifdef CLOCK_BOOTTIME
--	ret += vdso_test_clock(CLOCK_BOOTTIME);
-+	vdso_test_clock(CLOCK_BOOTTIME);
- #endif
- 
- #ifdef CLOCK_TAI
--	ret += vdso_test_clock(CLOCK_TAI);
-+	vdso_test_clock(CLOCK_TAI);
- #endif
- 
- #ifdef CLOCK_REALTIME_COARSE
--	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
-+	vdso_test_clock(CLOCK_REALTIME_COARSE);
- #endif
- 
- #ifdef CLOCK_MONOTONIC
--	ret += vdso_test_clock(CLOCK_MONOTONIC);
-+	vdso_test_clock(CLOCK_MONOTONIC);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_RAW
--	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
-+	vdso_test_clock(CLOCK_MONOTONIC_RAW);
- #endif
- 
- #ifdef CLOCK_MONOTONIC_COARSE
--	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
-+	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
- #endif
- 
- #endif
- 
--	ret += vdso_test_time();
--
--	if (ret > 0)
--		return KSFT_FAIL;
-+	vdso_test_time();
- 
--	return KSFT_PASS;
-+	ksft_print_cnts();
-+	return ksft_get_fail_cnt() == 0 ? KSFT_PASS : KSFT_FAIL;
- }
+ 	nvme_stop_keep_alive(&ctrl->ctrl);
++	flush_work(&ctrl->ctrl.async_event_work);
+ 	nvme_rdma_teardown_io_queues(ctrl, false);
+ 	nvme_start_queues(&ctrl->ctrl);
+ 	nvme_rdma_teardown_admin_queue(ctrl, false);
 -- 
 2.34.1
 
