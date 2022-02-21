@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07D1C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B595C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351604AbiBUJqR (ORCPT
+        id S1351721AbiBUJqb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:46:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47998 "EHLO
+        Mon, 21 Feb 2022 04:46:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351455AbiBUJhP (ORCPT
+        with ESMTP id S1351325AbiBUJg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:15 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB03539838;
-        Mon, 21 Feb 2022 01:15:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:36:59 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F22D2DD6F;
+        Mon, 21 Feb 2022 01:15:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2B5C2CE0E8B;
-        Mon, 21 Feb 2022 09:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11116C340E9;
-        Mon, 21 Feb 2022 09:15:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3BE91CE0E76;
+        Mon, 21 Feb 2022 09:15:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 219D3C340E9;
+        Mon, 21 Feb 2022 09:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434947;
-        bh=jtUIix8YE2fPyTynYc8qgmVp0lmvN90YoZI+APmQjhk=;
+        s=korg; t=1645434910;
+        bh=QX9P9b6jKNwVb+IFyUDJF/Xx6Le72wsrSkqWivmyQJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dakPIsi5v9Fpt19+V776r3v5s6HWvvrABY6SmV/x1FFfmEY9xwCetAmNCEjHj291e
-         oSZHy0uuRDIH4nG3njpl8xBCnbXZyrxMNxacm+SyJIFDibt6RJuBqcX48UjUZHL9Cp
-         +uatGR9L8VQXVKm9cGWGh811ebw4tWkx4zBAaTf0=
+        b=YOtjTu0GBqz8E6z3CMPIxagdVAZYkY7kdkFcCePrqllwy0RPiGNNfygpwWhC3H+yu
+         AgGeRPaFGVGFaizm46t2alCJbHGciG5QbVLofNky7qCBjh0qQPHsGVped96pepLnq5
+         QcwtUcnGfzKFXMvrmiyMaCd7azn3pmzLNBmGxaEc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Marc St-Amand <mstamand@ciena.com>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/196] ksmbd: fix same UniqueId for dot and dotdot entries
-Date:   Mon, 21 Feb 2022 09:49:47 +0100
-Message-Id: <20220221084936.120538087@linuxfoundation.org>
+Subject: [PATCH 5.15 174/196] net: macb: Align the dma and coherent dma masks
+Date:   Mon, 21 Feb 2022 09:50:06 +0100
+Message-Id: <20220221084936.779910220@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,52 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Marc St-Amand <mstamand@ciena.com>
 
-[ Upstream commit 97550c7478a2da93e348d8c3075d92cddd473a78 ]
+[ Upstream commit 37f7860602b5b2d99fc7465f6407f403f5941988 ]
 
-ksmbd sets the inode number to UniqueId. However, the same UniqueId for
-dot and dotdot entry is set to the inode number of the parent inode.
-This patch set them using the current inode and parent inode.
+Single page and coherent memory blocks can use different DMA masks
+when the macb accesses physical memory directly. The kernel is clever
+enough to allocate pages that fit into the requested address width.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+When using the ARM SMMU, the DMA mask must be the same for single
+pages and big coherent memory blocks. Otherwise the translation
+tables turn into one big mess.
+
+  [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+  [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+  [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
+  [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
+
+Since using the same DMA mask does not hurt direct 1:1 physical
+memory mappings, this commit always aligns DMA and coherent masks.
+
+Signed-off-by: Marc St-Amand <mstamand@ciena.com>
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb_common.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ksmbd/smb_common.c b/fs/ksmbd/smb_common.c
-index 707490ab1f4c4..f2e7e3a654b34 100644
---- a/fs/ksmbd/smb_common.c
-+++ b/fs/ksmbd/smb_common.c
-@@ -308,14 +308,17 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
- 	for (i = 0; i < 2; i++) {
- 		struct kstat kstat;
- 		struct ksmbd_kstat ksmbd_kstat;
-+		struct dentry *dentry;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d13fb1d318215..d71c11a6282ec 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4739,7 +4739,7 @@ static int macb_probe(struct platform_device *pdev)
  
- 		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
- 			if (i == 0) {
- 				d_info->name = ".";
- 				d_info->name_len = 1;
-+				dentry = dir->filp->f_path.dentry;
- 			} else {
- 				d_info->name = "..";
- 				d_info->name_len = 2;
-+				dentry = dir->filp->f_path.dentry->d_parent;
- 			}
- 
- 			if (!match_pattern(d_info->name, d_info->name_len,
-@@ -327,7 +330,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
- 			ksmbd_kstat.kstat = &kstat;
- 			ksmbd_vfs_fill_dentry_attrs(work,
- 						    user_ns,
--						    dir->filp->f_path.dentry->d_parent,
-+						    dentry,
- 						    &ksmbd_kstat);
- 			rc = fn(conn, info_level, d_info, &ksmbd_kstat);
- 			if (rc)
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ 	if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
+-		dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
++		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
+ 		bp->hw_dma_cap |= HW_DMA_CAP_64B;
+ 	}
+ #endif
 -- 
 2.34.1
 
