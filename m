@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DC5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AC3C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357645AbiBUMKw (ORCPT
+        id S1357694AbiBUMLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:10:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40902 "EHLO
+        Mon, 21 Feb 2022 07:11:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345377AbiBUMIx (ORCPT
+        with ESMTP id S1357317AbiBUMIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:08:53 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78C2201BF
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:29 -0800 (PST)
+        Mon, 21 Feb 2022 07:08:55 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66A8201B6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:30 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2C79E223E9;
-        Mon, 21 Feb 2022 13:08:28 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 03F5422464;
+        Mon, 21 Feb 2022 13:08:29 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645445308;
+        t=1645445309;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P5dcEej3Ax5+Qxcv48nsSiUuMGpOh3SbGy2WIrEVylY=;
-        b=P8MTPo7uKLThfMz6KQaXKG/4vXWfE6IZdQ1eQkAvn4fVypKGI2NCJS1Hf3hmpi9cmmuBXc
-        R7dQKayRTnEksVT0Era/fgrwuHbrWDvD6j5v8qq+XHgS3Zg6lxm8eil8HeX08EkYN6lDFU
-        RLicCT5PrBI5P47dSrf9rPqCtvtZUUI=
+        bh=y6Gbu5ONm2hlRADzx/R6Xoo589VHVIGFuGyeHW81kPk=;
+        b=QEllJi8xjl46bvXn+hYXfeWYozoAfrDmJwS9tdzApnAbgbarB7TslIMWiThticZSr8G90F
+        3WwSKHTJERUTNfhyqnubkszs7RP/T9H/QnFpIuYT4Z2Kj5U/O2HDmSJwVoPl+qux37qKaG
+        s+NIKlyoceQs58SOZVe7Zf1CItrN37E=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,9 +40,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 21/32] mtd: spi-nor: move all xilinx specifics into xilinx.c
-Date:   Mon, 21 Feb 2022 13:07:58 +0100
-Message-Id: <20220221120809.1531502-22-michael@walle.cc>
+Subject: [PATCH v4 24/32] mtd: spi-nor: move all micron-st specifics into micron-st.c
+Date:   Mon, 21 Feb 2022 13:08:01 +0100
+Message-Id: <20220221120809.1531502-25-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221120809.1531502-1-michael@walle.cc>
 References: <20220221120809.1531502-1-michael@walle.cc>
@@ -52,284 +52,366 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mechanically move all the xilinx functions to its own module.
+The flag status register is only available on micron flashes. Move all
+the functions around that into the micron module.
 
-Then register the new flash specific ready() function.
+This is almost a mechanical move except for the spi_nor_fsr_ready()
+which now also checks the normal status register. Previously, this was
+done in spi_nor_ready().
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/core.c   | 64 +------------------------------
- drivers/mtd/spi-nor/core.h   | 18 ---------
- drivers/mtd/spi-nor/xilinx.c | 73 ++++++++++++++++++++++++++++++++++++
- include/linux/mtd/spi-nor.h  |  9 -----
- 4 files changed, 74 insertions(+), 90 deletions(-)
+ drivers/mtd/spi-nor/core.c      | 123 +----------------------------
+ drivers/mtd/spi-nor/micron-st.c | 133 ++++++++++++++++++++++++++++++++
+ include/linux/mtd/spi-nor.h     |   8 --
+ 3 files changed, 134 insertions(+), 130 deletions(-)
 
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 8481272533a3..ae1560250c48 100644
+index ae1560250c48..5b56d718692b 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -598,57 +598,6 @@ int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
+@@ -412,50 +412,6 @@ int spi_nor_read_sr(struct spi_nor *nor, u8 *sr)
  	return ret;
  }
  
 -/**
-- * spi_nor_xread_sr() - Read the Status Register on S3AN flashes.
-- * @nor:	pointer to 'struct spi_nor'.
-- * @sr:		pointer to a DMA-able buffer where the value of the
-- *              Status Register will be written.
+- * spi_nor_read_fsr() - Read the Flag Status Register.
+- * @nor:	pointer to 'struct spi_nor'
+- * @fsr:	pointer to a DMA-able buffer where the value of the
+- *              Flag Status Register will be written. Should be at least 2
+- *              bytes.
 - *
 - * Return: 0 on success, -errno otherwise.
 - */
--int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
+-static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 -{
 -	int ret;
 -
 -	if (nor->spimem) {
 -		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_XRDSR, 0),
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),
 -				   SPI_MEM_OP_NO_ADDR,
 -				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, sr, 0));
+-				   SPI_MEM_OP_DATA_IN(1, fsr, 0));
+-
+-		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
+-			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
+-			op.dummy.nbytes = nor->params->rdsr_dummy;
+-			/*
+-			 * We don't want to read only one byte in DTR mode. So,
+-			 * read 2 and then discard the second byte.
+-			 */
+-			op.data.nbytes = 2;
+-		}
 -
 -		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
 -
 -		ret = spi_mem_exec_op(nor->spimem, &op);
 -	} else {
--		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_XRDSR, sr,
+-		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_RDFSR, fsr,
 -						      1);
 -	}
 -
 -	if (ret)
--		dev_dbg(nor->dev, "error %d reading XRDSR\n", ret);
+-		dev_dbg(nor->dev, "error %d reading FSR\n", ret);
 -
 -	return ret;
 -}
 -
+ /**
+  * spi_nor_read_cr() - Read the Configuration Register using the
+  * SPINOR_OP_RDCR (35h) command.
+@@ -664,75 +620,6 @@ int spi_nor_sr_ready(struct spi_nor *nor)
+ 	return !(nor->bouncebuf[0] & SR_WIP);
+ }
+ 
 -/**
-- * spi_nor_xsr_ready() - Query the Status Register of the S3AN flash to see if
-- * the flash is ready for new commands.
+- * spi_nor_clear_fsr() - Clear the Flag Status Register.
+- * @nor:	pointer to 'struct spi_nor'.
+- */
+-static void spi_nor_clear_fsr(struct spi_nor *nor)
+-{
+-	int ret;
+-
+-	if (nor->spimem) {
+-		struct spi_mem_op op =
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),
+-				   SPI_MEM_OP_NO_ADDR,
+-				   SPI_MEM_OP_NO_DUMMY,
+-				   SPI_MEM_OP_NO_DATA);
+-
+-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+-
+-		ret = spi_mem_exec_op(nor->spimem, &op);
+-	} else {
+-		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLFSR,
+-						       NULL, 0);
+-	}
+-
+-	if (ret)
+-		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);
+-}
+-
+-/**
+- * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
+- * ready for new commands.
 - * @nor:	pointer to 'struct spi_nor'.
 - *
 - * Return: 1 if ready, 0 if not ready, -errno on errors.
 - */
--static int spi_nor_xsr_ready(struct spi_nor *nor)
+-static int spi_nor_fsr_ready(struct spi_nor *nor)
 -{
--	int ret;
+-	int ret = spi_nor_read_fsr(nor, nor->bouncebuf);
 -
--	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
 -	if (ret)
 -		return ret;
 -
--	return !!(nor->bouncebuf[0] & XSR_RDY);
+-	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
+-		if (nor->bouncebuf[0] & FSR_E_ERR)
+-			dev_err(nor->dev, "Erase operation failed.\n");
+-		else
+-			dev_err(nor->dev, "Program operation failed.\n");
+-
+-		if (nor->bouncebuf[0] & FSR_PT_ERR)
+-			dev_err(nor->dev,
+-			"Attempted to modify a protected sector.\n");
+-
+-		spi_nor_clear_fsr(nor);
+-
+-		/*
+-		 * WEL bit remains set to one when an erase or page program
+-		 * error occurs. Issue a Write Disable command to protect
+-		 * against inadvertent writes that can possibly corrupt the
+-		 * contents of the memory.
+-		 */
+-		ret = spi_nor_write_disable(nor);
+-		if (ret)
+-			return ret;
+-
+-		return -EIO;
+-	}
+-
+-	return !!(nor->bouncebuf[0] & FSR_READY);
 -}
 -
  /**
-  * spi_nor_clear_sr() - Clear the Status Register.
+  * spi_nor_ready() - Query the flash to see if it is ready for new commands.
   * @nor:	pointer to 'struct spi_nor'.
-@@ -798,10 +747,7 @@ static int spi_nor_ready(struct spi_nor *nor)
+@@ -741,19 +628,11 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+  */
+ static int spi_nor_ready(struct spi_nor *nor)
+ {
+-	int sr, fsr;
+-
+ 	/* Flashes might override the standard routine. */
  	if (nor->params->ready)
  		return nor->params->ready(nor);
  
--	if (nor->flags & SNOR_F_READY_XSR_RDY)
--		sr = spi_nor_xsr_ready(nor);
--	else
--		sr = spi_nor_sr_ready(nor);
-+	sr = spi_nor_sr_ready(nor);
- 	if (sr < 0)
- 		return sr;
- 	fsr = nor->flags & SNOR_F_USE_FSR ? spi_nor_fsr_ready(nor) : 1;
-@@ -2677,14 +2623,6 @@ static void spi_nor_init_flags(struct spi_nor *nor)
- 
- 	if (flags & USE_FSR)
- 		nor->flags |= SNOR_F_USE_FSR;
--
--	/*
--	 * Make sure the XSR_RDY flag is set before calling
--	 * spi_nor_wait_till_ready(). Xilinx S3AN share MFR
--	 * with Atmel SPI NOR.
--	 */
--	if (flags & SPI_NOR_XSR_RDY)
--		nor->flags |=  SNOR_F_READY_XSR_RDY;
+-	sr = spi_nor_sr_ready(nor);
+-	if (sr < 0)
+-		return sr;
+-	fsr = nor->flags & SNOR_F_USE_FSR ? spi_nor_fsr_ready(nor) : 1;
+-	if (fsr < 0)
+-		return fsr;
+-	return sr && fsr;
++	return spi_nor_sr_ready(nor);
  }
  
  /**
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index 3c37b46d60d5..fabc01ae9a81 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -15,7 +15,6 @@ enum spi_nor_option_flags {
- 	SNOR_F_USE_FSR		= BIT(0),
- 	SNOR_F_HAS_SR_TB	= BIT(1),
- 	SNOR_F_NO_OP_CHIP_ERASE	= BIT(2),
--	SNOR_F_READY_XSR_RDY	= BIT(3),
- 	SNOR_F_USE_CLSR		= BIT(4),
- 	SNOR_F_BROKEN_RESET	= BIT(5),
- 	SNOR_F_4B_OPCODES	= BIT(6),
-@@ -351,8 +350,6 @@ struct spi_nor_fixups {
-  *   SPI_NOR_NO_FR:           can't do fastread.
-  *   USE_CLSR:                use CLSR command.
-  *   USE_FSR:                 use flag status register
-- *   SPI_NOR_XSR_RDY:         S3AN flashes have specific opcode to read the
-- *                            status register.
-  *
-  * @no_sfdp_flags:  flags that indicate support that can be discovered via SFDP.
-  *                  Used when SFDP tables are not defined in the flash. These
-@@ -405,7 +402,6 @@ struct flash_info {
- #define SPI_NOR_NO_FR			BIT(8)
- #define USE_CLSR			BIT(9)
- #define USE_FSR				BIT(10)
--#define SPI_NOR_XSR_RDY			BIT(11)
- 
- 	u8 no_sfdp_flags;
- #define SPI_NOR_SKIP_SFDP		BIT(0)
-@@ -462,19 +458,6 @@ struct flash_info {
- 		.addr_width = (_addr_width),				\
- 		.flags = SPI_NOR_NO_ERASE | SPI_NOR_NO_FR,		\
- 
--#define S3AN_INFO(_jedec_id, _n_sectors, _page_size)			\
--		.id = {							\
--			((_jedec_id) >> 16) & 0xff,			\
--			((_jedec_id) >> 8) & 0xff,			\
--			(_jedec_id) & 0xff				\
--			},						\
--		.id_len = 3,						\
--		.sector_size = (8 * (_page_size)),			\
--		.n_sectors = (_n_sectors),				\
--		.page_size = (_page_size),				\
--		.addr_width = 3,					\
--		.flags = SPI_NOR_NO_FR | SPI_NOR_XSR_RDY,
--
- #define OTP_INFO(_len, _n_regions, _base, _offset)			\
- 		.otp_org = {						\
- 			.len = (_len),					\
-@@ -564,7 +547,6 @@ int spi_nor_write_sr(struct spi_nor *nor, const u8 *sr, size_t len);
- int spi_nor_write_sr_and_check(struct spi_nor *nor, u8 sr1);
- int spi_nor_write_16bit_cr_and_check(struct spi_nor *nor, u8 cr);
- 
--int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr);
- ssize_t spi_nor_read_data(struct spi_nor *nor, loff_t from, size_t len,
- 			  u8 *buf);
- ssize_t spi_nor_write_data(struct spi_nor *nor, loff_t to, size_t len,
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 07dd11788df5..05c7fe843a7d 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -8,6 +8,27 @@
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index 7a68f2ad3ea1..8877b122cf42 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -8,6 +8,8 @@
  
  #include "core.h"
  
-+#define SPINOR_OP_XSE		0x50	/* Sector erase */
-+#define SPINOR_OP_XPP		0x82	/* Page program */
-+#define SPINOR_OP_XRDSR		0xd7	/* Read status register */
++#define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
++#define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
+ #define SPINOR_OP_MT_DTR_RD	0xfd	/* Fast Read opcode in DTR mode */
+ #define SPINOR_OP_MT_RD_ANY_REG	0x85	/* Read volatile register */
+ #define SPINOR_OP_MT_WR_ANY_REG	0x81	/* Write volatile register */
+@@ -17,6 +19,12 @@
+ #define SPINOR_MT_OCT_DTR	0xe7	/* Enable Octal DTR. */
+ #define SPINOR_MT_EXSPI		0xff	/* Enable Extended SPI (default) */
+ 
++/* Flag Status Register bits */
++#define FSR_READY		BIT(7)	/* Device status, 0 = Busy, 1 = Ready */
++#define FSR_E_ERR		BIT(5)	/* Erase operation status */
++#define FSR_P_ERR		BIT(4)	/* Program operation status */
++#define FSR_PT_ERR		BIT(1)	/* Protection error bit */
 +
-+#define XSR_PAGESIZE		BIT(0)	/* Page size in Po2 or Linear */
-+#define XSR_RDY			BIT(7)	/* Ready */
-+
-+#define S3AN_INFO(_jedec_id, _n_sectors, _page_size)			\
-+		.id = {							\
-+			((_jedec_id) >> 16) & 0xff,			\
-+			((_jedec_id) >> 8) & 0xff,			\
-+			(_jedec_id) & 0xff				\
-+			},						\
-+		.id_len = 3,						\
-+		.sector_size = (8 * (_page_size)),			\
-+		.n_sectors = (_n_sectors),				\
-+		.page_size = (_page_size),				\
-+		.addr_width = 3,					\
-+		.flags = SPI_NOR_NO_FR
-+
-+/* Xilinx S3AN share MFR with Atmel SPI NOR */
- static const struct flash_info xilinx_nor_parts[] = {
- 	/* Xilinx S3AN Internal Flash */
- 	{ "3S50AN", S3AN_INFO(0x1f2200, 64, 264) },
-@@ -38,6 +59,57 @@ static u32 s3an_nor_convert_addr(struct spi_nor *nor, u32 addr)
- 	return page | offset;
+ static int micron_st_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
+ {
+ 	struct spi_mem_op op;
+@@ -273,6 +281,124 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+ 	return spi_nor_write_disable(nor);
  }
  
 +/**
-+ * spi_nor_xread_sr() - Read the Status Register on S3AN flashes.
-+ * @nor:	pointer to 'struct spi_nor'.
-+ * @sr:		pointer to a DMA-able buffer where the value of the
-+ *              Status Register will be written.
++ * spi_nor_read_fsr() - Read the Flag Status Register.
++ * @nor:	pointer to 'struct spi_nor'
++ * @fsr:	pointer to a DMA-able buffer where the value of the
++ *              Flag Status Register will be written. Should be at least 2
++ *              bytes.
 + *
 + * Return: 0 on success, -errno otherwise.
 + */
-+static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
++static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 +{
 +	int ret;
 +
 +	if (nor->spimem) {
 +		struct spi_mem_op op =
-+			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_XRDSR, 0),
++			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),
 +				   SPI_MEM_OP_NO_ADDR,
 +				   SPI_MEM_OP_NO_DUMMY,
-+				   SPI_MEM_OP_DATA_IN(1, sr, 0));
++				   SPI_MEM_OP_DATA_IN(1, fsr, 0));
++
++		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
++			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
++			op.dummy.nbytes = nor->params->rdsr_dummy;
++			/*
++			 * We don't want to read only one byte in DTR mode. So,
++			 * read 2 and then discard the second byte.
++			 */
++			op.data.nbytes = 2;
++		}
 +
 +		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
 +
 +		ret = spi_mem_exec_op(nor->spimem, &op);
 +	} else {
-+		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_XRDSR, sr,
++		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_RDFSR, fsr,
 +						      1);
 +	}
 +
 +	if (ret)
-+		dev_dbg(nor->dev, "error %d reading XRDSR\n", ret);
++		dev_dbg(nor->dev, "error %d reading FSR\n", ret);
 +
 +	return ret;
 +}
 +
 +/**
-+ * spi_nor_xsr_ready() - Query the Status Register of the S3AN flash to see if
-+ * the flash is ready for new commands.
++ * spi_nor_clear_fsr() - Clear the Flag Status Register.
++ * @nor:	pointer to 'struct spi_nor'.
++ */
++static void spi_nor_clear_fsr(struct spi_nor *nor)
++{
++	int ret;
++
++	if (nor->spimem) {
++		struct spi_mem_op op =
++			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),
++				   SPI_MEM_OP_NO_ADDR,
++				   SPI_MEM_OP_NO_DUMMY,
++				   SPI_MEM_OP_NO_DATA);
++
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
++
++		ret = spi_mem_exec_op(nor->spimem, &op);
++	} else {
++		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLFSR,
++						       NULL, 0);
++	}
++
++	if (ret)
++		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);
++}
++
++/**
++ * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
++ * ready for new commands.
 + * @nor:	pointer to 'struct spi_nor'.
 + *
 + * Return: 1 if ready, 0 if not ready, -errno on errors.
 + */
-+static int spi_nor_xsr_ready(struct spi_nor *nor)
++static int spi_nor_fsr_ready(struct spi_nor *nor)
 +{
-+	int ret;
++	int sr_ready, ret;
 +
-+	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
++	sr_ready = spi_nor_sr_ready(nor);
++	if (sr_ready < 0)
++		return sr_ready;
++
++	ret = spi_nor_read_fsr(nor, nor->bouncebuf);
 +	if (ret)
 +		return ret;
 +
-+	return !!(nor->bouncebuf[0] & XSR_RDY);
++	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
++		if (nor->bouncebuf[0] & FSR_E_ERR)
++			dev_err(nor->dev, "Erase operation failed.\n");
++		else
++			dev_err(nor->dev, "Program operation failed.\n");
++
++		if (nor->bouncebuf[0] & FSR_PT_ERR)
++			dev_err(nor->dev,
++				"Attempted to modify a protected sector.\n");
++
++		spi_nor_clear_fsr(nor);
++
++		/*
++		 * WEL bit remains set to one when an erase or page program
++		 * error occurs. Issue a Write Disable command to protect
++		 * against inadvertent writes that can possibly corrupt the
++		 * contents of the memory.
++		 */
++		ret = spi_nor_write_disable(nor);
++		if (ret)
++			return ret;
++
++		return -EIO;
++	}
++
++	return sr_ready && !!(nor->bouncebuf[0] & FSR_READY);
 +}
 +
- static int xilinx_nor_setup(struct spi_nor *nor,
- 			    const struct spi_nor_hwcaps *hwcaps)
+ static void micron_st_nor_default_init(struct spi_nor *nor)
  {
-@@ -83,6 +155,7 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- static void xilinx_nor_late_init(struct spi_nor *nor)
- {
- 	nor->params->setup = xilinx_nor_setup;
-+	nor->params->ready = spi_nor_xsr_ready;
+ 	nor->flags |= SNOR_F_HAS_LOCK;
+@@ -281,8 +407,15 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
+ 	nor->params->set_4byte_addr_mode = micron_st_nor_set_4byte_addr_mode;
  }
  
- static const struct spi_nor_fixups xilinx_nor_fixups = {
++static void micron_st_nor_late_init(struct spi_nor *nor)
++{
++	if (nor->flags & SNOR_F_USE_FSR)
++		nor->params->ready = spi_nor_fsr_ready;
++}
++
+ static const struct spi_nor_fixups micron_st_nor_fixups = {
+ 	.default_init = micron_st_nor_default_init,
++	.late_init = micron_st_nor_late_init,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_micron = {
 diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
-index fc90fce26e33..b44b05a6f934 100644
+index b44b05a6f934..4622251a79ff 100644
 --- a/include/linux/mtd/spi-nor.h
 +++ b/include/linux/mtd/spi-nor.h
-@@ -86,15 +86,6 @@
- #define SPINOR_OP_BP		0x02	/* Byte program */
- #define SPINOR_OP_AAI_WP	0xad	/* Auto address increment word program */
+@@ -47,8 +47,6 @@
+ #define SPINOR_OP_RDID		0x9f	/* Read JEDEC ID */
+ #define SPINOR_OP_RDSFDP	0x5a	/* Read SFDP */
+ #define SPINOR_OP_RDCR		0x35	/* Read configuration register */
+-#define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
+-#define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
+ #define SPINOR_OP_RDEAR		0xc8	/* Read Extended Address Register */
+ #define SPINOR_OP_WREAR		0xc5	/* Write Extended Address Register */
+ #define SPINOR_OP_SRSTEN	0x66	/* Software Reset Enable */
+@@ -126,12 +124,6 @@
+ /* Enhanced Volatile Configuration Register bits */
+ #define EVCR_QUAD_EN_MICRON	BIT(7)	/* Micron Quad I/O */
  
--/* Used for S3AN flashes only */
--#define SPINOR_OP_XSE		0x50	/* Sector erase */
--#define SPINOR_OP_XPP		0x82	/* Page program */
--#define SPINOR_OP_XRDSR		0xd7	/* Read status register */
+-/* Flag Status Register bits */
+-#define FSR_READY		BIT(7)	/* Device status, 0 = Busy, 1 = Ready */
+-#define FSR_E_ERR		BIT(5)	/* Erase operation status */
+-#define FSR_P_ERR		BIT(4)	/* Program operation status */
+-#define FSR_PT_ERR		BIT(1)	/* Protection error bit */
 -
--#define XSR_PAGESIZE		BIT(0)	/* Page size in Po2 or Linear */
--#define XSR_RDY			BIT(7)	/* Ready */
--
--
- /* Used for Macronix and Winbond flashes. */
- #define SPINOR_OP_EN4B		0xb7	/* Enter 4-byte mode */
- #define SPINOR_OP_EX4B		0xe9	/* Exit 4-byte mode */
+ /* Status Register 2 bits. */
+ #define SR2_QUAD_EN_BIT1	BIT(1)
+ #define SR2_LB1			BIT(3)	/* Security Register Lock Bit 1 */
 -- 
 2.30.2
 
