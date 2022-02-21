@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690B2C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E51C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351315AbiBUJg7 (ORCPT
+        id S1351913AbiBUJhp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48098 "EHLO
+        Mon, 21 Feb 2022 04:37:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349142AbiBUJ1f (ORCPT
+        with ESMTP id S1349304AbiBUJ2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EEE13F37;
-        Mon, 21 Feb 2022 01:12:25 -0800 (PST)
+        Mon, 21 Feb 2022 04:28:47 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB54240A2;
+        Mon, 21 Feb 2022 01:12:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A77A360018;
-        Mon, 21 Feb 2022 09:12:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C0A6C340E9;
-        Mon, 21 Feb 2022 09:12:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BE9D9CE0E79;
+        Mon, 21 Feb 2022 09:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC855C340E9;
+        Mon, 21 Feb 2022 09:12:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434744;
-        bh=MpV41mmMEiSfIBzAFXtyV2UAZWRJlW4vgUhwyn3a/90=;
+        s=korg; t=1645434775;
+        bh=SK0woKC69aS1dpqIlWjbdHwaagPL1JG3IRZDlQJKPpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/tkADrzOrNm/Wtn7HolZowUNWdoOk7ZY6SXYbhLHF0RtQRH8rk1u98/2QW5Wrm9D
-         K+DHbAs+91Xk4F5UrE8wATPS4nocEIG5dDMKZN0lDSMPwikPASPsVUCwrbPk0s3iYy
-         Qh+y7Tg2nxzT5VX/Fw5g/d+wLrPVAYRYQwEIEmkw=
+        b=MInopzXv/njEdN/Jd0UCf5TwgpFJKAOfjcRuewGE5YFCxsCv2ybbJmHxGdFNDdFJL
+         cJthextqUH6iEvTYm7Jg+Z5piEEjUAWxQFAV1fOq/GJouBWC3TPy+msidFF/+xNw2s
+         EXTNbP3I9tjxGtdNn6Z3cdSuU4OWLUapAsjnyYIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        David Pinilla Caparros <dpini@cloudflare.com>,
-        Ignat Korchagin <ignat@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 083/196] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
-Date:   Mon, 21 Feb 2022 09:48:35 +0100
-Message-Id: <20220221084933.712174338@linuxfoundation.org>
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 127/196] scsi: ufs: Fix a deadlock in the error handler
+Date:   Mon, 21 Feb 2022 09:49:19 +0100
+Message-Id: <20220221084935.189662360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,97 +51,187 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ignat Korchagin <ignat@cloudflare.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit 26394fc118d6115390bd5b3a0fb17096271da227 upstream.
+commit 945c3cca05d78351bba29fa65d93834cb7934c7b upstream.
 
-Some time ago 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
-switched ipv6_get_lladdr() to __ipv6_get_lladdr(), which is rcu-unsafe
-version. That was OK, because idev->lock was held for these codepaths.
+The following deadlock has been observed on a test setup:
 
-In 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") these external locks were
-removed, so we probably need to restore the original rcu-safe call.
+ - All tags allocated
 
-Otherwise, we occasionally get a machine crashed/stalled with the following
-in dmesg:
+ - The SCSI error handler calls ufshcd_eh_host_reset_handler()
 
-[ 3405.966610][T230589] general protection fault, probably for non-canonical address 0xdead00000000008c: 0000 [#1] SMP NOPTI
-[ 3405.982083][T230589] CPU: 44 PID: 230589 Comm: kworker/44:3 Tainted: G           O      5.15.19-cloudflare-2022.2.1 #1
-[ 3405.998061][T230589] Hardware name: SUPA-COOL-SERV
-[ 3406.009552][T230589] Workqueue: mld mld_ifc_work
-[ 3406.017224][T230589] RIP: 0010:__ipv6_get_lladdr+0x34/0x60
-[ 3406.025780][T230589] Code: 57 10 48 83 c7 08 48 89 e5 48 39 d7 74 3e 48 8d 82 38 ff ff ff eb 13 48 8b 90 d0 00 00 00 48 8d 82 38 ff ff ff 48 39 d7 74 22 <66> 83 78 32 20 77 1b 75 e4 89 ca 23 50 2c 75 dd 48 8b 50 08 48 8b
-[ 3406.055748][T230589] RSP: 0018:ffff94e4b3fc3d10 EFLAGS: 00010202
-[ 3406.065617][T230589] RAX: dead00000000005a RBX: ffff94e4b3fc3d30 RCX: 0000000000000040
-[ 3406.077477][T230589] RDX: dead000000000122 RSI: ffff94e4b3fc3d30 RDI: ffff8c3a31431008
-[ 3406.089389][T230589] RBP: ffff94e4b3fc3d10 R08: 0000000000000000 R09: 0000000000000000
-[ 3406.101445][T230589] R10: ffff8c3a31430000 R11: 000000000000000b R12: ffff8c2c37887100
-[ 3406.113553][T230589] R13: ffff8c3a39537000 R14: 00000000000005dc R15: ffff8c3a31431000
-[ 3406.125730][T230589] FS:  0000000000000000(0000) GS:ffff8c3b9fc80000(0000) knlGS:0000000000000000
-[ 3406.138992][T230589] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 3406.149895][T230589] CR2: 00007f0dfea1db60 CR3: 000000387b5f2000 CR4: 0000000000350ee0
-[ 3406.162421][T230589] Call Trace:
-[ 3406.170235][T230589]  <TASK>
-[ 3406.177736][T230589]  mld_newpack+0xfe/0x1a0
-[ 3406.186686][T230589]  add_grhead+0x87/0xa0
-[ 3406.195498][T230589]  add_grec+0x485/0x4e0
-[ 3406.204310][T230589]  ? newidle_balance+0x126/0x3f0
-[ 3406.214024][T230589]  mld_ifc_work+0x15d/0x450
-[ 3406.223279][T230589]  process_one_work+0x1e6/0x380
-[ 3406.232982][T230589]  worker_thread+0x50/0x3a0
-[ 3406.242371][T230589]  ? rescuer_thread+0x360/0x360
-[ 3406.252175][T230589]  kthread+0x127/0x150
-[ 3406.261197][T230589]  ? set_kthread_struct+0x40/0x40
-[ 3406.271287][T230589]  ret_from_fork+0x22/0x30
-[ 3406.280812][T230589]  </TASK>
-[ 3406.288937][T230589] Modules linked in: ... [last unloaded: kheaders]
-[ 3406.476714][T230589] ---[ end trace 3525a7655f2f3b9e ]---
+ - ufshcd_eh_host_reset_handler() queues work that calls
+   ufshcd_err_handler()
 
-Fixes: 88e2ca308094 ("mld: convert ifmcaddr6 to RCU")
-Reported-by: David Pinilla Caparros <dpini@cloudflare.com>
-Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+ - ufshcd_err_handler() locks up as follows:
+
+Workqueue: ufs_eh_wq_0 ufshcd_err_handler.cfi_jt
+Call trace:
+ __switch_to+0x298/0x5d8
+ __schedule+0x6cc/0xa94
+ schedule+0x12c/0x298
+ blk_mq_get_tag+0x210/0x480
+ __blk_mq_alloc_request+0x1c8/0x284
+ blk_get_request+0x74/0x134
+ ufshcd_exec_dev_cmd+0x68/0x640
+ ufshcd_verify_dev_init+0x68/0x35c
+ ufshcd_probe_hba+0x12c/0x1cb8
+ ufshcd_host_reset_and_restore+0x88/0x254
+ ufshcd_reset_and_restore+0xd0/0x354
+ ufshcd_err_handler+0x408/0xc58
+ process_one_work+0x24c/0x66c
+ worker_thread+0x3e8/0xa4c
+ kthread+0x150/0x1b4
+ ret_from_fork+0x10/0x30
+
+Fix this lockup by making ufshcd_exec_dev_cmd() allocate a reserved
+request.
+
+Link: https://lore.kernel.org/r/20211203231950.193369-10-bvanassche@acm.org
+Tested-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/addrconf.h |    2 --
- net/ipv6/addrconf.c    |    4 ++--
- net/ipv6/mcast.c       |    2 +-
- 3 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/scsi/ufs/ufshcd.c |   53 ++++++++++++----------------------------------
+ drivers/scsi/ufs/ufshcd.h |    2 +
+ 2 files changed, 16 insertions(+), 39 deletions(-)
 
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -109,8 +109,6 @@ struct inet6_ifaddr *ipv6_get_ifaddr(str
- int ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
- 		       const struct in6_addr *daddr, unsigned int srcprefs,
- 		       struct in6_addr *saddr);
--int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
--		      u32 banned_flags);
- int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
- 		    u32 banned_flags);
- bool inet_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1837,8 +1837,8 @@ out:
- }
- EXPORT_SYMBOL(ipv6_dev_get_saddr);
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -125,8 +125,9 @@ EXPORT_SYMBOL_GPL(ufshcd_dump_regs);
+ enum {
+ 	UFSHCD_MAX_CHANNEL	= 0,
+ 	UFSHCD_MAX_ID		= 1,
+-	UFSHCD_CMD_PER_LUN	= 32,
+-	UFSHCD_CAN_QUEUE	= 32,
++	UFSHCD_NUM_RESERVED	= 1,
++	UFSHCD_CMD_PER_LUN	= 32 - UFSHCD_NUM_RESERVED,
++	UFSHCD_CAN_QUEUE	= 32 - UFSHCD_NUM_RESERVED,
+ };
  
--int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
--		      u32 banned_flags)
-+static int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
-+			      u32 banned_flags)
+ /* UFSHCD error handling flags */
+@@ -2185,6 +2186,7 @@ static inline int ufshcd_hba_capabilitie
+ 	hba->nutrs = (hba->capabilities & MASK_TRANSFER_REQUESTS_SLOTS) + 1;
+ 	hba->nutmrs =
+ 	((hba->capabilities & MASK_TASK_MANAGEMENT_REQUEST_SLOTS) >> 16) + 1;
++	hba->reserved_slot = hba->nutrs - 1;
+ 
+ 	/* Read crypto capabilities */
+ 	err = ufshcd_hba_init_crypto_capabilities(hba);
+@@ -2910,30 +2912,15 @@ static int ufshcd_wait_for_dev_cmd(struc
+ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
+ 		enum dev_cmd_type cmd_type, int timeout)
  {
- 	struct inet6_ifaddr *ifp;
- 	int err = -EADDRNOTAVAIL;
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -1759,7 +1759,7 @@ static struct sk_buff *mld_newpack(struc
- 	skb_reserve(skb, hlen);
- 	skb_tailroom_reserve(skb, mtu, tlen);
+-	struct request_queue *q = hba->cmd_queue;
+ 	DECLARE_COMPLETION_ONSTACK(wait);
+-	struct request *req;
++	const u32 tag = hba->reserved_slot;
+ 	struct ufshcd_lrb *lrbp;
+ 	int err;
+-	int tag;
  
--	if (__ipv6_get_lladdr(idev, &addr_buf, IFA_F_TENTATIVE)) {
-+	if (ipv6_get_lladdr(dev, &addr_buf, IFA_F_TENTATIVE)) {
- 		/* <draft-ietf-magma-mld-source-05.txt>:
- 		 * use unspecified address as the source address
- 		 * when a valid link-local address is not available.
+-	down_read(&hba->clk_scaling_lock);
++	/* Protects use of hba->reserved_slot. */
++	lockdep_assert_held(&hba->dev_cmd.lock);
+ 
+-	/*
+-	 * Get free slot, sleep if slots are unavailable.
+-	 * Even though we use wait_event() which sleeps indefinitely,
+-	 * the maximum wait time is bounded by SCSI request timeout.
+-	 */
+-	req = blk_get_request(q, REQ_OP_DRV_OUT, 0);
+-	if (IS_ERR(req)) {
+-		err = PTR_ERR(req);
+-		goto out_unlock;
+-	}
+-	tag = req->tag;
+-	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
+-	/* Set the timeout such that the SCSI error handler is not activated. */
+-	req->timeout = msecs_to_jiffies(2 * timeout);
+-	blk_mq_start_request(req);
++	down_read(&hba->clk_scaling_lock);
+ 
+ 	lrbp = &hba->lrb[tag];
+ 	WARN_ON(lrbp->cmd);
+@@ -2951,8 +2938,6 @@ static int ufshcd_exec_dev_cmd(struct uf
+ 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
+ 
+ out:
+-	blk_put_request(req);
+-out_unlock:
+ 	up_read(&hba->clk_scaling_lock);
+ 	return err;
+ }
+@@ -6640,23 +6625,16 @@ static int ufshcd_issue_devman_upiu_cmd(
+ 					enum dev_cmd_type cmd_type,
+ 					enum query_opcode desc_op)
+ {
+-	struct request_queue *q = hba->cmd_queue;
+ 	DECLARE_COMPLETION_ONSTACK(wait);
+-	struct request *req;
++	const u32 tag = hba->reserved_slot;
+ 	struct ufshcd_lrb *lrbp;
+ 	int err = 0;
+-	int tag;
+ 	u8 upiu_flags;
+ 
+-	down_read(&hba->clk_scaling_lock);
++	/* Protects use of hba->reserved_slot. */
++	lockdep_assert_held(&hba->dev_cmd.lock);
+ 
+-	req = blk_get_request(q, REQ_OP_DRV_OUT, 0);
+-	if (IS_ERR(req)) {
+-		err = PTR_ERR(req);
+-		goto out_unlock;
+-	}
+-	tag = req->tag;
+-	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
++	down_read(&hba->clk_scaling_lock);
+ 
+ 	lrbp = &hba->lrb[tag];
+ 	WARN_ON(lrbp->cmd);
+@@ -6725,9 +6703,6 @@ static int ufshcd_issue_devman_upiu_cmd(
+ 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
+ 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
+ 
+-	blk_put_request(req);
+-
+-out_unlock:
+ 	up_read(&hba->clk_scaling_lock);
+ 	return err;
+ }
+@@ -9418,8 +9393,8 @@ int ufshcd_init(struct ufs_hba *hba, voi
+ 	/* Configure LRB */
+ 	ufshcd_host_memory_configure(hba);
+ 
+-	host->can_queue = hba->nutrs;
+-	host->cmd_per_lun = hba->nutrs;
++	host->can_queue = hba->nutrs - UFSHCD_NUM_RESERVED;
++	host->cmd_per_lun = hba->nutrs - UFSHCD_NUM_RESERVED;
+ 	host->max_id = UFSHCD_MAX_ID;
+ 	host->max_lun = UFS_MAX_LUNS;
+ 	host->max_channel = UFSHCD_MAX_CHANNEL;
+--- a/drivers/scsi/ufs/ufshcd.h
++++ b/drivers/scsi/ufs/ufshcd.h
+@@ -725,6 +725,7 @@ struct ufs_hba_monitor {
+  * @capabilities: UFS Controller Capabilities
+  * @nutrs: Transfer Request Queue depth supported by controller
+  * @nutmrs: Task Management Queue depth supported by controller
++ * @reserved_slot: Used to submit device commands. Protected by @dev_cmd.lock.
+  * @ufs_version: UFS Version to which controller complies
+  * @vops: pointer to variant specific operations
+  * @priv: pointer to variant specific private data
+@@ -813,6 +814,7 @@ struct ufs_hba {
+ 	u32 capabilities;
+ 	int nutrs;
+ 	int nutmrs;
++	u32 reserved_slot;
+ 	u32 ufs_version;
+ 	const struct ufs_hba_variant_ops *vops;
+ 	struct ufs_hba_variant_params *vps;
 
 
