@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F31C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3643C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349254AbiBUJZP (ORCPT
+        id S1349267AbiBUJZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49282 "EHLO
+        Mon, 21 Feb 2022 04:25:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348420AbiBUJP1 (ORCPT
+        with ESMTP id S1348781AbiBUJLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:15:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C08C1AF29;
-        Mon, 21 Feb 2022 01:06:47 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:42 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA3627FF2;
+        Mon, 21 Feb 2022 01:04:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ACD460FB6;
-        Mon, 21 Feb 2022 09:06:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F25C3C340E9;
-        Mon, 21 Feb 2022 09:06:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3CF0ECE0E7C;
+        Mon, 21 Feb 2022 09:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3B3C340E9;
+        Mon, 21 Feb 2022 09:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434406;
-        bh=42zi/zigIyIUQ1oqsPKN7CLx5IlCRHcYsWZ5A3UZKvg=;
+        s=korg; t=1645434242;
+        bh=LbpS3Y/VfwBZOHuEtHeMd4iAvaPoeairLJWLJwAYa1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b0zlX5wkaCfFLbOV78LVH1xDFUi+40qodOxLbnquBZUyihVPV+gpNVqRWVDQzYXt3
-         tPQVhoysAvWTCX4Cjyf4cTCHIMNxYN+FFA6w+XUw/y2YLtzZ3KN/pZ9IhbDp+DdFkF
-         uv9DFgnxDu5tSJc3EUCqE9uQT6o7KaNuFYAr79DE=
+        b=P/TDJc+yeIIYwI1eGE5VIuG4J8rNFw3t4zWqODF866GDWY6+5/uZUIHQVlYNBvQ60
+         U0oouBb7qoVC3o3JxzC17b8fwV+xpbS0UaSXB8l2cokkEPZCdgrLjIP2luPzogHTAr
+         /VPN+nRtqXP/nfFHVHd9KW8WMRvxstZBYhx9qnMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.10 118/121] i2c: qcom-cci: dont put a device tree node before i2c_add_adapter()
-Date:   Mon, 21 Feb 2022 09:50:10 +0100
-Message-Id: <20220221084925.185882002@linuxfoundation.org>
+        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 029/121] selftests: openat2: Add missing dependency in Makefile
+Date:   Mon, 21 Feb 2022 09:48:41 +0100
+Message-Id: <20220221084922.169849260@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,71 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-commit 02a4a69667a2ad32f3b52ca906f19628fbdd8a01 upstream.
+[ Upstream commit ea3396725aa143dd42fe388cb67e44c90d2fb719 ]
 
-There is a minor chance for a race, if a pointer to an i2c-bus subnode
-is stored and then reused after releasing its reference, and it would
-be sufficient to get one more reference under a loop over children
-subnodes.
+Add a dependency on header helpers.h to the main target; while at that add
+to helpers.h also a missing include for bool types.
 
-Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-qcom-cci.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ tools/testing/selftests/openat2/Makefile  | 2 +-
+ tools/testing/selftests/openat2/helpers.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/i2c/busses/i2c-qcom-cci.c
-+++ b/drivers/i2c/busses/i2c-qcom-cci.c
-@@ -558,7 +558,7 @@ static int cci_probe(struct platform_dev
- 		cci->master[idx].adap.quirks = &cci->data->quirks;
- 		cci->master[idx].adap.algo = &cci_algo;
- 		cci->master[idx].adap.dev.parent = dev;
--		cci->master[idx].adap.dev.of_node = child;
-+		cci->master[idx].adap.dev.of_node = of_node_get(child);
- 		cci->master[idx].master = idx;
- 		cci->master[idx].cci = cci;
+diff --git a/tools/testing/selftests/openat2/Makefile b/tools/testing/selftests/openat2/Makefile
+index 4b93b1417b862..843ba56d8e49e 100644
+--- a/tools/testing/selftests/openat2/Makefile
++++ b/tools/testing/selftests/openat2/Makefile
+@@ -5,4 +5,4 @@ TEST_GEN_PROGS := openat2_test resolve_test rename_attack_test
  
-@@ -643,8 +643,10 @@ static int cci_probe(struct platform_dev
- 			continue;
+ include ../lib.mk
  
- 		ret = i2c_add_adapter(&cci->master[i].adap);
--		if (ret < 0)
-+		if (ret < 0) {
-+			of_node_put(cci->master[i].adap.dev.of_node);
- 			goto error_i2c;
-+		}
- 	}
+-$(TEST_GEN_PROGS): helpers.c
++$(TEST_GEN_PROGS): helpers.c helpers.h
+diff --git a/tools/testing/selftests/openat2/helpers.h b/tools/testing/selftests/openat2/helpers.h
+index ad5d0ba5b6ce9..7056340b9339e 100644
+--- a/tools/testing/selftests/openat2/helpers.h
++++ b/tools/testing/selftests/openat2/helpers.h
+@@ -9,6 +9,7 @@
  
- 	pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
-@@ -656,8 +658,10 @@ static int cci_probe(struct platform_dev
- 
- error_i2c:
- 	for (--i ; i >= 0; i--) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
- 			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
- 	}
- error:
- 	disable_irq(cci->irq);
-@@ -673,8 +677,10 @@ static int cci_remove(struct platform_de
- 	int i;
- 
- 	for (i = 0; i < cci->data->num_masters; i++) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
- 			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
- 		cci_halt(cci, i);
- 	}
- 
+ #define _GNU_SOURCE
+ #include <stdint.h>
++#include <stdbool.h>
+ #include <errno.h>
+ #include <linux/types.h>
+ #include "../kselftest.h"
+-- 
+2.34.1
+
 
 
