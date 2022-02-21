@@ -2,114 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F777C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E52C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344317AbiBUFWQ (ORCPT
+        id S1344340AbiBUFX3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 00:22:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44188 "EHLO
+        Mon, 21 Feb 2022 00:23:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243409AbiBUFWO (ORCPT
+        with ESMTP id S233837AbiBUFX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 00:22:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0EFE29
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 21:21:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10AEC611D0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D43C340E9;
-        Mon, 21 Feb 2022 05:21:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645420910;
-        bh=tKN5lVyIdydcnMmzW64HD2z0D7NvvLEpCWMv4HHhS28=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iJWZqcwnKTigFSQ0X3zkh+yU4KUaaNYY6gvjHaoX1gSSBIaIg/ImpEndvQ0sPuQCR
-         SCFcfXQSWZWctVg4925sAhZMotxz9dHJMwQEADk7ybd5KXI/0hoI7DGqFKKC6P4Gi1
-         BEKHnD7Hz0C80E0cHLkJtZJCL6V8IqSG+ruyu8lzkJKMhV8blIZjiJU6RClSo7M3dF
-         KYe3QpJFOpTyTVUyjkslYpQBOPPN/WyxaVWWeAvkOhHoH6dTRHlFAA0x5xXhxWpM61
-         suDQDipcc574Tx7uuWTq6Y+h3MfsSSzaeGsHIWj9y8JJb9SNlLzx/ZMxMVxBNLhcL1
-         Pn5GatbQFdnew==
-Date:   Sun, 20 Feb 2022 21:21:48 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux@dominikbrodowski.net,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH v2 09/10] random: group sysctl functions
-Message-ID: <YhMhbKdIH2wwEDxc@sol.localdomain>
-References: <20220212122318.623435-1-Jason@zx2c4.com>
- <20220212122318.623435-10-Jason@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220212122318.623435-10-Jason@zx2c4.com>
+        Mon, 21 Feb 2022 00:23:27 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C42E2D;
+        Sun, 20 Feb 2022 21:23:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645420986; x=1676956986;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=k/SrkmNO3uWYgzq06IwevJ6gIjLamufvr/U1/0YEWR4=;
+  b=ICfIgMqTSzIQNTCZmYutEFecmAHb1QYZP3RZlp9EfMSAZZU0Eq+UE7a/
+   CpcQ3jFOPPoo2V7kGLaB/hmSH/TkkyRACaPaiuttErwvxJt8EjuNUVPIs
+   f5Ojn6L5zpaOVTxbfW/ORGv/pE3KFehLiYTwpu3hJKxPAPqvG/Y0iMu9g
+   c=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 20 Feb 2022 21:23:05 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 20 Feb 2022 21:23:02 -0800
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Feb 2022 10:52:53 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id 1DAB546C3; Mon, 21 Feb 2022 10:52:53 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        jassisinghbrar@gmail.com, manivannan.sadhasivam@linaro.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH v3 3/7] dt-bindings: clock: Add A7 PLL binding for SDX65
+Date:   Mon, 21 Feb 2022 10:52:29 +0530
+Message-Id: <1645420953-21176-4-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1645420953-21176-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1645420953-21176-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 01:23:17PM +0100, Jason A. Donenfeld wrote:
-> This pulls all of the sysctl-focused functions into the sixth labeled
-> section.
-> 
-> No functional changes.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 37 +++++++++++++++++++++++++++++++------
->  1 file changed, 31 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index b2af2dc96d20..a32176a46691 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -1678,9 +1678,34 @@ const struct file_operations urandom_fops = {
->  	.llseek = noop_llseek,
->  };
->  
-> +
->  /********************************************************************
->   *
-> - * Sysctl interface
-> + * Sysctl interface.
-> + *
-> + * These are partly unused legacy knobs with dummy values to not break
-> + * userspace and partly still useful things. They are usually accessible
-> + * in /proc/sys/kernel/random/ and are as follows:
-> + *
-> + * - boot_id - a UUID representing the current boot.
-> + *
-> + * - uuid - a random UUID, different each time the file is read.
-> + *
-> + * - poolsize - the number of bits of entropy that the input pool can
-> + *   hold, tied to the POOL_BITS constant.
-> + *
-> + * - entropy_avail - the number of bits of entropy currently in the
-> + *   input pool. Always <= poolsize.
-> + *
-> + * - write_wakeup_threshold - the amount of entropy in the input pool
-> + *   below which write polls to /dev/random will unblock, requesting
-> + *   more entropy, tied to the POOL_MIN_BITS constant. It is writable
-> + *   to avoid breaking old userspaces, but writing to it does not
-> + *   change any behavior of the RNG.
-> + *
-> + * - urandom_min_reseed_secs - fixed to the meaningless value "60".
-> + *   It is writable to avoid breaking old userspaces, but writing
-> + *   to it does not change any behavior of the RNG.
->   *
+Add YAML binding for Cortex A7 PLL clock in Qualcomm
+platforms like SDX65.
 
-This is a nice explanation, but shouldn't
-Documentation/admin-guide/sysctl/kernel.rst be updated instead, and this comment
-point to there?
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ Documentation/devicetree/bindings/clock/qcom,a7pll.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
->  device_initcall(random_sysctls_init);
-> -#endif	/* CONFIG_SYSCTL */
-> +#endif
+diff --git a/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml b/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
+index 8666e99..b8889dc 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
+@@ -10,13 +10,14 @@ maintainers:
+   - Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+ 
+ description:
+-  The A7 PLL on the Qualcomm platforms like SDX55 is used to provide high
++  The A7 PLL on the Qualcomm platforms like SDX55, SDX65 is used to provide high
+   frequency clock to the CPU.
+ 
+ properties:
+   compatible:
+     enum:
+       - qcom,sdx55-a7pll
++      - qcom,sdx65-a7pll
+ 
+   reg:
+     maxItems: 1
+-- 
+2.7.4
 
-Nit: I'd prefer leaving the comment for the #endif.
-
-- Eric
