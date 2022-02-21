@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7ACC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349347AbiBUJVR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:21:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36062 "EHLO
+        id S237199AbiBUJWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:22:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349961AbiBUJNF (ORCPT
+        with ESMTP id S1349922AbiBUJND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:13:05 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B482DD41;
-        Mon, 21 Feb 2022 01:06:12 -0800 (PST)
+        Mon, 21 Feb 2022 04:13:03 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6B82DA99;
+        Mon, 21 Feb 2022 01:06:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 05464CE0E8C;
-        Mon, 21 Feb 2022 09:06:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EACA7C340E9;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 398B5CE0E86;
         Mon, 21 Feb 2022 09:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B070C340E9;
+        Mon, 21 Feb 2022 09:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434369;
-        bh=RNW58nSsRsrieD9LQbLqGoEK92RO06a2eAk7Sjr86jQ=;
+        s=korg; t=1645434366;
+        bh=vbbTpbP9u2rFn29GMsI3A4vpEDTwyx0tyee7vlCQGaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e7yL3bqRmT1a3yRZ2E6C+BGYXbCO3U0lRRagKrSGzsqLwPFp3OwL+IULrAvVOC0t5
-         mktAgNH/35DRSjLRISDG66hnpIp0CsY7spwhACYZffSFjrmE6CrYnYJ1zVnToh/FxS
-         2YAkpix4i0dvuR5XgMyUm8uCRu93RlwrkdEpjThM=
+        b=uewza1N1Nq7LCiDH8k8PlCMJg9Sjry2z7rS0bddPtGpIw97h38JOAOdr6MBC+UFuc
+         gYEVvrOXyb+R/UP4rVgvwoY8ZEN0MgRsRE8Zbu14pnmaJCC7/6Wr8FqU7aXeubb2+A
+         N9MibrWA7LlJ24/DKmhV/qZ/X+a22xTJ4UJyS/JM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 106/121] drm/rockchip: dw_hdmi: Do not leave clock enabled in error case
-Date:   Mon, 21 Feb 2022 09:49:58 +0100
-Message-Id: <20220221084924.771185292@linuxfoundation.org>
+Subject: [PATCH 5.10 105/121] xprtrdma: fix pointer derefs in error cases of rpcrdma_ep_create
+Date:   Mon, 21 Feb 2022 09:49:57 +0100
+Message-Id: <20220221084924.738812675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,53 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Dan Aloni <dan.aloni@vastdata.com>
 
-[ Upstream commit c0cfbb122275da1b726481de5a8cffeb24e6322b ]
+[ Upstream commit a9c10b5b3b67b3750a10c8b089b2e05f5e176e33 ]
 
-The driver returns an error when devm_phy_optional_get() fails leaving
-the previously enabled clock turned on. Change order and enable the
-clock only after the phy has been acquired.
+If there are failures then we must not leave the non-NULL pointers with
+the error value, otherwise `rpcrdma_ep_destroy` gets confused and tries
+free them, resulting in an Oops.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220126145549.617165-3-s.hauer@pengutronix.de
+Signed-off-by: Dan Aloni <dan.aloni@vastdata.com>
+Acked-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ net/sunrpc/xprtrdma/verbs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-index 23de359a1dec6..515e6f187dc77 100644
---- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
-@@ -529,13 +529,6 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
+diff --git a/net/sunrpc/xprtrdma/verbs.c b/net/sunrpc/xprtrdma/verbs.c
+index 25554260a5931..dcc1992b14d76 100644
+--- a/net/sunrpc/xprtrdma/verbs.c
++++ b/net/sunrpc/xprtrdma/verbs.c
+@@ -449,6 +449,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 					      IB_POLL_WORKQUEUE);
+ 	if (IS_ERR(ep->re_attr.send_cq)) {
+ 		rc = PTR_ERR(ep->re_attr.send_cq);
++		ep->re_attr.send_cq = NULL;
+ 		goto out_destroy;
  	}
  
--	ret = clk_prepare_enable(hdmi->vpll_clk);
--	if (ret) {
--		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
--			      ret);
--		return ret;
--	}
--
- 	hdmi->phy = devm_phy_optional_get(dev, "hdmi");
- 	if (IS_ERR(hdmi->phy)) {
- 		ret = PTR_ERR(hdmi->phy);
-@@ -544,6 +537,13 @@ static int dw_hdmi_rockchip_bind(struct device *dev, struct device *master,
- 		return ret;
+@@ -457,6 +458,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 					      IB_POLL_WORKQUEUE);
+ 	if (IS_ERR(ep->re_attr.recv_cq)) {
+ 		rc = PTR_ERR(ep->re_attr.recv_cq);
++		ep->re_attr.recv_cq = NULL;
+ 		goto out_destroy;
  	}
- 
-+	ret = clk_prepare_enable(hdmi->vpll_clk);
-+	if (ret) {
-+		DRM_DEV_ERROR(hdmi->dev, "Failed to enable HDMI vpll: %d\n",
-+			      ret);
-+		return ret;
-+	}
-+
- 	drm_encoder_helper_add(encoder, &dw_hdmi_rockchip_encoder_helper_funcs);
- 	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
+ 	ep->re_receive_count = 0;
+@@ -495,6 +497,7 @@ static int rpcrdma_ep_create(struct rpcrdma_xprt *r_xprt)
+ 	ep->re_pd = ib_alloc_pd(device, 0);
+ 	if (IS_ERR(ep->re_pd)) {
+ 		rc = PTR_ERR(ep->re_pd);
++		ep->re_pd = NULL;
+ 		goto out_destroy;
+ 	}
  
 -- 
 2.34.1
