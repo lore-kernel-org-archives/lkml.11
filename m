@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13697C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7958AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352216AbiBUJ7N (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:59:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42568 "EHLO
+        id S235306AbiBUJ7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:59:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351948AbiBUJu7 (ORCPT
+        with ESMTP id S1352123AbiBUJvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:50:59 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B9635DC4;
-        Mon, 21 Feb 2022 01:22:50 -0800 (PST)
+        Mon, 21 Feb 2022 04:51:12 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93E013E20;
+        Mon, 21 Feb 2022 01:22:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 98485CE0E99;
-        Mon, 21 Feb 2022 09:22:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84606C340E9;
-        Mon, 21 Feb 2022 09:22:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 55E62CE0E80;
+        Mon, 21 Feb 2022 09:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F70C340E9;
+        Mon, 21 Feb 2022 09:22:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435366;
-        bh=xfTfLuBCLxsgTOACm1b1I3fjPekjhfu0XQvZqy8k79U=;
+        s=korg; t=1645435371;
+        bh=XHeZTLhOEsGIZMErWZ33p31NioQ7wMoUH7X7H5dXHEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JmLk2liX8zhN01ktOv8l/sVSPUANJJyLJEKI8qUMdHv6fA9ddW0+oy7ZvL8tnwVGI
-         zwQNm4JV0FORBjiD0l9yErD+M8DcByh6nIGQkJq1cNk3b43sd3OzG8v2e+m6+UE6od
-         1B76DyZ1UPHUKQLQ27qI+m5w/SfFpZqLt/Vf93a8=
+        b=QDi1bKwFpZYT+GY+R9/qRONxtv+0JgpYjyZOMtnRf/tWYat/rG6OUKiU3TuVFZrTn
+         LVSiiNclasINPsZvnERy6cuUzfyPZe9Uc9+X2n/9oM5LGS7wvJMRJyxX8zV68fiv11
+         sAhbgq60p76ki+dVZeMusH04j0vOVbJwW2C6t/dI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        stable@vger.kernel.org, Yu Huang <diwang90@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 138/227] ALSA: memalloc: invalidate SG pages before sync
-Date:   Mon, 21 Feb 2022 09:49:17 +0100
-Message-Id: <20220221084939.433297721@linuxfoundation.org>
+Subject: [PATCH 5.16 139/227] ALSA: hda/realtek: Add quirk for Legion Y9000X 2019
+Date:   Mon, 21 Feb 2022 09:49:18 +0100
+Message-Id: <20220221084939.466504140@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,38 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Yu Huang <diwang90@gmail.com>
 
-commit 3e16dc50d77dc3494275a241fac250c94bf45206 upstream.
+commit c07f2c7b45413a9e50ba78630fda04ecfa17b4f2 upstream.
 
-It seems that calling invalidate_kernel_vmap_range() is more correct
-to be called before dma_sync_*(), judging from the other thread:
-  https://lore.kernel.org/all/20220111085958.GA22795@lst.de/
-Although this won't matter much in practice, let's fix the call order
-for consistency.
+Legion Y9000X 2019 has the same speaker with Y9000X 2020,
+but with a different quirk address. Add one quirk entry
+to make the speaker work on Y9000X 2019 too.
 
-Fixes: a25684a95646 ("ALSA: memalloc: Support for non-contiguous page allocation")
-Reported-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Yu Huang <diwang90@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220210123344.8756-3-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220212160835.165065-1-diwang90@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/memalloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/core/memalloc.c
-+++ b/sound/core/memalloc.c
-@@ -541,9 +541,9 @@ static void snd_dma_noncontig_sync(struc
- 	if (mode == SNDRV_DMA_SYNC_CPU) {
- 		if (dmab->dev.dir == DMA_TO_DEVICE)
- 			return;
-+		invalidate_kernel_vmap_range(dmab->area, dmab->bytes);
- 		dma_sync_sgtable_for_cpu(dmab->dev.dev, dmab->private_data,
- 					 dmab->dev.dir);
--		invalidate_kernel_vmap_range(dmab->area, dmab->bytes);
- 	} else {
- 		if (dmab->dev.dir == DMA_FROM_DEVICE)
- 			return;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9013,6 +9013,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
+ 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
++	SND_PCI_QUIRK(0x17aa, 0x383d, "Legion Y9000X 2019", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
+ 	SND_PCI_QUIRK(0x17aa, 0x384a, "Lenovo Yoga 7 15ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
 
 
