@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A93C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352484AbiBUKFh (ORCPT
+        id S1352853AbiBUKFo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:05:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57164 "EHLO
+        Mon, 21 Feb 2022 05:05:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353575AbiBUJ5e (ORCPT
+        with ESMTP id S1353579AbiBUJ5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A955A330;
-        Mon, 21 Feb 2022 01:26:59 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CE01EAE7;
+        Mon, 21 Feb 2022 01:27:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62BA8B80EBB;
-        Mon, 21 Feb 2022 09:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 878FDC340E9;
-        Mon, 21 Feb 2022 09:26:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63ABE608C4;
+        Mon, 21 Feb 2022 09:27:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C65AC340E9;
+        Mon, 21 Feb 2022 09:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435617;
-        bh=9Dj2S3rmu+atdgPw4d5KgzUpQOmctFRQN5kYq9qjlHg=;
+        s=korg; t=1645435619;
+        bh=4YZLmcvTI8pYJhYRl0jjFbpiq8bJUJKypK/bysrLb/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAIS9j0CeIdx6jQ1BGsXfyu5KqcC1T9Yoatrj3dbvMA4PGxj/ADh5eosWC1xOLX8A
-         KTgBm+tkGxHKQ6WFoo60xvYyUW4mrC5sh1XXK6aG4yw/Ryget04O0PjLLpC217O6oh
-         e0G0nMTq7W8lLh4vBPueBJgXNZ9fK5Bx2SLfWqi0=
+        b=dH22rtgPghXXSUwj9YPk34rsae4TX6zxICnzzc0dI+iRHa0BBKjzmXtwTJkOXpJ/R
+         46fXCpMFRRWnM0o11I3cGfZqptJPUKwyDDz9F3rkAhTVOKH1SqlppYVQgrPvpNQjNV
+         VOhJR+K7/4g0Qilrna8WlwzCeSl5rAtrjkYFNncY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 227/227] kconfig: fix failing to generate auto.conf
-Date:   Mon, 21 Feb 2022 09:50:46 +0100
-Message-Id: <20220221084942.338752004@linuxfoundation.org>
+Subject: [PATCH 5.16 216/227] ata: libata-core: Disable TRIM on M88V29
+Date:   Mon, 21 Feb 2022 09:50:35 +0100
+Message-Id: <20220221084941.994915241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,50 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-When the KCONFIG_AUTOCONFIG is specified (e.g. export \
-KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
-include/config/ will not be created, so kconfig can't create deps
-files in it and auto.conf can't be generated.
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
+
+TRIM must be disabled for this device.
+
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/kconfig/confdata.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index 00284c03da4d3..027f4c28dc320 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -992,14 +992,19 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 94bc5dbb31e1e..63666ee9de175 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4079,6 +4079,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- static int conf_touch_deps(void)
- {
--	const char *name;
-+	const char *name, *tmp;
- 	struct symbol *sym;
- 	int res, i;
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
  
--	strcpy(depfile_path, "include/config/");
--	depfile_prefix_len = strlen(depfile_path);
--
- 	name = conf_get_autoconfig_name();
-+	tmp = strrchr(name, '/');
-+	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
-+	if (depfile_prefix_len + 1 > sizeof(depfile_path))
-+		return -1;
-+
-+	strncpy(depfile_path, name, depfile_prefix_len);
-+	depfile_path[depfile_prefix_len] = 0;
-+
- 	conf_read_simple(name, S_DEF_AUTO);
- 	sym_calc_value(modules_sym);
- 
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
