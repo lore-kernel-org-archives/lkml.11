@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E68EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239460AbiBUJcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:32:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38972 "EHLO
+        id S1350236AbiBUJci (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:32:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350436AbiBUJWd (ORCPT
+        with ESMTP id S1350445AbiBUJWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:22:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0E01C920;
-        Mon, 21 Feb 2022 01:10:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D914C38BDD;
+        Mon, 21 Feb 2022 01:10:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB5A660C35;
-        Mon, 21 Feb 2022 09:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E83C36AFA;
-        Mon, 21 Feb 2022 09:10:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3AFC608C1;
+        Mon, 21 Feb 2022 09:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 833F0C340E9;
+        Mon, 21 Feb 2022 09:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434606;
-        bh=k/anRwbEWWZuOX0JrgCHoQW624CPv9gHOM5tS0HeWXY=;
+        s=korg; t=1645434609;
+        bh=EYtRDvgqtHYLLBYQB7EGKb1gI58MEzvShWdMSQvoFFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SHSCPpH4XjXTUGBQ9WXYFubfk/i8enfYRBRiAv8n7QxnLEDVG307UKX7gAZY19aeF
-         FN37letYkH5SNFfxyyD+PUdarwS0T53lNLHipT5/ExA2sFDU4mcIBlyAjtqvSR/1gj
-         E0tbx4ej5LrTXiHD4yZrlJCci4+IyGvko7Q+Qqx4=
+        b=AgduV25Ouvcz2/8iF/wBR7Y5qHfJv+vLm1wXKISN5vZSAffDH3CbjSiiALNf2ENLg
+         Fp2s1imsEwTtMH761LoMaJgg18Vi9dLH7HHWG9BaWd8ROj7+GnbNY9SpXNBK2NLC6C
+         ctBr0qo9axFEiUkDzKbebvk4aY5GU+Lksur74AoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         <ville.syrjala@linux.intel.com>,
         Jani Nikula <jani.nikula@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.15 066/196] drm/i915: Fix dbuf slice config lookup
-Date:   Mon, 21 Feb 2022 09:48:18 +0100
-Message-Id: <20220221084933.149539857@linuxfoundation.org>
+Subject: [PATCH 5.15 067/196] drm/i915: Fix mbus join config lookup
+Date:   Mon, 21 Feb 2022 09:48:19 +0100
+Message-Id: <20220221084933.180819022@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -53,25 +54,18 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 698bef8ff5d2edea5d1c9d6e5adf1bfed1e8a106 upstream.
+commit 8d9d2a723d64b650f2e6423024ccb4a33f0cdc40 upstream.
 
-Apparently I totally fumbled the loop condition when I
-removed the ARRAY_SIZE() stuff from the dbuf slice config
-lookup. Comparing the loop index with the active_pipes bitmask
-is utter nonsense, what we want to do is check to see if the
-mask is zero or not.
-
-Note that the code actually ended up working correctly despite
-the fumble, up until commit eef173954432 ("drm/i915: Allow
-!join_mbus cases for adlp+ dbuf configuration") when things
-broke for real.
+The bogus loop from compute_dbuf_slices() was copied into
+check_mbus_joined() as well. So this lookup is wrong as well.
+Fix it.
 
 Cc: stable@vger.kernel.org
-Fixes: 05e8155afe35 ("drm/i915: Use a sentinel to terminate the dbuf slice arrays")
+Fixes: f4dc00863226 ("drm/i915/adl_p: MBUS programming")
 Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220207132700.481-1-ville.syrjala@linux.intel.com
+Link: https://patchwork.freedesktop.org/patch/msgid/20220207132700.481-2-ville.syrjala@linux.intel.com
 Reviewed-by: Jani Nikula <jani.nikula@intel.com>
-(cherry picked from commit a28fde308c3c1c174249ff9559b57f24e6850086)
+(cherry picked from commit 053f2b85631316a9226f6340c1c0fd95634f7a5b)
 Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -80,14 +74,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/gpu/drm/i915/intel_pm.c
 +++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -4861,7 +4861,7 @@ static u8 compute_dbuf_slices(enum pipe
+@@ -4844,7 +4844,7 @@ static bool check_mbus_joined(u8 active_
  {
  	int i;
  
 -	for (i = 0; i < dbuf_slices[i].active_pipes; i++) {
 +	for (i = 0; dbuf_slices[i].active_pipes != 0; i++) {
- 		if (dbuf_slices[i].active_pipes == active_pipes &&
- 		    dbuf_slices[i].join_mbus == join_mbus)
- 			return dbuf_slices[i].dbuf_mask[pipe];
+ 		if (dbuf_slices[i].active_pipes == active_pipes)
+ 			return dbuf_slices[i].join_mbus;
+ 	}
 
 
