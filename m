@@ -2,146 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28005C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF26CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232611AbiBUTGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 14:06:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40462 "EHLO
+        id S232640AbiBUTHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 14:07:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiBUTGr (ORCPT
+        with ESMTP id S232618AbiBUTGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 14:06:47 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9005C13CE4;
-        Mon, 21 Feb 2022 11:06:23 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id s14so13975256edw.0;
-        Mon, 21 Feb 2022 11:06:23 -0800 (PST)
+        Mon, 21 Feb 2022 14:06:51 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7262413D0A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:06:27 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id y15-20020a4a650f000000b0031c19e9fe9dso11444095ooc.12
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 11:06:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ceab05HpR+ch4TiH/Ob+GFc5+HuiNbuq+Jenpr7lwVY=;
-        b=HwR7DkTjKPXlt4FrU/+Ajrp3Ch6Yk9qvXE0fIx8SjYAQjR76JkgOwTA+i+ahZCzaxt
-         J00wR7GMsnxrMoLd0RrUdLUsdpM+qJ2XVBT+vpc5vyve5JPUuYQG9zeVYithd7tsEL2K
-         c4sfPNc1cE23cGRJde900zuust3i0bAQGsi5V0U6YNphYds8kXX96Bc9MWE1F1jWYnST
-         dYqAM+SK8Y5Eh5q1aAz9FOAeKdcjut26JgGmVinGz+3UXwWy2Z2gEaSshav3p2Jx336Y
-         De6Xy5111TmgFJhF98xndSovZ/QcUI4eM7tBFrw3JNIDxEdVjZabi87YPPgEwzKsDFLH
-         hXLw==
+         :content-disposition:in-reply-to;
+        bh=mKYaMuXCaSDbgjwH5cDbyrb4SD5Y9F+pgT6HwHOAhw4=;
+        b=UayZoVpBKx73lHes9iSu/MRvaEOhZYEQ0s336NxWMNl0hTE8xxqgGUfeNvZRpbJdno
+         bOXRl6PkW8QImlSkKym03EpeC3YUqykYUDzXJEAjDMnB7u6ql+oPbHK9HEsdVwtY/+C/
+         nmuUkEiG2Sl3O+QCGNRlSv3D/YOZKHwFp6gT5CNkRsSapZG88rQf7n6cwMhEw/em7yHn
+         tP6rxY2fRy05sFM6IvlXbTZRYrjvqNN6/WHXbLLxKES1yx+79e8gfw9mp/jIgZeDAFZV
+         xBs2Ud8HzCJrTLNVQ1+x/cMlh8ji2v4uhcUQHMGrv+jYpYKwGMCo4jD4zxHD8X1dwqjB
+         z7IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ceab05HpR+ch4TiH/Ob+GFc5+HuiNbuq+Jenpr7lwVY=;
-        b=Ozea6GpuC9XeLlmlUaa+EKjaLMR438HVmJeBHTciUmyaFgH8QI5DqLzLUV6JHxKARf
-         Rj397RKHlY0Qw4p29VQw5djNU+fZvQCVJ8DXczLdQm62iRHisJB+kLiOo0CIt1EZ7pyP
-         9gUMUBcKwIwVAnOoNOb3YOwN9HXWvMnA8dkWWvIyN4z65BvpWcG3ZnU27W07sKJWLtnK
-         YXcjtp49h+q+9CqywImNzIjzatwxsUcBOqomb9j4pfQ+FA8aPqJhd9CEwqM1EF1VKek5
-         EW6JEpRtlfWk+20atRx2/ZArGZ0Pe/OV8aQPdlEqRdIVLO2yfXd/gZDDgmTvy3nFQGtC
-         OjoA==
-X-Gm-Message-State: AOAM530n3pjIeISTxn+tDB3ZOHkeMEcmJayp4a6mhVwmNZIBc92bTBb+
-        7dPJX9+j2yc9xRG5y5GbP7c=
-X-Google-Smtp-Source: ABdhPJyFxhMatni7cLWuGFa67F+eaPI+3F3yFbkng7b/N+qeLlNJr5ElGOCe40QfwPtTNJxrUoT+Rg==
-X-Received: by 2002:a50:8714:0:b0:410:5c41:3f25 with SMTP id i20-20020a508714000000b004105c413f25mr22483492edb.183.1645470381959;
-        Mon, 21 Feb 2022 11:06:21 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id lw18sm5394725ejb.88.2022.02.21.11.06.19
+         :mime-version:content-disposition:in-reply-to;
+        bh=mKYaMuXCaSDbgjwH5cDbyrb4SD5Y9F+pgT6HwHOAhw4=;
+        b=ZjpxbiGoTnK0HVAq1Mb/aqWu3YdG3W37Jbl30UJH1VOEg1HgYbPl0Po3/CLhBIiN8T
+         6xqd6cr3XvaxEEKhDUU7hDSnfWNtFyZCjg+DwCvcPE6ODtTDzgl+eM5DN+BoYY3vmdnS
+         FGwFeLfA4POAYkC6xxPK2aveaDg9Wp6DADgBbCtAr/aMqEsGHAPOEY3FhP7SHcQhAZOv
+         D3zi+7BdSnR06AGD8DyUZpk5T5tNiyMpmCdYdkjDHqV7n1RJdLiqCNEGBdurjNKd//U1
+         j6MF8ZPt5biU23YwS6L5DayaM2VHrqAkRdQaunE972EIrGTzqnGazcHSbQ2b1h2nE35X
+         hr5g==
+X-Gm-Message-State: AOAM532UmY4t7QYlwmmxPKNTmKfFafgphyuFF8KnbxmI+grQqA6+nbg3
+        pjfOMMPlNUTuA0bldwQ4ONoJ6A==
+X-Google-Smtp-Source: ABdhPJxZkhpfXyfMIR6pZATfsUiV6WfNFnMWVkBrVLoHBjm225+ktGOVREx1Vzzq++JUcijZyrDVVQ==
+X-Received: by 2002:a4a:1506:0:b0:2da:ee84:9759 with SMTP id 6-20020a4a1506000000b002daee849759mr6514311oon.65.1645470386741;
+        Mon, 21 Feb 2022 11:06:26 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id j32sm4357309ota.59.2022.02.21.11.06.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 11:06:21 -0800 (PST)
-Date:   Mon, 21 Feb 2022 21:06:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Rasmussen <mir@bang-olufsen.dk>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/2] net: dsa: realtek: allow subdrivers to
- externally lock regmap
-Message-ID: <20220221190619.4zgv7vwyvzcvxxxk@skbuf>
-References: <20220221184631.252308-1-alvin@pqrs.dk>
- <20220221184631.252308-2-alvin@pqrs.dk>
+        Mon, 21 Feb 2022 11:06:25 -0800 (PST)
+Date:   Mon, 21 Feb 2022 11:08:28 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH v2 1/6] device property: Helper to match multiple
+ connections
+Message-ID: <YhPjLOJchd4l+095@ripper>
+References: <20220208031944.3444-1-bjorn.andersson@linaro.org>
+ <20220208031944.3444-2-bjorn.andersson@linaro.org>
+ <YgOz6K55Oi2Si4pU@smile.fi.intel.com>
+ <Yg/s3eKB2wLEQTgY@ripper>
+ <YhIjHjMrhUpM0ucV@smile.fi.intel.com>
+ <YhMbLsvF8p/ce+mg@ripper>
+ <YhPJmiFSH8s94il7@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221184631.252308-2-alvin@pqrs.dk>
+In-Reply-To: <YhPJmiFSH8s94il7@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 07:46:30PM +0100, Alvin Šipraga wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> Currently there is no way for Realtek DSA subdrivers to serialize
-> consecutive regmap accesses. In preparation for a bugfix relating to
-> indirect PHY register access - which involves a series of regmap
-> reads and writes - add a facility for subdrivers to serialize their
-> regmap access.
-> 
-> Specifically, a mutex is added to the driver private data structure and
-> the standard regmap is initialized with custom lock/unlock ops which use
-> this mutex. Then, a "nolock" variant of the regmap is added, which is
-> functionally equivalent to the existing regmap except that regmap
-> locking is disabled. Functions that wish to serialize a sequence of
-> regmap accesses may then lock the newly introduced driver-owned mutex
-> before using the nolock regmap.
-> 
-> Doing things this way means that subdriver code that doesn't care about
-> serialized register access - i.e. the vast majority of code - needn't
-> worry about synchronizing register access with an external lock: it can
-> just continue to use the original regmap.
-> 
-> Another advantage of this design is that, while regmaps with locking
-> disabled do not expose a debugfs interface for obvious reasons, there
-> still exists the original regmap which does expose this interface. This
-> interface remains safe to use even combined with driver codepaths that
-> use the nolock regmap, because said codepaths will use the same mutex
-> to synchronize access.
-> 
-> With respect to disadvantages, it can be argued that having
-> near-duplicate regmaps is confusing. However, the naming is rather
-> explicit, and examples will abound.
-> 
-> Finally, while we are at it, rename realtek_smi_mdio_regmap_config to
-> realtek_smi_regmap_config. This makes it consistent with the naming
-> realtek_mdio_regmap_config in realtek-mdio.c.
-> 
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> ---
+On Mon 21 Feb 09:19 PST 2022, Andy Shevchenko wrote:
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-
->  drivers/net/dsa/realtek/realtek-mdio.c | 46 ++++++++++++++++++++++--
->  drivers/net/dsa/realtek/realtek-smi.c  | 48 ++++++++++++++++++++++++--
->  drivers/net/dsa/realtek/realtek.h      |  2 ++
->  3 files changed, 91 insertions(+), 5 deletions(-)
+> On Sun, Feb 20, 2022 at 08:55:10PM -0800, Bjorn Andersson wrote:
+> > On Sun 20 Feb 03:16 PST 2022, Andy Shevchenko wrote:
+> > > On Fri, Feb 18, 2022 at 11:00:45AM -0800, Bjorn Andersson wrote:
+> > > > On Wed 09 Feb 04:30 PST 2022, Andy Shevchenko wrote:
+> > > > > On Mon, Feb 07, 2022 at 07:19:39PM -0800, Bjorn Andersson wrote:
 > 
-> diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
-> index 0308be95d00a..31e1f100e48e 100644
-> --- a/drivers/net/dsa/realtek/realtek-mdio.c
-> +++ b/drivers/net/dsa/realtek/realtek-mdio.c
-> @@ -98,6 +98,20 @@ static int realtek_mdio_read(void *ctx, u32 reg, u32 *val)
->  	return ret;
->  }
->  
-> +static void realtek_mdio_lock(void *ctx)
+> ...
+> 
+> > > > > > +int fwnode_connection_find_matches(struct fwnode_handle *fwnode,
+> > > > > > +				   const char *con_id, void *data,
+> > > > > > +				   devcon_match_fn_t match,
+> > > > > > +				   void **matches, unsigned int matches_len)
+> > > > > > +{
+> > > > > > +	unsigned int count;
+> > > > > > +
+> > > > > > +	if (!fwnode || !match || !matches)
+> > > > > 
+> > > > > !matches case may be still useful to get the count and allocate memory by
+> > > > > caller. Please, consider this case.
+> > > > 
+> > > > As discussed in previous version, and described in the commit message,
+> > > > the returned value of "match" is a opaque pointer to something which
+> > > > has to be passed back to the caller in order to be cleaned up.
+> > > > 
+> > > > E.g. the typec mux code returns a pointer to a typec_mux/switch object
+> > > > with a refcounted struct device within, or an ERR_PTR().
+> > > > 
+> > > > So unfortunately we can must gather the results into matches and pass it
+> > > > back to the caller to take consume or clean up.
+> > > 
+> > > It's fine. You have **matches, means pointer of an opaque pointer.
+> > > What I'm talking about is memory allocation for and array of _pointers_.
+> > > That's what caller very much aware of and can allocate on heap. So, please
+> > > consider this case.
+> > 
+> > I'm sorry, but I'm not sure what you're looking for.
+> > 
+> > 
+> > I still interpret your comment as that it would be nice to be able to do
+> > something like:
+> > 
+> > count = fwnode_connection_find_matches(fwnode, "orientation-switch",
+> > 				       NULL, typec_switch_match, NULL, 0);
+> > 
+> > based on the returned value the caller could allocate an array of
+> > "count" pointers and then call the function again to actually fill out
+> > the count elements.
+> 
+> Yes, that's what I want from the generic fwnode APIs.
+> (Keyword: generic)
+> 
+> > The problem with this is that, typec_switch_match() does:
+> 
+> As you stated, the problem is in the typec_switch_match(). So, it's not related
+> to the fwnode, but how you are using it.
+> 
+> > void *typec_switch_match(fwnode, id, data) {
+> > 	struct device *dev = find_struct_device(fwnode, id);
+> > 	if (!dev)
+> > 		return NULL;
+> > 	get_device(dev);
+> > 	return container_of(dev, struct typec_switch, dev);
+> > }
+> > 
+> > So if we call the match function and if that finds a "dev" it will
+> > return a struct typec_switch with a refcounted struct device within.
+> 
+> fwnode (as being an abstraction on top of the others) has no knowledge
+> about this. And more important should not know that.
+> 
+> > We can see if that's NULL or not and will be able to return a "count",
+> > but we have no way of releasing the reference acquired - we must return
+> > the void pointer back to the client, so that it can release it.
+> 
+> The caller (if it wants to!) may create different callbacks for count and real
+> matching, no?
+> 
 
-I looked even at the build results for v1 and I don't know exactly why
-sparse doesn't complain about the lack of __acquires() and __releases()
-annotations, to avoid context imbalance warnings.
+Ahh, yeah you're right, we can shift this responsibility onto the caller
+and thereby allow them to implement the count as well. Makes sense!
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20220216160500.2341255-2-alvin@pqrs.dk/
+Thanks,
+Bjorn
 
-Anyway, those aren't of much use IMO (you can't get it to do anything
-but very trivial checks), and if sparse doesn't complain for whatever
-reason, I certainly won't request you to add them.
-
-I see other implementations don't have them either - like vexpress_config_lock.
+> > My claim is that this is not a problem, because this works fine with any
+> > reasonable size of fwnode graphs we might run into - and the client will
+> > in general have a sense of the worst case number of matches (in this
+> > series its 3, as there's 3 types of lanes that can be switched/muxed
+> > coming out of a USB connector).
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
