@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84985C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F01C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351875AbiBUJyh (ORCPT
+        id S1351639AbiBUJys (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42342 "EHLO
+        Mon, 21 Feb 2022 04:54:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352910AbiBUJsB (ORCPT
+        with ESMTP id S1352978AbiBUJsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809D120199;
-        Mon, 21 Feb 2022 01:21:16 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:05 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4386BF25;
+        Mon, 21 Feb 2022 01:22:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CC3060EDF;
-        Mon, 21 Feb 2022 09:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03C2DC340E9;
-        Mon, 21 Feb 2022 09:21:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A50D1CE0E8B;
+        Mon, 21 Feb 2022 09:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C8C2C340E9;
+        Mon, 21 Feb 2022 09:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435275;
-        bh=OXvfCS9PD0SNk8WUZWIhK1lM9qzjLIKjwNP/Cekcf6Y=;
+        s=korg; t=1645435329;
+        bh=mc0aKOxSsDuTXpmJoC/IG9w3zf1N4r0QHjUEA7j//a4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bs3uHlCzBGTpb4Fpk8rTBUaPXesGLgGvMlQ6HkKp1sJcPFUoHySeFzxlEBcguUUjE
-         gPAxh7jcqJ7z7OBSeQKS6fhWaxLyW1Rq/Wk/ouYR4zwUt/CL3PikUFQAIlWQjDl/PI
-         ROBpe3d7wMoeYdWwEhQtW94z9VMIFo+uL3FS5mCg=
+        b=W6YOrFc9EjaJOeL+Qxfp1il7YRCjFa8+dc1lkTCbDUD9suRhDkMC8OzAeK9A2US0x
+         4GBz0zjhwwU8IMSuqotR8fmtiD/ynJaMjaIbyuc5DYrgpQNDDSzgDhcbtmUMjwLL6Y
+         Nmg4AXsXLT4KZPMzJIqIWzuZ9YUt2ZOzDdlg9vYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 105/227] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
-Date:   Mon, 21 Feb 2022 09:48:44 +0100
-Message-Id: <20220221084938.366020326@linuxfoundation.org>
+        stable@vger.kernel.org, Gatis Peisenieks <gatis@mikrotik.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 126/227] atl1c: fix tx timeout after link flap on Mikrotik 10/25G NIC
+Date:   Mon, 21 Feb 2022 09:49:05 +0100
+Message-Id: <20220221084939.035155227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,73 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Gorski <jonas.gorski@gmail.com>
+From: Gatis Peisenieks <gatis@mikrotik.com>
 
-commit 6aba04ee3263669b335458c4cf4c7d97d6940229 upstream.
+commit bf8e59fd315f304eb538546e35de6dc603e4709f upstream.
 
-This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
+If NIC had packets in tx queue at the moment link down event
+happened, it could result in tx timeout when link got back up.
 
-Since idm_base and nicpm_base are still optional resources not present
-on all platforms, this breaks the driver for everything except Northstar
-2 (which has both).
+Since device has more than one tx queue we need to reset them
+accordingly.
 
-The same change was already reverted once with 755f5738ff98 ("net:
-broadcom: fix a mistake about ioremap resource").
-
-So let's do it again.
-
-Fixes: 3710e80952cf ("net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname")
-Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
-[florian: Added comments to explain the resources are optional]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220216184634.2032460-1-f.fainelli@gmail.com
+Fixes: 057f4af2b171 ("atl1c: add 4 RX/TX queue support for Mikrotik 10/25G NIC")
+Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+Link: https://lore.kernel.org/r/20220211065123.4187615-1-gatis@mikrotik.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bgmac-platform.c |   23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/broadcom/bgmac-platform.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
-@@ -172,6 +172,7 @@ static int bgmac_probe(struct platform_d
- {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct bgmac *bgmac;
-+	struct resource *regs;
- 	int ret;
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -900,7 +900,7 @@ static void atl1c_clean_tx_ring(struct a
+ 		atl1c_clean_buffer(pdev, buffer_info);
+ 	}
  
- 	bgmac = bgmac_alloc(&pdev->dev);
-@@ -208,15 +209,23 @@ static int bgmac_probe(struct platform_d
- 	if (IS_ERR(bgmac->plat.base))
- 		return PTR_ERR(bgmac->plat.base);
+-	netdev_reset_queue(adapter->netdev);
++	netdev_tx_reset_queue(netdev_get_tx_queue(adapter->netdev, queue));
  
--	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
--	if (IS_ERR(bgmac->plat.idm_base))
--		return PTR_ERR(bgmac->plat.idm_base);
--	else
-+	/* The idm_base resource is optional for some platforms */
-+	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
-+	if (regs) {
-+		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
-+		if (IS_ERR(bgmac->plat.idm_base))
-+			return PTR_ERR(bgmac->plat.idm_base);
- 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
-+	}
- 
--	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
--	if (IS_ERR(bgmac->plat.nicpm_base))
--		return PTR_ERR(bgmac->plat.nicpm_base);
-+	/* The nicpm_base resource is optional for some platforms */
-+	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
-+	if (regs) {
-+		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
-+							       regs);
-+		if (IS_ERR(bgmac->plat.nicpm_base))
-+			return PTR_ERR(bgmac->plat.nicpm_base);
-+	}
- 
- 	bgmac->read = platform_bgmac_read;
- 	bgmac->write = platform_bgmac_write;
+ 	/* Zero out Tx-buffers */
+ 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
 
 
