@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B829C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471C0C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348591AbiBUJWw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:22:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38024 "EHLO
+        id S240612AbiBUJW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:22:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241798AbiBUJNM (ORCPT
+        with ESMTP id S1350060AbiBUJNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:13:12 -0500
+        Mon, 21 Feb 2022 04:13:11 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D18526118;
-        Mon, 21 Feb 2022 01:06:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC462E0A8;
+        Mon, 21 Feb 2022 01:06:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2B9CACE0E86;
-        Mon, 21 Feb 2022 09:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C89BC340E9;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 56B92CE0E8B;
         Mon, 21 Feb 2022 09:06:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED4EC340E9;
+        Mon, 21 Feb 2022 09:06:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434383;
-        bh=Iu10TYzWNrgXeQsfppIYu11B1WF3/PSnjsNid03wlWE=;
+        s=korg; t=1645434380;
+        bh=In4AzKn1wxAe9eTmNKIelQ3WOTNBZ/W4/QZ6HsBrqyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q3aa06zup9qnuoQo+xEJ+r/EgEpaqAnNEbtcVWPe3ZpygrJM3cAf06FGMAn9M2zOY
-         u8Xa94UNW7CsIBbUba5tyaX/auf3AXrZqpKD1hHAVrPhJ687iNl+lNgMM2p6jc2Plg
-         zwZALu/8FcZKFmkCFm+ZoH+1Vp9ofCLi6gtY3R3Y=
+        b=YrLu5cBEwqoiG+zB4Fsq40faOx1PAXDAHSCTULj1c5RTqdL/6Cedb/XcxBOD9SEt8
+         uN448QJmb/yDsH2CCsNAqnUFsN+9gCAZkKRVEk5B33R++laXAUO4NBTxQw8CB/zTX3
+         uaJXWXspkJsxY7kAkc1og/D8nULDBuOLfIE8vwQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 110/121] kconfig: fix failing to generate auto.conf
-Date:   Mon, 21 Feb 2022 09:50:02 +0100
-Message-Id: <20220221084924.918764463@linuxfoundation.org>
+Subject: [PATCH 5.10 092/121] ARM: OMAP2+: hwmod: Add of_node_put() before break
+Date:   Mon, 21 Feb 2022 09:49:44 +0100
+Message-Id: <20220221084924.307292118@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,50 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
+[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
 
-When the KCONFIG_AUTOCONFIG is specified (e.g. export \
-KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
-include/config/ will not be created, so kconfig can't create deps
-files in it and auto.conf can't be generated.
+Fix following coccicheck warning:
+./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
+for_each_matching_node should have of_node_put() before break
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Early exits from for_each_matching_node should decrement the
+node reference counter.
+
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/kconfig/confdata.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index a39d93e3c6ae8..867b06c6d2797 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -968,14 +968,19 @@ static int conf_write_dep(const char *name)
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index 9443f129859b2..1fd67abca055b 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -749,8 +749,10 @@ static int __init _init_clkctrl_providers(void)
  
- static int conf_touch_deps(void)
- {
--	const char *name;
-+	const char *name, *tmp;
- 	struct symbol *sym;
- 	int res, i;
+ 	for_each_matching_node(np, ti_clkctrl_match_table) {
+ 		ret = _setup_clkctrl_provider(np);
+-		if (ret)
++		if (ret) {
++			of_node_put(np);
+ 			break;
++		}
+ 	}
  
--	strcpy(depfile_path, "include/config/");
--	depfile_prefix_len = strlen(depfile_path);
--
- 	name = conf_get_autoconfig_name();
-+	tmp = strrchr(name, '/');
-+	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
-+	if (depfile_prefix_len + 1 > sizeof(depfile_path))
-+		return -1;
-+
-+	strncpy(depfile_path, name, depfile_prefix_len);
-+	depfile_path[depfile_prefix_len] = 0;
-+
- 	conf_read_simple(name, S_DEF_AUTO);
- 	sym_calc_value(modules_sym);
- 
+ 	return ret;
 -- 
 2.34.1
 
