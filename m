@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA650C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 00:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F27C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 00:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245355AbiBUAQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 19:16:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46006 "EHLO
+        id S244399AbiBUAk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 19:40:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245348AbiBUAQq (ORCPT
+        with ESMTP id S230054AbiBUAkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 19:16:46 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8178E4476C;
-        Sun, 20 Feb 2022 16:16:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645402560;
-        bh=u55hKlChXTEXIJuV+e0xiIjiT2nKtCrwDTUv/GZniC8=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=SC+12ipn9rbHMsrVsmYy3Un09pxQVpkeoSYVL7Fp76hgJ8ynyDYZDTEOwe8xxl3W1
-         iCr0qqG1r3UuIJkMV49Fc6EfibX2It0gNibwDTnDaW6FDOckJNJi2SJEFvWLMmMm4r
-         YZY1P/nbxYR/sm74d4/3jwSyLE1j7ub86SJqAGiA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx004
- [212.227.17.184]) with ESMTPSA (Nemesis) id 1Msq2E-1oEioR24W8-00tBUZ; Mon, 21
- Feb 2022 01:16:00 +0100
-Message-ID: <0a2e57ad-2973-ea01-ceda-3262cde1f5aa@gmx.com>
-Date:   Mon, 21 Feb 2022 08:15:52 +0800
+        Sun, 20 Feb 2022 19:40:24 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1D249693
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 16:40:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645404002; x=1676940002;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eS/AFJZJSPUEV+/29UtYDFjHNVl4pXXe7ObP2I7de64=;
+  b=nlZfP7eZU/5fmhym5W7hbGPGga35V4Vg0x9cikBJ5h7X67xF2ZzooLXj
+   I3czacczkTzAsyUH7k6zrjSuGa3PdrK9eAIjc1CcNFP2XsMGlnnBw1fX4
+   v1SEGgcHmQfTb9Z4CIJ4R+Q2zbI5FFDrXrsOPEIdyAPbentCdCrKStgI7
+   VcDkJUt5OvY3rFoo/FNhVpQ91TvJsQsS0/QYuhK61Z3hpB+uk1NQcJdS5
+   oOSAjwhBkjnQdTQG4Y5uucoWCZGaB3uJO1IYzC8WdA4PSmR0UlwYLHioH
+   LMRewgQfLWVZwLH+ZG/bjamkXqIJ6Seg6JHOArOu+o1oa0YeSQqd5ataF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337844884"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="337844884"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 16:40:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
+   d="scan'208";a="504714216"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 20 Feb 2022 16:40:00 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nLwkB-00015X-WD; Mon, 21 Feb 2022 00:39:59 +0000
+Date:   Mon, 21 Feb 2022 08:39:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1479/2574]
+ arch/powerpc/include/asm/book3s/64/hash.h:244:22: error: expected '=', ',',
+ ';', 'asm' or '__attribute__' before 'hash__vmemmap_create_mapping'
+Message-ID: <202202210850.xjJMDz2l-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] btrfs: Initialize ret to 0 in scrub_simple_mirror()
-Content-Language: en-US
-To:     Souptick Joarder <jrdr.linux@gmail.com>, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, kernel test robot <lkp@intel.com>
-References: <20220220144606.5695-1-jrdr.linux@gmail.com>
-From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
-In-Reply-To: <20220220144606.5695-1-jrdr.linux@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:C8JAjspcmErs2qvGcN+rf+gs5pzGazDeRknGb4nSBztbmyzskiA
- m9rvdxjYIuSlPwQKNsJs1CwrpBoPxYQ/puNKMgElBHkhgjzY//jcZtbFn7w+HX377mox0yY
- 8ksMF6XX0qOIuy7Un30A/N+W7hwryUj0Bkya3FCNQuPjoNLn8Hry02cTy+19fs8f/UnaeFG
- iyqjwOaM/nUeUHDRhEE8Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yHT8ct1YwXg=:4qNAuuwGPL0dLqTUBv6r62
- zj5vSKm4vU4+6oz1vjcziodlfbEPOa0pj9GfCrG9SS3JMaiwIhYjSbPr9nCXZZuojMOxWMQFQ
- 7RtidxnLHDRq+JsCooYST+0Inw154w8Km/qCwm/Z0d8OV6on0YCDmuk9FLJlFdQBhoCGg/TfA
- FIlIDGSyqfnZgO1AlrbK1KSLNHZoTD4VJhwiHXmzsBPBYWXLK5XqKXwzAzPKwj6UvqGg+Zvli
- Uvnf0b7sxgbybCb0VLbjvlSqYg+UxA/h3z1zcAi40yo+ywuxDWgt8FI9pNKYdZLOHYIjDi4vu
- QKTVAWA+rdoErEMn9NDwKK8kfJ8wBqhFC+VL8AZUlH5r2afOLE5kiuBp200ONqKP+Q1vCRr2t
- UtfIqgkIs6X3V45EwoiZoHdXGiEC9lKr39EJWn1ekWDtD8OkvujklKpvnfVb3HPudNH2+gW+R
- +9mEP2wbKPyfdu0YN+IHxu6OAxhCPoaFkaBI6OZJmTsXctGIetf0q83mTcyNPV0hv/3WswbcA
- UY+6UTD327ePsxsSknt8FjWaddkcRuvYVXhsJEHLfnN1KxApInZc21ZMzGKnw5lXBcHjsnKpD
- mRrGk0Hl5hTuTP/IH0/lXrbWO0lJ48nHkeJ+5GQl451Pk2g5SwVNSizwecbELyA+0BrZ9OlRf
- c44lgZ9cQyxV1trcDOYlBWpzC1XGBgdp7LT+VWxJm0FY8eSHuN+Qvl8lsI9FDI4FkxeIQcXDS
- rthFP3zPRbZNn942ZiAkBOcnBEe0tajPq6GINlKy839j/TkGdwdhsxp5i/zHyY0HeOEfZBKiY
- dQ8GiaCYMRNthEnz/lSxZAiqjUL215EpJZ03RWdjAS1pecJyqnYSy+1Du42qPhQcJQd9SGR/X
- YsTWykG99zSWMcxtDQFb5rVnLOK/Zr1Y0ibPg4KgXmWsU/za1R6xIVf25D0Uurc+fiEqc6Nqt
- UJcW7p6fDiXeXNHETw/uh6tF2i1+khedwzMa4Tzu92FU25n2KVI9ra8nEBuymO9bovJmypWnY
- 91Kw0Tj5y8nw0oEXi7baNMjpIFxS7l8bHzfBDY49/bsQE3ZgLLDayrujOchaDdVA4hqBWNCqn
- 2DbeNLW8aA/Orw=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   39e8a0edc8fae20758051dadf7846849edc18b88
+commit: f840383878181d9f7f49fd96536a579548b7b101 [1479/2574] headers/deps: printk: Reduce <linux/printk.h> header dependencies
+config: powerpc64-randconfig-r015-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210850.xjJMDz2l-lkp@intel.com/config)
+compiler: powerpc64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=f840383878181d9f7f49fd96536a579548b7b101
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout f840383878181d9f7f49fd96536a579548b7b101
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc prepare
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:299,
+                    from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:39,
+                    from arch/powerpc/include/asm/mmu.h:405,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/hash.h:244:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'hash__vmemmap_create_mapping'
+     244 | extern int __meminit hash__vmemmap_create_mapping(unsigned long start,
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:300,
+                    from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:39,
+                    from arch/powerpc/include/asm/mmu.h:405,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/radix.h:289:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'radix__vmemmap_create_mapping'
+     289 | extern int __meminit radix__vmemmap_create_mapping(unsigned long start,
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:39,
+                    from arch/powerpc/include/asm/mmu.h:405,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/pgtable.h:1085:29: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'vmemmap_create_mapping'
+    1085 | static inline int __meminit vmemmap_create_mapping(unsigned long start,
+         |                             ^~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/mmu.h:405,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/mmu.h:231:27: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'early_init_mmu'
+     231 | static inline void __init early_init_mmu(void)
+         |                           ^~~~~~~~~~~~~~
+>> arch/powerpc/include/asm/book3s/64/mmu.h:262:13: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'radix_init_pseries'
+     262 | void __init radix_init_pseries(void);
+         |             ^~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/paca.h:30,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/cpuidle.h:88:12: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'validate_psscr_val_mask'
+      88 | int __init validate_psscr_val_mask(u64 *psscr_val, u64 *psscr_mask, u32 flags);
+         |            ^~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/sched.h:12,
+                    from include/linux/sched/thread_info_api.h:5,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/powerpc/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:79,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/sched/per_task.h:48:11: fatal error: generated/asm-offsets.h: No such file or directory
+      48 | # include <generated/asm-offsets.h>
+         |           ^~~~~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
+   make[2]: *** [scripts/Makefile.build:121: arch/powerpc/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 
-On 2022/2/20 22:46, Souptick Joarder wrote:
-> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
->
-> Kernel test robot reported below warning ->
-> fs/btrfs/scrub.c:3439:2: warning: Undefined or garbage value
-> returned to caller [clang-analyzer-core.uninitialized.UndefReturn]
->
-> Initialize ret to 0.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+vim +244 arch/powerpc/include/asm/book3s/64/hash.h
 
-Although the patch is not yet merged, but I have to say, it's a false aler=
-t.
+c605782b1c3f1c arch/powerpc/include/asm/pte-hash64.h     Benjamin Herrenschmidt 2009-03-10  241  
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  242  
+c766ee72235d09 arch/powerpc/include/asm/book3s/64/hash.h Christophe Leroy       2018-10-09  243  int hash__map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot);
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29 @244  extern int __meminit hash__vmemmap_create_mapping(unsigned long start,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  245  					      unsigned long page_size,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  246  					      unsigned long phys);
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  247  extern void hash__vmemmap_remove_mapping(unsigned long start,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  248  				     unsigned long page_size);
+32b53c012e0bfe arch/powerpc/include/asm/book3s/64/hash.h Reza Arbab             2017-01-03  249  
 
-Firstly, the while loop will always get at least one run.
+:::::: The code at line 244 was first introduced by commit
+:::::: 31a14fae92b29b7a7fcc65600f072bf448d3b0eb powerpc/mm: Abstraction for vmemmap and map_kernel_page()
 
-Secondly, in that loop, we either set ret to some error value and break,
-or after at least one find_first_extent_item() and scrub_extent() call,
-we increase cur_logical and reached the limit of the while loop and exit.
+:::::: TO: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
+:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
 
-So there is no possible routine to leave @ret uninitialized and returned
-to caller.
-
-Thanks,
-Qu
-
-> ---
->   fs/btrfs/scrub.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
-> index 4baa8e43d585..5ca7e5ffbc96 100644
-> --- a/fs/btrfs/scrub.c
-> +++ b/fs/btrfs/scrub.c
-> @@ -3325,7 +3325,7 @@ static int scrub_simple_mirror(struct scrub_ctx *s=
-ctx,
->   	const u32 max_length =3D SZ_64K;
->   	struct btrfs_path path =3D {};
->   	u64 cur_logical =3D logical_start;
-> -	int ret;
-> +	int ret =3D 0;
->
->   	/* The range must be inside the bg */
->   	ASSERT(logical_start >=3D bg->start &&
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
