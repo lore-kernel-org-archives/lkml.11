@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349517AbiBUJMd (ORCPT
+        id S1349648AbiBUJMo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33950 "EHLO
+        Mon, 21 Feb 2022 04:12:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347800AbiBUJIz (ORCPT
+        with ESMTP id S1347820AbiBUJI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:08:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F56A24BE0;
-        Mon, 21 Feb 2022 01:00:36 -0800 (PST)
+        Mon, 21 Feb 2022 04:08:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A676A27140;
+        Mon, 21 Feb 2022 01:00:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF73761132;
-        Mon, 21 Feb 2022 09:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36AEC340E9;
-        Mon, 21 Feb 2022 09:00:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 424BD6112C;
+        Mon, 21 Feb 2022 09:00:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F6D2C340EB;
+        Mon, 21 Feb 2022 09:00:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434035;
-        bh=0x6i4OlwnfiUrwgKFWTgJ7ebyVDAj1Ju/6rNnIfShrw=;
+        s=korg; t=1645434049;
+        bh=jl6J5B/Ooq64gp8K9/J7JdHTpm2F2YSPuQwYltenSYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KPtNI3+wF+VboUD0Y72V+UyuES9/dj46TfO4NhT/ugSIxq8yb/YPMDKAtqCVNTJW2
-         9IvvlDF0sB8CZxwWrLPKVhoPGE5/WnLgIbFsXZoC0KJqcb05LkzD5Ulf8/ZoH7Mrdc
-         FJKf+ULFHY3g2IzeNM6ShJ9qelVtAKac3y0TZmuU=
+        b=TfWNe71rRhcaHYCOlzKdHB4G5aYXNIOEX/IhnLbMgEuJPbDZlMdMzCx5o6aBWz5W/
+         H0cUOt2XSMDqWUttkl6Gz3MrH1xD09EcQAQlHN4kDyRzAH6J1C/lyRmF4l2CGoHERw
+         Xa6uQlCnepYJk1F+dq82d2J+D4XoFvACq+7brNaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Subject: [PATCH 5.4 70/80] netfilter: conntrack: dont refresh sctp entries in closed state
-Date:   Mon, 21 Feb 2022 09:49:50 +0100
-Message-Id: <20220221084917.876437921@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 75/80] ata: libata-core: Disable TRIM on M88V29
+Date:   Mon, 21 Feb 2022 09:49:55 +0100
+Message-Id: <20220221084918.039587269@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -51,53 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-Vivek Thrivikraman reported:
- An SCTP server application which is accessed continuously by client
- application.
- When the session disconnects the client retries to establish a connection.
- After restart of SCTP server application the session is not established
- because of stale conntrack entry with connection state CLOSED as below.
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
- (removing this entry manually established new connection):
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
 
- sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
+TRIM must be disabled for this device.
 
-Just skip timeout update of closed entries, we don't want them to
-stay around forever.
-
-Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index 810cca24b3990..7626f3e1c70a7 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 			pr_debug("Setting vtag %x for dir %d\n",
- 				 ih->init_tag, !dir);
- 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
-+
-+			/* don't renew timeout on init retransmit so
-+			 * port reuse by client or NAT middlebox cannot
-+			 * keep entry alive indefinitely (incl. nat info).
-+			 */
-+			if (new_state == SCTP_CONNTRACK_CLOSED &&
-+			    old_state == SCTP_CONNTRACK_CLOSED &&
-+			    nf_ct_is_confirmed(ct))
-+				ignore = true;
- 		}
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 92fb1f5b240e8..dca1590f295d0 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4595,6 +4595,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- 		ct->proto.sctp.state = new_state;
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+ 
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
