@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA557C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350433AbiBUJdG (ORCPT
+        id S1350449AbiBUJdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:33:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37026 "EHLO
+        Mon, 21 Feb 2022 04:33:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349135AbiBUJYA (ORCPT
+        with ESMTP id S1349054AbiBUJYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:24:00 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D9F39152;
-        Mon, 21 Feb 2022 01:10:23 -0800 (PST)
+        Mon, 21 Feb 2022 04:24:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A539694;
+        Mon, 21 Feb 2022 01:10:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4269ECE0E95;
-        Mon, 21 Feb 2022 09:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CAC5C340E9;
-        Mon, 21 Feb 2022 09:10:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DCA26097C;
+        Mon, 21 Feb 2022 09:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5725BC340E9;
+        Mon, 21 Feb 2022 09:10:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434614;
-        bh=PaaKW73KaW28UAaZXUGDURqeictQ95h8BZSpeKdhI7Y=;
+        s=korg; t=1645434628;
+        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R/4i2UP9Ih4WIJcfjlpK0nh5gJWSiwXtWyu2brSeU01zXm/eqbgx7lSpR7lsjhP9O
-         Bk++Ze3lbm5UBHrWQCkmlOiEdXCqPNJ+kgNPGyXGruerYl5C+SWrgdozIsbaaZEuqz
-         qqCyudqzwnGTgT/jy3ZHrk5eTWLrr6wMzo2bCwHQ=
+        b=admmjWX/ssQoqz+uoIMyxR4wFmQJwqOHmnhzo8b3Wv7YiiGWIMU4q5cbvdDoZX7Q+
+         XGnjsYfsOLaXg9tAenriKZTE5NORKm2bq1gUxHjkUFAWu+s7d3fBhhuqTMEFasbAza
+         kA3Zci7V02gpmFtAWE/4PF0NziYpl2J1XNS/K9KY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 069/196] tee: export teedev_open() and teedev_close_context()
-Date:   Mon, 21 Feb 2022 09:48:21 +0100
-Message-Id: <20220221084933.249069016@linuxfoundation.org>
+Subject: [PATCH 5.15 047/196] net: sparx5: do not refer to skb after passing it on
+Date:   Mon, 21 Feb 2022 09:47:59 +0100
+Message-Id: <20220221084932.504706572@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,81 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Wiklander <jens.wiklander@linaro.org>
+From: Steen Hegelund <steen.hegelund@microchip.com>
 
-[ Upstream commit 1e2c3ef0496e72ba9001da5fd1b7ed56ccb30597 ]
+[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
 
-Exports the two functions teedev_open() and teedev_close_context() in
-order to make it easier to create a driver internal struct tee_context.
+Do not try to use any SKB fields after the packet has been passed up in the
+receive stack.
 
-Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tee/tee_core.c  |  6 ++++--
- include/linux/tee_drv.h | 14 ++++++++++++++
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
-index 85102d12d7169..3fc426dad2df3 100644
---- a/drivers/tee/tee_core.c
-+++ b/drivers/tee/tee_core.c
-@@ -43,7 +43,7 @@ static DEFINE_SPINLOCK(driver_lock);
- static struct class *tee_class;
- static dev_t tee_devt;
- 
--static struct tee_context *teedev_open(struct tee_device *teedev)
-+struct tee_context *teedev_open(struct tee_device *teedev)
- {
- 	int rc;
- 	struct tee_context *ctx;
-@@ -70,6 +70,7 @@ static struct tee_context *teedev_open(struct tee_device *teedev)
- 	return ERR_PTR(rc);
- 
- }
-+EXPORT_SYMBOL_GPL(teedev_open);
- 
- void teedev_ctx_get(struct tee_context *ctx)
- {
-@@ -96,13 +97,14 @@ void teedev_ctx_put(struct tee_context *ctx)
- 	kref_put(&ctx->refcount, teedev_ctx_release);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index dc7e5ea6ec158..148d431fcde42 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+ 	skb->protocol = eth_type_trans(skb, netdev);
+-	netif_rx(skb);
+ 	netdev->stats.rx_bytes += skb->len;
+ 	netdev->stats.rx_packets++;
++	netif_rx(skb);
  }
  
--static void teedev_close_context(struct tee_context *ctx)
-+void teedev_close_context(struct tee_context *ctx)
- {
- 	struct tee_device *teedev = ctx->teedev;
- 
- 	teedev_ctx_put(ctx);
- 	tee_device_put(teedev);
- }
-+EXPORT_SYMBOL_GPL(teedev_close_context);
- 
- static int tee_open(struct inode *inode, struct file *filp)
- {
-diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-index feda1dc7f98ee..38b701b7af4cf 100644
---- a/include/linux/tee_drv.h
-+++ b/include/linux/tee_drv.h
-@@ -582,4 +582,18 @@ struct tee_client_driver {
- #define to_tee_client_driver(d) \
- 		container_of(d, struct tee_client_driver, driver)
- 
-+/**
-+ * teedev_open() - Open a struct tee_device
-+ * @teedev:	Device to open
-+ *
-+ * @return a pointer to struct tee_context on success or an ERR_PTR on failure.
-+ */
-+struct tee_context *teedev_open(struct tee_device *teedev);
-+
-+/**
-+ * teedev_close_context() - closes a struct tee_context
-+ * @ctx:	The struct tee_context to close
-+ */
-+void teedev_close_context(struct tee_context *ctx);
-+
- #endif /*__TEE_DRV_H*/
+ static int sparx5_inject(struct sparx5 *sparx5,
 -- 
 2.34.1
 
