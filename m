@@ -2,429 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDCDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 684FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346885AbiBUIJ5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:09:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42036 "EHLO
+        id S240989AbiBUILJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:11:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235981AbiBUIJw (ORCPT
+        with ESMTP id S229954AbiBUILC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:09:52 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E22FDC;
-        Mon, 21 Feb 2022 00:09:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645430969; x=1676966969;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=jpkWp//fhLVPL6Q1Zzz2gaKdb9MOH63GWaK9j4JlIiM=;
-  b=W9HgFt/3ER1J7AihLgxB1AjgkcN+fyt08BMy9/X41w1KcjWgJsRxRugF
-   ciVPcw6yvq8CqA9ZuVjUpvwdN2SRnJQpMbpzix4njYxv2IRt/HBSOjWen
-   suMUCw4+ld5Sga0XjQPQA50yoByt6cqy+plsMYm5IgZ4R6BGaxLx06VPv
-   2oSYwjsq3TDDG97UQM5ULwlaaH7/cbfjmv/VJIBbmr9sRuoqYfVPmJ9vQ
-   Ag+zqwd/wsTzkVAoTWI/WIIRFMvLZq9vEILE0jiZvISxF6y4fLJ3ZPPMe
-   Ti4ibpaonTyliQfJ28dzEUkqLtNrtNVmumvzUm1qsL2XX/IKUrAbzNG/a
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="86423859"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Feb 2022 01:09:28 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 21 Feb 2022 01:09:28 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 21 Feb 2022 01:09:23 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <arnd@arndb.de>, <alexandre.belloni@bootlin.com>,
-        <michael@walle.cc>, <olof@lixom.net>, <soc@kernel.org>,
-        <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>,
-        <Manohar.Puri@microchip.com>
-Subject: [PATCH v7] ARM: dts: add DT for lan966 SoC and 2-port board pcb8291
-Date:   Mon, 21 Feb 2022 13:38:58 +0530
-Message-ID: <20220221080858.14233-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 21 Feb 2022 03:11:02 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40AE1115A;
+        Mon, 21 Feb 2022 00:10:39 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L6HJRb030833;
+        Mon, 21 Feb 2022 08:10:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=e9FFJ0KwyjxAG2E12quQan+xn2YJPzNdsd1aNQsCpP8=;
+ b=pZ8PLoBx/IohErESqmAHI/R59znzdnGzwVbuzV7JKGsUL4+6mXdU6aQVOP2cEScmvO8E
+ 5WKBAZQzZnCOxj0MDRfqhiJtOc6zxuyRK0LZyZlw1hevoZrlZk6PX89UAualAi4sWCxw
+ t7gKkYhsYbUCoJweuQW08Z9dz68MO7ZwF1/yOzdhHlUc0NAERJOooy4eapzhg4u92axN
+ V+FN8UG+zhUUZf5F9Y/DOcRm5lOKxvMT3QmfK2K9lRyi2KRq9yD6mEhN9ijYzE/CZnOg
+ Xz1PEl9lwqFmfeRRglcNqtimmdzrbF53WLZMG2vUPG4kb66MlkYFkopy+nKuCVK/SZcS 6g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ec5bb20wh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 08:10:38 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21L7j9sj013405;
+        Mon, 21 Feb 2022 08:10:38 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ec5bb20w3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 08:10:37 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21L88g3b012668;
+        Mon, 21 Feb 2022 08:10:36 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3ear68qw3p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 08:10:36 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21L8AUfq49611082
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Feb 2022 08:10:30 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 89E154203F;
+        Mon, 21 Feb 2022 08:10:30 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0831A42047;
+        Mon, 21 Feb 2022 08:10:30 +0000 (GMT)
+Received: from [9.145.32.243] (unknown [9.145.32.243])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 21 Feb 2022 08:10:29 +0000 (GMT)
+Message-ID: <74568777-c09b-b6a5-e6fa-b8a3a2462e92@linux.ibm.com>
+Date:   Mon, 21 Feb 2022 09:10:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 1/1] s390x: KVM: guest support for topology function
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com
+References: <20220217095923.114489-1-pmorel@linux.ibm.com>
+ <20220217095923.114489-2-pmorel@linux.ibm.com>
+ <f0bf737abf480d6d16af6e5335bb195061f3d076.camel@linux.ibm.com>
+ <97af6268-ff7a-cfb6-5ea4-217b5162cfe7@linux.ibm.com>
+ <b9828696-f5d4-dd72-9b0e-a27b1480b799@linux.ibm.com>
+ <aecc2b93-3e07-be78-81a2-594d2bc6b64a@linux.ibm.com>
+ <580e5da7-f731-417f-0cc2-baf2313ac6d6@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <580e5da7-f731-417f-0cc2-baf2313ac6d6@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: l3nWA0ZTOL_mPc6wasjlni4_8uQniTlH
+X-Proofpoint-GUID: QvJaGwjijveFRzthwNt_ahGRKQETnbPD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-21_03,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ phishscore=0 mlxscore=0 adultscore=0 lowpriorityscore=0 mlxlogscore=999
+ suspectscore=0 malwarescore=0 priorityscore=1501 clxscore=1015 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202210049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds basic DT for Microchip lan966x SoC and associated board
-pcb8291(2-port EVB). Adds peripherals required to allow booting: Interrupt
-Controller, Clock, Generic ARMv7 Timers, Synopsys Timer, Flexcoms, GPIOs.
-Also adds other peripherals like crypto(AES/SHA), DMA, Watchdog Timer, TRNG
-and MCAN0.
-
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
-v6 -> v7:
-- Removed "arm,cpu-registers-not-fw-configured" property, as not required.
-- Corrected "PPI interrupt cpu mask" and order of interrupts.
-
-v5 -> v6:
-- Renamed dts file to lan966x-pcb8291.dts file.
-- Disabled optional watchdog in dtsi file and enabled it in dts file.
-
-v4 -> v5:
-- Modified AES, SHA, TRNG node names as per generic names recommended.
-
-v3 -> v4:
-- Removed character 'x' from compatible string.
-- Removed memory node as handled by bootloader.
-- Renamed flexcom3 usart0 to usart3
-- Added /chosen and /aliases nodes in dts file.
-
-v2 -> v3:
-- Enabling trng in dtsi itself.
-- Removed "status=okay" dma0.
-- Add gpio pin settings for can0(missed adding this in previous version)
-
-v1 -> v2:
-- Moved flx3 usart0 node to dtsi file.
-- Removed status="okay" for dma0 to maintain consistency across nodes
-  (which means enabling dma0 by default)
-
- arch/arm/boot/dts/Makefile            |   2 +
- arch/arm/boot/dts/lan966x-pcb8291.dts |  64 +++++++
- arch/arm/boot/dts/lan966x.dtsi        | 237 ++++++++++++++++++++++++++
- 3 files changed, 303 insertions(+)
- create mode 100644 arch/arm/boot/dts/lan966x-pcb8291.dts
- create mode 100644 arch/arm/boot/dts/lan966x.dtsi
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 235ad559acb2..c17a7308ff44 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -735,6 +735,8 @@ dtb-$(CONFIG_SOC_IMX7D) += \
- dtb-$(CONFIG_SOC_IMX7ULP) += \
- 	imx7ulp-com.dtb \
- 	imx7ulp-evk.dtb
-+dtb-$(CONFIG_SOC_LAN966) += \
-+	lan966x-pcb8291.dtb
- dtb-$(CONFIG_SOC_LS1021A) += \
- 	ls1021a-moxa-uc-8410a.dtb \
- 	ls1021a-qds.dtb \
-diff --git a/arch/arm/boot/dts/lan966x-pcb8291.dts b/arch/arm/boot/dts/lan966x-pcb8291.dts
-new file mode 100644
-index 000000000000..3281af90ac6d
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-pcb8291.dts
-@@ -0,0 +1,64 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * lan966x_pcb8291.dts - Device Tree file for PCB8291
-+ */
-+/dts-v1/;
-+#include "lan966x.dtsi"
-+
-+/ {
-+	model = "Microchip EVB - LAN9662";
-+	compatible = "microchip,lan9662-pcb8291", "microchip,lan9662", "microchip,lan966";
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	aliases {
-+		serial0 = &usart3;
-+	};
-+};
-+
-+&gpio {
-+	fc_shrd7_pins: fc_shrd7-pins {
-+		pins = "GPIO_49";
-+		function = "fc_shrd7";
-+	};
-+
-+	fc_shrd8_pins: fc_shrd8-pins {
-+		pins = "GPIO_54";
-+		function = "fc_shrd8";
-+	};
-+
-+	fc3_b_pins: fcb3-spi-pins {
-+		/* SCK, RXD, TXD */
-+		pins = "GPIO_51", "GPIO_52", "GPIO_53";
-+		function = "fc3_b";
-+	};
-+
-+	can0_b_pins:  can0_b_pins {
-+		/* RX, TX */
-+		pins = "GPIO_35", "GPIO_36";
-+		function = "can0_b";
-+	};
-+};
-+
-+&can0 {
-+	pinctrl-0 = <&can0_b_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&flx3 {
-+	atmel,flexcom-mode = <ATMEL_FLEXCOM_MODE_USART>;
-+	status = "okay";
-+
-+	usart3: serial@200 {
-+		pinctrl-0 = <&fc3_b_pins>, <&fc_shrd7_pins>, <&fc_shrd8_pins>;
-+		pinctrl-names = "default";
-+		status = "okay";
-+	};
-+};
-+
-+&watchdog {
-+	status = "okay";
-+};
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-new file mode 100644
-index 000000000000..7d2869648050
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -0,0 +1,237 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * lan966x.dtsi - Device Tree Include file for Microchip LAN966 family SoC
-+ *
-+ * Copyright (C) 2021 Microchip Technology, Inc. and its subsidiaries
-+ *
-+ * Author: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-+ *
-+ */
-+
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/mfd/atmel-flexcom.h>
-+#include <dt-bindings/dma/at91.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/clock/microchip,lan966x.h>
-+
-+/ {
-+	model = "Microchip LAN966 family SoC";
-+	compatible = "microchip,lan966";
-+	interrupt-parent = <&gic>;
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a7";
-+			clock-frequency = <600000000>;
-+			reg = <0x0>;
-+		};
-+	};
-+
-+	clocks {
-+		sys_clk: sys_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <162500000>;
-+		};
-+
-+		cpu_clk: cpu_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <600000000>;
-+		};
-+
-+		ddr_clk: ddr_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <300000000>;
-+		};
-+
-+		nic_clk: nic_clk {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <200000000>;
-+		};
-+	};
-+
-+	clks: clock-controller@e00c00a8 {
-+		compatible = "microchip,lan966x-gck";
-+		#clock-cells = <1>;
-+		clocks = <&cpu_clk>, <&ddr_clk>, <&sys_clk>;
-+		clock-names = "cpu", "ddr", "sys";
-+		reg = <0xe00c00a8 0x38>;
-+	};
-+
-+	timer {
-+		compatible = "arm,armv7-timer";
-+		interrupt-parent = <&gic>;
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(1) | IRQ_TYPE_LEVEL_LOW)>;
-+		clock-frequency = <37500000>;
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		flx0: flexcom@e0040000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0040000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM0>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0040000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		flx1: flexcom@e0044000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0044000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM1>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0044000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		trng: rng@e0048000 {
-+			compatible = "atmel,at91sam9g45-trng";
-+			reg = <0xe0048000 0x100>;
-+			clocks = <&nic_clk>;
-+		};
-+
-+		aes: crypto@e004c000 {
-+			compatible = "atmel,at91sam9g46-aes";
-+			reg = <0xe004c000 0x100>;
-+			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(13)>,
-+			       <&dma0 AT91_XDMAC_DT_PERID(12)>;
-+			dma-names = "rx", "tx";
-+			clocks = <&nic_clk>;
-+			clock-names = "aes_clk";
-+		};
-+
-+		flx2: flexcom@e0060000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0060000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM2>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0060000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		flx3: flexcom@e0064000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0064000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM3>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0064000 0x800>;
-+			status = "disabled";
-+
-+			usart3: serial@200 {
-+				compatible = "atmel,at91sam9260-usart";
-+				reg = <0x200 0x200>;
-+				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&nic_clk>;
-+				clock-names = "usart";
-+				atmel,fifo-size = <32>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		dma0: dma-controller@e0068000 {
-+			compatible = "microchip,sama7g5-dma";
-+			reg = <0xe0068000 0x1000>;
-+			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-+			#dma-cells = <1>;
-+			clocks = <&nic_clk>;
-+			clock-names = "dma_clk";
-+		};
-+
-+		sha: crypto@e006c000 {
-+			compatible = "atmel,at91sam9g46-sha";
-+			reg = <0xe006c000 0xec>;
-+			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
-+			dmas = <&dma0 AT91_XDMAC_DT_PERID(14)>;
-+			dma-names = "tx";
-+			clocks = <&nic_clk>;
-+			clock-names = "sha_clk";
-+		};
-+
-+		flx4: flexcom@e0070000 {
-+			compatible = "atmel,sama5d2-flexcom";
-+			reg = <0xe0070000 0x100>;
-+			clocks = <&clks GCK_ID_FLEXCOM4>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			ranges = <0x0 0xe0070000 0x800>;
-+			status = "disabled";
-+		};
-+
-+		timer0: timer@e008c000 {
-+			compatible = "snps,dw-apb-timer";
-+			reg = <0xe008c000 0x400>;
-+			clocks = <&nic_clk>;
-+			clock-names = "timer";
-+			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
-+		};
-+
-+		watchdog: watchdog@e0090000 {
-+			compatible = "snps,dw-wdt";
-+			reg = <0xe0090000 0x1000>;
-+			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&nic_clk>;
-+			status = "disabled";
-+		};
-+
-+		can0: can@e081c000 {
-+			compatible = "bosch,m_can";
-+			reg = <0xe081c000 0xfc>, <0x00100000 0x4000>;
-+			reg-names = "m_can", "message_ram";
-+			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "int0", "int1";
-+			clocks = <&clks GCK_ID_MCAN0>, <&clks GCK_ID_MCAN0>;
-+			clock-names = "hclk", "cclk";
-+			assigned-clocks = <&clks GCK_ID_MCAN0>;
-+			assigned-clock-rates = <40000000>;
-+			bosch,mram-cfg = <0x0 0 0 64 0 0 32 32>;
-+			status = "disabled";
-+		};
-+
-+		gpio: pinctrl@e2004064 {
-+			compatible = "microchip,lan966x-pinctrl";
-+			reg = <0xe2004064 0xb4>,
-+			    <0xe2010024 0x138>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&gpio 0 0 78>;
-+			interrupt-controller;
-+			interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
-+			#interrupt-cells = <2>;
-+		};
-+
-+		gic: interrupt-controller@e8c11000 {
-+			compatible = "arm,gic-400", "arm,cortex-a7-gic";
-+			#interrupt-cells = <3>;
-+			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-controller;
-+			reg = <0xe8c11000 0x1000>,
-+			      <0xe8c12000 0x2000>,
-+			      <0xe8c14000 0x2000>,
-+			      <0xe8c16000 0x2000>;
-+		};
-+	};
-+};
--- 
-2.17.1
+T24gMi8xOC8yMiAxOToyNCwgUGllcnJlIE1vcmVsIHdyb3RlOg0KPiANCj4gDQo+IE9uIDIv
+MTgvMjIgMTg6MjcsIFBpZXJyZSBNb3JlbCB3cm90ZToNCj4+DQo+Pg0KPj4gT24gMi8xOC8y
+MiAxNToyOCwgSmFub3NjaCBGcmFuayB3cm90ZToNCj4+PiBPbiAyLzE4LzIyIDE0OjEzLCBQ
+aWVycmUgTW9yZWwgd3JvdGU6DQo+Pj4+DQo+Pj4+DQo+Pj4+IE9uIDIvMTcvMjIgMTg6MTcs
+IE5pY28gQm9laHIgd3JvdGU6DQo+Pj4+PiBPbiBUaHUsIDIwMjItMDItMTcgYXQgMTA6NTkg
+KzAxMDAsIFBpZXJyZSBNb3JlbCB3cm90ZToNCj4+Pj4+IFsuLi5dDQo+Pj4+Pj4gZGlmZiAt
+LWdpdCBhL2FyY2gvczM5MC9rdm0va3ZtLXMzOTAuYyBiL2FyY2gvczM5MC9rdm0va3ZtLXMz
+OTAuYw0KPj4+Pj4+IGluZGV4IDIyOTZiMWZmMWUwMi4uYWY3ZWE4NDg4ZmEyIDEwMDY0NA0K
+Pj4+Pj4+IC0tLSBhL2FyY2gvczM5MC9rdm0va3ZtLXMzOTAuYw0KPj4+Pj4+ICsrKyBiL2Fy
+Y2gvczM5MC9rdm0va3ZtLXMzOTAuYw0KPj4+Pj4gWy4uLl0NCj4+Pg0KPj4+IFdoeSBpcyB0
+aGVyZSBubyBpbnRlcmZhY2UgdG8gY2xlYXIgdGhlIFNDQV9VVElMSVRZX01UQ1Igb24gYSBz
+dWJzeXN0ZW0NCj4+PiByZXNldD8NCj4+DQo+PiBSaWdodCwgSSBoYWQgb25lIGluIG15IGZp
+cnN0IHZlcnNpb24gYmFzZWQgb24gaW50ZXJjZXB0aW9uIGJ1dCBJIGZvcmdvdA0KPj4gdG8g
+aW1wbGVtZW50IGFuIGVxdWl2YWxlbnQgZm9yIEtWTSBhcyBJIG1vZGlmaWVkIHRoZSBpbXBs
+ZW1lbnRhdGlvbiBmb3INCj4+IGludGVycHJldGF0aW9uLg0KPj4gSSB3aWxsIGFkZCB0aGlz
+Lg0KPj4NCj4+Pg0KPj4+DQo+Pj4+Pj4gLXZvaWQga3ZtX2FyY2hfdmNwdV9sb2FkKHN0cnVj
+dCBrdm1fdmNwdSAqdmNwdSwgaW50IGNwdSkNCj4+Pj4+PiArLyoqDQo+Pj4+Pj4gKyAqIGt2
+bV9zMzkwX3ZjcHVfc2V0X210Y3INCj4+Pj4+PiArICogQHZjcDogdGhlIHZpcnR1YWwgQ1BV
+DQo+Pj4+Pj4gKyAqDQo+Pj4+Pj4gKyAqIElzIG9ubHkgcmVsZXZhbnQgaWYgdGhlIHRvcG9s
+b2d5IGZhY2lsaXR5IGlzIHByZXNlbnQuDQo+Pj4+Pj4gKyAqDQo+Pj4+Pj4gKyAqIFVwZGF0
+ZXMgdGhlIE11bHRpcHJvY2Vzc29yIFRvcG9sb2d5LUNoYW5nZS1SZXBvcnQgdG8gc2lnbmFs
+DQo+Pj4+Pj4gKyAqIHRoZSBndWVzdCB3aXRoIGEgdG9wb2xvZ3kgY2hhbmdlLg0KPj4+Pj4+
+ICsgKi8NCj4+Pj4+PiArc3RhdGljIHZvaWQga3ZtX3MzOTBfdmNwdV9zZXRfbXRjcihzdHJ1
+Y3Qga3ZtX3ZjcHUgKnZjcHUpDQo+Pj4+Pj4gIMKgIMKgew0KPj4+Pj4+ICvCoMKgwqDCoMKg
+wqDCoHN0cnVjdCBlc2NhX2Jsb2NrICplc2NhID0gdmNwdS0+a3ZtLT5hcmNoLnNjYTsNCj4+
+Pj4+DQo+Pj4+PiB1dGlsaXR5IGlzIGF0IHRoZSBzYW1lIG9mZnNldCBmb3IgdGhlIGJzY2Eg
+YW5kIHRoZSBlc2NhLCBzdGlsbA0KPj4+Pj4gd29uZGVyaW5nIHdoZXRoZXIgaXQgaXMgYSBn
+b29kIGlkZWEgdG8gYXNzdW1lIGVzY2EgaGVyZS4uLg0KPj4+Pg0KPj4+PiBXZSBjYW4gdGFr
+ZSBic2NhIHRvIGJlIGNvaGVyZW50IHdpdGggdGhlIGluY2x1ZGUgZmlsZSB3aGVyZSB3ZSBk
+ZWZpbmUNCj4+Pj4gRVNDQV9VVElMSVRZX01UQ1IgaW5zaWRlIHRoZSBic2NhLg0KPj4+PiBB
+bmQgd2UgY2FuIHJlbmFtZSB0aGUgZGVmaW5lIHRvIFNDQV9VVElMSVRZX01UQ1IgYXMgaXQg
+aXMgY29tbW9uIGZvcg0KPj4+PiBib3RoIEJTQ0EgYW5kIEVTQ0EgdGhlIChFKSBpcyB0b28g
+bXVjaC4NCj4+Pg0KPj4+IFllcyBhbmQgbWF5YmUgYWRkIGEgY29tbWVudCB0aGF0IGl0J3Mg
+YXQgdGhlIHNhbWUgb2Zmc2V0IGZvciBlc2NhIHNvDQo+Pj4gdGhlcmUgd29uJ3QgY29tZSB1
+cCBmdXJ0aGVyIHF1ZXN0aW9ucyBpbiB0aGUgZnV0dXJlLg0KPj4NCj4+IE9LDQo+Pg0KPj4+
+DQo+Pj4+DQo+Pj4+Pg0KPj4+Pj4gWy4uLl0NCj4+Pj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC9z
+MzkwL2t2bS9rdm0tczM5MC5oIGIvYXJjaC9zMzkwL2t2bS9rdm0tczM5MC5oDQo+Pj4+Pj4g
+aW5kZXggMDk4ODMxZTgxNWU2Li5hZjA0ZmZiZmQ1ODcgMTAwNjQ0DQo+Pj4+Pj4gLS0tIGEv
+YXJjaC9zMzkwL2t2bS9rdm0tczM5MC5oDQo+Pj4+Pj4gKysrIGIvYXJjaC9zMzkwL2t2bS9r
+dm0tczM5MC5oDQo+Pj4+Pj4gQEAgLTUwMyw0ICs1MDMsMjkgQEAgdm9pZCBrdm1fczM5MF92
+Y3B1X2NyeXB0b19yZXNldF9hbGwoc3RydWN0IGt2bQ0KPj4+Pj4+ICprdm0pOw0KPj4+Pj4+
+ICDCoCDCoCAqLw0KPj4+Pj4+ICDCoCDCoGV4dGVybiB1bnNpZ25lZCBpbnQgZGlhZzljX2Zv
+cndhcmRpbmdfaHo7DQo+Pj4+Pj4gKyNkZWZpbmUgUzM5MF9LVk1fVE9QT0xPR1lfTkVXX0NQ
+VSAtMQ0KPj4+Pj4+ICsvKioNCj4+Pj4+PiArICoga3ZtX3MzOTBfdG9wb2xvZ3lfY2hhbmdl
+ZA0KPj4+Pj4+ICsgKiBAdmNwdTogdGhlIHZpcnR1YWwgQ1BVDQo+Pj4+Pj4gKyAqDQo+Pj4+
+Pj4gKyAqIElmIHRoZSB0b3BvbG9neSBmYWNpbGl0eSBpcyBwcmVzZW50LCBjaGVja3MgaWYg
+dGhlIENQVSB0b3Bsb2d5DQo+Pj4+Pj4gKyAqIHZpZXdlZCBieSB0aGUgZ3Vlc3QgY2hhbmdl
+ZCBkdWUgdG8gbG9hZCBiYWxhbmNpbmcgb3IgQ1BVIGhvdHBsdWcuDQo+Pj4+Pj4gKyAqLw0K
+Pj4+Pj4+ICtzdGF0aWMgaW5saW5lIGJvb2wga3ZtX3MzOTBfdG9wb2xvZ3lfY2hhbmdlZChz
+dHJ1Y3Qga3ZtX3ZjcHUgKnZjcHUpDQo+Pj4+Pj4gK3sNCj4+Pj4+PiArwqDCoMKgwqDCoMKg
+wqBpZiAoIXRlc3Rfa3ZtX2ZhY2lsaXR5KHZjcHUtPmt2bSwgMTEpKQ0KPj4+Pj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gZmFsc2U7DQo+Pj4+Pj4gKw0KPj4+
+Pj4+ICvCoMKgwqDCoMKgwqDCoC8qIEEgbmV3IHZDUFUgaGFzIGJlZW4gaG90cGx1Z2dlZCAq
+Lw0KPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoGlmICh2Y3B1LT5hcmNoLnByZXZfY3B1ID09IFMz
+OTBfS1ZNX1RPUE9MT0dZX05FV19DUFUpDQo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoHJldHVybiB0cnVlOw0KPj4+Pj4+ICsNCj4+Pj4+PiArwqDCoMKgwqDCoMKg
+wqAvKiBUaGUgcmVhbCBDUFUgYmFja2luZyB1cCB0aGUgdkNQVSBtb3ZlZCB0byBhbm90aGVy
+IHNvY2tldA0KPj4+Pj4+ICovDQo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgaWYgKHRvcG9sb2d5
+X3BoeXNpY2FsX3BhY2thZ2VfaWQodmNwdS0+Y3B1KSAhPQ0KPj4+Pj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoCB0b3BvbG9neV9waHlzaWNhbF9wYWNrYWdlX2lkKHZjcHUtPmFyY2gucHJl
+dl9jcHUpKQ0KPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4g
+dHJ1ZTsNCj4+Pj4+DQo+Pj4+PiBXaHkgaXMgaXQgT0sgdG8gbG9vayBqdXN0IGF0IHRoZSBw
+aHlzaWNhbCBwYWNrYWdlIElEIGhlcmU/IFdoYXQgaWYgdGhlDQo+Pj4+PiB2Y3B1IGZvciBl
+eGFtcGxlIG1vdmVzIHRvIGEgZGlmZmVyZW50IGJvb2ssIHdoaWNoIGhhcyBhIGNvcmUgd2l0
+aCB0aGUNCj4+Pj4+IHNhbWUgcGh5c2ljYWwgcGFja2FnZSBJRD8NCj4+Pg0KPj4+IEknbGwg
+bmVlZCB0byBsb29rIHVwIHN0c2kgMTUqIG91dHB1dCB0byB1bmRlcnN0YW5kIHRoaXMuDQo+
+Pj4gQnV0IHRoZSBhcmNoaXRlY3R1cmUgc3RhdGVzIHRoYXQgYW55IGNoYW5nZSB0byB0aGUg
+c3RzaSAxNSBvdXRwdXQgc2V0cw0KPj4+IHRoZSBjaGFuZ2UgYml0IHNvIEknZCBndWVzcyBO
+aWNvIGlzIGNvcnJlY3QuDQo+Pj4NCj4+DQo+PiBZZXMsIE5pY28gaXMgY29ycmVjdCwgYXMg
+SSBhbHJlYWR5IGFuc3dlcmVkLCBob3dldmVyIGl0IGlzIG5vdCBhbnkNCj4+IGNoYW5nZSBv
+ZiBzdHNpKDE1KSBidXQgYSBjaGFuZ2Ugb2Ygc3RzaSgxNS4xLjIpIG91dHB1dCB3aGljaCBz
+ZXRzIHRoZQ0KPj4gY2hhbmdlIGJpdC4NCj4gDQo+IGh1bSwgdGhhdCBpcyB3aGF0IHRoZSBQ
+T1Agc2F5cyBidXQgaW4gZmFjdCB5b3UgYXJlIHJpZ2h0IGEgY2hhbmdlIG9mDQo+IHRvcG9s
+b2d5IHRoYXQgY2hhbmdlcyB0aGUgb3V0cHV0IG9mIGFueSBTVFNJKDE1KSBzZXRzIHRoZSB0
+b3BvbG9neQ0KPiBjaGFuZ2UgcmVwb3J0IGJpdCBhcyB0aGUgb3V0cHV0IG9mIFNUU0koMTUu
+MS4yKSB3b3VsZCBiZSBjaGFuZ2VkIHRvbw0KPiBvYnZpb3VzbHkuDQoNCkluIHRoaXMgY2Fz
+ZSBJIHdhcyBqdXN0IGJlaW5nIHRvbyBsYXp5IHRvIGxvb2sgdXAgdGhlIGNvcnJlY3QgcXVl
+cnkgY29kZSANCmJ1dCBJIGtuZXcgaXQgc3RhcnRlZCB3aXRoIGZjIDE1LiBJdCB3YXMgRnJp
+ZGF5IGFmdGVyIGFsbCA6LSkNCg0KPiANCj4gUmVnYXJkcywNCj4gUGllcnJlDQo+IA0KDQo=
 
