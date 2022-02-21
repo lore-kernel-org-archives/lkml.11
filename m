@@ -2,264 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C183EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8840C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358066AbiBUMiL (ORCPT
+        id S1358109AbiBUMii (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:38:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57184 "EHLO
+        Mon, 21 Feb 2022 07:38:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358056AbiBUMiG (ORCPT
+        with ESMTP id S1348408AbiBUMif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:38:06 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74823F10
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:37:42 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id i11so18388045lfu.3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:37:42 -0800 (PST)
+        Mon, 21 Feb 2022 07:38:35 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C8019287
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:38:12 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id j22so756539wrb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:38:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BHEt1T1Dr3DMzmTO8EpeENJekq7BZDfUi5pPH/ucie4=;
-        b=jzURkuBSvHGgkr8DytLLtBFQyDU8KDb9QvoXlkOKbodgYF96qgkxGv8j2VkH2xwe5E
-         TmgUSyTl05rmW/lBk046nkv6Cbqi/WvnYc92O3rzu0Kqmj4bl97OmqiP1pb/fZ59VRJt
-         AugWLr0Cqe5VMTBzxr3nobHHLZcn+h8fXr7wC/M8pOdFTSxtF0YBgrSdm2SBMFppPAT5
-         fHi7Xnly/ynVuieYMsJBRZb/jrnqphfaGvDQjVO/ckrDYH8uYK2n7yIfxMgVkEpxAvVb
-         +d+iN0j0ln4hB9ixaJt/AQEfFEmO1FneoY0AalYlRE8sLVQp6EjbiPtOVN4JRb3MPxMC
-         fAMg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LKx7tTbFFTJnPN+u30WrvTluvsJNKvcCbVga5G4cng4=;
+        b=euLhhZZCAI7A/+S/XKiME2KJm3o1oTmFVCPDGgzFxPD2ZbJ1lTYg7afyyVyL3gRe98
+         idxSTePdGLX9d7sOwTHhzwAEWxOh9vHhERxV3oXp6U/pHUot27L8awxSYKn43JgEk9VO
+         xMoaXpKHXp/XPZDkz7aGntl2MjCvslMxkER2B5OVMkqBxRsO+tvKorJ/2YRTj2go2DYy
+         Ao/Jv886fKTdXfeFsccbc2ocJU51YG/+RctufqIhNMKqdkpkTjGfiMa+jJ0BPchvN3Zp
+         6ed29r/PqxTv4NtEV3O9aeq+xkTgM2hKtwH9kJX+P4Ib7K6K0TjwFSUIuLcUh4EPHgM4
+         gYRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BHEt1T1Dr3DMzmTO8EpeENJekq7BZDfUi5pPH/ucie4=;
-        b=pszbROb7wnPmB3IguJiPzSnUN+kicYjC11JnMixNWQZdOSkLV6sewgL8483EylDyF0
-         kwv22cIKRZOhExcTVq9LWl+/QoYxS0uXukcJ37pyBiblbHN/e95CcfE+fByASEmYsP34
-         N+ltAlb5oj0ZbPxm7Yl3gKs/0pW/l200bz+WI0dyDNGsbhwMsNFvaVjIrEQwonRgOyO4
-         1oxXE7EquGN917n2gT8oN0eVK/MPt8m5qalAR6ynapMx+cJvqxQrsvKOZjcSCWMi69k0
-         b2EuV2BQeAB6ls3gGuQ2L37E3cNo/vlhmILuwSzgANIhRSCffd1KDx9hONY8e+n6+Cmj
-         SJLQ==
-X-Gm-Message-State: AOAM533zDgLuUy2DzhKCuWzM3sS8f4lOYxDp9B5Dhosk6KFp/1zYrJPE
-        XED5vTr53i0jcTK1JDfzt+QuhnQZJpbTsg==
-X-Google-Smtp-Source: ABdhPJwXmsvWi5N5+zEcG0VMEdEgWaH9TLXdnqHBzhYOfPatDGiICbASsGOZ8oIPL2zeVWJjeFAnwg==
-X-Received: by 2002:a05:6512:952:b0:443:7f74:1418 with SMTP id u18-20020a056512095200b004437f741418mr14397020lft.36.1645447060761;
-        Mon, 21 Feb 2022 04:37:40 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id d16sm1107988lfs.63.2022.02.21.04.37.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 04:37:40 -0800 (PST)
-Message-ID: <813297ce-c0fa-e805-eec9-1dbc31860f8f@linaro.org>
-Date:   Mon, 21 Feb 2022 15:37:37 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LKx7tTbFFTJnPN+u30WrvTluvsJNKvcCbVga5G4cng4=;
+        b=2kMPyXWdZn63Ed4NIBj2s2RBYZ6DHR3f/qHCmRQIeCp0vwRj4rU8eOO5AxXzQFIQGF
+         X3bd2x+4ESe9S7XYtbqLAE47h/XPBS2YfTelKfekWmhMegsM7iiF5wGWmmI7mnmCOo71
+         vsujD5lFl6651mXJCe64HNyfpxasGRF0l5ns3IPu5O27kyWfc8C4YBhbNM6MqCfDRsFs
+         86lGEz5yb7QA61GAPK16XtZp9Qpca5tCWZgI7I4RlGbN7lntiAaUsw01HXI0pX2TZO9S
+         i+aHUvxc1ot8u0yKK9b+eE1Od2NiYvUBZKST4JC5BOOMGQh0Z1AKfmuTb6PrUMJnX3zn
+         xzjA==
+X-Gm-Message-State: AOAM533h7kQg4tNPaeq/suygHhXsn4dtx7rgCn+G9iXB7EN86svqe6bL
+        HYOxbKHXj+GnnAWUDnaeoTvzhA==
+X-Google-Smtp-Source: ABdhPJxHAdNPhIyEhEY/h4/cryx14gzxwTvnqDvWQ2edSk5VVdfaR7tSY1L1Bei9A1l58+XEvcEKig==
+X-Received: by 2002:a5d:6a09:0:b0:1e3:3f5e:e8d with SMTP id m9-20020a5d6a09000000b001e33f5e0e8dmr15590128wru.670.1645447090808;
+        Mon, 21 Feb 2022 04:38:10 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id t1sm60536942wre.45.2022.02.21.04.38.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 04:38:10 -0800 (PST)
+Date:   Mon, 21 Feb 2022 12:38:08 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [PATCH v4 0/7] Provide and use generic_handle_irq_safe() where
+ appropriate.
+Message-ID: <YhOHsD4jB9pHpfdl@google.com>
+References: <20220211181500.1856198-1-bigeasy@linutronix.de>
+ <Ygu6UewoPbYC9yPa@google.com>
+ <Ygu9xtrMxxq36FRH@linutronix.de>
+ <YgvD1HpN2oyalDmj@google.com>
+ <YgvH4ROUQVgusBdA@linutronix.de>
+ <YgvJ1fCUYmaV0Mbx@google.com>
+ <87a6ekleye.ffs@tglx>
+ <875yp8laj5.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [REPOST PATCH v4 02/13] drm/msm/dsi: Pass DSC params to drm_panel
-Content-Language: en-GB
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-References: <20220210103423.271016-1-vkoul@kernel.org>
- <20220210103423.271016-3-vkoul@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220210103423.271016-3-vkoul@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875yp8laj5.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/2022 13:34, Vinod Koul wrote:
-> When DSC is enabled, we need to pass the DSC parameters to panel driver
-> as well, so add a dsc parameter in panel and set it when DSC is enabled
+On Mon, 21 Feb 2022, Thomas Gleixner wrote:
+
+> Lee & al!
 > 
-> Also, fetch and pass DSC configuration for DSI panels to DPU encoder,
-> which will enable and configure DSC hardware blocks accordingly.
+> On Mon, Feb 21 2022 at 10:57, Thomas Gleixner wrote:
+> > On Tue, Feb 15 2022 at 15:42, Lee Jones wrote:
+> >> What is your preference Thomas?
+> >
+> > I suggest doing it the following way:
+> >
+> >  1) I apply 1/7 on top of -rc5 and tag it
 > 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
->   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c |  2 ++
->   drivers/gpu/drm/msm/dsi/dsi.c           |  5 +++++
->   drivers/gpu/drm/msm/dsi/dsi.h           |  1 +
->   drivers/gpu/drm/msm/dsi/dsi_host.c      | 22 ++++++++++++++++++++++
->   drivers/gpu/drm/msm/msm_drv.h           |  8 ++++++++
->   include/drm/drm_panel.h                 |  7 +++++++
->   6 files changed, 45 insertions(+)
+> That's what I did now. The tag to pull from is:
 > 
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index 47fe11a84a77..ef6ddac22767 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -578,6 +578,8 @@ static int _dpu_kms_initialize_dsi(struct drm_device *dev,
->   			MSM_DISPLAY_CAP_CMD_MODE :
->   			MSM_DISPLAY_CAP_VID_MODE;
->   
-> +		info.dsc = msm_dsi_get_dsc_config(priv->dsi[i]);
-> +
->   		if (msm_dsi_is_bonded_dsi(priv->dsi[i]) && priv->dsi[other]) {
->   			rc = msm_dsi_modeset_init(priv->dsi[other], dev, encoder);
->   			if (rc) {
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi.c b/drivers/gpu/drm/msm/dsi/dsi.c
-> index 052548883d27..3aeac15e7421 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi.c
-> +++ b/drivers/gpu/drm/msm/dsi/dsi.c
-> @@ -20,6 +20,11 @@ bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi)
->   	return !(host_flags & MIPI_DSI_MODE_VIDEO);
->   }
->   
-> +struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
-> +{
-> +	return msm_dsi_host_get_dsc_config(msm_dsi->host);
-> +}
-> +
->   static int dsi_get_phy(struct msm_dsi *msm_dsi)
->   {
->   	struct platform_device *pdev = msm_dsi->pdev;
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
-> index c8dedc95428c..16cd9b2fce86 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi.h
-> +++ b/drivers/gpu/drm/msm/dsi/dsi.h
-> @@ -152,6 +152,7 @@ int dsi_calc_clk_rate_v2(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
->   int dsi_calc_clk_rate_6g(struct msm_dsi_host *msm_host, bool is_bonded_dsi);
->   void msm_dsi_host_snapshot(struct msm_disp_state *disp_state, struct mipi_dsi_host *host);
->   void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host);
-> +struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host);
->   
->   /* dsi phy */
->   struct msm_dsi_phy;
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> index 27553194f9fa..7e9913eff724 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> @@ -2059,9 +2059,24 @@ int msm_dsi_host_modeset_init(struct mipi_dsi_host *host,
->   {
->   	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
->   	const struct msm_dsi_cfg_handler *cfg_hnd = msm_host->cfg_hnd;
-> +	struct drm_panel *panel;
->   	int ret;
->   
->   	msm_host->dev = dev;
-> +	panel = msm_dsi_host_get_panel(&msm_host->base);
-> +
-> +	if (panel && panel->dsc) {
-> +		struct msm_display_dsc_config *dsc = msm_host->dsc;
-> +
-> +		if (!dsc) {
-> +			dsc = devm_kzalloc(&msm_host->pdev->dev, sizeof(*dsc), GFP_KERNEL);
-> +			if (!dsc)
-> +				return -ENOMEM;
-> +			dsc->drm = panel->dsc;
-> +			msm_host->dsc = dsc;
-> +		}
-> +	}
-> +
->   	ret = cfg_hnd->ops->tx_buf_alloc(msm_host, SZ_4K);
->   	if (ret) {
->   		pr_err("%s: alloc tx gem obj failed, %d\n", __func__, ret);
-> @@ -2626,3 +2641,10 @@ void msm_dsi_host_test_pattern_en(struct mipi_dsi_host *host)
->   		dsi_write(msm_host, REG_DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER,
->   				DSI_TEST_PATTERN_GEN_CMD_STREAM0_TRIGGER_SW_TRIGGER);
->   }
-> +
-> +struct msm_display_dsc_config *msm_dsi_host_get_dsc_config(struct mipi_dsi_host *host)
-> +{
-> +	struct msm_dsi_host *msm_host = to_msm_dsi_host(host);
-> +
-> +	return msm_host->dsc;
-> +}
-> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-> index 384f9bad4760..e7a312edfe67 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.h
-> +++ b/drivers/gpu/drm/msm/msm_drv.h
-> @@ -119,6 +119,7 @@ struct msm_display_topology {
->    *                      based on num_of_h_tiles
->    * @is_te_using_watchdog_timer:  Boolean to indicate watchdog TE is
->    *				 used instead of panel TE in cmd mode panels
-> + * @dsc:		DSC configuration data for DSC-enabled displays
->    */
->   struct msm_display_info {
->   	int intf_type;
-> @@ -126,6 +127,7 @@ struct msm_display_info {
->   	uint32_t num_of_h_tiles;
->   	uint32_t h_tile_instance[MAX_H_TILES_PER_DISPLAY];
->   	bool is_te_using_watchdog_timer;
-> +	struct msm_display_dsc_config *dsc;
->   };
->   
->   /* Commit/Event thread specific structure */
-> @@ -365,6 +367,7 @@ void msm_dsi_snapshot(struct msm_disp_state *disp_state, struct msm_dsi *msm_dsi
->   bool msm_dsi_is_cmd_mode(struct msm_dsi *msm_dsi);
->   bool msm_dsi_is_bonded_dsi(struct msm_dsi *msm_dsi);
->   bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi);
-> +struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi);
->   #else
->   static inline void __init msm_dsi_register(void)
->   {
-> @@ -393,6 +396,11 @@ static inline bool msm_dsi_is_master_dsi(struct msm_dsi *msm_dsi)
->   {
->   	return false;
->   }
-> +
-> +static inline struct msm_display_dsc_config *msm_dsi_get_dsc_config(struct msm_dsi *msm_dsi)
-> +{
-> +	return NULL;
-> +}
->   #endif
->   
->   #ifdef CONFIG_DRM_MSM_DP
-> diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
-> index 4602f833eb51..eb8ae9bf32ed 100644
-> --- a/include/drm/drm_panel.h
-> +++ b/include/drm/drm_panel.h
-> @@ -171,6 +171,13 @@ struct drm_panel {
->   	 * Panel entry in registry.
->   	 */
->   	struct list_head list;
-> +
-> +	/**
-> +	 * @dsc:
-> +	 *
-> +	 * Panel DSC pps payload to be sent
-> +	 */
-> +	struct drm_dsc_config *dsc;
+>    git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-api-2022-02-21
+> 
+> >  2) Driver maintainers who want to merge via their trees pull that tag
+> >     apply the relevant driver changes
+> >
+> >  3) I collect the leftovers and merge them via irq/core
+> 
+> So everyone who wants to merge the relevant driver changes, please pull
+> and let me know which driver patch(es) you merged. I'll pick up the
+> leftovers after -rc6.
 
-This is not a blocker or a request for a change, just a kind of thought:
-
-I've been looking onto this change for a while from the following point 
-of view. I'd like to switch DSI driver to use panel 
-bridge/drm_bridge_connector(). This simplifies handling of DRM bridge 
-chains.
-
-Also since DSC can be consumed not by the panel itself, but by the next 
-bridge in chain (e.g. it's supported on the DSI input by the ANX7625 
-bridge), using drm_panel doesn't look completely correct.
-
-So, I have been looking for a better way to pass DSC configuration.
-
-For DSI we can use struct mipi_dsi_device (together with the rest of 
-data we are passing from DSI device driver to DSI host). This would 
-allow both DSI panels and DSI bridges to pass the DSC config to the 
-previous deivce in chain (DSI host).
-
-Any comments/thoughs?
-
-Note, for DP this problem doesn't exist. The DSC config is a part of 
-DPDC, so it will be parsed by the msm/dp driver in a natural way.
-
-
->   };
->   
->   void drm_panel_init(struct drm_panel *panel, struct device *dev,
-
+Ideal.  Thanks Thomas.
 
 -- 
-With best wishes
-Dmitry
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
