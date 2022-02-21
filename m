@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E70EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15486C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350848AbiBUJpg (ORCPT
+        id S1351169AbiBUJoB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:45:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49230 "EHLO
+        Mon, 21 Feb 2022 04:44:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351599AbiBUJh2 (ORCPT
+        with ESMTP id S1351564AbiBUJhZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:28 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095793A5F3;
-        Mon, 21 Feb 2022 01:16:07 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:25 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79CB3A5CB;
+        Mon, 21 Feb 2022 01:16:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5FE3ACE0E66;
-        Mon, 21 Feb 2022 09:16:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40043C340E9;
-        Mon, 21 Feb 2022 09:16:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E14A3CE0E76;
+        Mon, 21 Feb 2022 09:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F55C340E9;
+        Mon, 21 Feb 2022 09:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434964;
-        bh=AF4LPCrgwjOuXSZomLZknzmmQQy0BdX+8IprKl36ljU=;
+        s=korg; t=1645434953;
+        bh=I+jBkflwt0aPUiUvWdQx+Obp5Zu9ym9Yrxeq3MFXuxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PddCbHdlHRzuhguxGZFXtJOGXEmkKlYRh7Dp/c5pHr6sg1t6obo6y1VcPr7vd/cG8
-         2GWoqvR7O+HE36LYrzI7lZoe0C/94dvXt50I2mGiYuvDn7B+2FVdUfVX/mGSO2uaeO
-         CqD0G92WHPHam+YUZmJngRrHk8BMxCeYXKLA67sg=
+        b=L2JabJm174fNJPTYP6endTaA6k55k3EVqQ/azSWewUUFMUam/rXvExTn7iT/GkPmb
+         MUIKYsK64VwZPrKrj9i1F4LM002mEBAB/8gfT5z7MtQJpJQZ4v7CjeOwo2J/MVRzkx
+         Vl5bZkh4TgZQvnHBZU7kVHBJMM/aDdq0WR6JDUHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 194/196] ice: enable parsing IPSEC SPI headers for RSS
-Date:   Mon, 21 Feb 2022 09:50:26 +0100
-Message-Id: <20220221084937.425843337@linuxfoundation.org>
+        stable@vger.kernel.org, Mateusz Krzak <kszaquitto@gmail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 157/196] arm64: dts: meson-gx: add ATF BL32 reserved-memory region
+Date:   Mon, 21 Feb 2022 09:49:49 +0100
+Message-Id: <20220221084936.199519629@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,48 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-commit 86006f996346e8a5a1ea80637ec949ceeea4ecbc upstream.
+[ Upstream commit 76577c9137456febb05b0e17d244113196a98968 ]
 
-The COMMS package can enable the hardware parser to recognize IPSEC
-frames with ESP header and SPI identifier.  If this package is available
-and configured for loading in /lib/firmware, then the driver will
-succeed in enabling this protocol type for RSS.
+Add an additional reserved memory region for the BL32 trusted firmware
+present in many devices that boot from Amlogic vendor u-boot.
 
-This in turn allows the hardware to hash over the SPI and use it to pick
-a consistent receive queue for the same secure flow. Without this all
-traffic is steered to the same queue for multiple traffic threads from
-the same IP address. For that reason this is marked as a fix, as the
-driver supports the model, but it wasn't enabled.
-
-If the package is not available, adding this type will fail, but the
-failure is ignored on purpose as it has no negative affect.
-
-Fixes: c90ed40cefe1 ("ice: Enable writing hardware filtering tables")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-2-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c |    6 ++++++
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi | 6 ++++++
  1 file changed, 6 insertions(+)
 
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1521,6 +1521,12 @@ static void ice_vsi_set_rss_flow_fld(str
- 	if (status)
- 		dev_dbg(dev, "ice_add_rss_cfg failed for sctp6 flow, vsi = %d, error = %s\n",
- 			vsi_num, ice_stat_str(status));
-+
-+	status = ice_add_rss_cfg(hw, vsi_handle, ICE_FLOW_HASH_ESP_SPI,
-+				 ICE_FLOW_SEG_HDR_ESP);
-+	if (status)
-+		dev_dbg(dev, "ice_add_rss_cfg failed for esp/spi flow, vsi = %d, error = %d\n",
-+			vsi_num, status);
- }
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+index 6b457b2c30a4b..aa14ea017a613 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+@@ -49,6 +49,12 @@
+ 			no-map;
+ 		};
  
- /**
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
+-- 
+2.34.1
+
 
 
