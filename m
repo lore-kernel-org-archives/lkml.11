@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C529AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351167AbiBUJm5 (ORCPT
+        id S1351177AbiBUJnH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:42:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45644 "EHLO
+        Mon, 21 Feb 2022 04:43:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351085AbiBUJgm (ORCPT
+        with ESMTP id S1351290AbiBUJg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:36:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408EC2CC92;
-        Mon, 21 Feb 2022 01:15:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:36:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409DF2DD54;
+        Mon, 21 Feb 2022 01:15:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 425DDCE0EAF;
-        Mon, 21 Feb 2022 09:15:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 387C3C36AE2;
-        Mon, 21 Feb 2022 09:15:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AA4960E9F;
+        Mon, 21 Feb 2022 09:15:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F26C340EB;
+        Mon, 21 Feb 2022 09:15:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434907;
-        bh=mBFW0v1udwYjkI9mRDNHQtF9GGNt96cBVf2w2wtCggo=;
+        s=korg; t=1645434913;
+        bh=SZn9YT+v2QlZSehP82U1/aaErN9Any7H5WRysuZTHaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEN9oCAVN2TpsH+h4MZVUW5qgHkd5NwIEov1rC5OZROHSxWrfW+0jAEEY6X50EYWM
-         HjXoCf0R9kxpVHGZ9Q/Lue3lGsEvUF8fIATQ7RPhozBw5xE4w4kVM2fMf/N/NtTCpC
-         7cIDkrgRFtB5eFuNIeve+hzlnQx2lskRVEt+LFxg=
+        b=wghFsFR7OYJ16Dtoq3FJHj7Uzq0LIQiiTiPZcd36DuzbL3SZiq4kUy9vK0rT2Zlgh
+         sEyolUgGdt0bCTQo5SHCHMVO8BDJbP+7xydlj7dB4H/l2S20sBI0OeW5hUtjhi04T2
+         E46msXDA8qgOSMtV4GEzidEurv9b5k6tpYeDV4YU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 173/196] net: usb: qmi_wwan: Add support for Dell DW5829e
-Date:   Mon, 21 Feb 2022 09:50:05 +0100
-Message-Id: <20220221084936.739925969@linuxfoundation.org>
+Subject: [PATCH 5.15 175/196] kconfig: fix failing to generate auto.conf
+Date:   Mon, 21 Feb 2022 09:50:07 +0100
+Message-Id: <20220221084936.812326895@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,65 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Jing Leng <jleng@ambarella.com>
 
-[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
+[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
 
-Dell DW5829e same as DW5821e except the CAT level.
-DW5821e supports CAT16 but DW5829e supports CAT9.
-Also, DW5829e includes normal and eSIM type.
-Please see below test evidence:
+When the KCONFIG_AUTOCONFIG is specified (e.g. export \
+KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
+include/config/ will not be created, so kconfig can't create deps
+files in it and auto.conf can't be generated.
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 2 ++
- 1 file changed, 2 insertions(+)
+ scripts/kconfig/confdata.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 33ada2c59952e..0c7f02ca6822b 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1395,6 +1395,8 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
- 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
- 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
-+	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
- 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
- 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
- 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
+diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+index cf72680cd7692..4a828bca071e8 100644
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -983,14 +983,19 @@ static int conf_write_dep(const char *name)
+ 
+ static int conf_touch_deps(void)
+ {
+-	const char *name;
++	const char *name, *tmp;
+ 	struct symbol *sym;
+ 	int res, i;
+ 
+-	strcpy(depfile_path, "include/config/");
+-	depfile_prefix_len = strlen(depfile_path);
+-
+ 	name = conf_get_autoconfig_name();
++	tmp = strrchr(name, '/');
++	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
++	if (depfile_prefix_len + 1 > sizeof(depfile_path))
++		return -1;
++
++	strncpy(depfile_path, name, depfile_prefix_len);
++	depfile_path[depfile_prefix_len] = 0;
++
+ 	conf_read_simple(name, S_DEF_AUTO);
+ 	sym_calc_value(modules_sym);
+ 
 -- 
 2.34.1
 
