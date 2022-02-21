@@ -2,89 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 709CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357952AbiBUM3T (ORCPT
+        id S1357964AbiBUM3z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:29:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41634 "EHLO
+        Mon, 21 Feb 2022 07:29:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357937AbiBUM3Q (ORCPT
+        with ESMTP id S1357937AbiBUM3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:29:16 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3554B13E2B;
-        Mon, 21 Feb 2022 04:28:53 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2M1L4bV6zVfmC;
-        Mon, 21 Feb 2022 20:24:22 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 20:28:50 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <edumazet@google.com>, <vvs@virtuozzo.com>,
-        <keescook@chromium.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: vlan: allow vlan device MTU change follow real device from smaller to bigger
-Date:   Mon, 21 Feb 2022 20:46:44 +0800
-Message-ID: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Feb 2022 07:29:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DBE13E30;
+        Mon, 21 Feb 2022 04:29:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A11612F4;
+        Mon, 21 Feb 2022 12:29:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD119C340E9;
+        Mon, 21 Feb 2022 12:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645446566;
+        bh=OmaFrsn4s+m3QVaKvKOf/kobmLt37ekHUhLTfYwN+aY=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=pJmp+/omTpvcZWxpevQ0CyeM0kuRuVZmPXc9F0Bqhe8LOlZV69V0uAx7KZ1+NH2S8
+         17hNJgYkXykg698Q8cAmm14xQj7l94k9+uri99h2NR4BzW8hUA3K2wsUvJMpeM2aLI
+         ikfBkhYFP1wB9RHq48Ccx4M0vjuaTInxavS6weLNHmxxoXW+l6BufjbINWTLVtycap
+         KBzwsBCNcRna0p2HoTp85M/+hhu//31c4Wrw3rxqnCk2D0ruWf4jN5ZI/US+6Le6hm
+         aDFFnr3iAR+K7uOyLSFkdDTvtUnyhN8ajPtzpIQyQNM+j+T4+pzrseQn1lMeJlIEjA
+         GpG8pLJjgoWQQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Stefan Agner <stefan@agner.ch>,
+        Wolfgang Walter <linux@stwm.de>,
+        Jason Self <jason@bluehome.net>,
+        Dominik Behr <dominik@dominikbehr.com>,
+        Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: Re: [PATCH 5.16 077/227] iwlwifi: fix use-after-free
+References: <20220221084934.836145070@linuxfoundation.org>
+        <20220221084937.429986092@linuxfoundation.org>
+        <fd5bacfa-b357-a2e2-f0b2-2098cdc734f2@leemhuis.info>
+Date:   Mon, 21 Feb 2022 14:29:19 +0200
+In-Reply-To: <fd5bacfa-b357-a2e2-f0b2-2098cdc734f2@leemhuis.info> (Thorsten
+        Leemhuis's message of "Mon, 21 Feb 2022 13:00:40 +0100")
+Message-ID: <87h78swggw.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vlan device MTU can only follow real device change from bigger to smaller
-but from smaller to bigger under the premise of vlan device MTU not exceed
-the real device MTU.
+Thorsten Leemhuis <regressions@leemhuis.info> writes:
 
-This issue can be seen using the following commands:
+> Hi, this is your Linux kernel regression tracker.
+>
+> On 21.02.22 09:48, Greg Kroah-Hartman wrote:
+>> From: Johannes Berg <johannes.berg@intel.com>
+>>=20
+>> commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+>>=20
+>> If no firmware was present at all (or, presumably, all of the
+>> firmware files failed to parse), we end up unbinding by calling
+>> device_release_driver(), which calls remove(), which then in
+>> iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
+>> the new code I added will still erroneously access it after it
+>> was freed.
+>>=20
+>> Set 'failure=3Dfalse' in this case to avoid the access, all data
+>> was already freed anyway.
+>>=20
+>> Cc: stable@vger.kernel.org
+>> Reported-by: Stefan Agner <stefan@agner.ch>
+>> Reported-by: Wolfgang Walter <linux@stwm.de>
+>> Reported-by: Jason Self <jason@bluehome.net>
+>> Reported-by: Dominik Behr <dominik@dominikbehr.com>
+>> Reported-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsla=
+b.com>
+>> Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware =
+load")
+>> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+>> Signed-off-by: Kalle Valo <kvalo@kernel.org>
+>> Link:
+>> https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d785=
+9b542c33b2a507d01554251@changeid
+>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>
+> Great to see that you quickly picked up this patch. Once the new stable
+> and longterm releases are out on Wednesday, it will fix a regression
+> that made it into many stable and longterm kernels nearly four weeks
+> earlier. I tracked the issue, which made me we wonder: should I have
+> done something differently in this case to get the regression resolved
+> more quickly? Should I maybe have suggested to remove the culprit
+> temporarily until the fix was merged to mainline?
+>
+> For context, this is the story of the regression afaics: the change
+> ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+> was merged for 5.17-rc1 (released on 2022-01-23). Shortly after it was
+> backported to several stable/longterm series with new versions released
+> on 2022-01-27. It triggered a general protection fault, if the proper
+> firmware file was missing. Afaics at least five people reported the
+> problem between 2022-02-01 and 2022-02-11 for at least 5.10.y, 5.15.y
+> and 5.16.y (some of those reports were on the stable list), which shows
+> that such a setup is not that unusual. A fix was posted on 2022-02-08
+> and approved and committed by a maintainer on 2022-02-10. It was then
+> merged to mainline on 2022-02-17 (I hope we can find ways to reduce such
+> particular timeframes in the future, but that's a different story).
 
-ip link add link eth1 dev eth1.100 type vlan id 100
-ip link set eth1 mtu 256
-ip link set eth1 mtu 1500
-ip link show
+From mainline point of view there is not really any easy way to make
+this faster. There are multiple trees involved and pull requests always
+take time (we cannot submit a pull request for every commit sepately),
 
-Modify to allow vlan device follow real device MTU change from smaller
-to bigger when user has not configured vlan device MTU which is not
-equal to real device MTU. That also ensure user configuration has higher
-priority.
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Fixes: 2e477c9bd2bb ("vlan: Propagate physical MTU changes")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/8021q/vlan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index 788076b002b3..7de4f462525a 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -361,6 +361,7 @@ static int __vlan_device_event(struct net_device *dev, unsigned long event)
- static int vlan_device_event(struct notifier_block *unused, unsigned long event,
- 			     void *ptr)
- {
-+	unsigned int orig_mtu = ((struct netdev_notifier_info_ext *)ptr)->ext.mtu;
- 	struct netlink_ext_ack *extack = netdev_notifier_info_to_extack(ptr);
- 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
- 	struct vlan_group *grp;
-@@ -419,7 +420,7 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
- 
- 	case NETDEV_CHANGEMTU:
- 		vlan_group_for_each_dev(grp, i, vlandev) {
--			if (vlandev->mtu <= dev->mtu)
-+			if (vlandev->mtu <= dev->mtu && vlandev->mtu != orig_mtu)
- 				continue;
- 
- 			dev_set_mtu(vlandev, dev->mtu);
--- 
-2.25.1
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
