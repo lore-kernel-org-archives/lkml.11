@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EDBC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D1AC35280
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354036AbiBUKCs (ORCPT
+        id S1354187AbiBUKDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57300 "EHLO
+        Mon, 21 Feb 2022 05:03:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352073AbiBUJzO (ORCPT
+        with ESMTP id S1352460AbiBUJzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:55:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6D0387BB;
-        Mon, 21 Feb 2022 01:24:13 -0800 (PST)
+        Mon, 21 Feb 2022 04:55:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C77A38BFC;
+        Mon, 21 Feb 2022 01:24:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A125C60FCC;
-        Mon, 21 Feb 2022 09:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 897EEC340E9;
-        Mon, 21 Feb 2022 09:24:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D30F6B80EBB;
+        Mon, 21 Feb 2022 09:24:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2414C340E9;
+        Mon, 21 Feb 2022 09:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435452;
-        bh=BNVmtUYVnmuinax3C7ACSj9zjInJX74bgTglaPhnYKw=;
+        s=korg; t=1645435460;
+        bh=DL49cb9d1UNYv3vnuLE5vghj+o41h5Rq2job1VvuVjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XkreUG9hhBsPiQP7hCson7YUjdeIGX85lm8LXW+4hCpN3n+RHJnC26lLKARhrUTwc
-         wpqTZyg56+prnsVSUY1Iu7yecZ6IISatNeHf5IPZou2E51ycyyly3X/L/LwtaZq3B/
-         J0JxBAdiMLl4UBIxiYTKLJkCJ7X6kkYm0m1uU1ug=
+        b=UyS7M+OKBfcM8d4gOliEUXbYyQQRdS+x79AHQXfqLO+/Qoerul1vtQV2ienTlYRXQ
+         CqMcyYFkENv5oYitzO3z/w95mzsQsWr2yC8Zol6g7C9Fb1MXORck3F/OL/G1cWAbjn
+         LrsLcZTGXvHBE7o9x5J0wAWXIlpw/9S7S6cETfnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 168/227] mtd: phram: Prevent divide by zero bug in phram_setup()
-Date:   Mon, 21 Feb 2022 09:49:47 +0100
-Message-Id: <20220221084940.406240823@linuxfoundation.org>
+        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.16 171/227] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
+Date:   Mon, 21 Feb 2022 09:49:50 +0100
+Message-Id: <20220221084940.499270787@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,52 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Eliav Farber <farbere@amazon.com>
 
-commit 3e3765875b1b8864898603768fd5c93eeb552211 upstream.
+commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
 
-The problem is that "erasesize" is a uint64_t type so it might be
-non-zero but the lower 32 bits are zero so when it's truncated,
-"(uint32_t)erasesize", then that value is zero. This leads to a
-divide by zero bug.
+Do alignment logic properly and use the "ptr" local variable for
+calculating the remainder of the alignment.
 
-Avoid the bug by delaying the divide until after we have validated
-that "erasesize" is non-zero and within the uint32_t range.
+This became an issue because struct edac_mc_layer has a size that is not
+zero modulo eight, and the next offset that was prepared for the private
+data was unaligned, causing an alignment exception.
 
-Fixes: dc2b3e5cbc80 ("mtd: phram: use div_u64_rem to stop overwrite len in phram_setup")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220121115505.GI1978@kadam
+The patch in Fixes: which broke this actually wanted to "what we
+actually care about is the alignment of the actual pointer that's about
+to be returned." But it didn't check that alignment.
+
+Use the correct variable "ptr" for that.
+
+  [ bp: Massage commit message. ]
+
+Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/devices/phram.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/edac/edac_mc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mtd/devices/phram.c
-+++ b/drivers/mtd/devices/phram.c
-@@ -264,15 +264,19 @@ static int phram_setup(const char *val)
- 		}
- 	}
+--- a/drivers/edac/edac_mc.c
++++ b/drivers/edac/edac_mc.c
+@@ -213,7 +213,7 @@ void *edac_align_ptr(void **p, unsigned
+ 	else
+ 		return (char *)ptr;
  
--	if (erasesize)
--		div_u64_rem(len, (uint32_t)erasesize, &rem);
--
- 	if (len == 0 || erasesize == 0 || erasesize > len
--	    || erasesize > UINT_MAX || rem) {
-+	    || erasesize > UINT_MAX) {
- 		parse_err("illegal erasesize or len\n");
- 		ret = -EINVAL;
- 		goto error;
- 	}
-+
-+	div_u64_rem(len, (uint32_t)erasesize, &rem);
-+	if (rem) {
-+		parse_err("len is not multiple of erasesize\n");
-+		ret = -EINVAL;
-+		goto error;
-+	}
+-	r = (unsigned long)p % align;
++	r = (unsigned long)ptr % align;
  
- 	ret = register_device(name, start, len, (uint32_t)erasesize);
- 	if (ret)
+ 	if (r == 0)
+ 		return (char *)ptr;
 
 
