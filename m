@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2EBC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC76C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233204AbiBUJiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:38:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60956 "EHLO
+        id S1349142AbiBUJia (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:38:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350058AbiBUJ3F (ORCPT
+        with ESMTP id S1349779AbiBUJ3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:29:05 -0500
+        Mon, 21 Feb 2022 04:29:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1B24BFD;
-        Mon, 21 Feb 2022 01:13:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA3F24F23;
+        Mon, 21 Feb 2022 01:13:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D053608C1;
-        Mon, 21 Feb 2022 09:13:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D8BC340F1;
-        Mon, 21 Feb 2022 09:13:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3401160EF0;
+        Mon, 21 Feb 2022 09:13:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7F8C354B9;
+        Mon, 21 Feb 2022 09:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434780;
-        bh=TYuvVS3fFqWieGFmsqv7QYOngtgAFJf28ruJSp8ojrk=;
+        s=korg; t=1645434783;
+        bh=w+UicoM5DkkuhGVLBhKd8GylSa81D5HTmjneWjIRTwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wzNEJKm6shk7Uu607y5ndSn9RJm8PEgXV0riLJCmYEXfgU23ajoQG5/mctrUmSKnR
-         bEaskR/vqxh3AISKbTzgYIIvenBbtbn8KCnRh8rlginZDP6KlQQUXf3pJlPE8EPM4I
-         tQBotBJroM6a4TsZw5FOMWzrh6eweqG8sOOuvDTw=
+        b=B8BqM33xE60TbtFugAkVaONMTlBv+J2eixnFPW4iojOcQB55oo8lNE+WgvT2147O9
+         z1Pdlim7DACKEXw1UtQKJmtJcvaAudkvEJgMY3RnEPB2igOThdZJkHa/LeYqKgzacy
+         Odd0TF2l6ERhdwROHt+zqMBiWi9p313uLLrhf/KY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivasa Rao Mandadapu <srivasam@codeaurora.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 129/196] ASoC: qcom: Actually clear DMA interrupt register for HDMI
-Date:   Mon, 21 Feb 2022 09:49:21 +0100
-Message-Id: <20220221084935.251121740@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Lei <ming.lei@rehdat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Laibin Qiu <qiulaibin@huawei.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 130/196] block/wbt: fix negative inflight counter when remove scsi device
+Date:   Mon, 21 Feb 2022 09:49:22 +0100
+Message-Id: <20220221084935.280505852@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,81 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Laibin Qiu <qiulaibin@huawei.com>
 
-commit c8d251f51ee61df06ee0e419348d8c9160bbfb86 upstream.
+commit e92bc4cd34de2ce454bdea8cd198b8067ee4e123 upstream.
 
-In commit da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg
-overwriting") we changed regmap_write() to regmap_update_bits() so that
-we can avoid overwriting bits that we didn't intend to modify.
-Unfortunately this change breaks the case where a register is writable
-but not readable, which is exactly how the HDMI irq clear register is
-designed (grep around LPASS_HDMITX_APP_IRQCLEAR_REG to see how it's
-write only). That's because regmap_update_bits() tries to read the
-register from the hardware and if it isn't readable it looks in the
-regmap cache to see what was written there last time to compare against
-what we want to write there. Eventually, we're unable to modify this
-register at all because the bits that we're trying to set are already
-set in the cache.
+Now that we disable wbt by set WBT_STATE_OFF_DEFAULT in
+wbt_disable_default() when switch elevator to bfq. And when
+we remove scsi device, wbt will be enabled by wbt_enable_default.
+If it become false positive between wbt_wait() and wbt_track()
+when submit write request.
 
-This is doubly bad for the irq clear register because you have to write
-the bit to clear an interrupt. Given the irq is level triggered, we see
-an interrupt storm upon plugging in an HDMI cable and starting audio
-playback. The irq storm is so great that performance degrades
-significantly, leading to CPU soft lockups.
+The following is the scenario that triggered the problem.
 
-Fix it by using regmap_write_bits() so that we really do write the bits
-in the clear register that we want to. This brings the number of irqs
-handled by lpass_dma_interrupt_handler() down from ~150k/sec to ~10/sec.
+T1                          T2                           T3
+                            elevator_switch_mq
+                            bfq_init_queue
+                            wbt_disable_default <= Set
+                            rwb->enable_state (OFF)
+Submit_bio
+blk_mq_make_request
+rq_qos_throttle
+<= rwb->enable_state (OFF)
+                                                         scsi_remove_device
+                                                         sd_remove
+                                                         del_gendisk
+                                                         blk_unregister_queue
+                                                         elv_unregister_queue
+                                                         wbt_enable_default
+                                                         <= Set rwb->enable_state (ON)
+q_qos_track
+<= rwb->enable_state (ON)
+^^^^^^ this request will mark WBT_TRACKED without inflight add and will
+lead to drop rqw->inflight to -1 in wbt_done() which will trigger IO hung.
 
-Fixes: da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg overwriting")
-Cc: Srinivasa Rao Mandadapu <srivasam@codeaurora.org>
-Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Link: https://lore.kernel.org/r/20220209232520.4017634-1-swboyd@chromium.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this by move wbt_enable_default() from elv_unregister to
+bfq_exit_queue(). Only re-enable wbt when bfq exit.
+
+Fixes: 76a8040817b4b ("blk-wbt: make sure throttle is enabled properly")
+
+Remove oneline stale comment, and kill one oneshot local variable.
+
+Signed-off-by: Ming Lei <ming.lei@rehdat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/linux-block/20211214133103.551813-1-qiulaibin@huawei.com/
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/qcom/lpass-platform.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ block/bfq-iosched.c |    2 ++
+ block/elevator.c    |    2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/qcom/lpass-platform.c
-+++ b/sound/soc/qcom/lpass-platform.c
-@@ -524,7 +524,7 @@ static int lpass_platform_pcmops_trigger
- 			return -EINVAL;
- 		}
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6878,6 +6878,8 @@ static void bfq_exit_queue(struct elevat
+ 	spin_unlock_irq(&bfqd->lock);
+ #endif
  
--		ret = regmap_update_bits(map, reg_irqclr, val_irqclr, val_irqclr);
-+		ret = regmap_write_bits(map, reg_irqclr, val_irqclr, val_irqclr);
- 		if (ret) {
- 			dev_err(soc_runtime->dev, "error writing to irqclear reg: %d\n", ret);
- 			return ret;
-@@ -665,7 +665,7 @@ static irqreturn_t lpass_dma_interrupt_h
- 	return -EINVAL;
- 	}
- 	if (interrupts & LPAIF_IRQ_PER(chan)) {
--		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
-+		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
- 		if (rv) {
- 			dev_err(soc_runtime->dev,
- 				"error writing to irqclear reg: %d\n", rv);
-@@ -676,7 +676,7 @@ static irqreturn_t lpass_dma_interrupt_h
- 	}
++	wbt_enable_default(bfqd->queue);
++
+ 	kfree(bfqd);
+ }
  
- 	if (interrupts & LPAIF_IRQ_XRUN(chan)) {
--		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
-+		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
- 		if (rv) {
- 			dev_err(soc_runtime->dev,
- 				"error writing to irqclear reg: %d\n", rv);
-@@ -688,7 +688,7 @@ static irqreturn_t lpass_dma_interrupt_h
- 	}
+--- a/block/elevator.c
++++ b/block/elevator.c
+@@ -523,8 +523,6 @@ void elv_unregister_queue(struct request
+ 		kobject_del(&e->kobj);
  
- 	if (interrupts & LPAIF_IRQ_ERR(chan)) {
--		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
-+		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
- 		if (rv) {
- 			dev_err(soc_runtime->dev,
- 				"error writing to irqclear reg: %d\n", rv);
+ 		e->registered = 0;
+-		/* Re-enable throttling in case elevator disabled it */
+-		wbt_enable_default(q);
+ 	}
+ }
+ 
 
 
