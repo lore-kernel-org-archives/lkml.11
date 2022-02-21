@@ -2,97 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 19:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiBUTLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 14:11:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59880 "EHLO
+        id S232781AbiBUTMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 14:12:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232744AbiBUTLj (ORCPT
+        with ESMTP id S232744AbiBUTME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 14:11:39 -0500
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866F819C23;
-        Mon, 21 Feb 2022 11:11:15 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id e140so36311807ybh.9;
-        Mon, 21 Feb 2022 11:11:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S08h/88nSHlNocSoaXtYaF8UFRglbkaVDETnl7Zh9xc=;
-        b=P+9aTl5wDIbcqPe2/dl2+itkyKJ5INfIPgUSH9CiRHpcoEUHTgm6szHxPeu2cGHxWB
-         5BVxRfVml5Pg/KE07QYxjk1OhLE5LdoFKut7axh53h90uQKu3yJ3V3iG67Lx15a4nG66
-         60XPoRjaWfhJMlq3mfjO9V8kBTeFunNA/A+5hPMzRNSwURGw8O3HUqnFAtd052laYQm/
-         XZlM42H+60soy1JgdXnj4LQW6n01watv/XR7Of/MWj0QK+QNqoG1tExGj3/VJW8asYBv
-         KtsO5N5WeoGBZEFcEgQn6utGOYFpLOxnT7UkIbB5B50Z4H8kZmx1EqaREHbGhTK06Zwg
-         yyog==
-X-Gm-Message-State: AOAM531HdwQ5BuD49QygcRWpKjwXKpLPxGfBpkNW5InFPtk6yNCvJX5c
-        EMx6qGOeVde2DX8QDX8wHSzqoQMwlqn/o86kstg=
-X-Google-Smtp-Source: ABdhPJz+PEGVSIBd6WyeGJr2Fpf6ugsheIp9t7vsRMbtBYLo6USJbXteI126Nvq5C/YO7/BR5pr2IbkbFfbioUzWMKo=
-X-Received: by 2002:a25:7785:0:b0:614:c283:2a3d with SMTP id
- s127-20020a257785000000b00614c2832a3dmr20093374ybc.137.1645470674792; Mon, 21
- Feb 2022 11:11:14 -0800 (PST)
-MIME-Version: 1.0
-References: <20220206145803.2011247-1-trix@redhat.com>
-In-Reply-To: <20220206145803.2011247-1-trix@redhat.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 21 Feb 2022 20:11:04 +0100
-Message-ID: <CAJZ5v0iw=6GN1ynxXh7tAftT03VMbrC1CdyaEDk_w0kXphRKkA@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: cleanup double word in comment
-To:     Tom Rix <trix@redhat.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Mon, 21 Feb 2022 14:12:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE6A1AF10;
+        Mon, 21 Feb 2022 11:11:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 186F0B81239;
+        Mon, 21 Feb 2022 19:11:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DC5C340E9;
+        Mon, 21 Feb 2022 19:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645470696;
+        bh=DkA8aPgi/+Xs3ZKPhsQKSJF8FSlF1+U60cOE9sfcDF4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cnF015ESh+yodrPHTjFevOIA50Vmyrkz9oGozW76VjSwul4mXTs2fTZ8iBjpnKIZM
+         ag7FzQ/t9+wA85kfw7ytlfLPNu2if5luKn5rpnDCK8mbL7I7hr3eGXwYg5d+YmrX7v
+         vvcJMtbjJRGw+l5xrb1T8D/WNLS0urAzSG2P6xMkJ7PzhH/1guIhIQ3Y2yIKkxQBR1
+         k/NlNzEQgdboUAryHjJYMj9QiDq8frMT+0VjFjBc/PknfIimDGLsGM5OvnuGnGUSuc
+         Yp0WseV0kKjsI9TTftSzY7QQmyISrP3hfQXqyF/muesmLiu+cYiD60K1QJzahrI9Pe
+         r83BcOl7pbvcg==
+From:   broonie@kernel.org
+To:     Greg KH <greg@kroah.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: linux-next: manual merge of the driver-core tree with the battery tree
+Date:   Mon, 21 Feb 2022 19:11:31 +0000
+Message-Id: <20220221191131.1661101-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 6, 2022 at 3:58 PM <trix@redhat.com> wrote:
->
-> From: Tom Rix <trix@redhat.com>
->
-> Remove the second 'on' and 'those'.
->
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/acpi/Kconfig    | 2 +-
->  drivers/acpi/pci_link.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index ba45541b1f1f8..9b93d8f328d4a 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -301,7 +301,7 @@ config ACPI_IPMI
->         help
->           This driver enables the ACPI to access the BMC controller. And it
->           uses the IPMI request/response message to communicate with BMC
-> -         controller, which can be found on on the server.
-> +         controller, which can be found on the server.
->
->           To compile this driver as a module, choose M here:
->           the module will be called as acpi_ipmi.
-> diff --git a/drivers/acpi/pci_link.c b/drivers/acpi/pci_link.c
-> index d54fb8e54671d..58647051c948a 100644
-> --- a/drivers/acpi/pci_link.c
-> +++ b/drivers/acpi/pci_link.c
-> @@ -185,7 +185,7 @@ static acpi_status acpi_pci_link_check_current(struct acpi_resource *resource,
->                         if (!p || !p->interrupt_count) {
->                                 /*
->                                  * IRQ descriptors may have no IRQ# bits set,
-> -                                * particularly those those w/ _STA disabled
-> +                                * particularly those w/ _STA disabled
->                                  */
->                                 pr_debug("Blank _CRS IRQ resource\n");
->                                 return AE_OK;
-> --
+Hi all,
 
-Applied as 5.18 material under a slightly adjusted subject.
+Today's linux-next merge of the driver-core tree got a conflict in:
 
-Thanks!
+  drivers/power/supply/ab8500_chargalg.c
+
+between commits:
+
+  75ee3f6f0c1a0 ("power: supply: ab8500_chargalg: Drop enable/disable sysfs")
+  05906f58c8225 ("power: supply: ab8500_chargalg: Drop charging step")
+  d662a7df36e1e ("power: supply: ab8500: Swap max and overvoltage")
+
+from the battery tree and commit:
+
+  a8e223094c7a8 ("power_supply: ab8500: use default_groups in kobj_type")
+
+from the driver-core tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+diff --cc drivers/power/supply/ab8500_chargalg.c
+index b5a3096e78a14,64a3f5bbfff14..0000000000000
+--- a/drivers/power/supply/ab8500_chargalg.c
++++ b/drivers/power/supply/ab8500_chargalg.c
+@@@ -254,12 -279,12 +254,6 @@@ static enum power_supply_property ab850
+  	POWER_SUPPLY_PROP_HEALTH,
+  };
+  
+--struct ab8500_chargalg_sysfs_entry {
+--	struct attribute attr;
+--	ssize_t (*show)(struct ab8500_chargalg *di, char *buf);
+--	ssize_t (*store)(struct ab8500_chargalg *di, const char *buf, size_t length);
+--};
+--
+  /**
+   * ab8500_chargalg_safety_timer_expired() - Expiration of the safety timer
+   * @timer:     pointer to the hrtimer structure
