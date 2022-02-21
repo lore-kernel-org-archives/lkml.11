@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38190C47081
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352125AbiBUJrK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47592 "EHLO
+        id S245477AbiBUJsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:48:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350058AbiBUJi4 (ORCPT
+        with ESMTP id S1350858AbiBUJm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:38:56 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BEF30F55;
-        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
+        Mon, 21 Feb 2022 04:42:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B583E5C9;
+        Mon, 21 Feb 2022 01:17:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6C5ABCE0E66;
-        Mon, 21 Feb 2022 09:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DACFC340E9;
-        Mon, 21 Feb 2022 09:16:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5215460F1A;
+        Mon, 21 Feb 2022 09:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A14C340F0;
+        Mon, 21 Feb 2022 09:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435018;
-        bh=tP5CUsGrhz28rz/+xDcgKWdz9OnlZ9AuyjX1ULukau8=;
+        s=korg; t=1645435066;
+        bh=ysQjc3cjbNtOKFPnq5TsGdaq+5xjsHmtSp9extAhfzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/WhBFkzEz5F6En2Y+RRz0b1shXsKO7RM6lDApS+ffTZ21andI+kywysU2eY0yfoM
-         WRAf0jDq9hcrD3wP4rKVC6ztFWB+DzwY5/SCWJuErNEXKqMY33X3Aj6MzwWB/m70Ro
-         14XbEvz5XsYsw4VUORUAVyTKgBDKqPQI8cDuQxmo=
+        b=OTrxwbnWj7CA9MVZnMSzFevkZU62dXjQsPW/yl0gVv8hG1vqOFpkayvjNrrRjnWpp
+         6+MbczbJ4pbYIrAZhzMWmj9q2GAPlOb3BsYH2FL8o8Bv/j4n5xlT9KmnQ0EZ2IwQno
+         hLrK8fLZBqJASRKPHRHLyzGWElA2pn0x5hpsLVhE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 016/227] parisc: Fix data TLB miss in sba_unmap_sg
-Date:   Mon, 21 Feb 2022 09:47:15 +0100
-Message-Id: <20220221084935.384299824@linuxfoundation.org>
+        stable@vger.kernel.org, Yuka Kawajiri <yukx00@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 032/227] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
+Date:   Mon, 21 Feb 2022 09:47:31 +0100
+Message-Id: <20220221084935.920191391@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,86 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Yuka Kawajiri <yukx00@gmail.com>
 
-commit b7d6f44a0fa716a82969725516dc0b16bc7cd514 upstream.
+[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
 
-Rolf Eike Beer reported the following bug:
+Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
 
-[1274934.746891] Bad Address (null pointer deref?): Code=15 (Data TLB miss fault) at addr 0000004140000018
-[1274934.746891] CPU: 3 PID: 5549 Comm: cmake Not tainted 5.15.4-gentoo-parisc64 #4
-[1274934.746891] Hardware name: 9000/785/C8000
-[1274934.746891]
-[1274934.746891]      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
-[1274934.746891] PSW: 00001000000001001111111000001110 Not tainted
-[1274934.746891] r00-03  000000ff0804fe0e 0000000040bc9bc0 00000000406760e4 0000004140000000
-[1274934.746891] r04-07  0000000040b693c0 0000004140000000 000000004a2b08b0 0000000000000001
-[1274934.746891] r08-11  0000000041f98810 0000000000000000 000000004a0a7000 0000000000000001
-[1274934.746891] r12-15  0000000040bddbc0 0000000040c0cbc0 0000000040bddbc0 0000000040bddbc0
-[1274934.746891] r16-19  0000000040bde3c0 0000000040bddbc0 0000000040bde3c0 0000000000000007
-[1274934.746891] r20-23  0000000000000006 000000004a368950 0000000000000000 0000000000000001
-[1274934.746891] r24-27  0000000000001fff 000000000800000e 000000004a1710f0 0000000040b693c0
-[1274934.746891] r28-31  0000000000000001 0000000041f988b0 0000000041f98840 000000004a171118
-[1274934.746891] sr00-03  00000000066e5800 0000000000000000 0000000000000000 00000000066e5800
-[1274934.746891] sr04-07  0000000000000000 0000000000000000 0000000000000000 0000000000000000
-[1274934.746891]
-[1274934.746891] IASQ: 0000000000000000 0000000000000000 IAOQ: 00000000406760e8 00000000406760ec
-[1274934.746891]  IIR: 48780030    ISR: 0000000000000000  IOR: 0000004140000018
-[1274934.746891]  CPU:        3   CR30: 00000040e3a9c000 CR31: ffffffffffffffff
-[1274934.746891]  ORIG_R28: 0000000040acdd58
-[1274934.746891]  IAOQ[0]: sba_unmap_sg+0xb0/0x118
-[1274934.746891]  IAOQ[1]: sba_unmap_sg+0xb4/0x118
-[1274934.746891]  RP(r2): sba_unmap_sg+0xac/0x118
-[1274934.746891] Backtrace:
-[1274934.746891]  [<00000000402740cc>] dma_unmap_sg_attrs+0x6c/0x70
-[1274934.746891]  [<000000004074d6bc>] scsi_dma_unmap+0x54/0x60
-[1274934.746891]  [<00000000407a3488>] mptscsih_io_done+0x150/0xd70
-[1274934.746891]  [<0000000040798600>] mpt_interrupt+0x168/0xa68
-[1274934.746891]  [<0000000040255a48>] __handle_irq_event_percpu+0xc8/0x278
-[1274934.746891]  [<0000000040255c34>] handle_irq_event_percpu+0x3c/0xd8
-[1274934.746891]  [<000000004025ecb4>] handle_percpu_irq+0xb4/0xf0
-[1274934.746891]  [<00000000402548e0>] generic_handle_irq+0x50/0x70
-[1274934.746891]  [<000000004019a254>] call_on_stack+0x18/0x24
-[1274934.746891]
-[1274934.746891] Kernel panic - not syncing: Bad Address (null pointer deref?)
-
-The bug is caused by overrunning the sglist and incorrectly testing
-sg_dma_len(sglist) before nents. Normally this doesn't cause a crash,
-but in this case sglist crossed a page boundary. This occurs in the
-following code:
-
-	while (sg_dma_len(sglist) && nents--) {
-
-The fix is simply to test nents first and move the decrement of nents
-into the loop.
-
-Reported-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
+Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/parisc/sba_iommu.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/parisc/sba_iommu.c
-+++ b/drivers/parisc/sba_iommu.c
-@@ -1047,7 +1047,7 @@ sba_unmap_sg(struct device *dev, struct
- 	spin_unlock_irqrestore(&ioc->res_lock, flags);
- #endif
+diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
+index 17dd54d4b783c..e318b40949679 100644
+--- a/drivers/platform/x86/touchscreen_dmi.c
++++ b/drivers/platform/x86/touchscreen_dmi.c
+@@ -773,6 +773,21 @@ static const struct ts_dmi_data predia_basic_data = {
+ 	.properties	= predia_basic_props,
+ };
  
--	while (sg_dma_len(sglist) && nents--) {
-+	while (nents && sg_dma_len(sglist)) {
- 
- 		sba_unmap_page(dev, sg_dma_address(sglist), sg_dma_len(sglist),
- 				direction, 0);
-@@ -1056,6 +1056,7 @@ sba_unmap_sg(struct device *dev, struct
- 		ioc->usingle_calls--;	/* kluge since call is unmap_sg() */
- #endif
- 		++sglist;
-+		nents--;
- 	}
- 
- 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__,  nents);
++static const struct property_entry rwc_nanote_p8_props[] = {
++	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
++	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
++	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
++	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
++	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
++	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
++	{ }
++};
++
++static const struct ts_dmi_data rwc_nanote_p8_data = {
++	.acpi_name = "MSSL1680:00",
++	.properties = rwc_nanote_p8_props,
++};
++
+ static const struct property_entry schneider_sct101ctm_props[] = {
+ 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
+ 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
+@@ -1406,6 +1421,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
+ 		},
+ 	},
++	{
++		/* RWC NANOTE P8 */
++		.driver_data = (void *)&rwc_nanote_p8_data,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
++			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
++		},
++	},
+ 	{
+ 		/* Schneider SCT101CTM */
+ 		.driver_data = (void *)&schneider_sct101ctm_data,
+-- 
+2.34.1
+
 
 
