@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14216C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F6BC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354417AbiBUJ63 (ORCPT
+        id S1354185AbiBUJ6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:58:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41668 "EHLO
+        Mon, 21 Feb 2022 04:58:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351632AbiBUJtz (ORCPT
+        with ESMTP id S1352375AbiBUJrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:49:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5AB34B8B;
-        Mon, 21 Feb 2022 01:22:39 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BE3424A3;
+        Mon, 21 Feb 2022 01:19:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C915160F3C;
-        Mon, 21 Feb 2022 09:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC204C340EB;
-        Mon, 21 Feb 2022 09:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C567960F46;
+        Mon, 21 Feb 2022 09:19:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC52FC340E9;
+        Mon, 21 Feb 2022 09:19:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435357;
-        bh=4/IQDapPhOfUHZ8I/bXCAqRqXgprEmYdeOsY8JUFMrw=;
+        s=korg; t=1645435176;
+        bh=tn9KiBfIResCyFFjyiBMQXV3QP7d83OBpO7pCS0v74M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nemIO3vDO6nbq3rN5HagG0zNwCMK9Cd3sJrcTn4GppDJ6DqNwHBaFySmBU6Swi9rF
-         oi81m0RG2L5gHQ9ZMX39Kid+cjVW1AVYIV8/tSv76ruorQ9/ZGIumh6qrxjy/sW72W
-         xmy0fQaazfpRW5XQxYbNbSCHkSz3fHQCQ5lhJU94=
+        b=RbyAfB83apnkOCwvtIUnaQzWbJDxymuaZ0aiUFDtmMXKQ9Wd4U01/2afQnPhUfPng
+         SGx3gZy6rpB8wwXlg3F98s9LB0sMY5125wha2T9APaPzBTI62PNp0dNgbeHcII4F8R
+         0Lynwn/2/kdHpeQ4IJP+HxZpKIluFN0d+HeQH82E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 135/227] ALSA: usb-audio: Dont abort resume upon errors
-Date:   Mon, 21 Feb 2022 09:49:14 +0100
-Message-Id: <20220221084939.341918784@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 070/227] random: wake up /dev/random writers after zap
+Date:   Mon, 21 Feb 2022 09:48:09 +0100
+Message-Id: <20220221084937.205361841@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -48,57 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 9a5adeb28b77416446658e75bdef3bbe5fb92a83 upstream.
+[ Upstream commit 042e293e16e3aa9794ce60c29f5b7b0c8170f933 ]
 
-The default mixer resume code treats the errors at restoring the
-modified mixer items as a fatal error, and it returns back to the
-caller.  This ends up in the resume failure, and the device will be
-come unavailable, although basically those errors are intermittent and
-can be safely ignored.
+When account() is called, and the amount of entropy dips below
+random_write_wakeup_bits, we wake up the random writers, so that they
+can write some more in. However, the RNDZAPENTCNT/RNDCLEARPOOL ioctl
+sets the entropy count to zero -- a potential reduction just like
+account() -- but does not unblock writers. This commit adds the missing
+logic to that ioctl to unblock waiting writers.
 
-The problem itself has been present from the beginning, but it didn't
-hit usually because the code tries to resume only the modified items.
-But now with the recent commit to forcibly initialize each item at the
-probe time, the problem surfaced more often, hence it appears as a
-regression.
-
-This patch fixes the regression simply by ignoring the errors at
-resume.
-
-Fixes: b96681bd5827 ("ALSA: usb-audio: Initialize every feature unit once at probe time")
-Cc: <stable@vger.kernel.org>
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215561
-Link: https://lore.kernel.org/r/20220214125711.20531-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/mixer.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/char/random.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/sound/usb/mixer.c
-+++ b/sound/usb/mixer.c
-@@ -3678,17 +3678,14 @@ static int restore_mixer_value(struct us
- 				err = snd_usb_set_cur_mix_value(cval, c + 1, idx,
- 							cval->cache_val[idx]);
- 				if (err < 0)
--					return err;
-+					break;
- 			}
- 			idx++;
- 		}
- 	} else {
- 		/* master */
--		if (cval->cached) {
--			err = snd_usb_set_cur_mix_value(cval, 0, 0, *cval->cache_val);
--			if (err < 0)
--				return err;
--		}
-+		if (cval->cached)
-+			snd_usb_set_cur_mix_value(cval, 0, 0, *cval->cache_val);
- 	}
- 
- 	return 0;
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index a27ae3999ff32..ebe86de9d0acc 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1963,7 +1963,10 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		input_pool.entropy_count = 0;
++		if (xchg(&input_pool.entropy_count, 0) && random_write_wakeup_bits) {
++			wake_up_interruptible(&random_write_wait);
++			kill_fasync(&fasync, SIGIO, POLL_OUT);
++		}
+ 		return 0;
+ 	case RNDRESEEDCRNG:
+ 		if (!capable(CAP_SYS_ADMIN))
+-- 
+2.34.1
+
 
 
