@@ -2,140 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 330AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89915C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:14:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiBUSPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:15:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41398 "EHLO
+        id S232176AbiBUSPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:15:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiBUSLk (ORCPT
+        with ESMTP id S231526AbiBUSMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:11:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF3C13DF9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:02:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57129B816B9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC4CC340E9;
-        Mon, 21 Feb 2022 18:02:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645466523;
-        bh=1o//f7ci38Nltr9ZStFH8Ui/1ANWC7noWUcvVsxH4Dk=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=O/vRl4W+1q3OlItbDWSIT1wpSOf+ke+C7ZG3LvL0E8Ya+3/aZd9JcNcVisu3jckU0
-         6sbYLe74cjvHHDMv8RnWlk5rBR1EOVZIGMboUNzvw4cJDnPk/2X52CjsYCEn65ZP9L
-         1jikMaz56J0R+vmkyJTLNY1ZN0ifhA0wlQmJHoPx/4CLp/b0mMktJUZkYIGqXptfWx
-         wLKcajj5/CDlapJ1A9YwGJOZK80GD/T6iWV1Ps8xJofVKspQVK3dkoDfWcGiIBVO70
-         ESAI4GM2Si1Nk030GEry7hHcn0i4RBdSvZ/3ox5sr7Y+J7MEhoVAom/tcuoj7Nvvk9
-         Bx8kmNoE88v7A==
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id C58BF27C005C;
-        Mon, 21 Feb 2022 13:02:00 -0500 (EST)
-Received: from imap48 ([10.202.2.98])
-  by compute5.internal (MEProxy); Mon, 21 Feb 2022 13:02:00 -0500
-X-ME-Sender: <xms:ltMTYrOO-q2eTdc7-lefNVhRw6CMzIIUjeq1Fl3pSsQUg5p0v4T3DQ>
-    <xme:ltMTYl-w3T6R0n3Nu6LPsQLBvomkxGIVmuyU0GhbO1DIpztXMJlRsLtQTCEYEh028
-    pjjpM0MX0B0CmMumOs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigddutdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
-    hicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenucggtf
-    frrghtthgvrhhnpeffffekfeeuueffkedvueeujeduledvteefveevvdeftdfhtdegfeej
-    geehveefudenucffohhmrghinhepuhhrrghnughomhdruggvvhdpshgvrhhvvghrrdguvg
-    hvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghn
-    ugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudekheeifedvqd
-    dvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuhigrdhluhht
-    ohdruhhs
-X-ME-Proxy: <xmx:ltMTYqTKzeHmFBPj0KeeRRyeIPkPiIPH6vrTikCX73-28YSIWW4E9A>
-    <xmx:ltMTYvsLwlTbcAc-2gQCU0GdilV3LUcAV3MWMIErkd6OV7tI1F8Liw>
-    <xmx:ltMTYjdgCl_PWiXjxovjIlwKP-0RphBlU2K8uA3PaBzbcFmq9vAImg>
-    <xmx:mNMTYsvOQibdXI0qUTvczgxlr_u6ezUHEVT1YByEYw8pV2tlEZ9rHX6Q-Nw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 01C9B21E006E; Mon, 21 Feb 2022 13:01:57 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
-Mime-Version: 1.0
-Message-Id: <6e117393-9c2f-441c-9c72-62c209643622@www.fastmail.com>
-In-Reply-To: <20220217162848.303601-1-Jason@zx2c4.com>
-References: <20220217162848.303601-1-Jason@zx2c4.com>
-Date:   Mon, 21 Feb 2022 10:01:37 -0800
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
-        linux-arch@vger.kernel.org
-Cc:     "Dinh Nguyen" <dinguyen@kernel.org>,
-        "Nick Hu" <nickhu@andestech.com>,
-        "Max Filippov" <jcmvbkbc@gmail.com>,
-        "Palmer Dabbelt" <palmer@dabbelt.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Yoshinori Sato" <ysato@users.sourceforge.jp>,
-        "Michal Simek" <monstr@monstr.eu>,
-        "Borislav Petkov" <bp@alien8.de>, "Guo Ren" <guoren@kernel.org>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        "Joshua Kinard" <kumba@gentoo.org>,
-        "David Laight" <David.Laight@aculab.com>,
-        "Dominik Brodowski" <linux@dominikbrodowski.net>,
-        "Eric Biggers" <ebiggers@google.com>,
-        "Ard Biesheuvel" <ardb@kernel.org>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Kees Cook" <keescook@chromium.org>,
-        "Lennart Poettering" <mzxreary@0pointer.de>,
-        "Konstantin Ryabitsev" <konstantin@linuxfoundation.org>,
-        "Linus Torvalds" <torvalds@linux-foundation.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>
-Subject: Re: [PATCH v1] random: block in /dev/urandom
-Content-Type: text/plain
+        Mon, 21 Feb 2022 13:12:34 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B2215;
+        Mon, 21 Feb 2022 10:03:36 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id s14so13658950edw.0;
+        Mon, 21 Feb 2022 10:03:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JSzbeyJ3wmi72yBQpp06Oo4N3LKGxxejN6QrBogGfGY=;
+        b=ImHynHr4TWu/Jy3NY3KN2p5AbC6LhDNHrAmrMj7BkA8vKIuHo+2S3dB7i1FcXXu6xT
+         Aw9mYdUevGkiHxzsqJpQzsOa6VkXKDSRN2d+pUvSj/xSdO9NRZlYRdRokOH3uYu8++8S
+         5SCfSWWB0EJc854KDzKK2iFAF2GSLXVkmybj6xQ2DjB1S+SKB+PfBLjVmePk4EUgIQ8U
+         SjKX2rB2nrNULYbIXBg6zlWB+tEelS3RtuXdkrIpEkBkbnlkWKaEmLse7xjaEE4ET57G
+         fnjczkAFH8kjtR2qjQuokfibC3+s0gk7Kn3zwutU9Lpwrgv/jMTwJ4OgXyumcIrhF+TZ
+         Xctg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JSzbeyJ3wmi72yBQpp06Oo4N3LKGxxejN6QrBogGfGY=;
+        b=RkcurywT6jXQXQIcEbLUmbKLlCCW0/R9HKr35URmRAALOJf/tKqe3+2HqbbjPC6dwh
+         dNY87OPu+hAFFhp8AAYNz+5mAc0cEW4nw4z6NDEDGKtoj9oSSUO//egTHnkWDQ+MR0tx
+         GzgDngzEUulNcQ7RpkkdfppRZfe92Ld76/XryFkc/A0kpaXQgIRQn29SihUiqGnzSYS1
+         IUt/dVsgx8mfRFvHPeUbG7GEhz6GMAue8eNHJr9eXLWEbTRlNGvvPjIHuCbiJsK/UdfO
+         JuHC5heKW60Z0JdLE/AYmPlzdzZjjDFBNmYYL091LX5PrMg6Q+KOQOpZ/30FC21jrCt8
+         q3Iw==
+X-Gm-Message-State: AOAM531635p+Ncj1WMn7Nyo1a11lAELUPTrJrt6q4OflqjO2CBO10yMY
+        DTDXVk/LsvUKWqIZoTRL3QySMYbB8oM=
+X-Google-Smtp-Source: ABdhPJyRHVKif8YwOMbAOuZy8/YcSv7z4RmtG1Sdw/znjf5FGmjpGfTCWwd3HIqBOrfosroOHlBazg==
+X-Received: by 2002:a05:6402:350e:b0:412:d02f:9004 with SMTP id b14-20020a056402350e00b00412d02f9004mr16805706edd.59.1645466615399;
+        Mon, 21 Feb 2022 10:03:35 -0800 (PST)
+Received: from [192.168.8.198] ([85.255.234.184])
+        by smtp.gmail.com with ESMTPSA id nc40sm3123736ejc.127.2022.02.21.10.03.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 10:03:35 -0800 (PST)
+Message-ID: <ec1647f3-2c37-04be-bdbd-ab78b9f07a03@gmail.com>
+Date:   Mon, 21 Feb 2022 18:00:17 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 4/4] io_uring: pre-increment f_pos on rw
+Content-Language: en-US
+To:     Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>,
+        io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <20220221141649.624233-1-dylany@fb.com>
+ <20220221141649.624233-5-dylany@fb.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <20220221141649.624233-5-dylany@fb.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022, at 8:28 AM, Jason A. Donenfeld wrote:
-> This topic has come up countless times, and usually doesn't go anywhere.
-> This time I thought I'd bring it up with a slightly narrower focus,
-> updated for some developments over the last three years: we finally can
-> make /dev/urandom always secure, in light of the fact that our RNG is
-> now always seeded.
->
-> Ever since Linus' 50ee7529ec45 ("random: try to actively add entropy
-> rather than passively wait for it"), the RNG does a haveged-style jitter
-> dance around the scheduler, in order to produce entropy (and credit it)
-> for the case when we're stuck in wait_for_random_bytes(). How ever you
-> feel about the Linus Jitter Dance is beside the point: it's been there
-> for three years and usually gets the RNG initialized in a second or so.
->
-> As a matter of fact, this is what happens currently when people use
-> getrandom(). It's already there and working, and most people have been
-> using it for years without realizing.
->
-> So, given that the kernel has grown this mechanism for seeding itself
-> from nothing, and that this procedure happens pretty fast, maybe there's
-> no point any longer in having /dev/urandom give insecure bytes. In the
-> past we didn't want the boot process to deadlock, which was
-> understandable. But now, in the worst case, a second goes by, and the
-> problem is resolved. It seems like maybe we're finally at a point when
-> we can get rid of the infamous "urandom read hole".
->
+On 2/21/22 14:16, Dylan Yudaken wrote:
+> In read/write ops, preincrement f_pos when no offset is specified, and
+> then attempt fix up the position after IO completes if it completed less
+> than expected. This fixes the problem where multiple queued up IO will all
+> obtain the same f_pos, and so perform the same read/write.
+> 
+> This is still not as consistent as sync r/w, as it is able to advance the
+> file offset past the end of the file. It seems it would be quite a
+> performance hit to work around this limitation - such as by keeping track
+> of concurrent operations - and the downside does not seem to be too
+> problematic.
+> 
+> The attempt to fix up the f_pos after will at least mean that in situations
+> where a single operation is run, then the position will be consistent.
+> 
+> Co-developed-by: Jens Axboe <axboe@kernel.dk>
+> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> Signed-off-by: Dylan Yudaken <dylany@fb.com>
+> ---
+>   fs/io_uring.c | 81 ++++++++++++++++++++++++++++++++++++++++++---------
+>   1 file changed, 68 insertions(+), 13 deletions(-)
+> 
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index abd8c739988e..a951d0754899 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -3066,21 +3066,71 @@ static inline void io_rw_done(struct kiocb *kiocb, ssize_t ret)
 
-This patch is 100% about a historical mistake.  Way back when (not actually that long ago), there were two usable interfaces to the random number generator: /dev/random and /dev/urandom.  /dev/random was, at least in principle, secure, but it blocked unnecessarily and was, therefore, incredibly slow.  It was totally unsuitable for repeated use by any sort of server.  /dev/urandom didn't block but was insecure if called too early.  *But* urandom was also the correct interface to get best-effort-i-need-them-right-now random bits.  The actual semantics that general crypography users wanted were not available.
+[...]
 
-Fast forward to today.  /dev/random has the correct semantics for cryptographic purposes.  getrandom() also has the correct semantics for cryptographic purposes and is reliable as such -- it is guaranteed to either not exist or to DTRT.  And best-effort users can use GRND_INSECURE or /dev/urandom.
+> +			return false;
+>   		}
+>   	}
+> -	return is_stream ? NULL : &kiocb->ki_pos;
+> +	*ppos = is_stream ? NULL : &kiocb->ki_pos;
+> +	return false;
+> +}
+> +
+> +static inline void
+> +io_kiocb_done_pos(struct io_kiocb *req, struct kiocb *kiocb, u64 actual)
 
-If we imagine that every user program we care about uses GRND_INSECURE for best-effort and /dev/random or getrandom() without GRND_INSECURE for cryptography, then we're in great shape and this patch is irrelevant.
+That's a lot of inlining, I wouldn't be surprised if the compiler
+will even refuse to do that.
 
-But we don't get to rely on that.  New kernels are supposed to be compatible with old userspace.  And with *old* userspace, we do not know whether /dev/urandom users want cryptographically secure output or whether they want insecure output.  And there is this window during boot that lasts, supposedly, up to 1 second, there is a massive difference. [0]
+io_kiocb_done_pos() {
+	// rest of it
+}
 
-So, sorry, this patch is an ABI break.  You're reinterpreting any program that wanted best-effort randomness right after boot as wanting cryptographic randomness, this can delay boot by up to a second [0], and that's more than enough delay to be considered a break.
+inline io_kiocb_done_pos() {
+	if (!(flags & CUR_POS));
+		return;
+	__io_kiocb_done_pos();
+}
 
-So I don't like this without a stronger justification and a clearer compatibility story.  I could *maybe* get on board if you had a urandom=insecure boot option to switch back to the old behavior and a very clear message like "random: startup of %s is delayed. Set urandom=insecure for faster boot if you do not need cryptographically secure urandom during boot", but I don't think this patch is okay otherwise.
+io_kiocb_update_pos() is huge as well
 
-Or we stick with the status quo and make the warning clearer.  "random: %s us using insecure urandom output.  Fix it to use getrandom() or /dev/rando as appropriate."
+> +{
+> +	u64 expected;
+> +
+> +	if (likely(!(req->flags & REQ_F_CUR_POS)))
+> +		return;
+> +
+> +	expected = req->rw.len;
+> +	if (actual >= expected)
+> +		return;
+> +
+> +	/*
+> +	 * It's not definitely safe to lock here, and the assumption is,
+> +	 * that if we cannot lock the position that it will be changing,
+> +	 * and if it will be changing - then we can't update it anyway
+> +	 */
+> +	if (req->file->f_mode & FMODE_ATOMIC_POS
+> +		&& !mutex_trylock(&req->file->f_pos_lock))
+> +		return;
+> +
+> +	/*
+> +	 * now we want to move the pointer, but only if everything is consistent
+> +	 * with how we left it originally
+> +	 */
+> +	if (req->file->f_pos == kiocb->ki_pos + (expected - actual))
+> +		req->file->f_pos = kiocb->ki_pos;
 
-[0] I just booted 5.16 in a Skylake -rdrand,-rdseed VM and it took 1.14 seconds to initialize.
+I wonder, is it good enough / safe to just assign it considering that
+the request was executed outside of locks? vfs_seek()?
+
+> +
+> +	/* else something else messed with f_pos and we can't do anything */
+> +
+> +	if (req->file->f_mode & FMODE_ATOMIC_POS)
+> +		mutex_unlock(&req->file->f_pos_lock);
+>   }
+
+Do we even care about races while reading it? E.g.
+pos = READ_ONCE();
+
+>   
+> -	ppos = io_kiocb_update_pos(req, kiocb);
+> -
+>   	ret = rw_verify_area(READ, req->file, ppos, req->result);
+>   	if (unlikely(ret)) {
+>   		kfree(iovec);
+> +		io_kiocb_done_pos(req, kiocb, 0);
+
+Why do we update it on failure?
+
+[...]
+
+> -	ppos = io_kiocb_update_pos(req, kiocb);
+> -
+>   	ret = rw_verify_area(WRITE, req->file, ppos, req->result);
+>   	if (unlikely(ret))
+>   		goto out_free;
+> @@ -3858,6 +3912,7 @@ static int io_write(struct io_kiocb *req, unsigned int issue_flags)
+>   		return ret ?: -EAGAIN;
+>   	}
+>   out_free:
+> +	io_kiocb_done_pos(req, kiocb, 0);
+
+Looks weird. It appears we don't need it on failure and
+successes are covered by kiocb_done() / ->ki_complete
+
+>   	/* it's reportedly faster than delegating the null check to kfree() */
+>   	if (iovec)
+>   		kfree(iovec);
+
+-- 
+Pavel Begunkov
