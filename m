@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 208D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235538AbiBUW2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 17:28:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48986 "EHLO
+        id S235554AbiBUW3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 17:29:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235514AbiBUW2l (ORCPT
+        with ESMTP id S235514AbiBUW3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 17:28:41 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2854A6140
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 14:28:17 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id om7so16428642pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 14:28:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IqM/HrrqcPXMco+mNKrHeafOPSrFfqA+ju2cxF4/AhY=;
-        b=L+rylveWfTX+QVfP2e0y6fLhK5NWrEMj2VsqkZNMa1h+B+00b9b/m4OtsxVgGD55W3
-         JtrqDMhFZS4uqP/87jlicQGr7AKHg1WJ/Hs1xKHzbcKjkmuUUwVartNmtRr+TygPA+YF
-         6DDFf3l5ORC/FZ/YkbpBMpDZ5WlGHs0idolIB7KFt/3zBIkcVfvEdOHuUlcKSTzs98UQ
-         aeDWCea8NBvsY3Jp+FcqiJROFr3V7rlvhbBmL4pr0wvzeNIYuceqbNiqtEvW6PqleaV9
-         IOgwODdV9XHsBMJbLcEvfz6gq/PL7NWf2YNnAQewFkTolFIIZPOteY4TCOK9993gBrxI
-         Yaxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IqM/HrrqcPXMco+mNKrHeafOPSrFfqA+ju2cxF4/AhY=;
-        b=wvy/FSrmaAVlNU+MZ9uBy0S3g8mLw3sSyTLlZXSuLrh5srenExYkY+V8vabuqufsQj
-         qwUWpgKCDkYH0ut7eOHvbHrJjWf6Zn59hQN2Mam9cjzkdLussIZ66m8WORvoPjqLkI40
-         PnCALXC0TeoQOs5sogEf/EA0m1hyjx6T9MDVSJ3hxki3oXOZrbUU5R/5lgwv3cIJENJ+
-         kI7hE1JeSQMfbGK81oOgHHA3qXIrHUxj/KjFQb4WDvtMb87h6V/qmt9XTKO9RRmAoKH2
-         NwK11y+vRSitNCCAnot9WWIKTRxb+afXP6A04kc/dPV1qrqq0LWJD6e18yPMOCY4HCkg
-         RObg==
-X-Gm-Message-State: AOAM533ZbrCo+Pvqsdhblqq76O8LYFziRnylKlYGQus0Tscs7qeWDi9R
-        iq23cL6tjhP7Ph9TUbtTTwIEF0V0hi73ykfsaULIYA==
-X-Google-Smtp-Source: ABdhPJz9OseVJlVg6tugK8F0kM3rwRT6ZJeilyKTouVlRha152nIHraupw15DKJdmwxB0fZ6WpUkBkmk4aV5pnHDhWU=
-X-Received: by 2002:a17:903:228a:b0:14d:aa04:2278 with SMTP id
- b10-20020a170903228a00b0014daa042278mr20906077plh.58.1645482496637; Mon, 21
- Feb 2022 14:28:16 -0800 (PST)
+        Mon, 21 Feb 2022 17:29:10 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC4465A4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 14:28:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645482526; x=1677018526;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5z6TNYBa1E/tQG09GqFVS0q8BYwOfAtcawhwoAICR4o=;
+  b=mXoVMVEy9WiDJnd94Zewmqpjcbdy85pyLTBOYqXnEFgsKOSEtY8zLV0O
+   OYM+tXWN2hK7JlIGM5i/xVJTmnPEVHS0+jjHGj9RcD6wEQDOYkEfa5dwx
+   XF4hTLnCU2w1ahdyFOw/+A5SG5G6U3iBJ+25iFVmAVnQmLtuvgHkuapkP
+   pELR11kIBAFFJ05oyYPYKNx18+IVJ30UYHs/7IO5si2gFaKcGENsQHMrl
+   kRWPNicVY5uZlZwuoGeHzcAfyco5++CCko7fAhravYASxFBc7f2WWYpbY
+   0JFN6TO0Q7Z2Bvk/rq718H0AsB7vsbNPHIWGrk5dl1LXynAvhvg0gfhGB
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="276169999"
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="276169999"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 14:28:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="776106630"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2022 14:28:40 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id EA84C12C; Tue, 22 Feb 2022 00:28:56 +0200 (EET)
+Date:   Tue, 22 Feb 2022 01:28:56 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv3 02/32] x86/coco: Add API to handle encryption mask
+Message-ID: <20220221222856.c6b74b3n3fwqe6vy@black.fi.intel.com>
+References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
+ <20220218161718.67148-3-kirill.shutemov@linux.intel.com>
+ <66fcd7e7-deb6-f27e-9fc6-33293ce04f16@intel.com>
+ <20220218213300.2bs4t3admhozonaq@black.fi.intel.com>
+ <7ebd6ba1-85a4-6fee-c897-22ed108ac8b7@intel.com>
 MIME-Version: 1.0
-References: <20220221084930.872957717@linuxfoundation.org> <d72c8af1-e93d-44ae-15e0-737302523961@roeck-us.net>
- <YhPTIFmCxjnELRyP@kroah.com>
-In-Reply-To: <YhPTIFmCxjnELRyP@kroah.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Mon, 21 Feb 2022 23:28:05 +0100
-Message-ID: <CAHUa44HS3idJFRuG47NCJaQEQ_OYpp3kpaUcabqjayrkZXVLnQ@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/196] 5.15.25-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ebd6ba1-85a4-6fee-c897-22ed108ac8b7@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 7:00 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Feb 21, 2022 at 09:15:52AM -0800, Guenter Roeck wrote:
-> > On 2/21/22 00:47, Greg Kroah-Hartman wrote:
-> > > This is the start of the stable review cycle for the 5.15.25 release.
-> > > There are 196 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> >
-> >
-> > Building arm:allmodconfig ... failed
-> > Building arm64:allmodconfig ... failed
-> > --------------
-> > Error log:
-> > drivers/tee/optee/core.c: In function 'optee_probe':
-> > drivers/tee/optee/core.c:726:20: error: operation on 'rc' may be undefined
->
->
-> Jens, did you build the 5.15 patch you sent?
+On Mon, Feb 21, 2022 at 11:28:16AM -0800, Dave Hansen wrote:
+> I'm just a bit confused why *this* was chosen as the cc_whatever() hook.
+>  Just like the mask function, it has one spot where it gets used:
+> 
+> +#define pgprot_encrypted(prot)	__pgprot(cc_mkenc(pgprot_val(prot)))
+> +#define pgprot_decrypted(prot)	__pgprot(cc_mkdec(pgprot_val(prot)))
+> 
+> So, why bother having another level of abstraction?
+> 
+> Why don't we just have:
+> 
+> 	pgprot_t cc_mkenc(pgprot prot)
+> 	pgprot_t cc_mkenc(pgprot prot)
+> 
+> and *no* pgprot_{en,de}crypted()?
 
-I did, but it seems I wasn't paying close enough attention to warnings.
+Okay. Let me try this.
 
->
-> This line looks a bit odd:
->
-> +               rc = rc = PTR_ERR(ctx);
->
-> And given that rc is an int, that is not guaranteed to hold a pointer
-> here :(
+> >>> +out:
+> >>>  	physical_mask &= ~sme_me_mask;
+> >>> +	if (sme_me_mask)
+> >>> +		cc_init(CC_VENDOR_AMD, sme_me_mask);
+> >>>  }
+> >>
+> >> I don't think you need to mop it up here, but where does this leave
+> >> sme_me_mask?
+> > 
+> > I think sme_me_mask still can be useful to indicate that the code is only
+> > relevant for AMD context.
+> 
+> Shouldn't we be able to tell that because something is in an
+> AMD-specific file, function or #ifdef?
 
-I'm sorry it looks like I've slipped on the keyboard. There is one "rc
-= " too many.
-I believe the assignment "rc = PTR_ERR(ctx)" is correct when
-IS_ERR(ctx) is true. If I'm wrong I have a bigger problem.
+Sure. But for some code it is not immidiately obvious that it is
+AMD-specific. Like from file name alone, mem_encrypt_identity.c doesn't
+look like it is only AMD thing.
 
-I'll send a v2 to fix this. I see that I've copied the error to
-backports for 5.10, 5.4 too so I'll send v2s for those too.
+Anyway, I think getting rid of sme_me_mask is out of scope for the
+patchset.
 
-Thanks,
-Jens
+> Is there ever a time where sme_me_mask is populated by cc_mask is not?
 
->
-> thanks,
->
-> greg k-h
+Yes. Decompression code. (I know it doesn't affect bottom line much).
+
+> This seems like it is just making a copy of sme_me_mask.
+> 
+> sme_me_mask does look quite AMD-specialized, like its assembly
+> manipulation.  Even if it's just a copy of cc_mask, it would be nice to
+> call that out so the relationship is crystal clear.
+
+-- 
+ Kirill A. Shutemov
