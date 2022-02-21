@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE721C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245495AbiBUKEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:04:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36310 "EHLO
+        id S1352716AbiBUKEd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:04:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353440AbiBUJ51 (ORCPT
+        with ESMTP id S1353467AbiBUJ52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6A639171;
-        Mon, 21 Feb 2022 01:25:48 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEB839687;
+        Mon, 21 Feb 2022 01:26:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21A2BB80EBB;
-        Mon, 21 Feb 2022 09:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597FAC340E9;
-        Mon, 21 Feb 2022 09:25:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEA7B6101A;
+        Mon, 21 Feb 2022 09:26:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA776C340E9;
+        Mon, 21 Feb 2022 09:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435545;
-        bh=MdwLK2UIQOUxi6p575z+uN8iqZmVWfHrE1bzAHEJX8Y=;
+        s=korg; t=1645435560;
+        bh=H/fR1pHcd6IqJQK3Dd1OyYzgmulAJOBsJJZHyTg8cng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rROmi3T7VeWatEfoFqCfJUcy8dnzKbGyQvxMygFBCAJ7VVjw2PBDML8sboLoUdDhb
-         FFbBsdpuEWV+wYNYiGSdF6FkrGoI0MUvg454AnnI1xoqZMk/xFrAD4+X8HlnUGvd2m
-         FypuKcPhwBcaF3H4mKloT8qp2XV0rw1Rlmj3Js7w=
+        b=giS/akfKLGqth0TCYMTHYstdyNGpdzRSF658ydTLFFc/xROYJq51BrYQLIP0zZC1I
+         ZstoB1MyWUDPmRQs0FwqIAZOhNDMrgf38TCyk4reI6WMD1iyEDdz/6b/OtYbcSyJ9b
+         b3Ny1hRgzUN9dpMAQNk26xQDSvHAzUi0gacbyjUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 201/227] staging: vc04_services: Fix RCU dereference check
-Date:   Mon, 21 Feb 2022 09:50:20 +0100
-Message-Id: <20220221084941.499932186@linuxfoundation.org>
+Subject: [PATCH 5.16 206/227] ksmbd: fix same UniqueId for dot and dotdot entries
+Date:   Mon, 21 Feb 2022 09:50:25 +0100
+Message-Id: <20220221084941.676059598@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,117 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 0cea730cac824edf78ffd3302938ed5fe2b9d50d ]
+[ Upstream commit 97550c7478a2da93e348d8c3075d92cddd473a78 ]
 
-In service_callback path RCU dereferenced pointer struct vchiq_service
-need to be accessed inside rcu read-critical section.
+ksmbd sets the inode number to UniqueId. However, the same UniqueId for
+dot and dotdot entry is set to the inode number of the parent inode.
+This patch set them using the current inode and parent inode.
 
-Also userdata/user_service part of vchiq_service is accessed around
-different synchronization mechanism, getting an extra reference to a
-pointer keeps sematics simpler and avoids prolonged graceperiod.
-
-Accessing vchiq_service with rcu_read_[lock/unlock] fixes below issue.
-
-[   32.201659] =============================
-[   32.201664] WARNING: suspicious RCU usage
-[   32.201670] 5.15.11-rt24-v8+ #3 Not tainted
-[   32.201680] -----------------------------
-[   32.201685] drivers/staging/vc04_services/interface/vchiq_arm/vchiq_core.h:529 suspicious rcu_dereference_check() usage!
-[   32.201695]
-[   32.201695] other info that might help us debug this:
-[   32.201695]
-[   32.201700]
-[   32.201700] rcu_scheduler_active = 2, debug_locks = 1
-[   32.201708] no locks held by vchiq-slot/0/98.
-[   32.201715]
-[   32.201715] stack backtrace:
-[   32.201723] CPU: 1 PID: 98 Comm: vchiq-slot/0 Not tainted 5.15.11-rt24-v8+ #3
-[   32.201733] Hardware name: Raspberry Pi 4 Model B Rev 1.4 (DT)
-[   32.201739] Call trace:
-[   32.201742]  dump_backtrace+0x0/0x1b8
-[   32.201772]  show_stack+0x20/0x30
-[   32.201784]  dump_stack_lvl+0x8c/0xb8
-[   32.201799]  dump_stack+0x18/0x34
-[   32.201808]  lockdep_rcu_suspicious+0xe4/0xf8
-[   32.201817]  service_callback+0x124/0x400
-[   32.201830]  slot_handler_func+0xf60/0x1e20
-[   32.201839]  kthread+0x19c/0x1a8
-[   32.201849]  ret_from_fork+0x10/0x20
-
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Link: https://lore.kernel.org/r/20211231195406.5479-1-treasure4paddy@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../interface/vchiq_arm/vchiq_arm.c           | 20 +++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ fs/ksmbd/smb_common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-index c650a32bcedff..b9505bb51f45c 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -1058,15 +1058,27 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
+diff --git a/fs/ksmbd/smb_common.c b/fs/ksmbd/smb_common.c
+index ef7f42b0290a8..9a7e211dbf4f4 100644
+--- a/fs/ksmbd/smb_common.c
++++ b/fs/ksmbd/smb_common.c
+@@ -308,14 +308,17 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 	for (i = 0; i < 2; i++) {
+ 		struct kstat kstat;
+ 		struct ksmbd_kstat ksmbd_kstat;
++		struct dentry *dentry;
  
- 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
- 
-+	rcu_read_lock();
- 	service = handle_to_service(handle);
--	if (WARN_ON(!service))
-+	if (WARN_ON(!service)) {
-+		rcu_read_unlock();
- 		return VCHIQ_SUCCESS;
-+	}
- 
- 	user_service = (struct user_service *)service->base.userdata;
- 	instance = user_service->instance;
- 
--	if (!instance || instance->closing)
-+	if (!instance || instance->closing) {
-+		rcu_read_unlock();
- 		return VCHIQ_SUCCESS;
-+	}
-+
-+	/*
-+	 * As hopping around different synchronization mechanism,
-+	 * taking an extra reference results in simpler implementation.
-+	 */
-+	vchiq_service_get(service);
-+	rcu_read_unlock();
- 
- 	vchiq_log_trace(vchiq_arm_log_level,
- 			"%s - service %lx(%d,%p), reason %d, header %lx, instance %lx, bulk_userdata %lx",
-@@ -1097,6 +1109,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 							bulk_userdata);
- 				if (status != VCHIQ_SUCCESS) {
- 					DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+					vchiq_service_put(service);
- 					return status;
- 				}
+ 		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
+ 			if (i == 0) {
+ 				d_info->name = ".";
+ 				d_info->name_len = 1;
++				dentry = dir->filp->f_path.dentry;
+ 			} else {
+ 				d_info->name = "..";
+ 				d_info->name_len = 2;
++				dentry = dir->filp->f_path.dentry->d_parent;
  			}
-@@ -1105,10 +1118,12 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 			if (wait_for_completion_interruptible(&user_service->remove_event)) {
- 				vchiq_log_info(vchiq_arm_log_level, "%s interrupted", __func__);
- 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+				vchiq_service_put(service);
- 				return VCHIQ_RETRY;
- 			} else if (instance->closing) {
- 				vchiq_log_info(vchiq_arm_log_level, "%s closing", __func__);
- 				DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+				vchiq_service_put(service);
- 				return VCHIQ_ERROR;
- 			}
- 			DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-@@ -1137,6 +1152,7 @@ service_callback(enum vchiq_reason reason, struct vchiq_header *header,
- 		header = NULL;
- 	}
- 	DEBUG_TRACE(SERVICE_CALLBACK_LINE);
-+	vchiq_service_put(service);
  
- 	if (skip_completion)
- 		return VCHIQ_SUCCESS;
+ 			if (!match_pattern(d_info->name, d_info->name_len,
+@@ -327,7 +330,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 			ksmbd_kstat.kstat = &kstat;
+ 			ksmbd_vfs_fill_dentry_attrs(work,
+ 						    user_ns,
+-						    dir->filp->f_path.dentry->d_parent,
++						    dentry,
+ 						    &ksmbd_kstat);
+ 			rc = fn(conn, info_level, d_info, &ksmbd_kstat);
+ 			if (rc)
 -- 
 2.34.1
 
