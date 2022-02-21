@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB9CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3FBC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351531AbiBUJqE (ORCPT
+        id S1351493AbiBUJpw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:46:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44906 "EHLO
+        Mon, 21 Feb 2022 04:45:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351523AbiBUJhW (ORCPT
+        with ESMTP id S1351586AbiBUJh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:22 -0500
+        Mon, 21 Feb 2022 04:37:28 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73DD3A199;
-        Mon, 21 Feb 2022 01:15:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BE93A5D0;
+        Mon, 21 Feb 2022 01:16:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6105D60EDF;
-        Mon, 21 Feb 2022 09:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FC4C340E9;
-        Mon, 21 Feb 2022 09:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97453608C1;
+        Mon, 21 Feb 2022 09:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B2EBC340E9;
+        Mon, 21 Feb 2022 09:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434944;
-        bh=7/S17zKKZcRI0PTGG5WL6TzosOzrdPRFquTzATca4EI=;
+        s=korg; t=1645434959;
+        bh=iPC6rs41KA4hADJiYkVNEN+JZ5gWdDD0SEeI8wwJ1HI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bbT+9dz6ITLGGU1zJy0VD3OK69efAzoJUVB3O1jrBFXHQS+qjssSxbnZ4tnc9c/ep
-         fSJH32z41hHie9JynuQpKn9m13cZZ/K8DLFduJg390fkXmUOS12Gfnw/bQuLhgZkTC
-         hzO7MgvUSZC/A43zjANuhZ9TOHfhv1YLhyKFAhvI=
+        b=wUoV5KOaO8RlPIWFt86TidVXmidCCb1bpz6XQ0Tt+Nu+AIC8PfMi4u2YX1bOenWJC
+         sKcy0WZ9GLAYq8k8pLFL+mcnRX7mlhbnNAxnDf8bZeJGRtlp8Rcr1o6BTHT4COfXBO
+         L6KIDz+Sz8CMreb+bX78dQ5HIsTvNK5MQxUx5hH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Subject: [PATCH 5.15 154/196] netfilter: conntrack: dont refresh sctp entries in closed state
-Date:   Mon, 21 Feb 2022 09:49:46 +0100
-Message-Id: <20220221084936.083501980@linuxfoundation.org>
+        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 149/196] phy: usb: Leave some clocks running during suspend
+Date:   Mon, 21 Feb 2022 09:49:41 +0100
+Message-Id: <20220221084935.914371020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,53 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Al Cooper <alcooperx@gmail.com>
 
-[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
+[ Upstream commit 42fed57046fc74586d7058bd51a1c10ac9c690cb ]
 
-Vivek Thrivikraman reported:
- An SCTP server application which is accessed continuously by client
- application.
- When the session disconnects the client retries to establish a connection.
- After restart of SCTP server application the session is not established
- because of stale conntrack entry with connection state CLOSED as below.
+The PHY client driver does a phy_exit() call on suspend or rmmod and
+the PHY driver needs to know the difference because some clocks need
+to be kept running for suspend but can be shutdown on unbind/rmmod
+(or if there are no PHY clients at all).
 
- (removing this entry manually established new connection):
+The fix is to use a PM notifier so the driver can tell if a PHY
+client is calling exit() because of a system suspend or a driver
+unbind/rmmod.
 
- sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
-
-Just skip timeout update of closed entries, we don't want them to
-stay around forever.
-
-Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
-Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20211201180653.35097-2-alcooperx@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index 2394238d01c91..5a936334b517a 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
- 			pr_debug("Setting vtag %x for dir %d\n",
- 				 ih->init_tag, !dir);
- 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
-+
-+			/* don't renew timeout on init retransmit so
-+			 * port reuse by client or NAT middlebox cannot
-+			 * keep entry alive indefinitely (incl. nat info).
-+			 */
-+			if (new_state == SCTP_CONNTRACK_CLOSED &&
-+			    old_state == SCTP_CONNTRACK_CLOSED &&
-+			    nf_ct_is_confirmed(ct))
-+				ignore = true;
- 		}
+diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
+index 116fb23aebd99..0f1deb6e0eabf 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb.c
++++ b/drivers/phy/broadcom/phy-brcm-usb.c
+@@ -18,6 +18,7 @@
+ #include <linux/soc/brcmstb/brcmstb.h>
+ #include <dt-bindings/phy/phy.h>
+ #include <linux/mfd/syscon.h>
++#include <linux/suspend.h>
  
- 		ct->proto.sctp.state = new_state;
+ #include "phy-brcm-usb-init.h"
+ 
+@@ -70,12 +71,35 @@ struct brcm_usb_phy_data {
+ 	int			init_count;
+ 	int			wake_irq;
+ 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
++	struct notifier_block	pm_notifier;
++	bool			pm_active;
+ };
+ 
+ static s8 *node_reg_names[BRCM_REGS_MAX] = {
+ 	"crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
+ };
+ 
++static int brcm_pm_notifier(struct notifier_block *notifier,
++			    unsigned long pm_event,
++			    void *unused)
++{
++	struct brcm_usb_phy_data *priv =
++		container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
++
++	switch (pm_event) {
++	case PM_HIBERNATION_PREPARE:
++	case PM_SUSPEND_PREPARE:
++		priv->pm_active = true;
++		break;
++	case PM_POST_RESTORE:
++	case PM_POST_HIBERNATION:
++	case PM_POST_SUSPEND:
++		priv->pm_active = false;
++		break;
++	}
++	return NOTIFY_DONE;
++}
++
+ static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
+ {
+ 	struct phy *gphy = dev_id;
+@@ -91,6 +115,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
+ 	struct brcm_usb_phy_data *priv =
+ 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
+ 
++	if (priv->pm_active)
++		return 0;
++
+ 	/*
+ 	 * Use a lock to make sure a second caller waits until
+ 	 * the base phy is inited before using it.
+@@ -120,6 +147,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
+ 	struct brcm_usb_phy_data *priv =
+ 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
+ 
++	if (priv->pm_active)
++		return 0;
++
+ 	dev_dbg(&gphy->dev, "EXIT\n");
+ 	if (phy->id == BRCM_USB_PHY_2_0)
+ 		brcm_usb_uninit_eohci(&priv->ini);
+@@ -488,6 +518,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
+ 
++	priv->pm_notifier.notifier_call = brcm_pm_notifier;
++	register_pm_notifier(&priv->pm_notifier);
++
+ 	mutex_init(&priv->mutex);
+ 
+ 	/* make sure invert settings are correct */
+@@ -528,7 +561,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
+ 
+ static int brcm_usb_phy_remove(struct platform_device *pdev)
+ {
++	struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
++
+ 	sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
++	unregister_pm_notifier(&priv->pm_notifier);
+ 
+ 	return 0;
+ }
+@@ -539,6 +575,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
+ 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
+ 
+ 	if (priv->init_count) {
++		dev_dbg(dev, "SUSPEND\n");
+ 		priv->ini.wake_enabled = device_may_wakeup(dev);
+ 		if (priv->phys[BRCM_USB_PHY_3_0].inited)
+ 			brcm_usb_uninit_xhci(&priv->ini);
+@@ -578,6 +615,7 @@ static int brcm_usb_phy_resume(struct device *dev)
+ 	 * Uninitialize anything that wasn't previously initialized.
+ 	 */
+ 	if (priv->init_count) {
++		dev_dbg(dev, "RESUME\n");
+ 		if (priv->wake_irq >= 0)
+ 			disable_irq_wake(priv->wake_irq);
+ 		brcm_usb_init_common(&priv->ini);
 -- 
 2.34.1
 
