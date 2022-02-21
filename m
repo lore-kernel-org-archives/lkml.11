@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33489C35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2410C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349279AbiBUJMR (ORCPT
+        id S1349005AbiBUJL5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36068 "EHLO
+        Mon, 21 Feb 2022 04:11:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347797AbiBUJIk (ORCPT
+        with ESMTP id S1347714AbiBUJIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:08:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BC226576;
-        Mon, 21 Feb 2022 01:00:27 -0800 (PST)
+        Mon, 21 Feb 2022 04:08:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD1431DFA;
+        Mon, 21 Feb 2022 01:00:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA5D61202;
-        Mon, 21 Feb 2022 09:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B61C340E9;
-        Mon, 21 Feb 2022 09:00:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C39EB80EB5;
+        Mon, 21 Feb 2022 09:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51996C340E9;
+        Mon, 21 Feb 2022 09:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434027;
-        bh=0ajMXluSAqvhHBE5hWclvfBMFrRyAUrOhetBDh6ThaM=;
+        s=korg; t=1645434015;
+        bh=1FVaijZuEp9ARdDV2v2gKUqVrRqWPh6b7zi2U1QN6ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQcZrTqWRmNqglp5RY08vyEUwKCk81SB76XfOcdQ/IiWHU7RInTcrSwT34GX8kk+o
-         Gzi8L9VHL43//uOQmAZK7X6yM0EnemMd8CSg4s4ru9+RwHMj9qUg8Ud8zL5VSiF/Hv
-         fog2Oj1COB/vDrL0Z++GZ8CJhZkwwNGXlqMJcidc=
+        b=IkkF8WMIEYhrJYA2xPlyvq47mTCZeoIkPxjqGtLu5ZbT79K4TlvUC6Qy3mM8JkgKm
+         Vv5QICU6ylXSWxY4/eaPQaEK/MRET4K4gbbUALYfLavi3zkJUqOSNp0ZecHW4v7nB1
+         0hTT0k857/pRIk5ZbBvlcgBddCi0927TjDZhzXJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 67/80] ARM: OMAP2+: hwmod: Add of_node_put() before break
-Date:   Mon, 21 Feb 2022 09:49:47 +0100
-Message-Id: <20220221084917.783210821@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.4 64/80] i2c: brcmstb: fix support for DSL and CM variants
+Date:   Mon, 21 Feb 2022 09:49:44 +0100
+Message-Id: <20220221084917.684012990@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,42 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
+commit 834cea3a252ed4847db076a769ad9efe06afe2d5 upstream.
 
-Fix following coccicheck warning:
-./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
-for_each_matching_node should have of_node_put() before break
+DSL and CM (Cable Modem) support 8 B max transfer size and have a custom
+DT binding for that reason. This driver was checking for a wrong
+"compatible" however which resulted in an incorrect setup.
 
-Early exits from for_each_matching_node should decrement the
-node reference counter.
-
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2e5a2c61837 ("i2c: brcmstb: Adding support for CM and DSL SoCs")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-brcmstb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
-index 6289b288d60a6..202b740adee0e 100644
---- a/arch/arm/mach-omap2/omap_hwmod.c
-+++ b/arch/arm/mach-omap2/omap_hwmod.c
-@@ -782,8 +782,10 @@ static int __init _init_clkctrl_providers(void)
+--- a/drivers/i2c/busses/i2c-brcmstb.c
++++ b/drivers/i2c/busses/i2c-brcmstb.c
+@@ -640,7 +640,7 @@ static int brcmstb_i2c_probe(struct plat
  
- 	for_each_matching_node(np, ti_clkctrl_match_table) {
- 		ret = _setup_clkctrl_provider(np);
--		if (ret)
-+		if (ret) {
-+			of_node_put(np);
- 			break;
-+		}
- 	}
- 
- 	return ret;
--- 
-2.34.1
-
+ 	/* set the data in/out register size for compatible SoCs */
+ 	if (of_device_is_compatible(dev->device->of_node,
+-				    "brcmstb,brcmper-i2c"))
++				    "brcm,brcmper-i2c"))
+ 		dev->data_regsz = sizeof(u8);
+ 	else
+ 		dev->data_regsz = sizeof(u32);
 
 
