@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A25DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3829DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350607AbiBUJfZ (ORCPT
+        id S1350663AbiBUJf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:35:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51000 "EHLO
+        Mon, 21 Feb 2022 04:35:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349999AbiBUJ1B (ORCPT
+        with ESMTP id S1349984AbiBUJ1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:27:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3164320F69;
-        Mon, 21 Feb 2022 01:11:12 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB721EEFA;
+        Mon, 21 Feb 2022 01:11:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3AF36097C;
-        Mon, 21 Feb 2022 09:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC673C340E9;
-        Mon, 21 Feb 2022 09:11:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07B6760B1B;
+        Mon, 21 Feb 2022 09:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF06FC340E9;
+        Mon, 21 Feb 2022 09:11:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434671;
-        bh=9Q7XWxP4CWVRjQ6J7B9VocxI/sX9aehlb7Nw9uBldkk=;
+        s=korg; t=1645434668;
+        bh=nkcQxGdJDoVl8oaSFTYORMJhIKjObWqU0wdGclgp29w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kjdi4JB6K0LT8urhRlhSY1JeUafCLPKcHrbYq0UJgbTQ6If5rj3gboGnyeETuPxyQ
-         NXzcJ+ilbJdOGAcHDryasVSP8ekMTql76NLWxq4GOCPk/Yhn0Ji585U+LROsRlSktU
-         my/EjnpYDy45ya/WxVpSgyiCrMxAKZ0PeoQ/UHG8=
+        b=WTO/JVqMWJPJ99Np3LCz1gi0JVk4i9TxsTSIgHgHyBi6jjX+jQWmjIQwkRDI8ADIy
+         MMi4SpMmEFVSPyTvOT7Qb61+1YQIunL5tAzVtkQX60gtjUxntXHo7+NTqIy34h8q1f
+         RMi1WQ/a8siS43y5UiTAW1M3KDQwguf+/IJ5RzDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 090/196] net: dsa: mv88e6xxx: flush switchdev FDB workqueue before removing VLAN
-Date:   Mon, 21 Feb 2022 09:48:42 +0100
-Message-Id: <20220221084933.947699415@linuxfoundation.org>
+        stable@vger.kernel.org, Mans Rullgard <mans@mansr.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fianelil <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 089/196] net: dsa: lan9303: fix reset on probe
+Date:   Mon, 21 Feb 2022 09:48:41 +0100
+Message-Id: <20220221084933.916906865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,81 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Mans Rullgard <mans@mansr.com>
 
-commit a2614140dc0f467a83aa3bb4b6ee2d6480a76202 upstream.
+commit 6bb9681a43f34f2cab4aad6e2a02da4ce54d13c5 upstream.
 
-mv88e6xxx is special among DSA drivers in that it requires the VTU to
-contain the VID of the FDB entry it modifies in
-mv88e6xxx_port_db_load_purge(), otherwise it will return -EOPNOTSUPP.
+The reset input to the LAN9303 chip is active low, and devicetree
+gpio handles reflect this.  Therefore, the gpio should be requested
+with an initial state of high in order for the reset signal to be
+asserted.  Other uses of the gpio already use the correct polarity.
 
-Sometimes due to races this is not always satisfied even if external
-code does everything right (first deletes the FDB entries, then the
-VLAN), because DSA commits to hardware FDB entries asynchronously since
-commit c9eb3e0f8701 ("net: dsa: Add support for learning FDB through
-notification").
-
-Therefore, the mv88e6xxx driver must close this race condition by
-itself, by asking DSA to flush the switchdev workqueue of any FDB
-deletions in progress, prior to exiting a VLAN.
-
-Fixes: c9eb3e0f8701 ("net: dsa: Add support for learning FDB through notification")
-Reported-by: Rafael Richter <rafael.richter@gin.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a1292595e006 ("net: dsa: add new DSA switch driver for the SMSC-LAN9303")
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fianelil <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220209145454.19749-1-mans@mansr.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c |    7 +++++++
- include/net/dsa.h                |    1 +
- net/dsa/dsa.c                    |    1 +
- net/dsa/dsa_priv.h               |    1 -
- 4 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/dsa/lan9303-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2291,6 +2291,13 @@ static int mv88e6xxx_port_vlan_del(struc
- 	if (!mv88e6xxx_max_vid(chip))
- 		return -EOPNOTSUPP;
- 
-+	/* The ATU removal procedure needs the FID to be mapped in the VTU,
-+	 * but FDB deletion runs concurrently with VLAN deletion. Flush the DSA
-+	 * switchdev workqueue to ensure that all FDB entries are deleted
-+	 * before we remove the VLAN.
-+	 */
-+	dsa_flush_workqueue();
-+
- 	mv88e6xxx_reg_lock(chip);
- 
- 	err = mv88e6xxx_port_get_pvid(chip, port, &pvid);
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -1056,6 +1056,7 @@ void dsa_unregister_switch(struct dsa_sw
- int dsa_register_switch(struct dsa_switch *ds);
- void dsa_switch_shutdown(struct dsa_switch *ds);
- struct dsa_switch *dsa_switch_find(int tree_index, int sw_index);
-+void dsa_flush_workqueue(void);
- #ifdef CONFIG_PM_SLEEP
- int dsa_switch_suspend(struct dsa_switch *ds);
- int dsa_switch_resume(struct dsa_switch *ds);
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -349,6 +349,7 @@ void dsa_flush_workqueue(void)
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1309,7 +1309,7 @@ static int lan9303_probe_reset_gpio(stru
+ 				     struct device_node *np)
  {
- 	flush_workqueue(dsa_owq);
- }
-+EXPORT_SYMBOL_GPL(dsa_flush_workqueue);
+ 	chip->reset_gpio = devm_gpiod_get_optional(chip->dev, "reset",
+-						   GPIOD_OUT_LOW);
++						   GPIOD_OUT_HIGH);
+ 	if (IS_ERR(chip->reset_gpio))
+ 		return PTR_ERR(chip->reset_gpio);
  
- int dsa_devlink_param_get(struct devlink *dl, u32 id,
- 			  struct devlink_param_gset_ctx *ctx)
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -170,7 +170,6 @@ void dsa_tag_driver_put(const struct dsa
- const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf);
- 
- bool dsa_schedule_work(struct work_struct *work);
--void dsa_flush_workqueue(void);
- const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops);
- 
- static inline int dsa_tag_protocol_overhead(const struct dsa_device_ops *ops)
 
 
