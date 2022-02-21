@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D46C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 031E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351707AbiBUJui (ORCPT
+        id S1351766AbiBUJul (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:50:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58482 "EHLO
+        Mon, 21 Feb 2022 04:50:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351461AbiBUJp0 (ORCPT
+        with ESMTP id S1351646AbiBUJqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:45:26 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4553F889;
-        Mon, 21 Feb 2022 01:18:24 -0800 (PST)
+        Mon, 21 Feb 2022 04:46:24 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DCE3FD84;
+        Mon, 21 Feb 2022 01:18:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6DEA9CE0E76;
-        Mon, 21 Feb 2022 09:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 590A6C340E9;
-        Mon, 21 Feb 2022 09:18:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E5649CE0E92;
+        Mon, 21 Feb 2022 09:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA265C340E9;
+        Mon, 21 Feb 2022 09:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435102;
-        bh=E7FOSdbTRTgamGUuWjaPs4cyaZmb3dvKjzdHiR8bK6g=;
+        s=korg; t=1645435114;
+        bh=WVNauBaRJsa6s6xQmmlbQqAkkHhuRdEnpesltO1Pqoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7GCHcvbU1S241NytxAuH+kfz2nSkayzYpW/v73rWmtgUmm3wooNMuTOGTATLKHPQ
-         74n9weEa6naK2p5MtkIBOuWk5Hu1/eD7XojI34Rr6asiEKzi1MShswohgw8G/a1saE
-         NKjxvURparNqiwqBwlswM6nQOmu7nPttMO8nP02E=
+        b=HgtvjMrw/tH+LShP2+qYivC+LAmH8gzxEFD73phnU3OKEM4yRVbmqzeQaIa7yBlAY
+         lJW4ht/EDeSQ1rdk0/PEH/Ed9BkWZzptaKxj4/OlLhRWhHs8CaqnDo3OOREQgKsVE7
+         zwvNAhpNDinsiE70jtFE4vPNmosQbGShi95sqJMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 013/227] parisc: Show error if wrong 32/64-bit compiler is being used
-Date:   Mon, 21 Feb 2022 09:47:12 +0100
-Message-Id: <20220221084935.279675188@linuxfoundation.org>
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 050/227] vfs: make freeze_super abort when sync_filesystem returns error
+Date:   Mon, 21 Feb 2022 09:47:49 +0100
+Message-Id: <20220221084936.537859477@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -48,42 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Darrick J. Wong <djwong@kernel.org>
 
-commit b160628e9ebcdc85d0db9d7f423c26b3c7c179d0 upstream.
+[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
 
-It happens quite often that people use the wrong compiler to build the
-kernel:
+If we fail to synchronize the filesystem while preparing to freeze the
+fs, abort the freeze.
 
-make ARCH=parisc   -> builds the 32-bit kernel
-make ARCH=parisc64 -> builds the 64-bit kernel
-
-This patch adds a sanity check which errors out with an instruction how
-use the correct ARCH= option.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/bitops.h |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
---- a/arch/parisc/include/asm/bitops.h
-+++ b/arch/parisc/include/asm/bitops.h
-@@ -12,6 +12,14 @@
- #include <asm/barrier.h>
- #include <linux/atomic.h>
+diff --git a/fs/super.c b/fs/super.c
+index a6405d44d4ca2..d978dd031a036 100644
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -1619,11 +1619,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
+ 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
+ }
  
-+/* compiler build environment sanity checks: */
-+#if !defined(CONFIG_64BIT) && defined(__LP64__)
-+#error "Please use 'ARCH=parisc' to build the 32-bit kernel."
-+#endif
-+#if defined(CONFIG_64BIT) && !defined(__LP64__)
-+#error "Please use 'ARCH=parisc64' to build the 64-bit kernel."
-+#endif
-+
- /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
-  * on use of volatile and __*_bit() (set/clear/change):
-  *	*_bit() want use of volatile.
+-static void sb_freeze_unlock(struct super_block *sb)
++static void sb_freeze_unlock(struct super_block *sb, int level)
+ {
+-	int level;
+-
+-	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
++	for (level--; level >= 0; level--)
+ 		percpu_up_write(sb->s_writers.rw_sem + level);
+ }
+ 
+@@ -1694,7 +1692,14 @@ int freeze_super(struct super_block *sb)
+ 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
+ 
+ 	/* All writers are done so after syncing there won't be dirty data */
+-	sync_filesystem(sb);
++	ret = sync_filesystem(sb);
++	if (ret) {
++		sb->s_writers.frozen = SB_UNFROZEN;
++		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
++		wake_up(&sb->s_writers.wait_unfrozen);
++		deactivate_locked_super(sb);
++		return ret;
++	}
+ 
+ 	/* Now wait for internal filesystem counter */
+ 	sb->s_writers.frozen = SB_FREEZE_FS;
+@@ -1706,7 +1711,7 @@ int freeze_super(struct super_block *sb)
+ 			printk(KERN_ERR
+ 				"VFS:Filesystem freeze failed\n");
+ 			sb->s_writers.frozen = SB_UNFROZEN;
+-			sb_freeze_unlock(sb);
++			sb_freeze_unlock(sb, SB_FREEZE_FS);
+ 			wake_up(&sb->s_writers.wait_unfrozen);
+ 			deactivate_locked_super(sb);
+ 			return ret;
+@@ -1751,7 +1756,7 @@ static int thaw_super_locked(struct super_block *sb)
+ 	}
+ 
+ 	sb->s_writers.frozen = SB_UNFROZEN;
+-	sb_freeze_unlock(sb);
++	sb_freeze_unlock(sb, SB_FREEZE_FS);
+ out:
+ 	wake_up(&sb->s_writers.wait_unfrozen);
+ 	deactivate_locked_super(sb);
+-- 
+2.34.1
+
 
 
