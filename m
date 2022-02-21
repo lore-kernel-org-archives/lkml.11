@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A51C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346203AbiBUJkb (ORCPT
+        id S1350755AbiBUJkh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:40:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32992 "EHLO
+        Mon, 21 Feb 2022 04:40:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350532AbiBUJdf (ORCPT
+        with ESMTP id S1350552AbiBUJdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:33:35 -0500
+        Mon, 21 Feb 2022 04:33:42 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA1F28E01;
-        Mon, 21 Feb 2022 01:13:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D28128E18;
+        Mon, 21 Feb 2022 01:14:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F44D60018;
-        Mon, 21 Feb 2022 09:13:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E48CBC340E9;
-        Mon, 21 Feb 2022 09:13:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6BA260DF6;
+        Mon, 21 Feb 2022 09:14:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B00C340E9;
+        Mon, 21 Feb 2022 09:13:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434837;
-        bh=vzkAtfuzlu8dQOlYBZ0ZwVL69Dz2j+un5CWuJ+ielgs=;
+        s=korg; t=1645434840;
+        bh=E8X8be894fHh241pFPixddfhnlq8eHFkwL8tLTXtjqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/uIb8MhZMux4T07Pu/ZazKaG/nu+OLjcHjh+ftv6ImlROVFgBDLK4VupMqefix95
-         JF37kBuWZvE7DV9M1mWFIL3t3qXD9QdiqeQvYsAmBzAPyMAK8qaPEartleCLBgIFcj
-         +QMnN8bmGF2wt6jluvThc7f1uYKnpv5FtnGDpcVI=
+        b=U6aSfbl3C7zzfLY2fS40bDWa4FevX9sTuXzk3Jee7Rd/lFYtN0WPviUJ2q5h5J8Wl
+         Pa/mB9Jo+QO83Uu+zQ8ozn7CkW5LELP9paYQQ0+m9zAMVxgqudUnLKwrq2zhjN04cC
+         N664HbZeRSE3K4JRxwFqICUwQVCsXFisWOLRMmms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
         Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 147/196] ARM: OMAP2+: hwmod: Add of_node_put() before break
-Date:   Mon, 21 Feb 2022 09:49:39 +0100
-Message-Id: <20220221084935.842981814@linuxfoundation.org>
+Subject: [PATCH 5.15 148/196] ARM: OMAP2+: adjust the location of put_device() call in omapdss_init_of
+Date:   Mon, 21 Feb 2022 09:49:40 +0100
+Message-Id: <20220221084935.874643667@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,40 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
+[ Upstream commit 34596ba380b03d181e24efd50e2f21045bde3696 ]
 
-Fix following coccicheck warning:
-./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
-for_each_matching_node should have of_node_put() before break
+This was found by coccicheck:
+./arch/arm/mach-omap2/display.c, 272, 1-7, ERROR missing put_device;
+call of_find_device_by_node on line 258, but without a corresponding
+object release within this function.
 
-Early exits from for_each_matching_node should decrement the
-node reference counter.
+Move the put_device() call before the if judgment.
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/mach-omap2/display.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
-index 0c2936c7a3799..a5e9cffcac10c 100644
---- a/arch/arm/mach-omap2/omap_hwmod.c
-+++ b/arch/arm/mach-omap2/omap_hwmod.c
-@@ -752,8 +752,10 @@ static int __init _init_clkctrl_providers(void)
- 
- 	for_each_matching_node(np, ti_clkctrl_match_table) {
- 		ret = _setup_clkctrl_provider(np);
--		if (ret)
-+		if (ret) {
-+			of_node_put(np);
- 			break;
-+		}
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 6daaa645ae5d9..21413a9b7b6c6 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -263,9 +263,9 @@ static int __init omapdss_init_of(void)
  	}
  
- 	return ret;
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
++	put_device(&pdev->dev);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+-		put_device(&pdev->dev);
+ 		return r;
+ 	}
+ 
 -- 
 2.34.1
 
