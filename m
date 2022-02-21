@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9823AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349103AbiBUJZj (ORCPT
+        id S1349111AbiBUJZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33974 "EHLO
+        Mon, 21 Feb 2022 04:25:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348466AbiBUJLT (ORCPT
+        with ESMTP id S1348417AbiBUJLR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:19 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E24205D7;
-        Mon, 21 Feb 2022 01:03:27 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:17 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F0824F08;
+        Mon, 21 Feb 2022 01:03:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 59C0DCE0E6D;
-        Mon, 21 Feb 2022 09:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC03C340F3;
-        Mon, 21 Feb 2022 09:03:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D2879CE0E7F;
+        Mon, 21 Feb 2022 09:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC45FC340E9;
+        Mon, 21 Feb 2022 09:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434204;
-        bh=CMmA/IivKrWnzV7tqHqyjVNnVmgLacPECP9NWZX5YPM=;
+        s=korg; t=1645434199;
+        bh=QVnAG+Gwt43QS9jbOGyZkXWfiZPYDLsCzmY88sQRMZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FcimDmGgHfUcKA2pTKyG67D8wPY7VQWA1NLz6WTrAtfK9p2g9ZrLFprgOoZxaHWzO
-         EYlVIPfz9koavYIPSxwXqryK7osSuQ7i5oeROf6wCT4DKRpYFfWJ6AN4q5tv1tPJ1E
-         EwvzFRndaCL1PgoUmxvG4PZp0K2lJZGqFF3g7EwM=
+        b=JtCiaXBsiZ+xRIFie4yZYz1qgyONnbBRKPzpTshaF5yDlO9cfll4asweQ5zOkI3Ch
+         ORNuxIOCUUQJGBGdK5iq/y06ioinXOLusapMeOOPVQgHaHeVWJMWgN0Av4ohQmrqDO
+         wUNcVEuZkSUto8yDRiigHiYrvAnKQmWnOkgcpT30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicholas Bishop <nicholasbishop@google.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 048/121] drm/radeon: Fix backlight control on iMac 12,1
-Date:   Mon, 21 Feb 2022 09:49:00 +0100
-Message-Id: <20220221084922.835388437@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: [PATCH 5.10 046/121] kbuild: lto: Merge module sections if and only if CONFIG_LTO_CLANG is enabled
+Date:   Mon, 21 Feb 2022 09:48:58 +0100
+Message-Id: <20220221084922.767725960@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,33 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Bishop <nicholasbishop@google.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 364438fd629f7611a84c8e6d7de91659300f1502 upstream.
+commit 6a3193cdd5e5b96ac65f04ee42555c216da332af upstream.
 
-The iMac 12,1 does not use the gmux driver for backlight, so the radeon
-backlight device is needed to set the brightness.
+Merge module sections only when using Clang LTO. With ld.bfd, merging
+sections does not appear to update the symbol tables for the module,
+e.g. 'readelf -s' shows the value that a symbol would have had, if
+sections were not merged. ld.lld does not show this problem.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1838
-Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+The stale symbol table breaks gdb's function disassembler, and presumably
+other things, e.g.
+
+  gdb -batch -ex "file arch/x86/kvm/kvm.ko" -ex "disassemble kvm_init"
+
+reads the wrong bytes and dumps garbage.
+
+Fixes: dd2776222abb ("kbuild: lto: merge module sections")
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20210322234438.502582-1-seanjc@google.com
+Cc: Stephen Boyd <swboyd@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/radeon/atombios_encoders.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ scripts/module.lds.S |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/radeon/atombios_encoders.c
-+++ b/drivers/gpu/drm/radeon/atombios_encoders.c
-@@ -197,7 +197,8 @@ void radeon_atom_backlight_init(struct r
- 	 * so don't register a backlight device
- 	 */
- 	if ((rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE) &&
--	    (rdev->pdev->device == 0x6741))
-+	    (rdev->pdev->device == 0x6741) &&
-+	    !dmi_match(DMI_PRODUCT_NAME, "iMac12,1"))
- 		return;
+--- a/scripts/module.lds.S
++++ b/scripts/module.lds.S
+@@ -26,6 +26,7 @@ SECTIONS {
  
- 	if (!radeon_encoder->enc_priv)
+ 	__patchable_function_entries : { *(__patchable_function_entries) }
+ 
++#ifdef CONFIG_LTO_CLANG
+ 	/*
+ 	 * With CONFIG_LTO_CLANG, LLD always enables -fdata-sections and
+ 	 * -ffunction-sections, which increases the size of the final module.
+@@ -47,6 +48,7 @@ SECTIONS {
+ 	}
+ 
+ 	.text : { *(.text .text.[0-9a-zA-Z_]*) }
++#endif
+ }
+ 
+ /* bring in arch-specific sections */
 
 
