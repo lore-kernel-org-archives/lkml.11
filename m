@@ -2,219 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B9FC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiBUS2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:28:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47772 "EHLO
+        id S230343AbiBUSac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:30:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233417AbiBUS0O (ORCPT
+        with ESMTP id S233351AbiBUS0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:26:14 -0500
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3813ECC2;
-        Mon, 21 Feb 2022 10:25:47 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id j12so36110590ybh.8;
-        Mon, 21 Feb 2022 10:25:47 -0800 (PST)
+        Mon, 21 Feb 2022 13:26:12 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA392BB3F;
+        Mon, 21 Feb 2022 10:22:07 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id v10so34127374qvk.7;
+        Mon, 21 Feb 2022 10:22:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=00FTKimPfYzBMP/rJrScDVkcWdLsN3tbxLeb3b/ES0s=;
+        b=f/pW1i/dFqsLzxJb4ANxGPQRtMAC59EizWVN6kf7QbwY5AK1/8/yTYqW3ow0gyijNq
+         yyR8Namv+HXL1ZvPk+540pdUJbR6XTjwbJjeg9ikTtgSecQhpmFN1miIrfRDEHrV7/yd
+         sGgJ6F7Zdxv5r+jWbpY4jsnlKY0yKa/sCuQvieKjfFrssg4q4QFg0BX5xh/78YftUfBz
+         m1DLzToCUf79gxzJYlipyuFF7DK5my99sbyGXPw662GqXYGZZ4rBFJ45VRy+ojZbkRze
+         i/QYXveyUsZjM0MAnrT02OqmplJStMzTXSny5SIZNxFzXfadDtQ2SF0yekFfY/w8B5Q6
+         l6gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7CLmQaOvCMcQvV4r2M9aCLErvPDwRMsrYPEB5OYDfvc=;
-        b=iy8HeJSDefxQLnZfCP2LG1C6oe72ffBB2czp3u0zvdnYvQRtv1nqeesNQNecXBh0fa
-         tK0d3Q2+WNi3kOtedDvWoFJo9w1kZfe73isPYFQIRcun6ynI+mAT3uw/vRyjtwHWFda+
-         wbp715Md6A7cf7j/W/y66Akl4slCMT40haNQ52HxUHmfwG25KtXW4ZC/qtBF2F49dLko
-         BL7eHw9wW4UWhjWu/6atdeC/VKKM2Oa44Z7+LifS5P48QwREcX3J4QZ46zZVRkN4SXns
-         gVlmOuXBShF8HCA2x+MC8DtruH49BvRjIX0qLsaAcg3xwRYwHgkOxh9i1hmNwd4pqn6c
-         Pxjw==
-X-Gm-Message-State: AOAM5324sQkJpE2hZPD9k0pC5BkE72rnaKKWaVdHzNtywVSyRHS2Vtzs
-        hxVCLMdVOjX/ip/cNn6eNXkkvIpdjost4Qs185dLL/Jw
-X-Google-Smtp-Source: ABdhPJz2BLZZm12UCagsI9Nu8EUrFQ6j0vK4AqIIHiwAOAIzhxT3kuPGm9cAToahDQj5WulJZFgZ9Rc7VXPxxC1uy98=
-X-Received: by 2002:a25:378f:0:b0:61d:8e8b:6cf5 with SMTP id
- e137-20020a25378f000000b0061d8e8b6cf5mr18939628yba.622.1645467946376; Mon, 21
- Feb 2022 10:25:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20211126070422.73234-1-xueshuai@linux.alibaba.com>
- <20220122052618.1074-1-xueshuai@linux.alibaba.com> <YhPXX+CSoK++9MP6@dev-arch.archlinux-ax161>
-In-Reply-To: <YhPXX+CSoK++9MP6@dev-arch.archlinux-ax161>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 21 Feb 2022 19:25:35 +0100
-Message-ID: <CAJZ5v0iwpvOMYt-bAAaN86+6+dzWqMRmdZnVqyw8wjhjh1Mp4w@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] ACPI: APEI: explicit init HEST and GHES in apci_init
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Shuai Xue <xueshuai@linux.alibaba.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>, Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        luanshi <zhangliguang@linux.alibaba.com>,
-        zhuo.song@linux.alibaba.com,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=00FTKimPfYzBMP/rJrScDVkcWdLsN3tbxLeb3b/ES0s=;
+        b=Pax01EDpOYzhEbrBMugrai8GxnWZyaPFCNYzC2Et2sPNF2lWC8YGkv4AgNzjq0wRvt
+         +Vwl+NzZqE580d1qIZzAR2hbOBi95ZhfzElPXcX4T4wE9hVnkqhi52Huef5OlNcOG3or
+         /jJXMbFb8BoN4SHZhZNpEh1ZfJIkn8fiLbJw7JX2MpfiGLiN+iAQkhCRb8O5B2Hqd5y1
+         wsPYXT6r1OmosNv+5SB+Ha5xB6Dp/TOcPAaNCA8q9IyJoIYW2MjwEeyudUxBvdPBLhvf
+         uo8wkTU+wjWty0UaMAQM+mVO4ILR2oYC8ykOYnuJ5/ewHcCF13tj2WB2dLcV1evs+qdk
+         kLsw==
+X-Gm-Message-State: AOAM530fSKyjus7W7pI8f7PPTb0Cv6uWtc8Rd5dlQd47zdSwo1fxKbjb
+        GAz/3QuKQJb+o4+DV8uy+hgi3iYSjqF96A==
+X-Google-Smtp-Source: ABdhPJy23lpHcWTjqGEIqFsr4qmnMTgvKFWLXKDugiNIPGMhCo0OKMkJUGfjTFteSoQw5vkRARzF8g==
+X-Received: by 2002:a05:622a:1a16:b0:2de:37ad:25ef with SMTP id f22-20020a05622a1a1600b002de37ad25efmr3009578qtb.131.1645467725594;
+        Mon, 21 Feb 2022 10:22:05 -0800 (PST)
+Received: from [120.7.1.38] (198-84-206-107.cpe.teksavvy.com. [198.84.206.107])
+        by smtp.gmail.com with ESMTPSA id e1sm22491435qtw.71.2022.02.21.10.22.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 10:22:05 -0800 (PST)
+Subject: Re: Linux 5.17-rc5
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Netdev <netdev@vger.kernel.org>
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+ <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com>
+ <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
+ <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+ <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+From:   Woody Suwalski <wsuwalski@gmail.com>
+Message-ID: <7b1a0613-810f-3406-89b3-10d45f3a1b7b@gmail.com>
+Date:   Mon, 21 Feb 2022 13:22:04 -0500
+User-Agent: Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101 Firefox/68.0
+ SeaMonkey/2.53.10.2
+MIME-Version: 1.0
+In-Reply-To: <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 7:18 PM Nathan Chancellor <nathan@kernel.org> wrote:
+Linus Torvalds wrote:
+> On Mon, Feb 21, 2022 at 10:02 AM Eric Dumazet <edumazet@google.com> wrote:
+>> I am pretty sure Pablo fixed this one week ago.
+> .. looks about right. Apart from the "it was never sent to me, so -rc5
+> ended up showing the problem" part.
 >
-> Hi Shuai,
->
-> On Sat, Jan 22, 2022 at 01:26:17PM +0800, Shuai Xue wrote:
-> > From commit e147133a42cb ("ACPI / APEI: Make hest.c manage the estatus
-> > memory pool") was merged, ghes_init() relies on acpi_hest_init() to manage
-> > the estatus memory pool. On the other hand, ghes_init() relies on
-> > sdei_init() to detect the SDEI version and (un)register events. The
-> > dependencies are as follows:
-> >
-> >     ghes_init() => acpi_hest_init() => acpi_bus_init() => acpi_init()
-> >     ghes_init() => sdei_init()
-> >
-> > HEST is not PCI-specific and initcall ordering is implicit and not
-> > well-defined within a level.
-> >
-> > Based on above, remove acpi_hest_init() from acpi_pci_root_init() and
-> > convert ghes_init() and sdei_init() from initcalls to explicit calls in the
-> > following order:
-> >
-> >     acpi_hest_init()
-> >     ghes_init()
-> >         sdei_init()
-> >
-> > Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
-> > ---
-> >  drivers/acpi/apei/ghes.c    | 19 ++++++++-----------
-> >  drivers/acpi/bus.c          |  2 ++
-> >  drivers/acpi/pci_root.c     |  3 ---
-> >  drivers/firmware/Kconfig    |  1 +
-> >  drivers/firmware/arm_sdei.c | 13 ++-----------
-> >  include/acpi/apei.h         |  4 +++-
-> >  include/linux/arm_sdei.h    |  2 ++
-> >  7 files changed, 18 insertions(+), 26 deletions(-)
-> >
-> > diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-> > index 0c5c9acc6254..aadc0a972f18 100644
-> > --- a/drivers/acpi/apei/ghes.c
-> > +++ b/drivers/acpi/apei/ghes.c
-> > @@ -1457,33 +1457,35 @@ static struct platform_driver ghes_platform_driver = {
-> >       .remove         = ghes_remove,
-> >  };
-> >
-> > -static int __init ghes_init(void)
-> > +void __init ghes_init(void)
-> >  {
-> >       int rc;
-> >
-> > +     sdei_init();
-> > +
-> >       if (acpi_disabled)
-> > -             return -ENODEV;
-> > +             return;
-> >
-> >       switch (hest_disable) {
-> >       case HEST_NOT_FOUND:
-> > -             return -ENODEV;
-> > +             return;
-> >       case HEST_DISABLED:
-> >               pr_info(GHES_PFX "HEST is not enabled!\n");
-> > -             return -EINVAL;
-> > +             return;
-> >       default:
-> >               break;
-> >       }
-> >
-> >       if (ghes_disable) {
-> >               pr_info(GHES_PFX "GHES is not enabled!\n");
-> > -             return -EINVAL;
-> > +             return;
-> >       }
-> >
-> >       ghes_nmi_init_cxt();
-> >
-> >       rc = platform_driver_register(&ghes_platform_driver);
-> >       if (rc)
-> > -             goto err;
-> > +             return;
-> >
-> >       rc = apei_osc_setup();
-> >       if (rc == 0 && osc_sb_apei_support_acked)
-> > @@ -1494,9 +1496,4 @@ static int __init ghes_init(void)
-> >               pr_info(GHES_PFX "APEI firmware first mode is enabled by APEI bit.\n");
-> >       else
-> >               pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
-> > -
-> > -     return 0;
-> > -err:
-> > -     return rc;
-> >  }
-> > -device_initcall(ghes_init);
-> > diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-> > index 07f604832fd6..3f403db20f69 100644
-> > --- a/drivers/acpi/bus.c
-> > +++ b/drivers/acpi/bus.c
-> > @@ -1331,6 +1331,8 @@ static int __init acpi_init(void)
-> >
-> >       pci_mmcfg_late_init();
-> >       acpi_iort_init();
-> > +     acpi_hest_init();
-> > +     ghes_init();
-> >       acpi_scan_init();
-> >       acpi_ec_init();
-> >       acpi_debugfs_init();
-> > diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-> > index b76db99cced3..6f9e75d14808 100644
-> > --- a/drivers/acpi/pci_root.c
-> > +++ b/drivers/acpi/pci_root.c
-> > @@ -22,8 +22,6 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/dmi.h>
-> >  #include <linux/platform_data/x86/apple.h>
-> > -#include <acpi/apei.h>       /* for acpi_hest_init() */
-> > -
-> >  #include "internal.h"
-> >
-> >  #define ACPI_PCI_ROOT_CLASS          "pci_bridge"
-> > @@ -943,7 +941,6 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
-> >
-> >  void __init acpi_pci_root_init(void)
-> >  {
-> > -     acpi_hest_init();
-> >       if (acpi_pci_disabled)
-> >               return;
-> >
-> > diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-> > index 75cb91055c17..ad114d9cdf8e 100644
-> > --- a/drivers/firmware/Kconfig
-> > +++ b/drivers/firmware/Kconfig
-> > @@ -40,6 +40,7 @@ config ARM_SCPI_POWER_DOMAIN
-> >  config ARM_SDE_INTERFACE
-> >       bool "ARM Software Delegated Exception Interface (SDEI)"
-> >       depends on ARM64
-> > +     select ACPI_APEI_GHES
->
-> As the kernel test robot pointed out [1], you cannot do this.
-> CONFIG_ACPI_APEI_GHES is a user selectable symbol that has dependencies,
-> which 'select' completely overrides, resulting in build failures when
-> CONFIG_ACPI_APEI is not enabled.
->
-> If CONFIG_ARM_SDE_INTERFACE truly requires CONFIG_ACPI_APEI_GHES, you
-> should have "depends on ACPI_APEI_GHES".
->
-> If CONFIG_ARM_SDE_INTERFACE soft depends on CONFIG_ACPI_APEI_GHES for
-> functionality but can work without it, you could use
-> "imply ACPI_APEI_GHES", which will enable CONFIG_ACPI_APEI_GHES if its
-> dependencies are met.
->
-> I noticed the same error with Alpine Linux's aarch64 configuration [2]
-> if you wanted a quick configuration to test with.
->
-> [1]: https://lore.kernel.org/r/202202151504.jWpZGPaH-lkp@intel.com/
-> [2]: https://git.alpinelinux.org/aports/plain/community/linux-edge/config-edge.aarch64
+>               Linus
+Patch works-for-me. Thanks...
+Woody
 
-Note that I've dropped these patches from my linux-next branch now.
