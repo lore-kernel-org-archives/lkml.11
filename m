@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E97AC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FB6C35295
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352878AbiBUJsA (ORCPT
+        id S1352964AbiBUJsF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:48:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60516 "EHLO
+        Mon, 21 Feb 2022 04:48:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350849AbiBUJlh (ORCPT
+        with ESMTP id S1351121AbiBUJmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:41:37 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F993D489;
-        Mon, 21 Feb 2022 01:17:33 -0800 (PST)
+        Mon, 21 Feb 2022 04:42:03 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE8D3DDC4;
+        Mon, 21 Feb 2022 01:17:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CF88BCE0E8B;
-        Mon, 21 Feb 2022 09:17:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7B3C340E9;
-        Mon, 21 Feb 2022 09:17:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0A55CCE0E66;
+        Mon, 21 Feb 2022 09:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7442C340E9;
+        Mon, 21 Feb 2022 09:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435044;
-        bh=VWGfAshiuYdLKS4NFlADuZCK20g14roqriy9aABhR0Q=;
+        s=korg; t=1645435055;
+        bh=6MdpUBQxcDitTQho4a+UV0MhACP/cQqImZDNH/2Z29w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ki0VWzG3IeyQy3WhigoGqw6d7Q/BVK/6SpzvxIHyi1I2t2WF46qO2byie7vqIlXH8
-         lHttUhbdErGQBaDjxrrxBCUY9flJkXBE6V7BNKw1mp5z2MKZRQgzkQmkhmwttPUELD
-         RlVJNXcSpbmaLSMiULdCISlPXHx45EnPyw5Hacow=
+        b=VbHYUU54W+6iiraL5xAlvfTsHu11KXq5sWOwYh7npZRMKBs7gAeUxKbHI6CMkQSMI
+         52E6PYJnEe8JC/xgMrPdjHZI0IfyKCHygOsvfezLXtKjcgvxDpvCre0Dts0oIv6giu
+         DM1W60HpOCzuJLYkSm64WV4WrKuk9BzQflFhS5KY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.16 007/227] bpf: Convert PTR_TO_MEM_OR_NULL to composable types.
-Date:   Mon, 21 Feb 2022 09:47:06 +0100
-Message-Id: <20220221084935.087780011@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 028/227] btrfs: dont hold CPU for too long when defragging a file
+Date:   Mon, 21 Feb 2022 09:47:27 +0100
+Message-Id: <20220221084935.777644127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,55 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit cf9f2f8d62eca810afbd1ee6cc0800202b000e57 upstream.
+commit ea0eba69a2a8125229b1b6011644598039bc53aa upstream.
 
-Remove PTR_TO_MEM_OR_NULL and replace it with PTR_TO_MEM combined with
-flag PTR_MAYBE_NULL.
+There is a user report about "btrfs filesystem defrag" causing 120s
+timeout problem.
 
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-7-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.16.x
+For btrfs_defrag_file() it will iterate all file extents if called from
+defrag ioctl, thus it can take a long time.
+
+There is no reason not to release the CPU during such a long operation.
+
+Add cond_resched() after defragged one cluster.
+
+CC: stable@vger.kernel.org # 5.16
+Link: https://lore.kernel.org/linux-btrfs/10e51417-2203-f0a4-2021-86c8511cc367@gmx.com
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h   |    1 -
- kernel/bpf/btf.c      |    2 +-
- kernel/bpf/verifier.c |    2 +-
- 3 files changed, 2 insertions(+), 3 deletions(-)
+ fs/btrfs/ioctl.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -506,7 +506,6 @@ enum bpf_reg_type {
- 	PTR_TO_SOCK_COMMON_OR_NULL	= PTR_MAYBE_NULL | PTR_TO_SOCK_COMMON,
- 	PTR_TO_TCP_SOCK_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_TCP_SOCK,
- 	PTR_TO_BTF_ID_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_BTF_ID,
--	PTR_TO_MEM_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_MEM,
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1603,6 +1603,7 @@ int btrfs_defrag_file(struct inode *inod
+ 			ret = 0;
+ 			break;
+ 		}
++		cond_resched();
+ 	}
  
- 	/* This must be the last entry. Its purpose is to ensure the enum is
- 	 * wide enough to hold the higher bits reserved for bpf_type_flag.
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5847,7 +5847,7 @@ int btf_prepare_func_args(struct bpf_ver
- 				return -EINVAL;
- 			}
- 
--			reg->type = PTR_TO_MEM_OR_NULL;
-+			reg->type = PTR_TO_MEM | PTR_MAYBE_NULL;
- 			reg->id = ++env->id_gen;
- 
- 			continue;
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -13336,7 +13336,7 @@ static int do_check_common(struct bpf_ve
- 				mark_reg_known_zero(env, regs, i);
- 			else if (regs[i].type == SCALAR_VALUE)
- 				mark_reg_unknown(env, regs, i);
--			else if (regs[i].type == PTR_TO_MEM_OR_NULL) {
-+			else if (base_type(regs[i].type) == PTR_TO_MEM) {
- 				const u32 mem_size = regs[i].mem_size;
- 
- 				mark_reg_known_zero(env, regs, i);
+ 	if (ra_allocated)
 
 
