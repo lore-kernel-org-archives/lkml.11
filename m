@@ -2,86 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE062C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358429AbiBUM6w (ORCPT
+        id S1358442AbiBUM67 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:58:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57732 "EHLO
+        Mon, 21 Feb 2022 07:58:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbiBUM6o (ORCPT
+        with ESMTP id S231617AbiBUM6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:58:44 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEBF1EAD4;
-        Mon, 21 Feb 2022 04:58:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ml2gqauoTFG3Smq6lcK3ePS4/koYLjxr1U+WiMKY3+Q=; b=ya3MgtNtZC7scN7QPF0NlWuMzE
-        wcAkZ9rzRI+5L2HcZ+n6cz1hTvP7m1DiLcHktw1rZ/AH2Wat58o4b3Y8W5iTvm24KjKsVcbHJyaqP
-        hQ4Te6cyjVjdv/tq+kuVIuL7tSRzOLyJukSn81B2XXBXhGBYx9Z8v0KJltr6M4Y0EscA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nM7hN-007JrM-Dr; Mon, 21 Feb 2022 13:21:49 +0100
-Date:   Mon, 21 Feb 2022 13:21:49 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mauri Sandberg <maukka@ext.kapsi.fi>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
-Message-ID: <YhOD3eCm8mYHJ1HF@lunn.ch>
-References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
+        Mon, 21 Feb 2022 07:58:54 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384401EAD5;
+        Mon, 21 Feb 2022 04:58:30 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21LCwI27047020;
+        Mon, 21 Feb 2022 06:58:18 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1645448298;
+        bh=zJPkUq5bndr8qfbg5WIBf/HuUb+QSE7Kcn6n8iOJ4gU=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=Xix/xZcWtlSkqka3uGCAoboZQFohva0T2zZu93RneAZaStraEU8uCUh28fIkSYXxv
+         Ngt5guRsBnBV2GhcFu/gr/S1Xeitq9pwA34d/8QQVncSRP5QuKvqTxyiE2XgEQ48R+
+         hF18EocxkGyJS2S1Vkjp1PE5cflc3pWWhjCluARg=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21LCwI3Z035992
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 21 Feb 2022 06:58:18 -0600
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
+ Feb 2022 06:58:18 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 21 Feb 2022 06:58:18 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21LCwHha021570;
+        Mon, 21 Feb 2022 06:58:17 -0600
+Date:   Mon, 21 Feb 2022 06:58:17 -0600
+From:   Nishanth Menon <nm@ti.com>
+To:     Drew Fustini <dfustini@baylibre.com>
+CC:     =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Dave Gerlach <d-gerlach@ti.com>, <devicetree@vger.kernel.org>,
+        Keerthy <j-keerthy@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Tony Lindgren <tony@atomide.com>, <s-anna@ti.com>,
+        <khilman@baylibre.com>
+Subject: Re: [PATCH 00/11] soc: ti: wkup_m3_ipc: support vtt toggle, io
+ isolation & voltage scaling
+Message-ID: <20220221125817.eg2rf6ktrhiq7eck@overbook>
+References: <20220219215328.485660-1-dfustini@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220221062441.2685-1-maukka@ext.kapsi.fi>
+In-Reply-To: <20220219215328.485660-1-dfustini@baylibre.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 08:24:41AM +0200, Mauri Sandberg wrote:
-> Obtaining MAC address may be deferred in cases when the MAC is stored
-> in NVMEM block and it may now be ready upon the first retrieval attempt
-> returing EPROBE_DEFER. Handle it here and leave logic otherwise as it
-> was.
+On 13:53-20220219, Drew Fustini wrote:
+> Improve the wkup_m3_ipc driver to better support the TI Wakeup Cortex M3 
+> device found on TI AM33xx and AM43xx SoCs.
 > 
-> Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
-> ---
->  drivers/net/ethernet/marvell/mv643xx_eth.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> This series derives from these commits in the ti-linux-5.10.y branch of
+> the TI Linux repo [1]:
 > 
-> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> index 105247582684..0694f53981f2 100644
-> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> @@ -2740,7 +2740,10 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
->  		return -EINVAL;
->  	}
->  
-> -	of_get_mac_address(pnp, ppd.mac_addr);
-> +	ret = of_get_mac_address(pnp, ppd.mac_addr);
-> +
-> +	if (ret == -EPROBE_DEFER)
-> +		return ret;
+>   6ab4eff1034b ("remoteproc: move rproc_da_to_va declaration to remoteproc.h")
+>   2a9be39a26f7 ("dt-bindings: wkup_m3_ipc: Add vtt toggling bindings")
+>   c65263f9e12c ("wkup_m3_ipc: Add support for toggling VTT regulator")
+>   5c6c821803e1 ("dt-bindings: wkup_m3_ipc: Add ti,io-isolation property")
+>   196c46f7577d ("wkup_m3_ipc: Add support for IO Isolation")
+>   c28acc847e5d ("soc: ti: wkup_m3_ipc: Add support for i2c voltage scaling")
+>   a4f9ef4ab5ca ("ARM: dts: am437x-gp-evm: Enable wkup_m3 control of IO isolation")
+>   94de756f1771 ("ARM: dts: am33xx: Add scale data fw to wkup_m3_ipc node")
+>   b7ae4b063793 ("ARM: dts: am43xx: Add scale data fw to wkup_m3_ipc node")
+>   451ec7871ae7 ("soc: ti: wkup_m3_ipc: Add debug option to halt m3 in suspend")
+> 
+> Minor changes have been made to some patches to resolve conflicts and 
+> to split i2c voltage scaling dt-bindings into separate patch.
+> 
+> [1] git://git.ti.com/ti-linux-kernel/ti-linux-kernel.git
+> 
+> Dave Gerlach (10):
+>   dt-bindings: wkup_m3_ipc: Add vtt toggling bindings
+>   soc: ti: wkup_m3_ipc: Add support for toggling VTT regulator
+>   dt-bindings: wkup_m3_ipc: Add ti,io-isolation property
+>   soc: ti: wkup_m3_ipc: Add support for IO Isolation
+>   ARM: dts: am437x-gp-evm: Enable wkup_m3 control of IO isolation
+>   dt-bindings: wkup_m3_ipc: Add scale-data-fw property
+>   soc: ti: wkup_m3_ipc: Add support for i2c voltage scaling
+>   ARM: dts: am33xx: Add scale data fw to wkup_m3_ipc node
+>   ARM: dts: am43xx: Add scale data fw to wkup_m3_ipc node
+>   soc: ti: wkup_m3_ipc: Add debug option to halt m3 in suspend
+> 
+> Suman Anna (1):
+>   remoteproc: move rproc_da_to_va declaration to remoteproc.h
 
-Hi Mauri
 
-There appears to be a follow on issue. There can be multiple ports. So
-it could be the first port does not use a MAC address from the NVMEM,
-but the second one does. The first time in
-mv643xx_eth_shared_of_add_port() is successful and a platform device
-is added. The second port can then fail with -EPROBE_DEFER. That
-causes the probe to fail, but the platform device will not be
-removed. The next time the driver is probed, it will add a second
-platform device for the first port, causing bad things to happen.
+This series seems to needing to go to various maintainers here
 
-Please can you add code to remove the platform device when the probe
-fails.
+Series should cleanup (example: txt files to yaml bindings),
+prior to creating patch series for each maintainer. I'd suggest bindings
+and drivers in 1 kernel rev and follow it up with dts updata for the
+next rev.
 
-	Andrew
+
+> 
+>  .../bindings/soc/ti/wkup_m3_ipc.txt           |  91 ++++++++
+>  arch/arm/boot/dts/am335x-bone-common.dtsi     |   4 +
+>  arch/arm/boot/dts/am335x-evm.dts              |   4 +
+>  arch/arm/boot/dts/am335x-evmsk.dts            |   4 +
+>  arch/arm/boot/dts/am437x-gp-evm.dts           |   5 +
+>  arch/arm/boot/dts/am437x-sk-evm.dts           |   4 +
+>  arch/arm/boot/dts/am43x-epos-evm.dts          |   4 +
+>  drivers/remoteproc/remoteproc_internal.h      |   1 -
+>  drivers/soc/ti/wkup_m3_ipc.c                  | 208 +++++++++++++++++-
+>  include/linux/remoteproc.h                    |   1 +
+>  include/linux/wkup_m3_ipc.h                   |  13 ++
+>  11 files changed, 334 insertions(+), 5 deletions(-)
+> 
+> -- 
+> 2.32.0
+> 
+
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D)/Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
