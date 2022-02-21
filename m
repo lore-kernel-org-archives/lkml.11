@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF53C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09411C3527B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353509AbiBUJ5a (ORCPT
+        id S1353151AbiBUJ5P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:57:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42232 "EHLO
+        Mon, 21 Feb 2022 04:57:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351314AbiBUJss (ORCPT
+        with ESMTP id S1352799AbiBUJrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:48 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C013732046;
-        Mon, 21 Feb 2022 01:22:32 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83ACC43EFC;
+        Mon, 21 Feb 2022 01:20:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AB6C4CE0E8B;
-        Mon, 21 Feb 2022 09:22:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90422C340E9;
-        Mon, 21 Feb 2022 09:22:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19AD160B1E;
+        Mon, 21 Feb 2022 09:20:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 057C5C340E9;
+        Mon, 21 Feb 2022 09:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435349;
-        bh=08eY0msXADLduerMwecp2drQdDRqyeIrBiLp/rfWPzA=;
+        s=korg; t=1645435229;
+        bh=RJrbhiB+QqFTSX2dxz9U5PNVkSWtc67m/JMmEgb5Ax4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kGwe1pok6DOzsV7cSuKJKg6RAPkPk3IfMjXydpYlwZxNSbBp2H39b3xaNSFogokGD
-         Xq3NL2vLP9ECl72Nrb5WIcEzhrO81ycnpnMC8MroQCXUZMPVxIGt3EIlcyiabdDzAe
-         DKv+wQut285bQJRSwPxKjCC3Hr6BQql0lK2abRdw=
+        b=wrGjg0ZzNfK7USS3lpOMqUu53uivj7qHRDGs91WNO/HyAquvDm3axypyG7F0VuEIw
+         GoC4UhUgmHg0Be15vXiJdmIs+4GEBbdpRtPJmicFrXfN1KsC/4/CNzlEbjUd4RqYlw
+         E0lmWqQWUJeZ8uNKJUPTuE0ThKDEJK6lxUEcd/og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 132/227] perf bpf: Defer freeing string after possible strlen() on it
-Date:   Mon, 21 Feb 2022 09:49:11 +0100
-Message-Id: <20220221084939.247694791@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 091/227] drm/i915/ttm: tweak priority hint selection
+Date:   Mon, 21 Feb 2022 09:48:30 +0100
+Message-Id: <20220221084937.897987684@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,50 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Matthew Auld <matthew.auld@intel.com>
 
-commit 31ded1535e3182778a1d0e5c32711f55da3bc512 upstream.
+commit 0bdc0a0699929c814a8aecd55d2accb8c11beae2 upstream.
 
-This was detected by the gcc in Fedora Rawhide's gcc:
+For some reason we are selecting PRIO_HAS_PAGES when we don't have
+mm.pages, and vice versa.
 
-  50    11.01 fedora:rawhide                : FAIL gcc version 12.0.1 20220205 (Red Hat 12.0.1-0) (GCC)
-        inlined from 'bpf__config_obj' at util/bpf-loader.c:1242:9:
-    util/bpf-loader.c:1225:34: error: pointer 'map_opt' may be used after 'free' [-Werror=use-after-free]
-     1225 |                 *key_scan_pos += strlen(map_opt);
-          |                                  ^~~~~~~~~~~~~~~
-    util/bpf-loader.c:1223:9: note: call to 'free' here
-     1223 |         free(map_name);
-          |         ^~~~~~~~~~~~~~
-    cc1: all warnings being treated as errors
+v2(Thomas):
+  - Add missing fixes tag
 
-So do the calculations on the pointer before freeing it.
-
-Fixes: 04f9bf2bac72480c ("perf bpf-loader: Add missing '*' for key_scan_pos")
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Link: https://lore.kernel.org/lkml/Yg1VtQxKrPpS3uNA@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 213d50927763 ("drm/i915/ttm: Introduce a TTM i915 gem object backend")
+Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220209111652.468762-1-matthew.auld@intel.com
+(cherry picked from commit ba2c5d15022a565da187d90e2fe44768e33e5034)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/bpf-loader.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/tools/perf/util/bpf-loader.c
-+++ b/tools/perf/util/bpf-loader.c
-@@ -1214,9 +1214,10 @@ bpf__obj_config_map(struct bpf_object *o
- 	pr_debug("ERROR: Invalid map config option '%s'\n", map_opt);
- 	err = -BPF_LOADER_ERRNO__OBJCONF_MAP_OPT;
- out:
--	free(map_name);
- 	if (!err)
- 		*key_scan_pos += strlen(map_opt);
-+
-+	free(map_name);
- 	return err;
- }
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -787,11 +787,9 @@ static void i915_ttm_adjust_lru(struct d
+ 	if (obj->mm.madv != I915_MADV_WILLNEED) {
+ 		bo->priority = I915_TTM_PRIO_PURGE;
+ 	} else if (!i915_gem_object_has_pages(obj)) {
+-		if (bo->priority < I915_TTM_PRIO_HAS_PAGES)
+-			bo->priority = I915_TTM_PRIO_HAS_PAGES;
++		bo->priority = I915_TTM_PRIO_NO_PAGES;
+ 	} else {
+-		if (bo->priority > I915_TTM_PRIO_NO_PAGES)
+-			bo->priority = I915_TTM_PRIO_NO_PAGES;
++		bo->priority = I915_TTM_PRIO_HAS_PAGES;
+ 	}
  
+ 	ttm_bo_move_to_lru_tail(bo, bo->resource, NULL);
 
 
