@@ -2,184 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E95C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbiBUSvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:51:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34074 "EHLO
+        id S232505AbiBUSvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:51:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233049AbiBUSt1 (ORCPT
+        with ESMTP id S233873AbiBUSvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:49:27 -0500
-X-Greylist: delayed 4920 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 10:49:04 PST
-Received: from mx0a-0039f301.pphosted.com (mx0a-0039f301.pphosted.com [148.163.133.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F69195;
-        Mon, 21 Feb 2022 10:49:04 -0800 (PST)
-Received: from pps.filterd (m0174679.ppops.net [127.0.0.1])
-        by mx0a-0039f301.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21LGn6V4025634;
-        Mon, 21 Feb 2022 17:26:51 GMT
-Received: from eur03-ve1-obe.outbound.protection.outlook.com (mail-ve1eur03lp2056.outbound.protection.outlook.com [104.47.9.56])
-        by mx0a-0039f301.pphosted.com (PPS) with ESMTPS id 3ecek8r4rq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Feb 2022 17:26:51 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AcpXn7+x0J1M0PNLh46Ku917oZMJ5M8C+pitxawGVUeNaIPcYDuDKlYHAhm3e7iayxeCzZOehXzIAfpB+Uo7y8DjCQev0j51HZONNQE2nMS53b5RYlgVaDc44n1AqarBMQxiw+OjfmEx+kXyELeQFdcqxLpcDrlsBY4ArOxt1u/xjO3pQ2q9hxE5XsaTvNZap+gNi1X5A9Aihl7BZSu89GAFp83Oc3B/SpP8C/3QBthnCuQLNP8wFC65mEIVaCFwMJCkuXO5VytV6m0VapqN2YdxoxqCxMDKqbwAgqWNY36Me5QtdACpUyimfoUGIUDOFdYSNPjeSoBIV5blChJeYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p05ZuRWkFo07UP+J2YSwu1tPd1ifLwCTHtdXJEHcpdM=;
- b=jMO1MkOVIQKahfBn0iizTcYXAwBOeziPzM3bgqWNhYUq3fzxSu5nQmUH7Htv/XU7u3xll1BMPMppQWlj0OKVWrZqpmgOTlwfthykat3ER4NYOqNB5HOhOIVjHkrL+0i0B9m6y6EnNdiqoNOUsWxNBLRS3Jr2qb4l6ell9zXs3bI0nJnJR0rhv2PZQOm8QOTUaCq2fBmLnakfWjcky32oNNouB0HzjWrYxiPwlS3/ErvCsqrsXEPmg3JA0qAk1OjW5jqDq/QY+8eXnO0OF+gqyp+dYi9UlYQStRi2frjxOtjRgCd/lZiY8EYBZ4rKnQjOmX4GW5o+UVyNiWZ2pKYEnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=epam.com; dmarc=pass action=none header.from=epam.com;
- dkim=pass header.d=epam.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=epam.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p05ZuRWkFo07UP+J2YSwu1tPd1ifLwCTHtdXJEHcpdM=;
- b=mLjIL7hsIT68e1O3G7eMBRIZe62He/hw+QY1eWpG96OhJb2ui5nb+GwcxUwS2lot9Tk04Jy46ixzDIODuBVf9G6IKshJIf47+z4i9PXPvRn0JEORtWMNVgL6y9HdZeInW558qGa8hj5R8Mg7t6fxNPtVaNyt6wDCB+eGKZDfbJ7WGOf6+ePDYhE7zHFaNaKob+ruDgkrN+q7LrO/3ONLxlqSZZtbCcxLxgQfK9E1DXH32WWKjqXHf1zC0+nBhZAgsIqTw+7P/UpirH+M2+gipr0NMaXeAFhHC/GYfHKdLmRyPOJmXNSVpK/iq3KXWEvs338vgTezWwD7DUhGHRgDzw==
-Received: from PA4PR03MB7136.eurprd03.prod.outlook.com (2603:10a6:102:ea::23)
- by AM7PR03MB6466.eurprd03.prod.outlook.com (2603:10a6:20b:1b5::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.27; Mon, 21 Feb
- 2022 17:26:47 +0000
-Received: from PA4PR03MB7136.eurprd03.prod.outlook.com
- ([fe80::c1c:f98:9dd:86e0]) by PA4PR03MB7136.eurprd03.prod.outlook.com
- ([fe80::c1c:f98:9dd:86e0%5]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 17:26:47 +0000
-From:   Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
-Thread-Topic: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
-Thread-Index: AQHYJ0gzI98NnKSQaEaZikv/1tAERQ==
-Date:   Mon, 21 Feb 2022 17:26:46 +0000
-Message-ID: <cover.1645460043.git.oleksii_moisieiev@epam.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 758b47bf-c0c8-4c2c-4708-08d9f55f5688
-x-ms-traffictypediagnostic: AM7PR03MB6466:EE_
-x-microsoft-antispam-prvs: <AM7PR03MB64660C6CC88A12943A7F32E5E33A9@AM7PR03MB6466.eurprd03.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: U/NzX4wSpqKiVnvTEoi0lbEC0kINbJmjQ8rtfz2neB3+P53ZJd9kz/taeCH7s3bAfgtLyGHY7DC1ugCLyh5ovQoI4HAYjEsx3muiX+5a8AN063Nswq4voJpN5IULCoe8Sbsl2cs7s2e4y8XtJ+skycTYGC3ebD5lFOgl8c/1EdgxTWbyOh70HGlr4hWcELkPXXaQXHqt/5OGCSHSWxfJntqafUQvRcFl1LSzYfG7oFmMf6v4KKAptCVQY2RmHD532zYCUY0eK5gOCeaLGGlbVRkiZKYI415NkdAXsKThqDN0gbdCQoObbv7MUCW+jdemArjE/pmMeTKFRCAggdCEE9XT1zLJkbCmbrpstkXJpYZA8xNHSy1/yqkC9poXk0P27DB5pYHOPZFbI0VR88jJCeH1Ss6P1T00DdXAIN2QiaFZYwiN6lFC1Ito6dBri43EgroaH4/5AndX2CAn3s/oD7XZ5FK4MhG2QuwdmHtoZcN3NEbFfWeqpu2gDaGXxKAo9KnYrrqqPAVyBAGwPzfwQRhriqMvXxK0fPIHFEajy2YZlbSszAQ8/zAEuwACdAjcMWsTqmihJd6Gx9YSbaT9GXtHFGtzK67ZE6tAUgHZ/H/Yvgk3cQTaMW1c2kjrAHXrCzbAaA7TWMPIwc7ODm0qKKPljsyWV8Gr38ETUj9GAg6hQbOPd9EQVIPU1nxBmsFUePC9OziCCME4GVzTz5KzHzwleGjVzc04r1AtQlC6+vNOztPHFWaqVuS3ttDOfvM7bKQUNw2uOj4Fqiw3eSyQSRneUgMeligUfL3vzU2s1hk=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR03MB7136.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(508600001)(8936002)(966005)(6486002)(54906003)(86362001)(83380400001)(2906002)(316002)(5660300002)(2616005)(8676002)(186003)(66556008)(66946007)(4326008)(36756003)(76116006)(6506007)(26005)(64756008)(38070700005)(66476007)(66446008)(91956017)(122000001)(71200400001)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?FeiR0h8MqA73d7wlKx68pFbsH8dMVteZ/GUcHyDsQOwXHfaFeWZb7aqWX9?=
- =?iso-8859-1?Q?P9oSHNEGDcXMmXFA4grgpNsPPLUZkIk6wyFAN3GzJQ3zwI32iiBb2xR7/K?=
- =?iso-8859-1?Q?RfLEDkJHEqKiWqzREJU5fMpHKoU6NoU5RjfAcb9xjv2MWbhMELoAb7wSSt?=
- =?iso-8859-1?Q?7vDzi2KkVNe9adGQlzm6Vp0E77nwjPZTjO+kkPw02tERhPohcxTQ4QM+f9?=
- =?iso-8859-1?Q?XUvgCYtfqOlwniekb/rbCEUd93eURpq6QkfqSuhooIdQbwv5GMVE7x9DW+?=
- =?iso-8859-1?Q?C4vKqOlntH07gh8kC17nTy//STOv7BYh1qfJQixkYBhECTJto/z2wRVqjw?=
- =?iso-8859-1?Q?OQK1e7TZrvGfFTyd5U3ztndrAVyPgy7EpQhGmvk/QVhbdsQv/etqUFQDYS?=
- =?iso-8859-1?Q?UuX3LwAvJRPKmQlyR9Kygx2CiRGhilu9Bm7M/wKRGehvvrAtf49ktTubOv?=
- =?iso-8859-1?Q?TO+Ccrkk2ksaBMLJXDSDN3GMtav48/pi91OeKNwwJbzDKba2HKpRejeeWo?=
- =?iso-8859-1?Q?HvJrGyUzCsaV1QrvcOIzq6942T+I7B28r77j8GGNmqpOLSBRXXaVL75WAx?=
- =?iso-8859-1?Q?AMSXvarYmC5WwH4M/trz7Tpw8pXtnvs9PkGvo4q+zaQVyGr8O1DvdEndDV?=
- =?iso-8859-1?Q?CkCtch/6mVB2cmrbc/oUfs6OezHfVcpvx7hYlIN5Gni/L/a2ww97XaEm/l?=
- =?iso-8859-1?Q?/QvADVDcIfDv/TFcY66hLc2EluMMy365fKKEbpvpiZ2sCoXa7R6MfSNQpJ?=
- =?iso-8859-1?Q?YBjz3JkbzPnGbKP+iQw3/0eiyeYKfqUkWDFyCnCILpvuY3PKPtvgMNt0M4?=
- =?iso-8859-1?Q?Ev/0HY7ulC0IdW0CpjB877+qEpZGS2V/uvr8WR+7BQADJPbPYDTWBhTlP/?=
- =?iso-8859-1?Q?bhaLNXo/e7c5tu5u4HfDkQDjCYiOdWgU1PXf6xXzXmDwgbCeNlpCjybbR7?=
- =?iso-8859-1?Q?2mj7YlJ9PbhjCCugf9Q223OehG3237k4Ug69voltdKWWil+SNjw30RdJR9?=
- =?iso-8859-1?Q?wOMqiz8XF/Wmvsa6zC1gwyTn+e1uEaHNhjqe8ZeupanRZqvPZo7v/H1AlV?=
- =?iso-8859-1?Q?AQFXnzCOHfAXuNm+Tlur143ZLiwK6Dne23C5OJC2/l5lGbnC4jeALV1qI3?=
- =?iso-8859-1?Q?a4TEOMZ1fnfhRjK9iTe7x4FmDBKMBOrGmXuv4zlC834Q9UU6AHFBuZy0Gx?=
- =?iso-8859-1?Q?ew0C0cs1lnOEiwM2ZgsYm+w3MlkWJ70r8M6cy0Gvzy/fhjeRJHgx+b3Ynn?=
- =?iso-8859-1?Q?agDSpFDr+2Dpc13mtAG6fHNwEBFnj+Zw3kkeUnoMHch4N/unnLoLcopblY?=
- =?iso-8859-1?Q?3bHcxTc9aLmdnnh0139+4Wies7PTLpyOEa/T73nVEv6faAg2/6p+u9wCVD?=
- =?iso-8859-1?Q?JODF8Ht5GYyzvBvBJyn2nyCWBDj+eZ/M6K29mA/b4PFtp8Y4MG6bUXpw06?=
- =?iso-8859-1?Q?UpISaqpdFoouQj10SseGekwcAD3oTyKA4wVeUmuzwYif66x8ASw2FOEqjQ?=
- =?iso-8859-1?Q?7P0QHGeYMAbh0BaZ7XZKWOPRbDSBmwuc4ou1WjZdu3oJ49iMCl6doDW9R3?=
- =?iso-8859-1?Q?6vUjsApf2bPdiKaLK5Y4tzYX+LSByX1ySxB849MGLpKLaG+tF18SSxnizh?=
- =?iso-8859-1?Q?0HdzCyC8LgF+jMsECdJAvHujqDJnEDjYadaAjPv4TCB4g8ia8BPRBFDhKi?=
- =?iso-8859-1?Q?lKKK/VPmclEyMbjFGnptLMTwr9RnfFnxSQ9cQwsoWPYBYoENDfILg5mHdz?=
- =?iso-8859-1?Q?7Ap/2Be0C+JY/amFSKfUPTFd4=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 21 Feb 2022 13:51:13 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7FF195;
+        Mon, 21 Feb 2022 10:50:49 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id p15so35461872ejc.7;
+        Mon, 21 Feb 2022 10:50:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pQO7ydSB+50ZXan7KxUTGPR/+jBW3P05AbbyHsGBMKY=;
+        b=MiHsA54rwzT6JJTQGupn68fWrBjqzaF61BiDr8rHkbH8QnbpbyoSumktR8sO1QRCAB
+         rHx0ANh1OECLZVHur9t8k0XntOogV7eF9VuSxKFYr0mMHGW2wrtdXOMkVBA17kUF90uG
+         WCqFo64y0vxipTMMEqbJyuju4cXFzaOdjwmEQ7Xl6MN59qjfPGDH0GevCTfV7h6yMHek
+         hUMtbqmH/FAp2hddDV0GFA1qFdZ50bUfGUC8+0q2dzGGqb0++0jEsAVMOzTcibVCIQID
+         ClDxidSt//yLe33TJ3qg80pzV28dqw568vxbEOiLWGiBgfT6NXAki/66ybGN0ghiUrh2
+         nZ9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pQO7ydSB+50ZXan7KxUTGPR/+jBW3P05AbbyHsGBMKY=;
+        b=XZPXr4sBKY2JsojxLG0WzQZWqO22FhXiOHp1HYrAD0rUnjgu99MPNdZdxZzV0xldWT
+         xOEIdAcLODMAyRBnRMfadsyZ9jQTpr+tEWY4DQpPYJoazWDWn3v9Z935qcKMyfQdDqWA
+         ugUWFzhhayp51kYMoARWi4PV/2TJu0iPsoLr/jhpmsgkTkztUllCzwIdzGz5S8T0oTH9
+         /LVDDGJ0OiJuM5TNVB1xM+jnvZi0q3w5kYleX27relohuYm0VV2YjEiHYsnRagfyki11
+         JtnYyOn1gsVcL50WTVraFzOJjg55p7iJKaaJCbNJVz2jtAtW8T+D+UezR0GEoN2t1Pg7
+         ec2A==
+X-Gm-Message-State: AOAM5331LodJMkV9bOSMQqPvKNTDE1yLPQVytc+uPMpYyniX1tDhWyWQ
+        uGVlBxZkbTQiqfQUAwPtm11cluMoLtCIcub8
+X-Google-Smtp-Source: ABdhPJzFGoAnbg9Tir3q3AwivZ1RtHXAgpklM0kqVF+wy/ZDxtkkjMKtPZ8fHxt6/8Tr65w8HfFw/A==
+X-Received: by 2002:a17:906:a057:b0:6cf:2736:ba65 with SMTP id bg23-20020a170906a05700b006cf2736ba65mr16575265ejb.171.1645469447972;
+        Mon, 21 Feb 2022 10:50:47 -0800 (PST)
+Received: from localhost.localdomain ([2a02:ab88:368f:2080:5d6e:322:57b6:5f03])
+        by smtp.googlemail.com with ESMTPSA id 23sm5334497ejg.209.2022.02.21.10.50.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 10:50:47 -0800 (PST)
+From:   David Virag <virag.david003@gmail.com>
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        phone-devel@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 0/1] Initial Samsung Galaxy A8 (2018) support
+Date:   Mon, 21 Feb 2022 20:49:55 +0100
+Message-Id: <20220221194958.117361-1-virag.david003@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-OriginatorOrg: epam.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR03MB7136.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 758b47bf-c0c8-4c2c-4708-08d9f55f5688
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2022 17:26:47.1012
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b41b72d0-4e9f-4c26-8a69-f949f367c91d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: W23u9Ztle4eTtX15Y8hsFRG3YAMn1x1rj3SR8V1/GMhPcE2ctCsUkrtzuu77KjPqH6s0njRuW9fFwFiuLxLDwP6vI2YSHekokbo7USnkL+4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR03MB6466
-X-Proofpoint-GUID: XPMz66BUP8AURLUM0XKuijYvtB6vqgBZ
-X-Proofpoint-ORIG-GUID: XPMz66BUP8AURLUM0XKuijYvtB6vqgBZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-21_08,2022-02-21_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 phishscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- mlxlogscore=509 impostorscore=0 adultscore=0 malwarescore=0 clxscore=1011
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202210102
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introducing new parameter called scmi_devid to the device-tree bindings.
-This parameter should be set for the device nodes, which has
-clocks/power-domains/resets working through SCMI.
-Given parameter should set the device_id, needed to set device
-permissions in the Firmware. This feature will be extremely useful for
-the virtualized systems, which has more that one Guests running on the
-system at the same time or for the syestems, which require several
-agents with different permissions. Trusted agent will use scmi_devid to
-set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
-for details).
-Agents concept is described in Section 4.2.1 [0].
+Add basic initial support for the Samsung Galaxy A8 (2018) smartphone.
+This phone is also known as "jackpotlte" and under the model name
+"SM-A530F". In its current state this should work on most if not all
+Exynos7885 phones/devices released.
 
-scmi_devid in Device-tree node example:
-usb@e6590000
-{
-    scmi_devid =3D <19>;
-    clocks =3D <&scmi_clock 3>, <&scmi_clock 2>;
-    resets =3D <&scmi_reset 10>, <&scmi_reset 9>;
-    power-domains =3D <&scmi_power 0>;
-};
+As of now, it supports I2C nodes (all disabled by default) and UART
+console with basic clock support in place.
 
-Given example shows the configuration of the hsusb node, which is using
-scmi to contol clocks, resets and power-domains. scmi_devid is set
-equals to 19, which should match defined id for usb in the Firmware.
+To access the UART console on the A8, there are two methods:
+  -You can open up the device and solder directly to some debug pins
+   close to the display connector.
+  -Through I2C you can set the S2MU004 MFD chip to multiplex the SoC's
+   UART lines to the d+ and d- on the USB Type-C port of the device.
 
-Trusted agent will use scmi_devid to set the device permissions for
-the Agents. Guest OS should not have an access to the permissions
-settings, so no code to process scmi_devid was presented in Linux
-kernel.
+Note that UART works on 1.8 volts, so plugging in a normal USB cable
+while multiplexed to UART may fry the SoC.
 
-We are currently contributing changes to Xen, which are intended to
-mediate SCMI access from Guests to the Firmware. Xen uses scmi_devid to set
-the permissions for the devices. See [1] thread for details.
+Everything was tested through UART by using a minimal driver that sets
+the S2MU004 to multiplex UART.
 
-[0] https://developer.arm.com/documentation/den0056/latest
-[1] https://xen.markmail.org/message/mmi4fpb4qr6e3kad
+The preferred way to boot this device is by using my Minimal S-Boot
+Wrapper [1] to work around some issues caused by the stock, and
+non-replacable Samsung S-Boot bootloader.
 
----
-Posting this patch as RFC because I'm not sure if I set maintainers
-correctly. Hope community will help me so I could set the maintainers in
-v2.
+Changes in v2:
+- Added R-b tags by Krzysztof Kozlowski
+- Moved dt-bindings patches to the beginning of the series
+- Fixed double : in 7885 CMU bindings
+- Fixed multiple double line breaks
+- Made Exynos850 and 7885 clock drivers share some code in a new patch
+- Lots of dts/dtsi fixes
 
-Oleksii Moisieiev (1):
-  dt-bindings: arm: Add scmi_devid property description for SCMI
+Changes in v3:
+- Fix SPDX comment style in clk-exynos-arm64.h
+- Fix typo in dts comment
 
- .../bindings/firmware/arm,scmi-devid.yaml     | 41 +++++++++++++++++++
- 1 file changed, 41 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/firmware/arm,scmi-dev=
-id.yaml
+Changes in v4:
+- Fixed leading 0x in clock-controller nodes
+- Fixed missing headers in clock driver patches
+- "__SAMSUNG_CLK_ARM64_H" -> "__CLK_EXYNOS_ARM64_H" in
+  clk-exynos-arm64.h everywhere (only the comment at the end had the
+  latter by accident)
+- Added R-b tag by Krzysztof Kozlowski to pll1417x patch
+- Actually suffixed pin configuration node names with "-pins"
+- Seperated Cortex-A53 and Cortex-A73 PMU
 
---=20
-2.27.0
+Changes in v5:
+- Only kept DTS patch as the rest have been merged.
+- Several fixes in DTS patch
+
+Changes in v6:
+- DTS patch fixes
+- Rebased on top of linux-next
+
+[1] https://github.com/VDavid003/minimal_sboot_wrapper
+
+David Virag (1):
+  arm64: dts: exynos: Add initial device tree support for Exynos7885 SoC
+
+ arch/arm64/boot/dts/exynos/Makefile           |   9 +-
+ .../boot/dts/exynos/exynos7885-jackpotlte.dts |  92 ++
+ .../boot/dts/exynos/exynos7885-pinctrl.dtsi   | 855 ++++++++++++++++++
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi    | 423 +++++++++
+ 4 files changed, 1375 insertions(+), 4 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/exynos/exynos7885.dtsi
+
+-- 
+2.35.1
+
