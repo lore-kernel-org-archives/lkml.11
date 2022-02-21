@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF02C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7446DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348285AbiBUJLL (ORCPT
+        id S1348801AbiBUJLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:11:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42848 "EHLO
+        Mon, 21 Feb 2022 04:11:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347432AbiBUJGZ (ORCPT
+        with ESMTP id S1347727AbiBUJHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:06:25 -0500
+        Mon, 21 Feb 2022 04:07:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A2231205;
-        Mon, 21 Feb 2022 00:59:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86933190B;
+        Mon, 21 Feb 2022 01:00:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8E01B80EA1;
-        Mon, 21 Feb 2022 08:59:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A583C340E9;
-        Mon, 21 Feb 2022 08:59:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 994BCB80EB5;
+        Mon, 21 Feb 2022 09:00:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA80BC340E9;
+        Mon, 21 Feb 2022 09:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433984;
-        bh=xbseft0bFThlkg8lFzuN/SR2wFUAQLzKHqgJRlH3A6E=;
+        s=korg; t=1645434004;
+        bh=dygTUwONmMG38Wg00UJVTPbzMlmQJHxtCv8avxILCx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrCcEp3rLBjL+P3IL8biltaDjTd1Gs7Ix/sZnvKug1x2SXJuvaw2pmHVUjHevccKl
-         H0nji1Zyir1OzVviLbyvWUHz5HvNokBPj790bFG1O61hmuRcF+RnQ8uiIJeg4hLFCo
-         pz2MLQSBSxO0jmj8n1oQWonE0kOqsdmTXAMP3SA8=
+        b=VcTb7wf9TNRYvEkqWQ/MvkFzjjisOZd1xANZGXgXuqyMCo3zpcBFQyeLGm71FvT1P
+         uOsU1wDLDbJ7RVUMXVWa8uDTMO8cMueWSgNIDLSdDYiDYHO8hyUSJiR9iIWHNPBMpT
+         8wP/AufU05BvaCFCKhm+3didxi5YC+UBOtXfoWew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 20/80] nvme-rdma: fix possible use-after-free in transport error_recovery work
-Date:   Mon, 21 Feb 2022 09:49:00 +0100
-Message-Id: <20220221084916.247334386@linuxfoundation.org>
+        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.4 60/80] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
+Date:   Mon, 21 Feb 2022 09:49:40 +0100
+Message-Id: <20220221084917.546933551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -49,38 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Eliav Farber <farbere@amazon.com>
 
-[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
+commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
 
-While nvme_rdma_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+Do alignment logic properly and use the "ptr" local variable for
+calculating the remainder of the alignment.
 
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This became an issue because struct edac_mc_layer has a size that is not
+zero modulo eight, and the next offset that was prepared for the private
+data was unaligned, causing an alignment exception.
+
+The patch in Fixes: which broke this actually wanted to "what we
+actually care about is the alignment of the actual pointer that's about
+to be returned." But it didn't check that alignment.
+
+Use the correct variable "ptr" for that.
+
+  [ bp: Massage commit message. ]
+
+Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/rdma.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/edac/edac_mc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
-index 08a23bb4b8b57..4213c71b02a4b 100644
---- a/drivers/nvme/host/rdma.c
-+++ b/drivers/nvme/host/rdma.c
-@@ -1110,6 +1110,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
- 			struct nvme_rdma_ctrl, err_work);
+--- a/drivers/edac/edac_mc.c
++++ b/drivers/edac/edac_mc.c
+@@ -263,7 +263,7 @@ void *edac_align_ptr(void **p, unsigned
+ 	else
+ 		return (char *)ptr;
  
- 	nvme_stop_keep_alive(&ctrl->ctrl);
-+	flush_work(&ctrl->ctrl.async_event_work);
- 	nvme_rdma_teardown_io_queues(ctrl, false);
- 	nvme_start_queues(&ctrl->ctrl);
- 	nvme_rdma_teardown_admin_queue(ctrl, false);
--- 
-2.34.1
-
+-	r = (unsigned long)p % align;
++	r = (unsigned long)ptr % align;
+ 
+ 	if (r == 0)
+ 		return (char *)ptr;
 
 
