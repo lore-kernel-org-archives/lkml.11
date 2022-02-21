@@ -2,192 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E40C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD289C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356732AbiBULsc (ORCPT
+        id S1356750AbiBULtv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:48:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44216 "EHLO
+        Mon, 21 Feb 2022 06:49:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242753AbiBULs2 (ORCPT
+        with ESMTP id S1356738AbiBULtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:48:28 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D1B1EEE6;
-        Mon, 21 Feb 2022 03:48:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645444085; x=1676980085;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=d2nxSyxlFXj9Y46HQxQTGJPE6uNfiwCTcyQito04juU=;
-  b=QUP9c7FgSwFWB3m3foNATrhxlm4uPApRpjjSwzLS+Vu9ixzbnVkW616j
-   GLAz7Y1f5QmRNECLSAg6E7QOhQXns0Jgg+BsRDVVbbSSWH/9f+5qiRYY5
-   iaEd3O0HgVQNjYZO5b2Itveq33xbTN2vRt1xxraWRdPbb9RuAm2e1pC71
-   gzlYpgzoWlTv2jLt2RgbQ78obi/9YRIwmafzQLriBod8Z0Zsh6p9GVNXo
-   sVWjvynrV3XqMPWtn70EaW//pX1m5XjzMlJn5TSuIG+pSoaqWG4ak6Sjn
-   RMHPrSDXjKDYWTbiGUs98Svmo4PeDG329E8ZTdab1u4avDLr8ALuXz2r4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="231463399"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="231463399"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 03:48:05 -0800
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="547305643"
-Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 03:48:02 -0800
-Date:   Mon, 21 Feb 2022 11:47:55 +0000
-From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-To:     Kyle Sanderson <kyle.leet@gmail.com>, herbert@gondor.apana.org.au
-Cc:     Dave Chinner <david@fromorbit.com>, qat-linux@intel.com,
-        Linux-Kernal <linux-kernel@vger.kernel.org>,
-        linux-xfs@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dm-devel@redhat.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: Intel QAT on A2SDi-8C-HLN4F causes massive data corruption with
- dm-crypt + xfs
-Message-ID: <YhN76/ONC9qgIKQc@silpixa00400314>
-References: <CACsaVZ+mt3CfdXV0_yJh7d50tRcGcRZ12j3n6-hoX2cz3+njsg@mail.gmail.com>
- <20220219210354.GF59715@dread.disaster.area>
- <CACsaVZ+LZUebtsGuiKhNV_No8fNLTv5kJywFKOigieB1cZcKUw@mail.gmail.com>
+        Mon, 21 Feb 2022 06:49:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3219D1EEE9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:49:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645444162;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=12CjzIfm9u48VcTin9bYn/mbYSt9Byr6lQhm+jL2Tdg=;
+        b=CaLFA52pANpwtvPLFo3l6VKuyE5jb11J434odrF/Ih89gtV4xSJ0wb0kP7VyFeetRmY3bg
+        PSsBVJefRvSpXAOYueh7ymA8xsJxY6mX8EwmW/h+O0qz0m2I2IjY/gpHNk+KKX8EcHvn6M
+        csshzug0f/uqdL8kGlmsZ7oUDTUUHHU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-295-VQMasphEOz6sznIOg5JWWQ-1; Mon, 21 Feb 2022 06:49:21 -0500
+X-MC-Unique: VQMasphEOz6sznIOg5JWWQ-1
+Received: by mail-wm1-f69.google.com with SMTP id b17-20020a05600c4e1100b0037cc0d56524so7936432wmq.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:49:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=12CjzIfm9u48VcTin9bYn/mbYSt9Byr6lQhm+jL2Tdg=;
+        b=QhsLpjYiykYiaZij76sSkMUPLJLx2RitTEBQc8ljin4jdDGdAddDxoMlfm9rqVVnAw
+         xC0zbEuzrEnYaBFKQylaCROiEjLo2HEK5flMLE/6mX3+7VJ/zhmMC2eo6/lolztFQY1W
+         Yv6lkpYY5xyFa1ezCiDsijX2f84K5+CAG2EmbKdlZDTeFBwvyYoX2hG0ymkdrAAxDREl
+         DczvpCh2DJQTWK+xTZPWIOBislEOFXBdZlWvYfi3Y8+3alx/MEIzIOooktFdBvCx+SUW
+         nu3CHWCzKK2UtcRFxR5zBKG7lXc6lBce/PUcaswoRY4xcu5lqqEGqwQOW3q4qA+wigRw
+         Eueg==
+X-Gm-Message-State: AOAM5327R41PP9fTPK8uqaUxzgM14C4A5TE15cp3XwaIOOJ5NOGPDTFM
+        X2HMvL684wowR1YBZ+Okc5YNQPCkmCpQrc+0LbKANVvSqqz62nyTSvC+uYIh7Ygg91Sd5TH0E7s
+        5k4/GeAuUJ8Usp2308nqf9kPj
+X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr17401382wml.160.1645444158955;
+        Mon, 21 Feb 2022 03:49:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz80NBK4xySdNK92dBVDo686zdoILiLjZ8DrwJxbn6DUuDBzdF93Cfrshx7zCott46Y92HTgQ==
+X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr17401363wml.160.1645444158689;
+        Mon, 21 Feb 2022 03:49:18 -0800 (PST)
+Received: from step1.redhat.com (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id o6-20020a05600c338600b0037c322d1425sm7141176wmp.8.2022.02.21.03.49.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 03:49:17 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        Asias He <asias@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org
+Subject: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
+Date:   Mon, 21 Feb 2022 12:49:16 +0100
+Message-Id: <20220221114916.107045-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACsaVZ+LZUebtsGuiKhNV_No8fNLTv5kJywFKOigieB1cZcKUw@mail.gmail.com>
-Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
- Collinstown Industrial Park, Leixlip, County Kildare - Ireland
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kyle,
+vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+ownership. It expects current->mm to be valid.
 
-The issue is that the implementations of aead and skcipher in the QAT
-driver are not properly supporting requests with the
-CRYPTO_TFM_REQ_MAY_BACKLOG flag set.
-If the HW queue is full, the driver returns -EBUSY [1] but does not
-enqueues the request as dm-crypt expects [2]. Dm-crypt ends up waiting
-indefinitely for a completion to a request that was never submitted,
-therefore the stall.
-This is not related to QATE-7495 'An incorrectly formatted request to
-QAT can hang the entire QAT endpoint' [3], which occurs when a malformed
-request is sent to the device.
+vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+the user has not done close(), so when we are in do_exit(). In this
+case current->mm is invalid and we're releasing the device, so we
+should clean it anyway.
 
-I'm working at patch that resolves this problem. In the meanwhile a
-workaround is to blacklist the qat_c3xxx.ko driver.
+Let's check the owner only when vhost_vsock_stop() is called
+by an ioctl.
 
-Regarding avoiding this issue on stable kernels. The usage of QAT with
-dm-crypt was already disabled in kernel 5.10 for a different issue
-(the driver allocates memory in the datapath).
-The following patches implement the change:
-    7bcb2c99f8ed crypto: algapi - use common mechanism for inheriting flags
-    2eb27c11937e crypto: algapi - add NEED_FALLBACK to INHERITED_FLAGS
-    fbb6cda44190 crypto: algapi - introduce the flag CRYPTO_ALG_ALLOCATES_MEMORY
-    b8aa7dc5c753 crypto: drivers - set the flag CRYPTO_ALG_ALLOCATES_MEMORY
-    cd74693870fb dm crypt: don't use drivers that have CRYPTO_ALG_ALLOCATES_MEMORY
-An option would be to send the patches above to stable, another is to wait
-for a patch that fixes the problems in the QAT driver and send that to
-stable.
-@Herbert, what is the preferred approach here?
+Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+Cc: stable@vger.kernel.org
+Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vhost/vsock.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-Thanks,
-
-[1] https://elixir.bootlin.com/linux/latest/source/drivers/crypto/qat/qat_common/qat_algs.c#L1022
-[2] https://elixir.bootlin.com/linux/latest/source/drivers/md/dm-crypt.c#L1584
-[3] https://01.org/sites/default/files/downloads//336211qatsoftwareforlinux-rn-hwversion1.7021.pdf - page 25
-
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index d6ca1c7ad513..f00d2dfd72b7 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -629,16 +629,18 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+ 	return ret;
+ }
+ 
+-static int vhost_vsock_stop(struct vhost_vsock *vsock)
++static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
+ {
+ 	size_t i;
+ 	int ret;
+ 
+ 	mutex_lock(&vsock->dev.mutex);
+ 
+-	ret = vhost_dev_check_owner(&vsock->dev);
+-	if (ret)
+-		goto err;
++	if (check_owner) {
++		ret = vhost_dev_check_owner(&vsock->dev);
++		if (ret)
++			goto err;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+ 		struct vhost_virtqueue *vq = &vsock->vqs[i];
+@@ -753,7 +755,7 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 	 * inefficient.  Room for improvement here. */
+ 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 
+-	vhost_vsock_stop(vsock);
++	vhost_vsock_stop(vsock, false);
+ 	vhost_vsock_flush(vsock);
+ 	vhost_dev_stop(&vsock->dev);
+ 
+@@ -868,7 +870,7 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 		if (start)
+ 			return vhost_vsock_start(vsock);
+ 		else
+-			return vhost_vsock_stop(vsock);
++			return vhost_vsock_stop(vsock, true);
+ 	case VHOST_GET_FEATURES:
+ 		features = VHOST_VSOCK_FEATURES;
+ 		if (copy_to_user(argp, &features, sizeof(features)))
 -- 
-Giovanni
+2.35.1
 
-
-On Sat, Feb 19, 2022 at 03:00:51PM -0800, Kyle Sanderson wrote:
-> hi Dave,
-> 
-> > This really sounds like broken hardware, not a kernel problem.
-> 
-> It is indeed a hardware issue, specifically the intel qat crypto
-> driver that's in-tree - the hardware is fine (see below). The IQAT
-> eratta documentation states that if a request is not submitted
-> properly it can stall the entire device. The remediation guidance from
-> 2020 was "don't do that" and "don't allow unprivileged users access to
-> the device". The in-tree driver is not implemented properly either for
-> this SoC or board - I'm thinking it's related to QATE-7495.
-> 
-> https://01.org/sites/default/files/downloads//336211qatsoftwareforlinux-rn-hwversion1.7021.pdf
-> 
-> > This implies a dmcrypt level problem - XFS can't make progress is dmcrypt is not completing IOs.
-> 
-> That's the weird part about it. Some bio's are completing, others are
-> completely dropped, with some stalling forever. I had to use
-> xfs_repair to get the volumes operational again. I lost a good deal of
-> files and had to recover from backup after toggling the device back on
-> on a production system (silly, I know).
-> 
-> > Where are the XFS corruption reports that the subject implies is occurring?
-> 
-> I think you're right, it's dm-crypt that's broken here, with
-> ultimately the crypto driver causing this corruption. XFS being the
-> edge to the end-user is taking the brunt of it. There's reports going
-> back to late 2017 of significant issues with this mainlined stable
-> driver.
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1522962
-> https://serverfault.com/questions/1010108/luks-hangs-on-centos-running-on-atom-c3758-cpu
-> https://www.phoronix.com/forums/forum/software/distributions/1172231-fedora-33-s-enterprise-linux-next-effort-approved-testbed-for-raising-cpu-requirements-etc?p=1174560#post1174560
-> 
-> Any guidance would be appreciated.
-> Kyle.
-> On Sat, Feb 19, 2022 at 1:03 PM Dave Chinner <david@fromorbit.com> wrote:
-> >
-> > On Fri, Feb 18, 2022 at 09:02:28PM -0800, Kyle Sanderson wrote:
-> > > A2SDi-8C-HLN4F has IQAT enabled by default, when this device is
-> > > attempted to be used by xfs (through dm-crypt) the entire kernel
-> > > thread stalls forever. Multiple users have hit this over the years
-> > > (through sporadic reporting) - I ended up trying ZFS and encryption
-> > > wasn't an issue there at all because I guess they don't use this
-> > > device. Returning to sanity (xfs), I was able to provision a dm-crypt
-> > > volume no problem on the disk, however when running mkfs.xfs on the
-> > > volume is what triggers the cascading failure (each request kills a
-> > > kthread).
-> >
-> > Can you provide the full stack traces for these errors so we can see
-> > exactly what this cascading failure looks like, please? In reality,
-> > the stall messages some time after this are not interesting - it's
-> > the first errors that cause the stall that need to be investigated.
-> >
-> > A good idea would be to provide the full storage stack decription
-> > and hardware in use, as per:
-> >
-> > https://xfs.org/index.php/XFS_FAQ#Q:_What_information_should_I_include_when_reporting_a_problem.3F
-> >
-> > > Disabling IQAT on the south bridge results in a working
-> > > system, however this is not the default configuration for the
-> > > distribution of choice (Ubuntu 20.04.3 LTS), nor the motherboard. I'm
-> > > convinced this never worked properly based on the lack of popularity
-> > > for kernel encryption (crypto), and the embedded nature that
-> > > SuperMicro has integrated this device in collaboration with intel as
-> > > it looks like the primary usage is through external accelerator cards.
-> >
-> > This really sounds like broken hardware, not a kernel problem.
-> >
-> > > Kernels tried were from RHEL8 over a year ago, and this impacts the
-> > > entirety of the 5.4 series on Ubuntu.
-> > > Please CC me on replies as I'm not subscribed to all lists. CPU is C3758.
-> >
-> > [snip stalled kcryptd worker threads]
-> >
-> > This implies a dmcrypt level problem - XFS can't make progress is
-> > dmcrypt is not completing IOs.
-> >
-> > Where are the XFS corruption reports that the subject implies is
-> > occurring?
-> >
-> > Cheers,
-> >
-> > Dave.
-> > --
-> > Dave Chinner
-> > david@fromorbit.com
