@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E51C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2EBC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351913AbiBUJhp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:37:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51996 "EHLO
+        id S233204AbiBUJiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:38:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349304AbiBUJ2r (ORCPT
+        with ESMTP id S1350058AbiBUJ3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:28:47 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB54240A2;
-        Mon, 21 Feb 2022 01:12:58 -0800 (PST)
+        Mon, 21 Feb 2022 04:29:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1B24BFD;
+        Mon, 21 Feb 2022 01:13:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BE9D9CE0E79;
-        Mon, 21 Feb 2022 09:12:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC855C340E9;
-        Mon, 21 Feb 2022 09:12:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D053608C1;
+        Mon, 21 Feb 2022 09:13:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D8BC340F1;
+        Mon, 21 Feb 2022 09:13:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434775;
-        bh=SK0woKC69aS1dpqIlWjbdHwaagPL1JG3IRZDlQJKPpE=;
+        s=korg; t=1645434780;
+        bh=TYuvVS3fFqWieGFmsqv7QYOngtgAFJf28ruJSp8ojrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MInopzXv/njEdN/Jd0UCf5TwgpFJKAOfjcRuewGE5YFCxsCv2ybbJmHxGdFNDdFJL
-         cJthextqUH6iEvTYm7Jg+Z5piEEjUAWxQFAV1fOq/GJouBWC3TPy+msidFF/+xNw2s
-         EXTNbP3I9tjxGtdNn6Z3cdSuU4OWLUapAsjnyYIo=
+        b=wzNEJKm6shk7Uu607y5ndSn9RJm8PEgXV0riLJCmYEXfgU23ajoQG5/mctrUmSKnR
+         bEaskR/vqxh3AISKbTzgYIIvenBbtbn8KCnRh8rlginZDP6KlQQUXf3pJlPE8EPM4I
+         tQBotBJroM6a4TsZw5FOMWzrh6eweqG8sOOuvDTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 127/196] scsi: ufs: Fix a deadlock in the error handler
-Date:   Mon, 21 Feb 2022 09:49:19 +0100
-Message-Id: <20220221084935.189662360@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivasa Rao Mandadapu <srivasam@codeaurora.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 129/196] ASoC: qcom: Actually clear DMA interrupt register for HDMI
+Date:   Mon, 21 Feb 2022 09:49:21 +0100
+Message-Id: <20220221084935.251121740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,187 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 945c3cca05d78351bba29fa65d93834cb7934c7b upstream.
+commit c8d251f51ee61df06ee0e419348d8c9160bbfb86 upstream.
 
-The following deadlock has been observed on a test setup:
+In commit da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg
+overwriting") we changed regmap_write() to regmap_update_bits() so that
+we can avoid overwriting bits that we didn't intend to modify.
+Unfortunately this change breaks the case where a register is writable
+but not readable, which is exactly how the HDMI irq clear register is
+designed (grep around LPASS_HDMITX_APP_IRQCLEAR_REG to see how it's
+write only). That's because regmap_update_bits() tries to read the
+register from the hardware and if it isn't readable it looks in the
+regmap cache to see what was written there last time to compare against
+what we want to write there. Eventually, we're unable to modify this
+register at all because the bits that we're trying to set are already
+set in the cache.
 
- - All tags allocated
+This is doubly bad for the irq clear register because you have to write
+the bit to clear an interrupt. Given the irq is level triggered, we see
+an interrupt storm upon plugging in an HDMI cable and starting audio
+playback. The irq storm is so great that performance degrades
+significantly, leading to CPU soft lockups.
 
- - The SCSI error handler calls ufshcd_eh_host_reset_handler()
+Fix it by using regmap_write_bits() so that we really do write the bits
+in the clear register that we want to. This brings the number of irqs
+handled by lpass_dma_interrupt_handler() down from ~150k/sec to ~10/sec.
 
- - ufshcd_eh_host_reset_handler() queues work that calls
-   ufshcd_err_handler()
-
- - ufshcd_err_handler() locks up as follows:
-
-Workqueue: ufs_eh_wq_0 ufshcd_err_handler.cfi_jt
-Call trace:
- __switch_to+0x298/0x5d8
- __schedule+0x6cc/0xa94
- schedule+0x12c/0x298
- blk_mq_get_tag+0x210/0x480
- __blk_mq_alloc_request+0x1c8/0x284
- blk_get_request+0x74/0x134
- ufshcd_exec_dev_cmd+0x68/0x640
- ufshcd_verify_dev_init+0x68/0x35c
- ufshcd_probe_hba+0x12c/0x1cb8
- ufshcd_host_reset_and_restore+0x88/0x254
- ufshcd_reset_and_restore+0xd0/0x354
- ufshcd_err_handler+0x408/0xc58
- process_one_work+0x24c/0x66c
- worker_thread+0x3e8/0xa4c
- kthread+0x150/0x1b4
- ret_from_fork+0x10/0x30
-
-Fix this lockup by making ufshcd_exec_dev_cmd() allocate a reserved
-request.
-
-Link: https://lore.kernel.org/r/20211203231950.193369-10-bvanassche@acm.org
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: da0363f7bfd3 ("ASoC: qcom: Fix for DMA interrupt clear reg overwriting")
+Cc: Srinivasa Rao Mandadapu <srivasam@codeaurora.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Link: https://lore.kernel.org/r/20220209232520.4017634-1-swboyd@chromium.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd.c |   53 ++++++++++++----------------------------------
- drivers/scsi/ufs/ufshcd.h |    2 +
- 2 files changed, 16 insertions(+), 39 deletions(-)
+ sound/soc/qcom/lpass-platform.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -125,8 +125,9 @@ EXPORT_SYMBOL_GPL(ufshcd_dump_regs);
- enum {
- 	UFSHCD_MAX_CHANNEL	= 0,
- 	UFSHCD_MAX_ID		= 1,
--	UFSHCD_CMD_PER_LUN	= 32,
--	UFSHCD_CAN_QUEUE	= 32,
-+	UFSHCD_NUM_RESERVED	= 1,
-+	UFSHCD_CMD_PER_LUN	= 32 - UFSHCD_NUM_RESERVED,
-+	UFSHCD_CAN_QUEUE	= 32 - UFSHCD_NUM_RESERVED,
- };
+--- a/sound/soc/qcom/lpass-platform.c
++++ b/sound/soc/qcom/lpass-platform.c
+@@ -524,7 +524,7 @@ static int lpass_platform_pcmops_trigger
+ 			return -EINVAL;
+ 		}
  
- /* UFSHCD error handling flags */
-@@ -2185,6 +2186,7 @@ static inline int ufshcd_hba_capabilitie
- 	hba->nutrs = (hba->capabilities & MASK_TRANSFER_REQUESTS_SLOTS) + 1;
- 	hba->nutmrs =
- 	((hba->capabilities & MASK_TASK_MANAGEMENT_REQUEST_SLOTS) >> 16) + 1;
-+	hba->reserved_slot = hba->nutrs - 1;
+-		ret = regmap_update_bits(map, reg_irqclr, val_irqclr, val_irqclr);
++		ret = regmap_write_bits(map, reg_irqclr, val_irqclr, val_irqclr);
+ 		if (ret) {
+ 			dev_err(soc_runtime->dev, "error writing to irqclear reg: %d\n", ret);
+ 			return ret;
+@@ -665,7 +665,7 @@ static irqreturn_t lpass_dma_interrupt_h
+ 	return -EINVAL;
+ 	}
+ 	if (interrupts & LPAIF_IRQ_PER(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_PER(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
+@@ -676,7 +676,7 @@ static irqreturn_t lpass_dma_interrupt_h
+ 	}
  
- 	/* Read crypto capabilities */
- 	err = ufshcd_hba_init_crypto_capabilities(hba);
-@@ -2910,30 +2912,15 @@ static int ufshcd_wait_for_dev_cmd(struc
- static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
- 		enum dev_cmd_type cmd_type, int timeout)
- {
--	struct request_queue *q = hba->cmd_queue;
- 	DECLARE_COMPLETION_ONSTACK(wait);
--	struct request *req;
-+	const u32 tag = hba->reserved_slot;
- 	struct ufshcd_lrb *lrbp;
- 	int err;
--	int tag;
+ 	if (interrupts & LPAIF_IRQ_XRUN(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_XRUN(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
+@@ -688,7 +688,7 @@ static irqreturn_t lpass_dma_interrupt_h
+ 	}
  
--	down_read(&hba->clk_scaling_lock);
-+	/* Protects use of hba->reserved_slot. */
-+	lockdep_assert_held(&hba->dev_cmd.lock);
- 
--	/*
--	 * Get free slot, sleep if slots are unavailable.
--	 * Even though we use wait_event() which sleeps indefinitely,
--	 * the maximum wait time is bounded by SCSI request timeout.
--	 */
--	req = blk_get_request(q, REQ_OP_DRV_OUT, 0);
--	if (IS_ERR(req)) {
--		err = PTR_ERR(req);
--		goto out_unlock;
--	}
--	tag = req->tag;
--	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
--	/* Set the timeout such that the SCSI error handler is not activated. */
--	req->timeout = msecs_to_jiffies(2 * timeout);
--	blk_mq_start_request(req);
-+	down_read(&hba->clk_scaling_lock);
- 
- 	lrbp = &hba->lrb[tag];
- 	WARN_ON(lrbp->cmd);
-@@ -2951,8 +2938,6 @@ static int ufshcd_exec_dev_cmd(struct uf
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
- 
- out:
--	blk_put_request(req);
--out_unlock:
- 	up_read(&hba->clk_scaling_lock);
- 	return err;
- }
-@@ -6640,23 +6625,16 @@ static int ufshcd_issue_devman_upiu_cmd(
- 					enum dev_cmd_type cmd_type,
- 					enum query_opcode desc_op)
- {
--	struct request_queue *q = hba->cmd_queue;
- 	DECLARE_COMPLETION_ONSTACK(wait);
--	struct request *req;
-+	const u32 tag = hba->reserved_slot;
- 	struct ufshcd_lrb *lrbp;
- 	int err = 0;
--	int tag;
- 	u8 upiu_flags;
- 
--	down_read(&hba->clk_scaling_lock);
-+	/* Protects use of hba->reserved_slot. */
-+	lockdep_assert_held(&hba->dev_cmd.lock);
- 
--	req = blk_get_request(q, REQ_OP_DRV_OUT, 0);
--	if (IS_ERR(req)) {
--		err = PTR_ERR(req);
--		goto out_unlock;
--	}
--	tag = req->tag;
--	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
-+	down_read(&hba->clk_scaling_lock);
- 
- 	lrbp = &hba->lrb[tag];
- 	WARN_ON(lrbp->cmd);
-@@ -6725,9 +6703,6 @@ static int ufshcd_issue_devman_upiu_cmd(
- 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
- 
--	blk_put_request(req);
--
--out_unlock:
- 	up_read(&hba->clk_scaling_lock);
- 	return err;
- }
-@@ -9418,8 +9393,8 @@ int ufshcd_init(struct ufs_hba *hba, voi
- 	/* Configure LRB */
- 	ufshcd_host_memory_configure(hba);
- 
--	host->can_queue = hba->nutrs;
--	host->cmd_per_lun = hba->nutrs;
-+	host->can_queue = hba->nutrs - UFSHCD_NUM_RESERVED;
-+	host->cmd_per_lun = hba->nutrs - UFSHCD_NUM_RESERVED;
- 	host->max_id = UFSHCD_MAX_ID;
- 	host->max_lun = UFS_MAX_LUNS;
- 	host->max_channel = UFSHCD_MAX_CHANNEL;
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -725,6 +725,7 @@ struct ufs_hba_monitor {
-  * @capabilities: UFS Controller Capabilities
-  * @nutrs: Transfer Request Queue depth supported by controller
-  * @nutmrs: Task Management Queue depth supported by controller
-+ * @reserved_slot: Used to submit device commands. Protected by @dev_cmd.lock.
-  * @ufs_version: UFS Version to which controller complies
-  * @vops: pointer to variant specific operations
-  * @priv: pointer to variant specific private data
-@@ -813,6 +814,7 @@ struct ufs_hba {
- 	u32 capabilities;
- 	int nutrs;
- 	int nutmrs;
-+	u32 reserved_slot;
- 	u32 ufs_version;
- 	const struct ufs_hba_variant_ops *vops;
- 	struct ufs_hba_variant_params *vps;
+ 	if (interrupts & LPAIF_IRQ_ERR(chan)) {
+-		rv = regmap_update_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
++		rv = regmap_write_bits(map, reg, mask, (LPAIF_IRQ_ERR(chan) | val));
+ 		if (rv) {
+ 			dev_err(soc_runtime->dev,
+ 				"error writing to irqclear reg: %d\n", rv);
 
 
