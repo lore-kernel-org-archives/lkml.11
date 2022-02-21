@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE36DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C059C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245573AbiBUJOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:14:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60638 "EHLO
+        id S1348133AbiBUJON (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:14:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347856AbiBUJJA (ORCPT
+        with ESMTP id S1347851AbiBUJJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:09:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A162184;
-        Mon, 21 Feb 2022 01:01:26 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5C9E86;
+        Mon, 21 Feb 2022 01:01:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 299F2B80EAF;
-        Mon, 21 Feb 2022 09:01:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5325EC340EB;
-        Mon, 21 Feb 2022 09:01:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5BB66112B;
+        Mon, 21 Feb 2022 09:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB16FC340EB;
+        Mon, 21 Feb 2022 09:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434083;
-        bh=l4zb7Tl3TLdRnQjU+WUKmLsX3RlgS+sOcSxgTGvS7ac=;
+        s=korg; t=1645434078;
+        bh=U7JjSvTUWGqSGweRc+H/rnqFWAD75e7iJl6LXlqWTls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bOGQRXJrjDPS/h67oEFr/SxXxpG8C0I+7uPpCl1AlDCMYmIfiRUvJdOf0w4aW1tHD
-         Rq55KwwBCdmLms6hdIo65k5hnibtzxWfbi7Vy2ymrGveJSY/dfRjYb/Jb3DUYLrFYh
-         iqUfZocob8Kq53nKAHLN2mP8MwSqARlC1y7Kxjmk=
+        b=Eae0NM+8IOHX/ZYD6E2GJKA1uoJXCT0f7AfMwJQ3aYKRp+WZUef204HDxJggtNKa+
+         dCkufFUHt4zI90UmznSEq7Jqn1uCazh2MwIQUigIns8myFgC2ql5jfSlVGS9vze+tO
+         86jKNyDr6291+RzJOmyLVqNqH99jfDhS3ATieDmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.4 56/80] NFS: Do not report writeback errors in nfs_getattr()
-Date:   Mon, 21 Feb 2022 09:49:36 +0100
-Message-Id: <20220221084917.412759848@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Lei <ming.lei@rehdat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Laibin Qiu <qiulaibin@huawei.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 54/80] block/wbt: fix negative inflight counter when remove scsi device
+Date:   Mon, 21 Feb 2022 09:49:34 +0100
+Message-Id: <20220221084917.347343341@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -49,39 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Laibin Qiu <qiulaibin@huawei.com>
 
-commit d19e0183a88306acda07f4a01fedeeffe2a2a06b upstream.
+commit e92bc4cd34de2ce454bdea8cd198b8067ee4e123 upstream.
 
-The result of the writeback, whether it is an ENOSPC or an EIO, or
-anything else, does not inhibit the NFS client from reporting the
-correct file timestamps.
+Now that we disable wbt by set WBT_STATE_OFF_DEFAULT in
+wbt_disable_default() when switch elevator to bfq. And when
+we remove scsi device, wbt will be enabled by wbt_enable_default.
+If it become false positive between wbt_wait() and wbt_track()
+when submit write request.
 
-Fixes: 79566ef018f5 ("NFS: Getattr doesn't require data sync semantics")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+The following is the scenario that triggered the problem.
+
+T1                          T2                           T3
+                            elevator_switch_mq
+                            bfq_init_queue
+                            wbt_disable_default <= Set
+                            rwb->enable_state (OFF)
+Submit_bio
+blk_mq_make_request
+rq_qos_throttle
+<= rwb->enable_state (OFF)
+                                                         scsi_remove_device
+                                                         sd_remove
+                                                         del_gendisk
+                                                         blk_unregister_queue
+                                                         elv_unregister_queue
+                                                         wbt_enable_default
+                                                         <= Set rwb->enable_state (ON)
+q_qos_track
+<= rwb->enable_state (ON)
+^^^^^^ this request will mark WBT_TRACKED without inflight add and will
+lead to drop rqw->inflight to -1 in wbt_done() which will trigger IO hung.
+
+Fix this by move wbt_enable_default() from elv_unregister to
+bfq_exit_queue(). Only re-enable wbt when bfq exit.
+
+Fixes: 76a8040817b4b ("blk-wbt: make sure throttle is enabled properly")
+
+Remove oneline stale comment, and kill one oneshot local variable.
+
+Signed-off-by: Ming Lei <ming.lei@rehdat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/linux-block/20211214133103.551813-1-qiulaibin@huawei.com/
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/inode.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ block/bfq-iosched.c |    2 ++
+ block/elevator.c    |    2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -791,12 +791,9 @@ int nfs_getattr(const struct path *path,
- 		goto out_no_update;
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6389,6 +6389,8 @@ static void bfq_exit_queue(struct elevat
+ 	spin_unlock_irq(&bfqd->lock);
+ #endif
  
- 	/* Flush out writes to the server in order to update c/mtime.  */
--	if ((request_mask & (STATX_CTIME|STATX_MTIME)) &&
--			S_ISREG(inode->i_mode)) {
--		err = filemap_write_and_wait(inode->i_mapping);
--		if (err)
--			goto out;
--	}
-+	if ((request_mask & (STATX_CTIME | STATX_MTIME)) &&
-+	    S_ISREG(inode->i_mode))
-+		filemap_write_and_wait(inode->i_mapping);
++	wbt_enable_default(bfqd->queue);
++
+ 	kfree(bfqd);
+ }
  
- 	/*
- 	 * We may force a getattr if the user cares about atime.
+--- a/block/elevator.c
++++ b/block/elevator.c
+@@ -522,8 +522,6 @@ void elv_unregister_queue(struct request
+ 		kobject_del(&e->kobj);
+ 
+ 		e->registered = 0;
+-		/* Re-enable throttling in case elevator disabled it */
+-		wbt_enable_default(q);
+ 	}
+ }
+ 
 
 
