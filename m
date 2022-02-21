@@ -2,227 +2,343 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65F0C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345975AbiBUHVW (ORCPT
+        id S1346116AbiBUH0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:21:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56524 "EHLO
+        Mon, 21 Feb 2022 02:26:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345973AbiBUHVS (ORCPT
+        with ESMTP id S1345979AbiBUHZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:21:18 -0500
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47B1DA9;
-        Sun, 20 Feb 2022 23:20:55 -0800 (PST)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21KMnbFP030539;
-        Sun, 20 Feb 2022 23:20:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=8kOwvDTl45DgZnzS4zO0qxmfSeJRd8nohhKRQkC6CgU=;
- b=PXsB/xybIE8ciW/TcLiDMFE66WQrDoazznpnBfwuKRSLhPGx6cMGWRtYDisEFIajTSDm
- /Aqn5JH8xOXWLX+DJgsSaPkhMx6EIeBzNZEbciqs8gL1jTJVD7Ak6gEaPqCrEIiVMBr/
- LyWzC40U6CSY8Csnxnt6Zc5s4XnYAWmjZwpdA2uwfPFOaj5RwWIEJhgR1S3Ex6Gy8NE9
- VrLpr25F7ysIoudrKL+AHPJgzfMinmEFVT9yVO5N4rPtpFvY0eu9USyay8uMXta3C0BV
- H/m1TKl1OoW0HTUg7l0XMEDc9hItraDz3Iq4LzS6GAGjuxE15QnzQDlBWkr2EOX3Upqy bA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3ebpvntcwx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 20 Feb 2022 23:20:52 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 20 Feb
- 2022 23:20:50 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Sun, 20 Feb 2022 23:21:12 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 6E4D765E8FA;
-        Sun, 20 Feb 2022 22:45:19 -0800 (PST)
-From:   Rakesh Babu Saladi <rsaladi2@marvell.com>
-To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <richardcochran@gmail.com>
-CC:     <rsaladi2@marvell.com>, Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH v2 2/2] octeontx2-af: cn10k: add workaround for ptp errata
-Date:   Mon, 21 Feb 2022 12:15:08 +0530
-Message-ID: <20220221064508.19148-3-rsaladi2@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220221064508.19148-1-rsaladi2@marvell.com>
-References: <20220221064508.19148-1-rsaladi2@marvell.com>
+        Mon, 21 Feb 2022 02:25:49 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDFBB0;
+        Sun, 20 Feb 2022 23:25:14 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 959B8482;
+        Mon, 21 Feb 2022 08:25:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1645428311;
+        bh=QzrKYMGmSk41w9hmcPhoY/HYYkB0EivAExnARRS54CQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dy5yOrtuU2YAsiAuof4cmstmqwW8UJUidYNzgO2kWw0cHDhU9d+f1RPEaGKT3LaDf
+         j1gByIsVX3HSTi12/WvNCyeChC6fdmLUzIztzsi9CyIRQa4skZgdeuO5wjn6WfV2wL
+         V6/h7pTFsoHtfzN+z+SDwgNLSYFTrtDct/PJ1Q7M=
+Date:   Mon, 21 Feb 2022 09:25:02 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
+        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
+        tomi.valkeinen@ideasonboard.com,
+        bcm-kernel-feedback-list@broadcom.com, stefan.wahren@i2se.com
+Subject: Re: [PATCH v5 11/11] media: imx219: Add support for the V4L2 subdev
+ active state
+Message-ID: <YhM+TgcOgbyXgs/x@pendragon.ideasonboard.com>
+References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220208155027.891055-12-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: YfbHU52-3iaLSbp4Ih57xkLpcT-WeoGJ
-X-Proofpoint-GUID: YfbHU52-3iaLSbp4Ih57xkLpcT-WeoGJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-21_02,2022-02-18_01,2021-12-02_01
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220208155027.891055-12-jeanmichel.hautbois@ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen Mamindlapalli <naveenm@marvell.com>
+Hi Jean-Michel,
 
-This patch adds workaround for PTP errata given below.
+Thank you for the patch.
 
-1. At the time of 1 sec rollover of nano-second counter,
-   the nano-second counter is set to 0. However, it should
-   be set to (existing counter_value - 10^9). This leads to
-   an accumulating error in the timestamp value with each sec
-   rollover.
-2. Additionally, the nano-second counter currently is rolling
-   over at 'h3B9A_C9FF. It should roll over at 'h3B9A_CA00.
+On Tue, Feb 08, 2022 at 04:50:27PM +0100, Jean-Michel Hautbois wrote:
+> Now that we have multiplexed streams support in the V4L2 API, add
+> support for the subdev active state in the sensor.
+> 
+> In order to use state to manage the active configuration, we need to
+> initialize the subdevice state with a call to
+> v4l2_subdev_init_finalize() before registering it. The call to
+> v4l2_subdev_cleanup() is also required to release the resources before
+> unregistering.
+> 
+> Accessing the configuration is then done after a call to
+> v4l2_subdev_lock_state() and the set_fmt operation can then call
+> v4l2_state_get_stream_format() directly.
+> 
+> The get_fmt operation does not need to be complex, and a simple call to
+> v4l2_subdev_get_fmt will do the trick, as it will grab the configured
+> format based on the state.
+> 
+> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+> ---
+>  drivers/media/i2c/imx219.c | 151 +++++++++++++++++++------------------
+>  1 file changed, 77 insertions(+), 74 deletions(-)
+> 
+> diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
+> index f005ad8d2124..f6322f39c3f1 100644
+> --- a/drivers/media/i2c/imx219.c
+> +++ b/drivers/media/i2c/imx219.c
+> @@ -887,78 +887,43 @@ static int imx219_enum_frame_size(struct v4l2_subdev *sd,
+>  				  struct v4l2_subdev_state *sd_state,
+>  				  struct v4l2_subdev_frame_size_enum *fse)
+>  {
+> -	struct imx219 *imx219 = to_imx219(sd);
+> -	u32 code;
+> -
+> -	if (fse->index >= ARRAY_SIZE(supported_modes))
+> -		return -EINVAL;
+> -
+> -	mutex_lock(&imx219->mutex);
+> -	code = imx219_get_format_code(imx219, fse->code);
+> -	mutex_unlock(&imx219->mutex);
+> -	if (fse->code != code)
+> -		return -EINVAL;
+> -
+> -	fse->min_width = supported_modes[fse->index].width;
+> -	fse->max_width = fse->min_width;
+> -	fse->min_height = supported_modes[fse->index].height;
+> -	fse->max_height = fse->min_height;
+> +	unsigned int i;
+>  
+> -	return 0;
+> -}
+> +	if (fse->stream == 0) {
+> +		for (i = 0; i < ARRAY_SIZE(imx219_mbus_formats); ++i) {
+> +			if (imx219_mbus_formats[i] == fse->code)
+> +				break;
+> +		}
+>  
+> -static void imx219_reset_colorspace(struct v4l2_mbus_framefmt *fmt)
+> -{
+> -	fmt->colorspace = V4L2_COLORSPACE_SRGB;
+> -	fmt->ycbcr_enc = V4L2_MAP_YCBCR_ENC_DEFAULT(fmt->colorspace);
+> -	fmt->quantization = V4L2_MAP_QUANTIZATION_DEFAULT(true,
+> -							  fmt->colorspace,
+> -							  fmt->ycbcr_enc);
+> -	fmt->xfer_func = V4L2_MAP_XFER_FUNC_DEFAULT(fmt->colorspace);
+> -}
+> +		if (i == ARRAY_SIZE(imx219_mbus_formats))
+> +			return -EINVAL;
+>  
+> -static void imx219_update_pad_format(struct imx219 *imx219,
+> -				     const struct imx219_mode *mode,
+> -				     struct v4l2_subdev_format *fmt)
+> -{
+> -	fmt->format.width = mode->width;
+> -	fmt->format.height = mode->height;
+> -	fmt->format.field = V4L2_FIELD_NONE;
+> -	imx219_reset_colorspace(&fmt->format);
+> -}
+> +		if (fse->index >= ARRAY_SIZE(supported_modes))
+> +			return -EINVAL;
+>  
+> -static int __imx219_get_pad_format(struct imx219 *imx219,
+> -				   struct v4l2_subdev_state *sd_state,
+> -				   struct v4l2_subdev_format *fmt)
+> -{
+> -	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+> -		struct v4l2_mbus_framefmt *try_fmt =
+> -			v4l2_subdev_get_try_format(&imx219->sd, sd_state,
+> -						   fmt->pad);
+> -		/* update the code which could change due to vflip or hflip: */
+> -		try_fmt->code = imx219_get_format_code(imx219, try_fmt->code);
+> -		fmt->format = *try_fmt;
+> +		fse->min_width  = supported_modes[fse->index].width;
+> +		fse->max_width  = fse->min_width;
+> +		fse->max_height = supported_modes[fse->index].height;
+> +		fse->min_height = fse->max_height;
+>  	} else {
+> -		imx219_update_pad_format(imx219, imx219->mode, fmt);
+> -		fmt->format.code = imx219_get_format_code(imx219,
+> -							  imx219->fmt.code);
+> +		if (fse->code != MEDIA_BUS_FMT_METADATA_8)
+> +			return -EINVAL;
+> +
+> +		fse->min_width = IMX219_EMBEDDED_LINE_WIDTH;
+> +		fse->max_width = fse->min_width;
+> +		fse->min_height = IMX219_NUM_EMBEDDED_LINES;
+> +		fse->max_height = fse->min_height;
+>  	}
+>  
+>  	return 0;
+>  }
+>  
+> -static int imx219_get_pad_format(struct v4l2_subdev *sd,
+> -				 struct v4l2_subdev_state *sd_state,
+> -				 struct v4l2_subdev_format *fmt)
+> +static void imx219_update_metadata_pad_format(struct v4l2_subdev_format *fmt)
+>  {
+> -	struct imx219 *imx219 = to_imx219(sd);
+> -	int ret;
+> -
+> -	mutex_lock(&imx219->mutex);
+> -	ret = __imx219_get_pad_format(imx219, sd_state, fmt);
+> -	mutex_unlock(&imx219->mutex);
+> -
+> -	return ret;
+> +	fmt->format.width = IMX219_EMBEDDED_LINE_WIDTH;
+> +	fmt->format.height = IMX219_NUM_EMBEDDED_LINES;
+> +	fmt->format.code = MEDIA_BUS_FMT_METADATA_8;
+> +	fmt->format.field = V4L2_FIELD_NONE;
+>  }
+>  
+>  static int imx219_set_pad_format(struct v4l2_subdev *sd,
+> @@ -966,32 +931,58 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
+>  				 struct v4l2_subdev_format *fmt)
+>  {
+>  	struct imx219 *imx219 = to_imx219(sd);
+> +	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
+>  	const struct imx219_mode *mode;
+> -	struct v4l2_mbus_framefmt *framefmt;
+> +	struct v4l2_mbus_framefmt *format;
+>  	int exposure_max, exposure_def, hblank;
+>  	unsigned int i;
+> +	int ret = 0;
+>  
+>  	mutex_lock(&imx219->mutex);
+>  
+> +	if (fmt->pad != 0) {
+> +		dev_err(&client->dev, "%s Could not get pad %d\n", __func__,
+> +			fmt->pad);
 
-The workaround for issue #1 is to speed up the ptp clock by
-adjusting PTP_CLOCK_COMP register to the desired value to
-compensate for the nanoseconds lost per each second.
+Drop this message.
 
-The workaround for issue #2 is to slow down the ptp clock
-such that the rollover occurs at ~1sec.
+> +		ret = -EINVAL;
+> +		goto done;
+> +	}
+> +
+> +	if (fmt->stream == 1) {
+> +		/* Only one embedded data mode is supported */
+> +		imx219_update_metadata_pad_format(fmt);
 
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Rakesh Babu Saladi <rsaladi2@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/ptp.c   | 87 +++++++++++++++++--
- 1 file changed, 80 insertions(+), 7 deletions(-)
+		return v4l2_subdev_get_fmt(sd, sd_state, fmt);
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-index 5b8906fd45c3..67a6821d2dff 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-@@ -51,9 +51,19 @@
- #define PTP_TIMESTAMP				0xF20ULL
- #define PTP_CLOCK_SEC				0xFD0ULL
- 
-+#define CYCLE_MULT				1000
-+
- static struct ptp *first_ptp_block;
- static const struct pci_device_id ptp_id_table[];
- 
-+static bool cn10k_ptp_errata(struct ptp *ptp)
-+{
-+	if (ptp->pdev->subsystem_device == PCI_SUBSYS_DEVID_CN10K_A_PTP ||
-+	    ptp->pdev->subsystem_device == PCI_SUBSYS_DEVID_CNF10K_A_PTP)
-+		return true;
-+	return false;
-+}
-+
- static bool is_ptp_tsfmt_sec_nsec(struct ptp *ptp)
- {
- 	if (ptp->pdev->subsystem_device == PCI_SUBSYS_DEVID_CN10K_A_PTP ||
-@@ -86,6 +96,58 @@ static u64 read_ptp_tstmp_nsec(struct ptp *ptp)
- 	return readq(ptp->reg_base + PTP_CLOCK_HI);
- }
- 
-+static u64 ptp_calc_adjusted_comp(u64 ptp_clock_freq)
-+{
-+	u64 comp, adj = 0, cycles_per_sec, ns_drift = 0;
-+	u32 ptp_clock_nsec, cycle_time;
-+	int cycle;
-+
-+	/* Errata:
-+	 * Issue #1: At the time of 1 sec rollover of the nano-second counter,
-+	 * the nano-second counter is set to 0. However, it should be set to
-+	 * (existing counter_value - 10^9).
-+	 *
-+	 * Issue #2: The nano-second counter rolls over at 0x3B9A_C9FF.
-+	 * It should roll over at 0x3B9A_CA00.
-+	 */
-+
-+	/* calculate ptp_clock_comp value */
-+	comp = ((u64)1000000000ULL << 32) / ptp_clock_freq;
-+	/* use CYCLE_MULT to avoid accuracy loss due to integer arithmetic */
-+	cycle_time = NSEC_PER_SEC * CYCLE_MULT / ptp_clock_freq;
-+	/* cycles per sec */
-+	cycles_per_sec = ptp_clock_freq;
-+
-+	/* check whether ptp nanosecond counter rolls over early */
-+	cycle = cycles_per_sec - 1;
-+	ptp_clock_nsec = (cycle * comp) >> 32;
-+	while (ptp_clock_nsec < NSEC_PER_SEC) {
-+		if (ptp_clock_nsec == 0x3B9AC9FF)
-+			goto calc_adj_comp;
-+		cycle++;
-+		ptp_clock_nsec = (cycle * comp) >> 32;
-+	}
-+	/* compute nanoseconds lost per second when nsec counter rolls over */
-+	ns_drift = ptp_clock_nsec - NSEC_PER_SEC;
-+	/* calculate ptp_clock_comp adjustment */
-+	if (ns_drift > 0) {
-+		adj = comp * ns_drift;
-+		adj = adj / 1000000000ULL;
-+	}
-+	/* speed up the ptp clock to account for nanoseconds lost */
-+	comp += adj;
-+	return comp;
-+
-+calc_adj_comp:
-+	/* slow down the ptp clock to not rollover early */
-+	adj = comp * cycle_time;
-+	adj = adj / 1000000000ULL;
-+	adj = adj / CYCLE_MULT;
-+	comp -= adj;
-+
-+	return comp;
-+}
-+
- struct ptp *ptp_get(void)
- {
- 	struct ptp *ptp = first_ptp_block;
-@@ -113,8 +175,8 @@ void ptp_put(struct ptp *ptp)
- static int ptp_adjfine(struct ptp *ptp, long scaled_ppm)
- {
- 	bool neg_adj = false;
--	u64 comp;
--	u64 adj;
-+	u32 freq, freq_adj;
-+	u64 comp, adj;
- 	s64 ppb;
- 
- 	if (scaled_ppm < 0) {
-@@ -136,15 +198,22 @@ static int ptp_adjfine(struct ptp *ptp, long scaled_ppm)
- 	 * where tbase is the basic compensation value calculated
- 	 * initialy in the probe function.
- 	 */
--	comp = ((u64)1000000000ull << 32) / ptp->clock_rate;
- 	/* convert scaled_ppm to ppb */
- 	ppb = 1 + scaled_ppm;
- 	ppb *= 125;
- 	ppb >>= 13;
--	adj = comp * ppb;
--	adj = div_u64(adj, 1000000000ull);
--	comp = neg_adj ? comp - adj : comp + adj;
- 
-+	if (cn10k_ptp_errata(ptp)) {
-+		/* calculate the new frequency based on ppb */
-+		freq_adj = (ptp->clock_rate * ppb) / 1000000000ULL;
-+		freq = neg_adj ? ptp->clock_rate + freq_adj : ptp->clock_rate - freq_adj;
-+		comp = ptp_calc_adjusted_comp(freq);
-+	} else {
-+		comp = ((u64)1000000000ull << 32) / ptp->clock_rate;
-+		adj = comp * ppb;
-+		adj = div_u64(adj, 1000000000ull);
-+		comp = neg_adj ? comp - adj : comp + adj;
-+	}
- 	writeq(comp, ptp->reg_base + PTP_CLOCK_COMP);
- 
- 	return 0;
-@@ -202,7 +271,11 @@ void ptp_start(struct ptp *ptp, u64 sclk, u32 ext_clk_freq, u32 extts)
- 	writeq(0x1dcd650000000000, ptp->reg_base + PTP_PPS_HI_INCR);
- 	writeq(0x1dcd650000000000, ptp->reg_base + PTP_PPS_LO_INCR);
- 
--	clock_comp = ((u64)1000000000ull << 32) / ptp->clock_rate;
-+	if (cn10k_ptp_errata(ptp))
-+		clock_comp = ptp_calc_adjusted_comp(ptp->clock_rate);
-+	else
-+		clock_comp = ((u64)1000000000ull << 32) / ptp->clock_rate;
-+
- 	/* Initial compensation value to start the nanosecs counter */
- 	writeq(clock_comp, ptp->reg_base + PTP_CLOCK_COMP);
- }
+will be simpler. You can drop the imx219_update_metadata_pad_format()
+function. And move the mutex_lock() lower, after all the code that
+doesn't touch fields of the imx219 structure.
+
+> +		ret = 0;
+
+Not needed.
+
+> +		goto done;
+> +	}
+> +
+>  	for (i = 0; i < ARRAY_SIZE(imx219_mbus_formats); i++)
+>  		if (imx219_mbus_formats[i] == fmt->format.code)
+>  			break;
+>  	if (i >= ARRAY_SIZE(imx219_mbus_formats))
+>  		i = 0;
+>  
+> -	/* Bayer order varies with flips */
+> -	fmt->format.code = imx219_get_format_code(imx219, imx219_mbus_formats[i]);
+> -
+>  	mode = v4l2_find_nearest_size(supported_modes,
+>  				      ARRAY_SIZE(supported_modes),
+>  				      width, height,
+>  				      fmt->format.width, fmt->format.height);
+> -	imx219_update_pad_format(imx219, mode, fmt);
+> -	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
+> -		framefmt = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
+> -		*framefmt = fmt->format;
+> -	} else if (imx219->mode != mode ||
+> -		   imx219->fmt.code != fmt->format.code) {
+> +
+> +	v4l2_subdev_lock_state(sd_state);
+> +
+> +	/* Update the stored format and return it. */
+> +	format = v4l2_state_get_stream_format(sd_state, fmt->pad, fmt->stream);
+> +
+> +	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE && imx219->streaming) {
+> +		ret = -EBUSY;
+> +		goto err_state;
+> +	}
+> +
+> +	/* Bayer order varies with flips */
+> +	format->code = imx219_get_format_code(imx219, imx219_mbus_formats[i]);
+> +	format->width = mode->width;
+> +	format->height = mode->height;
+> +	/* Bayer order varies with flips */
+> +	fmt->format = *format;
+> +
+> +	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
+>  		imx219->fmt = fmt->format;
+
+The whole point of using the active state is that you don't need to
+store the format in the imx219 structure anymore.
+
+This patch does too much. I'm tempted to ask you to first switch to
+usage of the active state, even before adding routing support, then add
+routing support without the embedded data stream, and finally add
+embedded data support.
+
+>  		imx219->mode = mode;
+>  		/* Update limits and set FPS to default */
+> @@ -1018,9 +1009,12 @@ static int imx219_set_pad_format(struct v4l2_subdev *sd,
+>  					 hblank);
+>  	}
+>  
+> +err_state:
+> +	v4l2_subdev_unlock_state(sd_state);
+> +done:
+>  	mutex_unlock(&imx219->mutex);
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static int imx219_set_framefmt(struct imx219 *imx219)
+> @@ -1322,7 +1316,7 @@ static const struct v4l2_subdev_video_ops imx219_video_ops = {
+>  static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
+>  	.init_cfg		= imx219_init_cfg,
+>  	.enum_mbus_code		= imx219_enum_mbus_code,
+> -	.get_fmt		= imx219_get_pad_format,
+> +	.get_fmt		= v4l2_subdev_get_fmt,
+>  	.set_fmt		= imx219_set_pad_format,
+>  	.get_selection		= imx219_get_selection,
+>  	.set_routing		= imx219_set_routing,
+> @@ -1602,10 +1596,16 @@ static int imx219_probe(struct i2c_client *client)
+>  		goto error_handler_free;
+>  	}
+>  
+> +	ret = v4l2_subdev_init_finalize(sd);
+> +	if (ret) {
+> +		dev_err(dev, "failed to finalize sensor init: %d\n", ret);
+> +		goto error_media_entity;
+> +	}
+> +
+>  	ret = v4l2_async_register_subdev_sensor(sd);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to register sensor sub-device: %d\n", ret);
+> -		goto error_media_entity;
+> +		goto error_free_state;
+>  	}
+>  
+>  	/* Enable runtime PM and turn off the device */
+> @@ -1615,6 +1615,8 @@ static int imx219_probe(struct i2c_client *client)
+>  
+>  	return 0;
+>  
+> +error_free_state:
+
+error_subdev_cleanup:
+
+> +	v4l2_subdev_cleanup(sd);
+>  error_media_entity:
+>  	media_entity_cleanup(&sd->entity);
+>  
+> @@ -1633,6 +1635,7 @@ static int imx219_remove(struct i2c_client *client)
+>  	struct imx219 *imx219 = to_imx219(sd);
+>  
+>  	v4l2_async_unregister_subdev(sd);
+> +	v4l2_subdev_cleanup(sd);
+>  	media_entity_cleanup(&sd->entity);
+>  	imx219_free_controls(imx219);
+>  
+
 -- 
-2.17.1
+Regards,
 
+Laurent Pinchart
