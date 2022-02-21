@@ -2,139 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C485EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4615C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358835AbiBUNSp (ORCPT
+        id S1358847AbiBUNTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:18:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53222 "EHLO
+        Mon, 21 Feb 2022 08:19:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358825AbiBUNSl (ORCPT
+        with ESMTP id S1358840AbiBUNTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:18:41 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312471EED9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:18:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645449498; x=1676985498;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vcJYgubBwS5EWIZVc7wEuxJrBDMZX2y3GacrrLk695Y=;
-  b=Ra7EVIZdB+3b4SQuvi4A0Bmv3ic/M7MpXGs4trnnA14Jg/YnBU0aqbBd
-   J843CASvPHgLJpq5oLL0jpPAEhRfhTXWTEoJs7EbDJzYoGbt5yfztQqGO
-   ejVFUnaztnCC285/W3ByP2ypKQ+1iDGAZ+JsZd0qn94jgAVkK2j3+S/E0
-   9ITqmHkTx/+OXEqXZgowk4rn1s7QQRJqguDujfpdYrcz94oMxdvWHsnrZ
-   r0gpenFeDabx90QUazP1KRXZc2JO0OK6oXCas+YrQXlv19YOx199MBKQh
-   lb7Krwvx7BxgN0Br0PFdhzHdwxiOGO8gZTZm8DFtlZY/zn2mMRYcIf0Qz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="276098710"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="276098710"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 05:18:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="638553145"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 05:18:16 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM8Zz-0001dP-9V; Mon, 21 Feb 2022 13:18:15 +0000
-Date:   Mon, 21 Feb 2022 21:18:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: drivers/dma/dw-edma/dw-edma-v0-core.c:192:19: warning: unused
- function 'readq_ch'
-Message-ID: <202202212129.7Gipg08u-lkp@intel.com>
+        Mon, 21 Feb 2022 08:19:01 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8071B1EEDA;
+        Mon, 21 Feb 2022 05:18:38 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3EA76210F0;
+        Mon, 21 Feb 2022 13:18:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645449517; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qx0Q18ljVcrXhWvAQ6cUSrAVYJIdsXr8hIUlUK/8QpM=;
+        b=Cqj3DkYxCZV9tKvMhc20KpHen50b9YvAxjUyjNAy5j3Xvz2X6M0bSDZR+S3amBXFlcd7E4
+        GyiTc/uusdBsKhLqAoKvJRO3wfHJj0bubdlDIchD/mMCW6ZPJMlJ/ltShHLGbV4Wa1/4JU
+        n5b02J35yPJl5V5IYGUmr/t7NQ9B6+A=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645449517;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qx0Q18ljVcrXhWvAQ6cUSrAVYJIdsXr8hIUlUK/8QpM=;
+        b=LofZw7M41jMg5B5ffe5yCkle/xS/uTOv0SumivGAz0qPUIAYkZOprL+M7W3Dd6TBDjORLq
+        bvgQ+L7Wq+Q15pAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0F39B13AF2;
+        Mon, 21 Feb 2022 13:18:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id sKQ3Ai2RE2K2fwAAMHmgww
+        (envelope-from <hare@suse.de>); Mon, 21 Feb 2022 13:18:37 +0000
+Message-ID: <9bfe807a-d14e-feea-6fcd-b1526da16ff5@suse.de>
+Date:   Mon, 21 Feb 2022 14:18:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 01/15] crypto: kpp - provide support for KPP template
+ instances
+Content-Language: en-US
+To:     Nicolai Stange <nstange@suse.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     =?UTF-8?Q?Stephan_M=c3=bcller?= <smueller@chronox.de>,
+        Torsten Duwe <duwe@suse.de>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org
+References: <20220221121101.1615-1-nstange@suse.de>
+ <20220221121101.1615-2-nstange@suse.de>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20220221121101.1615-2-nstange@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gustavo,
+On 2/21/22 13:10, Nicolai Stange wrote:
+> The upcoming support for the RFC 7919 ffdhe group parameters will be
+> made available in the form of templates like "ffdhe2048(dh)",
+> "ffdhe3072(dh)" and so on. Template instantiations thereof would wrap the
+> inner "dh" kpp_alg and also provide kpp_alg services to the outside again.
+> Furthermore, it might be perhaps be desirable to provide KDF templates in
+> the future, which would similarly wrap an inner kpp_alg and present
+> themselves to the outside as another kpp_alg, transforming the shared
+> secret on its way out.
+> 
+> Introduce the bits needed for supporting KPP template instances. Everything
+> related to inner kpp_alg spawns potentially being held by such template
+> instances will be deferred to a subsequent patch in order to facilitate
+> review.
+> 
+> Define struct struct kpp_instance in close analogy to the already existing
+> skcipher_instance, shash_instance and alike, but wrapping a struct kpp_alg.
+> Implement the new kpp_register_instance() template instance registration
+> primitive. Provide some helper functions for
+> - going back and forth between a generic struct crypto_instance and the new
+>    struct kpp_instance,
+> - obtaining the instantiating kpp_instance from a crypto_kpp transform and
+> - for accessing a given kpp_instance's implementation specific context
+>    data.
+> 
+> Annotate everything with proper kernel-doc comments, even though
+> include/crypto/internal/kpp.h is not considered for the generated docs.
+> 
+> Signed-off-by: Nicolai Stange <nstange@suse.de>
+> ---
+>   crypto/kpp.c                  | 20 +++++++++
+>   include/crypto/internal/kpp.h | 83 +++++++++++++++++++++++++++++++++++
+>   2 files changed, 103 insertions(+)
+> 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-FYI, the error/warning still remains.
+Cheers,
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-commit: e0c1d53891c43a70c9fa85ddb3174ab5afd7e2ec dmaengine: dw-edma: Add support for the HDMA feature
-date:   11 months ago
-config: mips-randconfig-r001-20220221 (https://download.01.org/0day-ci/archive/20220221/202202212129.7Gipg08u-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e0c1d53891c43a70c9fa85ddb3174ab5afd7e2ec
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e0c1d53891c43a70c9fa85ddb3174ab5afd7e2ec
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/cavium-octeon/crypto/ arch/mips/cavium-octeon/executive/ arch/mips/kernel/ drivers/dma/dw-edma/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/dma/dw-edma/dw-edma-v0-core.c:192:19: warning: unused function 'readq_ch'
-   static inline u64 readq_ch(struct dw_edma enum dw_edma_dir dir, u16 ch,
-   ^
-   fatal error: error in backend: Nested variants found in inline asm string: '.if ( 0x00 ) != -1)) 0x00 ) != -1)) : ($( static struct ftrace_branch_data __attribute__((__aligned__(4))) __attribute__((__section__("_ftrace_branch"))) __if_trace = $( .func = __func__, .file = "arch/mips/include/asm/barrier.h", .line = 16, $); 0x00 ) != -1)) : $))) ) && ( (1 << 0) ); .set push; .set mips64r2; .rept (1 - (0x00 == 0x04)); sync 0x00; .endr; .set pop; .else; ; .endif'
-   clang-15: error: clang frontend command failed with exit code 70 (use -v to see invocation)
-   clang version 15.0.0 (git://gitmirror/llvm_project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-   Target: mips64el-unknown-linux
-   Thread model: posix
-   InstalledDir: /opt/cross/clang-d271fc04d5/bin
-   clang-15: note: diagnostic msg:
-   Makefile arch drivers include kernel nr_bisected scripts source usr
-
-
-vim +/readq_ch +192 drivers/dma/dw-edma/dw-edma-v0-core.c
-
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  191  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18 @192  static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  193  			   const void __iomem *addr)
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  194  {
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  195  	u32 value;
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  196  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  197  	if (dw->mf == EDMA_MF_EDMA_LEGACY) {
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  198  		u32 viewport_sel;
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  199  		unsigned long flags;
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  200  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  201  		raw_spin_lock_irqsave(&dw->lock, flags);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  202  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  203  		viewport_sel = FIELD_PREP(EDMA_V0_VIEWPORT_MASK, ch);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  204  		if (dir == EDMA_DIR_READ)
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  205  			viewport_sel |= BIT(31);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  206  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  207  		writel(viewport_sel,
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  208  		       &(__dw_regs(dw)->type.legacy.viewport_sel));
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  209  		value = readq(addr);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  210  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  211  		raw_spin_unlock_irqrestore(&dw->lock, flags);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  212  	} else {
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  213  		value = readq(addr);
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  214  	}
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  215  
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  216  	return value;
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  217  }
-04e0a39fc10f82 Gustavo Pimentel 2021-02-18  218  
-
-:::::: The code at line 192 was first introduced by commit
-:::::: 04e0a39fc10f82a71b84af73351333b184cee578 dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures
-
-:::::: TO: Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-:::::: CC: Vinod Koul <vkoul@kernel.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
