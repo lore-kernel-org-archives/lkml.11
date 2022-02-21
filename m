@@ -2,49 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D31C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378986AbiBUPTI (ORCPT
+        id S1379000AbiBUPU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:19:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35706 "EHLO
+        Mon, 21 Feb 2022 10:20:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235434AbiBUPTA (ORCPT
+        with ESMTP id S1378992AbiBUPUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:19:00 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13BC1DA73;
-        Mon, 21 Feb 2022 07:18:37 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMASS-003dgP-QE; Mon, 21 Feb 2022 15:18:36 +0000
-Date:   Mon, 21 Feb 2022 15:18:36 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Max Kellermann <max.kellermann@ionos.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] lib/iov_iter: initialize "flags" in new pipe_buffer
-Message-ID: <YhOtTAj1CTRWlbRo@zeniv-ca.linux.org.uk>
-References: <20220221100313.1504449-1-max.kellermann@ionos.com>
+        Mon, 21 Feb 2022 10:20:50 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B061DA75;
+        Mon, 21 Feb 2022 07:20:27 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 055AA1F41EEC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645456820;
+        bh=AEBHpU/YbpjVEE8sZ5e3auTLaK6lJUMCcaPJ3UkaE2k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jZecYRDSM0F1Bp2byQMHOXaZ+4j0RYg3NQ9SGon82I9nC4mXy4ZC9g3Ko3n8Ulwnq
+         IxwJhIh9bAvdLEqiiq/MwLRTYK6f3sys6ayrZi32wwZvjGYx7Gg8pJ4AhcEiFkIDLS
+         85PS9J+KBAk/VtY2il5I5+/0AqM74nUwR3x/NKNYUuOY354iWDvKeqLwUTrT2CxhN4
+         5NZ+dbKDh2ILefofSluV6/SVfbj62+cSIFIYqX/Rzt+qjBAHFp5lNElCRl4XicKtDT
+         Y352CifU41aaojSbv45BlylJVUzStY1cXPklAKqXonJKvwuIPuBpT6qWNdEzIyjRU6
+         4qviYDH4uqGXw==
+Message-ID: <d4e27af2-0f64-9c7f-489d-0f7dfcdd9ee5@collabora.com>
+Date:   Mon, 21 Feb 2022 16:20:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221100313.1504449-1-max.kellermann@ionos.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2 09/23] arm64: dts: mt8192: Add infracfg_rst node
+Content-Language: en-US
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>
+References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-10-allen-kh.cheng@mediatek.com>
+ <c84ec638-3134-fc1c-4761-7f1ec8381a39@collabora.com>
+ <8a3a6167450bdd51bdff2e9b12a15522a18dd38e.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <8a3a6167450bdd51bdff2e9b12a15522a18dd38e.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 11:03:13AM +0100, Max Kellermann wrote:
-> The functions copy_page_to_iter_pipe() and push_pipe() can both
-> allocate a new pipe_buffer, but the "flags" member initializer is
-> missing.
+Il 21/02/22 14:05, allen-kh.cheng ha scritto:
+> On Fri, 2022-02-18 at 13:55 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
+>>> add infracfg_rst node for mt8192 SoC.
+>>>
+>>> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+>>
+>> For v3, please mention that you're adding simple-mfd to allow probing
+>> the
+>> ti,syscon-reset node.
+>>
+>> After the commit description fix:
+>> Reviewed-by: AngeloGioacchino Del Regno <
+>> angelogioacchino.delregno@collabora.com>
+>>
 > 
-> Fixes: 241699cd72a8 ("new iov_iter flavour: pipe-backed")
-> To: Alexander Viro <viro@zeniv.linux.org.uk>
-> To: linux-fsdevel@vger.kernel.org
-> To: linux-kernel@vger.kernel.org
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
+> Hi Angelo,
+> 
+> Thanks for reminding, I will update commit message.
+> 
+> Do I need to also change the commit title ?
+> 
+> Best regards,
+> Allen
+> 
 
-Applied, will push to Linus...
+Hi Allen,
+
+Please update only the description; the title is fine.
+
+Thank you,
+Angelo
