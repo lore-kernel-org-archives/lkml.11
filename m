@@ -2,120 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29598C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D298C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbiBUSG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:06:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58286 "EHLO
+        id S230409AbiBUSHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:07:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232550AbiBUSE0 (ORCPT
+        with ESMTP id S232547AbiBUSE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 13:04:26 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4CB1DA46
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:56:29 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id r20so15811291ljj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:56:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RYNWLnVbKM4xHO28n29WEcF6mje2egR5or43iUYgI8Y=;
-        b=CILXkezCgpPmCclkAHIZIeOknVFw1koxGhh+P/JszB5LU8l0sTxsK3rc3yjaEkvn7V
-         HnSuioQZMtItzMYIrJ0Ml3seKrxglaadNPwoI3Y1dyGSq0YFuo5F5KwurP3TV1a0WTjh
-         owvIJxAb1noguKZX9Q6wWg6rFVpLS2uL9QrFo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RYNWLnVbKM4xHO28n29WEcF6mje2egR5or43iUYgI8Y=;
-        b=obK7yAbtv2PadAYsYhHcnaOeC4hW9h0hXJI0tWZiTOvi2/QOqFExqE/hq2Ej98eh0x
-         UnPOY3wllcrK4dEXzx+ywsyHh2HgUgeQFkPvBdFFrTaPzNtlXkz7pj494WHFnSjMqNaB
-         07ajNhTXwEuOD+xX3bd2JQHsKlSAMQw68PAk2PGkmYaSjaEpI2tXKkGvDQRzpgEK8+0M
-         cmNVcC+uXx+wj7BpneXhtwQwQllbMNe9/kxJydxeYRQZbxOOMDSa7ET20+D0SbPQKXSC
-         tQGPZY4LUNgnsYmScq7WnKsq0A34C6dXF/prwUmPY2nMQpZNURtEyUQ9xZhW8baMO1+3
-         GgVA==
-X-Gm-Message-State: AOAM533JuMt+0SPnXPMuN5lnyYIb/HXmrhMBKKjwwfPB8lT8Z/zCzcdI
-        UJoZGCoQ9RVOaUyC4s92O8nzNGr6p3qXomSg
-X-Google-Smtp-Source: ABdhPJzdL0gtH+EO+o7Cnhc3zvV9ISx1gP6cOJDQ2rytTAFqSPw5nYuvFBgyYzdSQK4YLcPbH52ToA==
-X-Received: by 2002:a05:651c:1a29:b0:246:40e7:6360 with SMTP id by41-20020a05651c1a2900b0024640e76360mr3114630ljb.61.1645466187415;
-        Mon, 21 Feb 2022 09:56:27 -0800 (PST)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id q9sm32172ljh.118.2022.02.21.09.56.26
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 09:56:26 -0800 (PST)
-Received: by mail-lj1-f172.google.com with SMTP id e8so7862572ljj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:56:26 -0800 (PST)
-X-Received: by 2002:a2e:aa1f:0:b0:244:c2ea:7f20 with SMTP id
- bf31-20020a2eaa1f000000b00244c2ea7f20mr14792237ljb.164.1645466186113; Mon, 21
- Feb 2022 09:56:26 -0800 (PST)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7131D0C7;
+        Mon, 21 Feb 2022 09:56:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645466182; x=1677002182;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+/KTjRfi65Ib76kWEGOorsZScmtiCnDSMiUu8H92FgM=;
+  b=ITLgqtddaj9jqorF5CndFdZuYeHqPzmeK9CwEFHoTW8C1rV5J8x8Nr2g
+   L6o9qXrSkWArfVrOfsUUquPA4cmaHrePYOgyc7Me3nqMQLLjk+0lHYNv8
+   +qyHTnvJe32vv6p2wpcqlPfZkcdTa8/4r4n0BWPL6DGIJVUav09bw49TJ
+   h4cN2Sv54eyyGHC0b6gL7FyMc3QJRAT77ed6egzjP0sMT92oseMNSMmwW
+   RSCItpfmqtW2uMbvmi19HjTbuHUS7PSRfdlKzuzagVkjVPL+bKJkE+MGQ
+   S+tCoQEaJoD5tuf3khN+27vGg9lts/JTRz3qf1NBrlvt86N3x83AXt5xg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="314812286"
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="314812286"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:56:22 -0800
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="706329238"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:56:17 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMCuD-006s7L-Qt;
+        Mon, 21 Feb 2022 19:55:25 +0200
+Date:   Mon, 21 Feb 2022 19:55:25 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 09/10] i2c: mux: add support for fwnode
+Message-ID: <YhPSDTAPiTvEESnO@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <20220221162652.103834-10-clement.leger@bootlin.com>
 MIME-Version: 1.0
-References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
- <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com>
-In-Reply-To: <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 21 Feb 2022 09:56:10 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
-Message-ID: <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
-Subject: Re: Linux 5.17-rc5
-To:     Woody Suwalski <wsuwalski@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220221162652.103834-10-clement.leger@bootlin.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 6:23 AM Woody Suwalski <wsuwalski@gmail.com> wrote:
->
-> Compile failed like reported by Robert Gadson in
-> https://lkml.org/lkml/2022/2/20/341
->
-> As a workaround:
-> nf_defrag_ipv6.patch
-> --- a/net/netfilter/xt_socket.c    2022-02-21 07:29:21.938263397 -0500
-> +++ b/net/netfilter/xt_socket.c    2022-02-21 07:40:16.730022272 -0500
-> @@ -17,11 +17,11 @@
->   #include <net/inet_sock.h>
->   #include <net/netfilter/ipv4/nf_defrag_ipv4.h>
->
-> -#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
-> +//#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
->   #include <linux/netfilter_ipv6/ip6_tables.h>
-...
+On Mon, Feb 21, 2022 at 05:26:51PM +0100, Clément Léger wrote:
+> Modify i2c_mux_add_adapter() to use with fwnode API to allow creating
+> mux adapters with fwnode based devices. This allows to have a node
+> independent support for i2c muxes.
 
-Hmm. That may fix the compile failure, but it looks somewhat broken to me.
+I^2C muxes have their own description for DT and ACPI platforms, I'm not sure
+swnode should be used here at all. Just upload a corresponding SSDT overlay or
+DT overlay depending on the platform. Can it be achieved?
 
-Other cases of nf_defrag_ipv6_disable() end up being protected by
+-- 
+With Best Regards,
+Andy Shevchenko
 
-   #if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
 
-at the use-point, not by just assuming it always exists even when
-CONFIG_NF_TABLES_IPV6 is off.
-
-So I think the proper fix is something along the lines of
-
-  --- a/net/netfilter/xt_socket.c
-  +++ b/net/netfilter/xt_socket.c
-  @@ -220,8 +220,10 @@ static void socket_mt_destroy(const struct
-xt_mtdtor_param *par)
-   {
-        if (par->family == NFPROTO_IPV4)
-                nf_defrag_ipv4_disable(par->net);
-  +#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
-        else if (par->family == NFPROTO_IPV6)
-                nf_defrag_ipv6_disable(par->net);
-  +#endif
-   }
-
-instead. Entirely untested, because that's how I roll, but I suspect
-the netfilter people will know what to do.
-
-Added guilty parties and mailing list to the participants.
-
-                Linus
