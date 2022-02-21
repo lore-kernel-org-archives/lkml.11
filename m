@@ -2,175 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 811C8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 07:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346363AbiBUHeX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 02:34:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51514 "EHLO
+        id S243195AbiBUHe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 02:34:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346328AbiBUHdz (ORCPT
+        with ESMTP id S1346293AbiBUHet (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 02:33:55 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DC0140AD
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:33:19 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id qx21so30754912ejb.13
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 23:33:19 -0800 (PST)
+        Mon, 21 Feb 2022 02:34:49 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2C26310;
+        Sun, 20 Feb 2022 23:34:12 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id c14so29934403qvl.12;
+        Sun, 20 Feb 2022 23:34:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hpPKMOOkrFJF8q2NbuFWkI8+0Qjpz9YTMzfUO37K1GE=;
-        b=eVeSHrAldynujWT89vm1fFlDDPVKlpctWwU39dILonBi95xwqCqw6OKIjjukkEI/kL
-         e1wA5Mq/vFT6w1LQ0H2D9Ng0+IPFc7Z09q/eSlD/g4GkkUvB3EkMjExQ8tHL1WaP804d
-         Qjh0R3cHxj6Px9q+YpLm5Q/rVO9gPBFwOFWsT1XZGa18GHX8GBHFxIIv4dPx1xvd3F1q
-         vKhwzN35gp3OvDiHjWRRSCRRYYXlA1Fw1hFUg1/DhT9er/+XELITrSU03rlgnBXMTrHc
-         3nVQ3K1qJX6fQzlUgYHHoC51VsmXFihTqow/1Fkqlvo4uwrorTC4EgCrq3rtEWNWe5/O
-         0D5A==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=R4B6JGXR6mvZF1952Vke43JV0QR66SxjuMutQVOsFo8=;
+        b=Z06LCpgN2MVimjjFUlm3IrOc0bB63t5ON0LGaE4naFFq5j3x0jb78evJj8rax3eWP/
+         wgLsdIlXGADTXtwIZOPQPKaJFEYfYXwgtZ5UOBJuzO2T8WAjlN5DomYW9eZL93ICBZT8
+         yimSlEUKhwEw4f1FPbp0zK/EwW0EF/4JAD5uY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hpPKMOOkrFJF8q2NbuFWkI8+0Qjpz9YTMzfUO37K1GE=;
-        b=OVQW7GMikMKCPex/42IcJDUJkHoFCqX2gk9MwYo5eYkZ8cpy6mbLjhjzaP9u7Bf8SI
-         ZSLJfts7srir7X2LHBM7C4ukv0mKLld4jteeibWGFFN171F8VEywphOiKIUt/N26yXlQ
-         KGngtfkvVBp9340JVRtkYOJikxnCErlmxeFXaOiUmvmwwLrRqSdezA7OZS1mVtE4iRbz
-         U5rOLODo8E0GIkg6hkc/0GOhpVsjhqJ+YayaVCQ+b4pAvW1MXZ6mBDBCJwhNFgt7VFP0
-         ncA2W8bgTFJvnssaW8Kz9MiFcg5jRCQ1+m6WzjCtnjPflQEtUDOKb8aU+UX9H80JKxpg
-         R5MQ==
-X-Gm-Message-State: AOAM5329GlEUDxOCxNfxSoZwEVtQlqAEBPP/d33LSxITrfsmJqkU6heU
-        lWDn9O9aPXJwvnRx27vd0yU=
-X-Google-Smtp-Source: ABdhPJziO6jTr9J2uSUPk4q6xmDikxZKg+/yxSRzpUduiW5u07oqOlRVGvv0SL3D6Na77Ewv/4Z+VQ==
-X-Received: by 2002:a17:907:30cc:b0:6ce:d97:cb0f with SMTP id vl12-20020a17090730cc00b006ce0d97cb0fmr15023881ejb.0.1645428798560;
-        Sun, 20 Feb 2022 23:33:18 -0800 (PST)
-Received: from localhost.localdomain (ip5f5abb8f.dynamic.kabel-deutschland.de. [95.90.187.143])
-        by smtp.gmail.com with ESMTPSA id c11sm8673128edx.42.2022.02.20.23.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 23:33:18 -0800 (PST)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 5/5] staging: r8188eu: remove ODM_CmnInfoUpdate()
-Date:   Mon, 21 Feb 2022 08:33:06 +0100
-Message-Id: <20220221073306.16636-6-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221073306.16636-1-straube.linux@gmail.com>
-References: <20220221073306.16636-1-straube.linux@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R4B6JGXR6mvZF1952Vke43JV0QR66SxjuMutQVOsFo8=;
+        b=YmMEd+CHsdS0M5r5aMIe5Z8ScJKlFdbIFOKLqG52zRhQyW7ptqSoXd1fiajzxbl9sH
+         l4L60kMO5C7KtaqsC1Fdyb9D8LMwkvfM9hepITVhgrdPLA+g/Of3vZouBZW/jwiLaeLn
+         fV3qp+A+TLNljy3hZVBSTd5GGSwA7A2A84Fge+rmIUYhwj+WfVi5ifza+XdEpQVT2+LH
+         41dCQZzG6lYTW64TablpGoo66LKFiUUXQdxKJ+9nKNjUYb5fZ75jOg9kJ7JxxJLEkr8s
+         Q2XC2e48GPr2aaDPn1C3PUTbTGpqlvcqQKzx36YyQIuVUNXwfsnRYZ2QjDCqbjPcf6kU
+         ZXxA==
+X-Gm-Message-State: AOAM530Fwtu09ZEqAqW8L10A/Lk3K218yaytYQuYDF9aTW54vHLIR5/Y
+        XhqY1NRbM+zHfpPhw/EUo2vgezzcJoraEtaVpjA=
+X-Google-Smtp-Source: ABdhPJx2pPvLE2lY8PhsDFi43EexUA016GTtes5KYX0xv/HLHfxhIxLOM/pn0HF05x8GWnFK30iX+BejJZ2bFcsMSdI=
+X-Received: by 2002:ac8:5b82:0:b0:2cf:232d:b1f8 with SMTP id
+ a2-20020ac85b82000000b002cf232db1f8mr16728455qta.58.1645428851531; Sun, 20
+ Feb 2022 23:34:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210921043936.468001-1-andrew@aj.id.au> <d2b85ad7-aef7-6088-03f5-cbd6e0bcab5d@kaod.org>
+In-Reply-To: <d2b85ad7-aef7-6088-03f5-cbd6e0bcab5d@kaod.org>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 21 Feb 2022 07:33:59 +0000
+Message-ID: <CACPK8Xdvns7PK9t1ZutAbkJqhb5eRcoWCDySQGsfbtLv+XMvqQ@mail.gmail.com>
+Subject: Re: [PATCH 0/2] leds: pca955x: Expose GPIOs for all pins
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>,
+        linux-leds@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Each case in ODM_CmnInfoUpdate() just sets a single variable. Set the
-variables directly and remove ODM_CmnInfoUpdate().
+Hello Pavel,
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
-v2:
-no changes
 
- drivers/staging/r8188eu/hal/odm.c         | 21 +--------------------
- drivers/staging/r8188eu/hal/rtl8188e_dm.c |  4 ++--
- drivers/staging/r8188eu/include/odm.h     |  7 -------
- 3 files changed, 3 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/odm.c b/drivers/staging/r8188eu/hal/odm.c
-index 5d2f934d78ae..94f9b125d860 100644
---- a/drivers/staging/r8188eu/hal/odm.c
-+++ b/drivers/staging/r8188eu/hal/odm.c
-@@ -464,7 +464,7 @@ static void odm_RSSIMonitorCheck(struct odm_dm_struct *pDM_Odm)
- 		pdmpriv->EntryMinUndecoratedSmoothedPWDB = 0;
- 
- 	FindMinimumRSSI(Adapter);
--	ODM_CmnInfoUpdate(&pHalData->odmpriv, ODM_CMNINFO_RSSI_MIN, pdmpriv->MinUndecoratedPWDBForDM);
-+	pHalData->odmpriv.RSSI_Min = pdmpriv->MinUndecoratedPWDBForDM;
- }
- 
- static void odm_TXPowerTrackingThermalMeterInit(struct odm_dm_struct *pDM_Odm)
-@@ -639,25 +639,6 @@ void ODM_CmnInfoInit(struct odm_dm_struct *pDM_Odm, enum odm_common_info_def Cmn
- 	pDM_Odm->BbSwingFlagOfdm		= false;
- }
- 
--/*  Update Band/CHannel/.. The values are dynamic but non-per-packet. */
--void ODM_CmnInfoUpdate(struct odm_dm_struct *pDM_Odm, u32 CmnInfo, u64 Value)
--{
--	/*  */
--	/*  This init variable may be changed in run time. */
--	/*  */
--	switch	(CmnInfo) {
--	case	ODM_CMNINFO_ABILITY:
--		pDM_Odm->SupportAbility = (u32)Value;
--		break;
--	case	ODM_CMNINFO_LINK:
--		pDM_Odm->bLinked = (bool)Value;
--		break;
--	case	ODM_CMNINFO_RSSI_MIN:
--		pDM_Odm->RSSI_Min = (u8)Value;
--		break;
--	}
--}
--
- void ODM_Write_DIG(struct odm_dm_struct *pDM_Odm, u8 CurrentIGI)
- {
- 	struct rtw_dig *pDM_DigTable = &pDM_Odm->DM_DigTable;
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_dm.c b/drivers/staging/r8188eu/hal/rtl8188e_dm.c
-index df0b412c52eb..6d28e3dc0d26 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_dm.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_dm.c
-@@ -36,7 +36,7 @@ static void Update_ODM_ComInfo_88E(struct adapter *Adapter)
- 	if (hal_data->AntDivCfg)
- 		pdmpriv->InitODMFlag |= ODM_BB_ANT_DIV;
- 
--	ODM_CmnInfoUpdate(dm_odm, ODM_CMNINFO_ABILITY, pdmpriv->InitODMFlag);
-+	dm_odm->SupportAbility = pdmpriv->InitODMFlag;
- 
- 	dm_odm->pWirelessMode = &pmlmeext->cur_wireless_mode;
- 	dm_odm->pSecChOffset = &hal_data->nCur40MhzPrimeSC;
-@@ -80,7 +80,7 @@ void rtl8188e_HalDmWatchDog(struct adapter *Adapter)
- 			bLinked = true;
- 	}
- 
--	ODM_CmnInfoUpdate(&hal_data->odmpriv, ODM_CMNINFO_LINK, bLinked);
-+	hal_data->odmpriv.bLinked = bLinked;
- 	ODM_DMWatchdog(&hal_data->odmpriv);
- }
- 
-diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
-index 7a10f57b9bd3..b88b3f3d08ee 100644
---- a/drivers/staging/r8188eu/include/odm.h
-+++ b/drivers/staging/r8188eu/include/odm.h
-@@ -122,19 +122,14 @@ enum odm_common_info_def {
- 	/*  Fixed value: */
- 
- 	/* HOOK BEFORE REG INIT----------- */
--	ODM_CMNINFO_ABILITY,		/* ODM_ABILITY_E */
- 	ODM_CMNINFO_MP_TEST_CHIP,
- 	/* HOOK BEFORE REG INIT-----------  */
- 
- /* CALL BY VALUE------------- */
--	ODM_CMNINFO_LINK,
--	ODM_CMNINFO_RSSI_MIN,
- 	ODM_CMNINFO_RF_ANTENNA_TYPE,		/*  u8 */
- /* CALL BY VALUE-------------*/
- };
- 
--/*  2011/10/20 MH Define ODM support ability.  ODM_CMNINFO_ABILITY */
--
- enum odm_ability_def {
- 	/*  BB ODM section BIT 0-15 */
- 	ODM_BB_RSSI_MONITOR		= BIT(4),
-@@ -455,6 +450,4 @@ void ODM_DMWatchdog(struct odm_dm_struct *pDM_Odm);
- void ODM_CmnInfoInit(struct odm_dm_struct *pDM_Odm,
- 		     enum odm_common_info_def CmnInfo, u32 Value);
- 
--void ODM_CmnInfoUpdate(struct odm_dm_struct *pDM_Odm, u32 CmnInfo, u64 Value);
--
- #endif
--- 
-2.35.1
+On Fri, 24 Sept 2021 at 06:41, C=C3=A9dric Le Goater <clg@kaod.org> wrote:
+>
+> On 9/21/21 06:39, Andrew Jeffery wrote:
+> > Without these patches the driver limits the number of pins exposed on
+> > the gpiochip to the number of pins specified as GPIO in the devicetree,
+> > but doesn't map between the GPIO and pin number spaces. The result is
+> > that specifying offset or interleaved GPIOs in the devicetree gives
+> > unexpected behaviour in userspace.
+> >
+> > By always exposing all pins as GPIOs the patches resolve the lack of
+> > mapping between GPIO offsets and pins on the package in the driver by
+> > ensuring we always have a 1-to-1 mapping.
+> >
+> > The issue is primarily addressed by patch 1/2. Patch 2/2 makes it
+> > possible to not expose any pins as LEDs (and therefore make them all
+> > accessible as GPIOs). This has a follow-on effect of allowing the drive=
+r
+> > to bind to a device instantiated at runtime without requiring a
+> > description in the devicetree.
+> >
+> > I've tested the series under qemu to inspect the various interactions
+> > between LEDs vs GPIOs as well as conflicting GPIO requests.
 
+> > Please review!
+>
+> This is simpler than the 'ngpio' business we had before.
+>
+> Reviewed-by: C=C3=A9dric Le Goater <clg@kaod.org>
+
+I saw that you recently merged some LED patches. I was wondering if
+you could consider this series for v5.18. It still applies cleanly,
+and we've been running it for a while now, so it's very well tested.
+
+Cheers,
+
+Joel
