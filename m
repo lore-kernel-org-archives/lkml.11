@@ -2,184 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D47AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C75C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358543AbiBUNGw (ORCPT
+        id S1358561AbiBUNIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:06:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36638 "EHLO
+        Mon, 21 Feb 2022 08:08:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358536AbiBUNGu (ORCPT
+        with ESMTP id S1358551AbiBUNI2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:06:50 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE8EF34
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:06:23 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21LCr59l002355;
-        Mon, 21 Feb 2022 13:06:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=kILDo2zF8qjFH54gRd2yie0Oy+RloJn30X9ouKV71P0=;
- b=f6IJYfllGJduChVTtI6oPnTt1PbJqhfWNrRtyrObGIx24tEUj0I5nSvk5gKC438dall0
- k3bXVbYl+EWznWTMTBan1szdZpq9/YdNywTxVctBjSsL/9/lcA+mlPaLoQ1KI7fYJpyN
- sKRAdzVvnsDQhhxGtE+FG4wDMVOSVMt/1PsZpMYjM8kTJgKUuGhIuqmpnjdyGlB7sejt
- EuE5wfFly0FYJP1lQ9YQAEVA0rHS40nv0wpSsXWAsJIMvAvoMMnmE1Ckkxc6araOnI5I
- ColxQ1ycXdIudmilZaUB4OD5YQxm+grtubpCBakY0JtFJiLxjFA+NKmSwPXQk4LHVQ5e WQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ear5t42rj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 13:06:13 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21LD0n4Z136657;
-        Mon, 21 Feb 2022 13:06:13 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
-        by aserp3030.oracle.com with ESMTP id 3eapkep7cx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 13:06:12 +0000
+        Mon, 21 Feb 2022 08:08:28 -0500
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210771EC4F;
+        Mon, 21 Feb 2022 05:08:05 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LDCL++LYrGZ1GCmucxeejY0bTBOV/j/JC9c39CJmp6KGY8CMI16DuFL5seQOOTjnhsufoYzUY/P/uOKA6faSKjnFNB8SvCQKGoqU8PUuHsT2XZyv081Hw5riY2Ru1GTZw+2/188T4Qr1j4JiG4CbvoruQ6h4Cdt1h0gJsxVvJygHb1D5VZlnGjQ3dGZ1vdZx6vTR9w7Bwn04tiLyuobMmE4JQf7L0AwE/TyRAti1nLOkG5iiLnq1AZGD8orxFUiY7i3opVWRLM7skyuo6CMGGgRGk6TVmRANbcWQJZuVSELGyCFRLNPITa7xksCn7LnDGIAbb4cSHgTmNLmOY9ogJA==
+ b=ByU3Htn1oNYIcJOjJxB4xiVCBrJmWGHWhHIcs20/ph2Znt8Dvkk2Qo/KR8089oBQLem8jYswti1G+NBAogloOUDDsn69yaAYdKj0kLZbigZKOxChwNm85yHJGfzGAOqE7pz8cYjOjVTfv7M61PZF3BH9AYgLi4TQz6NiA9XIcqDRdtGutANnk5m3ZdujcbHXbY49HKLPOo7DCEWEbzI7WyY3prl6vGBfATRcXsrmttpiH6VMqyqoB87tyrUhjByzQUlOlhKxEQcFmL/fWAqHk/EftpG+fsH+DkoaN9twCW9VDKLYRum3SNEucBIaIGFPi2EoPpF1F/t6MKY3ErYNQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kILDo2zF8qjFH54gRd2yie0Oy+RloJn30X9ouKV71P0=;
- b=CUcgvpTPYCDd/J48ENNtQHS6pOP5LML5HPanTqxZwmwuHVGfOUkionHbgTN6U2y3hwPzdreUEEyhdjp4/ZGCYWRF/cXQBfPZr591qG+mZUN2GafyMfIuhKlY1B5LtaY0PON3eliDPHzFSJerxiUEjIHmXi08iIfiD8kLYH+DAGtRIkgJmpy2bVMZgqNZvnRp90VOHISjLL5ZbcB2g7Gf+afp/naTgAO673zbxIVCMa6eEW/BwCz2WHsP7tfB6Im8OR2JSdFgLLNOQY9NTkAKNMY6HvVJJZBVmfGk81MbxKAySHN7Vl63hKUWb7KpVIHD2bfA9I4IWr16GfnroSxywQ==
+ bh=UOUNC/ti0OOdjdfxbe3dzRn/yo29ytQRuBZEVFuGLqY=;
+ b=EwSMjG4WIP3npzz0Ol2YIllPvssTL1x5rpDaYd//9f27jka6RmglO3vZioZXEBOFGSyFTEKhQ+J57k85YeTeMmFSa8c6dGW81fzdgVGtIxt3dEqJvDVMsjnZlun/ugW6jPCQnMT/89ih9q9Ut3rQReTEgu2w/9wDbqHYX0FwkoqaYf4P2H8MfI9gjjrqExDTqi2Wa1vinVfWo8If7GgI+PTBcTX9ywQ41D4ptHgX3s1Ct5NsENIzB/sGD/MWbVhuB3fZFI1vIjL56Y7ox5BGoK1lOnTObZPUtsmE1b0n0ImxbRKDaOsNucMEAcMYnenmrzJ+tp+F2y43sRqoewYRsg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kILDo2zF8qjFH54gRd2yie0Oy+RloJn30X9ouKV71P0=;
- b=J4Fgj599+nW0YSZD6tHcOrTEOQJpLinu4k8IQ7Fcm/FsKXQb6OrLOInk15wccqT3Ny3vnvnR7Nq9/5Qmc2c48dc2ymHXnxAug/hoiH40wYpmr6C6GjbezF7Q76YhU/4BYVsemwZ1Wn9yvOkRjDJmXzzHHT3wPtd/hPrHJH1Fsyc=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BN0PR10MB5367.namprd10.prod.outlook.com
- (2603:10b6:408:125::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Mon, 21 Feb
- 2022 13:06:11 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 13:06:11 +0000
-Date:   Mon, 21 Feb 2022 16:05:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Colin Ian King <colin.i.king@googlemail.com>,
-        Saurav Girepunje <saurav.girepunje@gmail.com>,
-        Johan Hovold <johan@kernel.org>,
-        =?iso-8859-1?Q?Cl=E1udio?= Maia <clrrm@isep.ipp.pt>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: rtl8192u: cleanup proc fs entries upon exit
-Message-ID: <20220221130548.GK3965@kadam>
-References: <20220220231554.2510567-1-ztong0001@gmail.com>
- <20220221130006.GJ3965@kadam>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221130006.GJ3965@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0026.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::10)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=UOUNC/ti0OOdjdfxbe3dzRn/yo29ytQRuBZEVFuGLqY=;
+ b=VWaJPOqHCEoEqwwlw+y8bIm9cw5A9swDQzH/aim3txK39yW+uyvmS13l/jMqqfnB4V5ChCxXGNbXg8wJ1BLkZbxTDO2IcrYTSoU53w3vJMkH+LdRR8P/nTh+QXgH9IvzBaKnN4X+y9Vh/TUbVwcoKm47jm63pza/bK9QGqOvDFI=
+Received: from SJ0PR02MB7279.namprd02.prod.outlook.com (2603:10b6:a03:2a1::9)
+ by SA1PR02MB8461.namprd02.prod.outlook.com (2603:10b6:806:1f5::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Mon, 21 Feb
+ 2022 13:08:01 +0000
+Received: from SJ0PR02MB7279.namprd02.prod.outlook.com
+ ([fe80::a159:fdbf:b4d0:c180]) by SJ0PR02MB7279.namprd02.prod.outlook.com
+ ([fe80::a159:fdbf:b4d0:c180%8]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
+ 13:08:01 +0000
+From:   Harsha Harsha <harshah@xilinx.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+CC:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Michal Simek <michals@xilinx.com>,
+        Sarat Chand Savitala <saratcha@xilinx.com>,
+        Harsh Jain <harshj@xilinx.com>, git <git@xilinx.com>
+Subject: RE: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SHA3
+ functionality
+Thread-Topic: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SHA3
+ functionality
+Thread-Index: AQHYJDLEV7muFowk2EOLQ1JY4Y7bbqyZD4kAgATePfCAABFkIA==
+Date:   Mon, 21 Feb 2022 13:08:01 +0000
+Message-ID: <SJ0PR02MB7279D291580A2F1583836F79DE3A9@SJ0PR02MB7279.namprd02.prod.outlook.com>
+References: <1645125264-11033-1-git-send-email-harsha.harsha@xilinx.com>
+ <1645125264-11033-3-git-send-email-harsha.harsha@xilinx.com>
+ <Yg9qOrjJuttVSetN@Red>
+ <SJ0PR02MB7279894629DCA2758355A9D2DE3A9@SJ0PR02MB7279.namprd02.prod.outlook.com>
+In-Reply-To: <SJ0PR02MB7279894629DCA2758355A9D2DE3A9@SJ0PR02MB7279.namprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=xilinx.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 827696e6-4529-4d72-27bb-08d9f53b30a3
+x-ms-traffictypediagnostic: SA1PR02MB8461:EE_
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-microsoft-antispam-prvs: <SA1PR02MB84613038A1A97F7DB35A1C8ADE3A9@SA1PR02MB8461.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0jp8bJd1vQyGqatJVzVmBvzEUsF+HQ5iNC8rCzuGCTh/PhDVUt0akVMI09aPOnP7Z7AwqjY3EbLRR56jJArz+rAmhm+HnZ4gZb6BWxX1IqEXwHJroO1eeDzRF/3J82VA+EzxSEowG7HRfGTQGoA/JvpoScM20ezJtd+sGOxSi/nAtJKKZpTAWw/0SkhF9PW6JRe7rJrYWOq/wrE+PNAVYBB2QFVU7Hk3Q50HQ/Tr55dhrCfDKv63RqbLD69Qpgi4fxUp2KgGFqbn2EDRLLiLYtI7XdZXNSkaHd/9oRv2+pzDQNDZNIcKfYQZduotXfdM/ebbJwAEs+VpoSf2gefIRELuye3sdXdH6fUWnsoC5tEjiDaXAgPg6jz+UYV1fmmBkSFIU92aTN8YYX/bc9fzLBxItD2kRSGKtDnExq6t8vnfOnZinK0UI3X9RDq0LePUyQOJ/fVPFBgWD6lLAKZhJL4dFzf1l90vngNlcriomeRK1zULQPyVPbotTwS6fxxSD3oFS4+51lGe5w2bAHxSFbY5nrEgH5e6tQoOPPjCmn0TzTEjOAl0OanwRTTEvLL2ApIOCn4RtdlKmj/9cH3S8WIqEadufH0hr+zLqQKtRor242WScFhaCLGv2IKOYTgeGyF0Q1nkSRbegPzShRB91WIpwTniwmugrN4LM3KlQRROkpj0xVBx7dENT2JuovkklRv/BiSUroHtiJnoYMpV53GyuKIlGSL2rlojIL85qlCbXiAtrcDdc7IiTh1QCtcyBuHR8Kpq+zJ+b8/t4j5DvgtiONxu68TiThLwopin28c=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR02MB7279.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(76116006)(316002)(55016003)(71200400001)(6916009)(54906003)(38070700005)(508600001)(8936002)(52536014)(53546011)(107886003)(6506007)(966005)(7696005)(33656002)(9686003)(2940100002)(8676002)(4326008)(86362001)(66446008)(66574015)(66476007)(66946007)(66556008)(186003)(26005)(64756008)(83380400001)(122000001)(5660300002)(38100700002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?KSBbKsIiRtRXDLaAYgCH3DzrgDKvPhcBRYQBdUWRGAolzV1ptYTW1EJGil?=
+ =?iso-8859-1?Q?hRPbnORnfWHcLst+fukXsLERZPTOeBMzuwsLCz1aeu/LUmXUFLo+m0PxE9?=
+ =?iso-8859-1?Q?vFWlBU7Z/FasssrZO4o89msZkTVqs+2hDmBmxEQgNCJWQyYGhWRN9HF7Y3?=
+ =?iso-8859-1?Q?NTI/aLOwzMJKT6z+WlNuPwc9CILrp2P9dqaH0OQNbdly7TZY0xfkubItUY?=
+ =?iso-8859-1?Q?tZ77OIeiWWUbosqx+Joahc7B1hUe49ZPbHh6Jg4vVuxxPYVSqJXD/so1/D?=
+ =?iso-8859-1?Q?PA7f5cPuuFBo8/a/ld04dlkl1rpqRKuGhJipFadz756liyHgKcQcz97E00?=
+ =?iso-8859-1?Q?1F24i6S5o6tro5ZT6KbZlgkYtZvHy1M+7m7+fTKZZ9lVB+/hkN9iYAhFP0?=
+ =?iso-8859-1?Q?lrN4Ky4BCdsaPrzgwGD4LMiq5HUeFPDe9kgGwfrLKz9DgMnSI3AD2pjgM5?=
+ =?iso-8859-1?Q?M5EZeNU95VP+QX1HGhM4WERvuANf1ggHhRymjF4f8FjwctLcmIgzbZzHT9?=
+ =?iso-8859-1?Q?uKAkwqRklUmHEGUXOZzEz5V1mn/SQRmRfGnTlqetuVDGsgMLAMa7qcJqkI?=
+ =?iso-8859-1?Q?wZ8dWhsRSd8PjrUNTpJXetdIexLNq9QQ0aoGLfV5LpvvTe9/ZgWm78ABYd?=
+ =?iso-8859-1?Q?JxG3PsrGj5AuQj+BSZ4Ib4qZLowCOPYa2LcxYYmIJhLunAL3Ca913qLQvu?=
+ =?iso-8859-1?Q?V24m5V7Kz6kzY5hjyAv6iOJc5gyhVMFF4nuUMF6pq1LqYtEBPBf5uwSbMN?=
+ =?iso-8859-1?Q?UyAXK/eDjx/zFtZYNOuT6iAtMoIvjc7uE0fTGbxciWbvdbTE6usMT2d8yF?=
+ =?iso-8859-1?Q?LC5pXgH3S1/dBKuMuwKyaW4DaQUOaijj9GA5BWnJnvmZ89m0SYLD5gF0hX?=
+ =?iso-8859-1?Q?lKTgbQ85blJttA5w6j/HPEl9C3Km5OwHQORWd8FXVQJW0w5BfWuGPWfTFk?=
+ =?iso-8859-1?Q?OClIq+MvzDWJ7xQMSCVl1l4gBQnaBOBVK+m7wbhCQwgA8awvDU4/oqpyVa?=
+ =?iso-8859-1?Q?TECnvgIqVK33IvmcoqjKxRrgKwXllD1j0PS6sGn+oFcmITaVNFDIYTOW8e?=
+ =?iso-8859-1?Q?3/iBeFbyrwg7g9DGYKKFnuukexk7ziqmf83hfFcrsg4OY+lkqg2E/Hy+8r?=
+ =?iso-8859-1?Q?ehr18JyG7wgY7yKI7CebFF+WCGZbLKE2FRx6e8u5qH4SWBCD+KHeaI67Hk?=
+ =?iso-8859-1?Q?SJgxuT2jmCHoWAY4nN0eZxi2FVhgrDTr//X3hV3CNQ2hG1ntGsJlKZCojB?=
+ =?iso-8859-1?Q?/OLG2/XZuLhC/5KoQkBte9JuJMydW5TNYVN24on4anx8wxI1Wd45UekYMX?=
+ =?iso-8859-1?Q?rKFl4ZheuwhPdljC8mGHd6IDIU0FW0a0vedX5sLIkiaoYgvbPrLDQcYFMk?=
+ =?iso-8859-1?Q?6XX7DSLRLm2dnJa0CtvCvi5yWvGRQ60LEXmyCCPaeGp667wf1l22eSJgRT?=
+ =?iso-8859-1?Q?gH/n1PoObL7mEFNxmHni1NchiI35hyL6ZIaMb4+Tjh7I5V4UkyxTILVZ8w?=
+ =?iso-8859-1?Q?N7wTRb0t5U3XT+fZsCfFWlt7a3Qt4u50KTEEUj0LFtf5PjVuUgQHjUEfAt?=
+ =?iso-8859-1?Q?+0Xgq8OHTpNo4r80zVjlsOMGBc7b3scRGq2u+NFmsyH4MkNcX/qrBcOuYY?=
+ =?iso-8859-1?Q?Bx/P6ecF5qGbXYekTZDc8HTzxc/60NWSXxwldH6a4aGwfSBIxQt1pmeg?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ada2be97-f593-46f4-923d-08d9f53aee57
-X-MS-TrafficTypeDiagnostic: BN0PR10MB5367:EE_
-X-Microsoft-Antispam-PRVS: <BN0PR10MB536797FCDE7B92720D3B554D8E3A9@BN0PR10MB5367.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 16sOwywh2VFCyajAEvgDPNTUeCgVGVZZOKfuyHfIMV8oSC2J0DojDLGM5m2qCZTtS5Wh3pvjd8ql0NWlOHXvgwgJAZcjl40R0VnI/pk7/XP1D7TiqXVj/Q5kD4RG/UUNkhdvGM0SmTs46FJQOULgqGr9A66Jyq1EV56J5CzWYubTvcXIakCcSCcbHsrIeOUZpomPhQBJECJ2oK5wM9MxP4FYLUSqdIaKV/ejpPQwrZDek9QXS04VBMoDLJLlmZOagHOW23F9PEgQPN5ex3Uhe6ruz2ok5xVNge5jtnvm04SifrgQ3Oe3a+ZU+ezc27Q6u2Kf1oSddvrbHsMj3ktyvVaKeStBpJxBoBjqT3pppVm6fSfCXbsdrUVKrM7EvuKmM3dDXv7xuXbaBGzu9x/z+soPu0Ixuu0drjU99iP3DDjvsTNom4CmpGA5PDnLUl9K7TuYVjRO1FQQxMW9eEnO+FrHH7++pMlFgrBEKN/ql198P+hJcHg8JGi+nBRu2kQvHP6iqy/n7sUb3JM3/Y4DGvgj2JwmxHkMvvkklOhJpDL65ljTnGYKvRhvdkzUi+i78wHXHj9thZJxiPXeTZr30hgBvkugONqtMusjACyqatd6UD2Nr3TeCdRYSFsBxLphZU2Ft+cK9uG9M5KOsRdPR1KRXzOdGLhZk2yvLtdobSJuBoNnMCoaPB7WDEJXJ9PRVC/NtWoHN00G/Pm5f1C8EQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(52116002)(38100700002)(26005)(508600001)(6486002)(186003)(38350700002)(7416002)(33656002)(5660300002)(6506007)(86362001)(6666004)(1076003)(66946007)(66556008)(66476007)(8676002)(4326008)(33716001)(2906002)(54906003)(6916009)(83380400001)(9686003)(6512007)(316002)(44832011);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?teJgnLC4vdlyUK9dekborg4EAMcpa8tpYOiY2FYiG+mLEnRJFYZliaZF1ipK?=
- =?us-ascii?Q?K3KHVAJjvsdMhWqc6EHT0xwNjbRiQSCM+vldFbwJ9mqXK27JZLfpht2iVJ2I?=
- =?us-ascii?Q?k3/6WlmFZMuFqaR7EainUSuhSk07d3IxmlwUq+PsiphNt5A8mSs3a4NEem1a?=
- =?us-ascii?Q?/ewp67p0OkW7K0000BBuwgduUzpAniULixgMoElGC4vWP96+BMMhZ0twTyxO?=
- =?us-ascii?Q?i4jazrbp9tC2pZwlNFd6pdNYxJpega3VoFQxog3u7uk9LTTc0BOWFHwpqK65?=
- =?us-ascii?Q?t2VY6IZbRhZayb4GjU+4tqiHgqVJCR9DwHsaT3q2wmTtNKxBQ7UuznnLPruA?=
- =?us-ascii?Q?1ChlXA/MGdcZPMVf6IgglFLt3HKiS3h6ZfvF14nDkWMJHkIxnMaTUJYEKo9E?=
- =?us-ascii?Q?Y6Xe0D4z2oMvDx+aZnSsHrF0S4yTuMvDirRPNqXqCPWXDW+t3eX2f+nPdQO/?=
- =?us-ascii?Q?Oh4extP8MNjrrJdxBFwYfRQpwCNgxq58iMMJNuEhxwvTvFwDyD5V64Tlhy7Z?=
- =?us-ascii?Q?5yloymYlM7JKgALPqreYZVyT+c1MxoTWbHNI8YT6rk6/fLogDAsrmSu3C5xB?=
- =?us-ascii?Q?MGyoubNriGLuZ3De3qdImqWaQbNpJ52+HFBxHo774DCsihHL1uAcno5PyZMD?=
- =?us-ascii?Q?VqIJvddpM1/AdQPIbpROTDAMW+tAHe01Spv0891hRyy/JENM3AWwH1/CL33J?=
- =?us-ascii?Q?Sq1N/Zaj1qHTZ82kJ8d3R7uoIAFKKT9c8OW1jg7Ez7EUKQlOs4599XV2CDS4?=
- =?us-ascii?Q?4+sczDDK5vOrgoZiIVoMxE+yIZW9lBxA2EoBQIotgpGBR/e1qSWt1aKYEm+g?=
- =?us-ascii?Q?qZhnk95eJw01oUcP0jFQONwzKxml/ppCEtabOLmVHioHrCq2luYvjAGgIAAC?=
- =?us-ascii?Q?Q5dUTHfAFZ9yInyc432J07WA929uSbWTlSoBozhZSEdwmNBBRyb0CESOrz1A?=
- =?us-ascii?Q?6uMeEKtmOeYIPNDsX1s704v4oBOxToF4KfuRbgOz5g7JQqSvuRImQvC67DCs?=
- =?us-ascii?Q?8/sJ80wx5YPMkvBD44TXT6oeBLdEQVAbh3HYvXTSyDMVlGXuVLcP+U07hovN?=
- =?us-ascii?Q?Xlpuma+b6VN7RerYb7Lp6UHE0wDFR+Va0AA7bRiUzpMQqpZGlBeE8TNFMIv4?=
- =?us-ascii?Q?q6kCwxYcfIy/aYWYnOcYZqGtlLjIRZMfH4noK4DywqluJRJEF251cmRbKc/P?=
- =?us-ascii?Q?Tpg9lQ76UBWuwITJnhW0VSmeNbNfehpYrhtar3mXuic+xdGuE8NI0bhJrtWZ?=
- =?us-ascii?Q?PsL6LCHpEqWwtvyVCOQD3QFm4uQ2XyIiMHX3nbBU81BGQB8v+7JUQdTLhNC5?=
- =?us-ascii?Q?LOn3jqvgBHdK71Ii2yE7y8os26JMIaEcqP7rJQmzwF5V6ElXlXXVawLF2uO9?=
- =?us-ascii?Q?TBGxF2abrYphEOdA7tCwO7clD2miAedeuKuU5F8rGUnw4/k2kgcpP181PDKm?=
- =?us-ascii?Q?YNeh/LA9ld8OBozMm3fLENcRn/+RLvNSGqThuuNMlJTxFqYxMv5zHTDJuN0+?=
- =?us-ascii?Q?qiBiUn+CucvMsIw1rQlIfhkfMpzWP6V1xHhrpp+0E2b2G53/EjspV5S/T67y?=
- =?us-ascii?Q?+lRO5V0J3FohTo3W2QmYwzsEs80NmAb/W9EN35Tg5FZmUE3XuxCzpFiUjn8p?=
- =?us-ascii?Q?thhYfnYjeQMUd43m37iKyAPLzvRabKcO8iQq+Jg7fft1PZtdIi5jgjUj/md8?=
- =?us-ascii?Q?eBQ2kg=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ada2be97-f593-46f4-923d-08d9f53aee57
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-OriginatorOrg: xilinx.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 13:06:10.9791
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR02MB7279.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 827696e6-4529-4d72-27bb-08d9f53b30a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2022 13:08:01.6404
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oG2mBKLdbSCa5zh+5GYWdtkXfMoQRRhaiZWzAgEmhDAmQNfGLEh/XpwAO1m2QntPUX4Ab+aqHLaumIxJp5caxbNX8xOMlbWYlf9/HWxDnF0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5367
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10264 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
- spamscore=0 mlxlogscore=950 adultscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202210078
-X-Proofpoint-GUID: Q_7vto0Mhk4wW5wZrLgz_hE9lhk3u48v
-X-Proofpoint-ORIG-GUID: Q_7vto0Mhk4wW5wZrLgz_hE9lhk3u48v
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5zj/hnycB9ayDukHRyNvyVFIJT3xobvHSLon7zo2WvExY2t+8vreqvHUf1F+1/KZ0d0K+tY3EoUE1fxTqK5vpg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB8461
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 04:00:06PM +0300, Dan Carpenter wrote:
-> On Sun, Feb 20, 2022 at 03:15:53PM -0800, Tong Zhang wrote:
-> > proc fs entries need to be removed when module is removed, otherwise
-> > when we try to insert the module again, kernel will complain
-> > 
-> > [  493.068012] proc_dir_entry 'net/ieee80211' already registered
-> > [  493.271973]  proc_mkdir+0x18/0x20
-> > [  493.272136]  ieee80211_debug_init+0x28/0xde8 [r8192u_usb]
-> > [  493.272404]  rtl8192_usb_module_init+0x10/0x161 [r8192u_usb]
-> > 
-> > [   13.910616] proc_dir_entry 'net/rtl819xU' already registered
-> > [   13.918931]  proc_mkdir+0x18/0x20
-> > [   13.919098]  rtl8192_usb_module_init+0x142/0x16d [r8192u_usb]
-> > 
-> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-> > ---
-> 
-> This is a partial fix but there is a lot wrong with both the init() and
-> exit() function.  It's not hard to just fix everything and it saves
-> time.
-> 
-> Here is how to write Free the Last thing style error handling for init()
-> and when you finish writing the error handling code then the exit()
-> function is just a matter of cut and paste.
-> 
-> The rules are: 1) Free the last successful allocation.  2) Every
-> function must have a matching release function. 3) Every function must
-> clean up after itself.  No partial allocations.  4) Name your labels
-> with descriptive names to say what the goto does.
 
-I meant to add:
 
-5)  Free things in reverse order from how they were allocated.
+> -----Original Message-----
+> From: Harsha Harsha
+> Sent: Monday, February 21, 2022 5:47 PM
+> To: Corentin Labbe <clabbe.montjoie@gmail.com>
+> Cc: herbert@gondor.apana.org.au; davem@davemloft.net; linux-crypto@vger.k=
+ernel.org; linux-kernel@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; Michal Simek <michals@xilinx.com>; Sarat Chan=
+d Savitala <saratcha@xilinx.com>; Harsh Jain
+> <harshj@xilinx.com>; git <git@xilinx.com>
+> Subject: RE: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SHA3=
+ functionality
+>=20
+>=20
+>=20
+> > -----Original Message-----
+> > From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > Sent: Friday, February 18, 2022 3:13 PM
+> > To: Harsha Harsha <harshah@xilinx.com>
+> > Cc: herbert@gondor.apana.org.au; davem@davemloft.net; linux-crypto@vger=
+.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
+> > kernel@lists.infradead.org; Michal Simek <michals@xilinx.com>; Sarat Ch=
+and Savitala <saratcha@xilinx.com>; Harsh Jain
+> > <harshj@xilinx.com>; git <git@xilinx.com>
+> > Subject: Re: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SH=
+A3 functionality
+> >
+> > Le Fri, Feb 18, 2022 at 12:44:22AM +0530, Harsha a =E9crit :
+> > > This patch adds zynqmp_pm_sha_hash API in the ZynqMP firmware to comp=
+ute
+> > > SHA3 hash of given data.
+> > >
+> > > Signed-off-by: Harsha <harsha.harsha@xilinx.com>
+> > > Acked-by: Michal Simek <michal.simek@xilinx.com>
+> > > ---
+> >
+> > Hello
+> >
+> > Your signed-off should contain your real name.
+>=20
+> My complete name is Harsha which I have mentioned in the signed-off secti=
+on.
 
-regards,
-dan carpenter
+I shall update SOB as Signed-off-by: Harsha Harsha <harsha.harsha@xilinx.co=
+m> in the next version of patch.
 
+>=20
+> > Furthermore why did you drop copyright from previous poster ?
+> > See https://patchwork.kernel.org/project/linux-crypto/cover/1556793282-=
+17346-1-git-send-email-kalyani.akula@xilinx.com/ for
+> > reference.
+>=20
+> I did not understand the comment. Do you want me to add Kalyani's name al=
+so in the Signed of section?
+
+I will retain Kalyani as the author in next version of patch.
+
+>=20
+> >
+> > Furthermore, the previous poster didnt answered my questions about para=
+llel processing and tests.
+>=20
+> Since SHA3 HW engine in ZynqMPSoC does not support parallel processing of=
+ 2 hash requests, so we have changed our approach.
+> Now  to support parallel processing of 2 hash requests, software fallback=
+ is being used for init, update, final, export and import in the
+> ZynqMP SHA driver.
+> For digest, the calculation of SHA3 hash is done by the hardened SHA3 acc=
+elerator in Xilinx ZynqMP SoC.
+>=20
+> Following tests have been done for the driver:
+> - Enabled kernel self tests and extra run-time crypto self tests
+> - Tested SHA hash computation for different sizes of data using userspace=
+ application
+> - Tested SHA hash computation using multiple updates of data using usersp=
+ace application
+> - Tested parallel hash computation
+> - Tested using the tcrypt module
+>=20
+> >
+> > Regards
+>=20
+> Regards,
+> Harsha
