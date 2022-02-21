@@ -2,120 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA26C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240547AbiBULLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:11:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37400 "EHLO
+        id S1355491AbiBULLI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 06:11:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347773AbiBULKW (ORCPT
+        with ESMTP id S1355438AbiBULKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:10:22 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FDA2651
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:46 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9739D1F391;
-        Mon, 21 Feb 2022 10:41:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645440105; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=F0d7lkAaMU8geNxG5zttR6qwP8lVzWt7ebeJABufG5E=;
-        b=NUkcdVMkWxksW0aIV03i58GVEpjqYqxCokpTxzb/xSycX+EIEca7qebOKI+dCTpTmxPLyJ
-        oD9RKEyRRvn7vPXdT6h6dOBk0Mol8t3oq3oioabSWqNfegsw+Va8Z/ZSlPTLEVoLTpwJe8
-        AdTEg8Ipbaj8nY/53fGsbdsFfuU6FEU=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 50417A3B81;
-        Mon, 21 Feb 2022 10:41:45 +0000 (UTC)
-Date:   Mon, 21 Feb 2022 11:41:44 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-        hannes@cmpxchg.org, peterz@infradead.org, guro@fb.com,
-        shakeelb@google.com, minchan@kernel.org, timmurray@google.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Subject: Re: [PATCH 1/1] mm: count time in drain_all_pages during direct
- reclaim as memory pressure
-Message-ID: <YhNsaHLLfvFoxnNu@alley>
-References: <20220219174940.2570901-1-surenb@google.com>
- <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
+        Mon, 21 Feb 2022 06:10:21 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB641176
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:42 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id d3so10600793wrf.1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=o+5vqkQXPirAu/1Sjt7YkAPFccDLqMMWnr+8F22imTk=;
+        b=nPaWk5LfwzEn0LL7hDjXHx+adKazsGK3boQBxuXVtBNxfdkOK746wnkgp6LMGfbhNb
+         3KhQCNaITzFt30AfGjK/tMU6Ty0Y1aPMFmaXUWXdSX3geNrC4MbtJgK9NPA6Yi8KYO1o
+         EX2g32al3a6ytLBMQhRI0spcxQ9/mBc+6ltz1kvW7dHU3NqyrHAKC2vhfes1UCWGIy4p
+         jrYsuSRudJi9MWk7Fmvr9vgyfKZXrma/Y5v6yIlFaDHOZ6O5MQtRWS3HlhGu4Kh9aN/1
+         6TvoM04B93mNPWb7ajM4h1WPBNwewoS/SuCfZ7+1gsLqUkKzAQwyQ+veib4QgYSn/z5Z
+         wx8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=o+5vqkQXPirAu/1Sjt7YkAPFccDLqMMWnr+8F22imTk=;
+        b=Zpd0XrkqmUlCTmjBvw1XCc87jvL34qMA9tcHU3t0KkaVLK6PKj3MVWhcmFLC3qYb6y
+         KHO/lULliR9hn5WrMvUZumsuIisHDuFLZIbKhV+YEz5/aB1yCPkLncXKzbnBOpFhzLwV
+         5slWeC+b0Xa4LnA9cppJ19ZMx116zeK5cbWfWcD574HEoLWH9iN+z2PEOqVIlPgq/SKP
+         tl5SYmP5zmJXcMJWZkGZSlm+hujbA/E+DoY20A4SptROHQdYQ3sIpYA4+ufFoUcCOvnp
+         a7BLp4an8YCVYgHRHSIcRFcNvsdg5/46+l8CKwSKJ8ZKS5AYDiDIEXeYTKhiJN8HfguR
+         ny1w==
+X-Gm-Message-State: AOAM5300KQ6lWeGVwBLL986tkOWm5hgO+P53i47+JLSiDxxg8blE8PbF
+        6L1RrN4DgQQNf3eY6iaDCWMBDQ==
+X-Google-Smtp-Source: ABdhPJzpstyVfklHCpbOqUjZGxa3zUfwEkkM2h9RLHKyNYm3+7V5P1Ua7b4QPNqF21HRAwBj9jw2Ng==
+X-Received: by 2002:adf:efcc:0:b0:1e7:cf03:b419 with SMTP id i12-20020adfefcc000000b001e7cf03b419mr15153603wrp.122.1645440101330;
+        Mon, 21 Feb 2022 02:41:41 -0800 (PST)
+Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id n19-20020a05600c4f9300b0037c06fe68casm7584817wmq.44.2022.02.21.02.41.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 02:41:40 -0800 (PST)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     robh+dt@kernel.org, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com
+Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        quic_srivasam@quicinc.com,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 2/3] dt-bindings: soundwire: qcom: document optional wake irq
+Date:   Mon, 21 Feb 2022 10:41:26 +0000
+Message-Id: <20220221104127.15670-3-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
+References: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-21 09:55:12, Michal Hocko wrote:
-> On Sat 19-02-22 09:49:40, Suren Baghdasaryan wrote:
-> > When page allocation in direct reclaim path fails, the system will
-> > make one attempt to shrink per-cpu page lists and free pages from
-> > high alloc reserves. Draining per-cpu pages into buddy allocator can
-> > be a very slow operation because it's done using workqueues and the
-> > task in direct reclaim waits for all of them to finish before
-> > proceeding. Currently this time is not accounted as psi memory stall.
-> > 
-> > While testing mobile devices under extreme memory pressure, when
-> > allocations are failing during direct reclaim, we notices that psi
-> > events which would be expected in such conditions were not triggered.
-> > After profiling these cases it was determined that the reason for
-> > missing psi events was that a big chunk of time spent in direct
-> > reclaim is not accounted as memory stall, therefore psi would not
-> > reach the levels at which an event is generated. Further investigation
-> > revealed that the bulk of that unaccounted time was spent inside
-> > drain_all_pages call.
-> 
-> It would be cool to have some numbers here.
-> 
-> > Annotate drain_all_pages and unreserve_highatomic_pageblock during
-> > page allocation failure in the direct reclaim path so that delays
-> > caused by these calls are accounted as memory stall.
-> 
-> If the draining is too slow and dependent on the current CPU/WQ
-> contention then we should address that. The original intention was that
-> having a dedicated WQ with WQ_MEM_RECLAIM would help to isolate the
-> operation from the rest of WQ activity. Maybe we need to fine tune
-> mm_percpu_wq. If that doesn't help then we should revise the WQ model
-> and use something else. Memory reclaim shouldn't really get stuck behind
-> other unrelated work.
+Wake IRQ is optional interrupt that can be wired up on SoundWire controller
+instances like RX path along with MBHC(Multi Button Headset connection).
+Document this in bindings.
 
-WQ_MEM_RECLAIM causes that one special worker (rescuer) is created for
-the workqueue. It is used _only_ when new workers could not be created
-for some, typically when there is non enough memory. It is just
-a fallback, last resort. It does _not_ speedup processing.
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+ Documentation/devicetree/bindings/soundwire/qcom,sdw.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Otherwise, "mm_percpu_wq" is a normal CPU-bound wq. It uses the shared
-per-CPU worker pools. They serialize all work items on a single
-worker. Another worker is used only when a work goes asleep and waits
-for something.
+diff --git a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
+index b93a2b3e029d..bade68f429b0 100644
+--- a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
++++ b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
+@@ -22,7 +22,7 @@ board specific bus parameters.
+ - interrupts:
+ 	Usage: required
+ 	Value type: <prop-encoded-array>
+-	Definition: should specify the SoundWire Controller IRQ
++	Definition: should specify the SoundWire Controller and optional wake IRQ
+ 
+ - clock-names:
+ 	Usage: required
+-- 
+2.21.0
 
-It means that "drain" work is blocked by other work items that are
-using the same worker pool and were queued earlier.
-
-
-You might try to allocate "mm_percpu_wq" with WQ_HIGHPRI flag. It will
-use another shared per-CPU worker pools where the workers have nice
--20. The "drain" work still might be blocked by another work items
-using the same pool. But it should be faster because the workers
-have higher priority.
-
-
-Dedicated kthreads might be needed when the "draining" should not be
-blocked by anything. If you go this way then I suggest to use
-the kthread_worker API, see "linux/kthread.h". It is very similar
-to the workqueues API but it always creates new kthreads.
-
-Just note that kthread_worker API does not maintain per-CPU workers
-on its own. If you need per-CPU workers than you need to
-use kthread_create_worker_on_cpu() for_each_online_cpu().
-And you would need cpu hotplug callbacks to create/destroy
-ktheads. For example, see start_power_clamp_worker().
-
-HTH,
-Petr
