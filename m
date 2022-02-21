@@ -2,162 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377539AbiBUOSH (ORCPT
+        id S1377562AbiBUOSN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:18:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54722 "EHLO
+        Mon, 21 Feb 2022 09:18:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377517AbiBUORt (ORCPT
+        with ESMTP id S1377553AbiBUOSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:17:49 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102301EAF2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:17:26 -0800 (PST)
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21L4KJ8h014222
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:17:25 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=XsWZ+dstq9O1Y74mqKTBcqdLDX5wS+fQHRNAdVW6HtI=;
- b=FU7SzZ/Jra+9EUb9f96ooumawIM+nllcAogPUHOwgQ6+VjhS6bjtwsMZj3eciCQfwHHp
- 33wCN6DTt8YkIezFAOpGoU1i7H7ZcJBenSDsxeHkdock0guH/lLGaI2Q/hJSvS9P9AJS
- gWKJ8by1Ls1rCUWVZTkOSEitM2ncZI0ou4Q= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3eaxhx98eg-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:17:25 -0800
-Received: from twshared26885.03.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 06:17:23 -0800
-Received: by devbig039.lla1.facebook.com (Postfix, from userid 572232)
-        id D594D46F0930; Mon, 21 Feb 2022 06:17:16 -0800 (PST)
-From:   Dylan Yudaken <dylany@fb.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        <io-uring@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
-        Dylan Yudaken <dylany@fb.com>
-Subject: [PATCH v2 3/4] io_uring: do not recalculate ppos unnecessarily
-Date:   Mon, 21 Feb 2022 06:16:48 -0800
-Message-ID: <20220221141649.624233-4-dylany@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221141649.624233-1-dylany@fb.com>
-References: <20220221141649.624233-1-dylany@fb.com>
+        Mon, 21 Feb 2022 09:18:04 -0500
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACF7220F6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:17:39 -0800 (PST)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2d62593ad9bso139297807b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:17:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/gitQnf67UrIYwS+AKYeGa4xkTlw6MkahL4EAHICRPE=;
+        b=BiD+aD6kaClH4FFw7EqJ8IiMniNk+z2I2RLppijSnQ2cEZyfC1L7tZ46nhvaddSiH/
+         w6q4fz9towZeQ5uxYaKwJuOBFVfKAgZCxInL01/z3RJAzK/ncuMCOpUs0CYUPODaDI6y
+         YeJ9HtXZHc1BPNAVDrDireH+QoMdRNNuTKaqRf7nVA0okfnsiXLEyrW1lKfLIh0JY0iQ
+         KYoUi/Qrc/ENBkZSsrZzsYVV+Xj9s/2gz2kPzAfobyAXZfpdN+DQMDiwqQW0VK/3EKCg
+         xaDpv/l8wJbqi1TurVrvY36Y7H7U6FSUEgnK62MUTzcTXFGdXd4X/r4hRu7zc0Kdq+0u
+         mYHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/gitQnf67UrIYwS+AKYeGa4xkTlw6MkahL4EAHICRPE=;
+        b=JRhsbxXP675VZd8bL2ZmVDBIQwBZomEuKWL/59ncy7hXVtgiyoSp3hFufQD02FUw41
+         zYK6AvSGZN0LsfgrAfjpqhJEDy5prYCy4o6ZFD/Tgeb30gwzUVO1Eulw8wh6DW9b64w/
+         Psj7Ta599WVYkUKnxs+7SDjPloiinYFARhB1eE7za8+YBUhnAsmDklevcUmqKBLNrGB/
+         yumFAszLKuUBkBxYdS0CUz5nZqW8v2o3rluna6JQRniz+ZEk32C5MVfmC5fsOTLtVEAQ
+         ABqaFPnsMGVVyIzWUz9hpDIXStndRKziuX++RmaBWi22TwqPL6eaXAlkG5uc/VAz0gg+
+         vqhQ==
+X-Gm-Message-State: AOAM531QhiGaxj76iAtCFELVZc+t+TrDNWCCU+Q3KXu7NWNghkuYJC+a
+        ZoH8X4AYWy3Mo/wPJLxUCOPOfW00hFwLoYQqOCQE0g==
+X-Google-Smtp-Source: ABdhPJxOLq1Q2AJ4p4Fu1I+KBtPJsr66WMtq0nJR+KXzoJo+HH/OtQlmUOi8aheWu6pASgc/TBk8kbCowQCXPLMeTIU=
+X-Received: by 2002:a0d:dd48:0:b0:2d2:58cb:d6f5 with SMTP id
+ g69-20020a0ddd48000000b002d258cbd6f5mr19085596ywe.47.1645453058624; Mon, 21
+ Feb 2022 06:17:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Zc8qOIJ7oaJkaqfjcHdwUiWqap6i7Itw
-X-Proofpoint-GUID: Zc8qOIJ7oaJkaqfjcHdwUiWqap6i7Itw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-21_07,2022-02-21_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 mlxscore=0
- clxscore=1015 phishscore=0 priorityscore=1501 adultscore=0 mlxlogscore=641
- suspectscore=0 lowpriorityscore=0 impostorscore=0 spamscore=0 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202210086
-X-FB-Internal: deliver
+References: <20220221095530.1355319-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2202211143310.347934@ramsan.of.borg>
+In-Reply-To: <alpine.DEB.2.22.394.2202211143310.347934@ramsan.of.borg>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 21 Feb 2022 06:17:27 -0800
+Message-ID: <CANn89iLFEPxVw40zpb=akgvjMM6h-Bq1CGPSTR_G5SW4hOJkcA@mail.gmail.com>
+Subject: Re: Build regressions/improvements in v5.17-rc5
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Roger Quadros <rogerq@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a slight optimisation to be had by calculating the correct pos
-pointer inside io_kiocb_update_pos and then using that later.
+On Mon, Feb 21, 2022 at 2:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> On Mon, 21 Feb 2022, Geert Uytterhoeven wrote:
+> > JFYI, when comparing v5.17-rc5[1] to v5.17-rc4[3], the summaries are:
+> >  - build errors: +2/-1
+>
+>    + /kisskb/src/net/netfilter/xt_socket.c: error: implicit declaration of function 'nf_defrag_ipv6_disable'; did you mean 'nf_defrag_ipv4_disable'? [-Werror=implicit-function-declaration]:  => 224:3
+>
 
-It seems code size drops by a bit:
-000000000000a1b0 0000000000000400 t io_read
-000000000000a5b0 0000000000000319 t io_write
-
-vs
-000000000000a1b0 00000000000003f6 t io_read
-000000000000a5b0 0000000000000310 t io_write
-
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
----
- fs/io_uring.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 50b93ff2ee12..abd8c739988e 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3066,17 +3066,21 @@ static inline void io_rw_done(struct kiocb *kiocb=
-, ssize_t ret)
- 	}
- }
-=20
--static inline void
-+static inline loff_t*
- io_kiocb_update_pos(struct io_kiocb *req, struct kiocb *kiocb)
- {
-+	bool is_stream =3D req->file->f_mode & FMODE_STREAM;
- 	if (kiocb->ki_pos =3D=3D -1) {
--		if (!(req->file->f_mode & FMODE_STREAM)) {
-+		if (!is_stream) {
- 			req->flags |=3D REQ_F_CUR_POS;
- 			kiocb->ki_pos =3D req->file->f_pos;
-+			return &kiocb->ki_pos;
- 		} else {
- 			kiocb->ki_pos =3D 0;
-+			return NULL;
- 		}
- 	}
-+	return is_stream ? NULL : &kiocb->ki_pos;
- }
-=20
- static void kiocb_done(struct io_kiocb *req, ssize_t ret,
-@@ -3637,6 +3641,7 @@ static int io_read(struct io_kiocb *req, unsigned i=
-nt issue_flags)
- 	bool force_nonblock =3D issue_flags & IO_URING_F_NONBLOCK;
- 	struct io_async_rw *rw;
- 	ssize_t ret, ret2;
-+	loff_t *ppos;
-=20
- 	if (!req_has_async_data(req)) {
- 		ret =3D io_import_iovec(READ, req, &iovec, s, issue_flags);
-@@ -3667,9 +3672,9 @@ static int io_read(struct io_kiocb *req, unsigned i=
-nt issue_flags)
- 		kiocb->ki_flags &=3D ~IOCB_NOWAIT;
- 	}
-=20
--	io_kiocb_update_pos(req, kiocb);
-+	ppos =3D io_kiocb_update_pos(req, kiocb);
-=20
--	ret =3D rw_verify_area(READ, req->file, io_kiocb_ppos(kiocb), req->resu=
-lt);
-+	ret =3D rw_verify_area(READ, req->file, ppos, req->result);
- 	if (unlikely(ret)) {
- 		kfree(iovec);
- 		return ret;
-@@ -3768,6 +3773,7 @@ static int io_write(struct io_kiocb *req, unsigned =
-int issue_flags)
- 	struct kiocb *kiocb =3D &req->rw.kiocb;
- 	bool force_nonblock =3D issue_flags & IO_URING_F_NONBLOCK;
- 	ssize_t ret, ret2;
-+	loff_t *ppos;
-=20
- 	if (!req_has_async_data(req)) {
- 		ret =3D io_import_iovec(WRITE, req, &iovec, s, issue_flags);
-@@ -3798,9 +3804,9 @@ static int io_write(struct io_kiocb *req, unsigned =
-int issue_flags)
- 		kiocb->ki_flags &=3D ~IOCB_NOWAIT;
- 	}
-=20
--	io_kiocb_update_pos(req, kiocb);
-+	ppos =3D io_kiocb_update_pos(req, kiocb);
-=20
--	ret =3D rw_verify_area(WRITE, req->file, io_kiocb_ppos(kiocb), req->res=
-ult);
-+	ret =3D rw_verify_area(WRITE, req->file, ppos, req->result);
- 	if (unlikely(ret))
- 		goto out_free;
-=20
---=20
-2.30.2
-
+Fixed last week I think.
+https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git/commit/?id=2874b7911132f6975e668f6849c8ac93bc4e1f35
