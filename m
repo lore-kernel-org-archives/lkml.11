@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 862F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347311AbiBUJFQ (ORCPT
+        id S1347248AbiBUJFU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:05:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58046 "EHLO
+        Mon, 21 Feb 2022 04:05:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347639AbiBUJBi (ORCPT
+        with ESMTP id S1347642AbiBUJBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:01:38 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2B424F15;
-        Mon, 21 Feb 2022 00:56:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9266435;
+        Mon, 21 Feb 2022 00:56:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6827B60FB6;
-        Mon, 21 Feb 2022 08:56:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51A95C340E9;
-        Mon, 21 Feb 2022 08:56:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34F9961206;
+        Mon, 21 Feb 2022 08:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F3FC340E9;
+        Mon, 21 Feb 2022 08:56:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433805;
-        bh=4bCALXzMb4x6My4RnPf0joY/XMA1aoBXPL+MZSmCTgI=;
+        s=korg; t=1645433808;
+        bh=oQnpziJx3hOw14sJEPgcvF6w7v96hYdi1wqcsp84XMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k0awx9HvIEDSNsndI9N28el94luz8yInxVShVeHhmAa5eiRvAKY7/Ct0dbxsX39Qg
-         6wcRgoNnEHKWV3TjCqKjDHtfAy11scHedHTStDzjCQjy27sWKMhc/rhYntD4RnP8sQ
-         7VeHbTLINJcGz2ffJ9mymuJMGOjWuuv1Axo7l9q8=
+        b=zDEw6QB9kdjIbuFx3EdI1FZguAgHJ20lPgr9XlVNoI6Q5sTub/QN92cokndmFX9ix
+         L5kyVc8uw2jIoq1VDEAkAlbgCCdjtu3mBAo3zHifXhh1emdeoSPPAOthVrDZra6jpo
+         I0gs49Xzvli9zkJwBGJ+0lDTybNUp6s8gnE+pRRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kimberly Brown <kimbrownkd@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 47/58] Drivers: hv: vmbus: Expose monitor data only when monitor pages are used
-Date:   Mon, 21 Feb 2022 09:49:40 +0100
-Message-Id: <20220221084913.394725946@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Juan Vazquez <juvazq@linux.microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 48/58] Drivers: hv: vmbus: Fix memory leak in vmbus_add_channel_kobj
+Date:   Mon, 21 Feb 2022 09:49:41 +0100
+Message-Id: <20220221084913.425983021@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,229 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kimberly Brown <kimbrownkd@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 46fc15487d02451448c11b83c4d086d87a6ad588 ]
+[ Upstream commit 8bc69f86328e87a0ffa79438430cc82f3aa6a194 ]
 
-There are two methods for signaling the host: the monitor page mechanism
-and hypercalls. The monitor page mechanism is used by performance
-critical channels (storage, networking, etc.) because it provides
-improved throughput. However, latency is increased. Monitor pages are
-allocated to these channels.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-Monitor pages are not allocated to channels that do not use the monitor
-page mechanism. Therefore, these channels do not have a valid monitor id
-or valid monitor page data. In these cases, some of the "_show"
-functions return incorrect data. They return an invalid monitor id and
-data that is beyond the bounds of the hv_monitor_page array fields.
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-The "channel->offermsg.monitor_allocated" value can be used to determine
-whether monitor pages have been allocated to a channel.
+Fix memory leak by calling kobject_put().
 
-Add "is_visible()" callback functions for the device-level and
-channel-level attribute groups. These functions will hide the monitor
-sysfs files when the monitor mechanism is not used.
-
-Remove ".default_attributes" from "vmbus_chan_attrs" and create a
-channel-level attribute group. These changes allow the new
-"is_visible()" callback function to be applied to the channel-level
-attributes.
-
-Call "sysfs_create_group()" in "vmbus_add_channel_kobj()" to create the
-channel's sysfs files. Add a new function,
-“vmbus_remove_channel_attr_group()”, and call it in "free_channel()" to
-remove the channel's sysfs files when the channel is closed.
-
-Signed-off-by: Kimberly Brown <kimbrownkd@gmail.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Fixes: c2e5df616e1a ("vmbus: add per-channel sysfs info")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Juan Vazquez <juvazq@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220203173008.43480-1-linmq006@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/ABI/stable/sysfs-bus-vmbus | 12 +++-
- drivers/hv/channel_mgmt.c                |  1 +
- drivers/hv/hyperv_vmbus.h                |  2 +
- drivers/hv/vmbus_drv.c                   | 77 +++++++++++++++++++++++-
- 4 files changed, 87 insertions(+), 5 deletions(-)
+ drivers/hv/vmbus_drv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/stable/sysfs-bus-vmbus b/Documentation/ABI/stable/sysfs-bus-vmbus
-index 3fed8fdb873d7..c4ffdfc324b41 100644
---- a/Documentation/ABI/stable/sysfs-bus-vmbus
-+++ b/Documentation/ABI/stable/sysfs-bus-vmbus
-@@ -81,7 +81,9 @@ What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/latency
- Date:		September. 2017
- KernelVersion:	4.14
- Contact:	Stephen Hemminger <sthemmin@microsoft.com>
--Description:	Channel signaling latency
-+Description:	Channel signaling latency. This file is available only for
-+		performance critical channels (storage, network, etc.) that use
-+		the monitor page mechanism.
- Users:		Debugging tools
- 
- What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/out_mask
-@@ -95,7 +97,9 @@ What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/pending
- Date:		September. 2017
- KernelVersion:	4.14
- Contact:	Stephen Hemminger <sthemmin@microsoft.com>
--Description:	Channel interrupt pending state
-+Description:	Channel interrupt pending state. This file is available only for
-+		performance critical channels (storage, network, etc.) that use
-+		the monitor page mechanism.
- Users:		Debugging tools
- 
- What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/read_avail
-@@ -137,7 +141,9 @@ What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/monitor_id
- Date:		January. 2018
- KernelVersion:	4.16
- Contact:	Stephen Hemminger <sthemmin@microsoft.com>
--Description:	Monitor bit associated with channel
-+Description:	Monitor bit associated with channel. This file is available only
-+		for performance critical channels (storage, network, etc.) that
-+		use the monitor page mechanism.
- Users:		Debugging tools and userspace drivers
- 
- What:		/sys/bus/vmbus/devices/<UUID>/channels/<N>/ring
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index cdd4392c589d3..a3f6933f94e30 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -350,6 +350,7 @@ static struct vmbus_channel *alloc_channel(void)
- static void free_channel(struct vmbus_channel *channel)
- {
- 	tasklet_kill(&channel->callback_event);
-+	vmbus_remove_channel_attr_group(channel);
- 
- 	kobject_put(&channel->kobj);
- }
-diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-index 7e7c8debbd285..c4ad518890243 100644
---- a/drivers/hv/hyperv_vmbus.h
-+++ b/drivers/hv/hyperv_vmbus.h
-@@ -392,6 +392,8 @@ void vmbus_device_unregister(struct hv_device *device_obj);
- int vmbus_add_channel_kobj(struct hv_device *device_obj,
- 			   struct vmbus_channel *channel);
- 
-+void vmbus_remove_channel_attr_group(struct vmbus_channel *channel);
-+
- struct vmbus_channel *relid2channel(u32 relid);
- 
- void vmbus_free_channels(void);
 diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 0699c60188895..aab21c1534a10 100644
+index aab21c1534a10..51fe219c91fc3 100644
 --- a/drivers/hv/vmbus_drv.c
 +++ b/drivers/hv/vmbus_drv.c
-@@ -609,7 +609,36 @@ static struct attribute *vmbus_dev_attrs[] = {
- 	&dev_attr_device.attr,
- 	NULL,
- };
--ATTRIBUTE_GROUPS(vmbus_dev);
-+
-+/*
-+ * Device-level attribute_group callback function. Returns the permission for
-+ * each attribute, and returns 0 if an attribute is not visible.
-+ */
-+static umode_t vmbus_dev_attr_is_visible(struct kobject *kobj,
-+					 struct attribute *attr, int idx)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	const struct hv_device *hv_dev = device_to_hv_device(dev);
-+
-+	/* Hide the monitor attributes if the monitor mechanism is not used. */
-+	if (!hv_dev->channel->offermsg.monitor_allocated &&
-+	    (attr == &dev_attr_monitor_id.attr ||
-+	     attr == &dev_attr_server_monitor_pending.attr ||
-+	     attr == &dev_attr_client_monitor_pending.attr ||
-+	     attr == &dev_attr_server_monitor_latency.attr ||
-+	     attr == &dev_attr_client_monitor_latency.attr ||
-+	     attr == &dev_attr_server_monitor_conn_id.attr ||
-+	     attr == &dev_attr_client_monitor_conn_id.attr))
-+		return 0;
-+
-+	return attr->mode;
-+}
-+
-+static const struct attribute_group vmbus_dev_group = {
-+	.attrs = vmbus_dev_attrs,
-+	.is_visible = vmbus_dev_attr_is_visible
-+};
-+__ATTRIBUTE_GROUPS(vmbus_dev);
- 
- /*
-  * vmbus_uevent - add uevent for our device
-@@ -1484,10 +1513,34 @@ static struct attribute *vmbus_chan_attrs[] = {
- 	NULL
- };
- 
-+/*
-+ * Channel-level attribute_group callback function. Returns the permission for
-+ * each attribute, and returns 0 if an attribute is not visible.
-+ */
-+static umode_t vmbus_chan_attr_is_visible(struct kobject *kobj,
-+					  struct attribute *attr, int idx)
-+{
-+	const struct vmbus_channel *channel =
-+		container_of(kobj, struct vmbus_channel, kobj);
-+
-+	/* Hide the monitor attributes if the monitor mechanism is not used. */
-+	if (!channel->offermsg.monitor_allocated &&
-+	    (attr == &chan_attr_pending.attr ||
-+	     attr == &chan_attr_latency.attr ||
-+	     attr == &chan_attr_monitor_id.attr))
-+		return 0;
-+
-+	return attr->mode;
-+}
-+
-+static struct attribute_group vmbus_chan_group = {
-+	.attrs = vmbus_chan_attrs,
-+	.is_visible = vmbus_chan_attr_is_visible
-+};
-+
- static struct kobj_type vmbus_chan_ktype = {
- 	.sysfs_ops = &vmbus_chan_sysfs_ops,
- 	.release = vmbus_chan_release,
--	.default_attrs = vmbus_chan_attrs,
- };
- 
- /*
-@@ -1495,6 +1548,7 @@ static struct kobj_type vmbus_chan_ktype = {
-  */
- int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- {
-+	const struct device *device = &dev->device;
- 	struct kobject *kobj = &channel->kobj;
- 	u32 relid = channel->offermsg.child_relid;
- 	int ret;
-@@ -1505,11 +1559,30 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
- 	if (ret)
- 		return ret;
- 
-+	ret = sysfs_create_group(kobj, &vmbus_chan_group);
-+
+@@ -1556,8 +1556,10 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
+ 	kobj->kset = dev->channels_kset;
+ 	ret = kobject_init_and_add(kobj, &vmbus_chan_ktype, NULL,
+ 				   "%u", relid);
+-	if (ret)
 +	if (ret) {
-+		/*
-+		 * The calling functions' error handling paths will cleanup the
-+		 * empty channel directory.
-+		 */
-+		dev_err(device, "Unable to set up channel sysfs files\n");
-+		return ret;
++		kobject_put(kobj);
+ 		return ret;
 +	}
-+
- 	kobject_uevent(kobj, KOBJ_ADD);
  
- 	return 0;
- }
+ 	ret = sysfs_create_group(kobj, &vmbus_chan_group);
  
-+/*
-+ * vmbus_remove_channel_attr_group - remove the channel's attribute group
-+ */
-+void vmbus_remove_channel_attr_group(struct vmbus_channel *channel)
-+{
-+	sysfs_remove_group(&channel->kobj, &vmbus_chan_group);
-+}
-+
- /*
-  * vmbus_device_create - Creates and registers a new child device
-  * on the vmbus.
+@@ -1566,6 +1568,7 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
+ 		 * The calling functions' error handling paths will cleanup the
+ 		 * empty channel directory.
+ 		 */
++		kobject_put(kobj);
+ 		dev_err(device, "Unable to set up channel sysfs files\n");
+ 		return ret;
+ 	}
 -- 
 2.34.1
 
