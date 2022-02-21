@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6506AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 703C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346030AbiBUI7b (ORCPT
+        id S1346724AbiBUI7f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:59:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59920 "EHLO
+        Mon, 21 Feb 2022 03:59:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346525AbiBUI6k (ORCPT
+        with ESMTP id S1346897AbiBUI7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:58:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8229625E85;
-        Mon, 21 Feb 2022 00:54:52 -0800 (PST)
+        Mon, 21 Feb 2022 03:59:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D979B25E91;
+        Mon, 21 Feb 2022 00:54:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EAF8611DD;
-        Mon, 21 Feb 2022 08:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1131C340E9;
-        Mon, 21 Feb 2022 08:54:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0421B80EAC;
+        Mon, 21 Feb 2022 08:54:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F09E5C340E9;
+        Mon, 21 Feb 2022 08:54:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433689;
-        bh=ylA+VLrhYECc4xYLWXrutYwBlyqWHicuJlTJMCc1yuY=;
+        s=korg; t=1645433692;
+        bh=PL+85GFZzWd3G9uSX02dxj6cDoZ3GyVAS76x3H2RLoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iuQwX0VYca4D/dS/oHYYxuD6daJUTaxQtuBIqpXrNc/scvAuS6jVG+uPtKQ4uyfVv
-         uUYivx5GMW0h16JTN46mRfohmZVbrlKKUAiddbBZxMoSL7uO1SvF0VsoTHeeZHpfId
-         vbnkXo6Ac5utVX8ROIfUafksMGJXQlKUs4GMQrXo=
+        b=fA4yjMaT9v/rV/Z2YYtK8ix458QOBYnfg3OSXhAVleKzogTNohjQ0wQnRpsJ1dk+O
+         PeqvsV+f3rPPqrUKLRNM17LD4kltIGcQ68y3wEc3oNA3qTl9A4T/h73KLKwgUQsgpi
+         +9C9H5y155eoeErLoaQ3bzw3OlmL5xUB9OXmkiro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, dmummenschanz@web.de,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 28/45] ALSA: hda: Fix missing codec probe on Shenker Dock 15
-Date:   Mon, 21 Feb 2022 09:49:19 +0100
-Message-Id: <20220221084911.362480350@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 4.19 01/58] Makefile.extrawarn: Move -Wunaligned-access to W=1
+Date:   Mon, 21 Feb 2022 09:48:54 +0100
+Message-Id: <20220221084911.942463108@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
-References: <20220221084910.454824160@linuxfoundation.org>
+In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
+References: <20220221084911.895146879@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,33 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit dd8e5b161d7fb9cefa1f1d6e35a39b9e1563c8d3 upstream.
+commit 1cf5f151d25fcca94689efd91afa0253621fb33a upstream.
 
-By some unknown reason, BIOS on Shenker Dock 15 doesn't set up the
-codec mask properly for the onboard audio.  Let's set the forced codec
-mask to enable the codec discovery.
+-Wunaligned-access is a new warning in clang that is default enabled for
+arm and arm64 under certain circumstances within the clang frontend (see
+LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
+1284 total/70 unique instances of this warning (most of the instances
+are in header files), which is quite noisy.
 
-Reported-by: dmummenschanz@web.de
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/trinity-f018660b-95c9-442b-a2a8-c92a56eb07ed-1644345967148@3c-app-webde-bap22
-Link: https://lore.kernel.org/r/20220214100020.8870-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+To keep a normal build green through CONFIG_WERROR, only show this
+warning with W=1, which will allow automated build systems to catch new
+instances of the warning so that the total number can be driven down to
+zero eventually since catching unaligned accesses at compile time would
+be generally useful.
+
+Cc: stable@vger.kernel.org
+Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
+Link: https://github.com/ClangBuiltLinux/linux/issues/1569
+Link: https://github.com/ClangBuiltLinux/linux/issues/1576
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[nathan: Fix conflict due to lack of afe956c577b2d]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 ---
- sound/pci/hda/hda_intel.c |    1 +
+ scripts/Makefile.extrawarn |    1 +
  1 file changed, 1 insertion(+)
 
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1636,6 +1636,7 @@ static struct snd_pci_quirk probe_mask_l
- 	/* forced codec slots */
- 	SND_PCI_QUIRK(0x1043, 0x1262, "ASUS W5Fm", 0x103),
- 	SND_PCI_QUIRK(0x1046, 0x1262, "ASUS W5F", 0x103),
-+	SND_PCI_QUIRK(0x1558, 0x0351, "Schenker Dock 15", 0x105),
- 	/* WinFast VP200 H (Teradici) user reported broken communication */
- 	SND_PCI_QUIRK(0x3a21, 0x040d, "WinFast VP200 H", 0x101),
- 	{}
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -73,5 +73,6 @@ KBUILD_CFLAGS += $(call cc-disable-warni
+ KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
+ KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
++KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
+ endif
+ endif
 
 
