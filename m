@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC3DC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5AAC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350438AbiBUJbF (ORCPT
+        id S1350346AbiBUJay (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:31:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36960 "EHLO
+        Mon, 21 Feb 2022 04:30:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349739AbiBUJVl (ORCPT
+        with ESMTP id S1349502AbiBUJVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1BC26AF4;
-        Mon, 21 Feb 2022 01:08:56 -0800 (PST)
+        Mon, 21 Feb 2022 04:21:31 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E65B31DEF;
+        Mon, 21 Feb 2022 01:08:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F13B6077B;
-        Mon, 21 Feb 2022 09:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7682EC340F4;
-        Mon, 21 Feb 2022 09:08:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1126CE0E92;
+        Mon, 21 Feb 2022 09:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82954C340E9;
+        Mon, 21 Feb 2022 09:08:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434535;
-        bh=lBS1PiFdP3yxD/PYLR6hsDp3zi/r/zvvJWP4zHDftYk=;
+        s=korg; t=1645434498;
+        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MXoKhJIt3wBv1QTlYPgWYiNeihTS5lsnlDNPaAcFLkePzOB+5QtiXJGQiIKoQx+9B
-         SdaeO2j7IamZyoNFEW8ho70WZbkgJDjwsxY9JfWDtfndag7Z2++IcXFGopcdTgeZQP
-         T78nmhJYQc96+M1iyl/PsiY9RDcx0xeubEusZOHw=
+        b=u595Jq9GAXgNetUTTiOBcqDa9Xp185eTqyJcDj2wGxRvzaiyIq3fqfJ2Hx3q3Sx/B
+         YwAPDgiiugtAU230kidBVcmSS+spe/1VpnuP6Y/UXXEBiDQ/4LY75nvRfszTI5ohfJ
+         VW///G0dn+mkj+2Ke6Ca2RdXkTKcE419onMksuxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Martin Wilck <martin.wilck@suse.com>,
-        Martin Wilck <mwilck@suse.com>, Ming Lei <ming.lei@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 040/196] scsi: core: Reallocate devices budget map on queue depth change
-Date:   Mon, 21 Feb 2022 09:47:52 +0100
-Message-Id: <20220221084932.279177221@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 011/196] parisc: Fix sglist access in ccio-dma.c
+Date:   Mon, 21 Feb 2022 09:47:23 +0100
+Message-Id: <20220221084931.272531006@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,120 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit edb854a3680bacc9ef9b91ec0c5ff6105886f6f3 ]
+commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
 
-We currently use ->cmd_per_lun as initial queue depth for setting up the
-budget_map. Martin Wilck reported that it is common for the queue_depth to
-be subsequently updated in slave_configure() based on detected hardware
-characteristics.
+This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
+It ensures that only the allocated entries of the sglist are accessed.
 
-As a result, for some drivers, the static host template settings for
-cmd_per_lun and can_queue won't actually get used in practice. And if the
-default values are used to allocate the budget_map, memory may be consumed
-unnecessarily.
-
-Fix the issue by reallocating the budget_map after ->slave_configure()
-returns. At that time the device queue_depth should accurately reflect what
-the hardware needs.
-
-Link: https://lore.kernel.org/r/20220127153733.409132-1-ming.lei@redhat.com
-Cc: Bart Van Assche <bvanassche@acm.org>
-Reported-by: Martin Wilck <martin.wilck@suse.com>
-Suggested-by: Martin Wilck <martin.wilck@suse.com>
-Tested-by: Martin Wilck <mwilck@suse.com>
-Reviewed-by: Martin Wilck <mwilck@suse.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/scsi_scan.c | 55 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 50 insertions(+), 5 deletions(-)
+ drivers/parisc/ccio-dma.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
-index fe22191522a3b..7266880c70c21 100644
---- a/drivers/scsi/scsi_scan.c
-+++ b/drivers/scsi/scsi_scan.c
-@@ -198,6 +198,48 @@ static void scsi_unlock_floptical(struct scsi_device *sdev,
- 			 SCSI_TIMEOUT, 3, NULL);
- }
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 	ioc->usg_calls++;
+ #endif
  
-+static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
-+					unsigned int depth)
-+{
-+	int new_shift = sbitmap_calculate_shift(depth);
-+	bool need_alloc = !sdev->budget_map.map;
-+	bool need_free = false;
-+	int ret;
-+	struct sbitmap sb_backup;
-+
-+	/*
-+	 * realloc if new shift is calculated, which is caused by setting
-+	 * up one new default queue depth after calling ->slave_configure
-+	 */
-+	if (!need_alloc && new_shift != sdev->budget_map.shift)
-+		need_alloc = need_free = true;
-+
-+	if (!need_alloc)
-+		return 0;
-+
-+	/*
-+	 * Request queue has to be frozen for reallocating budget map,
-+	 * and here disk isn't added yet, so freezing is pretty fast
-+	 */
-+	if (need_free) {
-+		blk_mq_freeze_queue(sdev->request_queue);
-+		sb_backup = sdev->budget_map;
-+	}
-+	ret = sbitmap_init_node(&sdev->budget_map,
-+				scsi_device_max_queue_depth(sdev),
-+				new_shift, GFP_KERNEL,
-+				sdev->request_queue->node, false, true);
-+	if (need_free) {
-+		if (ret)
-+			sdev->budget_map = sb_backup;
-+		else
-+			sbitmap_free(&sb_backup);
-+		ret = 0;
-+		blk_mq_unfreeze_queue(sdev->request_queue);
-+	}
-+	return ret;
-+}
-+
- /**
-  * scsi_alloc_sdev - allocate and setup a scsi_Device
-  * @starget: which target to allocate a &scsi_device for
-@@ -291,11 +333,7 @@ static struct scsi_device *scsi_alloc_sdev(struct scsi_target *starget,
- 	 * default device queue depth to figure out sbitmap shift
- 	 * since we use this queue depth most of times.
- 	 */
--	if (sbitmap_init_node(&sdev->budget_map,
--				scsi_device_max_queue_depth(sdev),
--				sbitmap_calculate_shift(depth),
--				GFP_KERNEL, sdev->request_queue->node,
--				false, true)) {
-+	if (scsi_realloc_sdev_budget_map(sdev, depth)) {
- 		put_device(&starget->dev);
- 		kfree(sdev);
- 		goto out;
-@@ -1001,6 +1039,13 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
- 			}
- 			return SCSI_SCAN_NO_RESPONSE;
- 		}
-+
-+		/*
-+		 * The queue_depth is often changed in ->slave_configure.
-+		 * Set up budget map again since memory consumption of
-+		 * the map depends on actual queue depth.
-+		 */
-+		scsi_realloc_sdev_budget_map(sdev, sdev->queue_depth);
+-	while(sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
+ 
+ #ifdef CCIO_COLLECT_STATS
+ 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 		ccio_unmap_page(dev, sg_dma_address(sglist),
+ 				  sg_dma_len(sglist), direction, 0);
+ 		++sglist;
++		nents--;
  	}
  
- 	if (sdev->scsi_level >= SCSI_3)
--- 
-2.34.1
-
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
 
 
