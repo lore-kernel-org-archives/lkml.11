@@ -2,197 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89915C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232176AbiBUSPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:15:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41728 "EHLO
+        id S232281AbiBUSP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:15:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiBUSMe (ORCPT
+        with ESMTP id S232294AbiBUSMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 13:12:34 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3B2215;
-        Mon, 21 Feb 2022 10:03:36 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id s14so13658950edw.0;
-        Mon, 21 Feb 2022 10:03:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JSzbeyJ3wmi72yBQpp06Oo4N3LKGxxejN6QrBogGfGY=;
-        b=ImHynHr4TWu/Jy3NY3KN2p5AbC6LhDNHrAmrMj7BkA8vKIuHo+2S3dB7i1FcXXu6xT
-         Aw9mYdUevGkiHxzsqJpQzsOa6VkXKDSRN2d+pUvSj/xSdO9NRZlYRdRokOH3uYu8++8S
-         5SCfSWWB0EJc854KDzKK2iFAF2GSLXVkmybj6xQ2DjB1S+SKB+PfBLjVmePk4EUgIQ8U
-         SjKX2rB2nrNULYbIXBg6zlWB+tEelS3RtuXdkrIpEkBkbnlkWKaEmLse7xjaEE4ET57G
-         fnjczkAFH8kjtR2qjQuokfibC3+s0gk7Kn3zwutU9Lpwrgv/jMTwJ4OgXyumcIrhF+TZ
-         Xctg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JSzbeyJ3wmi72yBQpp06Oo4N3LKGxxejN6QrBogGfGY=;
-        b=RkcurywT6jXQXQIcEbLUmbKLlCCW0/R9HKr35URmRAALOJf/tKqe3+2HqbbjPC6dwh
-         dNY87OPu+hAFFhp8AAYNz+5mAc0cEW4nw4z6NDEDGKtoj9oSSUO//egTHnkWDQ+MR0tx
-         GzgDngzEUulNcQ7RpkkdfppRZfe92Ld76/XryFkc/A0kpaXQgIRQn29SihUiqGnzSYS1
-         IUt/dVsgx8mfRFvHPeUbG7GEhz6GMAue8eNHJr9eXLWEbTRlNGvvPjIHuCbiJsK/UdfO
-         JuHC5heKW60Z0JdLE/AYmPlzdzZjjDFBNmYYL091LX5PrMg6Q+KOQOpZ/30FC21jrCt8
-         q3Iw==
-X-Gm-Message-State: AOAM531635p+Ncj1WMn7Nyo1a11lAELUPTrJrt6q4OflqjO2CBO10yMY
-        DTDXVk/LsvUKWqIZoTRL3QySMYbB8oM=
-X-Google-Smtp-Source: ABdhPJyRHVKif8YwOMbAOuZy8/YcSv7z4RmtG1Sdw/znjf5FGmjpGfTCWwd3HIqBOrfosroOHlBazg==
-X-Received: by 2002:a05:6402:350e:b0:412:d02f:9004 with SMTP id b14-20020a056402350e00b00412d02f9004mr16805706edd.59.1645466615399;
-        Mon, 21 Feb 2022 10:03:35 -0800 (PST)
-Received: from [192.168.8.198] ([85.255.234.184])
-        by smtp.gmail.com with ESMTPSA id nc40sm3123736ejc.127.2022.02.21.10.03.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 10:03:35 -0800 (PST)
-Message-ID: <ec1647f3-2c37-04be-bdbd-ab78b9f07a03@gmail.com>
-Date:   Mon, 21 Feb 2022 18:00:17 +0000
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B56E195;
+        Mon, 21 Feb 2022 10:03:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645466599; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=YZyMF51P4+/S3dlgHlVUpxcI7aWblCY2sMq8Mn+tA5JO5mh2/dGB1qSkvIywCFZMGWxNADVWG3JvceJWo0j+8DnPkt+j7/d35uztkjl9wjpIxh+ucPTAl/0dwHmt02PiaSqHXZkWlXmlSrnaP9egmkFqAdSN/rSxunRFP5K6acQ=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645466599; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=fsIUXYehvEEwhdbyTVnwdNs58dADoiqa7FrNZpH5MvQ=; 
+        b=NvDSgUrgG2JK77anNLKyUhkXHdKaC5MSGK1LjlVJNAnX5Jsbw6nmpyNvN6KfcDUM2VMW6N9R9vG+/YOplUKG/kTA4BtA1JZXTrvNHiztsWiWwXGA3sXBTApJnJCNXkgaYF2kKSiP1zheqAuAmUSXEKYqvjJlkILzmbKoFeE3Jxk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645466599;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+        bh=fsIUXYehvEEwhdbyTVnwdNs58dADoiqa7FrNZpH5MvQ=;
+        b=pIbnLjTv5NJg42fxoUE97UNJyrtYslgTpEEwhf8FdicVjVcQBYZsqyxvEUboafkZ
+        +VGYCbnfFkHHKrPiu0l0pSOhitli54K1wStQJTP0RNkgCZWmc6Ak+xTpQ5S0zM6dSg7
+        sFjN+o6xvbtIPIpq2CvLUxXU6P1j5MMzaqloFxPY=
+Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
+        with SMTPS id 1645466598393587.852076311628; Mon, 21 Feb 2022 10:03:18 -0800 (PST)
+Date:   Mon, 21 Feb 2022 23:33:11 +0530
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        kvm <kvm@vger.kernel.org>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
+ while releasing
+Message-ID: <YhPT37ETuSfmxr5G@anirudhrb.com>
+References: <20220221114916.107045-1-sgarzare@redhat.com>
+ <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
+ <YhO6bwu7iDtUFQGj@anirudhrb.com>
+ <20220221164420.cnhs6sgxizc6tcok@sgarzare-redhat>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 4/4] io_uring: pre-increment f_pos on rw
-Content-Language: en-US
-To:     Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>,
-        io-uring@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <20220221141649.624233-1-dylany@fb.com>
- <20220221141649.624233-5-dylany@fb.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <20220221141649.624233-5-dylany@fb.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221164420.cnhs6sgxizc6tcok@sgarzare-redhat>
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 14:16, Dylan Yudaken wrote:
-> In read/write ops, preincrement f_pos when no offset is specified, and
-> then attempt fix up the position after IO completes if it completed less
-> than expected. This fixes the problem where multiple queued up IO will all
-> obtain the same f_pos, and so perform the same read/write.
+On Mon, Feb 21, 2022 at 05:44:20PM +0100, Stefano Garzarella wrote:
+> On Mon, Feb 21, 2022 at 09:44:39PM +0530, Anirudh Rayabharam wrote:
+> > On Mon, Feb 21, 2022 at 02:59:30PM +0100, Stefano Garzarella wrote:
+> > > On Mon, Feb 21, 2022 at 12:49 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> > > >
+> > > > vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+> > > > ownership. It expects current->mm to be valid.
+> > > >
+> > > > vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+> > > > the user has not done close(), so when we are in do_exit(). In this
+> > > > case current->mm is invalid and we're releasing the device, so we
+> > > > should clean it anyway.
+> > > >
+> > > > Let's check the owner only when vhost_vsock_stop() is called
+> > > > by an ioctl.
+> > > >
+> > > > Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+> > > > Cc: stable@vger.kernel.org
+> > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > > > ---
+> > > >  drivers/vhost/vsock.c | 14 ++++++++------
+> > > >  1 file changed, 8 insertions(+), 6 deletions(-)
+> > > 
+> > > Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > 
+> > I don't think this patch fixes "INFO: task hung in vhost_work_dev_flush"
+> > even though syzbot says so. I am able to reproduce the issue locally
+> > even with this patch applied.
 > 
-> This is still not as consistent as sync r/w, as it is able to advance the
-> file offset past the end of the file. It seems it would be quite a
-> performance hit to work around this limitation - such as by keeping track
-> of concurrent operations - and the downside does not seem to be too
-> problematic.
+> Are you using the sysbot reproducer or another test?
+> In that case, can you share it?
+
+I am using the syzbot reproducer.
+
 > 
-> The attempt to fix up the f_pos after will at least mean that in situations
-> where a single operation is run, then the position will be consistent.
+> From the stack trace it seemed to me that the worker accesses a zone that
+> has been cleaned (iotlb), so it is invalid and fails.
+
+Would the thread hang in that case? How?
+
+Thanks,
+
+	- Anirudh.
+
+> That's why I had this patch tested which should stop the worker before
+> cleaning.
 > 
-> Co-developed-by: Jens Axboe <axboe@kernel.dk>
-> Signed-off-by: Jens Axboe <axboe@kernel.dk>
-> Signed-off-by: Dylan Yudaken <dylany@fb.com>
-> ---
->   fs/io_uring.c | 81 ++++++++++++++++++++++++++++++++++++++++++---------
->   1 file changed, 68 insertions(+), 13 deletions(-)
+> Thanks,
+> Stefano
 > 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index abd8c739988e..a951d0754899 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -3066,21 +3066,71 @@ static inline void io_rw_done(struct kiocb *kiocb, ssize_t ret)
-
-[...]
-
-> +			return false;
->   		}
->   	}
-> -	return is_stream ? NULL : &kiocb->ki_pos;
-> +	*ppos = is_stream ? NULL : &kiocb->ki_pos;
-> +	return false;
-> +}
-> +
-> +static inline void
-> +io_kiocb_done_pos(struct io_kiocb *req, struct kiocb *kiocb, u64 actual)
-
-That's a lot of inlining, I wouldn't be surprised if the compiler
-will even refuse to do that.
-
-io_kiocb_done_pos() {
-	// rest of it
-}
-
-inline io_kiocb_done_pos() {
-	if (!(flags & CUR_POS));
-		return;
-	__io_kiocb_done_pos();
-}
-
-io_kiocb_update_pos() is huge as well
-
-> +{
-> +	u64 expected;
-> +
-> +	if (likely(!(req->flags & REQ_F_CUR_POS)))
-> +		return;
-> +
-> +	expected = req->rw.len;
-> +	if (actual >= expected)
-> +		return;
-> +
-> +	/*
-> +	 * It's not definitely safe to lock here, and the assumption is,
-> +	 * that if we cannot lock the position that it will be changing,
-> +	 * and if it will be changing - then we can't update it anyway
-> +	 */
-> +	if (req->file->f_mode & FMODE_ATOMIC_POS
-> +		&& !mutex_trylock(&req->file->f_pos_lock))
-> +		return;
-> +
-> +	/*
-> +	 * now we want to move the pointer, but only if everything is consistent
-> +	 * with how we left it originally
-> +	 */
-> +	if (req->file->f_pos == kiocb->ki_pos + (expected - actual))
-> +		req->file->f_pos = kiocb->ki_pos;
-
-I wonder, is it good enough / safe to just assign it considering that
-the request was executed outside of locks? vfs_seek()?
-
-> +
-> +	/* else something else messed with f_pos and we can't do anything */
-> +
-> +	if (req->file->f_mode & FMODE_ATOMIC_POS)
-> +		mutex_unlock(&req->file->f_pos_lock);
->   }
-
-Do we even care about races while reading it? E.g.
-pos = READ_ONCE();
-
->   
-> -	ppos = io_kiocb_update_pos(req, kiocb);
-> -
->   	ret = rw_verify_area(READ, req->file, ppos, req->result);
->   	if (unlikely(ret)) {
->   		kfree(iovec);
-> +		io_kiocb_done_pos(req, kiocb, 0);
-
-Why do we update it on failure?
-
-[...]
-
-> -	ppos = io_kiocb_update_pos(req, kiocb);
-> -
->   	ret = rw_verify_area(WRITE, req->file, ppos, req->result);
->   	if (unlikely(ret))
->   		goto out_free;
-> @@ -3858,6 +3912,7 @@ static int io_write(struct io_kiocb *req, unsigned int issue_flags)
->   		return ret ?: -EAGAIN;
->   	}
->   out_free:
-> +	io_kiocb_done_pos(req, kiocb, 0);
-
-Looks weird. It appears we don't need it on failure and
-successes are covered by kiocb_done() / ->ki_complete
-
->   	/* it's reportedly faster than delegating the null check to kfree() */
->   	if (iovec)
->   		kfree(iovec);
-
--- 
-Pavel Begunkov
