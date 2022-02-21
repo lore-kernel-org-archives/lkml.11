@@ -2,124 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 20:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D04DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 21:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbiBUU7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 15:59:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34302 "EHLO
+        id S234134AbiBUVCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 16:02:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234099AbiBUU7J (ORCPT
+        with ESMTP id S232555AbiBUVCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 15:59:09 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FEF237F4;
-        Mon, 21 Feb 2022 12:58:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645477125; x=1677013125;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Q8VbVq+l2O93VD3PU9iLNfpkN2dA3vfhrpThY/iQv7k=;
-  b=CuSW0yR16nYDmv8KQCiFubbtrGT6I8N3Nxt/QWSg9FmW3Rs1NafrOEnU
-   /tOkJgomlM6ErdLdFHoYL/TshgcVLX4JU5GZKakl70q2dFA9fy4dBLddE
-   DuKSKM5Yg0lFoYWgtFnPy5LJjGSaclI84CDN3hPwIWJLpeSfmhc7Dm3/f
-   pDW6glRrcIbHatrxanc6TCf1A5g/p0nssFTl6v87KK4v6kkCv/X7NAtFx
-   eEUGmBEjShdSYcZ86YpECfm0OZyLlX44mBd6Au4PYw6WbDNEq369gVOg0
-   IQnQuii7TT7j25gTfPwpyRpv6B0JgT0aBcjht6K/CthihvzCNZ0nmmPwZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="238984546"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="238984546"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 12:58:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="591075000"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Feb 2022 12:58:41 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMFlZ-0001ya-5Z; Mon, 21 Feb 2022 20:58:41 +0000
-Date:   Tue, 22 Feb 2022 04:57:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Like Xu <like.xu.linux@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
-Subject: Re: [PATCH 09/11] KVM: x86/pmu: Replace pmc_perf_hw_id() with
- perf_get_hw_event_config()
-Message-ID: <202202220414.dzxjtMiF-lkp@intel.com>
-References: <20220221115201.22208-10-likexu@tencent.com>
+        Mon, 21 Feb 2022 16:02:11 -0500
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A2DDA5;
+        Mon, 21 Feb 2022 13:01:47 -0800 (PST)
+Received: by mail-ej1-f48.google.com with SMTP id qk11so36386581ejb.2;
+        Mon, 21 Feb 2022 13:01:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2974eKi5BdNp35gKs82/fhm6RumNbC6dF3NV48ttMrc=;
+        b=1eqzCAudxjM9+/gdX6Jkrrb47saHKR/G8cMmnpDSSGRsltcbboNsnFGFNubNEHqI9x
+         SyC902PaTUis3Vg2RQ0b7JKkYKoyiG/HL4WJwcon8g/P51E6immNKDB24ieBC3D7vo99
+         BWbW3oFOmwKG/G1AX/qYNCgbZViQ2gX0J3H4ImiwoVfXhIbY2jEK3kRBcZI7QLmk0xt0
+         87sPrgC/Bo69ztbKoSRvou4672H2gopBSXnkELT2AJPA/MpCZ6Z/fwL/9hNpkHch+sj/
+         0pl++ZaPy/eZI/F0cAZ38/pGzsCehVNO2fHL38+d0ow8rCX14rbta75v5cFreS2fl69o
+         a4wQ==
+X-Gm-Message-State: AOAM531JrT61ywkzyNBn085gjyS6fq/lPJt4/S+Mz4PLIMK8Jk1bJN5H
+        4x9N231HhYvrDthBHxdeBHsl3KIqrf4=
+X-Google-Smtp-Source: ABdhPJzztwOaZSVTcKC2G5n99pioUT5+4mVtbjxwfaAkvFPqFPoLnSzgiO6qRNho1HaBDipNXAVWwA==
+X-Received: by 2002:a17:906:3588:b0:6a7:7ac1:cac8 with SMTP id o8-20020a170906358800b006a77ac1cac8mr16443120ejb.342.1645477305493;
+        Mon, 21 Feb 2022 13:01:45 -0800 (PST)
+Received: from [192.168.0.122] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.googlemail.com with ESMTPSA id m7sm4115951eds.104.2022.02.21.13.01.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 13:01:44 -0800 (PST)
+Message-ID: <2546477f-4190-e838-3095-f47b31802445@kernel.org>
+Date:   Mon, 21 Feb 2022 22:01:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221115201.22208-10-likexu@tencent.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
+Content-Language: en-US
+To:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1645460043.git.oleksii_moisieiev@epam.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <cover.1645460043.git.oleksii_moisieiev@epam.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Like,
+On 21/02/2022 18:26, Oleksii Moisieiev wrote:
+> Introducing new parameter called scmi_devid to the device-tree bindings.
+> This parameter should be set for the device nodes, which has
+> clocks/power-domains/resets working through SCMI.
+> Given parameter should set the device_id, needed to set device
+> permissions in the Firmware. This feature will be extremely useful for
+> the virtualized systems, which has more that one Guests running on the
+> system at the same time or for the syestems, which require several
+> agents with different permissions. Trusted agent will use scmi_devid to
+> set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
+> for details).
+> Agents concept is described in Section 4.2.1 [0].
+> 
+> scmi_devid in Device-tree node example:
+> usb@e6590000
+> {
+>     scmi_devid = <19>;
+>     clocks = <&scmi_clock 3>, <&scmi_clock 2>;
+>     resets = <&scmi_reset 10>, <&scmi_reset 9>;
+>     power-domains = <&scmi_power 0>;
+> };
 
-Thank you for the patch! Perhaps something to improve:
+And how do you prevent DT overlay adding such devid to any other node
+thus allowing any other device to send requests with given devid?
 
-[auto build test WARNING on kvm/master]
-[also build test WARNING on linus/master v5.17-rc5 next-20220217]
-[cannot apply to tip/perf/core mst-vhost/linux-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Plus few technicalities:
+1. Hyphen, not underscore in property name, so scmi-devid.
+2. Your schema does is not selected by anything. How is it intended to
+be used? Nothing is including it, either...
 
-url:    https://github.com/0day-ci/linux/commits/Like-Xu/KVM-x86-pmu-Get-rid-of-PERF_TYPE_HARDWAR-and-other-minor-fixes/20220221-195359
-base:   https://git.kernel.org/pub/scm/virt/kvm/kvm.git master
-config: x86_64-randconfig-c007-20220221 (https://download.01.org/0day-ci/archive/20220222/202202220414.dzxjtMiF-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/29bdfb8b85a85f36e3fca739146845d7050a372d
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Like-Xu/KVM-x86-pmu-Get-rid-of-PERF_TYPE_HARDWAR-and-other-minor-fixes/20220221-195359
-        git checkout 29bdfb8b85a85f36e3fca739146845d7050a372d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/kvm/pmu.c:471:66: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]
-           return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &&
-                                                                           ^
-   arch/x86/kvm/pmu.c:471:66: note: use '&' for a bitwise operation
-           return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &&
-                                                                           ^~
-                                                                           &
-   arch/x86/kvm/pmu.c:471:66: note: remove constant to silence this warning
-           return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &&
-                                                                          ~^~
-   1 warning generated.
-
-
-vim +471 arch/x86/kvm/pmu.c
-
-   467	
-   468	static inline bool eventsel_match_perf_hw_id(struct kvm_pmc *pmc,
-   469		unsigned int perf_hw_id)
-   470	{
- > 471		return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &&
-   472			AMD64_RAW_EVENT_MASK_NB);
-   473	}
-   474	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards,
+Krzysztof
