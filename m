@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3582FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348923AbiBUJUz (ORCPT
+        id S1349167AbiBUJVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:20:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56976 "EHLO
+        Mon, 21 Feb 2022 04:21:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiBUJLC (ORCPT
+        with ESMTP id S1349131AbiBUJMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA97555B0;
-        Mon, 21 Feb 2022 01:02:58 -0800 (PST)
+        Mon, 21 Feb 2022 04:12:05 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9082A26F;
+        Mon, 21 Feb 2022 01:04:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DAB6112F;
-        Mon, 21 Feb 2022 09:02:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37069C340E9;
-        Mon, 21 Feb 2022 09:02:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1EB0ECE0E82;
+        Mon, 21 Feb 2022 09:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C5CC340E9;
+        Mon, 21 Feb 2022 09:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434177;
-        bh=Kp3T8Uq/wmdAQIvGZCoRhZ+9BMeChwVbO3ac4eqCP1g=;
+        s=korg; t=1645434294;
+        bh=VRaI0hLw/feo0vqMNfNYJxQRXjWyLt8tx5utnHfXNM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bCGIKjyv7izf/py+jgexecSYpdKPu/7hT32LOIww+Z2sA3hUohLr7o1+3t0NE7OJE
-         yQfnbeyCwlidCG+sFH17NwBBo1HCUHbKezrtMhrXGB3em6vjnuCDQ5mUbXQ3RMHES5
-         afvVguBoGBXhXsPJofL+agh2UHy9lIJLwsVeTwBc=
+        b=06a0FuxpY4+NuPoxVBlTBnUyim0/bKlVCHQ/cZEL9TIuBdqNlKKoj89Tmwm19gSB3
+         XdxPqzVyDLxmxk1hQa/r3SLnSsEsrT4bCSYnxhkAnLuyJwIQOz/gdZNSD11jl3d+qZ
+         lqPFeCEIbnlcBmHrwr9ZIiWChzNdCwTKBanIebJ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 022/121] selftests: rtc: Increase test timeout so that all tests run
-Date:   Mon, 21 Feb 2022 09:48:34 +0100
-Message-Id: <20220221084921.910037020@linuxfoundation.org>
+        stable@vger.kernel.org, Lars Persson <larper@axis.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>
+Subject: [PATCH 5.10 079/121] optee: use driver internal tee_context for some rpc
+Date:   Mon, 21 Feb 2022 09:49:31 +0100
+Message-Id: <20220221084923.885948515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -53,46 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-[ Upstream commit f034cc1301e7d83d4ec428dd6b8ffb57ca446efb ]
+commit aceeafefff736057e8f93f19bbfbef26abd94604 upstream.
 
-The timeout setting for the rtc kselftest is currently 90 seconds. This
-setting is used by the kselftest runner to stop running a test if it
-takes longer than the assigned value.
+Adds a driver private tee_context by moving the tee_context in struct
+optee_notif to struct optee. This tee_context was previously used when
+doing internal calls to secure world to deliver notification.
 
-However, two of the test cases inside rtc set alarms. These alarms are
-set to the next beginning of the minute, so each of these test cases may
-take up to, in the worst case, 60 seconds.
+The new driver internal tee_context is now also when allocating driver
+private shared memory. This decouples the shared memory object from its
+original tee_context. This is needed when the life time of such a memory
+allocation outlives the client tee_context.
 
-In order to allow for all test cases in rtc to run, even in the worst
-case, when using the kselftest runner, the timeout value should be
-increased to at least 120. Set it to 180, so there's some additional
-slack.
+This patch fixes the problem described below:
 
-Correct operation can be tested by running the following command right
-after the start of a minute (low second count), and checking that all
-test cases run:
+The addition of a shutdown hook by commit f25889f93184 ("optee: fix tee out
+of memory failure seen during kexec reboot") introduced a kernel shutdown
+regression that can be triggered after running the OP-TEE xtest suites.
 
-	./run_kselftest.sh -c rtc
+Once the shutdown hook is called it is not possible to communicate any more
+with the supplicant process because the system is not scheduling task any
+longer. Thus if the optee driver shutdown path receives a supplicant RPC
+request from the OP-TEE we will deadlock the kernel's shutdown.
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f25889f93184 ("optee: fix tee out of memory failure seen during kexec reboot")
+Fixes: 217e0250cccb ("tee: use reference counting for tee_context")
+Reported-by: Lars Persson <larper@axis.com>
+Cc: stable@vger.kernel.org
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+[JW: backport to 5.10-stable]
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/rtc/settings | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tee/optee/core.c          |    8 ++++++++
+ drivers/tee/optee/optee_private.h |    2 ++
+ drivers/tee/optee/rpc.c           |    8 +++++---
+ 3 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
-index ba4d85f74cd6b..a953c96aa16e1 100644
---- a/tools/testing/selftests/rtc/settings
-+++ b/tools/testing/selftests/rtc/settings
-@@ -1 +1 @@
--timeout=90
-+timeout=180
--- 
-2.34.1
-
+--- a/drivers/tee/optee/core.c
++++ b/drivers/tee/optee/core.c
+@@ -588,6 +588,7 @@ static int optee_remove(struct platform_
+ 	/* Unregister OP-TEE specific client devices on TEE bus */
+ 	optee_unregister_devices();
+ 
++	teedev_close_context(optee->ctx);
+ 	/*
+ 	 * Ask OP-TEE to free all cached shared memory objects to decrease
+ 	 * reference counters and also avoid wild pointers in secure world
+@@ -633,6 +634,7 @@ static int optee_probe(struct platform_d
+ 	struct optee *optee = NULL;
+ 	void *memremaped_shm = NULL;
+ 	struct tee_device *teedev;
++	struct tee_context *ctx;
+ 	u32 sec_caps;
+ 	int rc;
+ 
+@@ -719,6 +721,12 @@ static int optee_probe(struct platform_d
+ 	optee_supp_init(&optee->supp);
+ 	optee->memremaped_shm = memremaped_shm;
+ 	optee->pool = pool;
++	ctx = teedev_open(optee->teedev);
++	if (IS_ERR(ctx)) {
++		rc = rc = PTR_ERR(ctx);
++		goto err;
++	}
++	optee->ctx = ctx;
+ 
+ 	/*
+ 	 * Ensure that there are no pre-existing shm objects before enabling
+--- a/drivers/tee/optee/optee_private.h
++++ b/drivers/tee/optee/optee_private.h
+@@ -70,6 +70,7 @@ struct optee_supp {
+  * struct optee - main service struct
+  * @supp_teedev:	supplicant device
+  * @teedev:		client device
++ * @ctx:		driver internal TEE context
+  * @invoke_fn:		function to issue smc or hvc
+  * @call_queue:		queue of threads waiting to call @invoke_fn
+  * @wait_queue:		queue of threads from secure world waiting for a
+@@ -87,6 +88,7 @@ struct optee {
+ 	struct tee_device *supp_teedev;
+ 	struct tee_device *teedev;
+ 	optee_invoke_fn *invoke_fn;
++	struct tee_context *ctx;
+ 	struct optee_call_queue call_queue;
+ 	struct optee_wait_queue wait_queue;
+ 	struct optee_supp supp;
+--- a/drivers/tee/optee/rpc.c
++++ b/drivers/tee/optee/rpc.c
+@@ -284,6 +284,7 @@ static struct tee_shm *cmd_alloc_suppl(s
+ }
+ 
+ static void handle_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
++					  struct optee *optee,
+ 					  struct optee_msg_arg *arg,
+ 					  struct optee_call_ctx *call_ctx)
+ {
+@@ -313,7 +314,8 @@ static void handle_rpc_func_cmd_shm_allo
+ 		shm = cmd_alloc_suppl(ctx, sz);
+ 		break;
+ 	case OPTEE_MSG_RPC_SHM_TYPE_KERNEL:
+-		shm = tee_shm_alloc(ctx, sz, TEE_SHM_MAPPED | TEE_SHM_PRIV);
++		shm = tee_shm_alloc(optee->ctx, sz,
++				    TEE_SHM_MAPPED | TEE_SHM_PRIV);
+ 		break;
+ 	default:
+ 		arg->ret = TEEC_ERROR_BAD_PARAMETERS;
+@@ -470,7 +472,7 @@ static void handle_rpc_func_cmd(struct t
+ 		break;
+ 	case OPTEE_MSG_RPC_CMD_SHM_ALLOC:
+ 		free_pages_list(call_ctx);
+-		handle_rpc_func_cmd_shm_alloc(ctx, arg, call_ctx);
++		handle_rpc_func_cmd_shm_alloc(ctx, optee, arg, call_ctx);
+ 		break;
+ 	case OPTEE_MSG_RPC_CMD_SHM_FREE:
+ 		handle_rpc_func_cmd_shm_free(ctx, arg);
+@@ -501,7 +503,7 @@ void optee_handle_rpc(struct tee_context
+ 
+ 	switch (OPTEE_SMC_RETURN_GET_RPC_FUNC(param->a0)) {
+ 	case OPTEE_SMC_RPC_FUNC_ALLOC:
+-		shm = tee_shm_alloc(ctx, param->a1,
++		shm = tee_shm_alloc(optee->ctx, param->a1,
+ 				    TEE_SHM_MAPPED | TEE_SHM_PRIV);
+ 		if (!IS_ERR(shm) && !tee_shm_get_pa(shm, 0, &pa)) {
+ 			reg_pair_from_64(&param->a1, &param->a2, pa);
 
 
