@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82877C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DE0C35294
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354544AbiBUJ6g (ORCPT
+        id S1354802AbiBUJ64 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:58:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42266 "EHLO
+        Mon, 21 Feb 2022 04:58:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352153AbiBUJrL (ORCPT
+        with ESMTP id S1351918AbiBUJqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:11 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F2F40E68;
-        Mon, 21 Feb 2022 01:19:05 -0800 (PST)
+        Mon, 21 Feb 2022 04:46:47 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A75C26553;
+        Mon, 21 Feb 2022 01:18:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 29C81CE0E79;
-        Mon, 21 Feb 2022 09:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03FDDC340E9;
-        Mon, 21 Feb 2022 09:19:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71C90CE0E79;
+        Mon, 21 Feb 2022 09:18:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50FE9C340E9;
+        Mon, 21 Feb 2022 09:18:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435142;
-        bh=FYwL1b4M3GccrtCBjz07QnsLhydRhFMZnVAOaArXwAc=;
+        s=korg; t=1645435122;
+        bh=WmPZXkYgM9yn7boO9/5pU3rwI0agwNsW1QZJMs+aPwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ArBgBh09SUNfPlTzTIznoGXUNCDVnK0mL844Fqs0A8fk5K2vcejtqpWgRso+3H9gw
-         anJ8FwoWekCT7fhJu2Y/BHr160RnJXXf04kcGeaLpjciu6SA2Tvf364kG+5Tpp8vwz
-         3JBrApmr3PIAPmBTVzlRcie6D0tMrKvoAVMCw7pk=
+        b=T3aVJSrczmvSjTK1WjC8zZf1qIpn7mf9Z0HGdvt4BifjNjcCgSAXjW1rQyKt/jPX1
+         MGY3FqXt3GKk1ks5XKIv5XsdOHC4z9o1v/GI1iXzr/nlqlGM7Ntb7kj5gd7uaJuJ1U
+         TPwLcnHfr2Fu43YqGP6VxUb9j8Tn7PBqj8eWjPBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Viswas G <Viswas.G@microchip.com>,
+        Ajish Koshy <Ajish.Koshy@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 042/227] selftests/zram: Adapt the situation that /dev/zram0 is being used
-Date:   Mon, 21 Feb 2022 09:47:41 +0100
-Message-Id: <20220221084936.270104912@linuxfoundation.org>
+Subject: [PATCH 5.16 053/227] scsi: pm80xx: Fix double completion for SATA devices
+Date:   Mon, 21 Feb 2022 09:47:52 +0100
+Message-Id: <20220221084936.635316463@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,327 +52,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Ajish Koshy <Ajish.Koshy@microchip.com>
 
-[ Upstream commit 01dabed20573804750af5c7bf8d1598a6bf7bf6e ]
+[ Upstream commit c26b85ea16365079be8d206b20556a60a0c69ad4 ]
 
-If zram-generator package is installed and works, then we can not remove
-zram module because zram swap is being used. This case needs a clean zram
-environment, change this test by using hot_add/hot_remove interface. So
-even zram device is being used, we still can add zram device and remove
-them in cleanup.
+Current code handles completions for SATA devices in mpi_sata_completion()
+and mpi_sata_event().
 
-The two interface was introduced since kernel commit 6566d1a32bf7("zram:
-add dynamic device add/remove functionality") in v4.2-rc1. If kernel
-supports these two interface, we use hot_add/hot_remove to slove this
-problem, if not, just check whether zram is being used or built in, then
-skip it on old kernel.
+However, at the time when any SATA event happens, for almost all the event
+types, the command is still in the target. It is therefore incorrect to
+complete the task in sata_event().
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+There are some events for which we get sata_completions, some need recovery
+procedure and others abort. All the tasks must be completed via
+sata_completion() path.
+
+Removed the task done related code from sata_events().  For tasks where we
+don't get completions, let top layer call abort() to abort the command post
+timeout.
+
+Link: https://lore.kernel.org/r/20220124082255.86223-1-Ajish.Koshy@microchip.com
+Acked-by: Jack Wang <jinpu.wang@ionos.com>
+Co-developed-by: Viswas G <Viswas.G@microchip.com>
+Signed-off-by: Viswas G <Viswas.G@microchip.com>
+Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/zram/zram.sh     |  15 +---
- tools/testing/selftests/zram/zram01.sh   |   3 +-
- tools/testing/selftests/zram/zram02.sh   |   1 -
- tools/testing/selftests/zram/zram_lib.sh | 110 +++++++++++++----------
- 4 files changed, 66 insertions(+), 63 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 18 ------------------
+ drivers/scsi/pm8001/pm80xx_hwi.c | 26 --------------------------
+ 2 files changed, 44 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram.sh b/tools/testing/selftests/zram/zram.sh
-index 232e958ec4547..b0b91d9b0dc21 100755
---- a/tools/testing/selftests/zram/zram.sh
-+++ b/tools/testing/selftests/zram/zram.sh
-@@ -2,9 +2,6 @@
- # SPDX-License-Identifier: GPL-2.0
- TCID="zram.sh"
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 4390c8b9170cd..066290dd57565 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -2695,7 +2695,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 	u32 tag = le32_to_cpu(psataPayload->tag);
+ 	u32 port_id = le32_to_cpu(psataPayload->port_id);
+ 	u32 dev_id = le32_to_cpu(psataPayload->device_id);
+-	unsigned long flags;
  
--# Kselftest framework requirement - SKIP code is 4.
--ksft_skip=4
--
- . ./zram_lib.sh
+ 	ccb = &pm8001_ha->ccb_info[tag];
  
- run_zram () {
-@@ -18,14 +15,4 @@ echo ""
- 
- check_prereqs
- 
--# check zram module exists
--MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--if [ -f $MODULE_PATH ]; then
--	run_zram
--elif [ -b /dev/zram0 ]; then
--	run_zram
--else
--	echo "$TCID : No zram.ko module or /dev/zram0 device file not found"
--	echo "$TCID : CONFIG_ZRAM is not set"
--	exit $ksft_skip
--fi
-+run_zram
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index e9e9eb777e2c7..8f4affe34f3e4 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -33,7 +33,7 @@ zram_algs="lzo"
- 
- zram_fill_fs()
- {
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "fill zram$i..."
- 		local b=0
- 		while [ true ]; do
-@@ -67,7 +67,6 @@ zram_mount
- 
- zram_fill_fs
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram02.sh b/tools/testing/selftests/zram/zram02.sh
-index e83b404807c09..2418b0c4ed136 100755
---- a/tools/testing/selftests/zram/zram02.sh
-+++ b/tools/testing/selftests/zram/zram02.sh
-@@ -36,7 +36,6 @@ zram_set_memlimit
- zram_makeswap
- zram_swapoff
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index f47fc0f27e99e..21ec1966de76c 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -5,10 +5,12 @@
- # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
- # Modified: Naresh Kamboju <naresh.kamboju@linaro.org>
- 
--MODULE=0
- dev_makeswap=-1
- dev_mounted=-1
--
-+dev_start=0
-+dev_end=-1
-+module_load=-1
-+sys_control=-1
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
- kernel_version=`uname -r | cut -d'.' -f1,2`
-@@ -46,57 +48,72 @@ zram_cleanup()
- {
- 	echo "zram cleanup"
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_makeswap); do
- 		swapoff /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $dev_mounted); do
-+	for i in $(seq $dev_start $dev_mounted); do
- 		umount /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo 1 > /sys/block/zram${i}/reset
- 		rm -rf zram$i
- 	done
- 
--}
-+	if [ $sys_control -eq 1 ]; then
-+		for i in $(seq $dev_start $dev_end); do
-+			echo $i > /sys/class/zram-control/hot_remove
-+		done
-+	fi
- 
--zram_unload()
--{
--	if [ $MODULE -ne 0 ] ; then
--		echo "zram rmmod zram"
-+	if [ $module_load -eq 1 ]; then
- 		rmmod zram > /dev/null 2>&1
- 	fi
+@@ -2735,8 +2734,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 		ts->resp = SAS_TASK_COMPLETE;
+ 		ts->stat = SAS_DATA_OVERRUN;
+ 		ts->residual = 0;
+-		if (pm8001_dev)
+-			atomic_dec(&pm8001_dev->running_req);
+ 		break;
+ 	case IO_XFER_ERROR_BREAK:
+ 		pm8001_dbg(pm8001_ha, IO, "IO_XFER_ERROR_BREAK\n");
+@@ -2778,7 +2775,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 				IO_OPEN_CNX_ERROR_IT_NEXUS_LOSS);
+ 			ts->resp = SAS_TASK_COMPLETE;
+ 			ts->stat = SAS_QUEUE_FULL;
+-			pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
+ 			return;
+ 		}
+ 		break;
+@@ -2864,20 +2860,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 		ts->stat = SAS_OPEN_TO;
+ 		break;
+ 	}
+-	spin_lock_irqsave(&t->task_state_lock, flags);
+-	t->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+-	t->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
+-	t->task_state_flags |= SAS_TASK_STATE_DONE;
+-	if (unlikely((t->task_state_flags & SAS_TASK_STATE_ABORTED))) {
+-		spin_unlock_irqrestore(&t->task_state_lock, flags);
+-		pm8001_dbg(pm8001_ha, FAIL,
+-			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+-			   t, event, ts->resp, ts->stat);
+-		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+-	} else {
+-		spin_unlock_irqrestore(&t->task_state_lock, flags);
+-		pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
+-	}
  }
  
- zram_load()
- {
--	# check zram module exists
--	MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--	if [ -f $MODULE_PATH ]; then
--		MODULE=1
--		echo "create '$dev_num' zram device(s)"
--		modprobe zram num_devices=$dev_num
--		if [ $? -ne 0 ]; then
--			echo "failed to insert zram module"
--			exit 1
--		fi
--
--		dev_num_created=$(ls /dev/zram* | wc -w)
-+	echo "create '$dev_num' zram device(s)"
-+
-+	# zram module loaded, new kernel
-+	if [ -d "/sys/class/zram-control" ]; then
-+		echo "zram modules already loaded, kernel supports" \
-+			"zram-control interface"
-+		dev_start=$(ls /dev/zram* | wc -w)
-+		dev_end=$(($dev_start + $dev_num - 1))
-+		sys_control=1
-+
-+		for i in $(seq $dev_start $dev_end); do
-+			cat /sys/class/zram-control/hot_add > /dev/null
-+		done
-+
-+		echo "all zram devices (/dev/zram$dev_start~$dev_end" \
-+			"successfully created"
-+		return 0
-+	fi
+ /*See the comments for mpi_ssp_completion */
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 4c5b945bf3187..885bc9e71ff64 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -2828,7 +2828,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
+ 	u32 tag = le32_to_cpu(psataPayload->tag);
+ 	u32 port_id = le32_to_cpu(psataPayload->port_id);
+ 	u32 dev_id = le32_to_cpu(psataPayload->device_id);
+-	unsigned long flags;
  
--		if [ "$dev_num_created" -ne "$dev_num" ]; then
--			echo "unexpected num of devices: $dev_num_created"
--			ERR_CODE=-1
-+	# detect old kernel or built-in
-+	modprobe zram num_devices=$dev_num
-+	if [ ! -d "/sys/class/zram-control" ]; then
-+		if grep -q '^zram' /proc/modules; then
-+			rmmod zram > /dev/null 2>&1
-+			if [ $? -ne 0 ]; then
-+				echo "zram module is being used on old kernel" \
-+					"without zram-control interface"
-+				exit $ksft_skip
-+			fi
- 		else
--			echo "zram load module successful"
-+			echo "test needs CONFIG_ZRAM=m on old kernel without" \
-+				"zram-control interface"
-+			exit $ksft_skip
- 		fi
--	elif [ -b /dev/zram0 ]; then
--		echo "/dev/zram0 device file found: OK"
--	else
--		echo "ERROR: No zram.ko module or no /dev/zram0 device found"
--		echo "$TCID : CONFIG_ZRAM is not set"
--		exit 1
-+		modprobe zram num_devices=$dev_num
- 	fi
-+
-+	module_load=1
-+	dev_end=$(($dev_num - 1))
-+	echo "all zram devices (/dev/zram0~$dev_end) successfully created"
+ 	ccb = &pm8001_ha->ccb_info[tag];
+ 
+@@ -2866,8 +2865,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
+ 		ts->resp = SAS_TASK_COMPLETE;
+ 		ts->stat = SAS_DATA_OVERRUN;
+ 		ts->residual = 0;
+-		if (pm8001_dev)
+-			atomic_dec(&pm8001_dev->running_req);
+ 		break;
+ 	case IO_XFER_ERROR_BREAK:
+ 		pm8001_dbg(pm8001_ha, IO, "IO_XFER_ERROR_BREAK\n");
+@@ -2916,11 +2913,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
+ 				IO_OPEN_CNX_ERROR_IT_NEXUS_LOSS);
+ 			ts->resp = SAS_TASK_COMPLETE;
+ 			ts->stat = SAS_QUEUE_FULL;
+-			spin_unlock_irqrestore(&circularQ->oq_lock,
+-					circularQ->lock_flags);
+-			pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
+-			spin_lock_irqsave(&circularQ->oq_lock,
+-					circularQ->lock_flags);
+ 			return;
+ 		}
+ 		break;
+@@ -3020,24 +3012,6 @@ static void mpi_sata_event(struct pm8001_hba_info *pm8001_ha,
+ 		ts->stat = SAS_OPEN_TO;
+ 		break;
+ 	}
+-	spin_lock_irqsave(&t->task_state_lock, flags);
+-	t->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+-	t->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
+-	t->task_state_flags |= SAS_TASK_STATE_DONE;
+-	if (unlikely((t->task_state_flags & SAS_TASK_STATE_ABORTED))) {
+-		spin_unlock_irqrestore(&t->task_state_lock, flags);
+-		pm8001_dbg(pm8001_ha, FAIL,
+-			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+-			   t, event, ts->resp, ts->stat);
+-		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+-	} else {
+-		spin_unlock_irqrestore(&t->task_state_lock, flags);
+-		spin_unlock_irqrestore(&circularQ->oq_lock,
+-				circularQ->lock_flags);
+-		pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
+-		spin_lock_irqsave(&circularQ->oq_lock,
+-				circularQ->lock_flags);
+-	}
  }
  
- zram_max_streams()
-@@ -110,7 +127,7 @@ zram_max_streams()
- 		return 0
- 	fi
- 
--	local i=0
-+	local i=$dev_start
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
- 		echo $max_s > $sys_path || \
-@@ -122,7 +139,7 @@ zram_max_streams()
- 			echo "FAIL can't set max_streams '$max_s', get $max_stream"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$max_streams' ($i/$dev_num)"
-+		echo "$sys_path = '$max_streams'"
- 	done
- 
- 	echo "zram max streams: OK"
-@@ -132,15 +149,16 @@ zram_compress_alg()
- {
- 	echo "test that we can set compression algorithm"
- 
--	local algs=$(cat /sys/block/zram0/comp_algorithm)
-+	local i=$dev_start
-+	local algs=$(cat /sys/block/zram${i}/comp_algorithm)
- 	echo "supported algs: $algs"
--	local i=0
-+
- 	for alg in $zram_algs; do
- 		local sys_path="/sys/block/zram${i}/comp_algorithm"
- 		echo "$alg" >	$sys_path || \
- 			echo "FAIL can't set '$alg' to $sys_path"
- 		i=$(($i + 1))
--		echo "$sys_path = '$alg' ($i/$dev_num)"
-+		echo "$sys_path = '$alg'"
- 	done
- 
- 	echo "zram set compression algorithm: OK"
-@@ -149,14 +167,14 @@ zram_compress_alg()
- zram_set_disksizes()
- {
- 	echo "set disk size to zram device(s)"
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_sizes; do
- 		local sys_path="/sys/block/zram${i}/disksize"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
- 
- 	echo "zram set disksizes: OK"
-@@ -166,14 +184,14 @@ zram_set_memlimit()
- {
- 	echo "set memory limit to zram device(s)"
- 
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_mem_limits; do
- 		local sys_path="/sys/block/zram${i}/mem_limit"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
- 
- 	echo "zram set memory limit: OK"
-@@ -182,8 +200,8 @@ zram_set_memlimit()
- zram_makeswap()
- {
- 	echo "make swap with zram device(s)"
--	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	local i=$dev_start
-+	for i in $(seq $dev_start $dev_end); do
- 		mkswap /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -206,7 +224,7 @@ zram_makeswap()
- zram_swapoff()
- {
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_end); do
- 		swapoff /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -220,7 +238,7 @@ zram_swapoff()
- 
- zram_makefs()
- {
--	local i=0
-+	local i=$dev_start
- 	for fs in $zram_filesystems; do
- 		# if requested fs not supported default it to ext2
- 		which mkfs.$fs > /dev/null 2>&1 || fs=ext2
-@@ -239,7 +257,7 @@ zram_makefs()
- zram_mount()
- {
- 	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "mount /dev/zram$i"
- 		mkdir zram$i
- 		mount /dev/zram$i zram$i > /dev/null || \
+ /*See the comments for mpi_ssp_completion */
 -- 
 2.34.1
 
