@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C529AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351158AbiBUJms (ORCPT
+        id S1351167AbiBUJm5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:42:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48444 "EHLO
+        Mon, 21 Feb 2022 04:42:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351047AbiBUJgk (ORCPT
+        with ESMTP id S1351085AbiBUJgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:36:40 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548362C674;
-        Mon, 21 Feb 2022 01:15:08 -0800 (PST)
+        Mon, 21 Feb 2022 04:36:42 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408EC2CC92;
+        Mon, 21 Feb 2022 01:15:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 12DFCCE0E92;
-        Mon, 21 Feb 2022 09:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31BE1C340E9;
-        Mon, 21 Feb 2022 09:14:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 425DDCE0EAF;
+        Mon, 21 Feb 2022 09:15:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 387C3C36AE2;
+        Mon, 21 Feb 2022 09:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434868;
-        bh=fPzhcJUNc782pRynNz+kxubVhm6EiTsyUtZufSvYyDg=;
+        s=korg; t=1645434907;
+        bh=mBFW0v1udwYjkI9mRDNHQtF9GGNt96cBVf2w2wtCggo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCcc2g16Uqj0JhRiaioiN4qttGhwGR1pBwgKogUd3nedybcPPWzilYid/6qPc0QtK
-         Kb+UqNrLSjHrx0rpBQdcN5ePuxzBLlguRbeXZlFBQxdqKvORLvL5ksHUnRKt27lJjS
-         3DXiFugEl3/yCI7LGomWrI3BxZDKFMRILyrS//ck=
+        b=IEN9oCAVN2TpsH+h4MZVUW5qgHkd5NwIEov1rC5OZROHSxWrfW+0jAEEY6X50EYWM
+         HjXoCf0R9kxpVHGZ9Q/Lue3lGsEvUF8fIATQ7RPhozBw5xE4w4kVM2fMf/N/NtTCpC
+         7cIDkrgRFtB5eFuNIeve+hzlnQx2lskRVEt+LFxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 160/196] pidfd: fix test failure due to stack overflow on some arches
-Date:   Mon, 21 Feb 2022 09:49:52 +0100
-Message-Id: <20220221084936.299730861@linuxfoundation.org>
+Subject: [PATCH 5.15 173/196] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Mon, 21 Feb 2022 09:50:05 +0100
+Message-Id: <20220221084936.739925969@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,146 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Rasmussen <axelrasmussen@google.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-[ Upstream commit 4cbd93c3c110447adc66cb67c08af21f939ae2d7 ]
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-When running the pidfd_fdinfo_test on arm64, it fails for me. After some
-digging, the reason is that the child exits due to SIGBUS, because it
-overflows the 1024 byte stack we've reserved for it.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-To fix the issue, increase the stack size to 8192 bytes (this number is
-somewhat arbitrary, and was arrived at through experimentation -- I kept
-doubling until the failure no longer occurred).
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Also, let's make the issue easier to debug. wait_for_pid() returns an
-ambiguous value: it may return -1 in all of these cases:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-1. waitpid() itself returned -1
-2. waitpid() returned success, but we found !WIFEXITED(status).
-3. The child process exited, but it did so with a -1 exit code.
-
-There's no way for the caller to tell the difference. So, at least log
-which occurred, so the test runner can debug things.
-
-While debugging this, I found that we had !WIFEXITED(), because the
-child exited due to a signal. This seems like a reasonably common case,
-so also print out whether or not we have WIFSIGNALED(), and the
-associated WTERMSIG() (if any). This lets us see the SIGBUS I'm fixing
-clearly when it occurs.
-
-Finally, I'm suspicious of allocating the child's stack on our stack.
-man clone(2) suggests that the correct way to do this is with mmap(),
-and in particular by setting MAP_STACK. So, switch to doing it that way
-instead.
-
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/pidfd/pidfd.h         | 13 ++++++++---
- .../selftests/pidfd/pidfd_fdinfo_test.c       | 22 +++++++++++++++----
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/pidfd/pidfd.h b/tools/testing/selftests/pidfd/pidfd.h
-index 01f8d3c0cf2cb..6922d6417e1cf 100644
---- a/tools/testing/selftests/pidfd/pidfd.h
-+++ b/tools/testing/selftests/pidfd/pidfd.h
-@@ -68,7 +68,7 @@
- #define PIDFD_SKIP 3
- #define PIDFD_XFAIL 4
- 
--int wait_for_pid(pid_t pid)
-+static inline int wait_for_pid(pid_t pid)
- {
- 	int status, ret;
- 
-@@ -78,13 +78,20 @@ int wait_for_pid(pid_t pid)
- 		if (errno == EINTR)
- 			goto again;
- 
-+		ksft_print_msg("waitpid returned -1, errno=%d\n", errno);
- 		return -1;
- 	}
- 
--	if (!WIFEXITED(status))
-+	if (!WIFEXITED(status)) {
-+		ksft_print_msg(
-+		       "waitpid !WIFEXITED, WIFSIGNALED=%d, WTERMSIG=%d\n",
-+		       WIFSIGNALED(status), WTERMSIG(status));
- 		return -1;
-+	}
- 
--	return WEXITSTATUS(status);
-+	ret = WEXITSTATUS(status);
-+	ksft_print_msg("waitpid WEXITSTATUS=%d\n", ret);
-+	return ret;
- }
- 
- static inline int sys_pidfd_open(pid_t pid, unsigned int flags)
-diff --git a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-index 22558524f71c3..3fd8e903118f5 100644
---- a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-+++ b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-@@ -12,6 +12,7 @@
- #include <string.h>
- #include <syscall.h>
- #include <sys/wait.h>
-+#include <sys/mman.h>
- 
- #include "pidfd.h"
- #include "../kselftest.h"
-@@ -80,7 +81,10 @@ static inline int error_check(struct error *err, const char *test_name)
- 	return err->code;
- }
- 
-+#define CHILD_STACK_SIZE 8192
-+
- struct child {
-+	char *stack;
- 	pid_t pid;
- 	int   fd;
- };
-@@ -89,17 +93,22 @@ static struct child clone_newns(int (*fn)(void *), void *args,
- 				struct error *err)
- {
- 	static int flags = CLONE_PIDFD | CLONE_NEWPID | CLONE_NEWNS | SIGCHLD;
--	size_t stack_size = 1024;
--	char *stack[1024] = { 0 };
- 	struct child ret;
- 
- 	if (!(flags & CLONE_NEWUSER) && geteuid() != 0)
- 		flags |= CLONE_NEWUSER;
- 
-+	ret.stack = mmap(NULL, CHILD_STACK_SIZE, PROT_READ | PROT_WRITE,
-+			 MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
-+	if (ret.stack == MAP_FAILED) {
-+		error_set(err, -1, "mmap of stack failed (errno %d)", errno);
-+		return ret;
-+	}
-+
- #ifdef __ia64__
--	ret.pid = __clone2(fn, stack, stack_size, flags, args, &ret.fd);
-+	ret.pid = __clone2(fn, ret.stack, CHILD_STACK_SIZE, flags, args, &ret.fd);
- #else
--	ret.pid = clone(fn, stack + stack_size, flags, args, &ret.fd);
-+	ret.pid = clone(fn, ret.stack + CHILD_STACK_SIZE, flags, args, &ret.fd);
- #endif
- 
- 	if (ret.pid < 0) {
-@@ -129,6 +138,11 @@ static inline int child_join(struct child *child, struct error *err)
- 	else if (r > 0)
- 		error_set(err, r, "child %d reported: %d", child->pid, r);
- 
-+	if (munmap(child->stack, CHILD_STACK_SIZE)) {
-+		error_set(err, -1, "munmap of child stack failed (errno %d)", errno);
-+		r = -1;
-+	}
-+
- 	return r;
- }
- 
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 33ada2c59952e..0c7f02ca6822b 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1395,6 +1395,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
 2.34.1
 
