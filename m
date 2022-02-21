@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9216BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F584C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351646AbiBUJu4 (ORCPT
+        id S1352173AbiBUJvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:50:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60820 "EHLO
+        Mon, 21 Feb 2022 04:51:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351665AbiBUJqY (ORCPT
+        with ESMTP id S1351941AbiBUJqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:46:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374443FD91;
-        Mon, 21 Feb 2022 01:18:38 -0800 (PST)
+        Mon, 21 Feb 2022 04:46:49 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE724585;
+        Mon, 21 Feb 2022 01:18:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9EB960F51;
-        Mon, 21 Feb 2022 09:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1B0C340F5;
-        Mon, 21 Feb 2022 09:18:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 47502CE0E8B;
+        Mon, 21 Feb 2022 09:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54ED6C340F0;
+        Mon, 21 Feb 2022 09:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435117;
-        bh=TXTiTY4Ys45f9GxVHtZc35Xx0/63xfUWdOIcjcLwCA0=;
+        s=korg; t=1645435125;
+        bh=LqAIqUeUEKgW92UTw1yJ3kk8qc1HcfhyXlsTFk6oZNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rSOPhYZouQNsJtY7gL+uCOc3sFaeo5NE4pjKuR/aoYXAzzB3MawRiqCwKVGJL0ccK
-         Mv/a6d49e5rsGCXEwnVYNjmpHLU2dWxF1js4P1adFLtsI/Z+5oxphPTCdFWTPy9abW
-         j01a+SdDUyFkE29GZzTouk1wtDX+9RhSvAJW6JJ8=
+        b=tVa+XLOcQ7GsTHnJ1MgSB6L3yDxWIKpHyORoeZRd58PmiK2r9sSg9uq6snK78NsGq
+         vtthuPYb2/QjITGhs4qSqQLt0VCAyYrHtFOFcLQCqohdl4mkVIcixZmdpsFGM1ZXYX
+         t3JIv7nqucBd6js/mBqGsviJt595UxisKCTg6wEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Christian Brauner <brauner@kernel.org>,
+        stable@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 051/227] vfs: make sync_filesystem return errors from ->sync_fs
-Date:   Mon, 21 Feb 2022 09:47:50 +0100
-Message-Id: <20220221084936.569402281@linuxfoundation.org>
+Subject: [PATCH 5.16 054/227] kselftest: Fix vdso_test_abi return status
+Date:   Mon, 21 Feb 2022 09:47:53 +0100
+Message-Id: <20220221084936.670132478@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,63 +54,290 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Vincenzo Frascino <vincenzo.frascino@arm.com>
 
-[ Upstream commit 5679897eb104cec9e99609c3f045a0c20603da4c ]
+[ Upstream commit ec049891b2dc16591813eacaddc476b3d27c8c14 ]
 
-Strangely, sync_filesystem ignores the return code from the ->sync_fs
-call, which means that syscalls like syncfs(2) never see the error.
-This doesn't seem right, so fix that.
+vdso_test_abi contains a batch of tests that verify the validity of the
+vDSO ABI.
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christian Brauner <brauner@kernel.org>
+When a vDSO symbol is not found the relevant test is skipped reporting
+KSFT_SKIP. All the tests return values are then added in a single
+variable which is checked to verify failures. This approach can have
+side effects which result in reporting the wrong kselftest exit status.
+
+Fix vdso_test_abi verifying the return code of each test separately.
+
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Reported-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/sync.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ tools/testing/selftests/vDSO/vdso_test_abi.c | 135 +++++++++----------
+ 1 file changed, 62 insertions(+), 73 deletions(-)
 
-diff --git a/fs/sync.c b/fs/sync.c
-index 3ce8e2137f310..c7690016453e4 100644
---- a/fs/sync.c
-+++ b/fs/sync.c
-@@ -29,7 +29,7 @@
-  */
- int sync_filesystem(struct super_block *sb)
+diff --git a/tools/testing/selftests/vDSO/vdso_test_abi.c b/tools/testing/selftests/vDSO/vdso_test_abi.c
+index 3d603f1394af4..883ca85424bc5 100644
+--- a/tools/testing/selftests/vDSO/vdso_test_abi.c
++++ b/tools/testing/selftests/vDSO/vdso_test_abi.c
+@@ -33,110 +33,114 @@ typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
+ typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
+ typedef time_t (*vdso_time_t)(time_t *t);
+ 
+-static int vdso_test_gettimeofday(void)
++#define VDSO_TEST_PASS_MSG()	"\n%s(): PASS\n", __func__
++#define VDSO_TEST_FAIL_MSG(x)	"\n%s(): %s FAIL\n", __func__, x
++#define VDSO_TEST_SKIP_MSG(x)	"\n%s(): SKIP: Could not find %s\n", __func__, x
++
++static void vdso_test_gettimeofday(void)
  {
--	int ret;
-+	int ret = 0;
+ 	/* Find gettimeofday. */
+ 	vdso_gettimeofday_t vdso_gettimeofday =
+ 		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
  
- 	/*
- 	 * We need to be protected against the filesystem going from
-@@ -52,15 +52,21 @@ int sync_filesystem(struct super_block *sb)
- 	 * at a time.
- 	 */
- 	writeback_inodes_sb(sb, WB_REASON_SYNC);
--	if (sb->s_op->sync_fs)
--		sb->s_op->sync_fs(sb, 0);
-+	if (sb->s_op->sync_fs) {
-+		ret = sb->s_op->sync_fs(sb, 0);
-+		if (ret)
-+			return ret;
-+	}
- 	ret = sync_blockdev_nowait(sb->s_bdev);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
+ 	if (!vdso_gettimeofday) {
+-		printf("Could not find %s\n", name[0]);
+-		return KSFT_SKIP;
++		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[0]));
++		return;
+ 	}
  
- 	sync_inodes_sb(sb);
--	if (sb->s_op->sync_fs)
--		sb->s_op->sync_fs(sb, 1);
-+	if (sb->s_op->sync_fs) {
-+		ret = sb->s_op->sync_fs(sb, 1);
-+		if (ret)
-+			return ret;
-+	}
- 	return sync_blockdev(sb->s_bdev);
+ 	struct timeval tv;
+ 	long ret = vdso_gettimeofday(&tv, 0);
+ 
+ 	if (ret == 0) {
+-		printf("The time is %lld.%06lld\n",
+-		       (long long)tv.tv_sec, (long long)tv.tv_usec);
++		ksft_print_msg("The time is %lld.%06lld\n",
++			       (long long)tv.tv_sec, (long long)tv.tv_usec);
++		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+ 	} else {
+-		printf("%s failed\n", name[0]);
+-		return KSFT_FAIL;
++		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[0]));
+ 	}
+-
+-	return KSFT_PASS;
  }
- EXPORT_SYMBOL(sync_filesystem);
+ 
+-static int vdso_test_clock_gettime(clockid_t clk_id)
++static void vdso_test_clock_gettime(clockid_t clk_id)
+ {
+ 	/* Find clock_gettime. */
+ 	vdso_clock_gettime_t vdso_clock_gettime =
+ 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
+ 
+ 	if (!vdso_clock_gettime) {
+-		printf("Could not find %s\n", name[1]);
+-		return KSFT_SKIP;
++		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[1]));
++		return;
+ 	}
+ 
+ 	struct timespec ts;
+ 	long ret = vdso_clock_gettime(clk_id, &ts);
+ 
+ 	if (ret == 0) {
+-		printf("The time is %lld.%06lld\n",
+-		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
++		ksft_print_msg("The time is %lld.%06lld\n",
++			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
++		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+ 	} else {
+-		printf("%s failed\n", name[1]);
+-		return KSFT_FAIL;
++		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[1]));
+ 	}
+-
+-	return KSFT_PASS;
+ }
+ 
+-static int vdso_test_time(void)
++static void vdso_test_time(void)
+ {
+ 	/* Find time. */
+ 	vdso_time_t vdso_time =
+ 		(vdso_time_t)vdso_sym(version, name[2]);
+ 
+ 	if (!vdso_time) {
+-		printf("Could not find %s\n", name[2]);
+-		return KSFT_SKIP;
++		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[2]));
++		return;
+ 	}
+ 
+ 	long ret = vdso_time(NULL);
+ 
+ 	if (ret > 0) {
+-		printf("The time in hours since January 1, 1970 is %lld\n",
++		ksft_print_msg("The time in hours since January 1, 1970 is %lld\n",
+ 				(long long)(ret / 3600));
++		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
+ 	} else {
+-		printf("%s failed\n", name[2]);
+-		return KSFT_FAIL;
++		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[2]));
+ 	}
+-
+-	return KSFT_PASS;
+ }
+ 
+-static int vdso_test_clock_getres(clockid_t clk_id)
++static void vdso_test_clock_getres(clockid_t clk_id)
+ {
++	int clock_getres_fail = 0;
++
+ 	/* Find clock_getres. */
+ 	vdso_clock_getres_t vdso_clock_getres =
+ 		(vdso_clock_getres_t)vdso_sym(version, name[3]);
+ 
+ 	if (!vdso_clock_getres) {
+-		printf("Could not find %s\n", name[3]);
+-		return KSFT_SKIP;
++		ksft_test_result_skip(VDSO_TEST_SKIP_MSG(name[3]));
++		return;
+ 	}
+ 
+ 	struct timespec ts, sys_ts;
+ 	long ret = vdso_clock_getres(clk_id, &ts);
+ 
+ 	if (ret == 0) {
+-		printf("The resolution is %lld %lld\n",
+-		       (long long)ts.tv_sec, (long long)ts.tv_nsec);
++		ksft_print_msg("The vdso resolution is %lld %lld\n",
++			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
+ 	} else {
+-		printf("%s failed\n", name[3]);
+-		return KSFT_FAIL;
++		clock_getres_fail++;
+ 	}
+ 
+ 	ret = syscall(SYS_clock_getres, clk_id, &sys_ts);
+ 
+-	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec)) {
+-		printf("%s failed\n", name[3]);
+-		return KSFT_FAIL;
+-	}
++	ksft_print_msg("The syscall resolution is %lld %lld\n",
++			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
+ 
+-	return KSFT_PASS;
++	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
++		clock_getres_fail++;
++
++	if (clock_getres_fail > 0) {
++		ksft_test_result_fail(VDSO_TEST_FAIL_MSG(name[3]));
++	} else {
++		ksft_test_result_pass(VDSO_TEST_PASS_MSG());
++	}
+ }
+ 
+ const char *vdso_clock_name[12] = {
+@@ -158,36 +162,23 @@ const char *vdso_clock_name[12] = {
+  * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
+  * with different values for clock_id.
+  */
+-static inline int vdso_test_clock(clockid_t clock_id)
++static inline void vdso_test_clock(clockid_t clock_id)
+ {
+-	int ret0, ret1;
+-
+-	ret0 = vdso_test_clock_gettime(clock_id);
+-	/* A skipped test is considered passed */
+-	if (ret0 == KSFT_SKIP)
+-		ret0 = KSFT_PASS;
+-
+-	ret1 = vdso_test_clock_getres(clock_id);
+-	/* A skipped test is considered passed */
+-	if (ret1 == KSFT_SKIP)
+-		ret1 = KSFT_PASS;
++	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);
+ 
+-	ret0 += ret1;
++	vdso_test_clock_gettime(clock_id);
+ 
+-	printf("clock_id: %s", vdso_clock_name[clock_id]);
+-
+-	if (ret0 > 0)
+-		printf(" [FAIL]\n");
+-	else
+-		printf(" [PASS]\n");
+-
+-	return ret0;
++	vdso_test_clock_getres(clock_id);
+ }
+ 
++#define VDSO_TEST_PLAN	16
++
+ int main(int argc, char **argv)
+ {
+ 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
+-	int ret;
++
++	ksft_print_header();
++	ksft_set_plan(VDSO_TEST_PLAN);
+ 
+ 	if (!sysinfo_ehdr) {
+ 		printf("AT_SYSINFO_EHDR is not present!\n");
+@@ -201,44 +192,42 @@ int main(int argc, char **argv)
+ 
+ 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
+ 
+-	ret = vdso_test_gettimeofday();
++	vdso_test_gettimeofday();
+ 
+ #if _POSIX_TIMERS > 0
+ 
+ #ifdef CLOCK_REALTIME
+-	ret += vdso_test_clock(CLOCK_REALTIME);
++	vdso_test_clock(CLOCK_REALTIME);
+ #endif
+ 
+ #ifdef CLOCK_BOOTTIME
+-	ret += vdso_test_clock(CLOCK_BOOTTIME);
++	vdso_test_clock(CLOCK_BOOTTIME);
+ #endif
+ 
+ #ifdef CLOCK_TAI
+-	ret += vdso_test_clock(CLOCK_TAI);
++	vdso_test_clock(CLOCK_TAI);
+ #endif
+ 
+ #ifdef CLOCK_REALTIME_COARSE
+-	ret += vdso_test_clock(CLOCK_REALTIME_COARSE);
++	vdso_test_clock(CLOCK_REALTIME_COARSE);
+ #endif
+ 
+ #ifdef CLOCK_MONOTONIC
+-	ret += vdso_test_clock(CLOCK_MONOTONIC);
++	vdso_test_clock(CLOCK_MONOTONIC);
+ #endif
+ 
+ #ifdef CLOCK_MONOTONIC_RAW
+-	ret += vdso_test_clock(CLOCK_MONOTONIC_RAW);
++	vdso_test_clock(CLOCK_MONOTONIC_RAW);
+ #endif
+ 
+ #ifdef CLOCK_MONOTONIC_COARSE
+-	ret += vdso_test_clock(CLOCK_MONOTONIC_COARSE);
++	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
+ #endif
+ 
+ #endif
+ 
+-	ret += vdso_test_time();
+-
+-	if (ret > 0)
+-		return KSFT_FAIL;
++	vdso_test_time();
+ 
+-	return KSFT_PASS;
++	ksft_print_cnts();
++	return ksft_get_fail_cnt() == 0 ? KSFT_PASS : KSFT_FAIL;
+ }
 -- 
 2.34.1
 
