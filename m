@@ -2,143 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAECC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D675C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358824AbiBUNQT (ORCPT
+        id S1358819AbiBUNSQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:16:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50062 "EHLO
+        Mon, 21 Feb 2022 08:18:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231450AbiBUNQR (ORCPT
+        with ESMTP id S233381AbiBUNSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:16:17 -0500
-Received: from sa-prd-fep-047.btinternet.com (mailomta7-sa.btinternet.com [213.120.69.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90E61EEDA;
-        Mon, 21 Feb 2022 05:15:50 -0800 (PST)
-Received: from sa-prd-rgout-003.btmx-prd.synchronoss.net ([10.2.38.6])
-          by sa-prd-fep-047.btinternet.com with ESMTP
-          id <20220221131548.JVDQ16049.sa-prd-fep-047.btinternet.com@sa-prd-rgout-003.btmx-prd.synchronoss.net>;
-          Mon, 21 Feb 2022 13:15:48 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1645449348; 
-        bh=LsQkjPur9s6lfrXPc17vF8122/BSlTkt2PIKZJf+o9A=;
-        h=From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version;
-        b=E/JiDTHJaU2tWpXNIE/w6ZYw+VbzX56ruXbhRtOawrnuUhF1pflk9lBlTNrd8ZCu7FTtFIg0WudeHkwjW0+HNnEXAgfm8iTv5WE8w9xM/P65HAysS5YZ0lCdAyD29aANmtAbMR5ax7E8zzKPM5nYI81DsY6f/cdyOFXJ7A7ykKl4x8wkfJyTL1B9VqxuDp4kMy7+GBC3WmtHS1hgsf566gEy2xW1zDOR+SpL5aRdAhq8uSb4XTOMjYsV9A9EGoCkQqDRQqJ4NEs9sLsMRexek8lY/NiTljeB4MpPFc7lzdWlOtxHdhWpX6LkVlKHsylicq0YV8ZonE+j33mGfdFang==
-Authentication-Results: btinternet.com;
-    auth=pass (PLAIN) smtp.auth=richard_c_haines@btinternet.com;
-    bimi=skipped
-X-SNCR-Rigid: 6139429016674C65
-X-Originating-IP: [86.184.61.59]
-X-OWM-Source-IP: 86.184.61.59 (GB)
-X-OWM-Env-Sender: richard_c_haines@btinternet.com
-X-VadeSecure-score: verdict=clean score=0/300, class=clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigdeglecutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomheptfhitghhrghrugcujfgrihhnvghsuceorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomheqnecuggftrfgrthhtvghrnhepheffledtuefffeffvddtgeevffetffekveeggeduhfeghedtvddvhedtkefggeeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpfhhigidrshgvtghurhhithihnecukfhppeekiedrudekgedriedurdehleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopehlohgtrghlhhhoshhtrdhlohgtrghlughomhgrihhnpdhinhgvthepkeeirddukeegrdeiuddrheelpdhmrghilhhfrhhomheprhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomhdpnhgspghrtghpthhtohepledprhgtphhtthhopeguvghmihhosggvnhhouhhrsehgmhgrihhlrdgtohhmpdhrtghpthhtohepvghprghrihhssehprghrihhsphhlrggtvgdrohhrghdprhgtphhtthhopehjvghffhhvsehgohhoghhlvgdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgt
-        phhtthhopehprghulhesphgruhhlqdhmohhorhgvrdgtohhmpdhrtghpthhtoheprhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomhdprhgtphhtthhopehsvghlihhnuhigqdhrvghfphholhhitgihsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshgvlhhinhhugiesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsthgvphhhvghnrdhsmhgrlhhlvgihrdifohhrkhesghhmrghilhdrtghomh
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-SNCR-hdrdom: btinternet.com
-Received: from localhost.localdomain (86.184.61.59) by sa-prd-rgout-003.btmx-prd.synchronoss.net (5.8.716.04) (authenticated as richard_c_haines@btinternet.com)
-        id 6139429016674C65; Mon, 21 Feb 2022 13:15:48 +0000
-From:   Richard Haines <richard_c_haines@btinternet.com>
-To:     paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, demiobenour@gmail.com
-Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        selinux-refpolicy@vger.kernel.org, jeffv@google.com,
-        Richard Haines <richard_c_haines@btinternet.com>
-Subject: [PATCH V2] security/selinux: Always allow FIOCLEX and FIONCLEX
-Date:   Mon, 21 Feb 2022 13:15:33 +0000
-Message-Id: <20220221131533.74238-1-richard_c_haines@btinternet.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 21 Feb 2022 08:18:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 746F91EED9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:17:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645449471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jpxAHuJa9t90aXC8zU1qGrExrwiV9NbX8bXL14xuDgg=;
+        b=f8z2438oku2a9VYnUWXBZmlJkA+PzEp5AqQxUZ5ZbJn63HyD+vVuZhikLVzT56eDNJcY9N
+        jaG46CUpHwUTaKqLBcQgAMp4lifdbrUmPzvdH3CpSJYqxTb8WVWp5d6Za+GeXTfQhfYmjX
+        Cqmus7gOpy1BUZ6/wGrDakzpmo84YbE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-rl_wM3ypPOigoSMEa4kSaA-1; Mon, 21 Feb 2022 08:17:50 -0500
+X-MC-Unique: rl_wM3ypPOigoSMEa4kSaA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 32526814243;
+        Mon, 21 Feb 2022 13:17:49 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8B2B9105C884;
+        Mon, 21 Feb 2022 13:17:47 +0000 (UTC)
+Message-ID: <263fc33973fa6cea8001bddceed1f69153db5174.camel@redhat.com>
+Subject: Re: [PATCH] KVM: nSVM: fix nested tsc scaling when not enabled but
+ MSR_AMD64_TSC_RATIO set
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        =?UTF-8?Q?D=C4=81vis_Mos=C4=81ns?= <davispuh@gmail.com>
+Date:   Mon, 21 Feb 2022 15:17:46 +0200
+In-Reply-To: <44604447-9686-24b3-4216-71d52eb1a6c2@redhat.com>
+References: <0a0b61c5c071415f213a4704ebd73e65761ec1a3.camel@redhat.com>
+         <20220221103331.58956-1-mlevitsk@redhat.com>
+         <44604447-9686-24b3-4216-71d52eb1a6c2@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
-always allows too.  Furthermore, a failed FIOCLEX could result in a file
-descriptor being leaked to a process that should not have access to it.
+On Mon, 2022-02-21 at 13:33 +0100, Paolo Bonzini wrote:
+> On 2/21/22 11:33, Maxim Levitsky wrote:
+> > For compatibility with userspace the MSR_AMD64_TSC_RATIO can be set
+> > even when the feature is not exposed to the guest, which breaks assumptions
+> > that it has the default value in this case.
+> > 
+> > Fixes: 5228eb96a487 ("KVM: x86: nSVM: implement nested TSC scaling")
+> > Cc: stable@vger.kernel.org
+> > 
+> > Reported-by: Dāvis Mosāns <davispuh@gmail.com>
+> > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> 
+> It's not clear how QEMU ends up writing MSR_AMD64_TSC_RATIO_DEFAULT 
+> rather than 0, but we clearly have a bug in KVM.  It should not allow 
+> writing 0 in the first place if tsc-ratio is not available in the VM.
 
-As this patch removes access controls, a policy capability needs to be
-enabled in policy to always allow these ioctls.
+Qemu currently (the code is very new so it can be changed) writes the initial value of
+0 to this msr if tsc scaling is disabled in the guest, or MSR_AMD64_TSC_RATIO_DEFAULT
+if the tsc scaling is enabled.
 
-Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
-Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
----
-V2 Change: Control via a policy capability. See this thread for discussion:
-https://lore.kernel.org/selinux/CAHC9VhQEPxYP_KU56gAGNHKQaxucY8gSsHiUB42PVgADBAccRQ@mail.gmail.com/T/#t
+The guest can change it only when TSC scaling is enabled for it.
+If tsc scaling is not enabled, both guest reads or writes of this MSR get #GP.
 
-With this patch and the polcap enabled, the selinux-testsuite will fail:
-ioctl/test at line 47 - Will need a fix.
+I only allowed qemu writes of this msr because I thought that qemu might
+first set the MSR and then set guest CPUID.
 
- security/selinux/hooks.c                   | 7 +++++++
- security/selinux/include/policycap.h       | 1 +
- security/selinux/include/policycap_names.h | 3 ++-
- security/selinux/include/security.h        | 7 +++++++
- 4 files changed, 17 insertions(+), 1 deletion(-)
+Also, for example the MSR_IA32_XSS uses the same logic in KVM.
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 5b6895e4f..030c41652 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -3745,6 +3745,13 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
- 					    CAP_OPT_NONE, true);
- 		break;
- 
-+	case FIOCLEX:
-+	case FIONCLEX:
-+		/* Must always succeed if polcap set, else default: */
-+		if (selinux_policycap_ioctl_skip_cloexec())
-+			break;
-+		fallthrough;
-+
- 	/* default case assumes that the command will go
- 	 * to the file's ioctl() function.
- 	 */
-diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
-index 2ec038efb..44d73dc32 100644
---- a/security/selinux/include/policycap.h
-+++ b/security/selinux/include/policycap.h
-@@ -11,6 +11,7 @@ enum {
- 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
- 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
- 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
-+	POLICYDB_CAPABILITY_IOCTL_CLOEXEC,
- 	__POLICYDB_CAPABILITY_MAX
- };
- #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
-diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
-index b89289f09..ebd64afe1 100644
---- a/security/selinux/include/policycap_names.h
-+++ b/security/selinux/include/policycap_names.h
-@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
- 	"always_check_network",
- 	"cgroup_seclabel",
- 	"nnp_nosuid_transition",
--	"genfs_seclabel_symlinks"
-+	"genfs_seclabel_symlinks",
-+	"ioctl_skip_cloexec"
- };
- 
- #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
-diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
-index ac0ece013..8a789c22b 100644
---- a/security/selinux/include/security.h
-+++ b/security/selinux/include/security.h
-@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
- 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
- }
- 
-+static inline bool selinux_policycap_ioctl_skip_cloexec(void)
-+{
-+	struct selinux_state *state = &selinux_state;
-+
-+	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_CLOEXEC]);
-+}
-+
- struct selinux_policy_convert_data;
- 
- struct selinux_load_state {
--- 
-2.35.1
+As for why qemu sets this msr regardless of guest CPUID bit,
+it seemed to be cleaner this way - kvm_put_msrs in qemu seems not to 
+check guest CPUID but rather only check that KVM supports this msr,
+which will be true regardless of guest's CPUID bit.
+
+What do you think?
+
+Best regards,
+	Maxim Levitsky
+
+
+> 
+> If QEMU really can get itself in this situation, we cannot fix this 
+> except with KVM_CAP_DISABLE_QUIRKS (a quirk that would accept and ignore 
+> host-initiated writes if the CPUID bit is not available) or perhaps with 
+> a pr_warn_ratelimited and a quick deprecation cycle, until some time 
+> after 6.2.1 is released.
+> 
+> Hmmm... maybe the issue is actually that KVM *returns* 0 from 
+> KVM_GET_MSRS?  And in this case, fixing KVM would also prevent QEMU from 
+> sending the bogus KVM_SET_MSRS?
+> 
+> Thanks,
+> 
+> Paolo
+> 
+> > ---
+> >   arch/x86/kvm/svm/nested.c | 10 ++++------
+> >   arch/x86/kvm/svm/svm.c    |  5 +++--
+> >   arch/x86/kvm/svm/svm.h    |  1 +
+> >   3 files changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> > index 1218b5a342fc..a2e2436057dc 100644
+> > --- a/arch/x86/kvm/svm/nested.c
+> > +++ b/arch/x86/kvm/svm/nested.c
+> > @@ -574,14 +574,12 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+> >   	vcpu->arch.tsc_offset = kvm_calc_nested_tsc_offset(
+> >   			vcpu->arch.l1_tsc_offset,
+> >   			svm->nested.ctl.tsc_offset,
+> > -			svm->tsc_ratio_msr);
+> > +			svm_get_l2_tsc_multiplier(vcpu));
+> >   
+> >   	svm->vmcb->control.tsc_offset = vcpu->arch.tsc_offset;
+> >   
+> > -	if (svm->tsc_ratio_msr != kvm_default_tsc_scaling_ratio) {
+> > -		WARN_ON(!svm->tsc_scaling_enabled);
+> > +	if (svm_get_l2_tsc_multiplier(vcpu) != kvm_default_tsc_scaling_ratio)
+> >   		nested_svm_update_tsc_ratio_msr(vcpu);
+> > -	}
+> >   
+> >   	svm->vmcb->control.int_ctl             =
+> >   		(svm->nested.ctl.int_ctl & int_ctl_vmcb12_bits) |
+> > @@ -867,8 +865,7 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
+> >   		vmcb_mark_dirty(svm->vmcb, VMCB_INTERCEPTS);
+> >   	}
+> >   
+> > -	if (svm->tsc_ratio_msr != kvm_default_tsc_scaling_ratio) {
+> > -		WARN_ON(!svm->tsc_scaling_enabled);
+> > +	if (svm_get_l2_tsc_multiplier(vcpu) != kvm_default_tsc_scaling_ratio) {
+> >   		vcpu->arch.tsc_scaling_ratio = vcpu->arch.l1_tsc_scaling_ratio;
+> >   		svm_write_tsc_multiplier(vcpu, vcpu->arch.tsc_scaling_ratio);
+> >   	}
+> > @@ -1264,6 +1261,7 @@ void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu)
+> >   {
+> >   	struct vcpu_svm *svm = to_svm(vcpu);
+> >   
+> > +	WARN_ON_ONCE(!svm->tsc_scaling_enabled);
+> >   	vcpu->arch.tsc_scaling_ratio =
+> >   		kvm_calc_nested_tsc_multiplier(vcpu->arch.l1_tsc_scaling_ratio,
+> >   					       svm->tsc_ratio_msr);
+> > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> > index 975be872cd1a..5cf6bb5bfd3e 100644
+> > --- a/arch/x86/kvm/svm/svm.c
+> > +++ b/arch/x86/kvm/svm/svm.c
+> > @@ -911,11 +911,12 @@ static u64 svm_get_l2_tsc_offset(struct kvm_vcpu *vcpu)
+> >   	return svm->nested.ctl.tsc_offset;
+> >   }
+> >   
+> > -static u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu)
+> > +u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu)
+> >   {
+> >   	struct vcpu_svm *svm = to_svm(vcpu);
+> >   
+> > -	return svm->tsc_ratio_msr;
+> > +	return svm->tsc_scaling_enabled ? svm->tsc_ratio_msr :
+> > +	       kvm_default_tsc_scaling_ratio;
+> >   }
+> >   
+> >   static void svm_write_tsc_offset(struct kvm_vcpu *vcpu, u64 offset)
+> > diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> > index 852b12aee03d..006571dd30df 100644
+> > --- a/arch/x86/kvm/svm/svm.h
+> > +++ b/arch/x86/kvm/svm/svm.h
+> > @@ -542,6 +542,7 @@ int nested_svm_check_exception(struct vcpu_svm *svm, unsigned nr,
+> >   			       bool has_error_code, u32 error_code);
+> >   int nested_svm_exit_special(struct vcpu_svm *svm);
+> >   void nested_svm_update_tsc_ratio_msr(struct kvm_vcpu *vcpu);
+> > +u64 svm_get_l2_tsc_multiplier(struct kvm_vcpu *vcpu);
+> >   void svm_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 multiplier);
+> >   void nested_copy_vmcb_control_to_cache(struct vcpu_svm *svm,
+> >   				       struct vmcb_control_area *control);
+
 
