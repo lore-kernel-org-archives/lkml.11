@@ -2,126 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8940AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71775C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379454AbiBUPoT (ORCPT
+        id S1379468AbiBUPof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:44:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36700 "EHLO
+        Mon, 21 Feb 2022 10:44:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379417AbiBUPnt (ORCPT
+        with ESMTP id S1379459AbiBUPoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:43:49 -0500
-Received: from smtp-42af.mail.infomaniak.ch (smtp-42af.mail.infomaniak.ch [IPv6:2001:1600:3:17::42af])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EDB22B15
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:43:24 -0800 (PST)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K2RQx6PqBzMqBHW;
-        Mon, 21 Feb 2022 16:43:21 +0100 (CET)
-Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4K2RQx4nTWzlhMCN;
-        Mon, 21 Feb 2022 16:43:21 +0100 (CET)
-From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-To:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Shuah Khan <shuah@kernel.org>, linux-api@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
-Subject: [PATCH v1 7/7] selftest/landlock: Fully test file rename with "remove" access
-Date:   Mon, 21 Feb 2022 16:53:11 +0100
-Message-Id: <20220221155311.166278-8-mic@digikod.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221155311.166278-1-mic@digikod.net>
-References: <20220221155311.166278-1-mic@digikod.net>
+        Mon, 21 Feb 2022 10:44:07 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7690D22B30
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:43:30 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id b35so7436710ybi.13
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:43:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8CiXW+ordTPvlB+u9HbUK6sbw1rc2hC0tPgjcuKVOVM=;
+        b=qUcvoofk8rUJAf0+4Hif+JUd1A284UxMQ/JJk7kRQn93WTS/uI4J9O3QoDFcKalbXt
+         rTfHx5TC1V040BXgKQJLZwfR+hK7Hh9QNfrYcSE2Y2EA7fCI3K3l4EDpoP3+lfmQR2xn
+         t0zle6EricYu1Gpra8GkZspUtBsUrTKMmQ/GF2DCxqa/MGEVn4+JMIOvMxPgSf1huyxZ
+         wc06SF+cnafh3OUrDhy2v7Wtl8iAiRdGjErskv8WTACS2psKUbm3QbNtYySpy8DnI+s8
+         B6/+4Gmsqk9qoaW05SOAnNf6fbG5+jKd+AEDVZE7g1XWKDtO4b53JP52RrJ9U8SqHZqs
+         oouA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8CiXW+ordTPvlB+u9HbUK6sbw1rc2hC0tPgjcuKVOVM=;
+        b=i1RygRN1FY/sOytsk8wY1GZp2g9nMI3n5EDOOdPY6ZYXY+a1UsUiSp2z+eJr8Ir7vS
+         wAmq+UBk/J/AgN/4CuVY9Mk7gzrKvUgaH1P2YSesFCnzXAAja7WcTOUyULPuRWYn5JfD
+         vwrLqEbM43grw9nSnQtMypkRTgQ5tGM8+zDF9RjfHLrS8ACpOrEsDP5AonPun/xNBRyf
+         To49YR/QPLPzXSnQPOSXIs/NR+gY49bh5GGlfffL1SYOv8u65IGD0AXIWzkxpmXI1oE+
+         jzn+DC8j8W1KNCGwz4T6peOAItr37Vr0kGWjWs5D8yGuhzEKP/NI7UkgipymuLGik0eC
+         Q6hg==
+X-Gm-Message-State: AOAM533YO8D1lNKqlrBs0QVdb5Bj8hdPxkzlQUygPNX02gnYvF3kwfLl
+        kkd5rc4QkC8UNSUoc/+xmRZCCJaSHPxzEqDHk/qfYhoQxQjB9w==
+X-Google-Smtp-Source: ABdhPJxdkqqwtNvDKWif6dKTTnGdo3MNqTsPxysw3CgEmS0eSJlkISpcJQj8TmNxzR0EW0Fp9m3MpKLCfKQKB6Ec6z8=
+X-Received: by 2002:a25:d614:0:b0:61d:bb22:8759 with SMTP id
+ n20-20020a25d614000000b0061dbb228759mr19289175ybg.231.1645458209249; Mon, 21
+ Feb 2022 07:43:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
+In-Reply-To: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 21 Feb 2022 07:43:18 -0800
+Message-ID: <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
+ device from smaller to bigger
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@linux.microsoft.com>
+CC Herbert Xu, author of blamed commit.
 
-These tests were missing to check the check_access_path() call with all
-combinations of maybe_remove(old_dentry) and maybe_remove(new_dentry).
+On Mon, Feb 21, 2022 at 4:28 AM Ziyang Xuan
+<william.xuanziyang@huawei.com> wrote:
+>
+> vlan device MTU can only follow real device change from bigger to smaller
+> but from smaller to bigger under the premise of vlan device MTU not exceed
+> the real device MTU.
+>
+> This issue can be seen using the following commands:
+>
+> ip link add link eth1 dev eth1.100 type vlan id 100
+> ip link set eth1 mtu 256
+> ip link set eth1 mtu 1500
+> ip link show
+>
+> Modify to allow vlan device follow real device MTU change from smaller
+> to bigger when user has not configured vlan device MTU which is not
+> equal to real device MTU. That also ensure user configuration has higher
+> priority.
+>
+> Fixes: 2e477c9bd2bb ("vlan: Propagate physical MTU changes")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>  net/8021q/vlan.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+> index 788076b002b3..7de4f462525a 100644
+> --- a/net/8021q/vlan.c
+> +++ b/net/8021q/vlan.c
+> @@ -361,6 +361,7 @@ static int __vlan_device_event(struct net_device *dev, unsigned long event)
+>  static int vlan_device_event(struct notifier_block *unused, unsigned long event,
+>                              void *ptr)
+>  {
+> +       unsigned int orig_mtu = ((struct netdev_notifier_info_ext *)ptr)->ext.mtu;
+>         struct netlink_ext_ack *extack = netdev_notifier_info_to_extack(ptr);
+>         struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>         struct vlan_group *grp;
+> @@ -419,7 +420,7 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
+>
+>         case NETDEV_CHANGEMTU:
+>                 vlan_group_for_each_dev(grp, i, vlandev) {
+> -                       if (vlandev->mtu <= dev->mtu)
+> +                       if (vlandev->mtu <= dev->mtu && vlandev->mtu != orig_mtu)
+>                                 continue;
+>
+>                         dev_set_mtu(vlandev, dev->mtu);
+> --
+> 2.25.1
+>
 
-Extend layout1/link with a new complementary test.
+Herbert, do you recall why only a decrease was taken into consideration ?
 
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220221155311.166278-8-mic@digikod.net
----
- tools/testing/selftests/landlock/fs_test.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
-index 3736253c9582..62b88406419d 100644
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -1640,11 +1640,14 @@ TEST_F_FORK(layout1, link)
- 
- 	ASSERT_EQ(-1, link(file2_s1d1, file1_s1d1));
- 	ASSERT_EQ(EACCES, errno);
-+
- 	/* Denies linking because of reparenting. */
- 	ASSERT_EQ(-1, link(file1_s2d1, file1_s1d2));
- 	ASSERT_EQ(EXDEV, errno);
- 	ASSERT_EQ(-1, link(file2_s1d2, file1_s1d3));
- 	ASSERT_EQ(EXDEV, errno);
-+	ASSERT_EQ(-1, link(file2_s1d3, file1_s1d2));
-+	ASSERT_EQ(EXDEV, errno);
- 
- 	ASSERT_EQ(0, link(file2_s1d2, file1_s1d2));
- 	ASSERT_EQ(0, link(file2_s1d3, file1_s1d3));
-@@ -1668,7 +1671,6 @@ TEST_F_FORK(layout1, rename_file)
- 
- 	ASSERT_LE(0, ruleset_fd);
- 
--	ASSERT_EQ(0, unlink(file1_s1d1));
- 	ASSERT_EQ(0, unlink(file1_s1d2));
- 
- 	enforce_ruleset(_metadata, ruleset_fd);
-@@ -1704,9 +1706,15 @@ TEST_F_FORK(layout1, rename_file)
- 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d2, AT_FDCWD, file1_s2d1,
- 				RENAME_EXCHANGE));
- 	ASSERT_EQ(EACCES, errno);
-+	/* Checks that file1_s2d1 cannot be removed (instead of ENOTDIR). */
-+	ASSERT_EQ(-1, rename(dir_s2d2, file1_s2d1));
-+	ASSERT_EQ(EACCES, errno);
- 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, dir_s2d2,
- 				RENAME_EXCHANGE));
- 	ASSERT_EQ(EACCES, errno);
-+	/* Checks that file1_s1d1 cannot be removed (instead of EISDIR). */
-+	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
-+	ASSERT_EQ(EACCES, errno);
- 
- 	/* Renames files with different parents. */
- 	ASSERT_EQ(-1, rename(file1_s2d2, file1_s1d2));
-@@ -1769,9 +1777,15 @@ TEST_F_FORK(layout1, rename_dir)
- 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s1d1, AT_FDCWD, dir_s2d1,
- 				RENAME_EXCHANGE));
- 	ASSERT_EQ(EACCES, errno);
-+	/* Checks that dir_s1d2 cannot be removed (instead of ENOTDIR). */
-+	ASSERT_EQ(-1, rename(dir_s1d2, file1_s1d1));
-+	ASSERT_EQ(EACCES, errno);
- 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s1d1, AT_FDCWD, dir_s1d2,
- 				RENAME_EXCHANGE));
- 	ASSERT_EQ(EACCES, errno);
-+	/* Checks that dir_s1d2 cannot be removed (instead of EISDIR). */
-+	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
-+	ASSERT_EQ(EACCES, errno);
- 
- 	/*
- 	 * Exchanges and renames directory to the same parent, which allows
--- 
-2.35.1
-
+Thanks.
