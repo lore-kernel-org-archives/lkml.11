@@ -2,82 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C516C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5343C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353495AbiBUKK4 (ORCPT
+        id S1353444AbiBUKKu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:10:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35726 "EHLO
+        Mon, 21 Feb 2022 05:10:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353276AbiBUJ5T (ORCPT
+        with ESMTP id S1353295AbiBUJ5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B0C4666B;
-        Mon, 21 Feb 2022 01:25:14 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1328046B0A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:25:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED35DB80EB1;
-        Mon, 21 Feb 2022 09:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 318B3C340E9;
-        Mon, 21 Feb 2022 09:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435511;
-        bh=siYdtErxRQq6Omyemv47TzjiCPolt1EQ/d8lzU9lmSk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqV2OZ6e09aQFqubQhbHxQrRKR78Qh6FKlhMXkUHKY3AP64IJ74GCAOX2mxV67PIJ
-         BBnCZf5I7ACkqscZ8nGSmIHE2629e4j323FuJAFpU/8Wsg5kr6H3bhI7RUC0p4mE+S
-         a4/qB0gNMMEP2twBsnJ7kMk6CI4a+mVMJY36WKho=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.16 190/227] i2c: brcmstb: fix support for DSL and CM variants
-Date:   Mon, 21 Feb 2022 09:50:09 +0100
-Message-Id: <20220221084941.137141013@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FDB260FC1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 136E4C340E9;
+        Mon, 21 Feb 2022 09:25:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645435517;
+        bh=+SlfpSN+7ew6DB983/BTiQCl7198EcRJ395ZNwoOy+A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lkWHHoOvawbH/Hr2DYFB47QtHxA3yAW/LXkzX6tCj1PBsJWYPH43PCinbvwGBEvaS
+         BkOYaQ2CNPXUQY1qrQhXv0KtmP13Wbqbn9e5rqjaC02ljG3j0lyh48mzm8I+HmFuLc
+         InbrGR2/nDJ+XLh82OxhUBvGYbgKe1uhd14JoFEXlufOKlx1q0IGys8AcWma1rOrJp
+         nUXg0VmPNxXpi4dMPNCNueZK/FmJTVwYMisQsaK2TVb42gOhBjVtvvbgJ7+P3Lv3tk
+         qpr75TUTD2rGo+NCPBrNTvjyegNo81a5SIYxz93GiE9Sa3Vby6ir9+ESdEzVB9B4GL
+         ZPKqfq+T+eCLw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nM4wU-009Ecl-Pq; Mon, 21 Feb 2022 09:25:14 +0000
+Date:   Mon, 21 Feb 2022 09:25:08 +0000
+Message-ID: <87ee3w4lmz.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jessica Clarke <jrtc27@jrtc27.com>
+Cc:     Anup Patel <anup@brainfault.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/6] irqchip/riscv-intc: Create domain using named fwnode
+In-Reply-To: <4A07582C-80BD-41F8-AEF5-EE48EB7D2D15@jrtc27.com>
+References: <20220128052505.859518-1-apatel@ventanamicro.com>
+        <20220128052505.859518-3-apatel@ventanamicro.com>
+        <063b8a5636d6372f37029946b2c3e0f4@kernel.org>
+        <CAAhSdy387r314f=YjvXJCxqxkvjm5q-EBOVu420giFzaVr_NYw@mail.gmail.com>
+        <31fea18e51a5021b79adb17973f9528e@kernel.org>
+        <4A07582C-80BD-41F8-AEF5-EE48EB7D2D15@jrtc27.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jrtc27@jrtc27.com, anup@brainfault.org, apatel@ventanamicro.com, palmer@dabbelt.com, paul.walmsley@sifive.com, tglx@linutronix.de, daniel.lezcano@linaro.org, atishp@atishpatra.org, Alistair.Francis@wdc.com, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On Sat, 19 Feb 2022 14:51:22 +0000,
+Jessica Clarke <jrtc27@jrtc27.com> wrote:
+>=20
+> On 19 Feb 2022, at 09:32, Marc Zyngier <maz@kernel.org> wrote:
+> >=20
+> > But how do you plan to work around the fact that everything is currently
+> > build around having a node (and an irqdomain) per CPU? The PLIC, for ex=
+ample,
+> > clearly has one parent per CPU, not one global parent.
+> >=20
+> > I'm sure there was a good reason for this, and I suspect merging the do=
+mains
+> > will simply end up breaking things.
+>=20
+> On the contrary, the drivers rely on the controller being the same
+> across all harts, with riscv_intc_init skipping initialisation for all
+> but the boot hart=E2=80=99s controller. The bindings are a complete pain =
+to
+> deal with as a result, what you *want* is like you have in the Arm
+> world where there is just one interrupt controller in the device tree
+> with some of the interrupts per-processor, but instead we have this
+> overengineered nuisance. The only reason there are per-hart interrupt
+> controllers is because that=E2=80=99s how the contexts for the CLINT/PLIC=
+ are
+> specified, but that really should have been done another way rather
+> than abusing the interrupts-extended property for that. In the FreeBSD
+> world we=E2=80=99ve been totally ignoring the device tree nodes for the l=
+ocal
+> interrupt controllers but for my AIA and ACLINT branch I started a few
+> months ago (though ACLINT's now been completely screwed up by RVI
+> politics, things have been renamed and split up differently in the past
+> few days and software interrupts de-prioritised with no current path to
+> ratification, so that was a waste of my time) I just hang the driver
+> off the boot hart=E2=80=99s node and leave all the others as totally igno=
+red
+> and a waste of space other than to figure out the contexts for the PLIC
+> etc.
+>=20
+> TL;DR yes the bindings are awful, no there=E2=80=99s no issue with mergin=
+g the
+> domains.
 
-commit 834cea3a252ed4847db076a769ad9efe06afe2d5 upstream.
+I don't know how that flies with something like[1], where CPU0 only
+gets interrupts in M-Mode and not S-Mode. Maybe it doesn't really
+matter, but this sort of asymmetric routing is totally backward.
 
-DSL and CM (Cable Modem) support 8 B max transfer size and have a custom
-DT binding for that reason. This driver was checking for a wrong
-"compatible" however which resulted in an incorrect setup.
+It sometime feels like the RV folks are actively trying to make this
+architecture a mess... :-/
 
-Fixes: e2e5a2c61837 ("i2c: brcmstb: Adding support for CM and DSL SoCs")
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/i2c/busses/i2c-brcmstb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+	M.
 
---- a/drivers/i2c/busses/i2c-brcmstb.c
-+++ b/drivers/i2c/busses/i2c-brcmstb.c
-@@ -673,7 +673,7 @@ static int brcmstb_i2c_probe(struct plat
- 
- 	/* set the data in/out register size for compatible SoCs */
- 	if (of_device_is_compatible(dev->device->of_node,
--				    "brcmstb,brcmper-i2c"))
-+				    "brcm,brcmper-i2c"))
- 		dev->data_regsz = sizeof(u8);
- 	else
- 		dev->data_regsz = sizeof(u32);
+[1] CAAhSdy0jTTDzoc+3T_8uLiWfBN3AFCWj99Ayc-Yh8FBfzUY2sQ@mail.gmail.com
 
-
+--=20
+Without deviation from the norm, progress is not possible.
