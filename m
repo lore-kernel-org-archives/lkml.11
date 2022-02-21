@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E77C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351083AbiBUJlL (ORCPT
+        id S1351008AbiBUJkv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:41:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36318 "EHLO
+        Mon, 21 Feb 2022 04:40:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350542AbiBUJef (ORCPT
+        with ESMTP id S1350409AbiBUJeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:34:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166912A26C;
-        Mon, 21 Feb 2022 01:14:32 -0800 (PST)
+        Mon, 21 Feb 2022 04:34:06 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E70A29826;
+        Mon, 21 Feb 2022 01:14:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD00B60018;
-        Mon, 21 Feb 2022 09:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75F6C340E9;
-        Mon, 21 Feb 2022 09:14:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6CB8ACE0E93;
+        Mon, 21 Feb 2022 09:13:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BDC1C340EB;
+        Mon, 21 Feb 2022 09:13:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434871;
-        bh=qJwGXYo41BOzEX6oFtnAmcbygBymqUp/dIQMb+BAvlQ=;
+        s=korg; t=1645434811;
+        bh=BNVmtUYVnmuinax3C7ACSj9zjInJX74bgTglaPhnYKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lq8IVe81pLzPMjiGwHK9J2IiQJTOGoU5rsiHuxFxS0IQZ1g7m1dJmmdVQikKUHXZ1
-         cRN9NPpm7Ik3nUPIwN1HEHR+nJVxd7dXjL7H1aR0lrC5P7WeVhHkU51Oijbl6rL62t
-         oi0RUmPZAjgazZF/xdWPcMcluyvDmDyH/Cy5WwzA=
+        b=uMadomUPY9+dE4GKOaPpqoKdxd/5dRu3Y37rV06kW3u0ySZluQyGNB3v9OxJYX0Un
+         x0ISlwB9Lt7YCyyOaNHETtgvLe04gTG/gLS4w636P8bIkcyvACdpm4RM30ftcA3LU3
+         Ob9BVZu5vyYxHSh6O5uVBFyl4LXLQ6wyhUbTAQ1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 161/196] selftests: fixup build warnings in pidfd / clone3 tests
-Date:   Mon, 21 Feb 2022 09:49:53 +0100
-Message-Id: <20220221084936.339905171@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.15 139/196] mtd: phram: Prevent divide by zero bug in phram_setup()
+Date:   Mon, 21 Feb 2022 09:49:31 +0100
+Message-Id: <20220221084935.577841576@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,105 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Rasmussen <axelrasmussen@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit e2aa5e650b07693477dff554053605976789fd68 ]
+commit 3e3765875b1b8864898603768fd5c93eeb552211 upstream.
 
-These are some trivial fixups, which were needed to build the tests with
-clang and -Werror. The following issues are fixed:
+The problem is that "erasesize" is a uint64_t type so it might be
+non-zero but the lower 32 bits are zero so when it's truncated,
+"(uint32_t)erasesize", then that value is zero. This leads to a
+divide by zero bug.
 
-- Remove various unused variables.
-- In child_poll_leader_exit_test, clang isn't smart enough to realize
-  syscall(SYS_exit, 0) won't return, so it complains we never return
-  from a non-void function. Add an extra exit(0) to appease it.
-- In test_pidfd_poll_leader_exit, ret may be branched on despite being
-  uninitialized, if we have !use_waitpid. Initialize it to zero to get
-  the right behavior in that case.
+Avoid the bug by delaying the divide until after we have validated
+that "erasesize" is non-zero and within the uint32_t range.
 
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dc2b3e5cbc80 ("mtd: phram: use div_u64_rem to stop overwrite len in phram_setup")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220121115505.GI1978@kadam
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/clone3/clone3.c    | 2 --
- tools/testing/selftests/pidfd/pidfd_test.c | 6 +++---
- tools/testing/selftests/pidfd/pidfd_wait.c | 5 ++---
- 3 files changed, 5 insertions(+), 8 deletions(-)
+ drivers/mtd/devices/phram.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
-index 076cf4325f783..cd4582129c7d6 100644
---- a/tools/testing/selftests/clone3/clone3.c
-+++ b/tools/testing/selftests/clone3/clone3.c
-@@ -126,8 +126,6 @@ static void test_clone3(uint64_t flags, size_t size, int expected,
+--- a/drivers/mtd/devices/phram.c
++++ b/drivers/mtd/devices/phram.c
+@@ -264,15 +264,19 @@ static int phram_setup(const char *val)
+ 		}
+ 	}
  
- int main(int argc, char *argv[])
- {
--	pid_t pid;
+-	if (erasesize)
+-		div_u64_rem(len, (uint32_t)erasesize, &rem);
 -
- 	uid_t uid = getuid();
+ 	if (len == 0 || erasesize == 0 || erasesize > len
+-	    || erasesize > UINT_MAX || rem) {
++	    || erasesize > UINT_MAX) {
+ 		parse_err("illegal erasesize or len\n");
+ 		ret = -EINVAL;
+ 		goto error;
+ 	}
++
++	div_u64_rem(len, (uint32_t)erasesize, &rem);
++	if (rem) {
++		parse_err("len is not multiple of erasesize\n");
++		ret = -EINVAL;
++		goto error;
++	}
  
- 	ksft_print_header();
-diff --git a/tools/testing/selftests/pidfd/pidfd_test.c b/tools/testing/selftests/pidfd/pidfd_test.c
-index 529eb700ac26a..9a2d64901d591 100644
---- a/tools/testing/selftests/pidfd/pidfd_test.c
-+++ b/tools/testing/selftests/pidfd/pidfd_test.c
-@@ -441,7 +441,6 @@ static void test_pidfd_poll_exec(int use_waitpid)
- {
- 	int pid, pidfd = 0;
- 	int status, ret;
--	pthread_t t1;
- 	time_t prog_start = time(NULL);
- 	const char *test_name = "pidfd_poll check for premature notification on child thread exec";
- 
-@@ -500,13 +499,14 @@ static int child_poll_leader_exit_test(void *args)
- 	 */
- 	*child_exit_secs = time(NULL);
- 	syscall(SYS_exit, 0);
-+	/* Never reached, but appeases compiler thinking we should return. */
-+	exit(0);
- }
- 
- static void test_pidfd_poll_leader_exit(int use_waitpid)
- {
- 	int pid, pidfd = 0;
--	int status, ret;
--	time_t prog_start = time(NULL);
-+	int status, ret = 0;
- 	const char *test_name = "pidfd_poll check for premature notification on non-empty"
- 				"group leader exit";
- 
-diff --git a/tools/testing/selftests/pidfd/pidfd_wait.c b/tools/testing/selftests/pidfd/pidfd_wait.c
-index be2943f072f60..17999e082aa71 100644
---- a/tools/testing/selftests/pidfd/pidfd_wait.c
-+++ b/tools/testing/selftests/pidfd/pidfd_wait.c
-@@ -39,7 +39,7 @@ static int sys_waitid(int which, pid_t pid, siginfo_t *info, int options,
- 
- TEST(wait_simple)
- {
--	int pidfd = -1, status = 0;
-+	int pidfd = -1;
- 	pid_t parent_tid = -1;
- 	struct clone_args args = {
- 		.parent_tid = ptr_to_u64(&parent_tid),
-@@ -47,7 +47,6 @@ TEST(wait_simple)
- 		.flags = CLONE_PIDFD | CLONE_PARENT_SETTID,
- 		.exit_signal = SIGCHLD,
- 	};
--	int ret;
- 	pid_t pid;
- 	siginfo_t info = {
- 		.si_signo = 0,
-@@ -88,7 +87,7 @@ TEST(wait_simple)
- 
- TEST(wait_states)
- {
--	int pidfd = -1, status = 0;
-+	int pidfd = -1;
- 	pid_t parent_tid = -1;
- 	struct clone_args args = {
- 		.parent_tid = ptr_to_u64(&parent_tid),
--- 
-2.34.1
-
+ 	ret = register_device(name, start, len, (uint32_t)erasesize);
+ 	if (ret)
 
 
