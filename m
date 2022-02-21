@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E832C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7157FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348326AbiBUJR7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:17:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34782 "EHLO
+        id S231902AbiBUJSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:18:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348365AbiBUJLQ (ORCPT
+        with ESMTP id S1348464AbiBUJLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:16 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0C823BDC;
-        Mon, 21 Feb 2022 01:03:13 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:19 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C424F35;
+        Mon, 21 Feb 2022 01:03:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 608BACE0E79;
-        Mon, 21 Feb 2022 09:03:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49614C340E9;
-        Mon, 21 Feb 2022 09:03:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 96307CE0E76;
+        Mon, 21 Feb 2022 09:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C89C340E9;
+        Mon, 21 Feb 2022 09:03:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434190;
-        bh=gBR3Ce/pJ47IRQg4FP9Z/vuY4SpFZJm7Vp0omlNnSeg=;
+        s=korg; t=1645434202;
+        bh=kg07GBpJKjU+4cm72S1zfVejqNzWrEUGduEQ37klR6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=njrCeZjdHsg2VcyShX0hQTHPPpW1WJ3Bom7GIwN7laGJUEtJ5W7/1wpi2aV958qfK
-         6eZhkE9KYyLUFUcS63xppJ7TJL0VgGSneIrypCgTwpop1JDC2FAUUvjMBw7EKA5Ta8
-         6gr/WijwAHPP/RXS5TlLb4/rzMMFwdCpLH5F8xjI=
+        b=SEpRxFOi7TSc9v7A9NQc08TIZLFIf/sUI1hUNaUIeQ02gpglL5hfJAYUHbjoQ2r/x
+         og4308nz0ClUDXHac8ffvcWxujsELyuaBJXpn5T+VTrFw5gdsPlhNftDqk3YY4zJEI
+         I/zi/EetF+9xwZ/dbTFSSe96FCil5ju27VnhZltY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Popov <alex.popov@linux.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 043/121] gcc-plugins/stackleak: Use noinstr in favor of notrace
-Date:   Mon, 21 Feb 2022 09:48:55 +0100
-Message-Id: <20220221084922.671268396@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        Wolfgang Walter <linux@stwm.de>,
+        Jason Self <jason@bluehome.net>,
+        Dominik Behr <dominik@dominikbehr.com>,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 047/121] iwlwifi: fix use-after-free
+Date:   Mon, 21 Feb 2022 09:48:59 +0100
+Message-Id: <20220221084922.799822158@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,68 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit dcb85f85fa6f142aae1fe86f399d4503d49f2b60 ]
+commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
 
-While the stackleak plugin was already using notrace, objtool is now a
-bit more picky.  Update the notrace uses to noinstr.  Silences the
-following objtool warnings when building with:
+If no firmware was present at all (or, presumably, all of the
+firmware files failed to parse), we end up unbinding by calling
+device_release_driver(), which calls remove(), which then in
+iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
+the new code I added will still erroneously access it after it
+was freed.
 
-CONFIG_DEBUG_ENTRY=y
-CONFIG_STACK_VALIDATION=y
-CONFIG_VMLINUX_VALIDATION=y
-CONFIG_GCC_PLUGIN_STACKLEAK=y
+Set 'failure=false' in this case to avoid the access, all data
+was already freed anyway.
 
-  vmlinux.o: warning: objtool: do_syscall_64()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: do_int80_syscall_32()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: exc_general_protection()+0x22: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: fixup_bad_iret()+0x20: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: do_machine_check()+0x27: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .text+0x5346e: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x143: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x10eb: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x17f9: call to stackleak_erase() leaves .noinstr.text section
-
-Note that the plugin's addition of calls to stackleak_track_stack() from
-noinstr functions is expected to be safe, as it isn't runtime
-instrumentation and is self-contained.
-
-Cc: Alexander Popov <alex.popov@linux.com>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Stefan Agner <stefan@agner.ch>
+Reported-by: Wolfgang Walter <linux@stwm.de>
+Reported-by: Jason Self <jason@bluehome.net>
+Reported-by: Dominik Behr <dominik@dominikbehr.com>
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/stackleak.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-index ce161a8e8d975..dd07239ddff9f 100644
---- a/kernel/stackleak.c
-+++ b/kernel/stackleak.c
-@@ -48,7 +48,7 @@ int stack_erasing_sysctl(struct ctl_table *table, int write,
- #define skip_erasing()	false
- #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
- 
--asmlinkage void notrace stackleak_erase(void)
-+asmlinkage void noinstr stackleak_erase(void)
- {
- 	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
- 	unsigned long kstack_ptr = current->lowest_stack;
-@@ -102,9 +102,8 @@ asmlinkage void notrace stackleak_erase(void)
- 	/* Reset the 'lowest_stack' value for the next syscall */
- 	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
- }
--NOKPROBE_SYMBOL(stackleak_erase);
- 
--void __used __no_caller_saved_registers notrace stackleak_track_stack(void)
-+void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
- {
- 	unsigned long sp = current_stack_pointer;
- 
--- 
-2.34.1
-
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1646,6 +1646,8 @@ static void iwl_req_fw_callback(const st
+  out_unbind:
+ 	complete(&drv->request_firmware_complete);
+ 	device_release_driver(drv->trans->dev);
++	/* drv has just been freed by the release */
++	failure = false;
+  free:
+ 	if (failure)
+ 		iwl_dealloc_ucode(drv);
 
 
