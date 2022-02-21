@@ -2,194 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E550C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349978AbiBULK4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:10:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40942 "EHLO
+        id S240547AbiBULLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 06:11:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355457AbiBULKV (ORCPT
+        with ESMTP id S1347773AbiBULKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:10:21 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE67325EC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:43 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id p14-20020a05600c1d8e00b0037f881182a8so1042252wms.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fMcxbuw6I6KTX07OCnquH99Hzxoc4oIUIzEIajyR3Yc=;
-        b=aMCfeRwMKXBIimw4TBzFj85xCm0lDCzNtDN3dZXJfWrWc8IMyECCsBq1jslJuMWLHy
-         HPqXKulqgipa6mBmEnn3JkU1Fzyysnl3d0uPk8ZcCK1uB2h8QWIoIFz0Oi7aOSn6UyJT
-         jz7UkphKfHQ3vkotJZQMqe7nz7jpjJwpJfEAC+zJnixrP10IOWuqj98gYkPjuJ+gC/vH
-         jojjMJ7onKKHgKWFrmqLjvfC3Ey2hNdM8ls6yx7buwvz4XLb+g8y70tgum0Y585u3hTP
-         DEHw8byPVcc2LGlL7ssk8DcnqRAAFhU3VhBKjF50BmesxaMG4BKmUTE8wbIEHCVz+nm1
-         Mjcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fMcxbuw6I6KTX07OCnquH99Hzxoc4oIUIzEIajyR3Yc=;
-        b=PRz/lvBlKojE+JOLjInExK/x+eHzQHG2KvF5ujiwi/R7Rf1doOTw/XUtBxTffNca9e
-         aUM1N/p3mEISOiBHgzk3CenJE+TQGCKnAlgULlwBK0aguOJEZuTdHXbwej9aFVwcBY7v
-         oUYirui4mpf+4N9k7Yfz3C+WNVTPhLK/rMEoYss7OMogFZG1QMQR3ssugNiWddApdlja
-         yi/YZJm68lJutZrpFAcoIf/jMCjRafyZWZdlK9lGLWBXpYJDXI0GWBwdYX4XkhfKOnXD
-         nsLhzn7Mvl/9mP3/2EFI/0VqwmVOC8Hy0VCk0hF1UNntlICH5SA5WARYDLSrE1XmI7Ul
-         C6Cw==
-X-Gm-Message-State: AOAM531urlH+Mc0isxOLJIwHhSlLlPw3zuT/dL/s3jLK1Z/5xwAR0cJi
-        aM3E0me79J9c4D7C9HbXg8xErA==
-X-Google-Smtp-Source: ABdhPJxXek3z/IqIcPNmes42fE7hmTRzBr2LPQ2Ztup4nG4rhEXOxSj7rikJ7T2bKIhQwvS4iJMWGw==
-X-Received: by 2002:a05:600c:1583:b0:346:3f83:6b8 with SMTP id r3-20020a05600c158300b003463f8306b8mr16940773wmf.75.1645440102448;
-        Mon, 21 Feb 2022 02:41:42 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n19-20020a05600c4f9300b0037c06fe68casm7584817wmq.44.2022.02.21.02.41.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:41:42 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 3/3] soundwire: qcom: add wake up interrupt support
-Date:   Mon, 21 Feb 2022 10:41:27 +0000
-Message-Id: <20220221104127.15670-4-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
-References: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
+        Mon, 21 Feb 2022 06:10:22 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FDA2651
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:46 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9739D1F391;
+        Mon, 21 Feb 2022 10:41:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645440105; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F0d7lkAaMU8geNxG5zttR6qwP8lVzWt7ebeJABufG5E=;
+        b=NUkcdVMkWxksW0aIV03i58GVEpjqYqxCokpTxzb/xSycX+EIEca7qebOKI+dCTpTmxPLyJ
+        oD9RKEyRRvn7vPXdT6h6dOBk0Mol8t3oq3oioabSWqNfegsw+Va8Z/ZSlPTLEVoLTpwJe8
+        AdTEg8Ipbaj8nY/53fGsbdsFfuU6FEU=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 50417A3B81;
+        Mon, 21 Feb 2022 10:41:45 +0000 (UTC)
+Date:   Mon, 21 Feb 2022 11:41:44 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+        hannes@cmpxchg.org, peterz@infradead.org, guro@fb.com,
+        shakeelb@google.com, minchan@kernel.org, timmurray@google.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com
+Subject: Re: [PATCH 1/1] mm: count time in drain_all_pages during direct
+ reclaim as memory pressure
+Message-ID: <YhNsaHLLfvFoxnNu@alley>
+References: <20220219174940.2570901-1-surenb@google.com>
+ <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the Qualcomm SoundWire Controller instances like the ones that are
-connected to RX path along with Headset connections support Waking up
-Controller from Low power clock stop state.
+On Mon 2022-02-21 09:55:12, Michal Hocko wrote:
+> On Sat 19-02-22 09:49:40, Suren Baghdasaryan wrote:
+> > When page allocation in direct reclaim path fails, the system will
+> > make one attempt to shrink per-cpu page lists and free pages from
+> > high alloc reserves. Draining per-cpu pages into buddy allocator can
+> > be a very slow operation because it's done using workqueues and the
+> > task in direct reclaim waits for all of them to finish before
+> > proceeding. Currently this time is not accounted as psi memory stall.
+> > 
+> > While testing mobile devices under extreme memory pressure, when
+> > allocations are failing during direct reclaim, we notices that psi
+> > events which would be expected in such conditions were not triggered.
+> > After profiling these cases it was determined that the reason for
+> > missing psi events was that a big chunk of time spent in direct
+> > reclaim is not accounted as memory stall, therefore psi would not
+> > reach the levels at which an event is generated. Further investigation
+> > revealed that the bulk of that unaccounted time was spent inside
+> > drain_all_pages call.
+> 
+> It would be cool to have some numbers here.
+> 
+> > Annotate drain_all_pages and unreserve_highatomic_pageblock during
+> > page allocation failure in the direct reclaim path so that delays
+> > caused by these calls are accounted as memory stall.
+> 
+> If the draining is too slow and dependent on the current CPU/WQ
+> contention then we should address that. The original intention was that
+> having a dedicated WQ with WQ_MEM_RECLAIM would help to isolate the
+> operation from the rest of WQ activity. Maybe we need to fine tune
+> mm_percpu_wq. If that doesn't help then we should revise the WQ model
+> and use something else. Memory reclaim shouldn't really get stuck behind
+> other unrelated work.
 
-Add support to this wake up interrupt.
+WQ_MEM_RECLAIM causes that one special worker (rescuer) is created for
+the workqueue. It is used _only_ when new workers could not be created
+for some, typically when there is non enough memory. It is just
+a fallback, last resort. It does _not_ speedup processing.
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- drivers/soundwire/qcom.c | 65 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+Otherwise, "mm_percpu_wq" is a normal CPU-bound wq. It uses the shared
+per-CPU worker pools. They serialize all work items on a single
+worker. Another worker is used only when a work goes asleep and waits
+for something.
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 3b2eb95a7e96..b9b76031307b 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -14,6 +14,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/slimbus.h>
- #include <linux/soundwire/sdw.h>
- #include <linux/soundwire/sdw_registers.h>
-@@ -154,6 +155,7 @@ struct qcom_swrm_ctrl {
- 	u8 rd_cmd_id;
- 	int irq;
- 	unsigned int version;
-+	int wake_irq;
- 	int num_din_ports;
- 	int num_dout_ports;
- 	int cols_index;
-@@ -503,6 +505,46 @@ static int qcom_swrm_enumerate(struct sdw_bus *bus)
- 	return 0;
- }
- 
-+static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
-+{
-+	struct qcom_swrm_ctrl *swrm = dev_id;
-+	int ret = IRQ_HANDLED;
-+	struct sdw_slave *slave;
-+
-+	clk_prepare_enable(swrm->hclk);
-+
-+	if (swrm->wake_irq > 0) {
-+		if (!irqd_irq_disabled(irq_get_irq_data(swrm->wake_irq)))
-+			disable_irq_nosync(swrm->wake_irq);
-+	}
-+
-+	/*
-+	 * resume all the slaves which must have potentially generated this
-+	 * interrupt, this should also wake the controller at the same time.
-+	 * this is much safer than waking controller directly that will deadlock!
-+	 */
-+	list_for_each_entry(slave, &swrm->bus.slaves, node) {
-+		ret = pm_runtime_get_sync(&slave->dev);
-+		if (ret < 0 && ret != -EACCES) {
-+			dev_err_ratelimited(swrm->dev,
-+					    "pm_runtime_get_sync failed in %s, ret %d\n",
-+					    __func__, ret);
-+			pm_runtime_put_noidle(&slave->dev);
-+			ret = IRQ_NONE;
-+			goto err;
-+		}
-+	}
-+
-+	list_for_each_entry(slave, &swrm->bus.slaves, node) {
-+		pm_runtime_mark_last_busy(&slave->dev);
-+		pm_runtime_put_autosuspend(&slave->dev);
-+	}
-+err:
-+	clk_disable_unprepare(swrm->hclk);
-+	return IRQ_HANDLED;
-+}
-+
-+
- static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
- {
- 	struct qcom_swrm_ctrl *swrm = dev_id;
-@@ -1340,6 +1382,19 @@ static int qcom_swrm_probe(struct platform_device *pdev)
- 		goto err_clk;
- 	}
- 
-+	ctrl->wake_irq = of_irq_get(dev->of_node, 1);
-+	if (ctrl->wake_irq > 0) {
-+		ret = devm_request_threaded_irq(dev, ctrl->wake_irq, NULL,
-+						qcom_swrm_wake_irq_handler,
-+						IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-+						"swr_wake_irq", ctrl);
-+		if (ret) {
-+			dev_err(dev, "Failed to request soundwire wake irq\n");
-+			goto err_init;
-+		}
-+	}
-+
-+
- 	ret = sdw_bus_master_add(&ctrl->bus, dev, dev->fwnode);
- 	if (ret) {
- 		dev_err(dev, "Failed to register Soundwire controller (%d)\n",
-@@ -1424,6 +1479,11 @@ static int swrm_runtime_resume(struct device *dev)
- 	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
- 	int ret;
- 
-+	if (ctrl->wake_irq > 0) {
-+		if (!irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-+			disable_irq_nosync(ctrl->wake_irq);
-+	}
-+
- 	clk_prepare_enable(ctrl->hclk);
- 
- 	if (ctrl->clk_stop_bus_reset) {
-@@ -1485,6 +1545,11 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
- 
- 	usleep_range(300, 305);
- 
-+	if (ctrl->wake_irq > 0) {
-+		if (irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-+			enable_irq(ctrl->wake_irq);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.21.0
+It means that "drain" work is blocked by other work items that are
+using the same worker pool and were queued earlier.
 
+
+You might try to allocate "mm_percpu_wq" with WQ_HIGHPRI flag. It will
+use another shared per-CPU worker pools where the workers have nice
+-20. The "drain" work still might be blocked by another work items
+using the same pool. But it should be faster because the workers
+have higher priority.
+
+
+Dedicated kthreads might be needed when the "draining" should not be
+blocked by anything. If you go this way then I suggest to use
+the kthread_worker API, see "linux/kthread.h". It is very similar
+to the workqueues API but it always creates new kthreads.
+
+Just note that kthread_worker API does not maintain per-CPU workers
+on its own. If you need per-CPU workers than you need to
+use kthread_create_worker_on_cpu() for_each_online_cpu().
+And you would need cpu hotplug callbacks to create/destroy
+ktheads. For example, see start_power_clamp_worker().
+
+HTH,
+Petr
