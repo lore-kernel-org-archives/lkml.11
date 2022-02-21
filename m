@@ -2,116 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F684C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380051AbiBUQQm (ORCPT
+        id S1380063AbiBUQQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:16:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40162 "EHLO
+        Mon, 21 Feb 2022 11:16:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379993AbiBUQPd (ORCPT
+        with ESMTP id S1380052AbiBUQQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:15:33 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C6F275E4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:15:10 -0800 (PST)
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7911A40017
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:15:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645460109;
-        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=VN7Dhyuauh9RFyBI5ipyI8n0C4NYgAO5DDi3VIbLmt2nWXCkqkNF1wof+aCWixrsh
-         /iQaN/+hGGWRSRs3qwaFNhXGD5H6kf3XAgNRxCmC3ywbMQprU5caJ3rKqdqDYJ15xt
-         qcPVTUbbWI5yB9eHFRY+gjN+r9sJpc3AO4J+xyGKz8uo4jeYeAIs2RLjoTlG/QBVsa
-         jE7JHGHtu99yCWUNDlFJ10biaXkmKRSMgfpz+ME/ZRimaAG3IzaE6SYimmLcHDNYsO
-         tZSw9hQBd1aBo7LH8UPcCzH8sVdIGM/EBNNf462KqKilE8xpr5F81Xvoky59UHMN2P
-         E2Xc8KWvic/7Q==
-Received: by mail-wr1-f70.google.com with SMTP id v17-20020adfc5d1000000b001e6405c2b56so7654825wrg.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:15:09 -0800 (PST)
+        Mon, 21 Feb 2022 11:16:43 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E4A27B2B;
+        Mon, 21 Feb 2022 08:16:19 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id n185so17361223qke.5;
+        Mon, 21 Feb 2022 08:16:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=0//CVz6gk3WJBaFfbakgy/AkhXMrrOJmbYrtOzjKFkE=;
+        b=N/JFzI/+U+wnEsmJb7DivTCxpnLwNBrtF95c3bX5Xxy01+suQFUHC/HxctxMu1wW2P
+         e4MMh9JeVtPoc8QEw6mvP7LAVf6swYi/rp3uYu/sM25J8tH4ngeahei3orV6dHkPUI1S
+         TBGONE6vwWh5fsiyA/rLugS7SiSJyyIpcStMF9WFM9yE3b4Vnwq2yies4KdzZJc9Cdux
+         /YHxvtZbZQD0HMEN93mAuXISuFTkSzQTjbx4UPqrAgc+EotwC55p5+oxcylXN6RN31oO
+         ErswE/PEFJMrYnCwoxyexgcLinTbvFHDXyj2ntTPHjDKtEMKQxAYOt4WsO5IkZrOyGFA
+         ELmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
-        b=2+NVqBsyEPvIwVs1H8YF2ZjzisKe4hFp7h1fNzPXmbkUBMcOWFdP+3qae/GrOAqjKs
-         mWJGnqzsAzamc3UxcqxhHP8SIZu9ZciE684d4BA6NtMPQXlM3yqtAxeAHcbKjXFXxppM
-         PxJnvHU1jgJpY1UfYtd7W1+QNOBCMKue6UzDiS1GFBu5kfgd/HZThX1lDLOjVnRaiWCS
-         CJdQ5Gt1Z5LlLHMIGtHnpZkxPSdAXp5yLvqioNUguyEXPv4K3d4T80qS9FBZEsgBTkKG
-         ftlvK17gkwOeDhGqnzpxqVrbZp+F9YoPFqD5TfrMvDxu3vDGyGCnb6YEZgK7q7pTfVVA
-         K2CQ==
-X-Gm-Message-State: AOAM532lTlioXVDRDyw4g5M95y1ebuTG8I+6lJ53CM4/9aIq6R8aOMDA
-        fPamyh+fEagtDM7MgYCVN8UQ49ahX6A+33z0rwc1yr7CyO968o/z0vR1fkATpWEM6xpmjTuBmr1
-        gvIoZcodVg80k/iRdpikxebs4zPe13AJCFxeJtwspAg==
-X-Received: by 2002:adf:e952:0:b0:1e3:39ed:d990 with SMTP id m18-20020adfe952000000b001e339edd990mr16495594wrn.215.1645460109057;
-        Mon, 21 Feb 2022 08:15:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw4/RK1fIWDS+henbbXZJgauSuqwElTcKvG20tpmepmsmnqy5mytufnWbPM6q+0YBF1+QKZTA==
-X-Received: by 2002:adf:e952:0:b0:1e3:39ed:d990 with SMTP id m18-20020adfe952000000b001e339edd990mr16495579wrn.215.1645460108908;
-        Mon, 21 Feb 2022 08:15:08 -0800 (PST)
-Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
-        by smtp.gmail.com with ESMTPSA id 3sm49978552wrz.86.2022.02.21.08.15.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 08:15:08 -0800 (PST)
-From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Nick Hu <nickhu@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: [PATCH -fixes v2 2/4] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
-Date:   Mon, 21 Feb 2022 17:12:30 +0100
-Message-Id: <20220221161232.2168364-3-alexandre.ghiti@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
-References: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=0//CVz6gk3WJBaFfbakgy/AkhXMrrOJmbYrtOzjKFkE=;
+        b=0nLFd+AaHmlfzNcMtPhfrvk45c7q8hSCdnD5rAp67tt3T8boITzZVPLaQ5SDCG4H2s
+         T0lvbu96Aw+MmCUwxGl3LoeHYvWrwIXGZxInNEHYbor5sSUZtoZaI3crTz4oNVHUj4PY
+         EoJt5qDh2dCQHM3z4AyfHYUAomxvum5Tb6dRdy9aKmRjx4QANzajizHLcaXXdmLiJxWm
+         Fk70GoV+Qm+DShdSu71RyQtlW4Rdfu1HO8QAKYMgGOk9sjFQd11sA3/8mokVzqO0J/h3
+         iWBTBo8f64+1n/+p+t9Y/ALVAnbkSgJ3tQYuGRdqSht65KapnCJbdP2dJCdAbCkv6uYy
+         /Z0g==
+X-Gm-Message-State: AOAM532TjHTg7skkXq0YueYTvjwknRljka4Xg85GtjZRVc2+pSHyhhLX
+        wJuPYR2e6rQNzm1pHYOBAVnjJeL0N3v1tw==
+X-Google-Smtp-Source: ABdhPJwoEOTVBrQQIyosl5WPPTTmhHfA/ViqBve4fuHNiKzkl3QtZ10AyQ61BippJHp6qpKmyYD5Qg==
+X-Received: by 2002:a37:6712:0:b0:49b:4bb0:ea32 with SMTP id b18-20020a376712000000b0049b4bb0ea32mr12662896qkc.132.1645460178673;
+        Mon, 21 Feb 2022 08:16:18 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id o10sm2154992qtk.84.2022.02.21.08.16.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 08:16:18 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <66e6b131-274f-454b-44f6-17df879d71a9@roeck-us.net>
+Date:   Mon, 21 Feb 2022 08:16:15 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Krzysztof Adamski <krzysztof.adamski@nokia.com>
+Cc:     linux-hwmon@vger.kernel.org, Agathe Porte <agathe.porte@nokia.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220218150908.1947772-1-linux@roeck-us.net>
+ <YhNWVLHYVtCvdGhi@localhost.localdomain>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v5 1/2] dt-bindings: hwmon: add tmp464.yaml
+In-Reply-To: <YhNWVLHYVtCvdGhi@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to get the pfn of a struct page* when sparsemem is enabled
-without vmemmap, the mem_section structures need to be initialized which
-happens in sparse_init.
+On 2/21/22 01:07, Krzysztof Adamski wrote:
+> Dnia Fri, Feb 18, 2022 at 07:09:07AM -0800, Guenter Roeck napisał(a):
+>> From: Agathe Porte <agathe.porte@nokia.com>
+>>
+>> Add basic description of the tmp464 driver DT bindings.
+>>
+>> Signed-off-by: Agathe Porte <agathe.porte@nokia.com>
+>> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
+>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>> ---
+>> v5:
+>> - Dropped ti,n-factor from channel@0 example. Added additional
+>>  channel to examples to show positive ti,n-factor property.
+>>
+>> v4:
+>> - No changes
+>>
+>> v3:
+>> - Addedd support for TMP468.
+>> - Changed number of channels from 0..3 (which was wrong anyway) to 0..8.
+>> - Changed value range for ti,n-factor to int8, with an example for
+>>  a negative value.
+>> - Added myself as driver maintainer.
+>>
+>> .../devicetree/bindings/hwmon/ti,tmp464.yaml  | 114 ++++++++++++++++++
+>> MAINTAINERS                                   |   7 ++
+>> 2 files changed, 121 insertions(+)
+>> create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+>> new file mode 100644
+>> index 000000000000..14f6a3412b8c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+>> @@ -0,0 +1,114 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/hwmon/ti,tmp464.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: TMP464 and TMP468 temperature sensors
+>> +
+>> +maintainers:
+>> +  - Agathe Porte <agathe.porte@nokia.com>
+>> +
+>> +description: |
+>> +  ±0.0625°C Remote and Local temperature sensor
+>> +  https://www.ti.com/lit/ds/symlink/tmp464.pdf
+>> +  https://www.ti.com/lit/ds/symlink/tmp468.pdf
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - ti,tmp464
+>> +      - ti,tmp468
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  '#address-cells':
+>> +    const: 1
+>> +
+>> +  '#size-cells':
+>> +    const: 0
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +
+>> +additionalProperties: false
+>> +
+>> +patternProperties:
+>> +  "^channel@([0-8])$":
+>> +    type: object
+>> +    description: |
+>> +      Represents channels of the device and their specific configuration.
+>> +
+>> +    properties:
+>> +      reg:
+>> +        description: |
+>> +          The channel number. 0 is local channel, 1-8 are remote channels.
+>> +        items:
+>> +          minimum: 0
+>> +          maximum: 8
+>> +
+>> +      label:
+>> +        description: |
+>> +          A descriptive name for this channel, like "ambient" or "psu".
+>> +
+>> +      ti,n-factor:
+>> +        description: |
+>> +          The value (two's complement) to be programmed in the channel specific N correction register.
+>> +          For remote channels only.
+>> +        $ref: /schemas/types.yaml#/definitions/int8
+>> +        items:
+>> +          minimum: -128
+>> +          maximum: 127
+> 
+> I still thing we should have the same format here and in tmp421, for
+> consistency. If use the same property name, "ti,n-factor" but on tmp421
+> you have use 32bit value while here you have to use 8bit (which is weird
+> in DT, BTW), it might be confusing.
+> Back when we did this for TMP421, there was some discussion and we
+> settled on this approach, why do it differently now?
+> 
 
-But kasan_early_init calls pfn_to_page way before sparse_init is called,
-which then tries to dereference a null mem_section pointer.
+I seem to recall from that discussion that there was supposedly no way to
+express negative numbers in devicetree. Obviously that is incorrect.
+In addition to that, I strongly suspect that the tmp421 code as written
+does not work. Its value range is specified as 0..255, but it is read with
+	err = of_property_read_s32(child, "ti,n-factor", &val);
+and range checked with
+	if (val > 127 || val < -128) {
+                 dev_err(dev, "n-factor for channel %d invalid (%d)\n",
+                        i, val);
+                 return -EINVAL;
+         }
 
-Fix this by removing the usage of this function in kasan_early_init.
+That just looks wrong. Either the value range is 0..255 and checked
+as 0 .. 255, or it is -128 .. 127 and must be both checked and specified
+accordingly. This made me look into the code and I found how negative
+numbers are supposed to be handled.
 
-Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
----
- arch/riscv/mm/kasan_init.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+We can go either way, but whatever it is should be correct and be confirmed
+to work. Rob, any thoughts ?
 
-diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
-index f61f7ca6fe0f..85e849318389 100644
---- a/arch/riscv/mm/kasan_init.c
-+++ b/arch/riscv/mm/kasan_init.c
-@@ -202,8 +202,7 @@ asmlinkage void __init kasan_early_init(void)
- 
- 	for (i = 0; i < PTRS_PER_PTE; ++i)
- 		set_pte(kasan_early_shadow_pte + i,
--			mk_pte(virt_to_page(kasan_early_shadow_page),
--			       PAGE_KERNEL));
-+			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
- 
- 	for (i = 0; i < PTRS_PER_PMD; ++i)
- 		set_pmd(kasan_early_shadow_pmd + i,
--- 
-2.32.0
-
+Guenter
