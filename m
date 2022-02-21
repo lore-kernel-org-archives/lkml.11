@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF00C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8C3C35278
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349883AbiBUJ0q (ORCPT
+        id S1349942AbiBUJ05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52024 "EHLO
+        Mon, 21 Feb 2022 04:26:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348375AbiBUJSP (ORCPT
+        with ESMTP id S1348247AbiBUJSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:18:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B78A26555;
-        Mon, 21 Feb 2022 01:07:15 -0800 (PST)
+        Mon, 21 Feb 2022 04:18:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF8B31233;
+        Mon, 21 Feb 2022 01:07:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FD396112F;
-        Mon, 21 Feb 2022 09:07:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77CBEC340E9;
-        Mon, 21 Feb 2022 09:07:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55E9F61252;
+        Mon, 21 Feb 2022 09:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D21DC340E9;
+        Mon, 21 Feb 2022 09:07:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434435;
-        bh=ScGyZeaWafLuvl41D/6KCvZ28rMsixyoy87rWju0a6M=;
+        s=korg; t=1645434440;
+        bh=6cvYlkqn5yFOmgKwTXG4kZ4WRgkDJOCytnbnYwNNro0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OhCqnCWkVrJEyxGqSVFfVZccDEE1b0aoeijKCAYEhEZLnzy6G899YQaFZldnk/qUz
-         MsnsQ8HQ+F+kc+TGhlTkXOMC7wfNWwMNv2uc4DZ/4Klb04n2z58YMQYWVXCMJ+WdSj
-         F7yj6zYmAu5cqYSocwlFBJs9LUcOnfbuWwBvk8RI=
+        b=Kdf/UZD6porbSmiXZj1HxdKvzkd+dNioJsRmgrc+oTacRbgq4w5GebK063wdzMbME
+         4s8tnftrqA3VD/tn3Dw/40x3BZ4z4comHUTrP/7kb4ywAeUdFnMH5dUoxr9MpIwQuz
+         YpH2UodB3mH7J5UzSU9PLoI2dynMD5/VsKzdxtX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 099/121] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
-Date:   Mon, 21 Feb 2022 09:49:51 +0100
-Message-Id: <20220221084924.532064665@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.15 001/196] drm/nouveau/pmu/gm200-: use alternate falcon reset sequence
+Date:   Mon, 21 Feb 2022 09:47:13 +0100
+Message-Id: <20220221084930.923926935@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
-References: <20220221084921.147454846@linuxfoundation.org>
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+References: <20220221084930.872957717@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,64 +51,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
+commit 4cdd2450bf739bada353e82d27b00db9af8c3001 upstream.
 
-The BL32/TEE reserved-memory region is now inherited from the common
-family dtsi (meson-g12-common) so we can drop it from board files.
-
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
- arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
- 2 files changed, 16 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/falcon/base.c      |    8 ++++--
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c |   31 +++++++++++++++++++++++-
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    2 -
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 -
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    2 -
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    2 +
+ 6 files changed, 41 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-index 4d5b3e514b514..71f91e31c1818 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
-@@ -157,14 +157,6 @@
- 		regulator-always-on;
- 	};
+--- a/drivers/gpu/drm/nouveau/nvkm/falcon/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/falcon/base.c
+@@ -117,8 +117,12 @@ nvkm_falcon_disable(struct nvkm_falcon *
+ int
+ nvkm_falcon_reset(struct nvkm_falcon *falcon)
+ {
+-	nvkm_falcon_disable(falcon);
+-	return nvkm_falcon_enable(falcon);
++	if (!falcon->func->reset) {
++		nvkm_falcon_disable(falcon);
++		return nvkm_falcon_enable(falcon);
++	}
++
++	return falcon->func->reset(falcon);
+ }
  
--	reserved-memory {
--		/* TEE Reserved Memory */
--		bl32_reserved: bl32@5000000 {
--			reg = <0x0 0x05300000 0x0 0x2000000>;
--			no-map;
--		};
--	};
--
- 	sdio_pwrseq: sdio-pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-index 5ab139a34c018..c21178e9c6064 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
-@@ -203,14 +203,6 @@
- 		regulator-always-on;
- 	};
+ int
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c
+@@ -23,9 +23,38 @@
+  */
+ #include "priv.h"
  
--	reserved-memory {
--		/* TEE Reserved Memory */
--		bl32_reserved: bl32@5000000 {
--			reg = <0x0 0x05300000 0x0 0x2000000>;
--			no-map;
--		};
--	};
--
- 	sdio_pwrseq: sdio-pwrseq {
- 		compatible = "mmc-pwrseq-simple";
- 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
--- 
-2.34.1
-
++static int
++gm200_pmu_flcn_reset(struct nvkm_falcon *falcon)
++{
++	struct nvkm_pmu *pmu = container_of(falcon, typeof(*pmu), falcon);
++
++	nvkm_falcon_wr32(falcon, 0x014, 0x0000ffff);
++	pmu->func->reset(pmu);
++	return nvkm_falcon_enable(falcon);
++}
++
++const struct nvkm_falcon_func
++gm200_pmu_flcn = {
++	.debug = 0xc08,
++	.fbif = 0xe00,
++	.load_imem = nvkm_falcon_v1_load_imem,
++	.load_dmem = nvkm_falcon_v1_load_dmem,
++	.read_dmem = nvkm_falcon_v1_read_dmem,
++	.bind_context = nvkm_falcon_v1_bind_context,
++	.wait_for_halt = nvkm_falcon_v1_wait_for_halt,
++	.clear_interrupt = nvkm_falcon_v1_clear_interrupt,
++	.set_start_addr = nvkm_falcon_v1_set_start_addr,
++	.start = nvkm_falcon_v1_start,
++	.enable = nvkm_falcon_v1_enable,
++	.disable = nvkm_falcon_v1_disable,
++	.reset = gm200_pmu_flcn_reset,
++	.cmdq = { 0x4a0, 0x4b0, 4 },
++	.msgq = { 0x4c8, 0x4cc, 0 },
++};
++
+ static const struct nvkm_pmu_func
+ gm200_pmu = {
+-	.flcn = &gt215_pmu_flcn,
++	.flcn = &gm200_pmu_flcn,
+ 	.enabled = gf100_pmu_enabled,
+ 	.reset = gf100_pmu_reset,
+ };
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
+@@ -211,7 +211,7 @@ gm20b_pmu_recv(struct nvkm_pmu *pmu)
+ 
+ static const struct nvkm_pmu_func
+ gm20b_pmu = {
+-	.flcn = &gt215_pmu_flcn,
++	.flcn = &gm200_pmu_flcn,
+ 	.enabled = gf100_pmu_enabled,
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
+@@ -39,7 +39,7 @@ gp102_pmu_enabled(struct nvkm_pmu *pmu)
+ 
+ static const struct nvkm_pmu_func
+ gp102_pmu = {
+-	.flcn = &gt215_pmu_flcn,
++	.flcn = &gm200_pmu_flcn,
+ 	.enabled = gp102_pmu_enabled,
+ 	.reset = gp102_pmu_reset,
+ };
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
+@@ -78,7 +78,7 @@ gp10b_pmu_acr = {
+ 
+ static const struct nvkm_pmu_func
+ gp10b_pmu = {
+-	.flcn = &gt215_pmu_flcn,
++	.flcn = &gm200_pmu_flcn,
+ 	.enabled = gf100_pmu_enabled,
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
+@@ -44,6 +44,8 @@ void gf100_pmu_reset(struct nvkm_pmu *);
+ 
+ void gk110_pmu_pgob(struct nvkm_pmu *, bool);
+ 
++extern const struct nvkm_falcon_func gm200_pmu_flcn;
++
+ void gm20b_pmu_acr_bld_patch(struct nvkm_acr *, u32, s64);
+ void gm20b_pmu_acr_bld_write(struct nvkm_acr *, u32, struct nvkm_acr_lsfw *);
+ int gm20b_pmu_acr_boot(struct nvkm_falcon *);
 
 
