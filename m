@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7958AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC01CC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235306AbiBUJ7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:59:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42722 "EHLO
+        id S243622AbiBUJ7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:59:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352123AbiBUJvM (ORCPT
+        with ESMTP id S1351482AbiBUJwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:51:12 -0500
+        Mon, 21 Feb 2022 04:52:06 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93E013E20;
-        Mon, 21 Feb 2022 01:22:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17521C11E;
+        Mon, 21 Feb 2022 01:22:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55E62CE0E80;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1D307CE0E95;
+        Mon, 21 Feb 2022 09:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0106EC340F8;
         Mon, 21 Feb 2022 09:22:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F70C340E9;
-        Mon, 21 Feb 2022 09:22:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435371;
-        bh=XHeZTLhOEsGIZMErWZ33p31NioQ7wMoUH7X7H5dXHEE=;
+        s=korg; t=1645435374;
+        bh=CvA19KV9FG1Gjf9m0b3HLPFaZC9yM084E9lwfwyuGhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QDi1bKwFpZYT+GY+R9/qRONxtv+0JgpYjyZOMtnRf/tWYat/rG6OUKiU3TuVFZrTn
-         LVSiiNclasINPsZvnERy6cuUzfyPZe9Uc9+X2n/9oM5LGS7wvJMRJyxX8zV68fiv11
-         sAhbgq60p76ki+dVZeMusH04j0vOVbJwW2C6t/dI=
+        b=LbFUfA5CF0Q9/vf1afLC1WFFzh4W+PyVuey3xDp7iMS2lN6lZ9Hdxnn8ou3jfPecq
+         vX9N9/2teoWSwHstiLIG3qkG+eHt75KrqiAfWUOqx1014snV0hp3js5Q1LPympljiv
+         1LRh2/zJ8KzntS4Nh75bkV2AYSq/PnHpZaXY07eg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Huang <diwang90@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 139/227] ALSA: hda/realtek: Add quirk for Legion Y9000X 2019
-Date:   Mon, 21 Feb 2022 09:49:18 +0100
-Message-Id: <20220221084939.466504140@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Julian Wollrath <jwollrath@web.de>
+Subject: [PATCH 5.16 140/227] ALSA: hda/realtek: Fix deadlock by COEF mutex
+Date:   Mon, 21 Feb 2022 09:49:19 +0100
+Message-Id: <20220221084939.495721883@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -48,32 +48,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Huang <diwang90@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit c07f2c7b45413a9e50ba78630fda04ecfa17b4f2 upstream.
+commit 2a845837e3d0ddaed493b4c5c4643d7f0542804d upstream.
 
-Legion Y9000X 2019 has the same speaker with Y9000X 2020,
-but with a different quirk address. Add one quirk entry
-to make the speaker work on Y9000X 2019 too.
+The recently introduced coef_mutex for Realtek codec seems causing a
+deadlock when the relevant code is invoked from the power-off state;
+then the HD-audio core tries to power-up internally, and this kicks
+off the codec runtime PM code that tries to take the same coef_mutex.
 
-Signed-off-by: Yu Huang <diwang90@gmail.com>
+In order to avoid the deadlock, do the temporary power up/down around
+the coef_mutex acquisition and release.  This assures that the
+power-up sequence runs before the mutex, hence no re-entrance will
+happen.
+
+Fixes: b837a9f5ab3b ("ALSA: hda: realtek: Fix race at concurrent COEF updates")
+Reported-and-tested-by: Julian Wollrath <jwollrath@web.de>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220212160835.165065-1-diwang90@gmail.com
+Link: https://lore.kernel.org/r/20220214132838.4db10fca@schienar
+Link: https://lore.kernel.org/r/20220214130410.21230-1-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/hda/patch_realtek.c |   39 ++++++++++++++++++++++++---------------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -9013,6 +9013,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
- 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
-+	SND_PCI_QUIRK(0x17aa, 0x383d, "Legion Y9000X 2019", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
- 	SND_PCI_QUIRK(0x17aa, 0x384a, "Lenovo Yoga 7 15ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+@@ -133,6 +133,22 @@ struct alc_spec {
+  * COEF access helper functions
+  */
+ 
++static void coef_mutex_lock(struct hda_codec *codec)
++{
++	struct alc_spec *spec = codec->spec;
++
++	snd_hda_power_up_pm(codec);
++	mutex_lock(&spec->coef_mutex);
++}
++
++static void coef_mutex_unlock(struct hda_codec *codec)
++{
++	struct alc_spec *spec = codec->spec;
++
++	mutex_unlock(&spec->coef_mutex);
++	snd_hda_power_down_pm(codec);
++}
++
+ static int __alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 				 unsigned int coef_idx)
+ {
+@@ -146,12 +162,11 @@ static int __alc_read_coefex_idx(struct
+ static int alc_read_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 			       unsigned int coef_idx)
+ {
+-	struct alc_spec *spec = codec->spec;
+ 	unsigned int val;
+ 
+-	mutex_lock(&spec->coef_mutex);
++	coef_mutex_lock(codec);
+ 	val = __alc_read_coefex_idx(codec, nid, coef_idx);
+-	mutex_unlock(&spec->coef_mutex);
++	coef_mutex_unlock(codec);
+ 	return val;
+ }
+ 
+@@ -168,11 +183,9 @@ static void __alc_write_coefex_idx(struc
+ static void alc_write_coefex_idx(struct hda_codec *codec, hda_nid_t nid,
+ 				 unsigned int coef_idx, unsigned int coef_val)
+ {
+-	struct alc_spec *spec = codec->spec;
+-
+-	mutex_lock(&spec->coef_mutex);
++	coef_mutex_lock(codec);
+ 	__alc_write_coefex_idx(codec, nid, coef_idx, coef_val);
+-	mutex_unlock(&spec->coef_mutex);
++	coef_mutex_unlock(codec);
+ }
+ 
+ #define alc_write_coef_idx(codec, coef_idx, coef_val) \
+@@ -193,11 +206,9 @@ static void alc_update_coefex_idx(struct
+ 				  unsigned int coef_idx, unsigned int mask,
+ 				  unsigned int bits_set)
+ {
+-	struct alc_spec *spec = codec->spec;
+-
+-	mutex_lock(&spec->coef_mutex);
++	coef_mutex_lock(codec);
+ 	__alc_update_coefex_idx(codec, nid, coef_idx, mask, bits_set);
+-	mutex_unlock(&spec->coef_mutex);
++	coef_mutex_unlock(codec);
+ }
+ 
+ #define alc_update_coef_idx(codec, coef_idx, mask, bits_set)	\
+@@ -230,9 +241,7 @@ struct coef_fw {
+ static void alc_process_coef_fw(struct hda_codec *codec,
+ 				const struct coef_fw *fw)
+ {
+-	struct alc_spec *spec = codec->spec;
+-
+-	mutex_lock(&spec->coef_mutex);
++	coef_mutex_lock(codec);
+ 	for (; fw->nid; fw++) {
+ 		if (fw->mask == (unsigned short)-1)
+ 			__alc_write_coefex_idx(codec, fw->nid, fw->idx, fw->val);
+@@ -240,7 +249,7 @@ static void alc_process_coef_fw(struct h
+ 			__alc_update_coefex_idx(codec, fw->nid, fw->idx,
+ 						fw->mask, fw->val);
+ 	}
+-	mutex_unlock(&spec->coef_mutex);
++	coef_mutex_unlock(codec);
+ }
+ 
+ /*
 
 
