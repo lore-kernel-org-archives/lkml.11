@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B45C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349073AbiBUJZF (ORCPT
+        id S1349242AbiBUJZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46478 "EHLO
+        Mon, 21 Feb 2022 04:25:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348324AbiBUJO6 (ORCPT
+        with ESMTP id S1347730AbiBUJO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:14:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1CD13F9B;
-        Mon, 21 Feb 2022 01:06:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3099FD06;
+        Mon, 21 Feb 2022 01:06:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AE7960FB6;
-        Mon, 21 Feb 2022 09:06:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1B5C340F3;
-        Mon, 21 Feb 2022 09:06:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DD7161252;
+        Mon, 21 Feb 2022 09:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B830C340E9;
+        Mon, 21 Feb 2022 09:06:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434403;
-        bh=3aV9bHzykKizB1J+5Ksl6TyTU0mBhVe4TvtLefKoCRo=;
+        s=korg; t=1645434400;
+        bh=6tyCpoNHSv/IABAUQ+aeDxp6gfUEuIYrCiuJPNabOeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0V7hFNn9wnRUnszHGPBzF3VJjEoxmQlqcr9hKDA/M/+BZTDg+kEuzh210or9JuHKl
-         Au+FXbKUeaZ14p6Yyd1UY91qng44Ne1rGnp9YTEXDsoS13UTZq28ZFhga4evTN74sm
-         4PF7Dxg2O5hkWmzBu5qi4+o4hsrpsats9t42FcHw=
+        b=fsjR1D/zEsSO1iukvLUFQalejUhEffYgl5Y31kyq4XHcbRr+rxtjpfgWuKDPw/6U8
+         yue2fZtRUckVBASn7c3F+fFN+qc0xQb6bad8YfHwIVDQLl1qYTn/xp1VxLgcRsgENP
+         hySaiOlXpssQlNcYpeydL39Ut0WBs/vKo2Ez6J9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.10 117/121] i2c: qcom-cci: dont delete an unregistered adapter
-Date:   Mon, 21 Feb 2022 09:50:09 +0100
-Message-Id: <20220221084925.150729759@linuxfoundation.org>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 116/121] dmaengine: sh: rcar-dmac: Check for error num after dma_set_max_seg_size
+Date:   Mon, 21 Feb 2022 09:50:08 +0100
+Message-Id: <20220221084925.118640641@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,40 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit a0d48505a1d68e27220369e2dd1e3573a2f362d2 upstream.
+commit da2ad87fba0891576aadda9161b8505fde81a84d upstream.
 
-If i2c_add_adapter() fails to add an I2C adapter found on QCOM CCI
-controller, on error path i2c_del_adapter() is still called.
+As the possible failure of the dma_set_max_seg_size(), it should be
+better to check the return value of the dma_set_max_seg_size().
 
-Fortunately there is a sanity check in the I2C core, so the only
-visible implication is a printed debug level message:
-
-    i2c-core: attempting to delete unregistered adapter [Qualcomm-CCI]
-
-Nevertheless it would be reasonable to correct the probe error path.
-
-Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 97d49c59e219 ("dmaengine: rcar-dmac: set scatter/gather max segment size")
+Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220111011239.452837-1-jiasheng@iscas.ac.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-qcom-cci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/sh/rcar-dmac.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/i2c/busses/i2c-qcom-cci.c
-+++ b/drivers/i2c/busses/i2c-qcom-cci.c
-@@ -655,7 +655,7 @@ static int cci_probe(struct platform_dev
- 	return 0;
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1844,7 +1844,10 @@ static int rcar_dmac_probe(struct platfo
  
- error_i2c:
--	for (; i >= 0; i--) {
-+	for (--i ; i >= 0; i--) {
- 		if (cci->master[i].cci)
- 			i2c_del_adapter(&cci->master[i].adap);
- 	}
+ 	dmac->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, dmac);
+-	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
++	ret = dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
++	if (ret)
++		return ret;
++
+ 	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
+ 	if (ret)
+ 		return ret;
 
 
