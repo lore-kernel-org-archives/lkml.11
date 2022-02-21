@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EDAC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5793C47080
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353180AbiBUJsP (ORCPT
+        id S1351840AbiBUJqm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:48:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34324 "EHLO
+        Mon, 21 Feb 2022 04:46:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351164AbiBUJmz (ORCPT
+        with ESMTP id S1351635AbiBUJhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:42:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE193EA99;
-        Mon, 21 Feb 2022 01:17:56 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BFE205CB;
+        Mon, 21 Feb 2022 01:16:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 668BC60F22;
-        Mon, 21 Feb 2022 09:17:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C3DC340E9;
-        Mon, 21 Feb 2022 09:17:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8CA260018;
+        Mon, 21 Feb 2022 09:16:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6748C340E9;
+        Mon, 21 Feb 2022 09:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435074;
-        bh=qXx8LLN8OdrK+AodAKJg3msw5uNFgNNxaDRX0Eumxzo=;
+        s=korg; t=1645434976;
+        bh=Kj5P1zY5l6pTNOhGPDTG6um+5ioqc9DX0x+C/sMtssQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SxSdJ3Cpi09PRwVju4BT8Kt60TMb5JhmwUJPwV/tLjatDgNm36H9HrJXIyspjB6s9
-         tBMeuMPOhUgSVoIKcm5qQTa2LnhRWVU108ZwQ0OhtkRLz1U+nWv25Q1uc8JBXczMWE
-         3xbj8N7NNJ24Kzgsw09yeQ/mbKldYyr88n+ZOqEk=
+        b=JQb+A/wWZZVsNCdfvZvOR8nHxF+A35kZq+AL53wzP6UPbVOKc3RS4580weyIY/dBL
+         W/qBvJMZK09Szhtme0uS54oaIyWiQIwJAeGSTQE/2Z40uYwl2jIw3+ctutAr7MmQi3
+         FAuSVLPCMkC8yL6KccfqZsuFteHEqsnCI+mtgSXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.16 008/227] bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.
-Date:   Mon, 21 Feb 2022 09:47:07 +0100
-Message-Id: <20220221084935.121206549@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 187/196] dmaengine: sh: rcar-dmac: Check for error num after dma_set_max_seg_size
+Date:   Mon, 21 Feb 2022 09:50:19 +0100
+Message-Id: <20220221084937.206219394@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+References: <20220221084930.872957717@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,116 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 34d3a78c681e8e7844b43d1a2f4671a04249c821 upstream.
+commit da2ad87fba0891576aadda9161b8505fde81a84d upstream.
 
-Tag the return type of {per, this}_cpu_ptr with RDONLY_MEM. The
-returned value of this pair of helpers is kernel object, which
-can not be updated by bpf programs. Previously these two helpers
-return PTR_OT_MEM for kernel objects of scalar type, which allows
-one to directly modify the memory. Now with RDONLY_MEM tagging,
-the verifier will reject programs that write into RDONLY_MEM.
+As the possible failure of the dma_set_max_seg_size(), it should be
+better to check the return value of the dma_set_max_seg_size().
 
-Fixes: 63d9b80dcf2c ("bpf: Introducte bpf_this_cpu_ptr()")
-Fixes: eaa6bcb71ef6 ("bpf: Introduce bpf_per_cpu_ptr()")
-Fixes: 4976b718c355 ("bpf: Introduce pseudo_btf_id")
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-8-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.16.x
+Fixes: 97d49c59e219 ("dmaengine: rcar-dmac: set scatter/gather max segment size")
+Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220111011239.452837-1-jiasheng@iscas.ac.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/helpers.c  |    4 ++--
- kernel/bpf/verifier.c |   30 ++++++++++++++++++++++++++----
- 2 files changed, 28 insertions(+), 6 deletions(-)
+ drivers/dma/sh/rcar-dmac.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -667,7 +667,7 @@ BPF_CALL_2(bpf_per_cpu_ptr, const void *
- const struct bpf_func_proto bpf_per_cpu_ptr_proto = {
- 	.func		= bpf_per_cpu_ptr,
- 	.gpl_only	= false,
--	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID | PTR_MAYBE_NULL,
-+	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID | PTR_MAYBE_NULL | MEM_RDONLY,
- 	.arg1_type	= ARG_PTR_TO_PERCPU_BTF_ID,
- 	.arg2_type	= ARG_ANYTHING,
- };
-@@ -680,7 +680,7 @@ BPF_CALL_1(bpf_this_cpu_ptr, const void
- const struct bpf_func_proto bpf_this_cpu_ptr_proto = {
- 	.func		= bpf_this_cpu_ptr,
- 	.gpl_only	= false,
--	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID,
-+	.ret_type	= RET_PTR_TO_MEM_OR_BTF_ID | MEM_RDONLY,
- 	.arg1_type	= ARG_PTR_TO_PERCPU_BTF_ID,
- };
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1868,7 +1868,10 @@ static int rcar_dmac_probe(struct platfo
  
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4333,15 +4333,30 @@ static int check_mem_access(struct bpf_v
- 				mark_reg_unknown(env, regs, value_regno);
- 			}
- 		}
--	} else if (reg->type == PTR_TO_MEM) {
-+	} else if (base_type(reg->type) == PTR_TO_MEM) {
-+		bool rdonly_mem = type_is_rdonly_mem(reg->type);
+ 	dmac->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, dmac);
+-	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
++	ret = dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
++	if (ret)
++		return ret;
 +
-+		if (type_may_be_null(reg->type)) {
-+			verbose(env, "R%d invalid mem access '%s'\n", regno,
-+				reg_type_str(env, reg->type));
-+			return -EACCES;
-+		}
-+
-+		if (t == BPF_WRITE && rdonly_mem) {
-+			verbose(env, "R%d cannot write into %s\n",
-+				regno, reg_type_str(env, reg->type));
-+			return -EACCES;
-+		}
-+
- 		if (t == BPF_WRITE && value_regno >= 0 &&
- 		    is_pointer_value(env, value_regno)) {
- 			verbose(env, "R%d leaks addr into mem\n", value_regno);
- 			return -EACCES;
- 		}
-+
- 		err = check_mem_region_access(env, regno, off, size,
- 					      reg->mem_size, false);
--		if (!err && t == BPF_READ && value_regno >= 0)
-+		if (!err && value_regno >= 0 && (t == BPF_READ || rdonly_mem))
- 			mark_reg_unknown(env, regs, value_regno);
- 	} else if (reg->type == PTR_TO_CTX) {
- 		enum bpf_reg_type reg_type = SCALAR_VALUE;
-@@ -6550,6 +6565,13 @@ static int check_helper_call(struct bpf_
- 			regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
- 			regs[BPF_REG_0].mem_size = tsize;
- 		} else {
-+			/* MEM_RDONLY may be carried from ret_flag, but it
-+			 * doesn't apply on PTR_TO_BTF_ID. Fold it, otherwise
-+			 * it will confuse the check of PTR_TO_BTF_ID in
-+			 * check_mem_access().
-+			 */
-+			ret_flag &= ~MEM_RDONLY;
-+
- 			regs[BPF_REG_0].type = PTR_TO_BTF_ID | ret_flag;
- 			regs[BPF_REG_0].btf = meta.ret_btf;
- 			regs[BPF_REG_0].btf_id = meta.ret_btf_id;
-@@ -9362,7 +9384,7 @@ static int check_ld_imm(struct bpf_verif
- 
- 	if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
- 		dst_reg->type = aux->btf_var.reg_type;
--		switch (dst_reg->type) {
-+		switch (base_type(dst_reg->type)) {
- 		case PTR_TO_MEM:
- 			dst_reg->mem_size = aux->btf_var.mem_size;
- 			break;
-@@ -11505,7 +11527,7 @@ static int check_pseudo_btf_id(struct bp
- 			err = -EINVAL;
- 			goto err_put;
- 		}
--		aux->btf_var.reg_type = PTR_TO_MEM;
-+		aux->btf_var.reg_type = PTR_TO_MEM | MEM_RDONLY;
- 		aux->btf_var.mem_size = tsize;
- 	} else {
- 		aux->btf_var.reg_type = PTR_TO_BTF_ID;
+ 	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
+ 	if (ret)
+ 		return ret;
 
 
