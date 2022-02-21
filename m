@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597F4C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E97AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352819AbiBUJr5 (ORCPT
+        id S1352878AbiBUJsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56768 "EHLO
+        Mon, 21 Feb 2022 04:48:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350922AbiBUJlr (ORCPT
+        with ESMTP id S1350849AbiBUJlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:41:47 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5833DA59;
-        Mon, 21 Feb 2022 01:17:35 -0800 (PST)
+        Mon, 21 Feb 2022 04:41:37 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F993D489;
+        Mon, 21 Feb 2022 01:17:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 132BCCE0E76;
-        Mon, 21 Feb 2022 09:17:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A60C36AE2;
-        Mon, 21 Feb 2022 09:17:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CF88BCE0E8B;
+        Mon, 21 Feb 2022 09:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7B3C340E9;
+        Mon, 21 Feb 2022 09:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435052;
-        bh=aq342Jl4tJfjwVay9ySTUGZn+7HK1tr7jmwMZIzqGmk=;
+        s=korg; t=1645435044;
+        bh=VWGfAshiuYdLKS4NFlADuZCK20g14roqriy9aABhR0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OR++jZ0sBxyoo6ykUxpRrUbMasktuN8FrSB/AamCsYOCfywhW4NYwLFG6FFtQOU93
-         ONDMLc90wyfhvVlgZbCvPxV575UJdzGw928AXzNvWZ+bNNeRQjvYfX/gPx3jYov8t3
-         8X0b1k+44oJ6UA80ruaTzLlynqrgqFxRFfAlnCUw=
+        b=ki0VWzG3IeyQy3WhigoGqw6d7Q/BVK/6SpzvxIHyi1I2t2WF46qO2byie7vqIlXH8
+         lHttUhbdErGQBaDjxrrxBCUY9flJkXBE6V7BNKw1mp5z2MKZRQgzkQmkhmwttPUELD
+         RlVJNXcSpbmaLSMiULdCISlPXHx45EnPyw5Hacow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Markus Wageringel <markus.wageringel@gmail.com>,
-        Alex Henrie <alexhenrie24@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.16 027/227] HID: apple: Set the tilde quirk flag on the Wellspring 5 and later
-Date:   Mon, 21 Feb 2022 09:47:26 +0100
-Message-Id: <20220221084935.746555690@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 007/227] bpf: Convert PTR_TO_MEM_OR_NULL to composable types.
+Date:   Mon, 21 Feb 2022 09:47:06 +0100
+Message-Id: <20220221084935.087780011@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,84 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Henrie <alexhenrie24@gmail.com>
+From: Hao Luo <haoluo@google.com>
 
-commit e26a78057c25dd56f112d536319c38735ed92ba4 upstream.
+commit cf9f2f8d62eca810afbd1ee6cc0800202b000e57 upstream.
 
-Markus reports that his 2011 MacBook with a German ISO keyboard (USB
-product code 05ac:0246, HID country code 13) has the tilde key quirk.
-Seeing as all of the standalone Apple ISO keyboards since about 2008
-have the quirk, it seems reasonable to assume that once the integrated
-laptop keyboards started having the quirk, they likewise never stopped
-having it.
+Remove PTR_TO_MEM_OR_NULL and replace it with PTR_TO_MEM combined with
+flag PTR_MAYBE_NULL.
 
-Reported-by: Markus Wageringel <markus.wageringel@gmail.com>
-Signed-off-by: Alex Henrie <alexhenrie24@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-7-haoluo@google.com
+Cc: stable@vger.kernel.org # 5.16.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-apple.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ include/linux/bpf.h   |    1 -
+ kernel/bpf/btf.c      |    2 +-
+ kernel/bpf/verifier.c |    2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -580,49 +580,49 @@ static const struct hid_device_id apple_
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7A_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7A_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7A_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING8_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING8_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING8_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING9_ANSI),
- 		.driver_data = APPLE_HAS_FN },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING9_ISO),
--		.driver_data = APPLE_HAS_FN },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING9_JIS),
- 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI),
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -506,7 +506,6 @@ enum bpf_reg_type {
+ 	PTR_TO_SOCK_COMMON_OR_NULL	= PTR_MAYBE_NULL | PTR_TO_SOCK_COMMON,
+ 	PTR_TO_TCP_SOCK_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_TCP_SOCK,
+ 	PTR_TO_BTF_ID_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_BTF_ID,
+-	PTR_TO_MEM_OR_NULL		= PTR_MAYBE_NULL | PTR_TO_MEM,
+ 
+ 	/* This must be the last entry. Its purpose is to ensure the enum is
+ 	 * wide enough to hold the higher bits reserved for bpf_type_flag.
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -5847,7 +5847,7 @@ int btf_prepare_func_args(struct bpf_ver
+ 				return -EINVAL;
+ 			}
+ 
+-			reg->type = PTR_TO_MEM_OR_NULL;
++			reg->type = PTR_TO_MEM | PTR_MAYBE_NULL;
+ 			reg->id = ++env->id_gen;
+ 
+ 			continue;
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -13336,7 +13336,7 @@ static int do_check_common(struct bpf_ve
+ 				mark_reg_known_zero(env, regs, i);
+ 			else if (regs[i].type == SCALAR_VALUE)
+ 				mark_reg_unknown(env, regs, i);
+-			else if (regs[i].type == PTR_TO_MEM_OR_NULL) {
++			else if (base_type(regs[i].type) == PTR_TO_MEM) {
+ 				const u32 mem_size = regs[i].mem_size;
+ 
+ 				mark_reg_known_zero(env, regs, i);
 
 
