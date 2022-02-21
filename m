@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D204C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6124C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353117AbiBUKJh (ORCPT
+        id S1353142AbiBUKJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:09:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56870 "EHLO
+        Mon, 21 Feb 2022 05:09:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353473AbiBUJ52 (ORCPT
+        with ESMTP id S1353478AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:28 -0500
+        Mon, 21 Feb 2022 04:57:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD063968C;
-        Mon, 21 Feb 2022 01:26:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7459E39694;
+        Mon, 21 Feb 2022 01:26:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42C6EB80EB9;
-        Mon, 21 Feb 2022 09:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830F3C340E9;
-        Mon, 21 Feb 2022 09:26:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23A13B80EB8;
+        Mon, 21 Feb 2022 09:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 379ADC340E9;
+        Mon, 21 Feb 2022 09:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435563;
-        bh=eEcLGIVXMQkyu6JpN7qeQfTNgzp08OYhHxab6htHh+g=;
+        s=korg; t=1645435568;
+        bh=CGKZKpHdtpHjqx8nLIub2ekK7SpErawCOlzQRha/BlY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LDOgD04kyn9/fcAe/AhvIGSm8psdiZuX53zsCvN6dhk8xB7b41aWvEn8n2GAz1PGP
-         LssbQEIdwlHIwAjUIrlkXI74PQK8coETm+SuxZc0QVA6XJUSUISXMeP8ffKi/q9p9G
-         AweHoBxmGaUFBnmvp3Vktqm/N9/yL9jW5FwnjkOU=
+        b=f3HNBXose7IfmENmIunnE5iGkcAE8MKnjtca9xMVrLb/uIdBA5EjGG4zHpX2eabJ1
+         lLbnK9hd+DMVfU/mfVHMjbj4GU3VKPTrkhoDATWtJitWTQbb6PmmDmc8oGGRFy+i5s
+         ESg6JhbG7O50NlGCX3cOBWO5KQcFAzSPJku4qzQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 207/227] ksmbd: dont align last entry offset in smb2 query directory
-Date:   Mon, 21 Feb 2022 09:50:26 +0100
-Message-Id: <20220221084941.707495122@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Seth Forshee <seth.forshee@digitalocean.com>,
+        Christoph Hellwig <hch@lst.de>, linux-fsdevel@vger.kernel.org,
+        Christian Brauner <brauner@kernel.org>
+Subject: [PATCH 5.16 182/227] tests: fix idmapped mount_setattr test
+Date:   Mon, 21 Feb 2022 09:50:01 +0100
+Message-Id: <20220221084940.869374838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,61 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Christian Brauner <brauner@kernel.org>
 
-[ Upstream commit 04e260948a160d3b7d622bf4c8a96fa4577c09bd ]
+commit d1c56bfdaca465bd1d0e913053a9c5cafe8b6a6c upstream.
 
-When checking smb2 query directory packets from other servers,
-OutputBufferLength is different with ksmbd. Other servers add an unaligned
-next offset to OutputBufferLength for the last entry.
+The test treated zero as a successful run when it really should treat
+non-zero as a successful run. A mount's idmapping can't change once it
+has been attached to the filesystem.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220203131411.3093040-2-brauner@kernel.org
+Fixes: 01eadc8dd96d ("tests: add mount_setattr() selftests")
+Cc: Seth Forshee <seth.forshee@digitalocean.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: linux-fsdevel@vger.kernel.org
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/smb2pdu.c | 7 ++++---
- fs/ksmbd/vfs.h     | 1 +
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ tools/testing/selftests/mount_setattr/mount_setattr_test.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 1ff1e52f398fc..cbbbccdc5a0a5 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -3423,9 +3423,9 @@ static int smb2_populate_readdir_entry(struct ksmbd_conn *conn, int info_level,
- 		goto free_conv_name;
- 	}
+--- a/tools/testing/selftests/mount_setattr/mount_setattr_test.c
++++ b/tools/testing/selftests/mount_setattr/mount_setattr_test.c
+@@ -1236,7 +1236,7 @@ static int get_userns_fd(unsigned long n
+ }
  
--	struct_sz = readdir_info_level_struct_sz(info_level);
--	next_entry_offset = ALIGN(struct_sz - 1 + conv_len,
--				  KSMBD_DIR_INFO_ALIGNMENT);
-+	struct_sz = readdir_info_level_struct_sz(info_level) - 1 + conv_len;
-+	next_entry_offset = ALIGN(struct_sz, KSMBD_DIR_INFO_ALIGNMENT);
-+	d_info->last_entry_off_align = next_entry_offset - struct_sz;
+ /**
+- * Validate that an attached mount in our mount namespace can be idmapped.
++ * Validate that an attached mount in our mount namespace cannot be idmapped.
+  * (The kernel enforces that the mount's mount namespace and the caller's mount
+  *  namespace match.)
+  */
+@@ -1259,7 +1259,7 @@ TEST_F(mount_setattr_idmapped, attached_
  
- 	if (next_entry_offset > d_info->out_buf_len) {
- 		d_info->out_buf_len = 0;
-@@ -3977,6 +3977,7 @@ int smb2_query_dir(struct ksmbd_work *work)
- 		((struct file_directory_info *)
- 		((char *)rsp->Buffer + d_info.last_entry_offset))
- 		->NextEntryOffset = 0;
-+		d_info.data_count -= d_info.last_entry_off_align;
- 
- 		rsp->StructureSize = cpu_to_le16(9);
- 		rsp->OutputBufferOffset = cpu_to_le16(72);
-diff --git a/fs/ksmbd/vfs.h b/fs/ksmbd/vfs.h
-index adf94a4f22fa6..8c37aaf936ab1 100644
---- a/fs/ksmbd/vfs.h
-+++ b/fs/ksmbd/vfs.h
-@@ -47,6 +47,7 @@ struct ksmbd_dir_info {
- 	int		last_entry_offset;
- 	bool		hide_dot_file;
- 	int		flags;
-+	int		last_entry_off_align;
- };
- 
- struct ksmbd_readdir_data {
--- 
-2.34.1
-
+ 	attr.userns_fd	= get_userns_fd(0, 10000, 10000);
+ 	ASSERT_GE(attr.userns_fd, 0);
+-	ASSERT_EQ(sys_mount_setattr(open_tree_fd, "", AT_EMPTY_PATH, &attr, sizeof(attr)), 0);
++	ASSERT_NE(sys_mount_setattr(open_tree_fd, "", AT_EMPTY_PATH, &attr, sizeof(attr)), 0);
+ 	ASSERT_EQ(close(attr.userns_fd), 0);
+ 	ASSERT_EQ(close(open_tree_fd), 0);
+ }
 
 
