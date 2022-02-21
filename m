@@ -2,120 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350556AbiBUJfH (ORCPT
+        id S1350567AbiBUJfK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:35:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51002 "EHLO
+        Mon, 21 Feb 2022 04:35:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350001AbiBUJ1B (ORCPT
+        with ESMTP id S1350004AbiBUJ1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:27:01 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902D2116
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:11:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645434673; x=1676970673;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+sMSFdBUf/9LvW63UTt/8rXrHUw2YlFgt4UKqrVoN7s=;
-  b=JrV1JDUdwhHQpGhwUvwIkMQ2xEygKVcJ3vlBkasCMoBYUHRv6MduTp4z
-   aDmBe+mUbi64tr/ByNKUW7dLaVy64lR2BPt/qYgHyd0U96QhrLddgvoG5
-   gXrZwDNcQ3TOMKn/HbrfXlOTqTHJ5SHyEcWQVoXjjjpS52d9x+wwk0Ahf
-   J+HJOONITFQ/CJA+f5daeC4h1CUiaTdSLL1n2TrqJru4xl/pzJanxox1U
-   i/Lzuj/grdQr8/lLD1seOGLj5E3lzBXyVBySpvS4Dk16K3vfOf9dvbrrF
-   Z3szmYiFQ5aAgPIz7X6iN7jaOKLKwLphOBcGDzzg+eYCntqnoGsp9GpbF
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="231439306"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="231439306"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 01:11:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="775938345"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2022 01:11:10 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM4ir-0001S6-E0; Mon, 21 Feb 2022 09:11:09 +0000
-Date:   Mon, 21 Feb 2022 17:11:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:axboe/linux-block/m1/2022-02-19 517/552]
- drivers/clk/clk-apple-nco.c:139:16: error: implicit declaration of function
- 'FIELD_PREP'
-Message-ID: <202202211707.LrS0JBhZ-lkp@intel.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02EC51D335;
+        Mon, 21 Feb 2022 01:11:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92A2760018;
+        Mon, 21 Feb 2022 09:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76953C340E9;
+        Mon, 21 Feb 2022 09:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645434674;
+        bh=42BZzAIrhChSJ2BfYlKST5WzCDRyABo6KiK+ubfK/54=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2tq3EeP+GNL52Oy6AqG0gKPFgEH6E+1KOupDepwPDoDYr6ByS8nauf6quKRwdJ+kT
+         ssJVqLk5H8aMQTn39MtrQTQJ6RoSN6SUu8cj8Sxmi2rq4xWm3uQfWT5pUU5lwiZc74
+         r2+HlP58Cy4HE+SP2PiK49HAEtdSxgO4SK6vZnAo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 091/196] net: dsa: lantiq_gswip: fix use after free in gswip_remove()
+Date:   Mon, 21 Feb 2022 09:48:43 +0100
+Message-Id: <20220221084933.987875225@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+References: <20220221084930.872957717@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1/2022-02-19
-head:   b781e0ccdc0c9a931571d15db09d45b7258b9905
-commit: 276bb3ac97d54e2461f27705391a3b87750a390e [517/552] clk: clk-apple-nco: Add driver for Apple NCO
-config: arm-randconfig-r026-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211707.LrS0JBhZ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/276bb3ac97d54e2461f27705391a3b87750a390e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1/2022-02-19
-        git checkout 276bb3ac97d54e2461f27705391a3b87750a390e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+commit 8c6ae46150a453f8ae9a6cd49b45f354f478587d upstream.
 
-All errors (new ones prefixed by >>):
+of_node_put(priv->ds->slave_mii_bus->dev.of_node) should be
+done before mdiobus_free(priv->ds->slave_mii_bus).
 
-   drivers/clk/clk-apple-nco.c: In function 'applnco_div_translate':
->> drivers/clk/clk-apple-nco.c:139:16: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
-     139 |         return FIELD_PREP(DIV_COARSE, tbl->fwd[coarse - COARSE_DIV_OFFSET]) |
-         |                ^~~~~~~~~~
-   drivers/clk/clk-apple-nco.c: In function 'applnco_div_translate_inv':
->> drivers/clk/clk-apple-nco.c:147:27: error: implicit declaration of function 'FIELD_GET' [-Werror=implicit-function-declaration]
-     147 |         coarse = tbl->inv[FIELD_GET(DIV_COARSE, regval)] + COARSE_DIV_OFFSET;
-         |                           ^~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/FIELD_PREP +139 drivers/clk/clk-apple-nco.c
-
-   131	
-   132	static u32 applnco_div_translate(struct applnco_tables *tbl, unsigned int div)
-   133	{
-   134		unsigned int coarse = div / 4;
-   135	
-   136		if (WARN_ON(applnco_div_out_of_range(div)))
-   137			return 0;
-   138	
- > 139		return FIELD_PREP(DIV_COARSE, tbl->fwd[coarse - COARSE_DIV_OFFSET]) |
-   140				FIELD_PREP(DIV_FINE, div % 4);
-   141	}
-   142	
-   143	static unsigned int applnco_div_translate_inv(struct applnco_tables *tbl, u32 regval)
-   144	{
-   145		unsigned int coarse, fine;
-   146	
- > 147		coarse = tbl->inv[FIELD_GET(DIV_COARSE, regval)] + COARSE_DIV_OFFSET;
-   148		fine = FIELD_GET(DIV_FINE, regval);
-   149	
-   150		return coarse * 4 + fine;
-   151	}
-   152	
-
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 0d120dfb5d67 ("net: dsa: lantiq_gswip: don't use devres for mdiobus")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/1644921768-26477-1-git-send-email-khoroshilov@ispras.ru
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/dsa/lantiq_gswip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -2201,8 +2201,8 @@ static int gswip_remove(struct platform_
+ 
+ 	if (priv->ds->slave_mii_bus) {
+ 		mdiobus_unregister(priv->ds->slave_mii_bus);
+-		mdiobus_free(priv->ds->slave_mii_bus);
+ 		of_node_put(priv->ds->slave_mii_bus->dev.of_node);
++		mdiobus_free(priv->ds->slave_mii_bus);
+ 	}
+ 
+ 	for (i = 0; i < priv->num_gphy_fw; i++)
+
+
