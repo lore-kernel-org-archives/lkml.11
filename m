@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED97C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 905C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346719AbiBUI6a (ORCPT
+        id S1345753AbiBUI6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:58:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43776 "EHLO
+        Mon, 21 Feb 2022 03:58:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346433AbiBUI5A (ORCPT
+        with ESMTP id S1346506AbiBUI5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:57:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986FA24F35;
-        Mon, 21 Feb 2022 00:54:11 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AABD24F3A;
+        Mon, 21 Feb 2022 00:54:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A3060FB6;
-        Mon, 21 Feb 2022 08:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62991C340E9;
-        Mon, 21 Feb 2022 08:54:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF5D3B80EA5;
+        Mon, 21 Feb 2022 08:54:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A424C340EB;
+        Mon, 21 Feb 2022 08:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433643;
-        bh=6LMTJymLcHBzX6coi3x+0TcnDuzE9a9Gnd4VQCaZv4A=;
+        s=korg; t=1645433646;
+        bh=AovC+t2MnHuCX0ndjB/Skwurxy39IYuMANZuvykWO4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b66HuuGbFphdVUq23FOWDQz0e38ITcJNH/z+2T5dYiL7P/OGGwx5sO+bo7ulaNX31
-         6uiS/taujk+l7dOXsPALpoR0kJa0tkxWhghEI/VluAFcrv8OAyPHxoYLBEXoNr2+tD
-         gB5cZO/eFwNnQo7hAqAuiLEzvRGDWiKGRo8myePo=
+        b=v/jtUM4Uwo7jmbsaZ9BsK1W6OOwFTWt6yo15tIJnaJOVTA80Vg6ArR41HwOpIa4HC
+         kGCIbp7FR0t+Keeq3RAW9jGwBgMoGrCK4IaTt0aBD4DvUeWjTofEvfLQ2KNxI2OAXC
+         cOdLPUrQodaKMHYgmOF1Vh+TCi6+YKI0fCBAGNBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, david regan <dregan@mail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 38/45] mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
-Date:   Mon, 21 Feb 2022 09:49:29 +0100
-Message-Id: <20220221084911.685226217@linuxfoundation.org>
+Subject: [PATCH 4.14 39/45] KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
+Date:   Mon, 21 Feb 2022 09:49:30 +0100
+Message-Id: <20220221084911.726249988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -51,46 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: david regan <dregan@mail.com>
+From: Jim Mattson <jmattson@google.com>
 
-[ Upstream commit 36415a7964711822e63695ea67fede63979054d9 ]
+[ Upstream commit 710c476514313c74045c41c0571bb5178fd16e3d ]
 
-The brcmnand driver contains a bug in which if a page (example 2k byte)
-is read from the parallel/ONFI NAND and within that page a subpage (512
-byte) has correctable errors which is followed by a subpage with
-uncorrectable errors, the page read will return the wrong status of
-correctable (as opposed to the actual status of uncorrectable.)
+AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
+a PerfEvtSeln MSR. Don't mask off the high nybble when configuring a
+RAW perf event.
 
-The bug is in function brcmnand_read_by_pio where there is a check for
-uncorrectable bits which will be preempted if a previous status for
-correctable bits is detected.
-
-The fix is to stop checking for bad bits only if we already have a bad
-bits status.
-
-Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
-Signed-off-by: david regan <dregan@mail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220203014813.2130559-2-jmattson@google.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/brcmnand/brcmnand.c | 2 +-
+ arch/x86/kvm/pmu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/nand/brcmnand/brcmnand.c b/drivers/mtd/nand/brcmnand/brcmnand.c
-index be4c6f256e807..2741147481c0a 100644
---- a/drivers/mtd/nand/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/brcmnand/brcmnand.c
-@@ -1673,7 +1673,7 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
- 					mtd->oobsize / trans,
- 					host->hwcfg.sector_size_1k);
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 1bca8016ee8ae..b1fde6a548403 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -171,7 +171,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	}
  
--		if (!ret) {
-+		if (ret != -EBADMSG) {
- 			*err_addr = brcmnand_get_uncorrecc_addr(ctrl);
+ 	if (type == PERF_TYPE_RAW)
+-		config = eventsel & X86_RAW_EVENT_MASK;
++		config = eventsel & AMD64_RAW_EVENT_MASK;
  
- 			if (*err_addr)
+ 	pmc_reprogram_counter(pmc, type, config,
+ 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
 -- 
 2.34.1
 
