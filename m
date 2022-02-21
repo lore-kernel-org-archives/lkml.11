@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C941C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6208DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348578AbiBUJTo (ORCPT
+        id S1348314AbiBUJTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:19:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33884 "EHLO
+        Mon, 21 Feb 2022 04:19:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349320AbiBUJMU (ORCPT
+        with ESMTP id S1349450AbiBUJM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:20 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649EE2B24F;
-        Mon, 21 Feb 2022 01:05:09 -0800 (PST)
+        Mon, 21 Feb 2022 04:12:29 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AF02BB32;
+        Mon, 21 Feb 2022 01:05:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BA33FCE0E96;
-        Mon, 21 Feb 2022 09:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFEDC36AF4;
-        Mon, 21 Feb 2022 09:05:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4AC11CE0E85;
+        Mon, 21 Feb 2022 09:05:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A157C340E9;
+        Mon, 21 Feb 2022 09:05:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434306;
-        bh=Uo+ubOqA+ITSRbDif9O/tdwRuedNsxQhWzP0LFzYGbI=;
+        s=korg; t=1645434314;
+        bh=r1SRfg9nnyENEPqICKXQBUH9uxt2e9BvLhFVnJyJHP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loa7eWjruFLRH5o+cub8N9U0EXBToFfQ0yiIk0S84Irg4w07FsXq5pr7bftuposLg
-         1KA1adpABR/YlrO2ssrjbS10j9v5+SZDmQ7e51a9xihlkDS1zTl7hWICgKiePgcDfw
-         cwu0INRuozZRUwWX8QtQlgkj5aRcLEhK4/ldSS8U=
+        b=JPMrz5K29pAwwcX0W7DEqlNRvlbrS7tA/sa1aCsB+J3hNa5G9pU+hV0vc2m8capaP
+         a6MlbabW1sFKh5o1ZuKsqXBjP1rEHvm9gU6glLkUaiFmdjqOIt0PE+ti3xWg/5mSjk
+         ld0CftFA0xgDQ2vK6h9R6p80t7Rrn/ytZwMCk3Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.10 083/121] NFS: Do not report writeback errors in nfs_getattr()
-Date:   Mon, 21 Feb 2022 09:49:35 +0100
-Message-Id: <20220221084924.022454619@linuxfoundation.org>
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.10 085/121] mtd: rawnand: qcom: Fix clock sequencing in qcom_nandc_probe()
+Date:   Mon, 21 Feb 2022 09:49:37 +0100
+Message-Id: <20220221084924.082316212@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,39 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit d19e0183a88306acda07f4a01fedeeffe2a2a06b upstream.
+commit 5c23b3f965bc9ee696bf2ed4bdc54d339dd9a455 upstream.
 
-The result of the writeback, whether it is an ENOSPC or an EIO, or
-anything else, does not inhibit the NFS client from reporting the
-correct file timestamps.
+Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
+partition parser was returning -EPROBE_DEFER waiting for the main smem
+driver to load.
 
-Fixes: 79566ef018f5 ("NFS: Getattr doesn't require data sync semantics")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+This caused the board to reset. Playing about with the probe() function
+shows that the problem lies in the core clock being switched off before the
+nandc_unalloc() routine has completed.
+
+If we look at how qcom_nandc_remove() tears down allocated resources we see
+the expected order is
+
+qcom_nandc_unalloc(nandc);
+
+clk_disable_unprepare(nandc->aon_clk);
+clk_disable_unprepare(nandc->core_clk);
+
+dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
+		   DMA_BIDIRECTIONAL, 0);
+
+Tweaking probe() to both bring up and tear-down in that order removes the
+reset if we end up deferring elsewhere.
+
+Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/inode.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/mtd/nand/raw/qcom_nandc.c |   14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -807,12 +807,9 @@ int nfs_getattr(const struct path *path,
- 	}
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -2,7 +2,6 @@
+ /*
+  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+  */
+-
+ #include <linux/clk.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
+@@ -2968,10 +2967,6 @@ static int qcom_nandc_probe(struct platf
+ 	if (!nandc->base_dma)
+ 		return -ENXIO;
  
- 	/* Flush out writes to the server in order to update c/mtime.  */
--	if ((request_mask & (STATX_CTIME|STATX_MTIME)) &&
--			S_ISREG(inode->i_mode)) {
--		err = filemap_write_and_wait(inode->i_mapping);
--		if (err)
--			goto out;
--	}
-+	if ((request_mask & (STATX_CTIME | STATX_MTIME)) &&
-+	    S_ISREG(inode->i_mode))
-+		filemap_write_and_wait(inode->i_mapping);
+-	ret = qcom_nandc_alloc(nandc);
+-	if (ret)
+-		goto err_nandc_alloc;
+-
+ 	ret = clk_prepare_enable(nandc->core_clk);
+ 	if (ret)
+ 		goto err_core_clk;
+@@ -2980,6 +2975,10 @@ static int qcom_nandc_probe(struct platf
+ 	if (ret)
+ 		goto err_aon_clk;
  
- 	/*
- 	 * We may force a getattr if the user cares about atime.
++	ret = qcom_nandc_alloc(nandc);
++	if (ret)
++		goto err_nandc_alloc;
++
+ 	ret = qcom_nandc_setup(nandc);
+ 	if (ret)
+ 		goto err_setup;
+@@ -2991,15 +2990,14 @@ static int qcom_nandc_probe(struct platf
+ 	return 0;
+ 
+ err_setup:
++	qcom_nandc_unalloc(nandc);
++err_nandc_alloc:
+ 	clk_disable_unprepare(nandc->aon_clk);
+ err_aon_clk:
+ 	clk_disable_unprepare(nandc->core_clk);
+ err_core_clk:
+-	qcom_nandc_unalloc(nandc);
+-err_nandc_alloc:
+ 	dma_unmap_resource(dev, res->start, resource_size(res),
+ 			   DMA_BIDIRECTIONAL, 0);
+-
+ 	return ret;
+ }
+ 
 
 
