@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C63C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D213FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353084AbiBUKJa (ORCPT
+        id S1353103AbiBUKJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:09:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56868 "EHLO
+        Mon, 21 Feb 2022 05:09:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353503AbiBUJ53 (ORCPT
+        with ESMTP id S1353495AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D832A1DA53;
-        Mon, 21 Feb 2022 01:26:26 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B789396A1;
+        Mon, 21 Feb 2022 01:26:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7676D61016;
-        Mon, 21 Feb 2022 09:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5395DC340E9;
-        Mon, 21 Feb 2022 09:26:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D085EB80EB8;
+        Mon, 21 Feb 2022 09:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DDBCC340E9;
+        Mon, 21 Feb 2022 09:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435585;
-        bh=3aV9bHzykKizB1J+5Ksl6TyTU0mBhVe4TvtLefKoCRo=;
+        s=korg; t=1645435574;
+        bh=KogUK00L+i8EBmOkWaS8EG8eriaWbC3FygQCpclJinU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J9b2P5Yc4vLtSaDEOJIR1b9v9RQSP3gqUcQOShEUWJj3Ed62jOoVa/yU7saNX48wz
-         EH19De4jQmphwjqixMUpsMQKhywnCcBs2v25X0KFI8q25j1fpOBf6X1L21FmuB02uO
-         JsS+dxqX8r2hsmc2wLiG+Lx0BAabSdNzDjYyGRbg=
+        b=JGVaXcjVTxG73s5KKLrtdnxEfDNNXfo/uLvET8WQh4Hwz28ir1airi9zUvPu0nX9z
+         PGrXwYhslO2j3C3JxLviNvptvTl9zIJDLT/dhKH0hayXC0gJBfZY53gtqIcK7zbxTi
+         nVhQS+QfjnvOekymEs8EeYmQmBQrbqaTleedVUiE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.16 183/227] i2c: qcom-cci: dont delete an unregistered adapter
-Date:   Mon, 21 Feb 2022 09:50:02 +0100
-Message-Id: <20220221084940.903673948@linuxfoundation.org>
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 210/227] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
+Date:   Mon, 21 Feb 2022 09:50:29 +0100
+Message-Id: <20220221084941.808249270@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,40 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-commit a0d48505a1d68e27220369e2dd1e3573a2f362d2 upstream.
+[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
 
-If i2c_add_adapter() fails to add an I2C adapter found on QCOM CCI
-controller, on error path i2c_del_adapter() is still called.
+The BL32/TEE reserved-memory region is now inherited from the common
+family dtsi (meson-g12-common) so we can drop it from board files.
 
-Fortunately there is a sanity check in the I2C core, so the only
-visible implication is a printed debug level message:
-
-    i2c-core: attempting to delete unregistered adapter [Qualcomm-CCI]
-
-Nevertheless it would be reasonable to correct the probe error path.
-
-Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-qcom-cci.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
+ arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
+ 2 files changed, 16 deletions(-)
 
---- a/drivers/i2c/busses/i2c-qcom-cci.c
-+++ b/drivers/i2c/busses/i2c-qcom-cci.c
-@@ -655,7 +655,7 @@ static int cci_probe(struct platform_dev
- 	return 0;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index d8838dde0f0f4..4fb31c2ba31c4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -157,14 +157,6 @@
+ 		regulator-always-on;
+ 	};
  
- error_i2c:
--	for (; i >= 0; i--) {
-+	for (--i ; i >= 0; i--) {
- 		if (cci->master[i].cci)
- 			i2c_del_adapter(&cci->master[i].adap);
- 	}
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 427475846fc70..a5d79f2f7c196 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -203,14 +203,6 @@
+ 		regulator-always-on;
+ 	};
+ 
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+-- 
+2.34.1
+
 
 
