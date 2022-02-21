@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 672B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCACCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344470AbiBUFXo (ORCPT
+        id S1344477AbiBUFXr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 00:23:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49274 "EHLO
+        Mon, 21 Feb 2022 00:23:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344414AbiBUFXf (ORCPT
+        with ESMTP id S1344419AbiBUFXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 00:23:35 -0500
+        Mon, 21 Feb 2022 00:23:36 -0500
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17ECEB7;
-        Sun, 20 Feb 2022 21:23:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1BD109C;
+        Sun, 20 Feb 2022 21:23:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645420993; x=1676956993;
+  t=1645420994; x=1676956994;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=TGPshyGLQVn+XUcTmwqZz7StC7gbCPyK/DutjTq1Skw=;
-  b=YK8li8a3qR7IllQzEaIteBgO+0g2lHUFZhJxo5V8I2obXO4wknlsAg0e
-   0naLa2293gdTJrc0d7fYiWzAQjSTbGSx2EGwlJt0KqPTQqRwKwdjABkwT
-   JFCybB5d9NuJiqZjYfF37urFKFuVwlXYJZgmvwgMLGfx4jX/5qyJvc7p/
+  bh=PX/WHKWbkuwa/EAALLC2/n7hI8uaF1SS9QQ5iBOgSbM=;
+  b=FIEVwUIaBQlH/gcA2nNoDS6SX5x0Eu4kpwt4ET+SDughv1THb+rfuAK1
+   v853DsjgxNE0vxXNLpePaxh8SaGYJgYrnKhR5bc9mCUdzLa+Xx2yYNQdd
+   3axU0/wJrHo2BMER+heqPzzEv62bYjgWZMV11XLSYds1+0ZYgMU52HKl1
    s=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 20 Feb 2022 21:23:11 -0800
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 20 Feb 2022 21:23:13 -0800
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 20 Feb 2022 21:23:08 -0800
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 20 Feb 2022 21:23:11 -0800
 X-QCInternal: smtphost
 Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Feb 2022 10:52:54 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Feb 2022 10:52:53 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id D94DD46C2; Mon, 21 Feb 2022 10:52:53 +0530 (+0530)
+        id 1A6CE46C2; Mon, 21 Feb 2022 10:52:52 +0530 (+0530)
 From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org,
         mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
@@ -43,9 +43,9 @@ To:     agross@kernel.org, bjorn.andersson@linaro.org,
 Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v3 4/7] clk: qcom: Add A7 PLL support for SDX65
-Date:   Mon, 21 Feb 2022 10:52:30 +0530
-Message-Id: <1645420953-21176-5-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v3 2/7] mailbox: qcom: Add support for SDX65 APCS IPC
+Date:   Mon, 21 Feb 2022 10:52:28 +0530
+Message-Id: <1645420953-21176-3-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1645420953-21176-1-git-send-email-quic_rohiagar@quicinc.com>
 References: <1645420953-21176-1-git-send-email-quic_rohiagar@quicinc.com>
@@ -53,52 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for PLL found in Qualcomm SDX65 platforms which is used to
-provide clock to the Cortex A7 CPU via a mux. This PLL can provide high
-frequency clock to the CPU above 1GHz as compared to the other sources
-like GPLL0.
-
-In this driver, the power domain is attached to the cpudev. This is
-required for CPUFreq functionality and there seems to be no better place
-to do other than this driver (no dedicated CPUFreq driver).
+In SDX65, the IPC bits are located in the APCS GCC block. Also, this block
+can provide clock functionality. Hence, add support for IPC with correct
+offset and name of the clock provider.
 
 Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 ---
- drivers/clk/qcom/Kconfig  | 6 +++---
- drivers/clk/qcom/a7-pll.c | 1 +
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/mailbox/qcom-apcs-ipc-mailbox.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-index 42c8741..5159a1d 100644
---- a/drivers/clk/qcom/Kconfig
-+++ b/drivers/clk/qcom/Kconfig
-@@ -29,11 +29,11 @@ config QCOM_A53PLL
- 	  devices.
- 
- config QCOM_A7PLL
--	tristate "SDX55 A7 PLL"
-+	tristate "A7 PLL driver for SDX55 and SDX65"
- 	help
--	  Support for the A7 PLL on SDX55 devices. It provides the CPU with
-+	  Support for the A7 PLL on SDX55 and SDX65 devices. It provides the CPU with
- 	  frequencies above 1GHz.
--	  Say Y if you want to support higher CPU frequencies on SDX55
-+	  Say Y if you want to support higher CPU frequencies on SDX55 and SDX65
- 	  devices.
- 
- config QCOM_CLK_APCS_MSM8916
-diff --git a/drivers/clk/qcom/a7-pll.c b/drivers/clk/qcom/a7-pll.c
-index c4a53e5..adb2121 100644
---- a/drivers/clk/qcom/a7-pll.c
-+++ b/drivers/clk/qcom/a7-pll.c
-@@ -84,6 +84,7 @@ static int qcom_a7pll_probe(struct platform_device *pdev)
- 
- static const struct of_device_id qcom_a7pll_match_table[] = {
- 	{ .compatible = "qcom,sdx55-a7pll" },
-+	{ .compatible = "qcom,sdx65-a7pll" },
- 	{ }
+diff --git a/drivers/mailbox/qcom-apcs-ipc-mailbox.c b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+index 9325d2a..54d7659 100644
+--- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
++++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+@@ -53,6 +53,10 @@ static const struct qcom_apcs_ipc_data sdx55_apcs_data = {
+ 	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
  };
- MODULE_DEVICE_TABLE(of, qcom_a7pll_match_table);
+ 
++static const struct qcom_apcs_ipc_data sdx65_apcs_data = {
++	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
++};
++
+ static const struct regmap_config apcs_regmap_config = {
+ 	.reg_bits = 32,
+ 	.reg_stride = 4,
+@@ -159,6 +163,7 @@ static const struct of_device_id qcom_apcs_ipc_of_match[] = {
+ 	{ .compatible = "qcom,sm8150-apss-shared", .data = &apps_shared_apcs_data },
+ 	{ .compatible = "qcom,sm6115-apcs-hmss-global", .data = &msm8994_apcs_data },
+ 	{ .compatible = "qcom,sdx55-apcs-gcc", .data = &sdx55_apcs_data },
++	{ .compatible = "qcom,sdx65-apcs-gcc", .data = &sdx65_apcs_data },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, qcom_apcs_ipc_of_match);
 -- 
 2.7.4
 
