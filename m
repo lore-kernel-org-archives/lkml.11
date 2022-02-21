@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5AAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC62EC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350346AbiBUJay (ORCPT
+        id S1350474AbiBUJbP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:30:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35062 "EHLO
+        Mon, 21 Feb 2022 04:31:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349502AbiBUJVb (ORCPT
+        with ESMTP id S1349702AbiBUJVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:31 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E65B31DEF;
-        Mon, 21 Feb 2022 01:08:21 -0800 (PST)
+        Mon, 21 Feb 2022 04:21:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B4126AE2;
+        Mon, 21 Feb 2022 01:08:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A1126CE0E92;
-        Mon, 21 Feb 2022 09:08:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82954C340E9;
-        Mon, 21 Feb 2022 09:08:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FC846097C;
+        Mon, 21 Feb 2022 09:08:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15657C340E9;
+        Mon, 21 Feb 2022 09:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434498;
-        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
+        s=korg; t=1645434523;
+        bh=NDFlc56uHX1BFyYLnXWX3MmsbvH/DYsnbkI3mGhD8kQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u595Jq9GAXgNetUTTiOBcqDa9Xp185eTqyJcDj2wGxRvzaiyIq3fqfJ2Hx3q3Sx/B
-         YwAPDgiiugtAU230kidBVcmSS+spe/1VpnuP6Y/UXXEBiDQ/4LY75nvRfszTI5ohfJ
-         VW///G0dn+mkj+2Ke6Ca2RdXkTKcE419onMksuxo=
+        b=nR8ySD1WNYmgjB9GwV80y/tgbawiQRQyM9jcZNGPRyo82U3Hq2RojfewmcjNKQdIO
+         DKuW2QhVr1orJM9eLzhhCIiw+tMAyDTMrSgRNfasgCYdtWaRTMjFuu8/eYA0JGubVs
+         D8BIUnxkIbKz5vlMxCR2D88IdAneLuKy+8xz+bG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 011/196] parisc: Fix sglist access in ccio-dma.c
-Date:   Mon, 21 Feb 2022 09:47:23 +0100
-Message-Id: <20220221084931.272531006@linuxfoundation.org>
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 037/196] quota: make dquot_quota_sync return errors from ->sync_fs
+Date:   Mon, 21 Feb 2022 09:47:49 +0100
+Message-Id: <20220221084932.174793223@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,39 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Darrick J. Wong <djwong@kernel.org>
 
-commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
+[ Upstream commit dd5532a4994bfda0386eb2286ec00758cee08444 ]
 
-This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
-It ensures that only the allocated entries of the sglist are accessed.
+Strangely, dquot_quota_sync ignores the return code from the ->sync_fs
+call, which means that quotacalls like Q_SYNC never see the error.  This
+doesn't seem right, so fix that.
 
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/parisc/ccio-dma.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/quota/dquot.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
- 	ioc->usg_calls++;
- #endif
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 22d904bde6ab9..a74aef99bd3d6 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -690,9 +690,14 @@ int dquot_quota_sync(struct super_block *sb, int type)
+ 	/* This is not very clever (and fast) but currently I don't know about
+ 	 * any other simple way of getting quota data to disk and we must get
+ 	 * them there for userspace to be visible... */
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
+-	sync_blockdev(sb->s_bdev);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
++	ret = sync_blockdev(sb->s_bdev);
++	if (ret)
++		return ret;
  
--	while(sg_dma_len(sglist) && nents--) {
-+	while (nents && sg_dma_len(sglist)) {
- 
- #ifdef CCIO_COLLECT_STATS
- 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
-@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
- 		ccio_unmap_page(dev, sg_dma_address(sglist),
- 				  sg_dma_len(sglist), direction, 0);
- 		++sglist;
-+		nents--;
- 	}
- 
- 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
+ 	/*
+ 	 * Now when everything is written we can discard the pagecache so
+-- 
+2.34.1
+
 
 
