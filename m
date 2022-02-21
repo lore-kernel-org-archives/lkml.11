@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877ECC3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F6CC35276
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354005AbiBUKLy (ORCPT
+        id S1354094AbiBUKMC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:11:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56972 "EHLO
+        Mon, 21 Feb 2022 05:12:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353059AbiBUJ5D (ORCPT
+        with ESMTP id S1352868AbiBUJ4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:03 -0500
+        Mon, 21 Feb 2022 04:56:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A2545AC2;
-        Mon, 21 Feb 2022 01:24:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51B445048;
+        Mon, 21 Feb 2022 01:24:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDE3FB80EBB;
-        Mon, 21 Feb 2022 09:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1568FC340EB;
-        Mon, 21 Feb 2022 09:24:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83E6FB80EB8;
+        Mon, 21 Feb 2022 09:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD81DC340E9;
+        Mon, 21 Feb 2022 09:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435494;
-        bh=codrGmHhofNBo70G6Zt4E6ZUnoFV5whk/hAizx7WyjI=;
+        s=korg; t=1645435480;
+        bh=7/FBbwrvHWUltZ4Jxxrkk2lhlNEV2NohBiXF+5Bj8II=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MXrj8D4cd4uDoBUKHTii0fKR1QBHxnYm36YeJcxkd4SH5QUNDv9UZEbtOyxn7PEmm
-         Y+T90NAtcb7o9bRLgiJpNLvZoT2E3LCBBj/nDNzvH7paXpwBaym0ak81cZjLUNNOsm
-         0NlUFh9aBPBKKnBJs1NW1rtw6AATHN3iY017lkcA=
+        b=JpJOqU9b3kLwHvoFCSUhxjjZmO2fmAzGUtK0H2+cYBdS0CCM9CCO8bxbpJ4m2JO6S
+         IbUYRhD+Q5uZhDeHgZuMllVJVy5SHWJQFFdXFLfJgOXj0u6HDwxYNLKjL3h+orz+Ab
+         PCQLJb/fKc4PVEcfb1f3CVtM21+NYjqjJZ8odrvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 151/227] powerpc/lib/sstep: fix ptesync build error
-Date:   Mon, 21 Feb 2022 09:49:30 +0100
-Message-Id: <20220221084939.852695804@linuxfoundation.org>
+        stable@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 177/227] ucounts: Move RLIMIT_NPROC handling after set_user
+Date:   Mon, 21 Feb 2022 09:49:56 +0100
+Message-Id: <20220221084940.695551387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,56 +48,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit fe663df7825811358531dc2e8a52d9eaa5e3515e upstream.
+commit c923a8e7edb010da67424077cbf1a6f1396ebd2e upstream.
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+During set*id() which cred->ucounts to charge the the current process
+to is not known until after set_cred_ucounts.  So move the
+RLIMIT_NPROC checking into a new helper flag_nproc_exceeded and call
+flag_nproc_exceeded after set_cred_ucounts.
 
-  {standard input}: Assembler messages:
-  {standard input}:2088: Error: unrecognized opcode: `ptesync'
-  make[3]: *** [/builds/linux/scripts/Makefile.build:287: arch/powerpc/lib/sstep.o] Error 1
+This is very much an arbitrary subset of the places where we currently
+change the RLIMIT_NPROC accounting, designed to preserve the existing
+logic.
 
-Add the 'ifdef CONFIG_PPC64' around the 'ptesync' in function
-'emulate_update_regs()' to like it is in 'analyse_instr()'. Since it looks like
-it got dropped inadvertently by commit 3cdfcbfd32b9 ("powerpc: Change
-analyse_instr so it doesn't modify *regs").
+Fixing the existing logic will be the subject of another series of
+changes.
 
-A key detail is that analyse_instr() will never recognise lwsync or
-ptesync on 32-bit (because of the existing ifdef), and as a result
-emulate_update_regs() should never be called with an op specifying
-either of those on 32-bit. So removing them from emulate_update_regs()
-should be a nop in terms of runtime behaviour.
-
-Fixes: 3cdfcbfd32b9 ("powerpc: Change analyse_instr so it doesn't modify *regs")
-Cc: stable@vger.kernel.org # v4.14+
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-[mpe: Add last paragraph of change log mentioning analyse_instr() details]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220211005113.1361436-1-anders.roxell@linaro.org
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220216155832.680775-4-ebiederm@xmission.com
+Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/lib/sstep.c |    2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sys.c |   19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -3264,12 +3264,14 @@ void emulate_update_regs(struct pt_regs
- 		case BARRIER_EIEIO:
- 			eieio();
- 			break;
-+#ifdef CONFIG_PPC64
- 		case BARRIER_LWSYNC:
- 			asm volatile("lwsync" : : : "memory");
- 			break;
- 		case BARRIER_PTESYNC:
- 			asm volatile("ptesync" : : : "memory");
- 			break;
-+#endif
- 		}
- 		break;
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -472,6 +472,16 @@ static int set_user(struct cred *new)
+ 	if (!new_user)
+ 		return -EAGAIN;
  
++	free_uid(new->user);
++	new->user = new_user;
++	return 0;
++}
++
++static void flag_nproc_exceeded(struct cred *new)
++{
++	if (new->ucounts == current_ucounts())
++		return;
++
+ 	/*
+ 	 * We don't fail in case of NPROC limit excess here because too many
+ 	 * poorly written programs don't check set*uid() return code, assuming
+@@ -480,14 +490,10 @@ static int set_user(struct cred *new)
+ 	 * failure to the execve() stage.
+ 	 */
+ 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
+-			new_user != INIT_USER)
++			new->user != INIT_USER)
+ 		current->flags |= PF_NPROC_EXCEEDED;
+ 	else
+ 		current->flags &= ~PF_NPROC_EXCEEDED;
+-
+-	free_uid(new->user);
+-	new->user = new_user;
+-	return 0;
+ }
+ 
+ /*
+@@ -562,6 +568,7 @@ long __sys_setreuid(uid_t ruid, uid_t eu
+ 	if (retval < 0)
+ 		goto error;
+ 
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
+@@ -624,6 +631,7 @@ long __sys_setuid(uid_t uid)
+ 	if (retval < 0)
+ 		goto error;
+ 
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
+@@ -703,6 +711,7 @@ long __sys_setresuid(uid_t ruid, uid_t e
+ 	if (retval < 0)
+ 		goto error;
+ 
++	flag_nproc_exceeded(new);
+ 	return commit_creds(new);
+ 
+ error:
 
 
