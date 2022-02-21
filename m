@@ -2,208 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44904C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C100AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236881AbiBUQmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:42:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51002 "EHLO
+        id S1353846AbiBUQnM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 11:43:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381065AbiBUQmc (ORCPT
+        with ESMTP id S229579AbiBUQnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:42:32 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CF015A29;
-        Mon, 21 Feb 2022 08:41:57 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 32CE31F38E;
-        Mon, 21 Feb 2022 16:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645461716;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=63OIUUWVRi7zDz7jhlALynEfvto/B2lOfcLNN/pBnCk=;
-        b=tfoszk1TQuRmiaUhb3ZS0cKZsacOwFAKHL/bEpMzt0P1n9gpZULkRdsB07v6J2NLd53rv+
-        ryWIvlaCbtkyHfpruJ/mTctDHHm9kg2FSpB3HwlTAuNZGjFTj6jyZV2/5voCEG/C7rRA/g
-        n/l90+Cj/2zexGnczvpg5DPnP/F0vKE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645461716;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=63OIUUWVRi7zDz7jhlALynEfvto/B2lOfcLNN/pBnCk=;
-        b=KWca5eHSKxCbyM8qiMFPEg/Fmk5Bb4+K9SrvcuY9Rh91JavN5UZHLj3h70+aAJxPzlJT//
-        N9LBSWWUFMFfttAg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 2A065A3B83;
-        Mon, 21 Feb 2022 16:41:56 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id B8E0EDA823; Mon, 21 Feb 2022 17:38:08 +0100 (CET)
-Date:   Mon, 21 Feb 2022 17:38:08 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2] btrfs: add fs state details to error messages.
-Message-ID: <20220221163808.GI12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me>
+        Mon, 21 Feb 2022 11:43:10 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6611EC69;
+        Mon, 21 Feb 2022 08:42:46 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id a19so33404189qvm.4;
+        Mon, 21 Feb 2022 08:42:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1WzDOpNHJ0rfPRdSj3JhKU3VK3POJ7SwpnBhQLRPXi4=;
+        b=BNUsuQpfaVVWRiN3MmnX5/RAfoD/FMkh0rCYpi4N3w2IehBd/DlNWbByxFTOkGYbR/
+         g5/vcWrlnA/+6kJ9NvFp0+kV5E2LaDPboyUMt0SfASv+fTzb/pbumnl9i+K+4Bxc3jzz
+         VCABIFvazPQKgBd8HyE9elKLQJS2PKKUbwYQH6nI0fbMWJgWr6xC6h41oX9cjwGUMoIf
+         kVhe5IGIc1dZ0neEh/9nO11AJ/PXPSzvAtYfqOTDDa1/nqYFDs02sCDkyzt8NTFaSkXk
+         f0wA7ewfGq3BtS6ulNfGYvtd4UlEqGk8jteuxvHSAImnkRypAdd84TvoNswXtECWAARA
+         cPow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1WzDOpNHJ0rfPRdSj3JhKU3VK3POJ7SwpnBhQLRPXi4=;
+        b=eZz0PyP8qRybv9YVXIERDf5yUPwJoVrg8gtyE+PTAbNAsbYY6DH6MStpvk+ZogbfFa
+         rSby1mZfYpB2nchRfMpN5kIT4u1xqBjm6j4flpwxWjjzfPNZ66KkcToDiyYxEzXQtgX9
+         9/ysY/UNw0BXzpZhlM9x2xcm4NvTxka8jDFdwRNQa/Q0offwm6r2HVg/49ReBna7saLF
+         uP302+Q3UKex5Yr0FQaB7LQoBcXCVU8wBEZwHHHtHJBcnqVwHdRb/kPo1N92mda5jAQh
+         xKj4U+7pQa8dUG8z2ouIVom4x6aQyVXL/6JRd6M1tz0iPgUhJxv+ZBX1uldkzFDXPFC2
+         o2mQ==
+X-Gm-Message-State: AOAM533LrOJag5WlL7ZeFHS2qCr32lTUq3icSeudfn4awz0efOA5JhVk
+        jAEhSgHjiSR9leJA+iBD5RPm/K6zLEeDMA==
+X-Google-Smtp-Source: ABdhPJwvtOwmpHQRsXYrpamk7gY5aD2VO5msr6JHKK4vgj1Xj1Ko/V0eKL/jo9jF9UOKTbb0sHqjgQ==
+X-Received: by 2002:a05:622a:c9:b0:2de:15a4:6256 with SMTP id p9-20020a05622a00c900b002de15a46256mr5761940qtw.679.1645461765862;
+        Mon, 21 Feb 2022 08:42:45 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id s7sm27078557qki.20.2022.02.21.08.42.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 08:42:45 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <ad8f0011-3444-d5df-c0b3-88d95766308d@roeck-us.net>
+Date:   Mon, 21 Feb 2022 08:42:43 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
+Content-Language: en-US
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jean Delvare <jdelvare@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20210618215455.19986-1-digetx@gmail.com>
+ <20210618215455.19986-3-digetx@gmail.com>
+ <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
+ <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
+ <84ddad27-eb22-0ba6-594f-2fc6d098dc2a@nvidia.com>
+ <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
+ <20da6f55-682f-4b30-7be7-f425f8efa995@nvidia.com>
+ <437c7c3c-66d4-2665-c8fa-781979366bc3@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <437c7c3c-66d4-2665-c8fa-781979366bc3@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 02:04:29PM -0500, Sweet Tea Dorminy wrote:
-> When a filesystem goes read-only due to an error, multiple errors tend
-> to be reported, some of which are knock-on failures. Logging some
-> fs_states, if any, in btrfs_handle_fs_error() and btrfs_printk()
-> helps distinguish the first error from subsequent messages which may
-> only exist due to an error state.
+On 2/21/22 08:20, Dmitry Osipenko wrote:
+> 21.02.2022 19:16, Jon Hunter пишет:
+>>
+>> On 21/02/2022 16:02, Guenter Roeck wrote:
+>>
+>> ...
+>>
+>>>> The platform I see this on does use device-tree and it does have a
+>>>> node for the ti,tmp451 device which uses the lm90 device. This
+>>>> platform uses the device-tree source
+>>>> arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts and the tmp451
+>>>> node is in arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi.
+>>>>
+>>>
+>>> Interesting. It appears that the call to
+>>> devm_thermal_zone_of_sensor_register()
+>>> in the hwmon core nevertheless returns -ENODEV which is not handled
+>>> properly
+>>> in the hwmon core. I can see a number of reasons for this to happen:
+>>> - there is no devicetree node for the lm90 device
+>>> - there is no thermal-zones devicetree node
+>>> - there is no thermal zone entry in the thermal-zones node which matches
+>>>     the sensor
+>>
+>>
+>> So we definitely have the node for the lm90 device and a thermal-zones
+>> node, but I do not see a thermal-sensor node. Maybe this is what we are
+>> missing?
 > 
-> Under the new format, most initial errors will look like:
-> `BTRFS: error (device loop0) in ...`
-> while subsequent errors will begin with:
-> `error (device loop0: state E) in ...`
+> Could you please try this:
 > 
-> An initial transaction abort error will look like
-> `error (device loop0: state X) in ...`
-> and subsequent messages will contain
-> `(device loop0: state EX) in ...`
-
-I think there should be also BTRFS_FS_STATE_LOG_CLEANUP_ERROR, and the
-letter maybe more hinting of the error:
-
-E - generic error
-A - transaction abort
-L - log related errors
-
-> 
-> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-> ---
-> v2:
->   - Changed btrfs_state_to_string() for clarity
->   - Removed superfluous whitespace change
-> 
-> v1:
->   - https://lore.kernel.org/linux-btrfs/20220212191042.94954-1-sweettea-kernel@dorminy.me/
-> 
->  fs/btrfs/super.c | 53 ++++++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 45 insertions(+), 8 deletions(-)
-> 
-> diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
-> index 4d947ba32da9..42429d68950d 100644
-> --- a/fs/btrfs/super.c
-> +++ b/fs/btrfs/super.c
-> @@ -66,6 +66,37 @@ static struct file_system_type btrfs_root_fs_type;
->  
->  static int btrfs_remount(struct super_block *sb, int *flags, char *data);
->  
-> +#define STATE_STRING_PREFACE ": state "
-> +#define MAX_STATE_CHARS 2
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index 5915fedee69b..48f80bc99fe6 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -233,8 +233,12 @@ static int hwmon_thermal_add_sensor(struct device
+> *dev, int index)
+>   	 * If CONFIG_THERMAL_OF is disabled, this returns -ENODEV,
+>   	 * so ignore that error but forward any other error.
+>   	 */
+> -	if (IS_ERR(tzd) && (PTR_ERR(tzd) != -ENODEV))
+> -		return PTR_ERR(tzd);
+> +	if (IS_ERR(tzd)) {
+> +		if (PTR_ERR(tzd) != -ENODEV)
+> +			return PTR_ERR(tzd);
 > +
-> +static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
-> +{
-> +	unsigned int states_printed = 0;
-> +	char *curr = buf;
-> +
-> +	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
-> +	curr += sizeof(STATE_STRING_PREFACE) - 1;
-> +
-> +	/* If more states are reported, update MAX_STATE_CHARS also */
-> +	if (test_bit(BTRFS_FS_STATE_ERROR, &info->fs_state)) {
-> +		*curr++ = 'E';
-> +		states_printed++;
+> +		tzd = NULL;
+
+That should just bail out. I'll send a patch in a minute.
+
+Guenter
+
 > +	}
-> +
-> +	if (test_bit(BTRFS_FS_STATE_TRANS_ABORTED, &info->fs_state)) {
-> +		*curr++ = 'X';
-> +		states_printed++;
-> +	}
-> +
+> 
+>   	err = devm_add_action(dev, hwmon_thermal_remove_sensor, &tdata->node);
+>   	if (err)
+> @@ -283,7 +287,7 @@ static void hwmon_thermal_notify(struct device *dev,
+> int index)
+>   	struct hwmon_thermal_data *tzdata;
+> 
+>   	list_for_each_entry(tzdata, &hwdev->tzdata, node) {
+> -		if (tzdata->index == index) {
+> +		if (tzdata->index == index && tzdata->tzd) {
+>   			thermal_zone_device_update(tzdata->tzd,
+>   						   THERMAL_EVENT_UNSPECIFIED);
+>   		}
+> 
 
-So if we have more than 2 it may make sense to create a table and not to
-opencode it like that and then use the constants (MAX_STATE_CHARS)
-everywhere. For first implementation it's probably ok to have it like
-three ifs.
-
-> +	/* If no states were printed, reset the buffer */
-> +	if (!states_printed)
-> +		curr = buf;
-> +
-> +	WARN_ON_ONCE(states_printed > MAX_STATE_CHARS);
-> +
-> +	*curr++ = '\0';
-> +}
-> +
->  /*
->   * Generally the error codes correspond to their respective errors, but there
->   * are a few special cases.
-> @@ -128,6 +159,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
->  {
->  	struct super_block *sb = fs_info->sb;
->  #ifdef CONFIG_PRINTK
-> +	char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
-
-A size defintion like that could be also predefined.
-
->  	const char *errstr;
->  #endif
->  
-> @@ -140,6 +172,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
->  
->  #ifdef CONFIG_PRINTK
->  	errstr = btrfs_decode_error(errno);
-> +	btrfs_state_to_string(fs_info, statestr);
->  	if (fmt) {
->  		struct va_format vaf;
->  		va_list args;
-> @@ -148,12 +181,12 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
->  		vaf.fmt = fmt;
->  		vaf.va = &args;
->  
-> -		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s (%pV)\n",
-> -			sb->s_id, function, line, errno, errstr, &vaf);
-> +		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s (%pV)\n",
-> +			sb->s_id, statestr, function, line, errno, errstr, &vaf);
->  		va_end(args);
->  	} else {
-> -		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s\n",
-> -			sb->s_id, function, line, errno, errstr);
-> +		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s\n",
-> +			sb->s_id, statestr, function, line, errno, errstr);
->  	}
->  #endif
->  
-> @@ -240,11 +273,15 @@ void __cold btrfs_printk(const struct btrfs_fs_info *fs_info, const char *fmt, .
->  	vaf.va = &args;
->  
->  	if (__ratelimit(ratelimit)) {
-> -		if (fs_info)
-> -			printk("%sBTRFS %s (device %s): %pV\n", lvl, type,
-> -				fs_info->sb->s_id, &vaf);
-> -		else
-> +		if (fs_info) {
-> +			char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
-> +
-> +			btrfs_state_to_string(fs_info, statestr);
-> +			printk("%sBTRFS %s (device %s%s): %pV\n", lvl, type,
-> +				fs_info->sb->s_id, statestr, &vaf);
-> +		} else {
->  			printk("%sBTRFS %s: %pV\n", lvl, type, &vaf);
-> +		}
->  	}
->  
->  	va_end(args);
-> -- 
-> 2.35.1
