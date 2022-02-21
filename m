@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7157FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A66C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiBUJSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36400 "EHLO
+        id S1348348AbiBUJSG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:18:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348464AbiBUJLT (ORCPT
+        with ESMTP id S1348523AbiBUJLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:19 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C424F35;
-        Mon, 21 Feb 2022 01:03:25 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E39325C44;
+        Mon, 21 Feb 2022 01:03:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 96307CE0E76;
-        Mon, 21 Feb 2022 09:03:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C89C340E9;
-        Mon, 21 Feb 2022 09:03:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD2706124A;
+        Mon, 21 Feb 2022 09:03:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B79C36AE7;
+        Mon, 21 Feb 2022 09:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434202;
-        bh=kg07GBpJKjU+4cm72S1zfVejqNzWrEUGduEQ37klR6Q=;
+        s=korg; t=1645434214;
+        bh=YiAl3IpWCjUJZCbwRpNn3idPI2eM5VTqyqRt9vcIH/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SEpRxFOi7TSc9v7A9NQc08TIZLFIf/sUI1hUNaUIeQ02gpglL5hfJAYUHbjoQ2r/x
-         og4308nz0ClUDXHac8ffvcWxujsELyuaBJXpn5T+VTrFw5gdsPlhNftDqk3YY4zJEI
-         I/zi/EetF+9xwZ/dbTFSSe96FCil5ju27VnhZltY=
+        b=K9zH5rHo9NzlMD/CJdClbJrlIqPGsjzQH1jEWhNFWPdgy2vBbFHm9+tVUzXaue/uz
+         nVjhHKqFFBLf3Pf5QoZbexMiugEpoF+F81FjzrYYmH8hiNHbvziHLhUPLz02NqYX4t
+         t5DSJ0U6fHqH0ju/qSeysVm9OIIAqEtTAk/l9e3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
-        Wolfgang Walter <linux@stwm.de>,
-        Jason Self <jason@bluehome.net>,
-        Dominik Behr <dominik@dominikbehr.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 047/121] iwlwifi: fix use-after-free
-Date:   Mon, 21 Feb 2022 09:48:59 +0100
-Message-Id: <20220221084922.799822158@linuxfoundation.org>
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 050/121] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Mon, 21 Feb 2022 09:49:02 +0100
+Message-Id: <20220221084922.900698834@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -54,45 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Seth Forshee <sforshee@digitalocean.com>
 
-commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+commit b9208492fcaecff8f43915529ae34b3bcb03877c upstream.
 
-If no firmware was present at all (or, presumably, all of the
-firmware files failed to parse), we end up unbinding by calling
-device_release_driver(), which calls remove(), which then in
-iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
-the new code I added will still erroneously access it after it
-was freed.
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-Set 'failure=false' in this case to avoid the access, all data
-was already freed anyway.
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
 
-Cc: stable@vger.kernel.org
-Reported-by: Stefan Agner <stefan@agner.ch>
-Reported-by: Wolfgang Walter <linux@stwm.de>
-Reported-by: Jason Self <jason@bluehome.net>
-Reported-by: Dominik Behr <dominik@dominikbehr.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
+Note for backporting: this patch requires d5afa82c977e ("vsock: correct
+removal of socket from the list"), which is in all current stable trees
+except 4.9.y.
+
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lore.kernel.org/r/20220217141312.2297547-1-sforshee@digitalocean.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/vmw_vsock/af_vsock.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1646,6 +1646,8 @@ static void iwl_req_fw_callback(const st
-  out_unbind:
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-+	/* drv has just been freed by the release */
-+	failure = false;
-  free:
- 	if (failure)
- 		iwl_dealloc_ucode(drv);
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1357,6 +1357,7 @@ static int vsock_stream_connect(struct s
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 
 
