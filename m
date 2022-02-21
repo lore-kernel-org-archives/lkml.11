@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 310EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347981AbiBUJRQ (ORCPT
+        id S1348166AbiBUJRV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:17:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36066 "EHLO
+        Mon, 21 Feb 2022 04:17:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347862AbiBUJJe (ORCPT
+        with ESMTP id S1347944AbiBUJKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD810BCB6;
-        Mon, 21 Feb 2022 01:01:50 -0800 (PST)
+        Mon, 21 Feb 2022 04:10:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232F61EC70;
+        Mon, 21 Feb 2022 01:02:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40F8D6112B;
-        Mon, 21 Feb 2022 09:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 275E5C340E9;
-        Mon, 21 Feb 2022 09:01:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD8A6B80EB8;
+        Mon, 21 Feb 2022 09:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00B85C340E9;
+        Mon, 21 Feb 2022 09:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434109;
-        bh=jpZH6xrh9hccXtiZXWyWHqnt+rfjkT9gFkXP6XsvMPw=;
+        s=korg; t=1645434166;
+        bh=pjlyT+vcizqttRwAGXl5Y1ZgpaCZGgVjty5mxEhx0pI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agi0BXEy6NlT8XYmL8wETOH7xpSsoQazZ4zTgYwXV1AqcwxYXzz7lyInjXkmIPBOC
-         I4TNr0Ti5sNuxPgkJfICg5U+yQMz/8+jdg9OzR0PT9MoOyzZQY6qD8DKzh28z4gkEB
-         u8omsYIJydnyfpooHt1QLJ0f+LCnT2dU9nn7CnZU=
+        b=xn6bSeEJNg3mvXvyIIHdK+8Nt5HI5QlUWhro+XnSAvNa8KjuMD9QtENrczwaOCtwe
+         seT56FnJD4+b61RORXv5OFDiZyMNpDhh64EFq83pExNJrkSwijYtDmoM1hDjZWs9hV
+         3fTyfF9NM/a61cAZ47t8fHwhhrtQ+5cLGbepggzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Oded Gabbay <oded.gabbay@gmail.com>
-Subject: [PATCH 5.10 016/121] mm: dont try to NUMA-migrate COW pages that have other uses
-Date:   Mon, 21 Feb 2022 09:48:28 +0100
-Message-Id: <20220221084921.697909406@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 036/121] scsi: pm8001: Fix use-after-free for aborted SSP/STP sas_task
+Date:   Mon, 21 Feb 2022 09:48:48 +0100
+Message-Id: <20220221084922.414124913@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,75 +53,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: John Garry <john.garry@huawei.com>
 
-commit 80d47f5de5e311cbc0d01ebb6ee684e8f4c196c6 upstream.
+[ Upstream commit df7abcaa1246e2537ab4016077b5443bb3c09378 ]
 
-Oded Gabbay reports that enabling NUMA balancing causes corruption with
-his Gaudi accelerator test load:
+Currently a use-after-free may occur if a sas_task is aborted by the upper
+layer before we handle the I/O completion in mpi_ssp_completion() or
+mpi_sata_completion().
 
- "All the details are in the bug, but the bottom line is that somehow,
-  this patch causes corruption when the numa balancing feature is
-  enabled AND we don't use process affinity AND we use GUP to pin pages
-  so our accelerator can DMA to/from system memory.
+In this case, the following are the two steps in handling those I/O
+completions:
 
-  Either disabling numa balancing, using process affinity to bind to
-  specific numa-node or reverting this patch causes the bug to
-  disappear"
+ - Call complete() to inform the upper layer handler of completion of
+   the I/O.
 
-and Oded bisected the issue to commit 09854ba94c6a ("mm: do_wp_page()
-simplification").
+ - Release driver resources associated with the sas_task in
+   pm8001_ccb_task_free() call.
 
-Now, the NUMA balancing shouldn't actually be changing the writability
-of a page, and as such shouldn't matter for COW.  But it appears it
-does.  Suspicious.
+When complete() is called, the upper layer may free the sas_task. As such,
+we should not touch the associated sas_task afterwards, but we do so in the
+pm8001_ccb_task_free() call.
 
-However, regardless of that, the condition for enabling NUMA faults in
-change_pte_range() is nonsensical.  It uses "page_mapcount(page)" to
-decide if a COW page should be NUMA-protected or not, and that makes
-absolutely no sense.
+Fix by swapping the complete() and pm8001_ccb_task_free() calls ordering.
 
-The number of mappings a page has is irrelevant: not only does GUP get a
-reference to a page as in Oded's case, but the other mappings migth be
-paged out and the only reference to them would be in the page count.
-
-Since we should never try to NUMA-balance a page that we can't move
-anyway due to other references, just fix the code to use 'page_count()'.
-Oded confirms that that fixes his issue.
-
-Now, this does imply that something in NUMA balancing ends up changing
-page protections (other than the obvious one of making the page
-inaccessible to get the NUMA faulting information).  Otherwise the COW
-simplification wouldn't matter - since doing the GUP on the page would
-make sure it's writable.
-
-The cause of that permission change would be good to figure out too,
-since it clearly results in spurious COW events - but fixing the
-nonsensical test that just happened to work before is obviously the
-CorrectThing(tm) to do regardless.
-
-Fixes: 09854ba94c6a ("mm: do_wp_page() simplification")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215616
-Link: https://lore.kernel.org/all/CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com/
-Reported-and-tested-by: Oded Gabbay <oded.gabbay@gmail.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Peter Xu <peterx@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/1643289172-165636-4-git-send-email-john.garry@huawei.com
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Acked-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mprotect.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -94,7 +94,7 @@ static unsigned long change_pte_range(st
- 
- 				/* Also skip shared copy-on-write pages */
- 				if (is_cow_mapping(vma->vm_flags) &&
--				    page_mapcount(page) != 1)
-+				    page_count(page) != 1)
- 					continue;
- 
- 				/*
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index b22a8ab754faa..2a3ce4680734b 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -2133,9 +2133,9 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha , void *piomb)
+ 		pm8001_dbg(pm8001_ha, FAIL,
+ 			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+ 			   t, status, ts->resp, ts->stat);
++		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+ 		if (t->slow_task)
+ 			complete(&t->slow_task->completion);
+-		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+ 	} else {
+ 		spin_unlock_irqrestore(&t->task_state_lock, flags);
+ 		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+@@ -2726,9 +2726,9 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 		pm8001_dbg(pm8001_ha, FAIL,
+ 			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
+ 			   t, status, ts->resp, ts->stat);
++		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+ 		if (t->slow_task)
+ 			complete(&t->slow_task->completion);
+-		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
+ 	} else {
+ 		spin_unlock_irqrestore(&t->task_state_lock, flags);
+ 		pm8001_ccb_task_free_done(pm8001_ha, t, ccb, tag);
+-- 
+2.34.1
+
 
 
