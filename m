@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DDCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351570AbiBUJtt (ORCPT
+        id S1351634AbiBUJtz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:49:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58870 "EHLO
+        Mon, 21 Feb 2022 04:49:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351122AbiBUJmm (ORCPT
+        with ESMTP id S1351317AbiBUJpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:42:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422F03E5FF;
-        Mon, 21 Feb 2022 01:17:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:45:06 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00906338B3;
+        Mon, 21 Feb 2022 01:18:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0309C60F1E;
-        Mon, 21 Feb 2022 09:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2DEC340E9;
-        Mon, 21 Feb 2022 09:17:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3D150CE0E80;
+        Mon, 21 Feb 2022 09:18:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 207FCC340E9;
+        Mon, 21 Feb 2022 09:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435069;
-        bh=rTpMY/u2eNMEo9Mhc9qfIctIQ26XgjuyXRzG9p9jEoQ=;
+        s=korg; t=1645435091;
+        bh=tH1bNzzexmqCQ6OrA5qVPdCW+hoVVzCyIC2/TiYU8X4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IRhIG0p3jZATIO9QeRINzwacToXwqroT4f2Vrc7dC8wB6eJRJSluCrRgHaJ+08ibC
-         GGPcGePADb9PwNGQjZA4pM07gE5gwJsfKxcVN33dV3zVPulYvTFit0Lcdlh431gMAN
-         ujzRmni8UZ5nRYSlacMEJUobTprFW6xNMOXcY4SM=
+        b=fP13Ht0kSt+IM/hEQlLxXUWXHlMqiFbFQK85JcB7HydQ3ryHn93fwBgx7+ATloKjO
+         mb65O6ynSfw0rnPj+vP53vkMlxhji+M7CCz0nHjGaEbHvc+aoRRrCnThZGyIDgN94A
+         wOjKrGEexyF+qihDu9baZWAkq2lNeFHAh7rwxjDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Liwei Song <liwei.song@windriver.com>
-Subject: [PATCH 5.16 033/227] platform/x86: ISST: Fix possible circular locking dependency detected
-Date:   Mon, 21 Feb 2022 09:47:32 +0100
-Message-Id: <20220221084935.957359836@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 009/227] bpf: Add MEM_RDONLY for helper args that are pointers to rdonly mem.
+Date:   Mon, 21 Feb 2022 09:47:08 +0100
+Message-Id: <20220221084935.152511744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,254 +49,563 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+From: Hao Luo <haoluo@google.com>
 
-[ Upstream commit 17da2d5f93692086dd096a975225ffd5622d0bf8 ]
+commit 216e3cd2f28dbbf1fe86848e0e29e6693b9f0a20 upstream.
 
-As reported:
+Some helper functions may modify its arguments, for example,
+bpf_d_path, bpf_get_stack etc. Previously, their argument types
+were marked as ARG_PTR_TO_MEM, which is compatible with read-only
+mem types, such as PTR_TO_RDONLY_BUF. Therefore it's legitimate,
+but technically incorrect, to modify a read-only memory by passing
+it into one of such helper functions.
 
-[  256.104522] ======================================================
-[  256.113783] WARNING: possible circular locking dependency detected
-[  256.120093] 5.16.0-rc6-yocto-standard+ #99 Not tainted
-[  256.125362] ------------------------------------------------------
-[  256.131673] intel-speed-sel/844 is trying to acquire lock:
-[  256.137290] ffffffffc036f0d0 (punit_misc_dev_lock){+.+.}-{3:3}, at: isst_if_open+0x18/0x90 [isst_if_common]
-[  256.147171]
-[  256.147171] but task is already holding lock:
-[  256.153135] ffffffff8ee7cb50 (misc_mtx){+.+.}-{3:3}, at: misc_open+0x2a/0x170
-[  256.160407]
-[  256.160407] which lock already depends on the new lock.
-[  256.160407]
-[  256.168712]
-[  256.168712] the existing dependency chain (in reverse order) is:
-[  256.176327]
-[  256.176327] -> #1 (misc_mtx){+.+.}-{3:3}:
-[  256.181946]        lock_acquire+0x1e6/0x330
-[  256.186265]        __mutex_lock+0x9b/0x9b0
-[  256.190497]        mutex_lock_nested+0x1b/0x20
-[  256.195075]        misc_register+0x32/0x1a0
-[  256.199390]        isst_if_cdev_register+0x65/0x180 [isst_if_common]
-[  256.205878]        isst_if_probe+0x144/0x16e [isst_if_mmio]
-...
-[  256.241976]
-[  256.241976] -> #0 (punit_misc_dev_lock){+.+.}-{3:3}:
-[  256.248552]        validate_chain+0xbc6/0x1750
-[  256.253131]        __lock_acquire+0x88c/0xc10
-[  256.257618]        lock_acquire+0x1e6/0x330
-[  256.261933]        __mutex_lock+0x9b/0x9b0
-[  256.266165]        mutex_lock_nested+0x1b/0x20
-[  256.270739]        isst_if_open+0x18/0x90 [isst_if_common]
-[  256.276356]        misc_open+0x100/0x170
-[  256.280409]        chrdev_open+0xa5/0x1e0
-...
+This patch tags the bpf_args compatible with immutable memory with
+MEM_RDONLY flag. The arguments that don't have this flag will be
+only compatible with mutable memory types, preventing the helper
+from modifying a read-only memory. The bpf_args that have
+MEM_RDONLY are compatible with both mutable memory and immutable
+memory.
 
-The call sequence suggested that misc_device /dev file can be opened
-before misc device is yet to be registered, which is done only once.
-
-Here punit_misc_dev_lock was used as common lock, to protect the
-registration by multiple ISST HW drivers, one time setup, prevent
-duplicate registry of misc device and prevent load/unload when device
-is open.
-
-We can split into locks:
-- One which just prevent duplicate call to misc_register() and one
-time setup. Also never call again if the misc_register() failed or
-required one time setup is failed. This lock is not shared with
-any misc device callbacks.
-
-- The other lock protects registry, load and unload of HW drivers.
-
-Sequence in isst_if_cdev_register()
-- Register callbacks under punit_misc_dev_open_lock
-- Call isst_misc_reg() which registers misc_device on the first
-registry which is under punit_misc_dev_reg_lock, which is not
-shared with callbacks.
-
-Sequence in isst_if_cdev_unregister
-Just opposite of isst_if_cdev_register
-
-Reported-and-tested-by: Liwei Song <liwei.song@windriver.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Link: https://lore.kernel.org/r/20220112022521.54669-1-srinivas.pandruvada@linux.intel.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-9-haoluo@google.com
+Cc: stable@vger.kernel.org # 5.16.x
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../intel/speed_select_if/isst_if_common.c    | 97 ++++++++++++-------
- 1 file changed, 63 insertions(+), 34 deletions(-)
+ include/linux/bpf.h      |    4 ++
+ kernel/bpf/btf.c         |    2 -
+ kernel/bpf/cgroup.c      |    2 -
+ kernel/bpf/helpers.c     |    8 ++---
+ kernel/bpf/ringbuf.c     |    2 -
+ kernel/bpf/syscall.c     |    2 -
+ kernel/bpf/verifier.c    |   20 ++++++++++++--
+ kernel/trace/bpf_trace.c |   26 +++++++++----------
+ net/core/filter.c        |   64 +++++++++++++++++++++++------------------------
+ 9 files changed, 73 insertions(+), 57 deletions(-)
 
-diff --git a/drivers/platform/x86/intel/speed_select_if/isst_if_common.c b/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
-index c9a85eb2e8600..e8424e70d81d2 100644
---- a/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
-+++ b/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
-@@ -596,7 +596,10 @@ static long isst_if_def_ioctl(struct file *file, unsigned int cmd,
- 	return ret;
- }
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -311,7 +311,9 @@ enum bpf_type_flag {
+ 	/* PTR may be NULL. */
+ 	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
  
--static DEFINE_MUTEX(punit_misc_dev_lock);
-+/* Lock to prevent module registration when already opened by user space */
-+static DEFINE_MUTEX(punit_misc_dev_open_lock);
-+/* Lock to allow one share misc device for all ISST interace */
-+static DEFINE_MUTEX(punit_misc_dev_reg_lock);
- static int misc_usage_count;
- static int misc_device_ret;
- static int misc_device_open;
-@@ -606,7 +609,7 @@ static int isst_if_open(struct inode *inode, struct file *file)
- 	int i, ret = 0;
+-	/* MEM is read-only. */
++	/* MEM is read-only. When applied on bpf_arg, it indicates the arg is
++	 * compatible with both mutable and immutable memory.
++	 */
+ 	MEM_RDONLY		= BIT(1 + BPF_BASE_TYPE_BITS),
  
- 	/* Fail open, if a module is going away */
--	mutex_lock(&punit_misc_dev_lock);
-+	mutex_lock(&punit_misc_dev_open_lock);
- 	for (i = 0; i < ISST_IF_DEV_MAX; ++i) {
- 		struct isst_if_cmd_cb *cb = &punit_callbacks[i];
- 
-@@ -628,7 +631,7 @@ static int isst_if_open(struct inode *inode, struct file *file)
- 	} else {
- 		misc_device_open++;
- 	}
--	mutex_unlock(&punit_misc_dev_lock);
-+	mutex_unlock(&punit_misc_dev_open_lock);
- 
- 	return ret;
- }
-@@ -637,7 +640,7 @@ static int isst_if_relase(struct inode *inode, struct file *f)
- {
- 	int i;
- 
--	mutex_lock(&punit_misc_dev_lock);
-+	mutex_lock(&punit_misc_dev_open_lock);
- 	misc_device_open--;
- 	for (i = 0; i < ISST_IF_DEV_MAX; ++i) {
- 		struct isst_if_cmd_cb *cb = &punit_callbacks[i];
-@@ -645,7 +648,7 @@ static int isst_if_relase(struct inode *inode, struct file *f)
- 		if (cb->registered)
- 			module_put(cb->owner);
- 	}
--	mutex_unlock(&punit_misc_dev_lock);
-+	mutex_unlock(&punit_misc_dev_open_lock);
- 
- 	return 0;
- }
-@@ -662,6 +665,43 @@ static struct miscdevice isst_if_char_driver = {
- 	.fops		= &isst_if_char_driver_ops,
+ 	__BPF_TYPE_LAST_FLAG	= MEM_RDONLY,
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6337,7 +6337,7 @@ const struct bpf_func_proto bpf_btf_find
+ 	.func		= bpf_btf_find_by_name_kind,
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE,
+ 	.arg3_type	= ARG_ANYTHING,
+ 	.arg4_type	= ARG_ANYTHING,
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -1789,7 +1789,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
  };
  
-+static int isst_misc_reg(void)
-+{
-+	mutex_lock(&punit_misc_dev_reg_lock);
-+	if (misc_device_ret)
-+		goto unlock_exit;
-+
-+	if (!misc_usage_count) {
-+		misc_device_ret = isst_if_cpu_info_init();
-+		if (misc_device_ret)
-+			goto unlock_exit;
-+
-+		misc_device_ret = misc_register(&isst_if_char_driver);
-+		if (misc_device_ret) {
-+			isst_if_cpu_info_exit();
-+			goto unlock_exit;
-+		}
-+	}
-+	misc_usage_count++;
-+
-+unlock_exit:
-+	mutex_unlock(&punit_misc_dev_reg_lock);
-+
-+	return misc_device_ret;
-+}
-+
-+static void isst_misc_unreg(void)
-+{
-+	mutex_lock(&punit_misc_dev_reg_lock);
-+	if (misc_usage_count)
-+		misc_usage_count--;
-+	if (!misc_usage_count && !misc_device_ret) {
-+		misc_deregister(&isst_if_char_driver);
-+		isst_if_cpu_info_exit();
-+	}
-+	mutex_unlock(&punit_misc_dev_reg_lock);
-+}
-+
- /**
-  * isst_if_cdev_register() - Register callback for IOCTL
-  * @device_type: The device type this callback handling.
-@@ -679,38 +719,31 @@ static struct miscdevice isst_if_char_driver = {
-  */
- int isst_if_cdev_register(int device_type, struct isst_if_cmd_cb *cb)
- {
--	if (misc_device_ret)
--		return misc_device_ret;
-+	int ret;
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -530,7 +530,7 @@ const struct bpf_func_proto bpf_strtol_p
+ 	.func		= bpf_strtol,
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE,
+ 	.arg3_type	= ARG_ANYTHING,
+ 	.arg4_type	= ARG_PTR_TO_LONG,
+@@ -558,7 +558,7 @@ const struct bpf_func_proto bpf_strtoul_
+ 	.func		= bpf_strtoul,
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE,
+ 	.arg3_type	= ARG_ANYTHING,
+ 	.arg4_type	= ARG_PTR_TO_LONG,
+@@ -630,7 +630,7 @@ const struct bpf_func_proto bpf_event_ou
+ 	.arg1_type      = ARG_PTR_TO_CTX,
+ 	.arg2_type      = ARG_CONST_MAP_PTR,
+ 	.arg3_type      = ARG_ANYTHING,
+-	.arg4_type      = ARG_PTR_TO_MEM,
++	.arg4_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
+ };
  
- 	if (device_type >= ISST_IF_DEV_MAX)
- 		return -EINVAL;
+@@ -1011,7 +1011,7 @@ const struct bpf_func_proto bpf_snprintf
+ 	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
+ 	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
+ 	.arg3_type	= ARG_PTR_TO_CONST_STR,
+-	.arg4_type	= ARG_PTR_TO_MEM_OR_NULL,
++	.arg4_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
  
--	mutex_lock(&punit_misc_dev_lock);
-+	mutex_lock(&punit_misc_dev_open_lock);
-+	/* Device is already open, we don't want to add new callbacks */
- 	if (misc_device_open) {
--		mutex_unlock(&punit_misc_dev_lock);
-+		mutex_unlock(&punit_misc_dev_open_lock);
- 		return -EAGAIN;
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -444,7 +444,7 @@ const struct bpf_func_proto bpf_ringbuf_
+ 	.func		= bpf_ringbuf_output,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_CONST_MAP_PTR,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -4772,7 +4772,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_ANYTHING,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ };
+ 
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5060,7 +5060,6 @@ static const struct bpf_reg_types mem_ty
+ 		PTR_TO_MAP_VALUE,
+ 		PTR_TO_MEM,
+ 		PTR_TO_BUF,
+-		PTR_TO_BUF | MEM_RDONLY,
+ 	},
+ };
+ 
+@@ -5130,6 +5129,21 @@ static int check_reg_type(struct bpf_ver
+ 		return -EFAULT;
  	}
--	if (!misc_usage_count) {
--		int ret;
--
--		misc_device_ret = misc_register(&isst_if_char_driver);
--		if (misc_device_ret)
--			goto unlock_exit;
--
--		ret = isst_if_cpu_info_init();
--		if (ret) {
--			misc_deregister(&isst_if_char_driver);
--			misc_device_ret = ret;
--			goto unlock_exit;
--		}
--	}
- 	memcpy(&punit_callbacks[device_type], cb, sizeof(*cb));
- 	punit_callbacks[device_type].registered = 1;
--	misc_usage_count++;
--unlock_exit:
--	mutex_unlock(&punit_misc_dev_lock);
-+	mutex_unlock(&punit_misc_dev_open_lock);
  
--	return misc_device_ret;
-+	ret = isst_misc_reg();
-+	if (ret) {
-+		/*
-+		 * No need of mutex as the misc device register failed
-+		 * as no one can open device yet. Hence no contention.
-+		 */
-+		punit_callbacks[device_type].registered = 0;
-+		return ret;
-+	}
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(isst_if_cdev_register);
++	/* ARG_PTR_TO_MEM + RDONLY is compatible with PTR_TO_MEM and PTR_TO_MEM + RDONLY,
++	 * but ARG_PTR_TO_MEM is compatible only with PTR_TO_MEM and NOT with PTR_TO_MEM + RDONLY
++	 *
++	 * Same for MAYBE_NULL:
++	 *
++	 * ARG_PTR_TO_MEM + MAYBE_NULL is compatible with PTR_TO_MEM and PTR_TO_MEM + MAYBE_NULL,
++	 * but ARG_PTR_TO_MEM is compatible only with PTR_TO_MEM but NOT with PTR_TO_MEM + MAYBE_NULL
++	 *
++	 * Therefore we fold these flags depending on the arg_type before comparison.
++	 */
++	if (arg_type & MEM_RDONLY)
++		type &= ~MEM_RDONLY;
++	if (arg_type & PTR_MAYBE_NULL)
++		type &= ~PTR_MAYBE_NULL;
++
+ 	for (i = 0; i < ARRAY_SIZE(compatible->types); i++) {
+ 		expected = compatible->types[i];
+ 		if (expected == NOT_INIT)
+@@ -5139,14 +5153,14 @@ static int check_reg_type(struct bpf_ver
+ 			goto found;
+ 	}
  
-@@ -725,16 +758,12 @@ EXPORT_SYMBOL_GPL(isst_if_cdev_register);
-  */
- void isst_if_cdev_unregister(int device_type)
- {
--	mutex_lock(&punit_misc_dev_lock);
--	misc_usage_count--;
-+	isst_misc_unreg();
-+	mutex_lock(&punit_misc_dev_open_lock);
- 	punit_callbacks[device_type].registered = 0;
- 	if (device_type == ISST_IF_DEV_MBOX)
- 		isst_delete_hash();
--	if (!misc_usage_count && !misc_device_ret) {
--		misc_deregister(&isst_if_char_driver);
--		isst_if_cpu_info_exit();
--	}
--	mutex_unlock(&punit_misc_dev_lock);
-+	mutex_unlock(&punit_misc_dev_open_lock);
- }
- EXPORT_SYMBOL_GPL(isst_if_cdev_unregister);
+-	verbose(env, "R%d type=%s expected=", regno, reg_type_str(env, type));
++	verbose(env, "R%d type=%s expected=", regno, reg_type_str(env, reg->type));
+ 	for (j = 0; j + 1 < i; j++)
+ 		verbose(env, "%s, ", reg_type_str(env, compatible->types[j]));
+ 	verbose(env, "%s\n", reg_type_str(env, compatible->types[j]));
+ 	return -EACCES;
  
--- 
-2.34.1
-
+ found:
+-	if (type == PTR_TO_BTF_ID) {
++	if (reg->type == PTR_TO_BTF_ID) {
+ 		if (!arg_btf_id) {
+ 			if (!compatible->btf_id) {
+ 				verbose(env, "verifier internal error: missing arg compatible BTF ID\n");
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -345,7 +345,7 @@ static const struct bpf_func_proto bpf_p
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_ANYTHING,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -394,7 +394,7 @@ static const struct bpf_func_proto bpf_t
+ 	.func		= bpf_trace_printk,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -450,9 +450,9 @@ static const struct bpf_func_proto bpf_t
+ 	.func		= bpf_trace_vprintk,
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM,
++	.arg1_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE,
+-	.arg3_type	= ARG_PTR_TO_MEM_OR_NULL,
++	.arg3_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -492,9 +492,9 @@ static const struct bpf_func_proto bpf_s
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID,
+ 	.arg1_btf_id	= &btf_seq_file_ids[0],
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+-	.arg4_type      = ARG_PTR_TO_MEM_OR_NULL,
++	.arg4_type      = ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg5_type      = ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -509,7 +509,7 @@ static const struct bpf_func_proto bpf_s
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID,
+ 	.arg1_btf_id	= &btf_seq_file_ids[0],
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -533,7 +533,7 @@ static const struct bpf_func_proto bpf_s
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID,
+ 	.arg1_btf_id	= &btf_seq_file_ids[0],
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
+@@ -694,7 +694,7 @@ static const struct bpf_func_proto bpf_p
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -1004,7 +1004,7 @@ const struct bpf_func_proto bpf_snprintf
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_MEM,
+ 	.arg2_type	= ARG_CONST_SIZE,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE,
+ 	.arg5_type	= ARG_ANYTHING,
+ };
+@@ -1285,7 +1285,7 @@ static const struct bpf_func_proto bpf_p
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -1507,7 +1507,7 @@ static const struct bpf_func_proto bpf_p
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -1561,7 +1561,7 @@ static const struct bpf_func_proto bpf_g
+ 	.gpl_only	= true,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE_OR_ZERO,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1713,7 +1713,7 @@ static const struct bpf_func_proto bpf_s
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE,
+ 	.arg5_type	= ARG_ANYTHING,
+ };
+@@ -2018,9 +2018,9 @@ static const struct bpf_func_proto bpf_c
+ 	.gpl_only	= false,
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_INTEGER,
+-	.arg1_type	= ARG_PTR_TO_MEM_OR_NULL,
++	.arg1_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
+-	.arg3_type	= ARG_PTR_TO_MEM_OR_NULL,
++	.arg3_type	= ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+ 	.arg5_type	= ARG_ANYTHING,
+ };
+@@ -2541,7 +2541,7 @@ static const struct bpf_func_proto bpf_r
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_ANYTHING,
+-	.arg2_type      = ARG_PTR_TO_MEM_OR_NULL,
++	.arg2_type      = ARG_PTR_TO_MEM | PTR_MAYBE_NULL | MEM_RDONLY,
+ 	.arg3_type      = ARG_CONST_SIZE_OR_ZERO,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
+@@ -4174,7 +4174,7 @@ static const struct bpf_func_proto bpf_s
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -4188,7 +4188,7 @@ const struct bpf_func_proto bpf_skb_outp
+ 	.arg1_btf_id	= &bpf_skb_output_btf_ids[0],
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -4371,7 +4371,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
+@@ -4397,7 +4397,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -4567,7 +4567,7 @@ static const struct bpf_func_proto bpf_x
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -4581,7 +4581,7 @@ const struct bpf_func_proto bpf_xdp_outp
+ 	.arg1_btf_id	= &bpf_xdp_output_btf_ids[0],
+ 	.arg2_type	= ARG_CONST_MAP_PTR,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
+ };
+ 
+@@ -5069,7 +5069,7 @@ const struct bpf_func_proto bpf_sk_setso
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
+ 	.arg2_type	= ARG_ANYTHING,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -5103,7 +5103,7 @@ static const struct bpf_func_proto bpf_s
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -5137,7 +5137,7 @@ static const struct bpf_func_proto bpf_s
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+ 	.arg3_type	= ARG_ANYTHING,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -5312,7 +5312,7 @@ static const struct bpf_func_proto bpf_b
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -5900,7 +5900,7 @@ static const struct bpf_func_proto bpf_l
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE
+ };
+ 
+@@ -5910,7 +5910,7 @@ static const struct bpf_func_proto bpf_l
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE
+ };
+ 
+@@ -5953,7 +5953,7 @@ static const struct bpf_func_proto bpf_l
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE
+ };
+ 
+@@ -6041,7 +6041,7 @@ static const struct bpf_func_proto bpf_l
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ 	.arg2_type	= ARG_ANYTHING,
+-	.arg3_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg4_type	= ARG_CONST_SIZE
+ };
+ 
+@@ -6266,7 +6266,7 @@ static const struct bpf_func_proto bpf_s
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6285,7 +6285,7 @@ static const struct bpf_func_proto bpf_s
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6304,7 +6304,7 @@ static const struct bpf_func_proto bpf_s
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6341,7 +6341,7 @@ static const struct bpf_func_proto bpf_x
+ 	.pkt_access     = true,
+ 	.ret_type       = RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type      = ARG_PTR_TO_CTX,
+-	.arg2_type      = ARG_PTR_TO_MEM,
++	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type      = ARG_CONST_SIZE,
+ 	.arg4_type      = ARG_ANYTHING,
+ 	.arg5_type      = ARG_ANYTHING,
+@@ -6364,7 +6364,7 @@ static const struct bpf_func_proto bpf_x
+ 	.pkt_access     = true,
+ 	.ret_type       = RET_PTR_TO_SOCK_COMMON_OR_NULL,
+ 	.arg1_type      = ARG_PTR_TO_CTX,
+-	.arg2_type      = ARG_PTR_TO_MEM,
++	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type      = ARG_CONST_SIZE,
+ 	.arg4_type      = ARG_ANYTHING,
+ 	.arg5_type      = ARG_ANYTHING,
+@@ -6387,7 +6387,7 @@ static const struct bpf_func_proto bpf_x
+ 	.pkt_access     = true,
+ 	.ret_type       = RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type      = ARG_PTR_TO_CTX,
+-	.arg2_type      = ARG_PTR_TO_MEM,
++	.arg2_type      = ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type      = ARG_CONST_SIZE,
+ 	.arg4_type      = ARG_ANYTHING,
+ 	.arg5_type      = ARG_ANYTHING,
+@@ -6406,7 +6406,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6425,7 +6425,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6444,7 +6444,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ 	.arg5_type	= ARG_ANYTHING,
+@@ -6757,9 +6757,9 @@ static const struct bpf_func_proto bpf_t
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -6826,9 +6826,9 @@ static const struct bpf_func_proto bpf_t
+ 	.pkt_access	= true,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+-	.arg4_type	= ARG_PTR_TO_MEM,
++	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg5_type	= ARG_CONST_SIZE,
+ };
+ 
+@@ -7057,7 +7057,7 @@ static const struct bpf_func_proto bpf_s
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+-	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+ 	.arg3_type	= ARG_CONST_SIZE,
+ 	.arg4_type	= ARG_ANYTHING,
+ };
 
 
