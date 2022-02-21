@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B065CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C01FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbiBUI7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:59:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60138 "EHLO
+        id S1346787AbiBUI7U (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:59:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiBUI6c (ORCPT
+        with ESMTP id S1346677AbiBUI6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:58:32 -0500
+        Mon, 21 Feb 2022 03:58:38 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E364723BED;
-        Mon, 21 Feb 2022 00:54:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552B225C5C;
+        Mon, 21 Feb 2022 00:54:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17914B80EB6;
-        Mon, 21 Feb 2022 08:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CAE8C340E9;
-        Mon, 21 Feb 2022 08:54:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC1AB80EBD;
+        Mon, 21 Feb 2022 08:54:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87EDDC340E9;
+        Mon, 21 Feb 2022 08:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433663;
-        bh=bJzk+MFGzdcR9CO+eXnU6w55eP9b3igNabas5tmvae0=;
+        s=korg; t=1645433641;
+        bh=lxCchzryuMtVgvfH1Q92K/i4dkv4KmcSp/CCgAaGACQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iLYQ61Ep9uojqROjgCeyeIfhekto8bef3Abkr5PdihS5Hek+Fdf5SDa0OeLPlNbDy
-         txA0rMRtxF66Hoa2RysZG6C6gGNn3MtHNu/uSfr6PkXijD67yRHqBjazF5ozd5whXP
-         c+erT5kJnbCpz1vbEktXqBL+d6OcsBA+1MzLPRhA=
+        b=wJzQXQd82jaS5lKVdWwNFvQY+J0eV6HXMzPQloyIi5IYxhItfdvD1ysJv/vdxGf+F
+         9DAavWNcuntpAzRPtTDEmJjKGe5LLUln49ZJhCrOaZr+Ezo0NQtZ3XfkUJsI9EQwLY
+         oEvkDARyoCxfK1+B1S9l8qhvZpws4+DBgO1VP2zU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc St-Amand <mstamand@ciena.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 45/45] net: macb: Align the dma and coherent dma masks
-Date:   Mon, 21 Feb 2022 09:49:36 +0100
-Message-Id: <20220221084911.916299159@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.14 29/45] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw()
+Date:   Mon, 21 Feb 2022 09:49:20 +0100
+Message-Id: <20220221084911.392544956@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -52,51 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc St-Amand <mstamand@ciena.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 37f7860602b5b2d99fc7465f6407f403f5941988 ]
+commit 564778d7b1ea465f9487eedeece7527a033549c5 upstream.
 
-Single page and coherent memory blocks can use different DMA masks
-when the macb accesses physical memory directly. The kernel is clever
-enough to allocate pages that fit into the requested address width.
+When writing out a stereo control we discard the change notification from
+the first channel, meaning that events are only generated based on changes
+to the second channel. Ensure that we report a change if either channel
+has changed.
 
-When using the ARM SMMU, the DMA mask must be the same for single
-pages and big coherent memory blocks. Otherwise the translation
-tables turn into one big mess.
-
-  [   74.959909] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   74.959989] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
-  [   75.173939] macb ff0e0000.ethernet eth0: DMA bus error: HRESP not OK
-  [   75.173955] arm-smmu fd800000.smmu: Unhandled context fault: fsr=0x402, iova=0x3165687460, fsynr=0x20001, cbfrsynra=0x877, cb=1
-
-Since using the same DMA mask does not hurt direct 1:1 physical
-memory mappings, this commit always aligns DMA and coherent masks.
-
-Signed-off-by: Marc St-Amand <mstamand@ciena.com>
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220201155629.120510-2-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-ops.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index b07ea8a26c20a..045ab0ec5ca25 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -3528,7 +3528,7 @@ static int macb_probe(struct platform_device *pdev)
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -319,7 +319,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	unsigned int sign_bit = mc->sign_bit;
+ 	unsigned int mask = (1 << fls(max)) - 1;
+ 	unsigned int invert = mc->invert;
+-	int err;
++	int err, ret;
+ 	bool type_2r = false;
+ 	unsigned int val2 = 0;
+ 	unsigned int val, val_mask;
+@@ -361,12 +361,18 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+ 	if (err < 0)
+ 		return err;
++	ret = err;
  
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- 	if (GEM_BFEXT(DAW64, gem_readl(bp, DCFG6))) {
--		dma_set_mask(&pdev->dev, DMA_BIT_MASK(44));
-+		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
- 		bp->hw_dma_cap |= HW_DMA_CAP_64B;
- 	}
- #endif
--- 
-2.34.1
-
+-	if (type_2r)
++	if (type_2r) {
+ 		err = snd_soc_component_update_bits(component, reg2, val_mask,
+-			val2);
++						    val2);
++		/* Don't discard any error code or drop change flag */
++		if (ret == 0 || err < 0) {
++			ret = err;
++		}
++	}
+ 
+-	return err;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(snd_soc_put_volsw);
+ 
 
 
