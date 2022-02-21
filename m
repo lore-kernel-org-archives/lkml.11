@@ -2,91 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 876B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1940C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379000AbiBUPU4 (ORCPT
+        id S1379016AbiBUPXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:20:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36646 "EHLO
+        Mon, 21 Feb 2022 10:23:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378992AbiBUPUu (ORCPT
+        with ESMTP id S1379007AbiBUPXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:20:50 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B061DA75;
-        Mon, 21 Feb 2022 07:20:27 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 055AA1F41EEC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645456820;
-        bh=AEBHpU/YbpjVEE8sZ5e3auTLaK6lJUMCcaPJ3UkaE2k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jZecYRDSM0F1Bp2byQMHOXaZ+4j0RYg3NQ9SGon82I9nC4mXy4ZC9g3Ko3n8Ulwnq
-         IxwJhIh9bAvdLEqiiq/MwLRTYK6f3sys6ayrZi32wwZvjGYx7Gg8pJ4AhcEiFkIDLS
-         85PS9J+KBAk/VtY2il5I5+/0AqM74nUwR3x/NKNYUuOY354iWDvKeqLwUTrT2CxhN4
-         5NZ+dbKDh2ILefofSluV6/SVfbj62+cSIFIYqX/Rzt+qjBAHFp5lNElCRl4XicKtDT
-         Y352CifU41aaojSbv45BlylJVUzStY1cXPklAKqXonJKvwuIPuBpT6qWNdEzIyjRU6
-         4qviYDH4uqGXw==
-Message-ID: <d4e27af2-0f64-9c7f-489d-0f7dfcdd9ee5@collabora.com>
-Date:   Mon, 21 Feb 2022 16:20:17 +0100
+        Mon, 21 Feb 2022 10:23:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B984E1DA7C
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:22:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 693A1B81216
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4585C340F3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:22:45 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="XI77mjzS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645456963;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1cAj9BP6fU0x9iYzz4BxpCghwg4kClAZ60uzD2844BI=;
+        b=XI77mjzSkvuGzRpdhnCN4WeUKQBvlMx5aaKX1uTdaH7S0YyZPUsNVXFFiy2ARl+AxyS5Ku
+        1DYLJI+p5a8dkZXijY8UwY8G4CX0pzMH8HfzOTNmMOa7GHxVhMnz3ntUD5c/cXImjPY0H4
+        K0rf27x/XHBve9qRsaQeRV1xrrMgS2Q=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bb953c46 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 21 Feb 2022 15:22:43 +0000 (UTC)
+Received: by mail-yb1-f180.google.com with SMTP id bt13so35085806ybb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:22:43 -0800 (PST)
+X-Gm-Message-State: AOAM5326jXghR5Iz9OtpGKYwVQvlhq2fNBaUxVI4XMKBLtL3jcnkLxzq
+        XBM32eyQJt00FkgcPkp5Z3XvputzK5MzRqON/nE=
+X-Google-Smtp-Source: ABdhPJxiXRBAhr1h7zEP/oBOPV/NaUvEU+XlPSR5TxTuL09+CrpdiRRqa7UTHTJBJw0wLqxnv3Sv9smSdRX4fETku6I=
+X-Received: by 2002:a05:6902:693:b0:613:7f4f:2e63 with SMTP id
+ i19-20020a056902069300b006137f4f2e63mr18234268ybt.271.1645456962794; Mon, 21
+ Feb 2022 07:22:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 09/23] arm64: dts: mt8192: Add infracfg_rst node
-Content-Language: en-US
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-10-allen-kh.cheng@mediatek.com>
- <c84ec638-3134-fc1c-4761-7f1ec8381a39@collabora.com>
- <8a3a6167450bdd51bdff2e9b12a15522a18dd38e.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <8a3a6167450bdd51bdff2e9b12a15522a18dd38e.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220212231022.679926-1-Jason@zx2c4.com> <20220212231022.679926-2-Jason@zx2c4.com>
+ <YhMoLad2U2zJVTyo@sol.localdomain>
+In-Reply-To: <YhMoLad2U2zJVTyo@sol.localdomain>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 21 Feb 2022 16:22:32 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rie8h9J=R9UkRQgsNntRKNqwqbQx=LY8wiOS0V-WYV_A@mail.gmail.com>
+Message-ID: <CAHmME9rie8h9J=R9UkRQgsNntRKNqwqbQx=LY8wiOS0V-WYV_A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] random: unify early init crng load accounting
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Theodore Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 21/02/22 14:05, allen-kh.cheng ha scritto:
-> On Fri, 2022-02-18 at 13:55 +0100, AngeloGioacchino Del Regno wrote:
->> Il 18/02/22 10:16, Allen-KH Cheng ha scritto:
->>> add infracfg_rst node for mt8192 SoC.
->>>
->>> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
->>
->> For v3, please mention that you're adding simple-mfd to allow probing
->> the
->> ti,syscon-reset node.
->>
->> After the commit description fix:
->> Reviewed-by: AngeloGioacchino Del Regno <
->> angelogioacchino.delregno@collabora.com>
->>
-> 
-> Hi Angelo,
-> 
-> Thanks for reminding, I will update commit message.
-> 
-> Do I need to also change the commit title ?
-> 
-> Best regards,
-> Allen
-> 
+On Mon, Feb 21, 2022 at 6:50 AM Eric Biggers <ebiggers@kernel.org> wrote:
+>
+> On Sun, Feb 13, 2022 at 12:10:20AM +0100, Jason A. Donenfeld wrote:
+> > -static size_t crng_fast_load(const void *cp, size_t len)
+> > +static size_t crng_pre_init_inject(const void *cp, size_t len,
+> > +                                bool fast, bool account)
+>
+> This would be a good chance to rename 'cp' to something more usual, like 'in'.
 
-Hi Allen,
+I'll do that. By the way, if you feel inclined to clean up other
+instances of 'cp' and other odd variable names, feel free to send a
+patch devoted to that.
 
-Please update only the description; the title is fine.
+>
+> Also, there's still a mention of "crng_{fast,slow}_load" in crng_make_state().
 
-Thank you,
-Angelo
+Nice catch, will fix.
+
+>
+> > +     const u8 *src = cp;
+> > +
+> > +     if (fast) {
+> > +             if (!spin_trylock_irqsave(&base_crng.lock, flags))
+> > +                     return 0;
+> > +     } else
+> > +             spin_lock_irqsave(&base_crng.lock, flags);
+>
+> Nit: the kernel coding style requires braces around the else clause here.
+
+Not the biggest fan of this one, but will do.
+
+Jason
