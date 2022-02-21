@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D47C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346730AbiBUI7j (ORCPT
+        id S1346910AbiBUI7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:59:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59276 "EHLO
+        Mon, 21 Feb 2022 03:59:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346903AbiBUI7T (ORCPT
+        with ESMTP id S1346782AbiBUI7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:59:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBDE25E9A;
-        Mon, 21 Feb 2022 00:54:59 -0800 (PST)
+        Mon, 21 Feb 2022 03:59:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AB425E9F;
+        Mon, 21 Feb 2022 00:55:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0456E611D0;
-        Mon, 21 Feb 2022 08:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7617C36AE2;
-        Mon, 21 Feb 2022 08:54:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A85461132;
+        Mon, 21 Feb 2022 08:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D7BC340E9;
+        Mon, 21 Feb 2022 08:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433695;
-        bh=lWQyRUsHNeogGgSlwf5ifeyPlKhUtf9p/geX3mGnQv8=;
+        s=korg; t=1645433655;
+        bh=4lO6JmZ9MvQL5yGg6vWszWkyE8N1+IVs3euL5JN/hjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvgLYn3zjrzbY6rohhBTt/HthXLXXN6Q1EVMzexJIwIlVdLIMPw7Lym2KgkxNjh01
-         3K8XeGY6izXagUMZvsVtieEVXEyM/oa0jQzleAjLJpjJh8fvDAbt3nh7JAa55GO6n0
-         NkPH7pivfRimTf8TtJjHmeyZNMHzyDGjAClUYWNw=
+        b=oKiVWrhsJ2Ulyy1VAMKr5b0yLWL38E1q9Jb5mL3lpUndWwEWB7kBZCqjtL1SAyINm
+         Er7h6lR5qc0qE6IvYCBkkFjPGWS3xN5h9ZJcTflbEpCHF+8jcBanE3aY8GnjV1TMBN
+         m78Gmn/FNRx/KrG+BjauHuxRHyzK/KGwLQ8zMmLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 10/58] selftests/zram: Adapt the situation that /dev/zram0 is being used
-Date:   Mon, 21 Feb 2022 09:49:03 +0100
-Message-Id: <20220221084912.219024165@linuxfoundation.org>
+Subject: [PATCH 4.14 42/45] ata: libata-core: Disable TRIM on M88V29
+Date:   Mon, 21 Feb 2022 09:49:33 +0100
+Message-Id: <20220221084911.820068364@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
-References: <20220221084911.895146879@linuxfoundation.org>
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,327 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 01dabed20573804750af5c7bf8d1598a6bf7bf6e ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-If zram-generator package is installed and works, then we can not remove
-zram module because zram swap is being used. This case needs a clean zram
-environment, change this test by using hot_add/hot_remove interface. So
-even zram device is being used, we still can add zram device and remove
-them in cleanup.
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-The two interface was introduced since kernel commit 6566d1a32bf7("zram:
-add dynamic device add/remove functionality") in v4.2-rc1. If kernel
-supports these two interface, we use hot_add/hot_remove to slove this
-problem, if not, just check whether zram is being used or built in, then
-skip it on old kernel.
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+TRIM must be disabled for this device.
+
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/zram/zram.sh     |  15 +---
- tools/testing/selftests/zram/zram01.sh   |   3 +-
- tools/testing/selftests/zram/zram02.sh   |   1 -
- tools/testing/selftests/zram/zram_lib.sh | 110 +++++++++++++----------
- 4 files changed, 66 insertions(+), 63 deletions(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/zram/zram.sh b/tools/testing/selftests/zram/zram.sh
-index 232e958ec4547..b0b91d9b0dc21 100755
---- a/tools/testing/selftests/zram/zram.sh
-+++ b/tools/testing/selftests/zram/zram.sh
-@@ -2,9 +2,6 @@
- # SPDX-License-Identifier: GPL-2.0
- TCID="zram.sh"
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 8ec71243cdcca..791374199e227 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4603,6 +4603,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
--# Kselftest framework requirement - SKIP code is 4.
--ksft_skip=4
--
- . ./zram_lib.sh
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
  
- run_zram () {
-@@ -18,14 +15,4 @@ echo ""
- 
- check_prereqs
- 
--# check zram module exists
--MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--if [ -f $MODULE_PATH ]; then
--	run_zram
--elif [ -b /dev/zram0 ]; then
--	run_zram
--else
--	echo "$TCID : No zram.ko module or /dev/zram0 device file not found"
--	echo "$TCID : CONFIG_ZRAM is not set"
--	exit $ksft_skip
--fi
-+run_zram
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index ac6e4ddd2604e..8abc9965089d1 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -42,7 +42,7 @@ zram_algs="lzo"
- 
- zram_fill_fs()
- {
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "fill zram$i..."
- 		local b=0
- 		while [ true ]; do
-@@ -76,7 +76,6 @@ zram_mount
- 
- zram_fill_fs
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram02.sh b/tools/testing/selftests/zram/zram02.sh
-index 74569b883737f..3768cfd2e5f83 100755
---- a/tools/testing/selftests/zram/zram02.sh
-+++ b/tools/testing/selftests/zram/zram02.sh
-@@ -45,7 +45,6 @@ zram_set_memlimit
- zram_makeswap
- zram_swapoff
- zram_cleanup
--zram_unload
- 
- if [ $ERR_CODE -ne 0 ]; then
- 	echo "$TCID : [FAIL]"
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 2c1d1c567f854..130d193cbd727 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -14,10 +14,12 @@
- # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
- # Modified: Naresh Kamboju <naresh.kamboju@linaro.org>
- 
--MODULE=0
- dev_makeswap=-1
- dev_mounted=-1
--
-+dev_start=0
-+dev_end=-1
-+module_load=-1
-+sys_control=-1
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
- kernel_version=`uname -r | cut -d'.' -f1,2`
-@@ -55,57 +57,72 @@ zram_cleanup()
- {
- 	echo "zram cleanup"
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_makeswap); do
- 		swapoff /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $dev_mounted); do
-+	for i in $(seq $dev_start $dev_mounted); do
- 		umount /dev/zram$i
- 	done
- 
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo 1 > /sys/block/zram${i}/reset
- 		rm -rf zram$i
- 	done
- 
--}
-+	if [ $sys_control -eq 1 ]; then
-+		for i in $(seq $dev_start $dev_end); do
-+			echo $i > /sys/class/zram-control/hot_remove
-+		done
-+	fi
- 
--zram_unload()
--{
--	if [ $MODULE -ne 0 ] ; then
--		echo "zram rmmod zram"
-+	if [ $module_load -eq 1 ]; then
- 		rmmod zram > /dev/null 2>&1
- 	fi
- }
- 
- zram_load()
- {
--	# check zram module exists
--	MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
--	if [ -f $MODULE_PATH ]; then
--		MODULE=1
--		echo "create '$dev_num' zram device(s)"
--		modprobe zram num_devices=$dev_num
--		if [ $? -ne 0 ]; then
--			echo "failed to insert zram module"
--			exit 1
--		fi
--
--		dev_num_created=$(ls /dev/zram* | wc -w)
-+	echo "create '$dev_num' zram device(s)"
-+
-+	# zram module loaded, new kernel
-+	if [ -d "/sys/class/zram-control" ]; then
-+		echo "zram modules already loaded, kernel supports" \
-+			"zram-control interface"
-+		dev_start=$(ls /dev/zram* | wc -w)
-+		dev_end=$(($dev_start + $dev_num - 1))
-+		sys_control=1
-+
-+		for i in $(seq $dev_start $dev_end); do
-+			cat /sys/class/zram-control/hot_add > /dev/null
-+		done
-+
-+		echo "all zram devices (/dev/zram$dev_start~$dev_end" \
-+			"successfully created"
-+		return 0
-+	fi
- 
--		if [ "$dev_num_created" -ne "$dev_num" ]; then
--			echo "unexpected num of devices: $dev_num_created"
--			ERR_CODE=-1
-+	# detect old kernel or built-in
-+	modprobe zram num_devices=$dev_num
-+	if [ ! -d "/sys/class/zram-control" ]; then
-+		if grep -q '^zram' /proc/modules; then
-+			rmmod zram > /dev/null 2>&1
-+			if [ $? -ne 0 ]; then
-+				echo "zram module is being used on old kernel" \
-+					"without zram-control interface"
-+				exit $ksft_skip
-+			fi
- 		else
--			echo "zram load module successful"
-+			echo "test needs CONFIG_ZRAM=m on old kernel without" \
-+				"zram-control interface"
-+			exit $ksft_skip
- 		fi
--	elif [ -b /dev/zram0 ]; then
--		echo "/dev/zram0 device file found: OK"
--	else
--		echo "ERROR: No zram.ko module or no /dev/zram0 device found"
--		echo "$TCID : CONFIG_ZRAM is not set"
--		exit 1
-+		modprobe zram num_devices=$dev_num
- 	fi
-+
-+	module_load=1
-+	dev_end=$(($dev_num - 1))
-+	echo "all zram devices (/dev/zram0~$dev_end) successfully created"
- }
- 
- zram_max_streams()
-@@ -119,7 +136,7 @@ zram_max_streams()
- 		return 0
- 	fi
- 
--	local i=0
-+	local i=$dev_start
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
- 		echo $max_s > $sys_path || \
-@@ -131,7 +148,7 @@ zram_max_streams()
- 			echo "FAIL can't set max_streams '$max_s', get $max_stream"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$max_streams' ($i/$dev_num)"
-+		echo "$sys_path = '$max_streams'"
- 	done
- 
- 	echo "zram max streams: OK"
-@@ -141,15 +158,16 @@ zram_compress_alg()
- {
- 	echo "test that we can set compression algorithm"
- 
--	local algs=$(cat /sys/block/zram0/comp_algorithm)
-+	local i=$dev_start
-+	local algs=$(cat /sys/block/zram${i}/comp_algorithm)
- 	echo "supported algs: $algs"
--	local i=0
-+
- 	for alg in $zram_algs; do
- 		local sys_path="/sys/block/zram${i}/comp_algorithm"
- 		echo "$alg" >	$sys_path || \
- 			echo "FAIL can't set '$alg' to $sys_path"
- 		i=$(($i + 1))
--		echo "$sys_path = '$alg' ($i/$dev_num)"
-+		echo "$sys_path = '$alg'"
- 	done
- 
- 	echo "zram set compression algorithm: OK"
-@@ -158,14 +176,14 @@ zram_compress_alg()
- zram_set_disksizes()
- {
- 	echo "set disk size to zram device(s)"
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_sizes; do
- 		local sys_path="/sys/block/zram${i}/disksize"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
- 
- 	echo "zram set disksizes: OK"
-@@ -175,14 +193,14 @@ zram_set_memlimit()
- {
- 	echo "set memory limit to zram device(s)"
- 
--	local i=0
-+	local i=$dev_start
- 	for ds in $zram_mem_limits; do
- 		local sys_path="/sys/block/zram${i}/mem_limit"
- 		echo "$ds" >	$sys_path || \
- 			echo "FAIL can't set '$ds' to $sys_path"
- 
- 		i=$(($i + 1))
--		echo "$sys_path = '$ds' ($i/$dev_num)"
-+		echo "$sys_path = '$ds'"
- 	done
- 
- 	echo "zram set memory limit: OK"
-@@ -191,8 +209,8 @@ zram_set_memlimit()
- zram_makeswap()
- {
- 	echo "make swap with zram device(s)"
--	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	local i=$dev_start
-+	for i in $(seq $dev_start $dev_end); do
- 		mkswap /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -215,7 +233,7 @@ zram_makeswap()
- zram_swapoff()
- {
- 	local i=
--	for i in $(seq 0 $dev_makeswap); do
-+	for i in $(seq $dev_start $dev_end); do
- 		swapoff /dev/zram$i > err.log 2>&1
- 		if [ $? -ne 0 ]; then
- 			cat err.log
-@@ -229,7 +247,7 @@ zram_swapoff()
- 
- zram_makefs()
- {
--	local i=0
-+	local i=$dev_start
- 	for fs in $zram_filesystems; do
- 		# if requested fs not supported default it to ext2
- 		which mkfs.$fs > /dev/null 2>&1 || fs=ext2
-@@ -248,7 +266,7 @@ zram_makefs()
- zram_mount()
- {
- 	local i=0
--	for i in $(seq 0 $(($dev_num - 1))); do
-+	for i in $(seq $dev_start $dev_end); do
- 		echo "mount /dev/zram$i"
- 		mkdir zram$i
- 		mount /dev/zram$i zram$i > /dev/null || \
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
