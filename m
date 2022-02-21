@@ -2,139 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0524C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357027AbiBULx6 (ORCPT
+        id S1348848AbiBULzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:53:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51830 "EHLO
+        Mon, 21 Feb 2022 06:55:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356953AbiBULxO (ORCPT
+        with ESMTP id S1356969AbiBULzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:53:14 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2551FA6C;
-        Mon, 21 Feb 2022 03:52:37 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id om7so14945238pjb.5;
-        Mon, 21 Feb 2022 03:52:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RHHO1lCTgmUCqGpOMS2hTgwPWrCn1+5dYE38ZQv5fAw=;
-        b=FHfU/E2JV17g5GrMCniEYdI+q+m5SY8zzNNLsOdlQqAsNjwezFhFxJ2E8bvPHMdoma
-         c7z+zDnUcRLUAnaRfjnRHXaHnvdgpVzr036+ahqfjdFeaUshRzfl1TBn51GIEkMatx+q
-         iGuqqgsfvk0dOyMx76qO+gS/NFY7ck+8SFtEGh/u5r1mOqW11k57WoONJWwnjwcjyO/O
-         OEDMSnGzoEGCbc6XYiTLh8KKItW6PANzxBDmK3eYc/HbrnQ+m54vXSTpSHDTngiIpArC
-         uQwHB20tT30ajLi94283ML4MHb/MsaL/hippmaunhvL72GjfmJdqVhX43uCkEHIfFUyI
-         7fQA==
+        Mon, 21 Feb 2022 06:55:06 -0500
+Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738071EEED;
+        Mon, 21 Feb 2022 03:54:41 -0800 (PST)
+Received: by mail-vs1-f49.google.com with SMTP id u10so17225797vsu.13;
+        Mon, 21 Feb 2022 03:54:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RHHO1lCTgmUCqGpOMS2hTgwPWrCn1+5dYE38ZQv5fAw=;
-        b=XEpOjXvS0XSdTaVr5LRyBevi0AzXa/812hnMYSUI8xNSvBKNra/972EkIryqj6LtpA
-         1dVu1mCv5h9ebcZ59gPbIkGkDzzdKZTzS2u5dgmzabUa3RLuidGLgRTPfeJBY/jzKKjV
-         xAGKHI0pqXWYrJZBF4gi8bBHeoIYhMDKe3wyplj4SriDw1PWQFfsAZrP3Ne6SWZq3uVq
-         E01YV9qPU96rWvq0e3qECFBsrquq5QFOhGZh0sfVnm07LJ9Z9//EIMBTPJpc1jL5f2ty
-         WLKn6ToZNK9pKN/XD7dLMm/GlDjgvqfE9hyRol+2miAaQPTTYxbVaWpfyGaIq0yud7FJ
-         smsA==
-X-Gm-Message-State: AOAM532jfWgxDYXgUTt0aoBQqyk4AfsZfKObzo4X+FzC3/anLEx9zGMv
-        UaRsCxgiL2NC77a0q3iuitk=
-X-Google-Smtp-Source: ABdhPJzJdZysFmnfkECExgsUIz53tG43FuUEq97WWce3qS0nCaMg1G92mUQ0TZiiKXa0nDWWwEjEZw==
-X-Received: by 2002:a17:902:da88:b0:14b:550b:4caa with SMTP id j8-20020a170902da8800b0014b550b4caamr18214777plx.111.1645444356529;
-        Mon, 21 Feb 2022 03:52:36 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id z14sm13055011pfe.30.2022.02.21.03.52.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 03:52:36 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 08/11] perf: x86/core: Add interface to query perfmon_event_map[] directly
-Date:   Mon, 21 Feb 2022 19:51:58 +0800
-Message-Id: <20220221115201.22208-9-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220221115201.22208-1-likexu@tencent.com>
-References: <20220221115201.22208-1-likexu@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t9glkrk7WFBjBWlhxGJJjxKdsiWpb+Qpxc6YsbbmFGE=;
+        b=WEIXnCdMIoqOxNuwXX78kcR4LqeBB7YRIdCysJLbhmbo1D9EO3Sj7heLsJPkgwh1I7
+         Lyw5a5SQdQcPSRY+30lYw5S4LNe4pCLYNvi+anRpPRbAFiieofPpfuuFTdStC56yaYK7
+         wxv+Q1ups177Re4FuPQ+pbxVXvMVPl0KW6tV1oYqSdjfA+nifRX3yVZiuJYJhUxNIDV9
+         6ijtnvcHWt/gKAGQ5Z8vD931Jegu7zR0Gjy2ZfzzV+seiW5XPC4L+G2Dfxg2xQcnmi+1
+         NM9X5lyiVv7lAZbyZvh2sIfUTaX1w6UpgXUOUgOy4uBkJFlmIhmOSQdHTu7uIcqJJXHk
+         yH7Q==
+X-Gm-Message-State: AOAM530HO39jN2B8/GiTD7qGIRGZtPHG9yCkoRm/udYFk+2cMtP56zao
+        rmF1CJulFlfP9Xz6LoSENXySsK7HkkoXBA==
+X-Google-Smtp-Source: ABdhPJyh1G2tM1yuaBb14wanBkfA8XBta8okdeqN1cA4hCMtWIremTrS/pMgq3OMx9Is8YvJt0sb6g==
+X-Received: by 2002:a05:6102:418a:b0:31a:1d33:6803 with SMTP id cd10-20020a056102418a00b0031a1d336803mr7910313vsb.40.1645444480412;
+        Mon, 21 Feb 2022 03:54:40 -0800 (PST)
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
+        by smtp.gmail.com with ESMTPSA id i13sm646550uap.12.2022.02.21.03.54.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 03:54:40 -0800 (PST)
+Received: by mail-ua1-f54.google.com with SMTP id 110so5849721uak.4;
+        Mon, 21 Feb 2022 03:54:39 -0800 (PST)
+X-Received: by 2002:a9f:360f:0:b0:341:8a12:8218 with SMTP id
+ r15-20020a9f360f000000b003418a128218mr6031609uad.14.1645444479570; Mon, 21
+ Feb 2022 03:54:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1645425519-9034-1-git-send-email-anshuman.khandual@arm.com> <1645425519-9034-9-git-send-email-anshuman.khandual@arm.com>
+In-Reply-To: <1645425519-9034-9-git-send-email-anshuman.khandual@arm.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 21 Feb 2022 12:54:28 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUrA4u5BTRuqTSn++vXFNn0w=HRmp9ZD_8SNZ1wMUKwwQ@mail.gmail.com>
+Message-ID: <CAMuHMdUrA4u5BTRuqTSn++vXFNn0w=HRmp9ZD_8SNZ1wMUKwwQ@mail.gmail.com>
+Subject: Re: [PATCH V2 08/30] m68k/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+Hi Anshuman,
 
-Currently, we have [intel|knc|p4|p6]_perfmon_event_map on the Intel
-platforms and amd_[f17h]_perfmon_event_map on the AMD platforms.
+On Mon, Feb 21, 2022 at 9:45 AM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
+> This defines and exports a platform specific custom vm_get_page_prot() via
+> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+> macros can be dropped which are no longer needed.
+>
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-Early clumsy KVM code or other potential perf_event users may have
-hard-coded these perfmon_maps (e.g., arch/x86/kvm/svm/pmu.c), so
-it would not make sense to program a common hardware event based
-on the generic "enum perf_hw_id" once the two tables do not match.
+Thanks for your patch!
 
-Just provide an interface for callers outside the perf subsystem to get
-the counter config based on the perfmon_event_map currently in use,
-and it also helps to save bytes.
+> --- a/arch/m68k/mm/init.c
+> +++ b/arch/m68k/mm/init.c
+> @@ -128,3 +128,107 @@ void __init mem_init(void)
+>         memblock_free_all();
+>         init_pointer_tables();
+>  }
+> +
+> +#ifdef CONFIG_COLDFIRE
+> +/*
+> + * Page protections for initialising protection_map. See mm/mmap.c
+> + * for use. In general, the bit positions are xwr, and P-items are
+> + * private, the S-items are shared.
+> + */
+> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/events/core.c            | 11 +++++++++++
- arch/x86/include/asm/perf_event.h |  6 ++++++
- 2 files changed, 17 insertions(+)
+Wouldn't it make more sense to add this to arch/m68k/mm/mcfmmu.c?
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index e686c5e0537b..e760a1348c62 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2996,3 +2996,14 @@ void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	cap->events_mask_len	= x86_pmu.events_mask_len;
- }
- EXPORT_SYMBOL_GPL(perf_get_x86_pmu_capability);
-+
-+u64 perf_get_hw_event_config(int hw_event)
-+{
-+	int max = x86_pmu.max_events;
-+
-+	if (hw_event < max)
-+		return x86_pmu.event_map(array_index_nospec(hw_event, max));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(perf_get_hw_event_config);
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index 8fc1b5003713..822927045406 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -477,6 +477,7 @@ struct x86_pmu_lbr {
- };
- 
- extern void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap);
-+extern u64 perf_get_hw_event_config(int hw_event);
- extern void perf_check_microcode(void);
- extern void perf_clear_dirty_counters(void);
- extern int x86_perf_rdpmc_index(struct perf_event *event);
-@@ -486,6 +487,11 @@ static inline void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	memset(cap, 0, sizeof(*cap));
- }
- 
-+static inline u64 perf_get_hw_event_config(int hw_event)
-+{
-+	return 0;
-+}
-+
- static inline void perf_events_lapic_init(void)	{ }
- static inline void perf_check_microcode(void) { }
- #endif
--- 
-2.35.0
+> +{
+> +       switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+> +       case VM_NONE:
+> +               return PAGE_NONE;
+> +       case VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE);
+> +       case VM_WRITE:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_WRITABLE);
+> +       case VM_WRITE | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_WRITABLE);
+> +       case VM_EXEC:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_EXEC);
+> +       case VM_EXEC | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_EXEC);
+> +       case VM_EXEC | VM_WRITE:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_WRITABLE | CF_PAGE_EXEC);
+> +       case VM_EXEC | VM_WRITE | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_WRITABLE |
+> +                               CF_PAGE_EXEC);
+> +       case VM_SHARED:
+> +               return PAGE_NONE;
+> +       case VM_SHARED | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE);
 
+This is the same as the plain VM_READ case.
+Perhaps they can be merged?
+
+> +       case VM_SHARED | VM_WRITE:
+> +               return PAGE_SHARED;
+> +       case VM_SHARED | VM_WRITE | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_SHARED);
+> +       case VM_SHARED | VM_EXEC:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_EXEC);
+
+Same as plain VM_EXEC.
+
+> +       case VM_SHARED | VM_EXEC | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_EXEC);
+
+Same as plain VM_EXEC | VM_READ.
+
+> +       case VM_SHARED | VM_EXEC | VM_WRITE:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_SHARED | CF_PAGE_EXEC);
+> +       case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+> +               return __pgprot(CF_PAGE_VALID | CF_PAGE_ACCESSED |
+> +                               CF_PAGE_READABLE | CF_PAGE_SHARED |
+> +                               CF_PAGE_EXEC);
+> +       default:
+> +               BUILD_BUG();
+> +       }
+> +}
+> +#endif
+> +
+> +#ifdef CONFIG_SUN3
+> +/*
+> + * Page protections for initialising protection_map. The sun3 has only two
+> + * protection settings, valid (implying read and execute) and writeable. These
+> + * are as close as we can get...
+> + */
+> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+
+Wouldn't it make more sense to add this to arch/m68k/mm/sun3mmu.c?
+
+> +{
+> +       switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+> +       case VM_NONE:
+> +               return PAGE_NONE;
+> +       case VM_READ:
+> +               return PAGE_READONLY;
+> +       case VM_WRITE:
+> +       case VM_WRITE | VM_READ:
+
+So you did merge some of them...
+
+> +               return PAGE_COPY;
+> +       case VM_EXEC:
+> +       case VM_EXEC | VM_READ:
+> +               return PAGE_READONLY;
+
+But not all? More below...
+
+> +       case VM_EXEC | VM_WRITE:
+> +       case VM_EXEC | VM_WRITE | VM_READ:
+> +               return PAGE_COPY;
+> +       case VM_SHARED:
+> +               return PAGE_NONE;
+> +       case VM_SHARED | VM_READ:
+> +               return PAGE_READONLY;
+> +       case VM_SHARED | VM_WRITE:
+> +       case VM_SHARED | VM_WRITE | VM_READ:
+> +               return PAGE_SHARED;
+> +       case VM_SHARED | VM_EXEC:
+> +       case VM_SHARED | VM_EXEC | VM_READ:
+> +               return PAGE_READONLY;
+> +       case VM_SHARED | VM_EXEC | VM_WRITE:
+> +       case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+> +               return PAGE_SHARED;
+> +       default:
+> +               BUILD_BUG();
+> +       }
+> +}
+> +#endif
+> +EXPORT_SYMBOL(vm_get_page_prot);
+> diff --git a/arch/m68k/mm/motorola.c b/arch/m68k/mm/motorola.c
+> index ecbe948f4c1a..495ba0ea083c 100644
+> --- a/arch/m68k/mm/motorola.c
+> +++ b/arch/m68k/mm/motorola.c
+> @@ -400,12 +400,9 @@ void __init paging_init(void)
+>
+>         /* Fix the cache mode in the page descriptors for the 680[46]0.  */
+>         if (CPU_IS_040_OR_060) {
+> -               int i;
+>  #ifndef mm_cachebits
+>                 mm_cachebits = _PAGE_CACHE040;
+>  #endif
+> -               for (i = 0; i < 16; i++)
+> -                       pgprot_val(protection_map[i]) |= _PAGE_CACHE040;
+>         }
+>
+>         min_addr = m68k_memory[0].addr;
+> @@ -483,3 +480,48 @@ void __init paging_init(void)
+>         max_zone_pfn[ZONE_DMA] = memblock_end_of_DRAM();
+>         free_area_init(max_zone_pfn);
+>  }
+> +
+> +/*
+> + * The m68k can't do page protection for execute, and considers that
+> + * the same are read. Also, write permissions imply read permissions.
+> + * This is the closest we can get..
+> + */
+> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+
+Good, this one is in arch/m68k/mm/motorola.c :-)
+
+> +{
+> +       unsigned long cachebits = 0;
+> +
+> +       if (CPU_IS_040_OR_060)
+> +               cachebits = _PAGE_CACHE040;
+
+If you would use the non-"_C"-variants (e.g. PAGE_NONE instead of
+PAGE_NONE_C) below, you would get the cachebits handling for free!
+After that, the "_C" variants are no longer used, and can be removed.
+Cfr. arch/m68k/include/asm/motorola_pgtable.h:
+
+    #define PAGE_NONE       __pgprot(_PAGE_PROTNONE | _PAGE_ACCESSED |
+mm_cachebits)
+    #define PAGE_SHARED     __pgprot(_PAGE_PRESENT | _PAGE_ACCESSED |
+mm_cachebits)
+    #define PAGE_COPY       __pgprot(_PAGE_PRESENT | _PAGE_RONLY |
+_PAGE_ACCESSED | mm_cachebits)
+    #define PAGE_READONLY   __pgprot(_PAGE_PRESENT | _PAGE_RONLY |
+_PAGE_ACCESSED | mm_cachebits)
+    #define PAGE_KERNEL     __pgprot(_PAGE_PRESENT | _PAGE_DIRTY |
+_PAGE_ACCESSED | mm_cachebits)
+
+    /* Alternate definitions that are compile time constants, for
+       initializing protection_map.  The cachebits are fixed later.  */
+    #define PAGE_NONE_C     __pgprot(_PAGE_PROTNONE | _PAGE_ACCESSED)
+    #define PAGE_SHARED_C   __pgprot(_PAGE_PRESENT | _PAGE_ACCESSED)
+    #define PAGE_COPY_C     __pgprot(_PAGE_PRESENT | _PAGE_RONLY |
+_PAGE_ACCESSED)
+    #define PAGE_READONLY_C __pgprot(_PAGE_PRESENT | _PAGE_RONLY |
+_PAGE_ACCESSED)
+
+BTW, this shows you left a reference in a comment to the now-gone
+"protection_map".  There are several more across the tree.
+
+> +
+> +       switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+> +       case VM_NONE:
+> +               return __pgprot(pgprot_val(PAGE_NONE_C) | cachebits);
+> +       case VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_READONLY_C) | cachebits);
+> +       case VM_WRITE:
+> +       case VM_WRITE | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_COPY_C) | cachebits);
+> +       case VM_EXEC:
+> +       case VM_EXEC | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_READONLY_C) | cachebits);
+> +       case VM_EXEC | VM_WRITE:
+> +       case VM_EXEC | VM_WRITE | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_COPY_C) | cachebits);
+> +       case VM_SHARED:
+> +               return __pgprot(pgprot_val(PAGE_NONE_C) | cachebits);
+
+Same as the VM_NONE case.  More to be merged below...
+
+> +       case VM_SHARED | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_READONLY_C) | cachebits);
+> +       case VM_SHARED | VM_WRITE:
+> +       case VM_SHARED | VM_WRITE | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_SHARED_C) | cachebits);
+> +       case VM_SHARED | VM_EXEC:
+> +       case VM_SHARED | VM_EXEC | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_READONLY_C) | cachebits);
+> +       case VM_SHARED | VM_EXEC | VM_WRITE:
+> +       case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+> +               return __pgprot(pgprot_val(PAGE_SHARED_C) | cachebits);
+> +       default:
+> +               BUILD_BUG();
+> +       }
+> +}
+> +EXPORT_SYMBOL(vm_get_page_prot);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
