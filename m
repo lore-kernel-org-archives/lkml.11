@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F2EC35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B31C35278
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352311AbiBUJrV (ORCPT
+        id S1352164AbiBUJrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49112 "EHLO
+        Mon, 21 Feb 2022 04:47:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349320AbiBUJkH (ORCPT
+        with ESMTP id S1350666AbiBUJjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:40:07 -0500
+        Mon, 21 Feb 2022 04:39:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9673BFA3;
-        Mon, 21 Feb 2022 01:17:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928633B3DD;
+        Mon, 21 Feb 2022 01:17:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C06C060F04;
-        Mon, 21 Feb 2022 09:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6070C340EB;
-        Mon, 21 Feb 2022 09:17:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DEAC608C4;
+        Mon, 21 Feb 2022 09:17:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C33C36AF4;
+        Mon, 21 Feb 2022 09:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435027;
-        bh=jpZH6xrh9hccXtiZXWyWHqnt+rfjkT9gFkXP6XsvMPw=;
+        s=korg; t=1645435021;
+        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EagVCQNwmWmN/WKIgAsDFiPmCJybQ9RJY4f6hOO7SSUO3Lm+Ti+DotrJwlxyNjD7S
-         CFDy3T105/DxpgiEBBWajk+TkWVAr3Xha0tHhhgAIVXVLWSKoLslPUjMoI3KocQP6x
-         jBzlZl1n9/sggH1EkdWg+k3c9lQkUQ2/Ul+eAd1E=
+        b=yRtBDpchB9HPLGLuKo+LFdTRvjLlfse/jyX7bhNFsHCO0yl1nXmy+bNiqkAHOWuz1
+         MWoeyDeu3t5vv848aRw1eRncSxK5ZTRNrttEB8NXkpkIB2xVgy9egIMOsr8qRi134l
+         4uMzQ01hnIx46yHfNm2iahe4ooLk2Sq3+ZMxV1uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Oded Gabbay <oded.gabbay@gmail.com>
-Subject: [PATCH 5.16 019/227] mm: dont try to NUMA-migrate COW pages that have other uses
-Date:   Mon, 21 Feb 2022 09:47:18 +0100
-Message-Id: <20220221084935.476424505@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.16 017/227] parisc: Fix sglist access in ccio-dma.c
+Date:   Mon, 21 Feb 2022 09:47:16 +0100
+Message-Id: <20220221084935.416055646@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,75 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit 80d47f5de5e311cbc0d01ebb6ee684e8f4c196c6 upstream.
+commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
 
-Oded Gabbay reports that enabling NUMA balancing causes corruption with
-his Gaudi accelerator test load:
+This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
+It ensures that only the allocated entries of the sglist are accessed.
 
- "All the details are in the bug, but the bottom line is that somehow,
-  this patch causes corruption when the numa balancing feature is
-  enabled AND we don't use process affinity AND we use GUP to pin pages
-  so our accelerator can DMA to/from system memory.
-
-  Either disabling numa balancing, using process affinity to bind to
-  specific numa-node or reverting this patch causes the bug to
-  disappear"
-
-and Oded bisected the issue to commit 09854ba94c6a ("mm: do_wp_page()
-simplification").
-
-Now, the NUMA balancing shouldn't actually be changing the writability
-of a page, and as such shouldn't matter for COW.  But it appears it
-does.  Suspicious.
-
-However, regardless of that, the condition for enabling NUMA faults in
-change_pte_range() is nonsensical.  It uses "page_mapcount(page)" to
-decide if a COW page should be NUMA-protected or not, and that makes
-absolutely no sense.
-
-The number of mappings a page has is irrelevant: not only does GUP get a
-reference to a page as in Oded's case, but the other mappings migth be
-paged out and the only reference to them would be in the page count.
-
-Since we should never try to NUMA-balance a page that we can't move
-anyway due to other references, just fix the code to use 'page_count()'.
-Oded confirms that that fixes his issue.
-
-Now, this does imply that something in NUMA balancing ends up changing
-page protections (other than the obvious one of making the page
-inaccessible to get the NUMA faulting information).  Otherwise the COW
-simplification wouldn't matter - since doing the GUP on the page would
-make sure it's writable.
-
-The cause of that permission change would be good to figure out too,
-since it clearly results in spurious COW events - but fixing the
-nonsensical test that just happened to work before is obviously the
-CorrectThing(tm) to do regardless.
-
-Fixes: 09854ba94c6a ("mm: do_wp_page() simplification")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215616
-Link: https://lore.kernel.org/all/CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com/
-Reported-and-tested-by: Oded Gabbay <oded.gabbay@gmail.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Peter Xu <peterx@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mprotect.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/parisc/ccio-dma.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -94,7 +94,7 @@ static unsigned long change_pte_range(st
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 	ioc->usg_calls++;
+ #endif
  
- 				/* Also skip shared copy-on-write pages */
- 				if (is_cow_mapping(vma->vm_flags) &&
--				    page_mapcount(page) != 1)
-+				    page_count(page) != 1)
- 					continue;
+-	while(sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
  
- 				/*
+ #ifdef CCIO_COLLECT_STATS
+ 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 		ccio_unmap_page(dev, sg_dma_address(sglist),
+ 				  sg_dma_len(sglist), direction, 0);
+ 		++sglist;
++		nents--;
+ 	}
+ 
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
 
 
