@@ -2,92 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B40C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231404AbiBURz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:55:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47182 "EHLO
+        id S231628AbiBUR6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 12:58:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiBURxW (ORCPT
+        with ESMTP id S231300AbiBURzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:53:22 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B32FDEEB;
-        Mon, 21 Feb 2022 09:48:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645465738; x=1677001738;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=zwiNRlhLeWQqN35/KdrWsXpG2B+PLJoioW20hr3nYM4=;
-  b=Fpj6r1A0icBVFRchNGO1e+H1iS37obos0vdGnmhX9q/wYCFMcAwBlGUV
-   z4h5n+FpGvqCHbsc1dsVexNhdj02ZvolJ4/cvi/W11q3fIpJM6ojqGryz
-   ZTA6Q5ZPmB/4NzaWXkSCL2vlI+4p0NKoQ6q/nBMjDwAI7gpt/e9Ii3O53
-   Tiwso0TRkuAwPZPJj0AsJCggvnOjEiNnkcPUkIN1HIMphaaLZm23AeeMi
-   c2ekN99W7mp+X5hFxhpoSI0gpm/2hc6KDPuotb/0ysLk3tVQIKqScLwYp
-   rUNHmXwvIXlesGH5enw4pg2bBxVd/ywRIqybKOKl+KFNrdirgzY1t0nuL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251732801"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251732801"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:48:57 -0800
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="507704887"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:48:53 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMCn2-006s1L-U8;
-        Mon, 21 Feb 2022 19:48:00 +0200
-Date:   Mon, 21 Feb 2022 19:48:00 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 03/10] base: swnode: use fwnode_get_match_data()
-Message-ID: <YhPQUPzz5vPvHUAy@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-4-clement.leger@bootlin.com>
+        Mon, 21 Feb 2022 12:55:52 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5738E01C;
+        Mon, 21 Feb 2022 09:50:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=/FM4BeA5AMOBfdTgSAmRLVTFsUL98NQyEY77WysQYVo=; b=zLsc4AXd99f4dJ1kp7KQgopJd4
+        Lba1XebLJS2VyOkWL82dRsrs8Px+vwdg+p6JzhnnNMwin/vH14PNSv6da8sCn6SEw5KqZXcj4W1NE
+        rpGjemu/JmvZbQ4FnsSFQjOHsF7P5RJk+a6UC3ZNNkzE16sD7wyOZNzbAVzEcJPh/BeD6q2m3BY80
+        V/LVHJyFAWDuhDS50atd4v3YaUVAdWQ/gBn3UlWUV6dae3h566RR+AtnD9YA4EFWPzkq9VNRDLQb0
+        lfpfP9n7ayTAGlte20sIKjX0L12P+2ZcqjGVC4T0fdHdS0YoK4ddNLU/mpiJ9zcCq3q0rSzo6diK2
+        V5+JnLzg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMCpS-006r5a-GS; Mon, 21 Feb 2022 17:50:30 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org
+Subject: [PATCH] mips: setup: fix setnocoherentio() boolean setting
+Date:   Mon, 21 Feb 2022 09:50:29 -0800
+Message-Id: <20220221175029.6046-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221162652.103834-4-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:45PM +0100, Clément Léger wrote:
-> In order to allow matching devices with software node with
-> device_get_match_data(), use fwnode_get_match_data() for
-> .device_get_match_data operation.
+Correct a typo/pasto: setnocoherentio() should set
+dma_default_coherent to false, not true.
 
-...
+Fixes: 14ac09a65e19 ("MIPS: refactor the runtime coherent vs noncoherent DMA indicators")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+---
+ arch/mips/kernel/setup.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +	.device_get_match_data = fwnode_get_match_data,
-
-Huh? It should be other way around, no?
-I mean that each of the resource providers may (or may not) provide a method
-for the specific fwnode abstraction.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--- linux-next-20220217.orig/arch/mips/kernel/setup.c
++++ linux-next-20220217/arch/mips/kernel/setup.c
+@@ -803,7 +803,7 @@ early_param("coherentio", setcoherentio)
+ 
+ static int __init setnocoherentio(char *str)
+ {
+-	dma_default_coherent = true;
++	dma_default_coherent = false;
+ 	pr_info("Software DMA cache coherency (command line)\n");
+ 	return 0;
+ }
