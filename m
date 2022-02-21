@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D1AC35280
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C2DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354187AbiBUKDH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:03:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50552 "EHLO
+        id S241794AbiBUKDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:03:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352460AbiBUJzQ (ORCPT
+        with ESMTP id S1352282AbiBUJzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:55:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C77A38BFC;
-        Mon, 21 Feb 2022 01:24:23 -0800 (PST)
+        Mon, 21 Feb 2022 04:55:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122EC38D9B;
+        Mon, 21 Feb 2022 01:24:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D30F6B80EBB;
-        Mon, 21 Feb 2022 09:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2414C340E9;
-        Mon, 21 Feb 2022 09:24:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A538260E77;
+        Mon, 21 Feb 2022 09:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88ACBC340E9;
+        Mon, 21 Feb 2022 09:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435460;
-        bh=DL49cb9d1UNYv3vnuLE5vghj+o41h5Rq2job1VvuVjk=;
+        s=korg; t=1645435466;
+        bh=ndV0d7LE6q+zLbv7DPboGaYMp5aB/82uoAfM0/0l9TQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UyS7M+OKBfcM8d4gOliEUXbYyQQRdS+x79AHQXfqLO+/Qoerul1vtQV2ienTlYRXQ
-         CqMcyYFkENv5oYitzO3z/w95mzsQsWr2yC8Zol6g7C9Fb1MXORck3F/OL/G1cWAbjn
-         LrsLcZTGXvHBE7o9x5J0wAWXIlpw/9S7S6cETfnk=
+        b=ngQOg9zFDCsoJ7196LKRx+PE7RsHZlyFGI79wMGiha1rNU2VXwwzwZLEkW/BXdU+h
+         0+JlJZS0f3oolpTpM9vJgOOZ/IXjYNoz2S3NdoohUD0teinDCrANUKw/485vzxL5JL
+         KMQH4mvemnTdzaI5m6qAdJkjSBWLo55KKUe9DCXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.16 171/227] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
-Date:   Mon, 21 Feb 2022 09:49:50 +0100
-Message-Id: <20220221084940.499270787@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.16 173/227] ucounts: Base set_cred_ucounts changes on the real user
+Date:   Mon, 21 Feb 2022 09:49:52 +0100
+Message-Id: <20220221084940.562469023@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,45 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eliav Farber <farbere@amazon.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
+commit a55d07294f1e9b576093bdfa95422f8119941e83 upstream.
 
-Do alignment logic properly and use the "ptr" local variable for
-calculating the remainder of the alignment.
+Michal Koutný <mkoutny@suse.com> wrote:
+> Tasks are associated to multiple users at once. Historically and as per
+> setrlimit(2) RLIMIT_NPROC is enforce based on real user ID.
+>
+> The commit 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+> made the accounting structure "indexed" by euid and hence potentially
+> account tasks differently.
+>
+> The effective user ID may be different e.g. for setuid programs but
+> those are exec'd into already existing task (i.e. below limit), so
+> different accounting is moot.
+>
+> Some special setresuid(2) users may notice the difference, justifying
+> this fix.
 
-This became an issue because struct edac_mc_layer has a size that is not
-zero modulo eight, and the next offset that was prepared for the private
-data was unaligned, causing an alignment exception.
+I looked at cred->ucount and it is only used for rlimit operations
+that were previously stored in cred->user.  Making the fact
+cred->ucount can refer to a different user from cred->user a bug,
+affecting all uses of cred->ulimit not just RLIMIT_NPROC.
 
-The patch in Fixes: which broke this actually wanted to "what we
-actually care about is the alignment of the actual pointer that's about
-to be returned." But it didn't check that alignment.
+Fix set_cred_ucounts to always use the real uid not the effective uid.
 
-Use the correct variable "ptr" for that.
+Further simplify set_cred_ucounts by noticing that set_cred_ucounts
+somehow retained a draft version of the check to see if alloc_ucounts
+was needed that checks the new->user and new->user_ns against the
+current_real_cred().  Remove that draft version of the check.
 
-  [ bp: Massage commit message. ]
+All that matters for setting the cred->ucounts are the user_ns and uid
+fields in the cred.
 
-Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
-Signed-off-by: Eliav Farber <farbere@amazon.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220207121800.5079-4-mkoutny@suse.com
+Link: https://lkml.kernel.org/r/20220216155832.680775-3-ebiederm@xmission.com
+Reported-by: Michal Koutný <mkoutny@suse.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/edac_mc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cred.c |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
---- a/drivers/edac/edac_mc.c
-+++ b/drivers/edac/edac_mc.c
-@@ -213,7 +213,7 @@ void *edac_align_ptr(void **p, unsigned
- 	else
- 		return (char *)ptr;
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -665,21 +665,16 @@ EXPORT_SYMBOL(cred_fscmp);
  
--	r = (unsigned long)p % align;
-+	r = (unsigned long)ptr % align;
+ int set_cred_ucounts(struct cred *new)
+ {
+-	struct task_struct *task = current;
+-	const struct cred *old = task->real_cred;
+ 	struct ucounts *new_ucounts, *old_ucounts = new->ucounts;
  
- 	if (r == 0)
- 		return (char *)ptr;
+-	if (new->user == old->user && new->user_ns == old->user_ns)
+-		return 0;
+-
+ 	/*
+ 	 * This optimization is needed because alloc_ucounts() uses locks
+ 	 * for table lookups.
+ 	 */
+-	if (old_ucounts->ns == new->user_ns && uid_eq(old_ucounts->uid, new->euid))
++	if (old_ucounts->ns == new->user_ns && uid_eq(old_ucounts->uid, new->uid))
+ 		return 0;
+ 
+-	if (!(new_ucounts = alloc_ucounts(new->user_ns, new->euid)))
++	if (!(new_ucounts = alloc_ucounts(new->user_ns, new->uid)))
+ 		return -EAGAIN;
+ 
+ 	new->ucounts = new_ucounts;
 
 
