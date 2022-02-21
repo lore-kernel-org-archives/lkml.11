@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5425C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345752AbiBUIxm (ORCPT
+        id S1343945AbiBUIxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:53:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44708 "EHLO
+        Mon, 21 Feb 2022 03:53:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345557AbiBUIwx (ORCPT
+        with ESMTP id S1345588AbiBUIwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B31B25E7;
-        Mon, 21 Feb 2022 00:52:27 -0800 (PST)
+        Mon, 21 Feb 2022 03:52:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580B62AC7;
+        Mon, 21 Feb 2022 00:52:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0131BB80EB0;
-        Mon, 21 Feb 2022 08:52:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E24EC340F1;
-        Mon, 21 Feb 2022 08:52:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB81861133;
+        Mon, 21 Feb 2022 08:52:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E59C340E9;
+        Mon, 21 Feb 2022 08:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433544;
-        bh=zZv4cf1Gxrqszl+G8uumJj1fJSQk+9B7NQtkVLy42R0=;
+        s=korg; t=1645433550;
+        bh=5C8MD+mk+Eb5UUBsFV2o0TrobpgLPD9Gi8Eu2lLIYVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vZCyja1wFogUluo2T4uALMZeA5F6apJRd0RnCQjBMXF6UibuVSHe6RSY28c9rTRtC
-         W63IF4K2XTihxZvQGoPVWkH2B+dSsw550N+zdwyVL9waipf1PXUwLRJ7gIlR7V12et
-         8V2dn/O+qdkBCDePl+4DrEzmNeldJY2lZUQqCmMc=
+        b=UsgPHbPw24OggaO64eTXc8JcXmPaCxyUA9EMm8xiQpiBsYts5MoDsHau+st+3++vN
+         Q54bFgz86ueLyUihCBxrDRyeSAdLJqpwyef4GSQ28blwMRCbmHhngAAhjX7I4P/Tzj
+         jZ/MU7q1UpdJGo1Ow8lEt0QmADV/NBnVxaq8yK1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
+        <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 29/33] KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
-Date:   Mon, 21 Feb 2022 09:49:22 +0100
-Message-Id: <20220221084909.706175553@linuxfoundation.org>
+Subject: [PATCH 4.9 31/33] ata: libata-core: Disable TRIM on M88V29
+Date:   Mon, 21 Feb 2022 09:49:24 +0100
+Message-Id: <20220221084909.770943733@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -51,37 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Zoltán Böszörményi <zboszor@gmail.com>
 
-[ Upstream commit 710c476514313c74045c41c0571bb5178fd16e3d ]
+[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
 
-AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
-a PerfEvtSeln MSR. Don't mask off the high nybble when configuring a
-RAW perf event.
+This device is a CF card, or possibly an SSD in CF form factor.
+It supports NCQ and high speed DMA.
 
-Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Message-Id: <20220203014813.2130559-2-jmattson@google.com>
-Reviewed-by: David Dunn <daviddunn@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+While it also advertises TRIM support, I/O errors are reported
+when the discard mount option fstrim is used. TRIM also fails
+when disabling NCQ and not just as an NCQ command.
+
+TRIM must be disabled for this device.
+
+Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 0827ee7d0e9b6..f1aa0b932c547 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -164,7 +164,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	}
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index a92cbe1aa72a2..35db918a1de56 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4486,6 +4486,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
  
- 	if (type == PERF_TYPE_RAW)
--		config = eventsel & X86_RAW_EVENT_MASK;
-+		config = eventsel & AMD64_RAW_EVENT_MASK;
+ 	/* devices that don't properly handle TRIM commands */
+ 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
++	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
  
- 	pmc_reprogram_counter(pmc, type, config,
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
+ 	/*
+ 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
 -- 
 2.34.1
 
