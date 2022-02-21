@@ -2,97 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE20C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245716AbiBUKEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:04:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55806 "EHLO
+        id S237730AbiBUKE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:04:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353457AbiBUJ51 (ORCPT
+        with ESMTP id S1353519AbiBUJ5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137AC39685;
-        Mon, 21 Feb 2022 01:25:57 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1228FDF89;
+        Mon, 21 Feb 2022 01:26:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8AA4B80EB8;
-        Mon, 21 Feb 2022 09:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A733BC340F3;
-        Mon, 21 Feb 2022 09:25:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645435554;
-        bh=pTs1KoJz12fq0suxK/PNOmIm2Mipe1yi2Mmf5i++HuA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=BdOvfN2KPA6X/hKIAutABNjteXHPyRcli2E0FCJs6/ucQQHN9197WbEkn5KYm/x1s
-         cbRgeO8J2i5PsQIQOeJprrAwLNIsZ5euWk2hoINpcws3RX9QT/DrPZNc+M31mQ5iUl
-         4AxrQ8qhs1Em+kw86BeJe6vdOI5QtAd5JCB36m99v3FTKgni/HU0E3YCLwnptoOTox
-         nxaI/KCiQMcuKez4F7GZBO6ErYYgGs8mv8YHVjAYdJk/bc+rVRIAjY5+7vEe55W7ar
-         HJU9PMJIp0U8rfXvt6qPoxO176scYBVJij/eENXJ/Z1eJESOSQDin6jgkL29QIL3tT
-         qdH/dhIFMCKgA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Souptick Joarder <jrdr.linux@gmail.com>
-Cc:     loic.poulain@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com,
-        ryan.odonoghue@linaro.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] wcn36xx: Initialize channel to NULL inside wcn36xx_change_opchannel()
-References: <20220219152912.93580-1-jrdr.linux@gmail.com>
-Date:   Mon, 21 Feb 2022 11:25:49 +0200
-In-Reply-To: <20220219152912.93580-1-jrdr.linux@gmail.com> (Souptick Joarder's
-        message of "Sat, 19 Feb 2022 20:59:12 +0530")
-Message-ID: <87o830y3j6.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A177C61016;
+        Mon, 21 Feb 2022 09:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E15C340E9;
+        Mon, 21 Feb 2022 09:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645435597;
+        bh=gTQ04QDOxJ+4r8PsB+BEiOsQwripN+5lfxt370p67Sg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F0Q8o8uCGoK4yancxqRc3jeOLuOf+FRTf6Q1N9xIRHtZX11tJF9nz0hCYNjN033PO
+         dYSrnccdk4SXwBNeZ1vvHz3glRjlx0E+8Zh94u4KW4YuyOQH0xw5RPJKamLbXj1RkA
+         UYV33TuKt6zUtq6TRuYfFiSeSBdmIyV+vBtehCJ4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 187/227] scsi: qedi: Fix ABBA deadlock in qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp()
+Date:   Mon, 21 Feb 2022 09:50:06 +0100
+Message-Id: <20220221084941.030096409@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Souptick Joarder <jrdr.linux@gmail.com> writes:
+From: Mike Christie <michael.christie@oracle.com>
 
-> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
->
-> Kernel test robot reported below warning ->
-> drivers/net/wireless/ath/wcn36xx/main.c:409:7: warning: Branch
-> condition evaluates to a garbage value
-> [clang-analyzer-core.uninitialized.Branch]
->
-> Also code walk indicates, if channel is not found in first band,
-> it will break the loop and instead of exit it will go ahead and
-> assign a garbage value in wcn->channel which looks like a bug.
->
-> Initialize channel with NULL should avoid this issue.
->
-> Fixes: 	d6f2746691cb ("wcn36xx: Track the band and channel we are tuned to")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-> ---
->  drivers/net/wireless/ath/wcn36xx/main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-> index 75661d449712..1a06eff07107 100644
-> --- a/drivers/net/wireless/ath/wcn36xx/main.c
-> +++ b/drivers/net/wireless/ath/wcn36xx/main.c
-> @@ -394,7 +394,7 @@ static void wcn36xx_change_opchannel(struct wcn36xx *wcn, int ch)
->  	struct ieee80211_vif *vif = NULL;
->  	struct wcn36xx_vif *tmp;
->  	struct ieee80211_supported_band *band;
-> -	struct ieee80211_channel *channel;
-> +	struct ieee80211_channel *channel = NULL;
->  	unsigned long flags;
->  	int i, j;
+commit f10f582d28220f50099d3f561116256267821429 upstream.
 
-I have already applied an identical patch from Dan:
+This fixes a deadlock added with commit b40f3894e39e ("scsi: qedi: Complete
+TMF works before disconnect")
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=ath-next&id=11e41e2929378df945bf50b95409d93059ad4507
+Bug description from Jia-Ju Bai:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+qedi_process_tmf_resp()
+  spin_lock(&session->back_lock); --> Line 201 (Lock A)
+  spin_lock(&qedi_conn->tmf_work_lock); --> Line 230 (Lock B)
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+qedi_process_cmd_cleanup_resp()
+  spin_lock_bh(&qedi_conn->tmf_work_lock); --> Line 752 (Lock B)
+  spin_lock_bh(&conn->session->back_lock); --> Line 784 (Lock A)
+
+When qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp() are
+concurrently executed, the deadlock can occur.
+
+This patch fixes the deadlock by not holding the tmf_work_lock in
+qedi_process_cmd_cleanup_resp while holding the back_lock. The
+tmf_work_lock is only needed while we remove the tmf_work from the
+work_list.
+
+Link: https://lore.kernel.org/r/20220208185448.6206-1-michael.christie@oracle.com
+Fixes: b40f3894e39e ("scsi: qedi: Complete TMF works before disconnect")
+Cc: Manish Rangankar <mrangankar@marvell.com>
+Cc: Nilesh Javali <njavali@marvell.com>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Reported-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/qedi/qedi_fw.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+--- a/drivers/scsi/qedi/qedi_fw.c
++++ b/drivers/scsi/qedi/qedi_fw.c
+@@ -771,11 +771,10 @@ static void qedi_process_cmd_cleanup_res
+ 			qedi_cmd->list_tmf_work = NULL;
+ 		}
+ 	}
++	spin_unlock_bh(&qedi_conn->tmf_work_lock);
+ 
+-	if (!found) {
+-		spin_unlock_bh(&qedi_conn->tmf_work_lock);
++	if (!found)
+ 		goto check_cleanup_reqs;
+-	}
+ 
+ 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_SCSI_TM,
+ 		  "TMF work, cqe->tid=0x%x, tmf flags=0x%x, cid=0x%x\n",
+@@ -806,7 +805,6 @@ static void qedi_process_cmd_cleanup_res
+ 	qedi_cmd->state = CLEANUP_RECV;
+ unlock:
+ 	spin_unlock_bh(&conn->session->back_lock);
+-	spin_unlock_bh(&qedi_conn->tmf_work_lock);
+ 	wake_up_interruptible(&qedi_conn->wait_queue);
+ 	return;
+ 
+
+
