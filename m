@@ -2,108 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F132EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347225AbiBUJE0 (ORCPT
+        id S1347102AbiBUJEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:04:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58562 "EHLO
+        Mon, 21 Feb 2022 04:04:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347237AbiBUJBE (ORCPT
+        with ESMTP id S1347280AbiBUJBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B90424BF4;
-        Mon, 21 Feb 2022 00:56:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0F2AB80EB0;
-        Mon, 21 Feb 2022 08:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6A3C340EB;
-        Mon, 21 Feb 2022 08:56:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433763;
-        bh=+K0VwmMexA2L3+pqCHBDD2Xt8G4WfkwYOqLZIN+59Dw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5wk+/urzu6KmR0VzOSjDk/sr2f/S5oTzYFF+XEtuF5vjUJ3gSNP35s4/PeFxTXD1
-         JcI6b1U+0UkhEPTEHrRyM8iTEoeBeq1OjSuH0z/sr8NuN4sQl40hlKkMNzU1QK98Zc
-         k5G23Q+vviUP05XKTWubTTm1qJMvsmnVv+WKlI3Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 34/58] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_range()
-Date:   Mon, 21 Feb 2022 09:49:27 +0100
-Message-Id: <20220221084912.981568656@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
-References: <20220221084911.895146879@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:01:08 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADCB1B797;
+        Mon, 21 Feb 2022 00:56:13 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id u16so8185270pfg.12;
+        Mon, 21 Feb 2022 00:56:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WZXrnKErNeL5lMaOc5mdXm+VKeICKiYhtwQ5xG170Xw=;
+        b=jU/OVWCH/lwwVb3C6Bp5ADGr8MXWoiP7i+0Kij0V0hacdaZZ8tK00cVt6iZ/1oDgSf
+         zLCNBR+499VDg1KPetHCo+UMwdstxG/Wtb/cojSBn4CxSEJ6+B6Kn2sSEKMLa1FhpnkO
+         gOfg/cTYpGSln1Uw29rXocHi3cBKSe7DPv5ozIhOeUHwEN6CIvYt5Ra3Si/aWrc6nHOh
+         7aJAYpciUQhPZ4GngXgspMO/udtUSVPy9FfWweOkXFjyWaxJte3XNAcV5wQbDu9Bgw6B
+         LWwBJa1AeaH1H8LyWa/xijViaL4QCRQOZGKSBn+6X/iN/DMs7UCUWh/T95iDkQZ2eXiU
+         6NYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WZXrnKErNeL5lMaOc5mdXm+VKeICKiYhtwQ5xG170Xw=;
+        b=8Ao2QHzkLB5cunQm+LHWy3/XEJ1+a9KDh/tknUv2DG3Xsx58pPfKJVaInlL/5YZroY
+         YyOjGs77n6kXHxknE4fcO1nOYX2WneXBfHLDyBKgFJrFgdp4qohK5KkI7I02Hh4jqqxk
+         JUZeMJLhnUnVC285PBNsl5DrJjS9gCztPgxlOuRXjcHyRxK3K0anni7LfPGZUTiQoEzo
+         mC9d4GlcexgL+dtd4+10/+VsTWj7rwcUw+YFDYSIeUj7xBB5oOhC94T9nj8m67hg2lVH
+         emCWsFPm2gHnfKNjvlBO8qCItWAGR93PPT7gCQqGzkfGGuZ67PY3Ompsh0jz51jlXtZi
+         ldvw==
+X-Gm-Message-State: AOAM533B1FrBjBGEobli9PWN3ICsQi54WRofdz+M7FwoVoZQtattK8lq
+        ZIWrVdk3j0XLoCP46i6irK8JoGuCEIvePqg7
+X-Google-Smtp-Source: ABdhPJxQFKuAvx0FRc1MFgpz68m7KDduM6CKW3pDZQEtnNhhGZJ/kLVbzQcknaO+Ju1xitzuqiXzYg==
+X-Received: by 2002:aa7:8d54:0:b0:4e0:bd6:cfb9 with SMTP id s20-20020aa78d54000000b004e00bd6cfb9mr19221126pfe.60.1645433768449;
+        Mon, 21 Feb 2022 00:56:08 -0800 (PST)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id h5sm11488325pfc.118.2022.02.21.00.56.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 00:56:08 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        coiby.xu@gmail.com, gregkh@linuxfoundation.org,
+        dan.carpenter@oracle.com
+Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v3] staging: qlge: add unregister_netdev in qlge_probe
+Date:   Mon, 21 Feb 2022 16:55:52 +0800
+Message-Id: <20220221085552.93561-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+unregister_netdev need to be called when register_netdev succeeds
+qlge_health_create_reporters fails.
 
-commit 650204ded3703b5817bd4b6a77fa47d333c4f902 upstream.
-
-When writing out a stereo control we discard the change notification from
-the first channel, meaning that events are only generated based on changes
-to the second channel. Ensure that we report a change if either channel
-has changed.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220201155629.120510-4-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d8827ae8e22b ("staging: qlge: deal with the case that devlink_health_reporter_create fails")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- sound/soc/soc-ops.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -523,7 +523,7 @@ int snd_soc_put_volsw_range(struct snd_k
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int ret;
-+	int err, ret;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -532,9 +532,10 @@ int snd_soc_put_volsw_range(struct snd_k
- 	val_mask = mask << shift;
- 	val = val << shift;
- 
--	ret = snd_soc_component_update_bits(component, reg, val_mask, val);
--	if (ret < 0)
--		return ret;
-+	err = snd_soc_component_update_bits(component, reg, val_mask, val);
-+	if (err < 0)
-+		return err;
-+	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		if (invert)
-@@ -544,8 +545,12 @@ int snd_soc_put_volsw_range(struct snd_k
- 		val_mask = mask << shift;
- 		val = val << shift;
- 
--		ret = snd_soc_component_update_bits(component, rreg, val_mask,
-+		err = snd_soc_component_update_bits(component, rreg, val_mask,
- 			val);
-+		/* Don't discard any error code or drop change flag */
-+		if (ret == 0 || err < 0) {
-+			ret = err;
-+		}
+v3: add a Fixed tag
+
+v2: use goto to fix this bug
+
+ drivers/staging/qlge/qlge_main.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 9873bb2a9ee4..113a3efd12e9 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -4605,14 +4605,12 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	err = register_netdev(ndev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "net device registration failed.\n");
+-		qlge_release_all(pdev);
+-		pci_disable_device(pdev);
+-		goto netdev_free;
++		goto cleanup_pdev;
  	}
  
- 	return ret;
-
+ 	err = qlge_health_create_reporters(qdev);
+ 	if (err)
+-		goto netdev_free;
++		goto unregister_netdev;
+ 
+ 	/* Start up the timer to trigger EEH if
+ 	 * the bus goes dead
+@@ -4626,6 +4624,11 @@ static int qlge_probe(struct pci_dev *pdev,
+ 	devlink_register(devlink);
+ 	return 0;
+ 
++unregister_netdev:
++	unregister_netdev(ndev);
++cleanup_pdev:
++	qlge_release_all(pdev);
++	pci_disable_device(pdev);
+ netdev_free:
+ 	free_netdev(ndev);
+ devlink_free:
+-- 
+2.25.1
 
