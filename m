@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA01C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B24C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378129AbiBUOlv (ORCPT
+        id S1378135AbiBUOly (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:41:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51952 "EHLO
+        Mon, 21 Feb 2022 09:41:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378116AbiBUOlt (ORCPT
+        with ESMTP id S1378119AbiBUOlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 09:41:49 -0500
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 4E703205D2
+Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 73A9B205DB
         for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:41:24 -0800 (PST)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1645454486; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=LP4YKbZ56ySo7RzBJHPXewfRLeUAvDaEzOSTPxmlgxQ=; b=QAnlw9X4h8lqD2Ndpod+1pG3drgZiAbwOedx0DEd7OCvdy0PNYQsJLy/rv+MzdH9w6BFcxGO
- QYLA1nZuyWm1YxY3xeWHE0o9RNUU72Flq1RZJHJ8d9VcACuiz1uWt32x4u15BJOsOtPsIFs5
- 5qiRe5+iWPeC6aphjYZhFhxHz+o=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ s=smtp; t=1645454486; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=xUsJwQqKxY3LkEa3BP/FKFjRWiH9Bwosxaz/JVSIBxA=; b=fmgXitzB91PA2XPWw6gc7xQYAa60st8B1wdbMzgHYW+vBgHnHAoLlak0D/f6pM+rh77xcyTg
+ Qa5032aC8tZq3sHnZRBNLCy6ZBkfax8wDHxQpXtjfwpjeg/TT+Mhr3E2yeGolCeHz7bpc4Mh
+ i+SwXABiyhqcKwYzD+EAdv7fshI=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 6213a48fb360e81798d0e83c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Feb 2022 14:41:19
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 6213a48c0ae862b7cf2fdcaa (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Feb 2022 14:41:16
  GMT
 Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4425CC4338F; Mon, 21 Feb 2022 14:41:19 +0000 (UTC)
+        id 66CC7C43637; Mon, 21 Feb 2022 14:41:15 +0000 (UTC)
 Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 25C3EC4361B;
-        Mon, 21 Feb 2022 14:41:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 25C3EC4361B
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0E40EC4338F;
+        Mon, 21 Feb 2022 14:41:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 0E40EC4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
@@ -51,50 +50,51 @@ To:     freedreno <freedreno@lists.freedesktop.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@linux.ie>,
+        Douglas Anderson <dianders@chromium.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] drm/msm: Use generic name for gpu resources
-Date:   Mon, 21 Feb 2022 20:10:58 +0530
-Message-Id: <20220221201039.1.Id3d2e7391192c86d0783aeb307d3f9fb61f9efee@changeid>
+Subject: [PATCH 0/5] Support 7c3 gpu SKUs
+Date:   Mon, 21 Feb 2022 20:10:57 +0530
+Message-Id: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use generic name for resources like irq and kthread instead of hardware
-specific name to make it easier to grep.
+This series supercedes [1]. Major change in this series is that it is now
+optional to include a gpu name in the gpu-list. This helps to avoid the
+confusion when we have different SKUs with different gpu names. And also
+I am pretty happy that the overall changes are smaller now.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
+[1] https://patchwork.freedesktop.org/series/99048/
 
- drivers/gpu/drm/msm/msm_gpu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 2c1049c..04ca37f 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -838,7 +838,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	gpu->funcs = funcs;
- 	gpu->name = name;
- 
--	gpu->worker = kthread_create_worker(0, "%s-worker", gpu->name);
-+	gpu->worker = kthread_create_worker(0, "gpu-worker");
- 	if (IS_ERR(gpu->worker)) {
- 		ret = PTR_ERR(gpu->worker);
- 		gpu->worker = NULL;
-@@ -876,7 +876,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	}
- 
- 	ret = devm_request_irq(&pdev->dev, gpu->irq, irq_handler,
--			IRQF_TRIGGER_HIGH, gpu->name, gpu);
-+			IRQF_TRIGGER_HIGH, "gpu-irq", gpu);
- 	if (ret) {
- 		DRM_DEV_ERROR(drm->dev, "failed to request IRQ%u: %d\n", gpu->irq, ret);
- 		goto fail;
+Akhil P Oommen (5):
+  drm/msm: Use generic name for gpu resources
+  drm/msm/adreno: Generate name from chipid for 7c3
+  drm/msm/a6xx: Add support for 7c3 SKUs
+  drm/msm/adreno: Expose speedbin to userspace
+  arm64: dts: qcom: sc7280: Support gpu speedbin
+
+ arch/arm64/boot/dts/qcom/sc7280.dtsi       | 46 ++++++++++++++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 18 ++++++++++--
+ drivers/gpu/drm/msm/adreno/adreno_device.c |  1 -
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c    | 35 +++++++++++++++++++----
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h    |  3 ++
+ drivers/gpu/drm/msm/msm_gpu.c              |  4 +--
+ 6 files changed, 96 insertions(+), 11 deletions(-)
+
 -- 
 2.7.4
 
