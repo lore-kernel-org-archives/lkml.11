@@ -2,107 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EADC6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80156C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343897AbiBUCgg (ORCPT
+        id S1343913AbiBUCgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 21:36:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48462 "EHLO
+        Sun, 20 Feb 2022 21:36:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343889AbiBUCgf (ORCPT
+        with ESMTP id S1343899AbiBUCgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 21:36:35 -0500
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600D3DDE0;
-        Sun, 20 Feb 2022 18:36:12 -0800 (PST)
-Received: by mail-io1-f54.google.com with SMTP id r7so8982377iot.3;
-        Sun, 20 Feb 2022 18:36:12 -0800 (PST)
+        Sun, 20 Feb 2022 21:36:39 -0500
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8123DDE0;
+        Sun, 20 Feb 2022 18:36:17 -0800 (PST)
+Received: by mail-il1-f180.google.com with SMTP id v3so3705222ilc.7;
+        Sun, 20 Feb 2022 18:36:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=FxeQCl1x7bPN2N7fKduzQexfeAZe1Kk7c2rGWjraM2M=;
-        b=vKnQxwU0+VxmSw9UgqnXXmy67eKsY5scUhrpbbtqsCdtT4dRP+MxYhekfIpriQTshC
-         1nm2PjKWr6m0zD/HMv+YamC02/uNkUyKQA2phTNMYRPFErn166bxut6/9kHzAvgNwOjL
-         xzbb27GxpmVv3C6qYeCeEC43SeTYYOB3whsz09/BHkZLKGNL5q/rgPIT0tctSQJVaRfe
-         KST+7ak1id9I58t9S8i17QskVHfr5OIEc3LAO67hVS8FkPO3q524hELgHaYn13/W6Tyd
-         R4wlW1uXKFkaYttTA0zDX1zgQxKKIOord1jX0vtOraXN+uxsS4Rfywokru+s4rNP3pbg
-         hhTw==
-X-Gm-Message-State: AOAM530TsRhPWYhMdkRmKMuUkBwczMYaV2gv36O3PXXZFF3OKhpP+cJW
-        bjzhbTW0aSqazCtL9gqaGozjPJ73Eg==
-X-Google-Smtp-Source: ABdhPJwOKow//TiuesfE0CYp/GWJkr7IS6te0xCDAT81+jaq7aIKH6XqV2hxLRYv99lirxqpAHRZdQ==
-X-Received: by 2002:a05:6638:2722:b0:30d:2b4e:5ff with SMTP id m34-20020a056638272200b0030d2b4e05ffmr13408270jav.261.1645410972080;
-        Sun, 20 Feb 2022 18:36:12 -0800 (PST)
+        bh=wRFWj5y7LotFUBPpzxeU6otCQ7nXTU9SS+1E8PK2qJM=;
+        b=mzZ7iR4UMsXBYtdmauaqH3R33lIfa/yioCpz1b3BljoMYTkMbTea45XlxBVGbPzbyb
+         EKlLfM+KkWXgaZUw7TUsWhiqASS+E25PKIZP3jgfPhxg5byt46eBUQgT0XgfKnEb8eKM
+         sOfM1+34y9LBBP9IslYGaBfBJKv6R5iatLY90vVTXEBDKveVIVi3XnbhHvVCNZnCHj7i
+         g7e7nb2S7NofOyWUAAhHH3f+mRvq3sLjob0+2jSC26hXyqKc587zBmCIdNiQ+ny6C16W
+         GZE9A4zpwwtXybHZjoJIBGKbIWFPdSQYVE+7vYBpSOENcPAu2kKBjj4QTNKhkwSxHyKN
+         f3Qg==
+X-Gm-Message-State: AOAM533peMlbzxmNMNaNwCPun4IOmJ7zFVrOEbVuyY9kCMdX/m41diEp
+        2u1sI4aBdC5/kOolg52KjQ==
+X-Google-Smtp-Source: ABdhPJygy6KKg5suAr0e2xSLMVxXh3lQT8BgBETmXxuwuEoAWuxc8fjfq5Z3jV+QHiMRkztWvbEg3A==
+X-Received: by 2002:a05:6e02:1d0d:b0:2c2:1d2c:5b2d with SMTP id i13-20020a056e021d0d00b002c21d2c5b2dmr5666690ila.168.1645410977178;
+        Sun, 20 Feb 2022 18:36:17 -0800 (PST)
 Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id f13sm4569612iov.39.2022.02.20.18.36.10
+        by smtp.gmail.com with ESMTPSA id c21sm4035829ioh.35.2022.02.20.18.36.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 18:36:11 -0800 (PST)
-Received: (nullmailer pid 2041534 invoked by uid 1000);
+        Sun, 20 Feb 2022 18:36:16 -0800 (PST)
+Received: (nullmailer pid 2041537 invoked by uid 1000);
         Mon, 21 Feb 2022 02:36:09 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     chegbeli <ciprian.hegbeli@analog.com>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org
-In-Reply-To: <20220217135140.5658-3-ciprian.hegbeli@analog.com>
-References: <20220217135140.5658-1-ciprian.hegbeli@analog.com> <20220217135140.5658-3-ciprian.hegbeli@analog.com>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: add ADE9078
+To:     Max Buchholz <max.buchholz@gmx.de>
+Cc:     devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        David Heidelberg <david@ixit.cz>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-input@vger.kernel.org, Max Buchholz <Max.Buchholz@gmx.de>
+In-Reply-To: <20220218101011.22988-1-max.buchholz@gmx.de>
+References: <20220218101011.22988-1-max.buchholz@gmx.de>
+Subject: Re: [PATCH] dt-bindings: nvidia,tegra20-kbc: Convert to json-schema
 Date:   Sun, 20 Feb 2022 20:36:09 -0600
-Message-Id: <1645410969.316145.2041533.nullmailer@robh.at.kernel.org>
+Message-Id: <1645410969.330994.2041536.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 15:51:39 +0200, chegbeli wrote:
-> Added device tree bindings for the ADE9078
+On Fri, 18 Feb 2022 11:10:10 +0100, Max Buchholz wrote:
+> From: Max Buchholz <Max.Buchholz@gmx.de>
 > 
-> Signed-off-by: chegbeli <ciprian.hegbeli@analog.com>
+> This converts the Nvidia Tegra keyboard controller bindings to YAML
+> and fix them up a bit.
+> 
+> Acked-by: David Heidelberg <david@ixit.cz>
+> Signed-off-by: Max Buchholz <max.buchholz@gmx.de>
 > ---
->  .../bindings/iio/meter/adi,ade9078.yaml       | 153 ++++++++++++++++++
->  include/dt-bindings/iio/meter/adi,ade9078.h   |  21 +++
->  2 files changed, 174 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/meter/adi,ade9078.yaml
->  create mode 100644 include/dt-bindings/iio/meter/adi,ade9078.h
+>  .../bindings/input/nvidia,tegra20-kbc.txt     |  55 ---------
+>  .../bindings/input/nvidia,tegra20-kbc.yaml    | 114 ++++++++++++++++++
+>  2 files changed, 114 insertions(+), 55 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.txt
+>  create mode 100644 Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/iio/meter/adi,ade9078.yaml:131:1: [error] syntax error: found character '\t' that cannot start any token (syntax)
 
 dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/iio/meter/adi,ade9078.yaml:  while scanning a block scalar
-  in "<unicode string>", line 129, column 5
-found a tab character where an indentation space is expected
-  in "<unicode string>", line 131, column 1
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/iio/meter/adi,ade9078.example.dts'
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-extract-example", line 46, in <module>
-    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
-    node = self.composer.get_single_node()
-  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
-  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 773, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 848, in _ruamel_yaml.CParser._compose_sequence_node
-  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
-ruamel.yaml.scanner.ScannerError: while scanning a block scalar
-  in "<unicode string>", line 129, column 5
-found a tab character where an indentation space is expected
-  in "<unicode string>", line 131, column 1
-make[1]: *** [Documentation/devicetree/bindings/Makefile:25: Documentation/devicetree/bindings/iio/meter/adi,ade9078.example.dts] Error 1
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.yaml: properties:nvidia,wakeup-source: 'oneOf' conditional failed, one must be fixed:
+	'type' is a required property
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.yaml: properties:nvidia,wakeup-source: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.yaml: properties:nvidia,wakeup-source: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.yaml: ignoring, error in schema: properties: nvidia,wakeup-source
+Error: Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.example.dts:19.19-20 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.example.dt.yaml] Error 1
 make[1]: *** Waiting for unfinished jobs....
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/meter/adi,ade9078.yaml: ignoring, error parsing file
 make: *** [Makefile:1398: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
+Documentation/devicetree/bindings/power/wakeup-source.txt: Documentation/devicetree/bindings/input/nvidia,tegra20-kbc.txt
 
-See https://patchwork.ozlabs.org/patch/1594257
+See https://patchwork.ozlabs.org/patch/1594620
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
