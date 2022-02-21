@@ -2,112 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88127C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6D0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354858AbiBUKcA (ORCPT
+        id S1354900AbiBUKcq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:32:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45322 "EHLO
+        Mon, 21 Feb 2022 05:32:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354834AbiBUKa2 (ORCPT
+        with ESMTP id S1354891AbiBUKcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:30:28 -0500
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D263EE;
-        Mon, 21 Feb 2022 01:51:39 -0800 (PST)
-Received: from pro2.mail.ovh.net (unknown [10.108.1.79])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id CC381E72481C;
-        Mon, 21 Feb 2022 10:51:09 +0100 (CET)
-Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 21 Feb
- 2022 10:51:08 +0100
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <linux-renesas-soc@vger.kernel.org>, <geert+renesas@glider.be>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/5] ARM: r9a06g032: add support for the watchdogs
-Date:   Mon, 21 Feb 2022 10:50:26 +0100
-Message-ID: <20220221095032.95054-1-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Feb 2022 05:32:36 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66076C961
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:52:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645437179; x=1676973179;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=iu+zMLF3uEJwf1pZVGzd3cv6unyU/opZuLXB5dw8lj4=;
+  b=UaqgbUCb+XmzoLaH4IeEJMt0ZRFSkevjDlM8alZgKecG2WUsf8AC5TYC
+   vOuOg6Q3EpnZT/QnXdR0bjFyruZBInTUKGB99ip+Tkpy/hHGRZMBWQF47
+   ZQ308cHWkXBow4lrGSSmohwOtAJiM4t8IyzCioFxE1w1wstQLoLjk9xtZ
+   zXMvv2hZ9OwLHtu43qfxTVEC5+CQN9lYpGPrx7FlGYeRwlDoaP4MFQG+g
+   r+zxNDE7ybVlAOpSI6ahniEQBB/50b9kbY7bAbWpWTpok5cGLSDTO2e6x
+   5AJt37NjT2XsEg4hTMYjWJs0L+ll1mc90MMi2PN1XR6YHFMp8urSxNqq5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337908402"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="337908402"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 01:52:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="627324138"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 21 Feb 2022 01:52:11 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM5MY-0001Ts-FH; Mon, 21 Feb 2022 09:52:10 +0000
+Date:   Mon, 21 Feb 2022 17:51:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:axboe/linux-block/m1/2022-02-19 522/552]
+ sound/soc/apple/mca.c:776:6: warning: no previous prototype for
+ 'apple_mca_release_dma_chans'
+Message-ID: <202202211725.BAv78HTm-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.125.132.78]
-X-ClientProxiedBy: CAS3.emp2.local (172.16.1.3) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 6957217000239806939
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigddtkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfgtihesthekredtredttdenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepjedugfffleelheehveevuedtjeffgfejkedukeekudfguedtfeefuefhueevheeinecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1/2022-02-19
+head:   b781e0ccdc0c9a931571d15db09d45b7258b9905
+commit: aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c [522/552] ASoC: apple-mca: Add platform driver for Apple SoCs
+config: m68k-buildonly-randconfig-r005-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211725.BAv78HTm-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1/2022-02-19
+        git checkout aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/dma/ sound/soc/apple/
 
-This series adds support for the watchdog timers of the RZ/N1.
-The watchdog driver (rzn1-wdt.c) is derived from the driver available at
-https://github.com/renesas-rz/rzn1_linux.git with a few modifications
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In order to be able to reset the board when a watchdog timer expires,
-the RSTEN register must be configured. it is the responsability of the
-bootloader to set those bits (or not, depending on the chosen policy).
+All warnings (new ones prefixed by >>):
 
-If the watchdog reset source is not enabled, an interrupt is triggered
-when the watchdog expires. Currently this interrupt doesn't much apart
-from printing a message.
+   sound/soc/apple/mca.c: In function 'mca_configure_serdes':
+   sound/soc/apple/mca.c:294:23: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+     294 |         serdes_conf = FIELD_PREP(SERDES_CONF_NCHANS, max(slots, 1) - 1);
+         |                       ^~~~~~~~~~
+   sound/soc/apple/mca.c: At top level:
+>> sound/soc/apple/mca.c:776:6: warning: no previous prototype for 'apple_mca_release_dma_chans' [-Wmissing-prototypes]
+     776 | void apple_mca_release_dma_chans(struct mca_data *mca)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> sound/soc/apple/mca.c:791:6: warning: no previous prototype for 'apple_mca_put_clks' [-Wmissing-prototypes]
+     791 | void apple_mca_put_clks(struct mca_data *mca)
+         |      ^~~~~~~~~~~~~~~~~~
+   In file included from include/linux/device.h:15,
+                    from include/linux/platform_device.h:13,
+                    from sound/soc/apple/mca.c:9:
+   sound/soc/apple/mca.c: In function 'apple_mca_probe':
+   sound/soc/apple/mca.c:917:45: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long int' [-Wformat=]
+     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
+         |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   sound/soc/apple/mca.c:917:25: note: in expansion of macro 'dev_err'
+     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
+         |                         ^~~~~~~
+   sound/soc/apple/mca.c:917:74: note: format string is defined here
+     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
+         |                                                                         ~^
+         |                                                                          |
+         |                                                                          int
+         |                                                                         %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/platform_device.h:13,
+                    from sound/soc/apple/mca.c:9:
+   sound/soc/apple/mca.c:951:61: warning: format '%d' expects argument of type 'int', but argument 4 has type 'struct device_node *' [-Wformat=]
+     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
+         |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   sound/soc/apple/mca.c:951:41: note: in expansion of macro 'dev_err'
+     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
+         |                                         ^~~~~~~
+   sound/soc/apple/mca.c:951:82: note: format string is defined here
+     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
+         |                                                                                 ~^
+         |                                                                                  |
+         |                                                                                  int
+   In file included from include/linux/device.h:15,
+                    from include/linux/platform_device.h:13,
+                    from sound/soc/apple/mca.c:9:
+   sound/soc/apple/mca.c:951:61: warning: too many arguments for format [-Wformat-extra-args]
+     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
+         |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   sound/soc/apple/mca.c:951:41: note: in expansion of macro 'dev_err'
+     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
+         |                                         ^~~~~~~
+   cc1: some warnings being treated as errors
 
-Changes v2 -> v3:
-* dts: changed compatible strings to include "renesas,r9a06g032-wdt" and
-  "renesas,rzn1-wdt".
-* driver: removed the SOC-specific "renesas,r9a06g032-wdt".
-* removed all the changes in the clock driver: the watchdog reset source
-  are not disabled anymore when the machine is halted.
-* fixed the clock rate type in the computations.
-* removed unnecessary printout and call to clk_disable_unprepare() in the
-  driver probe().
-    
-Changes v1 -> v2:
-* Modified the clock driver to not enable the watchdog reset sources.
-  On other renesas platforms, those bits are by the bootloader. The
-  watchdog reset sources are still disabled when the platform is halted
-  to prevent a watchdog reset.
-* Added a SOC-specific compatible "renesas,r9a06g032-wdt"
-* reordered the dts/i entries
-* default timeout is 60 seconds
-* reworked the probe function of the wdt driver to better error cases
-* removed the set_timeout() and use a fixed period computed in probe().
-  This removes the confusion and makes it clear that the period defined
-  by the user space in indeed handled by the watchdog core
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for NFSD_V2_ACL
+   Depends on NETWORK_FILESYSTEMS && NFSD
+   Selected by
+   - NFSD_V3_ACL && NETWORK_FILESYSTEMS
 
-Jean-Jacques Hiblot (4):
-  dt-bindings: clock: r9a06g032: Add the definition of the watchdog
-    clock
-  dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
-  ARM: dts: r9a06g032: Add the watchdog nodes
-  ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 60s timeout
 
-Phil Edworthy (1):
-  watchdog: Add Renesas RZ/N1 Watchdog driver
+vim +/apple_mca_release_dma_chans +776 sound/soc/apple/mca.c
 
- .../bindings/watchdog/renesas,wdt.yaml        |   6 +
- arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |   5 +
- arch/arm/boot/dts/r9a06g032.dtsi              |  16 ++
- drivers/watchdog/Kconfig                      |   8 +
- drivers/watchdog/Makefile                     |   1 +
- drivers/watchdog/rzn1_wdt.c                   | 206 ++++++++++++++++++
- include/dt-bindings/clock/r9a06g032-sysctrl.h |   1 +
- 7 files changed, 243 insertions(+)
- create mode 100644 drivers/watchdog/rzn1_wdt.c
+   775	
+ > 776	void apple_mca_release_dma_chans(struct mca_data *mca)
+   777	{
+   778		int i;
+   779		struct mca_route *route;
+   780	
+   781		list_for_each_entry(route, &mca->routes, list) {
+   782			for_each_pcm_streams(i) {
+   783				if (!route->chan[i])
+   784					continue;
+   785				dma_release_channel(route->chan[i]);
+   786				route->chan[i] = NULL;
+   787			}
+   788		}
+   789	}
+   790	
+ > 791	void apple_mca_put_clks(struct mca_data *mca)
+   792	{
+   793		struct mca_route *route;
+   794		int i;
+   795	
+   796		list_for_each_entry(route, &mca->routes, list) {
+   797			if (!route->clk_parent)
+   798				continue;
+   799			//clk_rate_exclusive_put(route->clk_parent);
+   800			route->clk_parent = NULL;
+   801		}
+   802	
+   803		for (i = 0; i < mca->nclusters; i++) {
+   804			if (!mca->clk_parents[i])
+   805				continue;
+   806			clk_put(mca->clk_parents[i]);
+   807			mca->clk_parents[i] = NULL;
+   808		}
+   809	}
+   810	
 
--- 
-2.25.1
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
