@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9462BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243066AbiBUJGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:06:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58050 "EHLO
+        id S1347438AbiBUJGZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:06:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348186AbiBUJCY (ORCPT
+        with ESMTP id S1348268AbiBUJCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEF32B248;
-        Mon, 21 Feb 2022 00:57:42 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE412BB20;
+        Mon, 21 Feb 2022 00:57:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B10ECB80EB7;
-        Mon, 21 Feb 2022 08:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC602C340E9;
-        Mon, 21 Feb 2022 08:57:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AE3561137;
+        Mon, 21 Feb 2022 08:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03608C340EB;
+        Mon, 21 Feb 2022 08:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433836;
-        bh=rokptrUqyaAJxAqsK0Nb4wu+vt33Umkfp6lUiUybKu0=;
+        s=korg; t=1645433850;
+        bh=DFsLvK0i3BObqF26aZZdRrDS2/spMsYEUdcIUmBugTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cRJs+M3Q0wdbLOH4+POQ6PukS4IMy9E07QLJ1cX8/xY9cYm3Db1PPQDCpqSeTgI1L
-         LvS2lutFNLC/3yBAhszntka+pc+31DTFiezJisH+8OgPxUTIN/qjnHlOHg9ZElWilN
-         ns3vrY0B5zg7h7MNakprkR4u7RyflP4FXpN2HGyE=
+        b=XgWFHK/DO84hIEo3lN1Nnkz0SjaX9/wA0OJmFm4rMIxkTZS2IfU1s6jrXSGqTFpC6
+         RhL75qrfOOYSLyR7MPPhSZFdEya+dYFzBiXUwNgXyjDdusbUK/W8moo6TTPReyc44k
+         BwG1q9p/1TMUtevR7sMCfG1PYRDCOsdwcSR4DrUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
-        Wolfgang Walter <linux@stwm.de>,
-        Jason Self <jason@bluehome.net>,
-        Dominik Behr <dominik@dominikbehr.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.19 17/58] iwlwifi: fix use-after-free
-Date:   Mon, 21 Feb 2022 09:49:10 +0100
-Message-Id: <20220221084912.444718683@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 57/58] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Mon, 21 Feb 2022 09:49:50 +0100
+Message-Id: <20220221084913.715265851@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -54,45 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-If no firmware was present at all (or, presumably, all of the
-firmware files failed to parse), we end up unbinding by calling
-device_release_driver(), which calls remove(), which then in
-iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
-the new code I added will still erroneously access it after it
-was freed.
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-Set 'failure=false' in this case to avoid the access, all data
-was already freed anyway.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Cc: stable@vger.kernel.org
-Reported-by: Stefan Agner <stefan@agner.ch>
-Reported-by: Wolfgang Walter <linux@stwm.de>
-Reported-by: Jason Self <jason@bluehome.net>
-Reported-by: Dominik Behr <dominik@dominikbehr.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
+ drivers/net/usb/qmi_wwan.c | 2 ++
  1 file changed, 2 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1549,6 +1549,8 @@ static void iwl_req_fw_callback(const st
-  out_unbind:
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-+	/* drv has just been freed by the release */
-+	failure = false;
-  free:
- 	if (failure)
- 		iwl_dealloc_ucode(drv);
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 54b37a30df18b..c2e872f926f1c 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1358,6 +1358,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
+-- 
+2.34.1
+
 
 
