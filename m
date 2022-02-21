@@ -2,113 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA537C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:19:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358856AbiBUNTR (ORCPT
+        id S1358862AbiBUNTm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:19:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53754 "EHLO
+        Mon, 21 Feb 2022 08:19:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232982AbiBUNTP (ORCPT
+        with ESMTP id S232982AbiBUNTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:19:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0982C1EEF7;
-        Mon, 21 Feb 2022 05:18:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91E5D6137C;
-        Mon, 21 Feb 2022 13:18:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE45C340E9;
-        Mon, 21 Feb 2022 13:18:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645449530;
-        bh=zZBPLOwN6VC415V5nh8joz0veP6og+pbcOBCbahM5NY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tII7+LMLdbC5SVB2FtWb7FEzAeHIwAAc7hck7Mk5k7BIJa5ZC+l5QzIHp0AGiq0X2
-         UR80X/ciAYECVR636j0ilnAmXMdL2J+P21y9xkwTnjAKd+yVPiDKfUtgqqPewazSl+
-         WX7Lo+qrwPdXkRF48WdblnbBPHYqYB9U6l3HREEmvkInODlHDJ3MHC43sIXxtV6Jpq
-         7Uz3S64nVyhSZOtRLoKFXK72a7+q9wo6upqb/OLFv8kjDQBlQO3PhzzNxiLWaqW0/Z
-         oUf/Xudcffgr4uj9hBRtO5kuwJ6Th8voIrviv0OwXKFDWkIJ7TWzdT4dqkMIFQEyYA
-         2serFy4vZWSPA==
-From:   broonie@kernel.org
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Geliang Tang <geliang.tang@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Date:   Mon, 21 Feb 2022 13:18:42 +0000
-Message-Id: <20220221131842.468893-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Mon, 21 Feb 2022 08:19:40 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515BA1EEDA
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:19:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645449557; x=1676985557;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I79uwjS1z7JWGQEvjvtR53Cl64d3hoSo4uV5m4nZh5k=;
+  b=YxkcLNMPBlxctV9ZJrmKxUUszcNdTUcGrpoce3BS9Q8n2Ac9iWZfLMNe
+   zEdOapvmpGQZMN+9TAyz3iGR2YX7C8fgxaHHv1pCsN4A9Dn7SWB68VbuM
+   Af40rCBbfBBrt5SGauzlYUARhA+/9biN4cQflSt3BC2V1Qte37cZEkm6E
+   ipF0HNNL+alOlQlUDBicdJnUrsD04SOW+XT+4P8jEZQRv7MuATW09ADMG
+   UayeyMI47xdljFQRnjnDYz/iXwTb4296FRzX+lCz2YK4/EypEYs41/FKA
+   EY9mphcQNbszpiSZ6VXHTgGPJDM9yH3ce3senYh/zTKgndvKOvrMg5V+8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="276098869"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="276098869"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 05:19:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="683203057"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2022 05:19:16 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM8ax-0001dj-Ah; Mon, 21 Feb 2022 13:19:15 +0000
+Date:   Mon, 21 Feb 2022 21:18:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Janne Grunau <j@jannau.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Hector Martin <marcan@marcan.st>
+Subject: [asahilinux:bits/090-spi-hid 11/11]
+ drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous
+ prototype for 'spihid_get_data'
+Message-ID: <202202212138.tQW6fcMZ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
+head:   6503ad96bc85209be90119188ff30d21612bbbf8
+commit: 6503ad96bc85209be90119188ff30d21612bbbf8 [11/11] WIP: HID: transport: spi: add Apple SPI transport
+config: csky-allyesconfig (https://download.01.org/0day-ci/archive/20220221/202202212138.tQW6fcMZ-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/6503ad96bc85209be90119188ff30d21612bbbf8
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/090-spi-hid
+        git checkout 6503ad96bc85209be90119188ff30d21612bbbf8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash drivers/hid/spi-hid/ drivers/platform/
 
-Today's linux-next merge of the net-next tree got a conflict in:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-  tools/testing/selftests/net/mptcp/mptcp_join.sh
+All warnings (new ones prefixed by >>):
 
-between commit:
+>> drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous prototype for 'spihid_get_data' [-Wmissing-prototypes]
+     259 | struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
+         |                      ^~~~~~~~~~~~~~~
+--
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:24:5: warning: no previous prototype for 'spihid_apple_of_power_on' [-Wmissing-prototypes]
+      24 | int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:40:5: warning: no previous prototype for 'spihid_apple_of_power_off' [-Wmissing-prototypes]
+      40 | int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:50:5: warning: no previous prototype for 'spihid_apple_of_enable_irq' [-Wmissing-prototypes]
+      50 | int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/hid/spi-hid/spi-hid-apple-of.c:59:5: warning: no previous prototype for 'spihid_apple_of_disable_irq' [-Wmissing-prototypes]
+      59 | int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  6ef84b1517e08 ("selftests: mptcp: more robust signal race test")
 
-from the net tree and commit:
+vim +/spihid_get_data +259 drivers/hid/spi-hid/spi-hid-apple-core.c
 
-  34aa6e3bccd86 ("selftests: mptcp: add ip mptcp wrappers")
+   258	
+ > 259	struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
+   260	{
+   261		switch (idev->id) {
+   262		case SPIHID_DEVICE_ID_KBD:
+   263			return container_of(idev, struct spihid_apple, kbd);
+   264		case SPIHID_DEVICE_ID_TP:
+   265			return container_of(idev, struct spihid_apple, tp);
+   266		default:
+   267			return NULL;
+   268		}
+   269	}
+   270	
 
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
-diff --cc tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 0c8a2a20b96cf,725924012b412..0000000000000
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@@ -1163,20 -1287,17 +1302,21 @@@ signal_address_tests(
-  
-  	# signal addresses race test
-  	reset
-- 	ip netns exec $ns1 ./pm_nl_ctl limits 4 4
-- 	ip netns exec $ns2 ./pm_nl_ctl limits 4 4
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-- 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.4.1 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.1.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags signal
-- 	ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags signal
-++
-+ 	pm_nl_set_limits $ns1 4 4
-+ 	pm_nl_set_limits $ns2 4 4
-+ 	pm_nl_add_endpoint $ns1 10.0.1.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.3.1 flags signal
-+ 	pm_nl_add_endpoint $ns1 10.0.4.1 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.1.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.2.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.3.2 flags signal
-+ 	pm_nl_add_endpoint $ns2 10.0.4.2 flags signal
- -	run_tests $ns1 $ns2 10.0.1.1
- +
- +	# the peer could possibly miss some addr notification, allow retransmission
- +	ip netns exec $ns1 sysctl -q net.mptcp.add_addr_timeout=1
- +	run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
-  	chk_join_nr "signal addresses race test" 3 3 3
-  
-  	# the server will not signal the address terminating
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
