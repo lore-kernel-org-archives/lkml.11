@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B9FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B68C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbiBUSac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:30:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47032 "EHLO
+        id S231140AbiBUSah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:30:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233351AbiBUS0M (ORCPT
+        with ESMTP id S233412AbiBUS0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:26:12 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA392BB3F;
-        Mon, 21 Feb 2022 10:22:07 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id v10so34127374qvk.7;
-        Mon, 21 Feb 2022 10:22:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=00FTKimPfYzBMP/rJrScDVkcWdLsN3tbxLeb3b/ES0s=;
-        b=f/pW1i/dFqsLzxJb4ANxGPQRtMAC59EizWVN6kf7QbwY5AK1/8/yTYqW3ow0gyijNq
-         yyR8Namv+HXL1ZvPk+540pdUJbR6XTjwbJjeg9ikTtgSecQhpmFN1miIrfRDEHrV7/yd
-         sGgJ6F7Zdxv5r+jWbpY4jsnlKY0yKa/sCuQvieKjfFrssg4q4QFg0BX5xh/78YftUfBz
-         m1DLzToCUf79gxzJYlipyuFF7DK5my99sbyGXPw662GqXYGZZ4rBFJ45VRy+ojZbkRze
-         i/QYXveyUsZjM0MAnrT02OqmplJStMzTXSny5SIZNxFzXfadDtQ2SF0yekFfY/w8B5Q6
-         l6gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=00FTKimPfYzBMP/rJrScDVkcWdLsN3tbxLeb3b/ES0s=;
-        b=Pax01EDpOYzhEbrBMugrai8GxnWZyaPFCNYzC2Et2sPNF2lWC8YGkv4AgNzjq0wRvt
-         +Vwl+NzZqE580d1qIZzAR2hbOBi95ZhfzElPXcX4T4wE9hVnkqhi52Huef5OlNcOG3or
-         /jJXMbFb8BoN4SHZhZNpEh1ZfJIkn8fiLbJw7JX2MpfiGLiN+iAQkhCRb8O5B2Hqd5y1
-         wsPYXT6r1OmosNv+5SB+Ha5xB6Dp/TOcPAaNCA8q9IyJoIYW2MjwEeyudUxBvdPBLhvf
-         uo8wkTU+wjWty0UaMAQM+mVO4ILR2oYC8ykOYnuJ5/ewHcCF13tj2WB2dLcV1evs+qdk
-         kLsw==
-X-Gm-Message-State: AOAM530fSKyjus7W7pI8f7PPTb0Cv6uWtc8Rd5dlQd47zdSwo1fxKbjb
-        GAz/3QuKQJb+o4+DV8uy+hgi3iYSjqF96A==
-X-Google-Smtp-Source: ABdhPJy23lpHcWTjqGEIqFsr4qmnMTgvKFWLXKDugiNIPGMhCo0OKMkJUGfjTFteSoQw5vkRARzF8g==
-X-Received: by 2002:a05:622a:1a16:b0:2de:37ad:25ef with SMTP id f22-20020a05622a1a1600b002de37ad25efmr3009578qtb.131.1645467725594;
-        Mon, 21 Feb 2022 10:22:05 -0800 (PST)
-Received: from [120.7.1.38] (198-84-206-107.cpe.teksavvy.com. [198.84.206.107])
-        by smtp.gmail.com with ESMTPSA id e1sm22491435qtw.71.2022.02.21.10.22.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 10:22:05 -0800 (PST)
-Subject: Re: Linux 5.17-rc5
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
- <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com>
- <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
- <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
- <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
-From:   Woody Suwalski <wsuwalski@gmail.com>
-Message-ID: <7b1a0613-810f-3406-89b3-10d45f3a1b7b@gmail.com>
-Date:   Mon, 21 Feb 2022 13:22:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux i686; rv:68.0) Gecko/20100101 Firefox/68.0
- SeaMonkey/2.53.10.2
+        Mon, 21 Feb 2022 13:26:13 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B3DC7E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:24:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645467879; x=1677003879;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=mzCGaMqSIKCdL//0sI2JbSojC7b0HtfrzdHg0ku3H2s=;
+  b=P69fujhjGYJfEXDZocA7AHfkT98opcGqk5LJTDbs3Gz1VbDnfeN9pzq9
+   LqtE/EbWLy7tgxNSTFuoPg9DJqJl5YGFeI2hyJddaUd78jyMbIdTZdXQU
+   5efe6kEme+xBzTOXxHXvGc/Yq4b77dczulVjWemEVel6Rmz5geqAzfy+v
+   rLRlivLpuI2Bd0ep3ojLuG9H6M/Y2FK5/3tg35sPiax/X+KBHys7RWgQr
+   RKofuw1YMdsfqvhpG99XciPswAbWakGE3a4HEjbiSVwrHq3hStKcLgcDc
+   3sXS9VMhg0kgtmyIJYzKbvdS9QSeRf7YIcqdlMJh9PYHyIgRuYBDlfNiI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251310863"
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="251310863"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 10:24:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
+   d="scan'208";a="627443330"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 21 Feb 2022 10:24:37 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMDMS-0001sW-E2; Mon, 21 Feb 2022 18:24:36 +0000
+Date:   Tue, 22 Feb 2022 02:24:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tom Zanussi <zanussi@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [ammarfaizi2-block:rostedt/linux-trace/for-next 19/32]
+ kernel/trace/trace_events_synth.c:65:9: warning: 'strncpy' specified bound
+ depends on the length of the source argument
+Message-ID: <202202220258.LyXgZyyT-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus Torvalds wrote:
-> On Mon, Feb 21, 2022 at 10:02 AM Eric Dumazet <edumazet@google.com> wrote:
->> I am pretty sure Pablo fixed this one week ago.
-> .. looks about right. Apart from the "it was never sent to me, so -rc5
-> ended up showing the problem" part.
->
->               Linus
-Patch works-for-me. Thanks...
-Woody
+tree:   https://github.com/ammarfaizi2/linux-block rostedt/linux-trace/for-next
+head:   864ea0e10cc90416a01b46f0d47a6f26dc020820
+commit: 27c888da9867725784bad3d6455d6e53b425fa2b [19/32] tracing: Remove size restriction on synthetic event cmd error logging
+config: arm-randconfig-r022-20220221 (https://download.01.org/0day-ci/archive/20220222/202202220258.LyXgZyyT-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/27c888da9867725784bad3d6455d6e53b425fa2b
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block rostedt/linux-trace/for-next
+        git checkout 27c888da9867725784bad3d6455d6e53b425fa2b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash kernel/trace/
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   kernel/trace/trace_events_synth.c: In function 'last_cmd_set':
+>> kernel/trace/trace_events_synth.c:65:9: warning: 'strncpy' specified bound depends on the length of the source argument [-Wstringop-truncation]
+      65 |         strncpy(last_cmd, str, strlen(str) + 1);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/trace_events_synth.c:65:32: note: length computed here
+      65 |         strncpy(last_cmd, str, strlen(str) + 1);
+         |                                ^~~~~~~~~~~
+
+
+vim +/strncpy +65 kernel/trace/trace_events_synth.c
+
+    54	
+    55	static void last_cmd_set(const char *str)
+    56	{
+    57		if (!str)
+    58			return;
+    59	
+    60		kfree(last_cmd);
+    61		last_cmd = kzalloc(strlen(str) + 1, GFP_KERNEL);
+    62		if (!last_cmd)
+    63			return;
+    64	
+  > 65		strncpy(last_cmd, str, strlen(str) + 1);
+    66	}
+    67	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
