@@ -2,80 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E40C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346311AbiBUI5I (ORCPT
+        id S1346336AbiBUI5N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:57:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44682 "EHLO
+        Mon, 21 Feb 2022 03:57:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345772AbiBUIyR (ORCPT
+        with ESMTP id S1345991AbiBUIy2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:54:17 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD26237D4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:53:05 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 21 Feb 2022 03:54:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB5523BC2;
+        Mon, 21 Feb 2022 00:53:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E39E92241C;
-        Mon, 21 Feb 2022 09:53:03 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ckbf6Q/jmsl515Nwvytsj5VQqppc1StpRQJYAIW3rH4=;
-        b=Fh6ZpioiI5c5gfiMotj2uaPHz4ZDQJRvZZIyh53cDvssa5ZUH5lhdBplUM+Tg31nQlaVXD
-        RKzLsffsGHfrN5DF7gy1iW47Wqi8+gTWscAwKplvRJk4FjmWS4SPwCWQeXZggDZ/J21Me3
-        yUlN5FjqGD2NIbNvzzl2ainUga9GX8g=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 31/32] mtd: spi-nor: slightly change code style in spi_nor_sr_ready()
-Date:   Mon, 21 Feb 2022 09:52:35 +0100
-Message-Id: <20220221085236.1452024-32-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 624CEB80EA5;
+        Mon, 21 Feb 2022 08:53:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6BE0C340EB;
+        Mon, 21 Feb 2022 08:53:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433587;
+        bh=Jx8LAhV6OIpIdGMzBxuqr8O6xckWBkwl6Prj0jsGmvw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zix+Hcz6bfu4TJAxmkklnmJtK2ugCbhf0X7FvOeoV1Ku89mBd8STHotSzMLlke6ek
+         gL4afMWWZUWqo30UKPoE2wVHSYObOjyP6ymPAU6ODsa5b0c8ygGNRNxqCUE2mN4pJd
+         89YHl0Ah7K7fcYqDlFbPKM8iQQP9l0Tg2B5UK8WA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.14 18/45] taskstats: Cleanup the use of task->exit_code
+Date:   Mon, 21 Feb 2022 09:49:09 +0100
+Message-Id: <20220221084911.052411167@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that there is almost no special case code left in
-spi_nor_sr_ready(), the return check looks odd. Move the function call
-closer to the return code checking.
+From: "Eric W. Biederman" <ebiederm@xmission.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+commit 1b5a42d9c85f0e731f01c8d1129001fd8531a8a0 upstream.
+
+In the function bacct_add_task the code reading task->exit_code was
+introduced in commit f3cef7a99469 ("[PATCH] csa: basic accounting over
+taskstats"), and it is not entirely clear what the taskstats interface
+is trying to return as only returning the exit_code of the first task
+in a process doesn't make a lot of sense.
+
+As best as I can figure the intent is to return task->exit_code after
+a task exits.  The field is returned with per task fields, so the
+exit_code of the entire process is not wanted.  Only the value of the
+first task is returned so this is not a useful way to get the per task
+ptrace stop code.  The ordinary case of returning this value is
+returning after a task exits, which also precludes use for getting
+a ptrace value.
+
+It is common to for the first task of a process to also be the last
+task of a process so this field may have done something reasonable by
+accident in testing.
+
+Make ac_exitcode a reliable per task value by always returning it for
+every exited task.
+
+Setting ac_exitcode in a sensible mannter makes it possible to continue
+to provide this value going forward.
+
+Cc: Balbir Singh <bsingharora@gmail.com>
+Fixes: f3cef7a99469 ("[PATCH] csa: basic accounting over taskstats")
+Link: https://lkml.kernel.org/r/20220103213312.9144-5-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/spi-nor/core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/tsacct.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index f5a2f37d140e..9014008e60b3 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -563,8 +563,9 @@ int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
-  */
- int spi_nor_sr_ready(struct spi_nor *nor)
- {
--	int ret = spi_nor_read_sr(nor, nor->bouncebuf);
-+	int ret;
- 
-+	ret = spi_nor_read_sr(nor, nor->bouncebuf);
- 	if (ret)
- 		return ret;
- 
--- 
-2.30.2
+--- a/kernel/tsacct.c
++++ b/kernel/tsacct.c
+@@ -46,11 +46,10 @@ void bacct_add_tsk(struct user_namespace
+ 	/* Convert to seconds for btime */
+ 	do_div(delta, USEC_PER_SEC);
+ 	stats->ac_btime = get_seconds() - delta;
+-	if (thread_group_leader(tsk)) {
++	if (tsk->flags & PF_EXITING)
+ 		stats->ac_exitcode = tsk->exit_code;
+-		if (tsk->flags & PF_FORKNOEXEC)
+-			stats->ac_flag |= AFORK;
+-	}
++	if (thread_group_leader(tsk) && (tsk->flags & PF_FORKNOEXEC))
++		stats->ac_flag |= AFORK;
+ 	if (tsk->flags & PF_SUPERPRIV)
+ 		stats->ac_flag |= ASU;
+ 	if (tsk->flags & PF_DUMPCORE)
+
 
