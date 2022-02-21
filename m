@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E44C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76455C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351407AbiBUJpO (ORCPT
+        id S1351355AbiBUJpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:45:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49230 "EHLO
+        Mon, 21 Feb 2022 04:45:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351692AbiBUJhe (ORCPT
+        with ESMTP id S1351671AbiBUJhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:34 -0500
+        Mon, 21 Feb 2022 04:37:33 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19E43A734;
-        Mon, 21 Feb 2022 01:16:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BFB3A71D;
+        Mon, 21 Feb 2022 01:16:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5FE7FCE0E76;
-        Mon, 21 Feb 2022 09:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53124C340E9;
-        Mon, 21 Feb 2022 09:16:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1957CE0EB2;
+        Mon, 21 Feb 2022 09:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C97DC36AE9;
+        Mon, 21 Feb 2022 09:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434984;
-        bh=42zi/zigIyIUQ1oqsPKN7CLx5IlCRHcYsWZ5A3UZKvg=;
+        s=korg; t=1645434982;
+        bh=3aV9bHzykKizB1J+5Ksl6TyTU0mBhVe4TvtLefKoCRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtkXPy7HQsjoUMPobw2h5NjM7vG6Xg4adOsU+C4ZwXupoqa8024OzgwHaxry/y8ud
-         XuYL74Dfzvw2xAP+SmRtdoYtfM0Uv8zpg2gc/Kr8lWxTVSjGhyEIl5JDABfSRDGQMg
-         giB7799whFklCY8BuWk0LxUk6Ei8bhlJBIM5sT5Y=
+        b=uN4HmNplKnyEkDj8ZYlooPAb5sN6z5yBP5lghcy8VegrCUdvSkMEgP7AvpgaD7Y5U
+         3u5aFotAAdmR84kWjPlSkEEPN2PZdfs+86UAPh68tbBv0bIj67DMbMBIM70x5fXH+N
+         q5kgGqY9F6rsujbW0mfB2nzp+aJLS3a9wJWMQ8dY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Robert Foss <robert.foss@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.15 190/196] i2c: qcom-cci: dont put a device tree node before i2c_add_adapter()
-Date:   Mon, 21 Feb 2022 09:50:22 +0100
-Message-Id: <20220221084937.298792081@linuxfoundation.org>
+Subject: [PATCH 5.15 189/196] i2c: qcom-cci: dont delete an unregistered adapter
+Date:   Mon, 21 Feb 2022 09:50:21 +0100
+Message-Id: <20220221084937.266767413@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -54,12 +54,17 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-commit 02a4a69667a2ad32f3b52ca906f19628fbdd8a01 upstream.
+commit a0d48505a1d68e27220369e2dd1e3573a2f362d2 upstream.
 
-There is a minor chance for a race, if a pointer to an i2c-bus subnode
-is stored and then reused after releasing its reference, and it would
-be sufficient to get one more reference under a loop over children
-subnodes.
+If i2c_add_adapter() fails to add an I2C adapter found on QCOM CCI
+controller, on error path i2c_del_adapter() is still called.
+
+Fortunately there is a sanity check in the I2C core, so the only
+visible implication is a printed debug level message:
+
+    i2c-core: attempting to delete unregistered adapter [Qualcomm-CCI]
+
+Nevertheless it would be reasonable to correct the probe error path.
 
 Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
 Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
@@ -68,55 +73,19 @@ Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-qcom-cci.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/i2c/busses/i2c-qcom-cci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/i2c/busses/i2c-qcom-cci.c
 +++ b/drivers/i2c/busses/i2c-qcom-cci.c
-@@ -558,7 +558,7 @@ static int cci_probe(struct platform_dev
- 		cci->master[idx].adap.quirks = &cci->data->quirks;
- 		cci->master[idx].adap.algo = &cci_algo;
- 		cci->master[idx].adap.dev.parent = dev;
--		cci->master[idx].adap.dev.of_node = child;
-+		cci->master[idx].adap.dev.of_node = of_node_get(child);
- 		cci->master[idx].master = idx;
- 		cci->master[idx].cci = cci;
- 
-@@ -643,8 +643,10 @@ static int cci_probe(struct platform_dev
- 			continue;
- 
- 		ret = i2c_add_adapter(&cci->master[i].adap);
--		if (ret < 0)
-+		if (ret < 0) {
-+			of_node_put(cci->master[i].adap.dev.of_node);
- 			goto error_i2c;
-+		}
- 	}
- 
- 	pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
-@@ -656,8 +658,10 @@ static int cci_probe(struct platform_dev
+@@ -655,7 +655,7 @@ static int cci_probe(struct platform_dev
+ 	return 0;
  
  error_i2c:
- 	for (--i ; i >= 0; i--) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
+-	for (; i >= 0; i--) {
++	for (--i ; i >= 0; i--) {
+ 		if (cci->master[i].cci)
  			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
  	}
- error:
- 	disable_irq(cci->irq);
-@@ -673,8 +677,10 @@ static int cci_remove(struct platform_de
- 	int i;
- 
- 	for (i = 0; i < cci->data->num_masters; i++) {
--		if (cci->master[i].cci)
-+		if (cci->master[i].cci) {
- 			i2c_del_adapter(&cci->master[i].adap);
-+			of_node_put(cci->master[i].adap.dev.of_node);
-+		}
- 		cci_halt(cci, i);
- 	}
- 
 
 
