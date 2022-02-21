@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46854C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344995AbiBUKAI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:00:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56618 "EHLO
+        id S244400AbiBUKAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:00:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351843AbiBUJwm (ORCPT
+        with ESMTP id S1352031AbiBUJws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:52:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DCF3615D;
-        Mon, 21 Feb 2022 01:23:01 -0800 (PST)
+        Mon, 21 Feb 2022 04:52:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D64836323;
+        Mon, 21 Feb 2022 01:23:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F421A60F3C;
-        Mon, 21 Feb 2022 09:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1760C340E9;
-        Mon, 21 Feb 2022 09:22:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AECFF60EB3;
+        Mon, 21 Feb 2022 09:23:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F2EAC340E9;
+        Mon, 21 Feb 2022 09:23:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435380;
-        bh=g/HgtpBBObGeQPvjdrbi8IklQvypj/Rpp30Wgl/uAwQ=;
+        s=korg; t=1645435389;
+        bh=MBWNJWbtH9kFyIszuJHOKyr4znqOnXDjPczikbGkrgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n73kA2ZsNn431Dpo9pEafyQLgSQgoE6d/Y/ndmsdhK8GEs5LVJEnLL1ySoc3olJDp
-         +2SLsOjv2m7D5JAhzBssnpK84bxkCSBChbXtLyUxUWrh+aRJynqCdXuvFR3s9Rb+n7
-         PuVrsT11JKcXUZklTPutY0ZCqQTuFK62+lIe3bIw=
+        b=gotfxtpzun/6xJx6orqWTtTGI7WPRqt/C9FHv/B3+dosH9kQXknOQpH4FbfL5/rSW
+         EseowzPbXLHpSP6h+e0ZxO/kj0KVo5LiPA9amGpjYWL+eFCmBLneqAoEXzrecglE+c
+         AJsZMeLXY9Jd5sctuFuzBLenIEcKbWRo0u8SCKgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, dmummenschanz@web.de,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 142/227] ALSA: hda: Fix missing codec probe on Shenker Dock 15
-Date:   Mon, 21 Feb 2022 09:49:21 +0100
-Message-Id: <20220221084939.559773882@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 5.16 114/227] net: ieee802154: ca8210: Fix lifs/sifs periods
+Date:   Mon, 21 Feb 2022 09:48:53 +0100
+Message-Id: <20220221084938.658919849@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,33 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit dd8e5b161d7fb9cefa1f1d6e35a39b9e1563c8d3 upstream.
+commit bdc120a2bcd834e571ce4115aaddf71ab34495de upstream.
 
-By some unknown reason, BIOS on Shenker Dock 15 doesn't set up the
-codec mask properly for the onboard audio.  Let's set the forced codec
-mask to enable the codec discovery.
+These periods are expressed in time units (microseconds) while 40 and 12
+are the number of symbol durations these periods will last. We need to
+multiply them both with the symbol_duration in order to get these
+values in microseconds.
 
-Reported-by: dmummenschanz@web.de
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/trinity-f018660b-95c9-442b-a2a8-c92a56eb07ed-1644345967148@3c-app-webde-bap22
-Link: https://lore.kernel.org/r/20220214100020.8870-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/r/20220201180629.93410-2-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_intel.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ieee802154/ca8210.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1611,6 +1611,7 @@ static const struct snd_pci_quirk probe_
- 	/* forced codec slots */
- 	SND_PCI_QUIRK(0x1043, 0x1262, "ASUS W5Fm", 0x103),
- 	SND_PCI_QUIRK(0x1046, 0x1262, "ASUS W5F", 0x103),
-+	SND_PCI_QUIRK(0x1558, 0x0351, "Schenker Dock 15", 0x105),
- 	/* WinFast VP200 H (Teradici) user reported broken communication */
- 	SND_PCI_QUIRK(0x3a21, 0x040d, "WinFast VP200 H", 0x101),
- 	{}
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@ -2975,8 +2975,8 @@ static void ca8210_hw_setup(struct ieee8
+ 	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+ 	ca8210_hw->phy->cca_ed_level = -9800;
+ 	ca8210_hw->phy->symbol_duration = 16;
+-	ca8210_hw->phy->lifs_period = 40;
+-	ca8210_hw->phy->sifs_period = 12;
++	ca8210_hw->phy->lifs_period = 40 * ca8210_hw->phy->symbol_duration;
++	ca8210_hw->phy->sifs_period = 12 * ca8210_hw->phy->symbol_duration;
+ 	ca8210_hw->flags =
+ 		IEEE802154_HW_AFILT |
+ 		IEEE802154_HW_OMIT_CKSUM |
 
 
