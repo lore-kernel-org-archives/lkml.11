@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10345C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380477AbiBUQZ1 (ORCPT
+        id S1380405AbiBUQZi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:25:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53602 "EHLO
+        Mon, 21 Feb 2022 11:25:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380247AbiBUQXV (ORCPT
+        with ESMTP id S1380352AbiBUQYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:23:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BA63275D1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:22:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645460577;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=i3nje5ezz2l8EdII+5hi4MIxNm8UaLF4TH8gVbuFagw=;
-        b=V4cpdK47fRVuVUnmKhfekpv6Kon+2rNkU9sKacaK2xMX8tRShCt/oY4aqlapQErHNM86xQ
-        TVEN/Sv+5ciD/k9+AtJxNfqm/Bl3har1iyKiadbEC5htpahcp92l3ayJCWO7KtlBjFAk/K
-        scNomuG3zl4Dh/N2PH7b5ZN2tc+2QVk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590--lw84rjrO9OLbYqALxnYAg-1; Mon, 21 Feb 2022 11:22:53 -0500
-X-MC-Unique: -lw84rjrO9OLbYqALxnYAg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E0EB11091DA1;
-        Mon, 21 Feb 2022 16:22:52 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 826E37611B;
-        Mon, 21 Feb 2022 16:22:52 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     dmatlack@google.com, seanjc@google.com
-Subject: [PATCH v2 17/25] KVM: x86/mmu: remove redundant bits from extended role
-Date:   Mon, 21 Feb 2022 11:22:35 -0500
-Message-Id: <20220221162243.683208-18-pbonzini@redhat.com>
-In-Reply-To: <20220221162243.683208-1-pbonzini@redhat.com>
-References: <20220221162243.683208-1-pbonzini@redhat.com>
+        Mon, 21 Feb 2022 11:24:30 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E163227154;
+        Mon, 21 Feb 2022 08:23:23 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id f19so33255497qvb.6;
+        Mon, 21 Feb 2022 08:23:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TKiCt1S1j4SATnS4TlLvHBjlEUqaLXI7U/mAZPB0y5I=;
+        b=S9CZ1OU2H+mocrhnNQdvnqdd75Wt8mgMi73b6S3J2ouJI9QdY4BCqUHtiOmjdpuP+s
+         ceghewmE1wR2TyU09ypOD5QTjNeO5TvcoktA2qK/+7DTTk9Fk42pb6z35teWNifJrOj6
+         laYkck6lrqfcxzsws8HGkPFMyQMf0StyDwEYgDqgZb22o8HUROvfdZzES9ytRvn17nw2
+         bTiQZw7SBIWffkQqHFkLcjEiNtw8ZPbCQE0lasOpK3OVm2yuevtW2ALer9LfY7oMvvMO
+         FoC694j4qGJvwT83PTf2yyeEczxqN48hDati9qh5uf1rRqUVSttX8/00N4diRXnHTRCj
+         ud9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TKiCt1S1j4SATnS4TlLvHBjlEUqaLXI7U/mAZPB0y5I=;
+        b=JoTQsbxRzy2ERcOZ8m83QJO1/Bf93w7+KmMp4JR6Vq9PfYeQGslctGL2Hir/S1+ePW
+         q0glBcJMtSIFYhZ4wvugvsOWo7MKq2Du9YsdCtFw6tYCv2Kmt2O+ihCOVhC/28aXeJtn
+         ltQszujNVkFiHCjvZbDHw1n/7YJIy9eELxlcFeUIPmmRe+K56LsgF8suhDVw2gJwXmcG
+         kYs/h2rEVW3kDek/JCytMvU9HpqqaFLowwPiYcCVjGs6eoZc49ZmU4xL775XsoIQqgZ5
+         Kd8MWKgbYVOepgceDf7r0ZkqfZB1rYYb4CEt68nWF+MdbYwpjupmgkdXbCTxAfnwt3qK
+         BX9Q==
+X-Gm-Message-State: AOAM531Mn1v8eiHKPiDuPdvBf1Gw2FQ49HJ6iDeX9zQdIJG9zCJIPKQf
+        Y6dYkdyuMXygm+vIU1TNnhw=
+X-Google-Smtp-Source: ABdhPJx3luw9Yj2YgyBCmh5YWqsBLD2UE75fz7mAtavHhJp2P6swRwUHOFzLuWmLEGMvptso/PF9cg==
+X-Received: by 2002:ac8:59c7:0:b0:2dd:1364:4149 with SMTP id f7-20020ac859c7000000b002dd13644149mr18292863qtf.90.1645460603031;
+        Mon, 21 Feb 2022 08:23:23 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id y15sm27301501qko.95.2022.02.21.08.23.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 08:23:22 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <ed6fa743-781d-35ed-b002-5621d3f66c91@roeck-us.net>
+Date:   Mon, 21 Feb 2022 08:23:20 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
+Content-Language: en-US
+To:     Jon Hunter <jonathanh@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20210618215455.19986-1-digetx@gmail.com>
+ <20210618215455.19986-3-digetx@gmail.com>
+ <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
+ <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
+ <84ddad27-eb22-0ba6-594f-2fc6d098dc2a@nvidia.com>
+ <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
+ <20da6f55-682f-4b30-7be7-f425f8efa995@nvidia.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20da6f55-682f-4b30-7be7-f425f8efa995@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before the separation of the CPU and the MMU role, CR0.PG was not
-available in the base MMU role, because two-dimensional paging always
-used direct=1 in the MMU role.  However, now that the raw role is
-snapshotted in mmu->cpu_mode, CR0.PG *can* be found (though inverted)
-as !cpu_mode.base.direct.  There is no need to store it again in union
-kvm_mmu_extended_role; instead, write an is_cr0_pg accessor by hand that
-takes care of the inversion.
+On 2/21/22 08:16, Jon Hunter wrote:
+> 
+> On 21/02/2022 16:02, Guenter Roeck wrote:
+> 
+> ...
+> 
+>>> The platform I see this on does use device-tree and it does have a node for the ti,tmp451 device which uses the lm90 device. This platform uses the device-tree source arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts and the tmp451 node is in arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi.
+>>>
+>>
+>> Interesting. It appears that the call to devm_thermal_zone_of_sensor_register()
+>> in the hwmon core nevertheless returns -ENODEV which is not handled properly
+>> in the hwmon core. I can see a number of reasons for this to happen:
+>> - there is no devicetree node for the lm90 device
+>> - there is no thermal-zones devicetree node
+>> - there is no thermal zone entry in the thermal-zones node which matches
+>>    the sensor
+> 
+> 
+> So we definitely have the node for the lm90 device and a thermal-zones node, but I do not see a thermal-sensor node. Maybe this is what we are missing?
+> 
 
-Likewise, CR4.PAE is now always present in the CPU mode as
-!cpu_mode.base.has_4_byte_gpte.  The inversion makes certain tests on
-the MMU role easier, and is easily hidden by the is_cr4_pae accessor
-when operating on the CPU mode.
+Correct.
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/include/asm/kvm_host.h |  2 --
- arch/x86/kvm/mmu/mmu.c          | 14 ++++++++++----
- 2 files changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 3dbe0be075f5..14f391582738 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -362,8 +362,6 @@ union kvm_mmu_extended_role {
- 	struct {
- 		unsigned int valid:1;
- 		unsigned int execonly:1;
--		unsigned int cr0_pg:1;
--		unsigned int cr4_pae:1;
- 		unsigned int cr4_pse:1;
- 		unsigned int cr4_pke:1;
- 		unsigned int cr4_smap:1;
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 61499fd7d017..eb7c62c11700 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -223,16 +223,24 @@ static inline bool __maybe_unused is_##reg##_##name(struct kvm_mmu *mmu)	\
- {								\
- 	return !!(mmu->cpu_mode. base_or_ext . reg##_##name);	\
- }
--BUILD_MMU_ROLE_ACCESSOR(ext,  cr0, pg);
- BUILD_MMU_ROLE_ACCESSOR(base, cr0, wp);
- BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pse);
--BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pae);
- BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smep);
- BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, smap);
- BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, pke);
- BUILD_MMU_ROLE_ACCESSOR(ext,  cr4, la57);
- BUILD_MMU_ROLE_ACCESSOR(base, efer, nx);
- 
-+static inline bool is_cr0_pg(struct kvm_mmu *mmu)
-+{
-+        return !mmu->cpu_mode.base.direct;
-+}
-+
-+static inline bool is_cr4_pae(struct kvm_mmu *mmu)
-+{
-+        return !mmu->cpu_mode.base.has_4_byte_gpte;
-+}
-+
- static struct kvm_mmu_role_regs vcpu_to_role_regs(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_mmu_role_regs regs = {
-@@ -4681,8 +4689,6 @@ kvm_calc_cpu_mode(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
- 		else
- 			role.base.level = PT32_ROOT_LEVEL;
- 
--		role.ext.cr0_pg = 1;
--		role.ext.cr4_pae = ____is_cr4_pae(regs);
- 		role.ext.cr4_smep = ____is_cr4_smep(regs);
- 		role.ext.cr4_smap = ____is_cr4_smap(regs);
- 		role.ext.cr4_pse = ____is_cr4_pse(regs);
--- 
-2.31.1
-
+Guenter
 
