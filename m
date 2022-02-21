@@ -2,136 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98090C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E50C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238307AbiBURew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:34:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42334 "EHLO
+        id S237856AbiBURgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 12:36:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234652AbiBURem (ORCPT
+        with ESMTP id S232022AbiBURgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:34:42 -0500
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981E11B79E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:34:15 -0800 (PST)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220221173411epoutp01a4fa1f5afa54ec4d0daea6bfc0c11db0~V3ZCUk74B0928409284epoutp01n
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 17:34:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220221173411epoutp01a4fa1f5afa54ec4d0daea6bfc0c11db0~V3ZCUk74B0928409284epoutp01n
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1645464851;
-        bh=czJXhhu7BKvM2wKopoIGmCQLR5jigccH7TKoGeuBU3c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hNaL6oOgZbA6PpkXodeO4AhHzyc86vqXNSkxHMG39xbKLxVvSccMxzZb0AtXHsq8+
-         PBwviVtHPwMFCKkVVzpl7r/GDLMvCqgMg8cnwcTmUVvpFm2ZMENQcp504Z5QtZ8XpK
-         oYW3z21wUscrOpJkgoJWdb4zYZGVVaIc6GZC0auY=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220221173410epcas5p1b92b382e13b34682517d2914c47fd301~V3ZA9Km8I1540215402epcas5p1w;
-        Mon, 21 Feb 2022 17:34:10 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.182]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4K2Ttk0WN3z4x9Pq; Mon, 21 Feb
-        2022 17:34:06 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        94.A0.06423.D0DC3126; Tue, 22 Feb 2022 02:34:05 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220221173404epcas5p44ceb57158d3df4808ec1f409f53a0e81~V3Y71--eY2548525485epcas5p49;
-        Mon, 21 Feb 2022 17:34:04 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220221173404epsmtrp1dad9756e3a6408cc7a11508f9c7d57d5~V3Y71NOvs2875728757epsmtrp1C;
-        Mon, 21 Feb 2022 17:34:04 +0000 (GMT)
-X-AuditID: b6c32a49-b01ff70000001917-ae-6213cd0d33b7
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        CA.DA.29871.C0DC3126; Tue, 22 Feb 2022 02:34:04 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220221173403epsmtip2e537cd01c5f19d10a80eaa8432ccc376~V3Y6itD6t0992909929epsmtip2N;
-        Mon, 21 Feb 2022 17:34:03 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, pankaj.dubey@samsung.com,
-        m.szyprowski@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH v3 2/3] clocksource/drivers/exynos_mct: bump up mct max irq
- number
-Date:   Mon, 21 Feb 2022 23:15:46 +0530
-Message-Id: <20220221174547.26176-2-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220221174547.26176-1-alim.akhtar@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrHKsWRmVeSWpSXmKPExsWy7bCmui7vWeEkgz8L9SwezNvGZjHvs6zF
-        xrc/mCw2Pb7GanF51xw2ixnn9zFZrD1yl91i0dYv7BabN01lduD0mNXQy+Zx59oeNo93586x
-        e2xeUu/Rt2UVo8fnTXIBbFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJ
-        uam2Si4+AbpumTlANykplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCkwK9IoTc4tL
-        89L18lJLrAwNDIxMgQoTsjNmnGlgLnjKVtF4cjZbA+M11i5GTg4JAROJZTfPs3cxcnEICexm
-        lDgz4zgrhPOJUeL2mzdsEM43RokZzZdZYFoOT/zOBJHYyyix9eAXqP4WJomva+aDVbEJaEvc
-        nb6FCcQWEXCTuNHYAdbBLHCNUeLPxEOMIAlhgRCJo7d/ATVwcLAIqEq0XWIDMXkFbCQ+nTeE
-        WCYvsXrDAWYQm1PAVuLEhH5GkDESAvfYJS7N/c4MUeQi8fDBayYIW1ji1fEt7BC2lMTL/jZ2
-        kJkSAtkSPbuMIcI1EkvnHYN6xl7iwJU5YBcwC2hKrN+lDxJmFuCT6P39hAmik1eio00IolpV
-        ovndVahOaYmJ3d3QUPSQmHN5GZgtJDCBUWLO3qQJjLKzEIYuYGRcxSiZWlCcm55abFpgmJda
-        Do+m5PzcTYzghKbluYPx7oMPeocYmTgYDzFKcDArifDeYRdOEuJNSaysSi3Kjy8qzUktPsRo
-        CgyvicxSosn5wJSaVxJvaGJpYGJmZmZiaWxmqCTOezp9Q6KQQHpiSWp2ampBahFMHxMHp1QD
-        U29J4Mpev3k+nRY/1T50LrqRtGhB4jzB5tmHC47uOuDGrqBWy3Vkwg+JG9NuM5Z9Fn+TJMs9
-        Z/NH/k2rq/YqekuKbbx3PSnTbavW65dJwVL3gvfda9/ZG3uJcb91euKLniNHl/y7eiRB9upp
-        Ppm4wkWxt9WEjA5v7FrflvFwOUeCFq8Hq1jwj5cL6rX8ykpP3KtZ8FOK27dqyems1XwliV5R
-        /9cUT5Y8o6S1LLdX911q4iY3uR13zUx/rTscM5cjZ5tq5eF7EzXvGq9fv1pPU/T7xbV6cuKh
-        G35p3cv+unq37aKtSdt5L7obfzpxQuHX7y1Hkt89vrJTiNPnUb3Zbk/tcK9p2U+uK7jPOWCw
-        /JESS3FGoqEWc1FxIgDph2Fj8QMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrELMWRmVeSWpSXmKPExsWy7bCSvC7PWeEkg+Z+E4sH87axWcz7LGux
-        8e0PJotNj6+xWlzeNYfNYsb5fUwWa4/cZbdYtPULu8XmTVOZHTg9ZjX0snncubaHzePduXPs
-        HpuX1Hv0bVnF6PF5k1wAWxSXTUpqTmZZapG+XQJXxowzDcwFT9kqGk/OZmtgvMbaxcjJISFg
-        InF44nemLkYuDiGB3YwSV3vms0MkpCWub5wAZQtLrPz3nB2iqIlJ4tjq9YwgCTYBbYm707cw
-        gdgiAh4Sbf/uMYMUMQvcY5T43TINrEhYIEhi7peVQOs4OFgEVCXaLrGBmLwCNhKfzhtCzJeX
-        WL3hADOIzSlgK3FiQj8jSIkQUMnpNp0JjHwLGBlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXr
-        JefnbmIEB6OW5g7G7as+6B1iZOJgPMQowcGsJMJ7h104SYg3JbGyKrUoP76oNCe1+BCjNAeL
-        kjjvha6T8UIC6YklqdmpqQWpRTBZJg5OqQYmj8OLfuxje91xZrXiyn6evGy2OfLXvYOljuuk
-        8N1K+304d0PAO/6Ein7HyWFt2jI6zn7RlhY+p358nHbhZIrE/urnHhz/FpzVrtZlNY14FFib
-        aqS3+ce9j5Mvr65a4XZ2QtIhL8Gcu9J8IuFf5L4unyKakcQWNWGG1CGHPG6OxQeVTPInb1+6
-        woklYafh3D1f28wXvZZiuMS9rnzJgVU3OJafmrtTdEnahTq/P8Wr353MSNT2bKzYtfrDy+ik
-        Sb+z6t4sPr95i07jPP3zD3jnL1nC3HHldPikBxsmrvT5bXX2t+N/v/WL3/PVyFgbnl/0Zm3A
-        563i9nlTCrZc7tiwRIHhmbD9+lbxH7q7bgexuiuxFGckGmoxFxUnAgChCF98tQIAAA==
-X-CMS-MailID: 20220221173404epcas5p44ceb57158d3df4808ec1f409f53a0e81
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220221173404epcas5p44ceb57158d3df4808ec1f409f53a0e81
-References: <20220221174547.26176-1-alim.akhtar@samsung.com>
-        <CGME20220221173404epcas5p44ceb57158d3df4808ec1f409f53a0e81@epcas5p4.samsung.com>
+        Mon, 21 Feb 2022 12:36:38 -0500
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEFF1B797;
+        Mon, 21 Feb 2022 09:36:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PkpUpGJ5fnZavlDzdbOdq/17AO+V95dcZa/mE2WXAVg=; b=NY4d56ipV+ocFh5z0mNXf4EUne
+        0cybsnz+sCoMyNGGmrBQAF3IztUaD4VTsdgx3LQjBi4E4Kx6kty0oDhd81IngYd5FWuvuDAL4+kgu
+        R9SntmnlQl8dPHbaAW/Hs56NWT/CI6btDP3MeORUQEe3u4D/L3eFkQ/SeNsvg9ienk5G+9X7nyq3n
+        mNGMmY0u90eqfUddJbp7AVkc74mGY372hpeAo3GbU4sjBvd4jmCnC2XsfqUlpz/0QHcI9szjyxG8v
+        QpIJ6gyG8M9cC0eSIZRxljwFXf0fMFGHXnzqnoy7vI0ZngkKYanPfVYSr3DwcFwJGC69NqWoCJy1S
+        P7D0XKBQ==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nMCbW-0002UU-8v; Mon, 21 Feb 2022 19:36:06 +0200
+Message-ID: <6be67fc4-3343-123e-5dc3-d45f51f42624@kapsi.fi>
+Date:   Mon, 21 Feb 2022 19:36:05 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        will@kernel.org, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+        linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-9-mperttunen@nvidia.com>
+ <71e94ac3-20fc-6f41-270f-fe246740e7e0@arm.com>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <71e94ac3-20fc-6f41-270f-fe246740e7e0@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bump-up maximum number of MCT IRQ to match the binding
-documentation. This make driver scalable for SoC which
-has more than 12 timer irqs, like recently added FSD SoC.
+On 2/21/22 19:27, Robin Murphy wrote:
+> On 2022-02-18 11:39, Mikko Perttunen via iommu wrote:
+>> Implement the get_streamid_offset required for supporting context
+>> isolation. Since old firmware cannot support context isolation
+>> without hacks that we don't want to implement, check the firmware
+>> binary to see if context isolation should be enabled.
+>>
+>> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+>> ---
+>>   drivers/gpu/drm/tegra/vic.c | 38 +++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 38 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+>> index 1e342fa3d27b..2863ee5e0e67 100644
+>> --- a/drivers/gpu/drm/tegra/vic.c
+>> +++ b/drivers/gpu/drm/tegra/vic.c
+>> @@ -38,6 +38,8 @@ struct vic {
+>>       struct clk *clk;
+>>       struct reset_control *rst;
+>> +    bool can_use_context;
+>> +
+>>       /* Platform configuration */
+>>       const struct vic_config *config;
+>>   };
+>> @@ -229,6 +231,7 @@ static int vic_load_firmware(struct vic *vic)
+>>   {
+>>       struct host1x_client *client = &vic->client.base;
+>>       struct tegra_drm *tegra = vic->client.drm;
+>> +    u32 fce_bin_data_offset;
+>>       dma_addr_t iova;
+>>       size_t size;
+>>       void *virt;
+>> @@ -277,6 +280,25 @@ static int vic_load_firmware(struct vic *vic)
+>>           vic->falcon.firmware.phys = phys;
+>>       }
+>> +    /*
+>> +     * Check if firmware is new enough to not require mapping firmware
+>> +     * to data buffer domains.
+>> +     */
+>> +    fce_bin_data_offset = *(u32 *)(virt + VIC_UCODE_FCE_DATA_OFFSET);
+>> +
+>> +    if (!vic->config->supports_sid) {
+>> +        vic->can_use_context = false;
+>> +    } else if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 
+>> 0xa5a5a5a5) {
+>> +        /*
+>> +         * Firmware will access FCE through STREAMID0, so context
+>> +         * isolation cannot be used.
+>> +         */
+>> +        vic->can_use_context = false;
+>> +        dev_warn_once(vic->dev, "context isolation disabled due to 
+>> old firmware\n");
+>> +    } else {
+>> +        vic->can_use_context = true;
+>> +    }
+>> +
+>>       return 0;
+>>   cleanup:
+>> @@ -358,10 +380,26 @@ static void vic_close_channel(struct 
+>> tegra_drm_context *context)
+>>       host1x_channel_put(context->channel);
+>>   }
+>> +static int vic_get_streamid_offset(struct tegra_drm_client *client)
+>> +{
+>> +    struct vic *vic = to_vic(client);
+>> +    int err;
+>> +
+>> +    err = vic_load_firmware(vic);
+>> +    if (err < 0)
+>> +        return err;
+>> +
+>> +    if (vic->can_use_context)
+>> +        return 0x30;
+>> +    else
+>> +        return -ENOTSUPP;
+>> +}
+>> +
+>>   static const struct tegra_drm_client_ops vic_ops = {
+>>       .open_channel = vic_open_channel,
+>>       .close_channel = vic_close_channel,
+>>       .submit = tegra_drm_submit,
+>> +    .get_streamid_offset = vic_get_streamid_offset,
+> 
+> The patch order seems off here, since the .get_streamid_offset member 
+> isn't defined yet.
+> 
+> Robin.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
----
- drivers/clocksource/exynos_mct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Indeed, will fix.
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index b3f3d27a837b..0c7931f7f99a 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -64,7 +64,8 @@
- #define MCT_G0_IRQ	0
- /* Local timers count starts after global timer count */
- #define MCT_L0_IRQ	4
--#define MCT_NR_IRQS	12
-+/* Max number of IRQ as per DT binding document */
-+#define MCT_NR_IRQS	20
- 
- enum {
- 	MCT_INT_SPI,
--- 
-2.25.1
+Thanks,
+Mikko
+
+> 
+>>   };
+>>   #define NVIDIA_TEGRA_124_VIC_FIRMWARE "nvidia/tegra124/vic03_ucode.bin"
 
