@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA83C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351556AbiBUJvw (ORCPT
+        id S1351577AbiBUJwE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:51:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40410 "EHLO
+        Mon, 21 Feb 2022 04:52:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352333AbiBUJrV (ORCPT
+        with ESMTP id S1352422AbiBUJr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:21 -0500
+        Mon, 21 Feb 2022 04:47:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029DC41F95;
-        Mon, 21 Feb 2022 01:19:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB804427E2;
+        Mon, 21 Feb 2022 01:19:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34816608C4;
-        Mon, 21 Feb 2022 09:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBA2C340E9;
-        Mon, 21 Feb 2022 09:19:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5726560F71;
+        Mon, 21 Feb 2022 09:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CA6AC340E9;
+        Mon, 21 Feb 2022 09:19:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435170;
-        bh=gBR3Ce/pJ47IRQg4FP9Z/vuY4SpFZJm7Vp0omlNnSeg=;
+        s=korg; t=1645435184;
+        bh=UZzJEtPpZHkwZAVOc12NZhYi/u6DMPaLPsuvQQWcqNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z0466jwY9AozoiaNQz3cXSRXc3nEQyZq3e6tGX1t866oBXeuRqGcrq1f+EUoNlaG+
-         zE7z3kmnH0JUlB6q0bkHc0p38YnGcSEs17MY9Tjtg/lrtB69zOkAaQ/uk0uydbAucB
-         sktOYJrBFapc7FOKUhrfjyjzZZsxLZQouFhxpe8Y=
+        b=QdB6X29TRFCObU+xLvEV1YVVcPBvaSjIe2EMjYuL3LJeAoxM+/NubgogVC+VHucdT
+         fGVNacBYzBqTUphGf4f3nb1bSQqMTuWS91z/X2ngmtojGYMG4YbqaFJz0GUJElz6uU
+         +iQMjCChmRMQrek7dNSoR5HTLD66fRsE3I4otukU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Popov <alex.popov@linux.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 069/227] gcc-plugins/stackleak: Use noinstr in favor of notrace
-Date:   Mon, 21 Feb 2022 09:48:08 +0100
-Message-Id: <20220221084937.167743369@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 073/227] KVM: x86: SVM: dont passthrough SMAP/SMEP/PKE bits in !NPT && !gCR0.PG case
+Date:   Mon, 21 Feb 2022 09:48:12 +0100
+Message-Id: <20220221084937.298472604@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,68 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-[ Upstream commit dcb85f85fa6f142aae1fe86f399d4503d49f2b60 ]
+commit c53bbe2145f51d3bc0438c2db02e737b9b598bf3 upstream.
 
-While the stackleak plugin was already using notrace, objtool is now a
-bit more picky.  Update the notrace uses to noinstr.  Silences the
-following objtool warnings when building with:
+When the guest doesn't enable paging, and NPT/EPT is disabled, we
+use guest't paging CR3's as KVM's shadow paging pointer and
+we are technically in direct mode as if we were to use NPT/EPT.
 
-CONFIG_DEBUG_ENTRY=y
-CONFIG_STACK_VALIDATION=y
-CONFIG_VMLINUX_VALIDATION=y
-CONFIG_GCC_PLUGIN_STACKLEAK=y
+In direct mode we create SPTEs with user mode permissions
+because usually in the direct mode the NPT/EPT doesn't
+need to restrict access based on guest CPL
+(there are MBE/GMET extenstions for that but KVM doesn't use them).
 
-  vmlinux.o: warning: objtool: do_syscall_64()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: do_int80_syscall_32()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: exc_general_protection()+0x22: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: fixup_bad_iret()+0x20: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: do_machine_check()+0x27: call to stackleak_track_stack() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .text+0x5346e: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x143: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x10eb: call to stackleak_erase() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: .entry.text+0x17f9: call to stackleak_erase() leaves .noinstr.text section
+In this special "use guest paging as direct" mode however,
+and if CR4.SMAP/CR4.SMEP are enabled, that will make the CPU
+fault on each access and KVM will enter endless loop of page faults.
 
-Note that the plugin's addition of calls to stackleak_track_stack() from
-noinstr functions is expected to be safe, as it isn't runtime
-instrumentation and is self-contained.
+Since page protection doesn't have any meaning in !PG case,
+just don't passthrough these bits.
 
-Cc: Alexander Popov <alex.popov@linux.com>
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The fix is the same as was done for VMX in commit:
+commit 656ec4a4928a ("KVM: VMX: fix SMEP and SMAP without EPT")
+
+This fixes the boot of windows 10 without NPT for good.
+(Without this patch, BSP boots, but APs were stuck in endless
+loop of page faults, causing the VM boot with 1 CPU)
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: stable@vger.kernel.org
+Message-Id: <20220207155447.840194-2-mlevitsk@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/stackleak.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/x86/kvm/svm/svm.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-index ce161a8e8d975..dd07239ddff9f 100644
---- a/kernel/stackleak.c
-+++ b/kernel/stackleak.c
-@@ -48,7 +48,7 @@ int stack_erasing_sysctl(struct ctl_table *table, int write,
- #define skip_erasing()	false
- #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
- 
--asmlinkage void notrace stackleak_erase(void)
-+asmlinkage void noinstr stackleak_erase(void)
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -1795,6 +1795,7 @@ void svm_set_cr0(struct kvm_vcpu *vcpu,
  {
- 	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
- 	unsigned long kstack_ptr = current->lowest_stack;
-@@ -102,9 +102,8 @@ asmlinkage void notrace stackleak_erase(void)
- 	/* Reset the 'lowest_stack' value for the next syscall */
- 	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
- }
--NOKPROBE_SYMBOL(stackleak_erase);
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	u64 hcr0 = cr0;
++	bool old_paging = is_paging(vcpu);
  
--void __used __no_caller_saved_registers notrace stackleak_track_stack(void)
-+void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
- {
- 	unsigned long sp = current_stack_pointer;
+ #ifdef CONFIG_X86_64
+ 	if (vcpu->arch.efer & EFER_LME && !vcpu->arch.guest_state_protected) {
+@@ -1811,8 +1812,11 @@ void svm_set_cr0(struct kvm_vcpu *vcpu,
+ #endif
+ 	vcpu->arch.cr0 = cr0;
  
--- 
-2.34.1
-
+-	if (!npt_enabled)
++	if (!npt_enabled) {
+ 		hcr0 |= X86_CR0_PG | X86_CR0_WP;
++		if (old_paging != is_paging(vcpu))
++			svm_set_cr4(vcpu, kvm_read_cr4(vcpu));
++	}
+ 
+ 	/*
+ 	 * re-enable caching here because the QEMU bios
+@@ -1856,8 +1860,12 @@ void svm_set_cr4(struct kvm_vcpu *vcpu,
+ 		svm_flush_tlb(vcpu);
+ 
+ 	vcpu->arch.cr4 = cr4;
+-	if (!npt_enabled)
++	if (!npt_enabled) {
+ 		cr4 |= X86_CR4_PAE;
++
++		if (!is_paging(vcpu))
++			cr4 &= ~(X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE);
++	}
+ 	cr4 |= host_cr4_mce;
+ 	to_svm(vcpu)->vmcb->save.cr4 = cr4;
+ 	vmcb_mark_dirty(to_svm(vcpu)->vmcb, VMCB_CR);
 
 
