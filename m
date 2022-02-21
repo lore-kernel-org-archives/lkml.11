@@ -2,117 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C012C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378081AbiBUOhm (ORCPT
+        id S1378095AbiBUOip (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:37:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49964 "EHLO
+        Mon, 21 Feb 2022 09:38:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378073AbiBUOhh (ORCPT
+        with ESMTP id S1350689AbiBUOid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:37:37 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1449C1FA42;
-        Mon, 21 Feb 2022 06:37:14 -0800 (PST)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21LEQ5jG020639;
-        Mon, 21 Feb 2022 14:37:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=tSbMXh38w1m5isYJZGMogBGAKJRCnfBSGcDktspG2Ug=;
- b=s4HAo9W6I80iDjKKQhmsLrWqPxcJYiSZUHZj3J9g0z8uwVriH2DWNKH5jJvf8cBkn+n1
- QXTD7UnNFvC7BACGputh1/xn6+W5LD0EcI0QtTuea8DzU/gFytlnhY9VPwiow9UzNIa/
- L5QOtk1Hzd7MQ0Xmh2MFwsOtqXhWkv72QqU1iGn3iPVR55o0+utmA2AgQHy+9bPZLtor
- eGyXfUcH+Z7OufMeb335++dGmjxKfR+7+8NyxBStywWmeAO0rKmhsMZ4cPrGMOZiFiGH
- rFsAe7HyaERzWfPrJT3mfBpZydVK2ufQ0sD+r8hB5rFMKorDU9niCRaevD138PxHU7i7 Rg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eca3skp9m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Feb 2022 14:37:11 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21LCxpbY022981;
-        Mon, 21 Feb 2022 14:37:09 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eca3skp8x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Feb 2022 14:37:09 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21LESiW9021454;
-        Mon, 21 Feb 2022 14:37:07 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 3ear68te2r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 21 Feb 2022 14:37:07 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21LEb3V252822526
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 21 Feb 2022 14:37:03 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97286A4040;
-        Mon, 21 Feb 2022 14:37:03 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 34E2EA4051;
-        Mon, 21 Feb 2022 14:37:03 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 21 Feb 2022 14:37:03 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: s390: Clarify key argument for MEM_OP in api docs
-Date:   Mon, 21 Feb 2022 15:36:57 +0100
-Message-Id: <20220221143657.3712481-1-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220211182215.2730017-10-scgl@linux.ibm.com>
-References: <20220211182215.2730017-10-scgl@linux.ibm.com>
+        Mon, 21 Feb 2022 09:38:33 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600E9205D2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:38:08 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id z66so11190324qke.10
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:38:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SQkkpjsX6TpHTIkwX4rlheMVKzlTSUCBOIkGIhUmEnk=;
+        b=lFloJT5XTRR77kzfHXTKnbI4pb8ZRFszg5NJtpODh2xdLUe/I00E73ECSqJvCocxE2
+         b91NgLxHbLq2mKguKL6+A8vg59eCEqgoc3DveKrETnDLj1w3kQOwUnqmAyyMEzwuyF++
+         1oz4fM9tYT3W1pjPYzepabrJTciPcMKBtMn9aK5T3gg7gaxtxK3qGRDfcii8PSRqH1m5
+         jTfcfIxVWzqsyre+F9ScBo3PJyTGXXcumCcPycf5oTgrENXqutdnUW36PETYhvnU0X6i
+         kE5fYBI0/0sqdCVOLbEJmColObNXJPYvXf2JzQQK0cwu9DtCZ/5LkSqn+45P9FbV6RjB
+         gqew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SQkkpjsX6TpHTIkwX4rlheMVKzlTSUCBOIkGIhUmEnk=;
+        b=Q4+vPdyV9fpi2+NZ5mGjsa2HOMv4HFMT5gGAYg5lap1gzEN2GRUkdPErzewtMKi5vB
+         xo05kXqTNl52I6yGGvUXBCp9QInfMvi+M1c3ke36TfcLjEoqoo9rPw55yMqE35Vr+YxS
+         cSmxHCFg9OiO0J94em92WASiqkxmxrs5cyOvNWz//EmvxOW8Xyw+31dQr+WD/q53Egpe
+         KeIN/v24JAqqbVm1nyzCSG6EaE+m/WyefGn/itL1zivo5oqNlM/QN4RtpKvcl8QXELpl
+         kPq4C/jmHDpqj8xucAxLP8M2OW9xRNKQJiHHm2ueDh8WqewyB+esmDZwKnSpLBjNb4hK
+         oENQ==
+X-Gm-Message-State: AOAM531Zw3YB0QBDWeVN6j3OSfK90qY44xRKzvWGQjBnC9fNlQjhW2FC
+        ofzXNy4QrFnjqJhbF8dcxXY=
+X-Google-Smtp-Source: ABdhPJxlKmrxFZuT/FAITTFKtimqCuPmpqJElllBfSaAREj/db8P6HZlcu9ug388nFgwdaclSsMcRA==
+X-Received: by 2002:ae9:df42:0:b0:47e:fe7b:a202 with SMTP id t63-20020ae9df42000000b0047efe7ba202mr12266908qkf.256.1645454287319;
+        Mon, 21 Feb 2022 06:38:07 -0800 (PST)
+Received: from mail.google.com ([207.246.89.135])
+        by smtp.gmail.com with ESMTPSA id bm8sm20942916qkb.25.2022.02.21.06.38.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 06:38:07 -0800 (PST)
+Date:   Mon, 21 Feb 2022 22:37:58 +0800
+From:   Changbin Du <changbin.du@gmail.com>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] kallsyms: ignore all local labels prefixed by '.L'
+Message-ID: <20220221143758.7wln3mklyaj7mzod@mail.google.com>
+References: <20220201013257.17926-1-changbin.du@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7f4pXBRszYbuNTzEk8_TPPvd-DC6tPt8
-X-Proofpoint-ORIG-GUID: JYOJ6p9eazyxRnWLgAwhmir51Je-4MmW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-21_07,2022-02-21_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- suspectscore=0 priorityscore=1501 mlxscore=0 spamscore=0 bulkscore=0
- adultscore=0 malwarescore=0 lowpriorityscore=0 clxscore=1015
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202210087
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220201013257.17926-1-changbin.du@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clarify that the key argument represents the access key, not the whole
-storage key.
+Hi, Masahiro,
+Could you consider picking up this change if you have no objection?
 
-Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
----
- Documentation/virt/kvm/api.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Feb 01, 2022 at 09:32:57AM +0800, Changbin Du wrote:
+> The llvm compiler can generate lots of local labels ('.LBB', '.Ltmpxxx',
+> '.L__unnamed_xx', etc.). These symbols usually are useless for debugging.
+> And they might overlap with handwritten symbols.
+> 
+> Before this change, a dumpstack shows a local symbol for epc:
+> [    0.040341][    T0] Hardware name: riscv-virtio,qemu (DT)
+> [    0.040376][    T0] epc : .LBB6_14+0x22/0x6a
+> [    0.040452][    T0]  ra : restore_all+0x12/0x6e
+> 
+> The simple solution is that we can ignore all local labels prefixed by '.L'.
+> For handwritten symbols which need to be preserved should drop the '.L'
+> prefix.
+> 
+> After this change, the C defined symbol is shown so we can locate the
+> problematical code immediately:
+> [    0.035795][    T0] Hardware name: riscv-virtio,qemu (DT)
+> [    0.036332][    T0] epc : trace_hardirqs_on+0x54/0x13c
+> [    0.036567][    T0]  ra : restore_all+0x12/0x6e
+> 
+> Signed-off-by: Changbin Du <changbin.du@gmail.com>
+> ---
+>  scripts/kallsyms.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 54ad86d13784..8caabddf817c 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -108,7 +108,7 @@ static bool is_ignored_symbol(const char *name, char type)
+>  	/* Symbol names that begin with the following are ignored.*/
+>  	static const char * const ignored_prefixes[] = {
+>  		"$",			/* local symbols for ARM, MIPS, etc. */
+> -		".LASANPC",		/* s390 kasan local symbols */
+> +		".L",			/* local labels, .LBB,.Ltmpxxx,.L__unnamed_xx,.LASANPC, etc. */
+>  		"__crc_",		/* modversions */
+>  		"__efistub_",		/* arm64 EFI stub namespace */
+>  		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
+> -- 
+> 2.32.0
+> 
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 48f23bb80d7f..622667cc87ef 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -3763,7 +3763,7 @@ KVM_S390_MEMOP_F_INJECT_EXCEPTION is set.
- 
- If the KVM_S390_MEMOP_F_SKEY_PROTECTION flag is set, storage key
- protection is also in effect and may cause exceptions if accesses are
--prohibited given the access key passed in "key".
-+prohibited given the access key designated by "key"; the valid range is 0..15.
- KVM_S390_MEMOP_F_SKEY_PROTECTION is available if KVM_CAP_S390_MEM_OP_EXTENSION
- is > 0.
- 
-
-base-commit: af33593d63a403287b8a6edd217e854a3571938b
 -- 
-2.32.0
-
+Cheers,
+Changbin Du
