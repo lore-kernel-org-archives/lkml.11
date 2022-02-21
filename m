@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD77C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A67FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351388AbiBUJpD (ORCPT
+        id S1351319AbiBUJpH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:45:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48414 "EHLO
+        Mon, 21 Feb 2022 04:45:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352006AbiBUJh6 (ORCPT
+        with ESMTP id S1352102AbiBUJiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:58 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C796C14096;
-        Mon, 21 Feb 2022 01:16:46 -0800 (PST)
+        Mon, 21 Feb 2022 04:38:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293571D0D8;
+        Mon, 21 Feb 2022 01:16:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5411DCE0E88;
-        Mon, 21 Feb 2022 09:16:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38B68C340E9;
-        Mon, 21 Feb 2022 09:16:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C2F608C1;
+        Mon, 21 Feb 2022 09:16:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95C5C340EB;
+        Mon, 21 Feb 2022 09:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435004;
-        bh=hhWlZ3gOfjwVDi4wvQ0OenxmXbZe5bw15akQf+a6Qpc=;
+        s=korg; t=1645435013;
+        bh=+8zlUxd5tIndKPPZA3jaxwDkOfCJtW/lS2dkXSYvgNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=APyCd+WB00ePQtCCWu1BPP1U9t/wtMcMGqF/FArzRDa64L52bfGi8cO8o2CIyILCs
-         YJlbovA3yD98NMRk/xZzkV/GbgWPhCDguGFYCpgLw5o2xwgxDowR1qXcrSouIlreb6
-         Pal8CNCNjxRP7LrwSIyY+kUyXrAh7KOHuX4xWGhY=
+        b=MKe8fup3gt4PUQsul1Q3y875mLJ8C7cKbnyTgv5ylppT3W7N/4iwf+uLq5B2+kdcx
+         KpjtettALvGqGxABaK9GwGQPnDRwzObAtgQ9qM3rAObdBD6OhmAlUd4SZQI8v8fgMv
+         Si5vEcyC/uDTxPGujKm7OmPken43RpZjcrSiJ/HU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
         Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.16 003/227] bpf: Replace ARG_XXX_OR_NULL with ARG_XXX | PTR_MAYBE_NULL
-Date:   Mon, 21 Feb 2022 09:47:02 +0100
-Message-Id: <20220221084934.948839907@linuxfoundation.org>
+Subject: [PATCH 5.16 006/227] bpf: Introduce MEM_RDONLY flag
+Date:   Mon, 21 Feb 2022 09:47:05 +0100
+Message-Id: <20220221084935.044999793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,196 +51,253 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hao Luo <haoluo@google.com>
 
-commit 48946bd6a5d695c50b34546864b79c1f910a33c1 upstream.
+commit 20b2aff4bc15bda809f994761d5719827d66c0b4 upstream.
 
-We have introduced a new type to make bpf_arg composable, by
-reserving high bits of bpf_arg to represent flags of a type.
+This patch introduce a flag MEM_RDONLY to tag a reg value
+pointing to read-only memory. It makes the following changes:
 
-One of the flags is PTR_MAYBE_NULL which indicates a pointer
-may be NULL. When applying this flag to an arg_type, it means
-the arg can take NULL pointer. This patch switches the
-qualified arg_types to use this flag. The arg_types changed
-in this patch include:
-
-1. ARG_PTR_TO_MAP_VALUE_OR_NULL
-2. ARG_PTR_TO_MEM_OR_NULL
-3. ARG_PTR_TO_CTX_OR_NULL
-4. ARG_PTR_TO_SOCKET_OR_NULL
-5. ARG_PTR_TO_ALLOC_MEM_OR_NULL
-6. ARG_PTR_TO_STACK_OR_NULL
-
-This patch does not eliminate the use of these arg_types, instead
-it makes them an alias to the 'ARG_XXX | PTR_MAYBE_NULL'.
+1. PTR_TO_RDWR_BUF -> PTR_TO_BUF
+2. PTR_TO_RDONLY_BUF -> PTR_TO_BUF | MEM_RDONLY
 
 Signed-off-by: Hao Luo <haoluo@google.com>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-3-haoluo@google.com
+Link: https://lore.kernel.org/bpf/20211217003152.48334-6-haoluo@google.com
 Cc: stable@vger.kernel.org # 5.16.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h   |   15 +++++++++------
- kernel/bpf/verifier.c |   39 ++++++++++++++-------------------------
- 2 files changed, 23 insertions(+), 31 deletions(-)
+ include/linux/bpf.h       |    8 ++--
+ kernel/bpf/btf.c          |    3 -
+ kernel/bpf/map_iter.c     |    4 +-
+ kernel/bpf/verifier.c     |   84 +++++++++++++++++++++++++++-------------------
+ net/core/bpf_sk_storage.c |    2 -
+ net/core/sock_map.c       |    2 -
+ 6 files changed, 60 insertions(+), 43 deletions(-)
 
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -331,13 +331,11 @@ enum bpf_arg_type {
- 	ARG_PTR_TO_MAP_KEY,	/* pointer to stack used as map key */
- 	ARG_PTR_TO_MAP_VALUE,	/* pointer to stack used as map value */
- 	ARG_PTR_TO_UNINIT_MAP_VALUE,	/* pointer to valid memory used to store a map value */
--	ARG_PTR_TO_MAP_VALUE_OR_NULL,	/* pointer to stack used as map value or NULL */
+@@ -311,7 +311,10 @@ enum bpf_type_flag {
+ 	/* PTR may be NULL. */
+ 	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
  
- 	/* the following constraints used to prototype bpf_memcmp() and other
- 	 * functions that access data on eBPF program stack
- 	 */
- 	ARG_PTR_TO_MEM,		/* pointer to valid memory (stack, packet, map value) */
--	ARG_PTR_TO_MEM_OR_NULL, /* pointer to valid memory or NULL */
- 	ARG_PTR_TO_UNINIT_MEM,	/* pointer to memory does not need to be initialized,
- 				 * helper function must fill all bytes or clear
- 				 * them in error case.
-@@ -347,26 +345,31 @@ enum bpf_arg_type {
- 	ARG_CONST_SIZE_OR_ZERO,	/* number of bytes accessed from memory or 0 */
- 
- 	ARG_PTR_TO_CTX,		/* pointer to context */
--	ARG_PTR_TO_CTX_OR_NULL,	/* pointer to context or NULL */
- 	ARG_ANYTHING,		/* any (initialized) argument is ok */
- 	ARG_PTR_TO_SPIN_LOCK,	/* pointer to bpf_spin_lock */
- 	ARG_PTR_TO_SOCK_COMMON,	/* pointer to sock_common */
- 	ARG_PTR_TO_INT,		/* pointer to int */
- 	ARG_PTR_TO_LONG,	/* pointer to long */
- 	ARG_PTR_TO_SOCKET,	/* pointer to bpf_sock (fullsock) */
--	ARG_PTR_TO_SOCKET_OR_NULL,	/* pointer to bpf_sock (fullsock) or NULL */
- 	ARG_PTR_TO_BTF_ID,	/* pointer to in-kernel struct */
- 	ARG_PTR_TO_ALLOC_MEM,	/* pointer to dynamically allocated memory */
--	ARG_PTR_TO_ALLOC_MEM_OR_NULL,	/* pointer to dynamically allocated memory or NULL */
- 	ARG_CONST_ALLOC_SIZE_OR_ZERO,	/* number of allocated bytes requested */
- 	ARG_PTR_TO_BTF_ID_SOCK_COMMON,	/* pointer to in-kernel sock_common or bpf-mirrored bpf_sock */
- 	ARG_PTR_TO_PERCPU_BTF_ID,	/* pointer to in-kernel percpu type */
- 	ARG_PTR_TO_FUNC,	/* pointer to a bpf program function */
--	ARG_PTR_TO_STACK_OR_NULL,	/* pointer to stack or NULL */
-+	ARG_PTR_TO_STACK,	/* pointer to stack */
- 	ARG_PTR_TO_CONST_STR,	/* pointer to a null terminated read-only string */
- 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
- 	__BPF_ARG_TYPE_MAX,
- 
-+	/* Extended arg_types. */
-+	ARG_PTR_TO_MAP_VALUE_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_MAP_VALUE,
-+	ARG_PTR_TO_MEM_OR_NULL		= PTR_MAYBE_NULL | ARG_PTR_TO_MEM,
-+	ARG_PTR_TO_CTX_OR_NULL		= PTR_MAYBE_NULL | ARG_PTR_TO_CTX,
-+	ARG_PTR_TO_SOCKET_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_SOCKET,
-+	ARG_PTR_TO_ALLOC_MEM_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_ALLOC_MEM,
-+	ARG_PTR_TO_STACK_OR_NULL	= PTR_MAYBE_NULL | ARG_PTR_TO_STACK,
+-	__BPF_TYPE_LAST_FLAG	= PTR_MAYBE_NULL,
++	/* MEM is read-only. */
++	MEM_RDONLY		= BIT(1 + BPF_BASE_TYPE_BITS),
 +
- 	/* This must be the last entry. Its purpose is to ensure the enum is
- 	 * wide enough to hold the higher bits reserved for bpf_type_flag.
++	__BPF_TYPE_LAST_FLAG	= MEM_RDONLY,
+ };
+ 
+ /* Max number of base types. */
+@@ -492,8 +495,7 @@ enum bpf_reg_type {
+ 	 * an explicit null check is required for this struct.
  	 */
+ 	PTR_TO_MEM,		 /* reg points to valid memory region */
+-	PTR_TO_RDONLY_BUF,	 /* reg points to a readonly buffer */
+-	PTR_TO_RDWR_BUF,	 /* reg points to a read/write buffer */
++	PTR_TO_BUF,		 /* reg points to a read/write buffer */
+ 	PTR_TO_PERCPU_BTF_ID,	 /* reg points to a percpu kernel variable */
+ 	PTR_TO_FUNC,		 /* reg points to a bpf program function */
+ 	__BPF_REG_TYPE_MAX,
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4932,8 +4932,7 @@ bool btf_ctx_access(int off, int size, e
+ 
+ 		type = base_type(ctx_arg_info->reg_type);
+ 		flag = type_flag(ctx_arg_info->reg_type);
+-		if (ctx_arg_info->offset == off &&
+-		    (type == PTR_TO_RDWR_BUF || type == PTR_TO_RDONLY_BUF) &&
++		if (ctx_arg_info->offset == off && type == PTR_TO_BUF &&
+ 		    (flag & PTR_MAYBE_NULL)) {
+ 			info->reg_type = ctx_arg_info->reg_type;
+ 			return true;
+--- a/kernel/bpf/map_iter.c
++++ b/kernel/bpf/map_iter.c
+@@ -174,9 +174,9 @@ static const struct bpf_iter_reg bpf_map
+ 	.ctx_arg_info_size	= 2,
+ 	.ctx_arg_info		= {
+ 		{ offsetof(struct bpf_iter__bpf_map_elem, key),
+-		  PTR_TO_RDONLY_BUF | PTR_MAYBE_NULL },
++		  PTR_TO_BUF | PTR_MAYBE_NULL | MEM_RDONLY },
+ 		{ offsetof(struct bpf_iter__bpf_map_elem, value),
+-		  PTR_TO_RDWR_BUF | PTR_MAYBE_NULL },
++		  PTR_TO_BUF | PTR_MAYBE_NULL },
+ 	},
+ };
+ 
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -472,14 +472,9 @@ static bool arg_type_may_be_refcounted(e
- 	return type == ARG_PTR_TO_SOCK_COMMON;
+@@ -452,6 +452,11 @@ static bool reg_type_may_be_refcounted_o
+ 		base_type(type) == PTR_TO_MEM;
  }
  
--static bool arg_type_may_be_null(enum bpf_arg_type type)
-+static bool type_may_be_null(u32 type)
- {
--	return type == ARG_PTR_TO_MAP_VALUE_OR_NULL ||
--	       type == ARG_PTR_TO_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_CTX_OR_NULL ||
--	       type == ARG_PTR_TO_SOCKET_OR_NULL ||
--	       type == ARG_PTR_TO_ALLOC_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_STACK_OR_NULL;
-+	return type & PTR_MAYBE_NULL;
- }
- 
- /* Determine whether the function releases some resources allocated by another
-@@ -4963,9 +4958,8 @@ static int process_timer_func(struct bpf
- 
- static bool arg_type_is_mem_ptr(enum bpf_arg_type type)
- {
--	return type == ARG_PTR_TO_MEM ||
--	       type == ARG_PTR_TO_MEM_OR_NULL ||
--	       type == ARG_PTR_TO_UNINIT_MEM;
-+	return base_type(type) == ARG_PTR_TO_MEM ||
-+	       base_type(type) == ARG_PTR_TO_UNINIT_MEM;
- }
- 
- static bool arg_type_is_mem_size(enum bpf_arg_type type)
-@@ -5102,31 +5096,26 @@ static const struct bpf_reg_types *compa
- 	[ARG_PTR_TO_MAP_KEY]		= &map_key_value_types,
- 	[ARG_PTR_TO_MAP_VALUE]		= &map_key_value_types,
- 	[ARG_PTR_TO_UNINIT_MAP_VALUE]	= &map_key_value_types,
--	[ARG_PTR_TO_MAP_VALUE_OR_NULL]	= &map_key_value_types,
- 	[ARG_CONST_SIZE]		= &scalar_types,
- 	[ARG_CONST_SIZE_OR_ZERO]	= &scalar_types,
- 	[ARG_CONST_ALLOC_SIZE_OR_ZERO]	= &scalar_types,
- 	[ARG_CONST_MAP_PTR]		= &const_map_ptr_types,
- 	[ARG_PTR_TO_CTX]		= &context_types,
--	[ARG_PTR_TO_CTX_OR_NULL]	= &context_types,
- 	[ARG_PTR_TO_SOCK_COMMON]	= &sock_types,
- #ifdef CONFIG_NET
- 	[ARG_PTR_TO_BTF_ID_SOCK_COMMON]	= &btf_id_sock_common_types,
- #endif
- 	[ARG_PTR_TO_SOCKET]		= &fullsock_types,
--	[ARG_PTR_TO_SOCKET_OR_NULL]	= &fullsock_types,
- 	[ARG_PTR_TO_BTF_ID]		= &btf_ptr_types,
- 	[ARG_PTR_TO_SPIN_LOCK]		= &spin_lock_types,
- 	[ARG_PTR_TO_MEM]		= &mem_types,
--	[ARG_PTR_TO_MEM_OR_NULL]	= &mem_types,
- 	[ARG_PTR_TO_UNINIT_MEM]		= &mem_types,
- 	[ARG_PTR_TO_ALLOC_MEM]		= &alloc_mem_types,
--	[ARG_PTR_TO_ALLOC_MEM_OR_NULL]	= &alloc_mem_types,
- 	[ARG_PTR_TO_INT]		= &int_ptr_types,
- 	[ARG_PTR_TO_LONG]		= &int_ptr_types,
- 	[ARG_PTR_TO_PERCPU_BTF_ID]	= &percpu_btf_ptr_types,
- 	[ARG_PTR_TO_FUNC]		= &func_ptr_types,
--	[ARG_PTR_TO_STACK_OR_NULL]	= &stack_ptr_types,
-+	[ARG_PTR_TO_STACK]		= &stack_ptr_types,
- 	[ARG_PTR_TO_CONST_STR]		= &const_str_ptr_types,
- 	[ARG_PTR_TO_TIMER]		= &timer_types,
- };
-@@ -5140,7 +5129,7 @@ static int check_reg_type(struct bpf_ver
- 	const struct bpf_reg_types *compatible;
- 	int i, j;
- 
--	compatible = compatible_reg_types[arg_type];
-+	compatible = compatible_reg_types[base_type(arg_type)];
- 	if (!compatible) {
- 		verbose(env, "verifier internal error: unsupported arg type %d\n", arg_type);
- 		return -EFAULT;
-@@ -5221,15 +5210,14 @@ static int check_func_arg(struct bpf_ver
- 		return -EACCES;
- 	}
- 
--	if (arg_type == ARG_PTR_TO_MAP_VALUE ||
--	    arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
--	    arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL) {
-+	if (base_type(arg_type) == ARG_PTR_TO_MAP_VALUE ||
-+	    base_type(arg_type) == ARG_PTR_TO_UNINIT_MAP_VALUE) {
- 		err = resolve_map_arg_type(env, meta, &arg_type);
- 		if (err)
- 			return err;
- 	}
- 
--	if (register_is_null(reg) && arg_type_may_be_null(arg_type))
-+	if (register_is_null(reg) && type_may_be_null(arg_type))
- 		/* A NULL register has a SCALAR_VALUE type, so skip
- 		 * type checking.
- 		 */
-@@ -5298,10 +5286,11 @@ skip_type_check:
- 		err = check_helper_mem_access(env, regno,
- 					      meta->map_ptr->key_size, false,
- 					      NULL);
--	} else if (arg_type == ARG_PTR_TO_MAP_VALUE ||
--		   (arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL &&
--		    !register_is_null(reg)) ||
--		   arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE) {
-+	} else if (base_type(arg_type) == ARG_PTR_TO_MAP_VALUE ||
-+		   base_type(arg_type) == ARG_PTR_TO_UNINIT_MAP_VALUE) {
-+		if (type_may_be_null(arg_type) && register_is_null(reg))
-+			return 0;
++static bool type_is_rdonly_mem(u32 type)
++{
++	return type & MEM_RDONLY;
++}
 +
- 		/* bpf_map_xxx(..., map_ptr, ..., value) call:
- 		 * check [value, value + map->value_size) validity
- 		 */
+ static bool arg_type_may_be_refcounted(enum bpf_arg_type type)
+ {
+ 	return type == ARG_PTR_TO_SOCK_COMMON;
+@@ -527,7 +532,7 @@ static bool is_cmpxchg_insn(const struct
+ static const char *reg_type_str(struct bpf_verifier_env *env,
+ 				enum bpf_reg_type type)
+ {
+-	char postfix[16] = {0};
++	char postfix[16] = {0}, prefix[16] = {0};
+ 	static const char * const str[] = {
+ 		[NOT_INIT]		= "?",
+ 		[SCALAR_VALUE]		= "inv",
+@@ -547,8 +552,7 @@ static const char *reg_type_str(struct b
+ 		[PTR_TO_BTF_ID]		= "ptr_",
+ 		[PTR_TO_PERCPU_BTF_ID]	= "percpu_ptr_",
+ 		[PTR_TO_MEM]		= "mem",
+-		[PTR_TO_RDONLY_BUF]	= "rdonly_buf",
+-		[PTR_TO_RDWR_BUF]	= "rdwr_buf",
++		[PTR_TO_BUF]		= "buf",
+ 		[PTR_TO_FUNC]		= "func",
+ 		[PTR_TO_MAP_KEY]	= "map_key",
+ 	};
+@@ -561,8 +565,11 @@ static const char *reg_type_str(struct b
+ 			strncpy(postfix, "_or_null", 16);
+ 	}
+ 
+-	snprintf(env->type_str_buf, TYPE_STR_BUF_LEN, "%s%s",
+-		 str[base_type(type)], postfix);
++	if (type & MEM_RDONLY)
++		strncpy(prefix, "rdonly_", 16);
++
++	snprintf(env->type_str_buf, TYPE_STR_BUF_LEN, "%s%s%s",
++		 prefix, str[base_type(type)], postfix);
+ 	return env->type_str_buf;
+ }
+ 
+@@ -2688,8 +2695,7 @@ static bool is_spillable_regtype(enum bp
+ 	case PTR_TO_TCP_SOCK:
+ 	case PTR_TO_XDP_SOCK:
+ 	case PTR_TO_BTF_ID:
+-	case PTR_TO_RDONLY_BUF:
+-	case PTR_TO_RDWR_BUF:
++	case PTR_TO_BUF:
+ 	case PTR_TO_PERCPU_BTF_ID:
+ 	case PTR_TO_MEM:
+ 	case PTR_TO_FUNC:
+@@ -4442,22 +4448,28 @@ static int check_mem_access(struct bpf_v
+ 	} else if (reg->type == CONST_PTR_TO_MAP) {
+ 		err = check_ptr_to_map_access(env, regs, regno, off, size, t,
+ 					      value_regno);
+-	} else if (reg->type == PTR_TO_RDONLY_BUF) {
+-		if (t == BPF_WRITE) {
+-			verbose(env, "R%d cannot write into %s\n",
+-				regno, reg_type_str(env, reg->type));
+-			return -EACCES;
++	} else if (base_type(reg->type) == PTR_TO_BUF) {
++		bool rdonly_mem = type_is_rdonly_mem(reg->type);
++		const char *buf_info;
++		u32 *max_access;
++
++		if (rdonly_mem) {
++			if (t == BPF_WRITE) {
++				verbose(env, "R%d cannot write into %s\n",
++					regno, reg_type_str(env, reg->type));
++				return -EACCES;
++			}
++			buf_info = "rdonly";
++			max_access = &env->prog->aux->max_rdonly_access;
++		} else {
++			buf_info = "rdwr";
++			max_access = &env->prog->aux->max_rdwr_access;
+ 		}
++
+ 		err = check_buffer_access(env, reg, regno, off, size, false,
+-					  "rdonly",
+-					  &env->prog->aux->max_rdonly_access);
+-		if (!err && value_regno >= 0)
+-			mark_reg_unknown(env, regs, value_regno);
+-	} else if (reg->type == PTR_TO_RDWR_BUF) {
+-		err = check_buffer_access(env, reg, regno, off, size, false,
+-					  "rdwr",
+-					  &env->prog->aux->max_rdwr_access);
+-		if (!err && t == BPF_READ && value_regno >= 0)
++					  buf_info, max_access);
++
++		if (!err && value_regno >= 0 && (rdonly_mem || t == BPF_READ))
+ 			mark_reg_unknown(env, regs, value_regno);
+ 	} else {
+ 		verbose(env, "R%d invalid mem access '%s'\n", regno,
+@@ -4718,8 +4730,10 @@ static int check_helper_mem_access(struc
+ 				   struct bpf_call_arg_meta *meta)
+ {
+ 	struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
++	const char *buf_info;
++	u32 *max_access;
+ 
+-	switch (reg->type) {
++	switch (base_type(reg->type)) {
+ 	case PTR_TO_PACKET:
+ 	case PTR_TO_PACKET_META:
+ 		return check_packet_access(env, regno, reg->off, access_size,
+@@ -4738,18 +4752,20 @@ static int check_helper_mem_access(struc
+ 		return check_mem_region_access(env, regno, reg->off,
+ 					       access_size, reg->mem_size,
+ 					       zero_size_allowed);
+-	case PTR_TO_RDONLY_BUF:
+-		if (meta && meta->raw_mode)
+-			return -EACCES;
+-		return check_buffer_access(env, reg, regno, reg->off,
+-					   access_size, zero_size_allowed,
+-					   "rdonly",
+-					   &env->prog->aux->max_rdonly_access);
+-	case PTR_TO_RDWR_BUF:
++	case PTR_TO_BUF:
++		if (type_is_rdonly_mem(reg->type)) {
++			if (meta && meta->raw_mode)
++				return -EACCES;
++
++			buf_info = "rdonly";
++			max_access = &env->prog->aux->max_rdonly_access;
++		} else {
++			buf_info = "rdwr";
++			max_access = &env->prog->aux->max_rdwr_access;
++		}
+ 		return check_buffer_access(env, reg, regno, reg->off,
+ 					   access_size, zero_size_allowed,
+-					   "rdwr",
+-					   &env->prog->aux->max_rdwr_access);
++					   buf_info, max_access);
+ 	case PTR_TO_STACK:
+ 		return check_stack_range_initialized(
+ 				env,
+@@ -5028,8 +5044,8 @@ static const struct bpf_reg_types mem_ty
+ 		PTR_TO_MAP_KEY,
+ 		PTR_TO_MAP_VALUE,
+ 		PTR_TO_MEM,
+-		PTR_TO_RDONLY_BUF,
+-		PTR_TO_RDWR_BUF,
++		PTR_TO_BUF,
++		PTR_TO_BUF | MEM_RDONLY,
+ 	},
+ };
+ 
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -929,7 +929,7 @@ static struct bpf_iter_reg bpf_sk_storag
+ 		{ offsetof(struct bpf_iter__bpf_sk_storage_map, sk),
+ 		  PTR_TO_BTF_ID_OR_NULL },
+ 		{ offsetof(struct bpf_iter__bpf_sk_storage_map, value),
+-		  PTR_TO_RDWR_BUF | PTR_MAYBE_NULL },
++		  PTR_TO_BUF | PTR_MAYBE_NULL },
+ 	},
+ 	.seq_info		= &iter_seq_info,
+ };
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1569,7 +1569,7 @@ static struct bpf_iter_reg sock_map_iter
+ 	.ctx_arg_info_size	= 2,
+ 	.ctx_arg_info		= {
+ 		{ offsetof(struct bpf_iter__sockmap, key),
+-		  PTR_TO_RDONLY_BUF | PTR_MAYBE_NULL },
++		  PTR_TO_BUF | PTR_MAYBE_NULL | MEM_RDONLY },
+ 		{ offsetof(struct bpf_iter__sockmap, sk),
+ 		  PTR_TO_BTF_ID_OR_NULL },
+ 	},
 
 
