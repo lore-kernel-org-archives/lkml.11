@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A105C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FB5C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349432AbiBUJ1n (ORCPT
+        id S1349442AbiBUJ1r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:27:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38970 "EHLO
+        Mon, 21 Feb 2022 04:27:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349115AbiBUJVC (ORCPT
+        with ESMTP id S1349110AbiBUJVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC35C35272;
+        Mon, 21 Feb 2022 04:21:01 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4BD35259;
         Mon, 21 Feb 2022 01:07:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 620BC6092A;
-        Mon, 21 Feb 2022 09:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4435CC340F1;
-        Mon, 21 Feb 2022 09:07:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8ABF9CE0E93;
+        Mon, 21 Feb 2022 09:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D111C340E9;
+        Mon, 21 Feb 2022 09:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434474;
-        bh=rJqkONifNZkKsNztAUsXBO+i58TXXXnD/CHomPNqq44=;
+        s=korg; t=1645434472;
+        bh=/N9KiyRHRNC1Xdut6D39Oz083rW0QRKFf+9KWMr8LOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aELT26m/wbDegCD2Jd5WUuj9Ts+9fcdKDv5L1HFfUnNNdjLBhAIyzIUqjs99Cj2TL
-         qr3nb0cmIPFz4cmstSKcrdEaG0F70L8+brq6z+mWhP70Lat4PczbFSvdL2SRxILumu
-         CHhL4riJC8MkjjD92TETtD/kacSAr1GDZPMACIDw=
+        b=oxZlUJ+3VcrVJObtXcp70fhOxgKOTSvAT/AuRgFLRFllBzazjWTrGygAqvccwzwPl
+         X5z5szar2R8h/jxGIW0ZuKf71HjEHcIJQb8GvTIsZovpxCk0xtUqqQtWqsC8WV3rjD
+         kphMQ2Ah68SS9EeL56XcplalSdXZFRviN+MAt2oI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuka Kawajiri <yukx00@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 021/196] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
-Date:   Mon, 21 Feb 2022 09:47:33 +0100
-Message-Id: <20220221084931.607356103@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 020/196] btrfs: send: in case of IO error log it
+Date:   Mon, 21 Feb 2022 09:47:32 +0100
+Message-Id: <20220221084931.575990318@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,65 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuka Kawajiri <yukx00@gmail.com>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
+commit 2e7be9db125a0bf940c5d65eb5c40d8700f738b5 upstream.
 
-Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
+Currently if we get IO error while doing send then we abort without
+logging information about which file caused issue.  So log it to help
+with debugging.
 
-Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
-Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ fs/btrfs/send.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
-index 033f797861d8a..c608078538a79 100644
---- a/drivers/platform/x86/touchscreen_dmi.c
-+++ b/drivers/platform/x86/touchscreen_dmi.c
-@@ -773,6 +773,21 @@ static const struct ts_dmi_data predia_basic_data = {
- 	.properties	= predia_basic_props,
- };
- 
-+static const struct property_entry rwc_nanote_p8_props[] = {
-+	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
-+	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
-+	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-+	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
-+	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
-+	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
-+	{ }
-+};
-+
-+static const struct ts_dmi_data rwc_nanote_p8_data = {
-+	.acpi_name = "MSSL1680:00",
-+	.properties = rwc_nanote_p8_props,
-+};
-+
- static const struct property_entry schneider_sct101ctm_props[] = {
- 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
- 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-@@ -1379,6 +1394,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
- 		},
- 	},
-+	{
-+		/* RWC NANOTE P8 */
-+		.driver_data = (void *)&rwc_nanote_p8_data,
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
-+			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
-+		},
-+	},
- 	{
- 		/* Schneider SCT101CTM */
- 		.driver_data = (void *)&schneider_sct101ctm_data,
--- 
-2.34.1
-
+--- a/fs/btrfs/send.c
++++ b/fs/btrfs/send.c
+@@ -4978,6 +4978,10 @@ static int put_file_data(struct send_ctx
+ 			lock_page(page);
+ 			if (!PageUptodate(page)) {
+ 				unlock_page(page);
++				btrfs_err(fs_info,
++			"send: IO error at offset %llu for inode %llu root %llu",
++					page_offset(page), sctx->cur_ino,
++					sctx->send_root->root_key.objectid);
+ 				put_page(page);
+ 				ret = -EIO;
+ 				break;
 
 
