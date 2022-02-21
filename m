@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B116C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64517C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351237AbiBUJnc (ORCPT
+        id S1351256AbiBUJnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:43:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48780 "EHLO
+        Mon, 21 Feb 2022 04:43:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351362AbiBUJhB (ORCPT
+        with ESMTP id S1351517AbiBUJhW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDA815A38;
-        Mon, 21 Feb 2022 01:15:43 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:22 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF893A180;
+        Mon, 21 Feb 2022 01:15:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A4360C1D;
-        Mon, 21 Feb 2022 09:15:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39414C340E9;
-        Mon, 21 Feb 2022 09:15:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AC898CE0E90;
+        Mon, 21 Feb 2022 09:15:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933E9C340E9;
+        Mon, 21 Feb 2022 09:15:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434924;
-        bh=ZD01o9rSSE8LUE0dVcK7GaEZOVJK7nnDEiRaEzbfzEQ=;
+        s=korg; t=1645434936;
+        bh=bVtbcFu1bP+aF7lF8UMTo0RVnvCW+DX0l8LGlJdH/wM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f2dI+tP9N8QiNdepq3bUIwu49qnvTpijgDH7xnTXoZWtNVq74oaZnsU8AE1sysMOu
-         /skaV6dXLwVfT/xr60BRWRa6UwfNZbz35w2YPRG6ShTMMNuXTzhXW5Y32CetrfSe0g
-         l5XodPFikYOSF2PBQw0pVV4WJ0M0k6PQNlp8Ptm8=
+        b=VqpawUgRwJZoFthG+biqOrj6XdFWYpSbvgNLJq2/nk6VxV02ydHBglmLxYXCDsxdn
+         CL8Lwb3kp80E8v8iIFKNcSR25t4tyjeiXduir93Zs11HeeflIlu/DEcVcIvGt1bQAP
+         rEbdJXMsl0+tftqhucfjs8Kkurw7BMqHd3VZ2/9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 152/196] irqchip/sifive-plic: Add missing thead,c900-plic match string
-Date:   Mon, 21 Feb 2022 09:49:44 +0100
-Message-Id: <20220221084936.014638002@linuxfoundation.org>
+        stable@vger.kernel.org, Solar Designer <solar@openwall.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 182/196] rlimit: Fix RLIMIT_NPROC enforcement failure caused by capability calls in set_user
+Date:   Mon, 21 Feb 2022 09:50:14 +0100
+Message-Id: <20220221084937.031868839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -54,49 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
+commit c16bdeb5a39ffa3f32b32f812831a2092d2a3061 upstream.
 
-The thead,c900-plic has been used in opensbi to distinguish
-PLIC [1]. Although PLICs have the same behaviors in Linux,
-they are different hardware with some custom initializing in
-firmware(opensbi).
+Solar Designer <solar@openwall.com> wrote:
+> I'm not aware of anyone actually running into this issue and reporting
+> it.  The systems that I personally know use suexec along with rlimits
+> still run older/distro kernels, so would not yet be affected.
+>
+> So my mention was based on my understanding of how suexec works, and
+> code review.  Specifically, Apache httpd has the setting RLimitNPROC,
+> which makes it set RLIMIT_NPROC:
+>
+> https://httpd.apache.org/docs/2.4/mod/core.html#rlimitnproc
+>
+> The above documentation for it includes:
+>
+> "This applies to processes forked from Apache httpd children servicing
+> requests, not the Apache httpd children themselves. This includes CGI
+> scripts and SSI exec commands, but not any processes forked from the
+> Apache httpd parent, such as piped logs."
+>
+> In code, there are:
+>
+> ./modules/generators/mod_cgid.c:        ( (cgid_req.limits.limit_nproc_set) && ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
+> ./modules/generators/mod_cgi.c:        ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
+> ./modules/filters/mod_ext_filter.c:    rv = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC, conf->limit_nproc);
+>
+> For example, in mod_cgi.c this is in run_cgi_child().
+>
+> I think this means an httpd child sets RLIMIT_NPROC shortly before it
+> execs suexec, which is a SUID root program.  suexec then switches to the
+> target user and execs the CGI script.
+>
+> Before 2863643fb8b9, the setuid() in suexec would set the flag, and the
+> target user's process count would be checked against RLIMIT_NPROC on
+> execve().  After 2863643fb8b9, the setuid() in suexec wouldn't set the
+> flag because setuid() is (naturally) called when the process is still
+> running as root (thus, has those limits bypass capabilities), and
+> accordingly execve() would not check the target user's process count
+> against RLIMIT_NPROC.
 
-Qute opensbi patch commit-msg by Samuel:
+In commit 2863643fb8b9 ("set_user: add capability check when
+rlimit(RLIMIT_NPROC) exceeds") capable calls were added to set_user to
+make it more consistent with fork.  Unfortunately because of call site
+differences those capable calls were checking the credentials of the
+user before set*id() instead of after set*id().
 
-  The T-HEAD PLIC implementation requires setting a delegation bit
-  to allow access from S-mode. Now that the T-HEAD PLIC has its own
-  compatible string, set this bit automatically from the PLIC driver,
-  instead of reaching into the PLIC's MMIO space from another driver.
+This breaks enforcement of RLIMIT_NPROC for applications that set the
+rlimit and then call set*id() while holding a full set of
+capabilities.  The capabilities are only changed in the new credential
+in security_task_fix_setuid().
 
-[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+The code in apache suexec appears to follow this pattern.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Commit 909cc4ae86f3 ("[PATCH] Fix two bugs with process limits
+(RLIMIT_NPROC)") where this check was added describes the targes of this
+capability check as:
+
+  2/ When a root-owned process (e.g. cgiwrap) sets up process limits and then
+      calls setuid, the setuid should fail if the user would then be running
+      more than rlim_cur[RLIMIT_NPROC] processes, but it doesn't.  This patch
+      adds an appropriate test.  With this patch, and per-user process limit
+      imposed in cgiwrap really works.
+
+So the original use case of this check also appears to match the broken
+pattern.
+
+Restore the enforcement of RLIMIT_NPROC by removing the bad capable
+checks added in set_user.  This unfortunately restores the
+inconsistent state the code has been in for the last 11 years, but
+dealing with the inconsistencies looks like a larger problem.
+
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/20210907213042.GA22626@openwall.com/
+Link: https://lkml.kernel.org/r/20220212221412.GA29214@openwall.com
+Link: https://lkml.kernel.org/r/20220216155832.680775-1-ebiederm@xmission.com
+Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+History-Tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
+Reviewed-by: Solar Designer <solar@openwall.com>
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-sifive-plic.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/sys.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index 259065d271ef0..09cc98266d30f 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -398,3 +398,4 @@ static int __init plic_init(struct device_node *node,
- 
- IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
- IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
-+IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
--- 
-2.34.1
-
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -480,8 +480,7 @@ static int set_user(struct cred *new)
+ 	 * failure to the execve() stage.
+ 	 */
+ 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
+-			new_user != INIT_USER &&
+-			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
++			new_user != INIT_USER)
+ 		current->flags |= PF_NPROC_EXCEEDED;
+ 	else
+ 		current->flags &= ~PF_NPROC_EXCEEDED;
 
 
