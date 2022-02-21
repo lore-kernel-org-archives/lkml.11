@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D625C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 468FEC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380216AbiBUQXR (ORCPT
+        id S1380199AbiBUQXU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:23:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53344 "EHLO
+        Mon, 21 Feb 2022 11:23:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243235AbiBUQXM (ORCPT
+        with ESMTP id S1380192AbiBUQXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:23:12 -0500
+        Mon, 21 Feb 2022 11:23:13 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42B9827149
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:22:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E63F927152
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:22:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645460566;
+        s=mimecast20190719; t=1645460568;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TTbfjz2iff8ZLMo4yQHOTt0V56zvOG1AVXw8qi9cYUA=;
-        b=YuExlj/Cdi+aEhhg9b4n8tu9yCUEJzjqAMiWPolVXJdSNID2+DdYRGiVIzZMXVCVgsXEZA
-        +NEfoJdcO78WRKvOp7+aKhgcLPnxgrQkpbdQw0bsFfhjnS55xJ/sF28ERZWRNgUCSS5Izo
-        HZcvTVAKjiH2P2+PuwCITpUxaTx5E6c=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cbki0TF8g05gfWmutcV9pyLiWp15y56GQBu92FXt0z8=;
+        b=WPmIbPLnnzH/+zO0qSGMW0dneRlYyx67R1zgoNae+5lG9zl5oJ0yUGGA4oEhhmDo2Kbznx
+        ybQwNOxOhQ/KGPNYUl2m/kEpvBUoIEhOhMaQLSz2mMXKXDpLfaV42+rFSft+Djz8suldOu
+        ypYkWnHOk1KF5+SvmVy80WaxQQ/gGWU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-271-V-PuRMCpM7apgjDa6ZhrJw-1; Mon, 21 Feb 2022 11:22:45 -0500
-X-MC-Unique: V-PuRMCpM7apgjDa6ZhrJw-1
+ us-mta-655-sLvUIf3KNZO8i1GSpRjT5w-1; Mon, 21 Feb 2022 11:22:47 -0500
+X-MC-Unique: sLvUIf3KNZO8i1GSpRjT5w-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EEA981926DA0;
-        Mon, 21 Feb 2022 16:22:43 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65A482F4C;
+        Mon, 21 Feb 2022 16:22:46 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A29277474;
-        Mon, 21 Feb 2022 16:22:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0923177477;
+        Mon, 21 Feb 2022 16:22:45 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dmatlack@google.com, seanjc@google.com
-Subject: [PATCH v2 00/25] KVM MMU refactoring part 2: role changes
-Date:   Mon, 21 Feb 2022 11:22:18 -0500
-Message-Id: <20220221162243.683208-1-pbonzini@redhat.com>
+Subject: [PATCH v2 05/25] KVM: x86/mmu: rephrase unclear comment
+Date:   Mon, 21 Feb 2022 11:22:23 -0500
+Message-Id: <20220221162243.683208-6-pbonzini@redhat.com>
+In-Reply-To: <20220221162243.683208-1-pbonzini@redhat.com>
+References: <20220221162243.683208-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
@@ -51,52 +54,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the MMU root role vs. CPU mode split.  While not a requirement
-in absolute terms for further hacking, it makes it much clearer to reason
-on whether the previous root is still valid.
+If accessed bits are not supported there simple isn't any distinction
+between accessed and non-accessed gPTEs, so the comment does not make
+much sense.  Rephrase it in terms of what happens if accessed bits
+*are* supported.
 
-Paolo
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Paolo Bonzini (25):
-  KVM: x86/mmu: avoid indirect call for get_cr3
-  KVM: x86/mmu: nested EPT cannot be used in SMM
-  KVM: x86/mmu: constify uses of struct kvm_mmu_role_regs
-  KVM: x86/mmu: pull computation of kvm_mmu_role_regs to kvm_init_mmu
-  KVM: x86/mmu: rephrase unclear comment
-  KVM: nVMX/nSVM: do not monkey-patch inject_page_fault callback
-  KVM: x86/mmu: remove "bool base_only" arguments
-  KVM: x86/mmu: split cpu_mode from mmu_role
-  KVM: x86/mmu: do not recompute root level from kvm_mmu_role_regs
-  KVM: x86/mmu: remove ept_ad field
-  KVM: x86/mmu: remove kvm_calc_shadow_root_page_role_common
-  KVM: x86/mmu: cleanup computation of MMU roles for two-dimensional
-    paging
-  KVM: x86/mmu: cleanup computation of MMU roles for shadow paging
-  KVM: x86/mmu: store shadow EFER.NX in the MMU role
-  KVM: x86/mmu: remove extended bits from mmu_role, rename field
-  KVM: x86/mmu: rename kvm_mmu_role union
-  KVM: x86/mmu: remove redundant bits from extended role
-  KVM: x86/mmu: remove valid from extended role
-  KVM: x86/mmu: simplify and/or inline computation of shadow MMU roles
-  KVM: x86/mmu: pull CPU mode computation to kvm_init_mmu
-  KVM: x86/mmu: replace shadow_root_level with root_role.level
-  KVM: x86/mmu: replace root_level with cpu_mode.base.level
-  KVM: x86/mmu: replace direct_map with root_role.direct
-  KVM: x86/mmu: initialize constant-value fields just once
-  KVM: x86/mmu: extract initialization of the page walking data
-
- arch/x86/include/asm/kvm_host.h |  25 +-
- arch/x86/kvm/mmu.h              |  12 +-
- arch/x86/kvm/mmu/mmu.c          | 479 +++++++++++++-------------------
- arch/x86/kvm/mmu/paging_tmpl.h  |  16 +-
- arch/x86/kvm/mmu/tdp_mmu.c      |   4 +-
- arch/x86/kvm/svm/nested.c       |  13 +-
- arch/x86/kvm/svm/svm.c          |   2 +-
- arch/x86/kvm/vmx/nested.c       |   9 +-
- arch/x86/kvm/vmx/vmx.c          |   2 +-
- arch/x86/kvm/x86.c              |  31 ++-
- 10 files changed, 260 insertions(+), 333 deletions(-)
-
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 80b4b291002a..d1d17d28e81b 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -193,7 +193,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
+ 	if (!FNAME(is_present_gpte)(gpte))
+ 		goto no_present;
+ 
+-	/* if accessed bit is not supported prefetch non accessed gpte */
++	/* if accessed bit is supported, prefetch only accessed gpte */
+ 	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
+ 	    !(gpte & PT_GUEST_ACCESSED_MASK))
+ 		goto no_present;
 -- 
 2.31.1
+
 
