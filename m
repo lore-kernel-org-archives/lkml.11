@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 347DEC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 672E4C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353604AbiBUKCH (ORCPT
+        id S1353762AbiBUKCS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50744 "EHLO
+        Mon, 21 Feb 2022 05:02:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352201AbiBUJxo (ORCPT
+        with ESMTP id S1352013AbiBUJxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A75036E22;
-        Mon, 21 Feb 2022 01:23:33 -0800 (PST)
+        Mon, 21 Feb 2022 04:53:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669981D317;
+        Mon, 21 Feb 2022 01:23:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A76E608C4;
-        Mon, 21 Feb 2022 09:23:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75564C340E9;
-        Mon, 21 Feb 2022 09:23:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19146B80EAF;
+        Mon, 21 Feb 2022 09:23:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CFACC340E9;
+        Mon, 21 Feb 2022 09:23:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435412;
-        bh=8zpKje5IYFHCszmh7tFQ0f69g0A/tpI2GZ5tmB/KPWs=;
+        s=korg; t=1645435397;
+        bh=SH5kv4+d2g9ytmY1kPDcn0mQvYvUQiU/BXUGy5MogX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tnsGo8DaY+4amii9lapt6wJPLtU3ANrIZw9fbI4txZHznuXECRzRpI2H/OYyif3qd
-         3qdDuDoJhLYaNr5kXWJQos7pCIxVz93uKzwTP6SVRa6FZcP4pPsKxgzOkwp1BAE0H4
-         TAn46SrC69aFtFI11mfcOVg3+4Ge9FBjuXlT5XzY=
+        b=lLall1nHhA8Xk+mWFHTLsBqhGTflRMRNa8/6or2CFMOVJJuOkE0V58KoRac46C71u
+         vDKgfQSCjrfZ+vudBgPaAS3B+9PdzzKP/LaD0tUl0g4bw+7ytqU9WoUXHBK3ZSmqMb
+         D9ym82nU50ETN/iWmSFg2dD7ZuayU6d1fN925RsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 155/227] scsi: ufs: Remove dead code
-Date:   Mon, 21 Feb 2022 09:49:34 +0100
-Message-Id: <20220221084939.979308283@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 117/227] mctp: fix use after free
+Date:   Mon, 21 Feb 2022 09:48:56 +0100
+Message-Id: <20220221084938.753002243@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,48 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Tom Rix <trix@redhat.com>
 
-commit d77ea8226b3be23b0b45aa42851243b62a27bda1 upstream.
+commit 7e5b6a5c8c44310784c88c1c198dde79f6402f7b upstream.
 
-Commit 7252a3603015 ("scsi: ufs: Avoid busy-waiting by eliminating tag
-conflicts") guarantees that 'tag' is not in use by any SCSI command.
-Remove the check that returns early if a conflict occurs.
+Clang static analysis reports this problem
+route.c:425:4: warning: Use of memory after it is freed
+  trace_mctp_key_acquire(key);
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+When mctp_key_add() fails, key is freed but then is later
+used in trace_mctp_key_acquire().  Add an else statement
+to use the key only when mctp_key_add() is successful.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-6-bvanassche@acm.org
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Acked-by: Avri Altman <avri.altman@wdc.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 4f9e1ba6de45 ("mctp: Add tracepoints for tag/key handling")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ net/mctp/route.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -6734,11 +6734,6 @@ static int ufshcd_issue_devman_upiu_cmd(
- 	tag = req->tag;
- 	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -414,13 +414,14 @@ static int mctp_route_input(struct mctp_
+ 			 * this function.
+ 			 */
+ 			rc = mctp_key_add(key, msk);
+-			if (rc)
++			if (rc) {
+ 				kfree(key);
++			} else {
++				trace_mctp_key_acquire(key);
  
--	if (unlikely(test_bit(tag, &hba->outstanding_reqs))) {
--		err = -EBUSY;
--		goto out;
--	}
+-			trace_mctp_key_acquire(key);
 -
- 	lrbp = &hba->lrb[tag];
- 	WARN_ON(lrbp->cmd);
- 	lrbp->cmd = NULL;
-@@ -6806,8 +6801,8 @@ static int ufshcd_issue_devman_upiu_cmd(
- 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
+-			/* we don't need to release key->lock on exit */
+-			mctp_key_unref(key);
++				/* we don't need to release key->lock on exit */
++				mctp_key_unref(key);
++			}
+ 			key = NULL;
  
--out:
- 	blk_mq_free_request(req);
-+
- out_unlock:
- 	up_read(&hba->clk_scaling_lock);
- 	return err;
+ 		} else {
 
 
