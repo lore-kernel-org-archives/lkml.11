@@ -2,140 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A64C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345263AbiBUJkR (ORCPT
+        id S1350705AbiBUJkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:40:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36254 "EHLO
+        Mon, 21 Feb 2022 04:40:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350315AbiBUJc1 (ORCPT
+        with ESMTP id S236978AbiBUJdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:32:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F7E28982;
-        Mon, 21 Feb 2022 01:13:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9F1860B1E;
-        Mon, 21 Feb 2022 09:13:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D07BBC340E9;
-        Mon, 21 Feb 2022 09:13:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434803;
-        bh=/NW4lK+cwpAZ+jx+0oSMQYbrYONrpg8H23rLb64Kxbk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUSZcSDh/qtbJUlRG/ypl7pq1yerrN6JODEmVnBdLz64Sf3v66eWu1OW6RcLFEpvL
-         Pf6rhpZDxDx2UaNX1nirp+KS/8T5t6mA8MST1iqdXM1QKIJnHEOSiC1FYZN+EVgrqQ
-         Qm0QRh5GVQvIqdupqPP2wZxpdhV5oETBXfgT8Pro=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 136/196] mtd: rawnand: qcom: Fix clock sequencing in qcom_nandc_probe()
-Date:   Mon, 21 Feb 2022 09:49:28 +0100
-Message-Id: <20220221084935.469327304@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
-References: <20220221084930.872957717@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:33:15 -0500
+Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F13F28997;
+        Mon, 21 Feb 2022 01:13:54 -0800 (PST)
+Received: from pro2.mail.ovh.net (unknown [10.109.138.12])
+        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id C3F61E720712;
+        Mon, 21 Feb 2022 10:13:23 +0100 (CET)
+Received: from [192.168.1.103] (88.125.132.78) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 21 Feb
+ 2022 10:13:22 +0100
+Message-ID: <e4b4fbc7-53ee-987b-7849-bf625fc2155e@traphandler.com>
+Date:   Mon, 21 Feb 2022 10:13:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 6/6] clk: renesas: r9a06g032: Disable the watchdog
+ reset sources when halting
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     <linux-renesas-soc@vger.kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        <linux-watchdog@vger.kernel.org>
+References: <20220208183511.2925304-1-jjhiblot@traphandler.com>
+ <20220208183511.2925304-7-jjhiblot@traphandler.com>
+ <CAMuHMdUCT-qwhN53mRnAUox2pqw+Y5-7Gw5EbC+-HCF054kkgQ@mail.gmail.com>
+ <4595fbfe-da0b-1b1a-2478-6d537012a2bf@roeck-us.net>
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+In-Reply-To: <4595fbfe-da0b-1b1a-2478-6d537012a2bf@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [88.125.132.78]
+X-ClientProxiedBy: CAS4.emp2.local (172.16.1.4) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 6319676177827838292
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeeufeeggeevkefguedtheeufefftdehkeegkeetudetjeehjedtudeuveffkeehteenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqfigrthgthhguohhgsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Hi,
 
-commit 5c23b3f965bc9ee696bf2ed4bdc54d339dd9a455 upstream.
+On 14/02/2022 16:34, Guenter Roeck wrote:
+> On 2/14/22 02:45, Geert Uytterhoeven wrote:
+>> Hi Jean-Jacques,
+>>
+>> CC watchdog people, who only received some patches.
+>>
+>> On Tue, Feb 8, 2022 at 7:35 PM Jean-Jacques Hiblot
+>> <jjhiblot@traphandler.com> wrote:
+>>> The watchdog reset sources must be disabled when the system is halted.
+>>> Otherwise the watchdogs will trigger a reset if they have been armed.
+>>>
+>>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>>
+>> Thanks for your patch!
+>>
+>> [inserting changelog]
+>>
+>> | Changes v1 -> v2:
+>> | * Modified the clock driver to not enable the watchdog reset sources.
+>> |   On other renesas platforms, those bits are by the bootloader. The
+>> |   watchdog reset sources are still disabled when the platform is 
+>> halted
+>> |   to prevent a watchdog reset.
+>>
+>> I still have my doubts about this part. So on halt, you override the
+>> policy configured by the boot loader, which means the watchdog is no
+>> longer triggered on halt.
+>>
+>>> From a system perspective, the system can be in five states:
+>>    1. Running,
+>>    2. Crashed/lock-ed up,
+>>    3. Halt,
+>>    4. Reboot,
+>>    5. Poweroff.
+>>
+>> Now, from a policy perspective, what is the difference between a
+>> system that crashes or locks up, and a system that halts?
+>> I.e. should the system reboot on halt, or not?
+>>
+>> I think halting a system where the watchdog has been activated makes
+>> no sense, and the user either wants to explicitly reboot the system, or
+>> power it off, but never halt it.  So I think this patch is not needed.
 
-Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
-partition parser was returning -EPROBE_DEFER waiting for the main smem
-driver to load.
+I don't see halting the machine as a must-have feature either, but it 
+seemed to me
 
-This caused the board to reset. Playing about with the probe() function
-shows that the problem lies in the core clock being switched off before the
-nandc_unalloc() routine has completed.
+that there could be other people relying on it. I'll remove this patch 
+from the series.
 
-If we look at how qcom_nandc_remove() tears down allocated resources we see
-the expected order is
-
-qcom_nandc_unalloc(nandc);
-
-clk_disable_unprepare(nandc->aon_clk);
-clk_disable_unprepare(nandc->core_clk);
-
-dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
-		   DMA_BIDIRECTIONAL, 0);
-
-Tweaking probe() to both bring up and tear-down in that order removes the
-reset if we end up deferring elsewhere.
-
-Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mtd/nand/raw/qcom_nandc.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
---- a/drivers/mtd/nand/raw/qcom_nandc.c
-+++ b/drivers/mtd/nand/raw/qcom_nandc.c
-@@ -2,7 +2,6 @@
- /*
-  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
-  */
--
- #include <linux/clk.h>
- #include <linux/slab.h>
- #include <linux/bitops.h>
-@@ -3063,10 +3062,6 @@ static int qcom_nandc_probe(struct platf
- 	if (dma_mapping_error(dev, nandc->base_dma))
- 		return -ENXIO;
- 
--	ret = qcom_nandc_alloc(nandc);
--	if (ret)
--		goto err_nandc_alloc;
--
- 	ret = clk_prepare_enable(nandc->core_clk);
- 	if (ret)
- 		goto err_core_clk;
-@@ -3075,6 +3070,10 @@ static int qcom_nandc_probe(struct platf
- 	if (ret)
- 		goto err_aon_clk;
- 
-+	ret = qcom_nandc_alloc(nandc);
-+	if (ret)
-+		goto err_nandc_alloc;
-+
- 	ret = qcom_nandc_setup(nandc);
- 	if (ret)
- 		goto err_setup;
-@@ -3086,15 +3085,14 @@ static int qcom_nandc_probe(struct platf
- 	return 0;
- 
- err_setup:
-+	qcom_nandc_unalloc(nandc);
-+err_nandc_alloc:
- 	clk_disable_unprepare(nandc->aon_clk);
- err_aon_clk:
- 	clk_disable_unprepare(nandc->core_clk);
- err_core_clk:
--	qcom_nandc_unalloc(nandc);
--err_nandc_alloc:
- 	dma_unmap_resource(dev, res->start, resource_size(res),
- 			   DMA_BIDIRECTIONAL, 0);
--
- 	return ret;
- }
- 
+>>
+>> Watchdog people: what is your opinion?
+>
+> In my understanding the shutdown code is always executed, ie also for
+> restarts and poweroff. Disabling the watchdog in that situation is not
+> always desirable, though sometimes necessary depending on the hardware.
+> Disabling it through the backdoor (instead of calling 
+> watchdog_stop_on_reboot)
+> seems odd, though.
 
 
+Unfortunately, in this case it is not possible to stop the watchdog once 
+started.
+
+The only way to halt the machine is to disable the watchdog reset source.
+
+
+JJ
+
+
+>
+> Guenter
+>
+>> Thanks!
+>>
+>>> --- a/drivers/clk/renesas/r9a06g032-clocks.c
+>>> +++ b/drivers/clk/renesas/r9a06g032-clocks.c
+>>> @@ -129,6 +129,11 @@ enum { K_GATE = 0, K_FFC, K_DIV, K_BITSEL, 
+>>> K_DUALGATE };
+>>>
+>>>   #define R9A06G032_CLOCK_COUNT (R9A06G032_UART_GROUP_34567 + 1)
+>>>
+>>> +#define R9A06G032_SYSCTRL_REG_RSTEN            0x120
+>>> +#define WDA7RST1       BIT(2)
+>>> +#define WDA7RST0       BIT(1)
+>>> +#define MRESET         BIT(0)
+>>> +
+>>>   static const struct r9a06g032_clkdesc r9a06g032_clocks[] = {
+>>>          D_ROOT(CLKOUT, "clkout", 25, 1),
+>>>          D_ROOT(CLK_PLL_USB, "clk_pll_usb", 12, 10),
+>>> @@ -893,6 +898,19 @@ static void 
+>>> r9a06g032_clocks_del_clk_provider(void *data)
+>>>          of_clk_del_provider(data);
+>>>   }
+>>>
+>>> +static void r9a06g032_reset_sources(struct r9a06g032_priv *clocks,
+>>> +                       uint32_t mask, uint32_t value)
+>>> +{
+>>> +       uint32_t rsten;
+>>> +       unsigned long flags;
+>>> +
+>>> +       spin_lock_irqsave(&clocks->lock, flags);
+>>> +       rsten = readl(clocks->reg);
+>>> +       rsten = (rsten & ~mask) | (value & mask);
+>>> +       writel(rsten, clocks->reg + R9A06G032_SYSCTRL_REG_RSTEN);
+>>> +       spin_unlock_irqrestore(&clocks->lock, flags);
+>>> +}
+>>> +
+>>>   static int __init r9a06g032_clocks_probe(struct platform_device 
+>>> *pdev)
+>>>   {
+>>>          struct device *dev = &pdev->dev;
+>>> @@ -910,6 +928,8 @@ static int __init r9a06g032_clocks_probe(struct 
+>>> platform_device *pdev)
+>>>          if (!clocks || !clks)
+>>>                  return -ENOMEM;
+>>>
+>>> +       platform_set_drvdata(pdev, clocks);
+>>> +
+>>>          spin_lock_init(&clocks->lock);
+>>>
+>>>          clocks->data.clks = clks;
+>>> @@ -963,9 +983,18 @@ static int __init r9a06g032_clocks_probe(struct 
+>>> platform_device *pdev)
+>>>          if (error)
+>>>                  return error;
+>>>
+>>> +
+>>>          return r9a06g032_add_clk_domain(dev);
+>>>   }
+>>>
+>>> +static void r9a06g032_clocks_shutdown(struct platform_device *pdev)
+>>> +{
+>>> +       struct r9a06g032_priv *clocks = platform_get_drvdata(pdev);
+>>> +
+>>> +       /* Disable the watchdog reset sources */
+>>> +       r9a06g032_reset_sources(clocks, WDA7RST0 | WDA7RST1, 0);
+>>> +}
+>>> +
+>>>   static const struct of_device_id r9a06g032_match[] = {
+>>>          { .compatible = "renesas,r9a06g032-sysctrl" },
+>>>          { }
+>>> @@ -976,6 +1005,7 @@ static struct platform_driver 
+>>> r9a06g032_clock_driver = {
+>>>                  .name   = "renesas,r9a06g032-sysctrl",
+>>>                  .of_match_table = r9a06g032_match,
+>>>          },
+>>> +       .shutdown = r9a06g032_clocks_shutdown,
+>>>   };
+>>>
+>>>   static int __init r9a06g032_clocks_init(void)
+>>
+>> Gr{oetje,eeting}s,
+>>
+>>                          Geert
+>>
+>> -- 
+>> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- 
+>> geert@linux-m68k.org
+>>
+>> In personal conversations with technical people, I call myself a 
+>> hacker. But
+>> when I'm talking to journalists I just say "programmer" or something 
+>> like that.
+>>                                  -- Linus Torvalds
+>
