@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A722C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354976AbiBUKde (ORCPT
+        id S1354873AbiBUKdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:33:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47946 "EHLO
+        Mon, 21 Feb 2022 05:33:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354956AbiBUKdJ (ORCPT
+        with ESMTP id S1354967AbiBUKdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:33:09 -0500
+        Mon, 21 Feb 2022 05:33:10 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DC3369E7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:53:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B54369F1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:53:31 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nM5Nb-0007AZ-9w; Mon, 21 Feb 2022 10:53:15 +0100
+        id 1nM5Nb-0007AW-9u; Mon, 21 Feb 2022 10:53:15 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nM5NZ-00FUf2-Og; Mon, 21 Feb 2022 10:53:13 +0100
+        id 1nM5NZ-00FUea-LD; Mon, 21 Feb 2022 10:53:13 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -33,17 +33,17 @@ To:     Mark Rutland <mark.rutland@arm.com>,
         Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
+Cc:     David Jander <david@protonic.nl>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v1 7/8] ARM: dts: imx6dl-victgo: The TGO uses a lg,lb070wv8 compatible 7" display
-Date:   Mon, 21 Feb 2022 10:53:11 +0100
-Message-Id: <20220221095312.3692669-7-o.rempel@pengutronix.de>
+Subject: [PATCH v1 4/8] ARM: dts: imx6qdl-vicut1: update gpio-line-names for some GPIOs
+Date:   Mon, 21 Feb 2022 10:53:08 +0100
+Message-Id: <20220221095312.3692669-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221095312.3692669-1-o.rempel@pengutronix.de>
 References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
@@ -57,29 +57,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin van der Gracht <robin@protonic.nl>
+From: David Jander <david@protonic.nl>
 
-This series of devices is using lg,lb070wv8 instead of kyo,tcg121xglp.
+countedX lines have different board names (YACO_x). And REV_ and BOARD_ pins
+have multiple functions. So, use names exposed to the OS.
 
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
+Signed-off-by: David Jander <david@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6dl-victgo.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
-index 907682248aa7..7839021bc3eb 100644
---- a/arch/arm/boot/dts/imx6dl-victgo.dts
-+++ b/arch/arm/boot/dts/imx6dl-victgo.dts
-@@ -129,7 +129,7 @@ led-2 {
- 	};
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index 2f6b263eea66..ec39008c0950 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -277,9 +277,9 @@ &gpio1 {
  
- 	panel {
--		compatible = "kyo,tcg121xglp";
-+		compatible = "lg,lb070wv8";
- 		backlight = <&backlight_lcd>;
- 		power-supply = <&reg_3v3>;
+ &gpio2 {
+ 	gpio-line-names =
+-		"count0", "count1", "count2", "", "", "", "", "",
+-		"REV_ID0", "REV_ID1", "REV_ID2", "REV_ID3", "REV_ID4",
+-			"BOARD_ID0", "BOARD_ID1", "BOARD_ID2",
++		"YACO_WHEEL", "YACO_RADAR", "YACO_PTO", "", "", "", "", "",
++		"", "LED_PWM", "", "", "",
++			"", "", "",
+ 		"", "", "", "", "", "", "", "ON_SWITCH",
+ 		"POWER_LED", "", "ECSPI2_SS0", "", "", "", "", "";
+ };
+@@ -298,8 +298,10 @@ &gpio4 {
+ 		"", "", "", "", "", "", "UART4_TXD", "UART4_RXD",
+ 		"UART5_TXD", "UART5_RXD", "CAN1_TX", "CAN1_RX", "CAN1_SR",
+ 			"CAN2_SR", "CAN2_TX", "CAN2_RX",
+-		"LED_DI0_DEBUG_0", "LED_DI0_DEBUG_1", "", "", "", "", "", "",
+-		"", "", "", "", "BL_EN", "BL_PWM", "", "";
++		"LED_DI0_DEBUG_0", "LED_DI0_DEBUG_1", "", "", "", "ON1_CTRL",
++			"ON2_CTRL", "HITCH_IN_OUT",
++		"LIGHT_ON", "", "", "CONTACT_IN", "BL_EN", "BL_PWM", "",
++			"ISB_LED";
+ };
  
+ &gpio5 {
 -- 
 2.30.2
 
