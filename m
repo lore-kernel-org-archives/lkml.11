@@ -2,36 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD263C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345638AbiBUIyI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:54:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42564 "EHLO
+        id S244331AbiBUIyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:54:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345666AbiBUIxT (ORCPT
+        with ESMTP id S1345625AbiBUIxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:53:19 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E63F192BF
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:50 -0800 (PST)
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2FB192B7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:48 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 5A158223EF;
-        Mon, 21 Feb 2022 09:52:48 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8DF76223E9;
+        Mon, 21 Feb 2022 09:52:43 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433568;
+        t=1645433565;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VH1+ZLr+3aCUvAokLgGLfn7yiFo+DMUkRJCzELQD4KI=;
-        b=lVepYD2hN6+0fXlu1bOQtYz8k+hho0ZV/dG71P+3iKg13cx7ISawHj2qB+CRyqL4L4l368
-        XELQWyGgpv9W/7uHR+DPDU1do33ioKxChBw87T8TQo1AOW5nK68cMUgHgLYS0QddbNWpU2
-        nHSUUNF4pWnFnRY8JRsKediKUqpMmRM=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vhXcIyrYYOOhtTLar2qt08o1kFLd8n5VCrCCKuuqYdg=;
+        b=kEcjqtpRny+mV6S0WqzV2adQV+CoG8z2MbrIHVId4XF2SmF11oMU8O/UP13AoNY48BnaHL
+        pJasnkluLLVpQeGUgcf+e6tEjfEHDNz54xOvzq9KYvc9PB9VWNi18FX6CNY2LkZnzT7/1J
+        4UmmuDAmDM9LL67Y7yv4EupkWa2Dx84=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,53 +38,102 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 03/32] mtd: spi-nor: eon: unify function names
-Date:   Mon, 21 Feb 2022 09:52:07 +0100
-Message-Id: <20220221085236.1452024-4-michael@walle.cc>
+Subject: [PATCH v3 00/32] mtd: spi-nor: move vendor specific code into vendor modules
+Date:   Mon, 21 Feb 2022 09:52:04 +0100
+Message-Id: <20220221085236.1452024-1-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid name clashes unify all the function and static object names and
-use one of the following prefixes which should be sufficiently unique:
- - <vendor>_nor_
- - <flash_family>_nor_
- - <flash_part>_
+It turns out that most of the special status register handling is
+specific for a particular vendor. I.e. Xilinx has some different
+opcodes for the status register read, Micron has an additional FSR
+register and Spansion has these flags integrated into the SR.
 
-There are no functional changes.
+Create a callback to ready() where a flash chip can register its
+own function. This will let us move all the vendor specific stuff
+out of the core into the vendor modules.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/mtd/spi-nor/eon.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+As a preparation step, unify all function and object names in the
+vendor modules. For the sake of consistency and better readability
+of the code flow, I also converted the setup() callback to be
+optional.
 
-diff --git a/drivers/mtd/spi-nor/eon.c b/drivers/mtd/spi-nor/eon.c
-index 4f3ee6331f37..8c1c57530281 100644
---- a/drivers/mtd/spi-nor/eon.c
-+++ b/drivers/mtd/spi-nor/eon.c
-@@ -8,7 +8,7 @@
- 
- #include "core.h"
- 
--static const struct flash_info eon_parts[] = {
-+static const struct flash_info eon_nor_parts[] = {
- 	/* EON -- en25xxx */
- 	{ "en25f32",    INFO(0x1c3116, 0, 64 * 1024,   64)
- 		NO_SFDP_FLAGS(SECT_4K) },
-@@ -32,6 +32,6 @@ static const struct flash_info eon_parts[] = {
- 
- const struct spi_nor_manufacturer spi_nor_eon = {
- 	.name = "eon",
--	.parts = eon_parts,
--	.nparts = ARRAY_SIZE(eon_parts),
-+	.parts = eon_nor_parts,
-+	.nparts = ARRAY_SIZE(eon_nor_parts),
- };
+Please note that this is only compile-time tested.
+
+Changes since v2:
+ - use family_nor_ instead of just family_ prefix
+ - fix function doc
+
+Changes since v1:
+ - rename/unify function names inside the vendor modules.
+ - make local functions static
+ - fix function doc typo
+ - use late_init hook to set fsr_ready op
+ - Use uppercase and period in comments
+ - Add comments for the vendor flags
+ - move coding style change in spi_nor_sr_ready() into own patch
+ - new patch to add missing parenthesis in S3AN_INFO()
+ - add missing function prefix rename patch for the spansion module
+
+Michael Walle (32):
+  mtd: spi-nor: atmel: unify function names
+  mtd: spi-nor: catalyst: unify function names
+  mtd: spi-nor: eon: unify function names
+  mtd: spi-nor: esmt: unify function names
+  mtd: spi-nor: everspin: unify function names
+  mtd: spi-nor: fujitsu: unify function names
+  mtd: spi-nor: gigadevice: unify function names
+  mtd: spi-nor: intel: unify function names
+  mtd: spi-nor: issi: unify function names
+  mtd: spi-nor: macronix: unify function names
+  mtd: spi-nor: micron-st: unify function names
+  mtd: spi-nor: spansion: unify function names
+  mtd: spi-nor: sst: unify function names
+  mtd: spi-nor: winbond: unify function names
+  mtd: spi-nor: xilinx: unify function names
+  mtd: spi-nor: xmc: unify function names
+  mtd: spi-nor: slightly refactor the spi_nor_setup()
+  mtd: spi-nor: allow a flash to define its own ready() function
+  mtd: spi-nor: export more function to be used in vendor modules
+  mtd: spi-nor: guard _page_size parameter in S3AN_INFO()
+  mtd: spi-nor: move all xilinx specifics into xilinx.c
+  mtd: spi-nor: xilinx: rename vendor specific functions and defines
+  mtd: spi-nor: xilinx: correct the debug message
+  mtd: spi-nor: move all micron-st specifics into micron-st.c
+  mtd: spi-nor: micron-st: convert USE_FSR to a manufacturer flag
+  mtd: spi-nor: micron-st: rename vendor specific functions and defines
+  mtd: spi-nor: spansion: slightly rework control flow in late_init()
+  mtd: spi-nor: move all spansion specifics into spansion.c
+  mtd: spi-nor: spansion: convert USE_CLSR to a manufacturer flag
+  mtd: spi-nor: spansion: rename vendor specific functions and defines
+  mtd: spi-nor: slightly change code style in spi_nor_sr_ready()
+  mtd: spi-nor: renumber flags
+
+ drivers/mtd/spi-nor/atmel.c      |  81 +++++-----
+ drivers/mtd/spi-nor/catalyst.c   |   6 +-
+ drivers/mtd/spi-nor/core.c       | 265 ++-----------------------------
+ drivers/mtd/spi-nor/core.h       |  70 ++++----
+ drivers/mtd/spi-nor/eon.c        |   6 +-
+ drivers/mtd/spi-nor/esmt.c       |   6 +-
+ drivers/mtd/spi-nor/everspin.c   |   6 +-
+ drivers/mtd/spi-nor/fujitsu.c    |   6 +-
+ drivers/mtd/spi-nor/gigadevice.c |   6 +-
+ drivers/mtd/spi-nor/intel.c      |   6 +-
+ drivers/mtd/spi-nor/issi.c       |  10 +-
+ drivers/mtd/spi-nor/macronix.c   |  14 +-
+ drivers/mtd/spi-nor/micron-st.c  | 258 ++++++++++++++++++++++++------
+ drivers/mtd/spi-nor/spansion.c   | 164 ++++++++++++++-----
+ drivers/mtd/spi-nor/sst.c        |  44 ++---
+ drivers/mtd/spi-nor/winbond.c    |  29 ++--
+ drivers/mtd/spi-nor/xilinx.c     |  97 +++++++++--
+ drivers/mtd/spi-nor/xmc.c        |   6 +-
+ include/linux/mtd/spi-nor.h      |  18 ---
+ 19 files changed, 576 insertions(+), 522 deletions(-)
+
 -- 
 2.30.2
 
