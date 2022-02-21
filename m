@@ -2,162 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F69C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377108AbiBUNyF (ORCPT
+        id S1377116AbiBUNyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:54:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51710 "EHLO
+        Mon, 21 Feb 2022 08:54:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376746AbiBUNyA (ORCPT
+        with ESMTP id S1349266AbiBUNyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:54:00 -0500
-Received: from 189.cn (ptr.189.cn [183.61.185.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C2A2BF7F;
-        Mon, 21 Feb 2022 05:53:35 -0800 (PST)
-HMM_SOURCE_IP: 10.64.8.43:49386.1635481058
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id 247AB100135;
-        Mon, 21 Feb 2022 21:53:29 +0800 (CST)
-Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 8927a885023a44a3b0b45b301e09b9e3 for sergei.shtylyov@gmail.com;
-        Mon, 21 Feb 2022 21:53:33 CST
-X-Transaction-ID: 8927a885023a44a3b0b45b301e09b9e3
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 114.242.206.180
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-Message-ID: <f7782013-6a4a-e333-369c-e8caf13997b7@189.cn>
-Date:   Mon, 21 Feb 2022 21:53:27 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v10 1/4] MIPS: Loongson64: dts: update the display
- controller device node
-Content-Language: en-US
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Mon, 21 Feb 2022 08:54:17 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF63DE80;
+        Mon, 21 Feb 2022 05:53:54 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id q17so29670000edd.4;
+        Mon, 21 Feb 2022 05:53:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=G3DC4qi9Rxgo/akJjc9uQtn29p0/BI+YilmzZePFgCA=;
+        b=KjMOOzxqt8z6xWdgQOftpOQWDw70KVdrK8Tp3HqRaWT7rOkRBkgE3Z6rAymxth7ub1
+         yXKhiKl9ns0NsOqnw/2mlkxQaXf3PjqHWYszGIClDUsrZHqSXZ9fXqvfXK9GS+ELIbIB
+         3sYJFUtHfe9Z4yQn4tcAmXQ1w8FCmiPjsz9AI0oUsB4rIoTuFww4WoQg91E0X3LxnF6C
+         ikOZtwdI3i1N1Y8Ctqo3WKHOSyC1+uO/L/a8hBwpe+iJtBEXRZjIZGAaYp9Otu6DPpx5
+         AgNlKwSVPayOLcEP0L8ygtjAzQjEqLEXXPJtc/ufsOJVgWIj7a1FHXcetWKeauoY+3XE
+         XWiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=G3DC4qi9Rxgo/akJjc9uQtn29p0/BI+YilmzZePFgCA=;
+        b=vIu1INlOSHVAiE2qQw1U7Ie7uPPq8pFro3nRyD9oWZpO9z6xuIqu9PJJiyb/T7jSj+
+         FKXMtHHOXqhUny9drD9wINq9pQDok0p7S+QUAcX1GsuezElguu6FfIPNVHXg408iALHt
+         ATTJahKV+IW02dVD2+0f8t4WVyc75blc69NlzXIaK+vE5DTraN8Pli0ZFqKuoVEn/gXv
+         HmU4+f6BzXtpKyrh/FVHxpkynxld3fghaKrWAJSHrFnoSnE/PSuV5DmK3h13MGKpA9Ns
+         isk8IokE4d9jkFkYguvHFx/PV2iVrra9iDzxYWraQ6RWIorcqbInZwiDKVQSxXpsdgNC
+         CwzQ==
+X-Gm-Message-State: AOAM5316JXYMuNoYIpR1myxR9jdwo5Ppg8n+eq/7hVYOrtRUCQfmsV1I
+        U2JG+dzBWYou3KtYA2rkPfF6u5tHRiv4zA==
+X-Google-Smtp-Source: ABdhPJyOS03GMYX7eH/DOmGTI9PyzEvRckZJEkOWty6yyMReikfzqySXVV9g6ZS36dAodPSQskn5Qg==
+X-Received: by 2002:aa7:c047:0:b0:40b:488:547c with SMTP id k7-20020aa7c047000000b0040b0488547cmr21091419edo.76.1645451632612;
+        Mon, 21 Feb 2022 05:53:52 -0800 (PST)
+Received: from ubuntu ([155.133.219.250])
+        by smtp.gmail.com with ESMTPSA id eg42sm6800528edb.79.2022.02.21.05.53.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 05:53:52 -0800 (PST)
+Date:   Mon, 21 Feb 2022 14:53:51 +0100
+From:   Daniel Kestrel <kestrelseventyfour@gmail.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220220145554.117854-1-15330273260@189.cn>
- <20220220145554.117854-2-15330273260@189.cn>
- <08abcb14-f1f6-8be5-6309-cd16e0578c05@gmail.com>
-From:   Sui Jingfeng <15330273260@189.cn>
-In-Reply-To: <08abcb14-f1f6-8be5-6309-cd16e0578c05@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Daniel Kestrel <kestrelseventyfour@gmail.com>,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] dt-bindings: remoteproc: Add AVM WASP
+Message-ID: <20220221135351.GA7342@ubuntu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+AVM Fritzbox router boards may contain an additional ATH79
+based SoC that has the wifi cards connected.
+This patch adds bindings for this remote processor.
 
-On 2022/2/21 17:19, Sergei Shtylyov wrote:
-> On 2/20/22 5:55 PM, Sui Jingfeng wrote:
->
->> From: suijingfeng <suijingfeng@loongson.cn>
->>
->> The display controller is a pci device, its PCI vendor id is 0x0014
->> its PCI device id is 0x7a06.
->>
->> 1) In order to let the driver to know which chip the DC is contained
->>     in, the compatible string of the display controller is updated
->>     according to the chip's name.
->>
->> 2) Add display controller device node for ls2k1000 SoC
->>
->> Reported-by: Krzysztof Kozlowski <krzk@kernel.org>
->> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
->> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
->> ---
->>   arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 8 ++++++++
->>   arch/mips/boot/dts/loongson/ls7a-pch.dtsi          | 7 ++-----
->>   2 files changed, 10 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
->> index 768cf2abcea3..af9cda540f9e 100644
->> --- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
->> +++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
->> @@ -209,6 +209,14 @@ gpu@5,0 {
->>   				interrupt-parent = <&liointc0>;
->>   			};
->>   
->> +			lsdc: display-controller@6,0 {
->     Shouldn't the node name just be "display", according to the section 2.2.2
-> of the DT spec?
->
-> [...]
->> diff --git a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
->> index 2f45fce2cdc4..ec35ea9b2fe8 100644
->> --- a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
->> +++ b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
->> @@ -160,11 +160,8 @@ gpu@6,0 {
->>   				interrupt-parent = <&pic>;
->>   			};
->>   
->> -			dc@6,1 {
->> -				compatible = "pci0014,7a06.0",
->> -						   "pci0014,7a06",
->> -						   "pciclass030000",
->> -						   "pciclass0300";
->> +			lsdc: display-controller@6,1 {
->     Same here...
->
-> [...]
->
-> MBR, Sergey
+Signed-off-by: Daniel Kestrel <kestrelseventyfour@gmail.com>
+---
+ .../bindings/remoteproc/avm,wasp-rproc.yaml   | 93 +++++++++++++++++++
+ 1 file changed, 93 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/avm,wasp-rproc.yaml
 
-Display sounds like a panel or monitor, while we are the device that driven the display device.
-
-Running find . -name "*.dtsi" -type f | xargs grep "display-controller"
-at drm-tip/arch/ directory show that there are a number of vendors using
-display controller as theirnode name, for example Atmel and STM32.
-
-
-./arm/boot/dts/pxa3xx.dtsi:		gcu: display-controller@54000000 {
-./arm/boot/dts/at91sam9n12.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/at91sam9n12.dtsi:					compatible = "atmel,hlcdc-display-controller";
-./arm/boot/dts/at91-dvk_su60_somc_lcm.dtsi:	hlcdc-display-controller {
-./arm/boot/dts/stm32h743.dtsi:		ltdc: display-controller@50001000 {
-./arm/boot/dts/stm32mp151.dtsi:		ltdc: display-controller@5a001000 {
-./arm/boot/dts/at91sam9x5dm.dtsi:	hlcdc-display-controller {
-./arm/boot/dts/gemini.dtsi:		display-controller@6a000000 {
-./arm/boot/dts/stm32f429.dtsi:		ltdc: display-controller@40016800 {
-./arm/boot/dts/at91sam9x5_lcd.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/at91sam9x5_lcd.dtsi:					compatible = "atmel,hlcdc-display-controller";
-./arm/boot/dts/sama5d2.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/sama5d2.dtsi:					compatible = "atmel,hlcdc-display-controller";
-./arm/boot/dts/sama5d4.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/sama5d4.dtsi:					compatible = "atmel,hlcdc-display-controller";
-./arm/boot/dts/sama5d3_lcd.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/sama5d3_lcd.dtsi:					compatible = "atmel,hlcdc-display-controller";
-./arm/boot/dts/sam9x60.dtsi:				hlcdc-display-controller {
-./arm/boot/dts/sam9x60.dtsi:					compatible = "atmel,hlcdc-display-controller";
-
-./arm/boot/dts/at91-sama5d4_ma5d4evk.dts:				hlcdc-display-controller {
-./arm/boot/dts/at91sam9n12ek.dts:				hlcdc-display-controller {
-./arm/boot/dts/am335x-pdu001.dts:	display-controller@0 {
-./arm/boot/dts/at91-nattis-2-natte-2.dts:	hlcdc-display-controller {
-./arm/boot/dts/gemini-dlink-dir-685.dts:		display-controller@6a000000 {
+diff --git a/Documentation/devicetree/bindings/remoteproc/avm,wasp-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/avm,wasp-rproc.yaml
+new file mode 100644
+index 000000000000..21f3bbcc4202
+--- /dev/null
++++ b/Documentation/devicetree/bindings/remoteproc/avm,wasp-rproc.yaml
+@@ -0,0 +1,93 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/remoteproc/avm,wasp-rproc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AVM WASP processor controller bindings
++
++maintainers:
++  - Daniel Kestrel <kestrelseventyfour@gmail.com>
++
++description: |
++  This document defines the bindings for the remoteproc component that loads and
++  boots firmwares on the AVM Wireless Assistent Support Processor (WASP) SoC
++  that is attached to some AVM Fritzbox devices (3390, 3490, 5490, 5491, 7490).
++
++properties:
++  compatible:
++    const: avm,wasp
++
++  ath9k-firmware:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should contain the name of the ath9k eeprom that is to be loaded from
++      the lantiq host flash. Wifi on the WASP SoC does not work without it.
++      The file should be located on the firmware search path.
++
++  ath10k-caldata:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should contain the name of the ath10k caldata that is to be loaded from
++      the lantiq host flash. Wifi on the WASP SoC does not work without it.
++      The file should be located on the firmware search path.
++
++  wasp-netboot-firmware:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should contain the name of the netboot firmware that is to be loaded
++      and started on the WASP SoC using mdio in order to be able to load
++      the initramfs image as a second stage.
++      The file should be located on the firmware search path.
++
++  wasp-netboot-mdio:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Reference to the Lantiq GSWIP switch mdio.
++
++  wasp-initramfs-port:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Reference to the network port, where the WASP SoC is connected to.
++
++  wasp-initramfs-image:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should contain the name of the initramfs linux image that is to be loaded
++      and started on the WASP SoC.
++      The file should be located on the firmware search path.
++
++  reset-gpio:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: Reference and parameters for the reset gpio of the WASP SoC.
++
++  startup-gpio:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: Reference and parameters for the power switch gpio of the WASP SoC.
++
++required:
++  - compatible
++  - ath9k-firmware
++  - ath10k-caldata
++  - wasp-netboot-firmware
++  - wasp-netboot-mdio
++  - wasp-initramfs-port
++  - wasp-initramfs-image
++  - reset-gpio
++  - startup-gpio
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    avm-wasp {
++        compatible = "avm,wasp";
++        ath9k-firmware = "ath9k-eeprom-ahb-18100000.wmac.bin";
++        ath10k-caldata = "ath10k/cal-pci-0000:00:00.0.bin";
++        wasp-netboot-firmware = "netboot.fw";
++        wasp-netboot-mdio = <&gswip_mdio>;
++        wasp-initramfs-port = <&port5>;
++        wasp-initramfs-image = "avm_fritzx490-wasp-initramfs-kernel.bin";
++        reset-gpio = <&gpio 34 GPIO_ACTIVE_HIGH>;
++        startup-gpio = <&gpio 5 GPIO_ACTIVE_HIGH>;
++    };
+-- 
+2.17.1
 
