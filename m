@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348265AbiBUJTF (ORCPT
+        id S1348504AbiBUJTJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:19:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33980 "EHLO
+        Mon, 21 Feb 2022 04:19:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348864AbiBUJLs (ORCPT
+        with ESMTP id S1348895AbiBUJLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33C228988;
-        Mon, 21 Feb 2022 01:04:17 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:49 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BC92899D;
+        Mon, 21 Feb 2022 01:04:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE4160FB6;
-        Mon, 21 Feb 2022 09:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FBDC340E9;
-        Mon, 21 Feb 2022 09:04:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5497BCE0E96;
+        Mon, 21 Feb 2022 09:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DFACC340F1;
+        Mon, 21 Feb 2022 09:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434256;
-        bh=w7C2GgCRtP1+xltsNW+WDszYMEqhmA+wflbrN7qr1Ow=;
+        s=korg; t=1645434259;
+        bh=zPEyfU1ecxpvXSoCI9xFguvbg7TQZ1EtnpjrPVaVoKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxdk/+52oV79MA/rMQ/vjSa3m6L4MXCIlAgTjNuVNDK21DTPM+cATWEYl5b05KHnm
-         +KgJQkxRuL/gWNUSiIZ7i83urF2tstKWB/zZC6vSLuJ66s7PNsfR1yp4wAFgjzq1jV
-         ARUNZsgFKRdYN0ZaY6G9Ab01dvclps1q9xU6lPTY=
+        b=zRjUXloOLKcwkfGaRB7+XF27EP5aDrFNAWSYFnc3UiWHTCX6w14v2If6vqxRiqZyF
+         hMIk/ANDWLSLYxMFz+L0yHB9dLI11OlD+Idj1RtrYQV1AV3lJxc1B2Czc4AQZ1+bMH
+         fDDErtc4ogJzZx2SHCFinixc8rPMzRtbO+M0oVjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 067/121] perf bpf: Defer freeing string after possible strlen() on it
-Date:   Mon, 21 Feb 2022 09:49:19 +0100
-Message-Id: <20220221084923.467669276@linuxfoundation.org>
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.10 068/121] selftests/exec: Add non-regular to TEST_GEN_PROGS
+Date:   Mon, 21 Feb 2022 09:49:20 +0100
+Message-Id: <20220221084923.499069159@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,50 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-commit 31ded1535e3182778a1d0e5c32711f55da3bc512 upstream.
+commit a7e793a867ae312cecdeb6f06cceff98263e75dd upstream.
 
-This was detected by the gcc in Fedora Rawhide's gcc:
+non-regular file needs to be compiled and then copied to the output
+directory. Remove it from TEST_PROGS and add it to TEST_GEN_PROGS. This
+removes error thrown by rsync when non-regular object isn't found:
 
-  50    11.01 fedora:rawhide                : FAIL gcc version 12.0.1 20220205 (Red Hat 12.0.1-0) (GCC)
-        inlined from 'bpf__config_obj' at util/bpf-loader.c:1242:9:
-    util/bpf-loader.c:1225:34: error: pointer 'map_opt' may be used after 'free' [-Werror=use-after-free]
-     1225 |                 *key_scan_pos += strlen(map_opt);
-          |                                  ^~~~~~~~~~~~~~~
-    util/bpf-loader.c:1223:9: note: call to 'free' here
-     1223 |         free(map_name);
-          |         ^~~~~~~~~~~~~~
-    cc1: all warnings being treated as errors
+rsync: [sender] link_stat "/linux/tools/testing/selftests/exec/non-regular" failed: No such file or directory (2)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
 
-So do the calculations on the pointer before freeing it.
-
-Fixes: 04f9bf2bac72480c ("perf bpf-loader: Add missing '*' for key_scan_pos")
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Link: https://lore.kernel.org/lkml/Yg1VtQxKrPpS3uNA@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 0f71241a8e32 ("selftests/exec: add file type errno tests")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/bpf-loader.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/exec/Makefile |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/tools/perf/util/bpf-loader.c
-+++ b/tools/perf/util/bpf-loader.c
-@@ -1215,9 +1215,10 @@ bpf__obj_config_map(struct bpf_object *o
- 	pr_debug("ERROR: Invalid map config option '%s'\n", map_opt);
- 	err = -BPF_LOADER_ERRNO__OBJCONF_MAP_OPT;
- out:
--	free(map_name);
- 	if (!err)
- 		*key_scan_pos += strlen(map_opt);
-+
-+	free(map_name);
- 	return err;
- }
+--- a/tools/testing/selftests/exec/Makefile
++++ b/tools/testing/selftests/exec/Makefile
+@@ -3,8 +3,8 @@ CFLAGS = -Wall
+ CFLAGS += -Wno-nonnull
+ CFLAGS += -D_GNU_SOURCE
  
+-TEST_PROGS := binfmt_script non-regular
+-TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216
++TEST_PROGS := binfmt_script
++TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
+ TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
+ # Makefile is a run-time dependency, since it's accessed by the execveat test
+ TEST_FILES := Makefile
 
 
