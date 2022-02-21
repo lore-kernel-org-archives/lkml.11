@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347823AbiBUJJa (ORCPT
+        id S1347878AbiBUJJg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:09:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42032 "EHLO
+        Mon, 21 Feb 2022 04:09:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343987AbiBUJEs (ORCPT
+        with ESMTP id S1347315AbiBUJFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:04:48 -0500
+        Mon, 21 Feb 2022 04:05:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50632DD70;
-        Mon, 21 Feb 2022 00:58:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160A825C5C;
+        Mon, 21 Feb 2022 00:58:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69C8CB80EBB;
-        Mon, 21 Feb 2022 08:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA38C340E9;
-        Mon, 21 Feb 2022 08:58:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E7DDB80EAC;
+        Mon, 21 Feb 2022 08:58:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81AB6C340EB;
+        Mon, 21 Feb 2022 08:58:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433930;
-        bh=ww4qvgER5OPZ4qzfq4h55HS9IV8nlvw5JDBb4dbZ2SY=;
+        s=korg; t=1645433933;
+        bh=os7+BbduWHsodAPKLMmu7l+9ODhuHdAKJZMGcsnJXmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpew3xnRZCpT1e3NMO5M5VLZCr9iZmG/UC03ZYnoHzZ4DCAcUq7WaZ0avYFai724t
-         ar2pr0ufgZTP6zRnX1KMW3tZvW7T3TrJBHHEy8lhs2n3GoRNp01SmyPw2aGB7tAB+C
-         vWmSo+kUAYC3BoJoH/AFYfXwbIEjZNn1WCVIcsp4=
+        b=sKdP8wC2jHSeSkuxQUSGiB7u1IpNomttBI3r3LEOmVji8hnZaglew6NUAEWnsJqUQ
+         ps0zPODRCnBOnI/QueZobkiUGSjwvx52f+EvUO1avZ3cPeFLojWR/8eItdobKIUfrp
+         tEjdfFJ6W1m3S8aZQtqVVFkCi6AtKe8PqP5sJvNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Mickael GARDET <m.gardet@overkiz.com>
-Subject: [PATCH 5.4 33/80] dmaengine: at_xdmac: Start transfer for cyclic channels in issue_pending
-Date:   Mon, 21 Feb 2022 09:49:13 +0100
-Message-Id: <20220221084916.660763875@linuxfoundation.org>
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 34/80] vsock: remove vsock from connected table when connect is interrupted by a signal
+Date:   Mon, 21 Feb 2022 09:49:14 +0100
+Message-Id: <20220221084916.690373564@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -51,43 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Seth Forshee <sforshee@digitalocean.com>
 
-commit e6af9b05bec63cd4d1de2a33968cd0be2a91282a upstream.
+commit b9208492fcaecff8f43915529ae34b3bcb03877c upstream.
 
-Cyclic channels must too call issue_pending in order to start a transfer.
-Start the transfer in issue_pending regardless of the type of channel.
-This wrongly worked before, because in the past the transfer was started
-at tx_submit level when only a desc in the transfer list.
+vsock_connect() expects that the socket could already be in the
+TCP_ESTABLISHED state when the connecting task wakes up with a signal
+pending. If this happens the socket will be in the connected table, and
+it is not removed when the socket state is reset. In this situation it's
+common for the process to retry connect(), and if the connection is
+successful the socket will be added to the connected table a second
+time, corrupting the list.
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Change-Id: If1bf3e13329cebb9904ae40620f6cf2b7f06fe9f
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-3-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Mickael GARDET <m.gardet@overkiz.com>
+Prevent this by calling vsock_remove_connected() if a signal is received
+while waiting for a connection. This is harmless if the socket is not in
+the connected table, and if it is in the table then removing it will
+prevent list corruption from a double add.
+
+Note for backporting: this patch requires d5afa82c977e ("vsock: correct
+removal of socket from the list"), which is in all current stable trees
+except 4.9.y.
+
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lore.kernel.org/r/20220217141312.2297547-1-sforshee@digitalocean.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/vmw_vsock/af_vsock.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1726,11 +1726,13 @@ static irqreturn_t at_xdmac_interrupt(in
- static void at_xdmac_issue_pending(struct dma_chan *chan)
- {
- 	struct at_xdmac_chan *atchan = to_at_xdmac_chan(chan);
-+	unsigned long flags;
- 
- 	dev_dbg(chan2dev(&atchan->chan), "%s\n", __func__);
- 
--	if (!at_xdmac_chan_is_cyclic(atchan))
--		at_xdmac_advance_work(atchan);
-+	spin_lock_irqsave(&atchan->lock, flags);
-+	at_xdmac_advance_work(atchan);
-+	spin_unlock_irqrestore(&atchan->lock, flags);
- 
- 	return;
- }
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1222,6 +1222,7 @@ static int vsock_stream_connect(struct s
+ 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
++			vsock_remove_connected(vsk);
+ 			goto out_wait;
+ 		} else if (timeout == 0) {
+ 			err = -ETIMEDOUT;
 
 
