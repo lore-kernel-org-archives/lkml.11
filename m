@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C82C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348134AbiBUJSw (ORCPT
+        id S1348265AbiBUJTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33874 "EHLO
+        Mon, 21 Feb 2022 04:19:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348842AbiBUJLp (ORCPT
+        with ESMTP id S1348864AbiBUJLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:45 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F8C286F3;
-        Mon, 21 Feb 2022 01:04:14 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33C228988;
+        Mon, 21 Feb 2022 01:04:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C50ECCE0E86;
-        Mon, 21 Feb 2022 09:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A67F0C340E9;
-        Mon, 21 Feb 2022 09:04:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE4160FB6;
+        Mon, 21 Feb 2022 09:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FBDC340E9;
+        Mon, 21 Feb 2022 09:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434251;
-        bh=8IUsyVO3CUV/NHmrn9iyf0MiQePqG+1lN0ZMxV/tScY=;
+        s=korg; t=1645434256;
+        bh=w7C2GgCRtP1+xltsNW+WDszYMEqhmA+wflbrN7qr1Ow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IMQx8vNcAyqO6dEGdkYG0o2lOJ238ZXCmzWgva6us1T2ykTOOZhkWTlVfE8t36RLt
-         D/u8KlIK+mu4KNXFWtaWoFBKSoW0huw2UL3vB7uD5sWEOQ7IOyIXaXbUA32G3FpxP0
-         g9+1au6YlkklOU+ZVb5vjBKds5NKfv3Q2RZmPAMU=
+        b=dxdk/+52oV79MA/rMQ/vjSa3m6L4MXCIlAgTjNuVNDK21DTPM+cATWEYl5b05KHnm
+         +KgJQkxRuL/gWNUSiIZ7i83urF2tstKWB/zZC6vSLuJ66s7PNsfR1yp4wAFgjzq1jV
+         ARUNZsgFKRdYN0ZaY6G9Ab01dvclps1q9xU6lPTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Kees Kook <keescook@chromium.org>,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-hardening@vger.kernel.org,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
         Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 065/121] libsubcmd: Fix use-after-free for realloc(..., 0)
-Date:   Mon, 21 Feb 2022 09:49:17 +0100
-Message-Id: <20220221084923.404143613@linuxfoundation.org>
+Subject: [PATCH 5.10 067/121] perf bpf: Defer freeing string after possible strlen() on it
+Date:   Mon, 21 Feb 2022 09:49:19 +0100
+Message-Id: <20220221084923.467669276@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -54,62 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 52a9dab6d892763b2a8334a568bd4e2c1a6fde66 upstream.
+commit 31ded1535e3182778a1d0e5c32711f55da3bc512 upstream.
 
-GCC 12 correctly reports a potential use-after-free condition in the
-xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
-when size == 0:
+This was detected by the gcc in Fedora Rawhide's gcc:
 
-In file included from help.c:12:
-In function 'xrealloc',
-    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
-   56 |                 ret = realloc(ptr, size);
-      |                       ^~~~~~~~~~~~~~~~~~
-subcmd-util.h:52:21: note: call to 'realloc' here
-   52 |         void *ret = realloc(ptr, size);
-      |                     ^~~~~~~~~~~~~~~~~~
-subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
-   58 |                         ret = realloc(ptr, 1);
-      |                               ^~~~~~~~~~~~~~~
-subcmd-util.h:52:21: note: call to 'realloc' here
-   52 |         void *ret = realloc(ptr, size);
-      |                     ^~~~~~~~~~~~~~~~~~
+  50    11.01 fedora:rawhide                : FAIL gcc version 12.0.1 20220205 (Red Hat 12.0.1-0) (GCC)
+        inlined from 'bpf__config_obj' at util/bpf-loader.c:1242:9:
+    util/bpf-loader.c:1225:34: error: pointer 'map_opt' may be used after 'free' [-Werror=use-after-free]
+     1225 |                 *key_scan_pos += strlen(map_opt);
+          |                                  ^~~~~~~~~~~~~~~
+    util/bpf-loader.c:1223:9: note: call to 'free' here
+     1223 |         free(map_name);
+          |         ^~~~~~~~~~~~~~
+    cc1: all warnings being treated as errors
 
-Fixes: 2f4ce5ec1d447beb ("perf tools: Finalize subcmd independence")
-Reported-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Signed-off-by: Kees Kook <keescook@chromium.org>
-Tested-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: linux-hardening@vger.kernel.org
-Cc: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Link: http://lore.kernel.org/lkml/20220213182443.4037039-1-keescook@chromium.org
+So do the calculations on the pointer before freeing it.
+
+Fixes: 04f9bf2bac72480c ("perf bpf-loader: Add missing '*' for key_scan_pos")
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Link: https://lore.kernel.org/lkml/Yg1VtQxKrPpS3uNA@kernel.org
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/lib/subcmd/subcmd-util.h |   11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ tools/perf/util/bpf-loader.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/tools/lib/subcmd/subcmd-util.h
-+++ b/tools/lib/subcmd/subcmd-util.h
-@@ -50,15 +50,8 @@ static NORETURN inline void die(const ch
- static inline void *xrealloc(void *ptr, size_t size)
- {
- 	void *ret = realloc(ptr, size);
--	if (!ret && !size)
--		ret = realloc(ptr, 1);
--	if (!ret) {
--		ret = realloc(ptr, size);
--		if (!ret && !size)
--			ret = realloc(ptr, 1);
--		if (!ret)
--			die("Out of memory, realloc failed");
--	}
-+	if (!ret)
-+		die("Out of memory, realloc failed");
- 	return ret;
+--- a/tools/perf/util/bpf-loader.c
++++ b/tools/perf/util/bpf-loader.c
+@@ -1215,9 +1215,10 @@ bpf__obj_config_map(struct bpf_object *o
+ 	pr_debug("ERROR: Invalid map config option '%s'\n", map_opt);
+ 	err = -BPF_LOADER_ERRNO__OBJCONF_MAP_OPT;
+ out:
+-	free(map_name);
+ 	if (!err)
+ 		*key_scan_pos += strlen(map_opt);
++
++	free(map_name);
+ 	return err;
  }
  
 
