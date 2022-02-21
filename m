@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 21:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9138C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 21:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiBUVZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 16:25:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41230 "EHLO
+        id S234887AbiBUVZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 16:25:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234900AbiBUVZl (ORCPT
+        with ESMTP id S234869AbiBUVZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 16:25:41 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4D413CD0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 13:25:14 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id a23so36362666eju.3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 13:25:14 -0800 (PST)
+        Mon, 21 Feb 2022 16:25:44 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B39C12AE8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 13:25:20 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id w3so32034858edu.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 13:25:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=JWjYfqXasCYEUfZcDuCmAcewGNZu47MK/PX+0VAxPLM=;
-        b=Di05ReSn75HTTnV/xV+063h7YXUIJNIUfTSmixmKczxJxPu8eCzNM7Ar5HTzlO96Jp
-         SHUfPWxlkV8NFxfHgfCcXNeK1D90SMct9LNxnww86f26wxK79xcRn3O7dzw+Cb9auOuh
-         ITAtC9/YL8h0B8Rmm4hps6ExwAonjLs70UKGruWcvLxTI+5inrcmTFC5AVbtQQsgxrfF
-         hf0GdAaT861gDX9hHQp32FoVqqoJOWwpaS21I79pT8nW3cfYylqBuA+x1ZpYg0pvg7oK
-         ZqKbH6qCjMnl7zTxQ+bkiGTLN3ynNadoAGGfHrJeSkxluHQAQoZ3dLFxlxbkBlB1R/G2
-         ORag==
+        bh=hRNEJYkXr+PwSGSW5oI3rp0CXIsPeHFtIOlhCAUsWYo=;
+        b=Og3vrovv6LTZwDBZk1v459NGVWUMEHl6mUBfs/6JKezdMuBldc2tHbo614J6H/39ec
+         m8W+9YGfXZnCZ9xoYRGIBDqEBeJ8q90A8Vzgtxq2nqLgDwrBaitIZboNLsV9ks8mpR3z
+         lfxw5Q3lJHJboK8Eu8qQC/G6BnSkJeWDayF3anq2zCAcDW2Gyv72QW+tAurVtle++97c
+         4q98CoxPo2dW6A9FHJSJqmDCVGO3K/A4tBsnjElGHbeK3kTBn41nhOc4pe6zDz4MIMk8
+         hV00lF7vi5VupVJYx5NUJzZpqjhydSagD1oCi8l/9ItkcEywO5SoibblZaL6GOJCwUDU
+         dcfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=JWjYfqXasCYEUfZcDuCmAcewGNZu47MK/PX+0VAxPLM=;
-        b=MRModPLiRm5BAzpKJ4XTtR/zjZRG01GpdB+sy3HUJM/XJk49yKY8brDadqj+zikq6T
-         tI7IlYpIzYlXlI7eUATy/u7eMppoO8XZVvLx/yoHyH3CjsoGDJjq4LK2LIuGku/Bgt5O
-         oPpul18VnivJM53baWu7AIbJ1qGb/F74U4jt5zqeqJ3jh1LuogiVZ3X8AVInlXqe1+vy
-         A/8cuqEsaYrSjT7xciuxKPYSGQju1O+IITqGeno+amLR2oUImd/1JdjDwNif+QIZD6Tk
-         oRaVUVOolLN3oBh3kszeyNv/6PaK7JV7j8HOuAVZ18729coLLw0TreYzEsoaKUCjhNIX
-         8XhQ==
-X-Gm-Message-State: AOAM533FdGLAkeHZ9pOeKlINY6GTkbEagy6Lu6mYebLZYDM0wY5leVV5
-        XApF4EZorEG5x6aISU0H6Us=
-X-Google-Smtp-Source: ABdhPJwngm1nPQDLcrGttoKbc3qyTiAwa5bkoKD1xHpoJtrVHFT/viemRNdvBvdj/rDEhH0nF8Iewg==
-X-Received: by 2002:a17:906:a145:b0:6ae:e45d:15b6 with SMTP id bu5-20020a170906a14500b006aee45d15b6mr17107775ejb.714.1645478712790;
-        Mon, 21 Feb 2022 13:25:12 -0800 (PST)
+        bh=hRNEJYkXr+PwSGSW5oI3rp0CXIsPeHFtIOlhCAUsWYo=;
+        b=WzN2w0N3juN+9PcztBTPFprJFM56mA3w/oJGQZqubynHKOQgZkLGBMBkfuktSlaXv5
+         X58rL91YIXayCGVZ2c5vYLPiRohkajdV3oAzbsaXs+bz6hTEvJVxjrv4UJrOiBc8jkgv
+         c5jCAjzKsoQIa2+Z6pVSyt2dZoSZCAcn9IxxbPzrmhLOzFX0B6BPRZ0UMLV+pyiaq7kp
+         YeT2SbX5v60MQOavN0yc/WNbiBdPsdQrPChMwd93dU8qCXmHf/gSfLJrjH1igqawYTLc
+         DeO3t2dX+sFkY4eQ9j6luxQix8aWkET8ANuOAOPP2bGsuFcASqd8bQTiXJVwfbpvnCzp
+         G11w==
+X-Gm-Message-State: AOAM532H+NOk0+pMzMkdKakmzRgisLjUwbaixTo3PoCLgXTWuN6wWyOx
+        AEUqjuP3q+Mg9KCo+BBSm9o=
+X-Google-Smtp-Source: ABdhPJzmtpRHxuS6X84WUIbiaEuDt83WewKyJDe0iPuKShXYAJZWJN9IGS53x868g7pBjR4OsBHlkw==
+X-Received: by 2002:a05:6402:5209:b0:412:7cd8:a8fc with SMTP id s9-20020a056402520900b004127cd8a8fcmr23392496edd.51.1645478718822;
+        Mon, 21 Feb 2022 13:25:18 -0800 (PST)
 Received: from matrix-ESPRIMO-P710 (p57935aa6.dip0.t-ipconnect.de. [87.147.90.166])
-        by smtp.gmail.com with ESMTPSA id m4sm5598757ejl.45.2022.02.21.13.25.12
+        by smtp.gmail.com with ESMTPSA id ho34sm1660725ejc.122.2022.02.21.13.25.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 13:25:12 -0800 (PST)
-Date:   Mon, 21 Feb 2022 22:25:10 +0100
+        Mon, 21 Feb 2022 13:25:18 -0800 (PST)
+Date:   Mon, 21 Feb 2022 22:25:16 +0100
 From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
 To:     Forest Bond <forest@alittletooquiet.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/6] staging: vt6656: Fix CamelCase warnings in macro
-Message-ID: <53072a97348b08276b083ce18188b9199cbfaae6.1645477326.git.philipp.g.hortmann@gmail.com>
+Subject: [PATCH v2 4/6] staging: vt6656: Change macro to function and moved
+ to better file
+Message-ID: <fa37dde640cfe5093ff23ca0881aba4673751a49.1645477326.git.philipp.g.hortmann@gmail.com>
 References: <cover.1645477326.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -64,36 +65,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes the checkpatch.pl warnings like:
-- CHECK: Avoid CamelCase: <uVar>
+This patch fixes the checkpatch.pl warning like:
+- CHECK: Macro argument reuse 'uVar' - possible side-effects?
+Moved the only twice used function to the file where it is used.
 
 Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
 ---
 V1 -> V2: Devided patch into three
 ---
- drivers/staging/vt6656/device.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/vt6656/device.h |  7 -------
+ drivers/staging/vt6656/wcmd.c   | 13 +++++++++++--
+ 2 files changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/staging/vt6656/device.h b/drivers/staging/vt6656/device.h
-index dda38c2a6f06..0ab2d60204e8 100644
+index 0ab2d60204e8..ca974d61d3f4 100644
 --- a/drivers/staging/vt6656/device.h
 +++ b/drivers/staging/vt6656/device.h
-@@ -381,11 +381,11 @@ struct vnt_private {
+@@ -381,13 +381,6 @@ struct vnt_private {
  	struct ieee80211_low_level_stats low_stats;
  };
  
--#define ADD_ONE_WITH_WRAP_AROUND(uVar, uModulo) {	\
--	if ((uVar) >= ((uModulo) - 1))			\
--		(uVar) = 0;				\
-+#define ADD_ONE_WITH_WRAP_AROUND(var, modulo) {	\
-+	if ((var) >= ((modulo) - 1))			\
-+		(var) = 0;				\
- 	else						\
--		(uVar)++;				\
-+		(var)++;				\
+-#define ADD_ONE_WITH_WRAP_AROUND(var, modulo) {	\
+-	if ((var) >= ((modulo) - 1))			\
+-		(var) = 0;				\
+-	else						\
+-		(var)++;				\
+-}
+-
+ int vnt_init(struct vnt_private *priv);
+ 
+ #endif
+diff --git a/drivers/staging/vt6656/wcmd.c b/drivers/staging/vt6656/wcmd.c
+index e8ee2fbee76c..14b8aa587119 100644
+--- a/drivers/staging/vt6656/wcmd.c
++++ b/drivers/staging/vt6656/wcmd.c
+@@ -31,6 +31,15 @@ static void vnt_cmd_timer_wait(struct vnt_private *priv, unsigned long msecs)
+ 	schedule_delayed_work(&priv->run_command_work, msecs_to_jiffies(msecs));
  }
  
- int vnt_init(struct vnt_private *priv);
++static u32 add_one_with_wrap_around(u32 var, u8 modulo)
++{
++	if (var >= (modulo - 1))
++		var = 0;
++	else
++		var++;
++	return var;
++}
++
+ static int vnt_cmd_complete(struct vnt_private *priv)
+ {
+ 	priv->command_state = WLAN_CMD_IDLE;
+@@ -42,7 +51,7 @@ static int vnt_cmd_complete(struct vnt_private *priv)
+ 
+ 	priv->command = priv->cmd_queue[priv->cmd_dequeue_idx];
+ 
+-	ADD_ONE_WITH_WRAP_AROUND(priv->cmd_dequeue_idx, CMD_Q_SIZE);
++	priv->cmd_dequeue_idx = add_one_with_wrap_around(priv->cmd_dequeue_idx, CMD_Q_SIZE);
+ 	priv->free_cmd_queue++;
+ 	priv->cmd_running = true;
+ 
+@@ -157,7 +166,7 @@ int vnt_schedule_command(struct vnt_private *priv, enum vnt_cmd command)
+ 
+ 	priv->cmd_queue[priv->cmd_enqueue_idx] = command;
+ 
+-	ADD_ONE_WITH_WRAP_AROUND(priv->cmd_enqueue_idx, CMD_Q_SIZE);
++	priv->cmd_enqueue_idx = add_one_with_wrap_around(priv->cmd_enqueue_idx, CMD_Q_SIZE);
+ 	priv->free_cmd_queue--;
+ 
+ 	if (!priv->cmd_running)
 -- 
 2.25.1
 
