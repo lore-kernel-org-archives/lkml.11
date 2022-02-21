@@ -2,136 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0768C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32523C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245487AbiBUBrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 20:47:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53426 "EHLO
+        id S245513AbiBUBwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 20:52:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245458AbiBUBrh (ORCPT
+        with ESMTP id S236468AbiBUBwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 20:47:37 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E48443C9;
-        Sun, 20 Feb 2022 17:47:15 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id iq13-20020a17090afb4d00b001bc4437df2cso919014pjb.2;
-        Sun, 20 Feb 2022 17:47:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YhojBWVK4UiEqGQSq9xm7bnPmCBpgHMKvLchmEMssxs=;
-        b=GlK21yrXja4jNo1iNtBTRnPdeFQI5GpeylgO4iDFg+CzXF41SDjFSj8xiPCGjoIYGt
-         8GsdIrxUZLSUp895Aek9lp3KaiKcnx+8FG/dZ1Z/bSCNS9TKJMpgrTIU71kbmxNE5GPJ
-         d2hFqUN93utB3CZO92u+RdM136S1a9RKYnx9mm2RPtLgHaFWy4WDf6/EuIpk04lnzXa9
-         R3SZxb9eK4ZJVuFwuZPYRIBSROenJv2ywEYhuS4Ym8WqDFZTUPlbX1YJ1C9wbLIBgGpv
-         RNEKatUz1IqL9dvwziyhI6d8zo+asOlyWCuWEF5OQIPFKBJZShhhy+KZNPkeHambjgWo
-         3F/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YhojBWVK4UiEqGQSq9xm7bnPmCBpgHMKvLchmEMssxs=;
-        b=YwGCigK2ikxMi+yMipxztbXUsZ2o3o7F40L0sO16ohaNscdy+FWHbQKmzwrUY+iwwG
-         p97ZMqem13EXgAqxj1DphsoFTmG+8U/8c512gtpdNeorGlZWp+JmEkVZitUO1ydOeoHt
-         Ud8L36vH9d/lJXO1zjJSwQwXpbWMcC5Cu76fCJEUXAP71CpP7dTv65jzUqb5egUg7+cU
-         klbo4FdRn4dC30gPmm3Wnxf8nvu1DmAmcakaqy5aijK3FaM6q13oE5LkPzotI4FRfRLx
-         WlcGov/jk62RPj1+7Ejh95RqbhI9w7Q6nd8XFR6aPucUFPScNL3zE/pWffOb2r5CfNkZ
-         TD6Q==
-X-Gm-Message-State: AOAM530bQAv5Gcz+vCzzKqTC7ZomhCxBHtx0jNNjT6PkM9nDRzZuW/Gb
-        cjvuUb65ScqjBCtZjow+6wHbHfuwNp/dQFa2
-X-Google-Smtp-Source: ABdhPJwRp23Tcp7DStqEeIUVQutOLb2WR5T9Q1KrYs773Q5FFnrNasoaeqQiUzVYjBNvgbqvFOfAsg==
-X-Received: by 2002:a17:90a:1656:b0:1bb:f715:5606 with SMTP id x22-20020a17090a165600b001bbf7155606mr8998633pje.221.1645408035199;
-        Sun, 20 Feb 2022 17:47:15 -0800 (PST)
-Received: from [10.11.37.162] ([103.84.139.53])
-        by smtp.gmail.com with ESMTPSA id c14sm10171380pfv.126.2022.02.20.17.47.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 17:47:14 -0800 (PST)
-Message-ID: <a8d5b618-f5ee-686e-d614-dd038004d488@gmail.com>
-Date:   Mon, 21 Feb 2022 09:47:09 +0800
+        Sun, 20 Feb 2022 20:52:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC37AE2A
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 17:52:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66CD260E9B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61FACC340E8;
+        Mon, 21 Feb 2022 01:52:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645408336;
+        bh=4lfUSZ8GkQGgALesFEPJ8MtxwuF+eM/2/gYQ99xIzw4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lo8m5g0icBpkrOSuhEwn1AF9oUN2RY0Ngdg+nuwo3VZbVxZEbmpy7LBD70QPDHS7Y
+         ABS63Mbzgn4IHK9ceQnuu3s7kqhtGOzLo732IUvmJGmy0YF+jvYf7Fa55pCYh93L4B
+         2w4q4r2wnplsP/P+1nlBcrsaAKch50KSB/kKKzqKu8LegUM7YZVV1TCZSmMyqmou3S
+         AZzTCvgnOMv3YoZ42kE80GG/ZUTxAWaTUzNm6QkjYzJdQF4r+SMo22O9w8RER80xIY
+         yVkOmbpuqOrx6FfrsoBwF1huUi/wQMoVpF21YqstGOvUYKdk0ycYAMhnb/r+e1xLEY
+         YuEj4Ijxr5odQ==
+Date:   Mon, 21 Feb 2022 02:52:56 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
+        Rijo Thomas <Rijo-john.Thomas@amd.com>,
+        David Howells <dhowells@redhat.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+Subject: Re: [PATCH v4 08/10] KEYS: trusted: tee: use
+ tee_shm_register_kernel_buf()
+Message-ID: <YhLweBhnmITyErqG@kernel.org>
+References: <20220204093359.359059-1-jens.wiklander@linaro.org>
+ <20220204093359.359059-9-jens.wiklander@linaro.org>
+ <CAHUa44HkQtstCyUt_J962rzysFnOJOP+e3T2gL7nV+6V5hfa9A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] staging: qlge: add unregister_netdev in qlge_probe
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        coiby.xu@gmail.com, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220218081130.45670-1-hbh25y@gmail.com>
- <20220218120344.GH2407@kadam>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20220218120344.GH2407@kadam>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHUa44HkQtstCyUt_J962rzysFnOJOP+e3T2gL7nV+6V5hfa9A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for your suggesion. I will resubmit later.
+On Wed, Feb 09, 2022 at 03:08:48PM +0100, Jens Wiklander wrote:
+> Hi Jarkko,
+> 
+> On Fri, Feb 4, 2022 at 10:34 AM Jens Wiklander
+> <jens.wiklander@linaro.org> wrote:
+> >
+> > Uses the new simplified tee_shm_register_kernel_buf() function instead
+> > of the old tee_shm_alloc() function which required specific
+> > TEE_SHM-flags
+> >
+> > Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+> > Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+> > ---
+> >  security/keys/trusted-keys/trusted_tee.c | 23 +++++++++--------------
+> >  1 file changed, 9 insertions(+), 14 deletions(-)
+> 
+> Since this patch depends on other patches in this patch set and vice
+> versa is it OK if I take this patch via my tree? I'm aiming for v5.18
+> with this.
 
-On 2022/2/18 20:03, Dan Carpenter wrote:
-> On Fri, Feb 18, 2022 at 04:11:30PM +0800, Hangyu Hua wrote:
->> unregister_netdev need to be called when register_netdev succeeds
->> qlge_health_create_reporters fails.
->>
-> 
-> 1) Add a Fixes tag:
-> 
-> Fixes: d8827ae8e22b ("staging: qlge: deal with the case that devlink_health_reporter_create fails")
-> 
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   drivers/staging/qlge/qlge_main.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
->> index 9873bb2a9ee4..0a199c6d77a1 100644
->> --- a/drivers/staging/qlge/qlge_main.c
->> +++ b/drivers/staging/qlge/qlge_main.c
->> @@ -4611,8 +4611,10 @@ static int qlge_probe(struct pci_dev *pdev,
->>   	}
->>   
->>   	err = qlge_health_create_reporters(qdev);
->> -	if (err)
->> +	if (err) {
->> +		unregister_netdev(ndev);
->>   		goto netdev_free;
->> +	}
-> 
-> 2) Use a goto to unwind.  3) Release the other pdev stuff as well.
-> 4)  Clean up the error handling for register_netdev() by using a goto
-> as well.
-> 
-> 	err = register_netdev(ndev);
-> 	if (err) {
-> 		dev_err(&pdev->dev, "net device registration failed.\n");
-> 		goto cleanup_pdev;
-> 	}
-> 
-> 	err = qlge_health_create_reporters(qdev);
-> 	if (err)
-> 		goto unregister_netdev;
-> 
-> 	...
-> 
-> 	return 0;
-> 
-> unregister_netdev:
-> 	unregister_netdev(ndev);
-> cleanup_pdev:
-> 	qlge_release_all(pdev);
-> 	pci_disable_device(pdev);
-> netdev_free:
-> 	free_netdev(ndev);
-> devlink_free:
-> 	devlink_free(devlink);
-> 
-> 	return ret;
-> 
-> regards,
-> dan carpenter
-> 
+Yes.
+
+You can also add:
+
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+
+BR, Jarkko
