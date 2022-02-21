@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4013C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346461AbiBUJUb (ORCPT
+        id S1348520AbiBUJUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:20:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36074 "EHLO
+        Mon, 21 Feb 2022 04:20:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349638AbiBUJMk (ORCPT
+        with ESMTP id S1349744AbiBUJMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:40 -0500
+        Mon, 21 Feb 2022 04:12:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934B325C7D;
-        Mon, 21 Feb 2022 01:05:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661A42CC80;
+        Mon, 21 Feb 2022 01:05:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EE796129E;
-        Mon, 21 Feb 2022 09:05:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B469C340E9;
-        Mon, 21 Feb 2022 09:05:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F193E60FB6;
+        Mon, 21 Feb 2022 09:05:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5F3CC340E9;
+        Mon, 21 Feb 2022 09:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434343;
-        bh=pdYcomNLL3PzGskTbzhBQrGTA8W/NZiDsGChgV0dS7M=;
+        s=korg; t=1645434349;
+        bh=fID+Kd/lIJ/NaWew1k1KAFADnmsxMbE3DYrzB5MuU10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uc6R+OowBlWz7HrOg0qZmkFicU34PFuUP10Q+PeBk3NirrOKKQSj3lcRqBBzi496+
-         IC48LsA/oVw/Yvh2oCKlmoQ9rbLx5sHVlS7lWIHSuGh1QhFAKGr/HAntpwED/h0tQh
-         u9hQHbIGlDYOdja5RixjidkYpmbrfTqidSOP8XRs=
+        b=GE1Wv+K4sfIvBqvu0RgRyp6bMQ+Yy6V64ZtmjKuc6R461vtHUPtCOwLPwUQwJB0HB
+         ZB4PJiwxDsua/Zu9jeEI9H0J44v4V3WS2YFDfk40tO00wheTjBA9/et5fzZbJgOF2w
+         7PfJ680To1enIwAnMbw8t/5zNs9yHZKussGsCanU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 064/121] bonding: fix data-races around agg_select_timer
-Date:   Mon, 21 Feb 2022 09:49:16 +0100
-Message-Id: <20220221084923.372641329@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 091/121] NFS: Dont set NFS_INO_INVALID_XATTR if there is no xattr cache
+Date:   Mon, 21 Feb 2022 09:49:43 +0100
+Message-Id: <20220221084924.275257880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,138 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 9ceaf6f76b203682bb6100e14b3d7da4c0bedde8 upstream.
+[ Upstream commit 848fdd62399c638e65a1512616acaa5de7d5c5e8 ]
 
-syzbot reported that two threads might write over agg_select_timer
-at the same time. Make agg_select_timer atomic to fix the races.
-
-BUG: KCSAN: data-race in bond_3ad_initiate_agg_selection / bond_3ad_state_machine_handler
-
-read to 0xffff8881242aea90 of 4 bytes by task 1846 on cpu 1:
- bond_3ad_state_machine_handler+0x99/0x2810 drivers/net/bonding/bond_3ad.c:2317
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-write to 0xffff8881242aea90 of 4 bytes by task 25910 on cpu 0:
- bond_3ad_initiate_agg_selection+0x18/0x30 drivers/net/bonding/bond_3ad.c:1998
- bond_open+0x658/0x6f0 drivers/net/bonding/bond_main.c:3967
- __dev_open+0x274/0x3a0 net/core/dev.c:1407
- dev_open+0x54/0x190 net/core/dev.c:1443
- bond_enslave+0xcef/0x3000 drivers/net/bonding/bond_main.c:1937
- do_set_master net/core/rtnetlink.c:2532 [inline]
- do_setlink+0x94f/0x2500 net/core/rtnetlink.c:2736
- __rtnl_newlink net/core/rtnetlink.c:3414 [inline]
- rtnl_newlink+0xfeb/0x13e0 net/core/rtnetlink.c:3529
- rtnetlink_rcv_msg+0x745/0x7e0 net/core/rtnetlink.c:5594
- netlink_rcv_skb+0x14e/0x250 net/netlink/af_netlink.c:2494
- rtnetlink_rcv+0x18/0x20 net/core/rtnetlink.c:5612
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x602/0x6d0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x728/0x850 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmsg+0x195/0x230 net/socket.c:2496
- __do_sys_sendmsg net/socket.c:2505 [inline]
- __se_sys_sendmsg net/socket.c:2503 [inline]
- __x64_sys_sendmsg+0x42/0x50 net/socket.c:2503
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000050 -> 0x0000004f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 25910 Comm: syz-executor.1 Tainted: G        W         5.17.0-rc4-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_3ad.c |   30 +++++++++++++++++++++++++-----
- include/net/bond_3ad.h         |    2 +-
- 2 files changed, 26 insertions(+), 6 deletions(-)
+ fs/nfs/inode.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -223,7 +223,7 @@ static inline int __check_agg_selection_
- 	if (bond == NULL)
- 		return 0;
- 
--	return BOND_AD_INFO(bond).agg_select_timer ? 1 : 0;
-+	return atomic_read(&BOND_AD_INFO(bond).agg_select_timer) ? 1 : 0;
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index 21addb78523d2..6e7fd73a264af 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -195,6 +195,18 @@ bool nfs_check_cache_invalid(struct inode *inode, unsigned long flags)
  }
+ EXPORT_SYMBOL_GPL(nfs_check_cache_invalid);
  
- /**
-@@ -1976,7 +1976,7 @@ static void ad_marker_response_received(
-  */
- void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
- {
--	BOND_AD_INFO(bond).agg_select_timer = timeout;
-+	atomic_set(&BOND_AD_INFO(bond).agg_select_timer, timeout);
- }
- 
- /**
-@@ -2260,6 +2260,28 @@ void bond_3ad_update_ad_actor_settings(s
- }
- 
- /**
-+ * bond_agg_timer_advance - advance agg_select_timer
-+ * @bond:  bonding structure
-+ *
-+ * Return true when agg_select_timer reaches 0.
-+ */
-+static bool bond_agg_timer_advance(struct bonding *bond)
++#ifdef CONFIG_NFS_V4_2
++static bool nfs_has_xattr_cache(const struct nfs_inode *nfsi)
 +{
-+	int val, nval;
-+
-+	while (1) {
-+		val = atomic_read(&BOND_AD_INFO(bond).agg_select_timer);
-+		if (!val)
-+			return false;
-+		nval = val - 1;
-+		if (atomic_cmpxchg(&BOND_AD_INFO(bond).agg_select_timer,
-+				   val, nval) == val)
-+			break;
-+	}
-+	return nval == 0;
++	return nfsi->xattr_cache != NULL;
 +}
++#else
++static bool nfs_has_xattr_cache(const struct nfs_inode *nfsi)
++{
++	return false;
++}
++#endif
 +
-+/**
-  * bond_3ad_state_machine_handler - handle state machines timeout
-  * @work: work context to fetch bonding struct to work on from
-  *
-@@ -2294,9 +2316,7 @@ void bond_3ad_state_machine_handler(stru
- 	if (!bond_has_slaves(bond))
- 		goto re_arm;
+ static void nfs_set_cache_invalid(struct inode *inode, unsigned long flags)
+ {
+ 	struct nfs_inode *nfsi = NFS_I(inode);
+@@ -210,6 +222,8 @@ static void nfs_set_cache_invalid(struct inode *inode, unsigned long flags)
+ 	} else if (flags & NFS_INO_REVAL_PAGECACHE)
+ 		flags |= NFS_INO_INVALID_CHANGE | NFS_INO_INVALID_SIZE;
  
--	/* check if agg_select_timer timer after initialize is timed out */
--	if (BOND_AD_INFO(bond).agg_select_timer &&
--	    !(--BOND_AD_INFO(bond).agg_select_timer)) {
-+	if (bond_agg_timer_advance(bond)) {
- 		slave = bond_first_slave_rcu(bond);
- 		port = slave ? &(SLAVE_AD_INFO(slave)->port) : NULL;
- 
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -262,7 +262,7 @@ struct ad_system {
- struct ad_bond_info {
- 	struct ad_system system;	/* 802.3ad system structure */
- 	struct bond_3ad_stats stats;
--	u32 agg_select_timer;		/* Timer to select aggregator after all adapter's hand shakes */
-+	atomic_t agg_select_timer;		/* Timer to select aggregator after all adapter's hand shakes */
- 	u16 aggregator_identifier;
- };
- 
++	if (!nfs_has_xattr_cache(nfsi))
++		flags &= ~NFS_INO_INVALID_XATTR;
+ 	if (inode->i_mapping->nrpages == 0)
+ 		flags &= ~(NFS_INO_INVALID_DATA|NFS_INO_DATA_INVAL_DEFER);
+ 	nfsi->cache_validity |= flags;
+-- 
+2.34.1
+
 
 
