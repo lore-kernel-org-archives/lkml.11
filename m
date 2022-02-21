@@ -2,72 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E51C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E61C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237082AbiBUXks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 18:40:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57104 "EHLO
+        id S237112AbiBUXlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 18:41:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232179AbiBUXkr (ORCPT
+        with ESMTP id S232179AbiBUXlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 18:40:47 -0500
-X-Greylist: delayed 13197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 15:40:21 PST
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818E8240AB
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:40:21 -0800 (PST)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1645486818;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OK+un4V/aeVMjWJC0DxSGK3Hdj4j+7kI4FwDw4pB+q4=;
-        b=KHz5ulIsGGKQw2cUBBdMMR9jUUTl9qFg45hF5+OhR0QtrjCIaIbLpqvAJWBaOjYbRFDcvP
-        iQIn+dXDxpAVRXFuoHyMaGePY6rtHvg/JSrx6kMBv74s8jsgFDb8Fqqb7haPzMqY5OHQdi
-        e47Iz7/z8AhnvBDZM9q1gdBBUVbjaUg=
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>
-Subject: [PATCH] MAINTAINERS: add myself as a memcg co-maintainer
-Date:   Mon, 21 Feb 2022 15:39:51 -0800
-Message-Id: <20220221233951.659048-1-roman.gushchin@linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+        Mon, 21 Feb 2022 18:41:19 -0500
+Received: from wnew4-smtp.messagingengine.com (wnew4-smtp.messagingengine.com [64.147.123.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E5D245A8;
+        Mon, 21 Feb 2022 15:40:54 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.west.internal (Postfix) with ESMTP id B42D22B00234;
+        Mon, 21 Feb 2022 18:23:46 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Mon, 21 Feb 2022 18:23:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
+        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=dGwM6z
+        CAZezD9UAOkbQM1FyRcimaQ2GZliBAK4GzXRc=; b=K624Q5LtzhKisanNhHxmUl
+        4AlQx8iTOn46MbDafdQfuJRNz/chZrzm7JugXOq+bef3SR77slDYEW5jlKoWss3a
+        mqoDdVU5o/+UEmScKwnKI5LE1h0PqH49BNz+Dg2RwlgUroKHRtVMrUigP3bLdzir
+        9dlpaexcuD2XptsC1jWSM+qCdw/6lmU0gBWy/LRwDsO8tzIpGI2FMgMTuYTZZBOV
+        wSwnhxlUZd7k9y+HbQiQNitMNGw4lAYySPeCi06XRO6TqP7Ea7CLMwtcK/sfLSwX
+        4c4Nc3omlKdZdC3d5kt2FW5gPzN3A0yxZ0hiJzgyFpBM/CFIi4tgpWXXN9i9Zjgw
+        ==
+X-ME-Sender: <xms:AR8UYlD0GaPkHt7D9oHky_-MO2OCxg_NwyAWBF-c7gMt14pwTi1Emg>
+    <xme:AR8UYjgCQ6XMUj5G30BTXNw492Wxp3VjStVvPU6VqZfXfIzIHc1LGezzsXOpHqrs7
+    ByrpcN3jz8erTBM0TE>
+X-ME-Received: <xmr:AR8UYgmahiQ_r0xt7dI5IFWD76nfzgCov5tv_ixy6caNFy2Jd5Hrc1YDfXpLOfDdy7m5xUdLakfwiFue4cP47ci85LWOErz64U8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeejgddutdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
+    fhohhrsghiugguvghnjfgurhculdehtddtmdenucfjughrpefvkffhufffsedttdertddt
+    tdenucfhrhhomhephfhinhhnucfvhhgrihhnuceofhhthhgrihhnsehlihhnuhigqdhmie
+    ekkhdrohhrgheqnecuhfhorhgsihguuggvnhfjughrpefvkffhufffsedttdertddttddp
+    vffkhffuffestddtredttddtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomhepfhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgh
+X-ME-Proxy: <xmx:AR8UYvwX444dA81EMWJSsQ1H1tCfQJxUbbblLdmjnVfok6YMsYhiOg>
+    <xmx:AR8UYqRi0b4ErocgIbZ19LM2epQvjXmw4u41PSP-tCF4fXFQJ3NmHg>
+    <xmx:AR8UYib03AWo6dJnUXF7snUplEQdL-Vs2xhA6TUWIqFjn83hs4Hj_g>
+    <xmx:Ah8UYlegwH_YYIAi7N9IBATIZxIBiHnl8HM4zrZDBAGSYAiswlRxxQpq6q0>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Feb 2022 18:23:43 -0500 (EST)
+To:     "Juergen E. Fischer" <fischer@norbit.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <4e17ff7295a96e31ed21ccb250c65b56c173b530.1645484982.git.fthain@linux-m68k.org>
+From:   Finn Thain <fthain@linux-m68k.org>
+Subject: [PATCH] aha152x: Clean up struct scsi_pointer usage
+Date:   Tue, 22 Feb 2022 10:09:42 +1100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as a memcg co-maintainer. My primary focus over last few
-years was the kernel memory accounting stack, but I do work on some
-other parts of the memory controller as well.
+Bring aha152x into line with 10 other drivers which assign
+scsi_host_template.cmd_size = sizeof(struct scsi_pointer)
+and avoid the "struct foo { struct bar; };" silliness.
 
-Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Remove a pointless scsi_pointer->have_data_in assignment.
+
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/aha152x.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 66aa3a589f6a..ecdb90e99ba7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4991,6 +4991,7 @@ CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)
- M:	Johannes Weiner <hannes@cmpxchg.org>
- M:	Michal Hocko <mhocko@kernel.org>
- M:	Vladimir Davydov <vdavydov.dev@gmail.com>
-+M:	Roman Gushchin <roman.gushchin@linux.dev>
- L:	cgroups@vger.kernel.org
- L:	linux-mm@kvack.org
- S:	Maintained
+diff --git a/drivers/scsi/aha152x.c b/drivers/scsi/aha152x.c
+index 34b2378075fd..70f49fba66be 100644
+--- a/drivers/scsi/aha152x.c
++++ b/drivers/scsi/aha152x.c
+@@ -316,15 +316,9 @@ enum {
+ 	check_condition = 0x0800,	/* requesting sense after CHECK CONDITION */
+ };
+ 
+-struct aha152x_cmd_priv {
+-	struct scsi_pointer scsi_pointer;
+-};
+-
+ static struct scsi_pointer *aha152x_scsi_pointer(struct scsi_cmnd *cmd)
+ {
+-	struct aha152x_cmd_priv *acmd = scsi_cmd_priv(cmd);
+-
+-	return &acmd->scsi_pointer;
++	return scsi_cmd_priv(cmd);
+ }
+ 
+ MODULE_AUTHOR("Jürgen Fischer");
+@@ -931,7 +925,6 @@ static int aha152x_internal_queue(struct scsi_cmnd *SCpnt,
+ 	scsi_pointer->phase	   = not_issued | phase;
+ 	scsi_pointer->Status	   = 0x1; /* Ilegal status by SCSI standard */
+ 	scsi_pointer->Message	   = 0;
+-	scsi_pointer->have_data_in = 0;
+ 	scsi_pointer->sent_command = 0;
+ 
+ 	if (scsi_pointer->phase & (resetting | check_condition)) {
+@@ -2971,7 +2964,7 @@ static struct scsi_host_template aha152x_driver_template = {
+ 	.sg_tablesize			= SG_ALL,
+ 	.dma_boundary			= PAGE_SIZE - 1,
+ 	.slave_alloc			= aha152x_adjust_queue,
+-	.cmd_size			= sizeof(struct aha152x_cmd_priv),
++	.cmd_size			= sizeof(struct scsi_pointer),
+ };
+ 
+ #if !defined(AHA152X_PCMCIA)
 -- 
-2.35.1
+2.32.0
 
