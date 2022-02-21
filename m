@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FA7C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6D9C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353922AbiBUKCg (ORCPT
+        id S1353893AbiBUKCa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57250 "EHLO
+        Mon, 21 Feb 2022 05:02:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352328AbiBUJzK (ORCPT
+        with ESMTP id S1352070AbiBUJyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:55:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EF538792;
-        Mon, 21 Feb 2022 01:24:09 -0800 (PST)
+        Mon, 21 Feb 2022 04:54:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B213A37BC0;
+        Mon, 21 Feb 2022 01:24:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C600AB80EB9;
-        Mon, 21 Feb 2022 09:24:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8830C340E9;
-        Mon, 21 Feb 2022 09:24:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45C56608C4;
+        Mon, 21 Feb 2022 09:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2760AC340E9;
+        Mon, 21 Feb 2022 09:23:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435446;
-        bh=kPsipjtm5BFbOtdKq1wVwjsC6HImBrZUVW4TMQmoygI=;
+        s=korg; t=1645435440;
+        bh=PZ4zbWHG6FHr4c5kMC4jycMZlER2SHA6mGK3PahdE2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=av8480uENwpCN3B6p0CT0l9pk8bEliQvLFtrJz3JpQMoPtgCCx8gef4t3OTbsRJX6
-         PQtM1i5yuGRL0fLQ474LPdS9hmkk7Mcmbh+kSwAQ8aDcsGGBYINf99JdkCf32DnH13
-         BRAUnp0y+0KYP4Qc8WM83KI1cNXk9Ch0duTzkse8=
+        b=zFWNgB5UiEKQuMzACl88vYmkxpqpJTSbxZS1Sl4JMLWshLwzD6kkaqmfjUiue6qLn
+         KCO2W178uvXymlmNYlIN6mJK4RyR3oZmRUE3hJyxu/B9/Vhaa/wOglOkMgApp15Ywm
+         t0gT756+eOvcfWFv7u5MjJZLE2wX8EYsuOvxVd9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 166/227] mtd: parsers: qcom: Fix kernel panic on skipped partition
-Date:   Mon, 21 Feb 2022 09:49:45 +0100
-Message-Id: <20220221084940.343157397@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Markus=20Bl=C3=B6chl?= <markus.bloechl@ipetronik.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 164/227] block: fix surprise removal for drivers calling blk_set_queue_dying
+Date:   Mon, 21 Feb 2022 09:49:43 +0100
+Message-Id: <20220221084940.279885173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,106 +51,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 65d003cca335cabc0160d3cd7daa689eaa9dd3cd upstream.
+commit 7a5428dcb7902700b830e912feee4e845df7c019 upstream.
 
-In the event of a skipped partition (case when the entry name is empty)
-the kernel panics in the cleanup function as the name entry is NULL.
-Rework the parser logic by first checking the real partition number and
-then allocate the space and set the data for the valid partitions.
+Various block drivers call blk_set_queue_dying to mark a disk as dead due
+to surprise removal events, but since commit 8e141f9eb803 that doesn't
+work given that the GD_DEAD flag needs to be set to stop I/O.
 
-The logic was also fundamentally wrong as with a skipped partition, the
-parts number returned was incorrect by not decreasing it for the skipped
-partitions.
+Replace the driver calls to blk_set_queue_dying with a new (and properly
+documented) blk_mark_disk_dead API, and fold blk_set_queue_dying into the
+only remaining caller.
 
-Fixes: 803eb124e1a6 ("mtd: parsers: Add Qcom SMEM parser")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220116032211.9728-1-ansuelsmth@gmail.com
+Fixes: 8e141f9eb803 ("block: drain file system I/O on del_gendisk")
+Reported-by: Markus Blöchl <markus.bloechl@ipetronik.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Link: https://lore.kernel.org/r/20220217075231.1140-1-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/parsers/qcomsmempart.c |   31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ block/blk-core.c                  |   10 ++--------
+ block/genhd.c                     |   14 ++++++++++++++
+ drivers/block/mtip32xx/mtip32xx.c |    2 +-
+ drivers/block/rbd.c               |    2 +-
+ drivers/block/xen-blkfront.c      |    2 +-
+ drivers/md/dm.c                   |    2 +-
+ drivers/nvme/host/core.c          |    2 +-
+ drivers/nvme/host/multipath.c     |    2 +-
+ include/linux/blkdev.h            |    3 ++-
+ 9 files changed, 24 insertions(+), 15 deletions(-)
 
---- a/drivers/mtd/parsers/qcomsmempart.c
-+++ b/drivers/mtd/parsers/qcomsmempart.c
-@@ -58,11 +58,11 @@ static int parse_qcomsmem_part(struct mt
- 			       const struct mtd_partition **pparts,
- 			       struct mtd_part_parser_data *data)
- {
-+	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
-+	int ret, i, j, tmpparts, numparts = 0;
- 	struct smem_flash_pentry *pentry;
- 	struct smem_flash_ptable *ptable;
--	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
- 	struct mtd_partition *parts;
--	int ret, i, numparts;
- 	char *name, *c;
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -324,13 +324,6 @@ void blk_queue_start_drain(struct reques
+ 	wake_up_all(&q->mq_freeze_wq);
+ }
  
- 	if (IS_ENABLED(CONFIG_MTD_SPI_NOR_USE_4K_SECTORS)
-@@ -87,8 +87,8 @@ static int parse_qcomsmem_part(struct mt
- 	}
+-void blk_set_queue_dying(struct request_queue *q)
+-{
+-	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
+-	blk_queue_start_drain(q);
+-}
+-EXPORT_SYMBOL_GPL(blk_set_queue_dying);
+-
+ /**
+  * blk_cleanup_queue - shutdown a request queue
+  * @q: request queue to shutdown
+@@ -348,7 +341,8 @@ void blk_cleanup_queue(struct request_qu
+ 	WARN_ON_ONCE(blk_queue_registered(q));
  
- 	/* Ensure that # of partitions is less than the max we have allocated */
--	numparts = le32_to_cpu(ptable->numparts);
--	if (numparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
-+	tmpparts = le32_to_cpu(ptable->numparts);
-+	if (tmpparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
- 		pr_err("Partition numbers exceed the max limit\n");
- 		return -EINVAL;
- 	}
-@@ -116,11 +116,17 @@ static int parse_qcomsmem_part(struct mt
- 		return PTR_ERR(ptable);
- 	}
+ 	/* mark @q DYING, no new request or merges will be allowed afterwards */
+-	blk_set_queue_dying(q);
++	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
++	blk_queue_start_drain(q);
  
-+	for (i = 0; i < tmpparts; i++) {
-+		pentry = &ptable->pentry[i];
-+		if (pentry->name[0] != '\0')
-+			numparts++;
-+	}
+ 	blk_queue_flag_set(QUEUE_FLAG_NOMERGES, q);
+ 	blk_queue_flag_set(QUEUE_FLAG_NOXMERGES, q);
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -550,6 +550,20 @@ out_free_ext_minor:
+ EXPORT_SYMBOL(device_add_disk);
+ 
+ /**
++ * blk_mark_disk_dead - mark a disk as dead
++ * @disk: disk to mark as dead
++ *
++ * Mark as disk as dead (e.g. surprise removed) and don't accept any new I/O
++ * to this disk.
++ */
++void blk_mark_disk_dead(struct gendisk *disk)
++{
++	set_bit(GD_DEAD, &disk->state);
++	blk_queue_start_drain(disk->queue);
++}
++EXPORT_SYMBOL_GPL(blk_mark_disk_dead);
 +
- 	parts = kcalloc(numparts, sizeof(*parts), GFP_KERNEL);
- 	if (!parts)
- 		return -ENOMEM;
- 
--	for (i = 0; i < numparts; i++) {
-+	for (i = 0, j = 0; i < tmpparts; i++) {
- 		pentry = &ptable->pentry[i];
- 		if (pentry->name[0] == '\0')
- 			continue;
-@@ -135,24 +141,25 @@ static int parse_qcomsmem_part(struct mt
- 		for (c = name; *c != '\0'; c++)
- 			*c = tolower(*c);
- 
--		parts[i].name = name;
--		parts[i].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
--		parts[i].mask_flags = pentry->attr;
--		parts[i].size = le32_to_cpu(pentry->length) * mtd->erasesize;
-+		parts[j].name = name;
-+		parts[j].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
-+		parts[j].mask_flags = pentry->attr;
-+		parts[j].size = le32_to_cpu(pentry->length) * mtd->erasesize;
- 		pr_debug("%d: %s offs=0x%08x size=0x%08x attr:0x%08x\n",
- 			 i, pentry->name, le32_to_cpu(pentry->offset),
- 			 le32_to_cpu(pentry->length), pentry->attr);
-+		j++;
++/**
+  * del_gendisk - remove the gendisk
+  * @disk: the struct gendisk to remove
+  *
+--- a/drivers/block/mtip32xx/mtip32xx.c
++++ b/drivers/block/mtip32xx/mtip32xx.c
+@@ -4113,7 +4113,7 @@ static void mtip_pci_remove(struct pci_d
+ 			"Completion workers still active!\n");
  	}
  
- 	pr_debug("SMEM partition table found: ver: %d len: %d\n",
--		 le32_to_cpu(ptable->version), numparts);
-+		 le32_to_cpu(ptable->version), tmpparts);
- 	*pparts = parts;
+-	blk_set_queue_dying(dd->queue);
++	blk_mark_disk_dead(dd->disk);
+ 	set_bit(MTIP_DDF_REMOVE_PENDING_BIT, &dd->dd_flag);
  
- 	return numparts;
+ 	/* Clean up the block layer. */
+--- a/drivers/block/rbd.c
++++ b/drivers/block/rbd.c
+@@ -7186,7 +7186,7 @@ static ssize_t do_rbd_remove(struct bus_
+ 		 * IO to complete/fail.
+ 		 */
+ 		blk_mq_freeze_queue(rbd_dev->disk->queue);
+-		blk_set_queue_dying(rbd_dev->disk->queue);
++		blk_mark_disk_dead(rbd_dev->disk);
+ 	}
  
- out_free_parts:
--	while (--i >= 0)
--		kfree(parts[i].name);
-+	while (--j >= 0)
-+		kfree(parts[j].name);
- 	kfree(parts);
- 	*pparts = NULL;
+ 	del_gendisk(rbd_dev->disk);
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -2129,7 +2129,7 @@ static void blkfront_closing(struct blkf
  
+ 	/* No more blkif_request(). */
+ 	blk_mq_stop_hw_queues(info->rq);
+-	blk_set_queue_dying(info->rq);
++	blk_mark_disk_dead(info->gd);
+ 	set_capacity(info->gd, 0);
+ 
+ 	for_each_rinfo(info, rinfo, i) {
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -2140,7 +2140,7 @@ static void __dm_destroy(struct mapped_d
+ 	set_bit(DMF_FREEING, &md->flags);
+ 	spin_unlock(&_minor_lock);
+ 
+-	blk_set_queue_dying(md->queue);
++	blk_mark_disk_dead(md->disk);
+ 
+ 	/*
+ 	 * Take suspend_lock so that presuspend and postsuspend methods
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -4578,7 +4578,7 @@ static void nvme_set_queue_dying(struct
+ 	if (test_and_set_bit(NVME_NS_DEAD, &ns->flags))
+ 		return;
+ 
+-	blk_set_queue_dying(ns->queue);
++	blk_mark_disk_dead(ns->disk);
+ 	nvme_start_ns_queue(ns);
+ 
+ 	set_capacity_and_notify(ns->disk, 0);
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -817,7 +817,7 @@ void nvme_mpath_remove_disk(struct nvme_
+ {
+ 	if (!head->disk)
+ 		return;
+-	blk_set_queue_dying(head->disk->queue);
++	blk_mark_disk_dead(head->disk);
+ 	/* make sure all pending bios are cleaned up */
+ 	kblockd_schedule_work(&head->requeue_work);
+ 	flush_work(&head->requeue_work);
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -740,7 +740,8 @@ extern bool blk_queue_can_use_dma_map_me
+ 
+ bool __must_check blk_get_queue(struct request_queue *);
+ extern void blk_put_queue(struct request_queue *);
+-extern void blk_set_queue_dying(struct request_queue *);
++
++void blk_mark_disk_dead(struct gendisk *disk);
+ 
+ #ifdef CONFIG_BLOCK
+ /*
 
 
