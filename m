@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C3BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A87BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349092AbiBUJb2 (ORCPT
+        id S1346615AbiBUJbg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:31:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35888 "EHLO
+        Mon, 21 Feb 2022 04:31:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348920AbiBUJUz (ORCPT
+        with ESMTP id S1350118AbiBUJWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:20:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E7334661;
-        Mon, 21 Feb 2022 01:07:43 -0800 (PST)
+        Mon, 21 Feb 2022 04:22:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9ECE6E;
+        Mon, 21 Feb 2022 01:09:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DF88FCE0E88;
-        Mon, 21 Feb 2022 09:07:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D391CC340E9;
-        Mon, 21 Feb 2022 09:07:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1753960B24;
+        Mon, 21 Feb 2022 09:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBEBC340E9;
+        Mon, 21 Feb 2022 09:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434460;
-        bh=HKrIBi5m5CFXzZ+6/xBVUfB/8hJp8GunVilEDIKwwTQ=;
+        s=korg; t=1645434569;
+        bh=tn9KiBfIResCyFFjyiBMQXV3QP7d83OBpO7pCS0v74M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JEIebeZA7vLIgvYaZibUDWnjiNGWBmsC+l7xGj2YSYGPBWfuhjjID/0zTaoPSre0d
-         Fi8+LKMWWXMrTI4WF502K2u1SQnG+TKC8QdM72MbR/583abZywebsy/6MoQyolJFBG
-         xSRhSW3NR6xjNW8GAwJpoMZHOoO0OpfPXb34dbjQ=
+        b=ZfuPtJCRCzSfILH8hW0ZNkjYPqc0VgLZn0sCJKP9T32K3RuPuV5A1JUCA3FJie3mW
+         cVlI4fXCKAkPaLEnzqmRd/9skhFcl5ZYHCY41y5s4K1HhETSCmMGVTIN6M4GRAjA4V
+         +eRCxNXti3ew17vzv316B8eOyw3IQGKA+zyzIQNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 008/196] serial: parisc: GSC: fix build when IOSAPIC is not set
-Date:   Mon, 21 Feb 2022 09:47:20 +0100
-Message-Id: <20220221084931.173905801@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 054/196] random: wake up /dev/random writers after zap
+Date:   Mon, 21 Feb 2022 09:48:06 +0100
+Message-Id: <20220221084932.745428996@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -53,54 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 6e8793674bb0d1135ca0e5c9f7e16fecbf815926 upstream.
+[ Upstream commit 042e293e16e3aa9794ce60c29f5b7b0c8170f933 ]
 
-There is a build error when using a kernel .config file from
-'kernel test robot' for a different build problem:
+When account() is called, and the amount of entropy dips below
+random_write_wakeup_bits, we wake up the random writers, so that they
+can write some more in. However, the RNDZAPENTCNT/RNDCLEARPOOL ioctl
+sets the entropy count to zero -- a potential reduction just like
+account() -- but does not unblock writers. This commit adds the missing
+logic to that ioctl to unblock waiting writers.
 
-hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
-(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
-
-when:
-  CONFIG_GSC=y
-  CONFIG_SERIO_GSCPS2=y
-  CONFIG_SERIAL_8250_GSC=y
-  CONFIG_PCI is not set
-    and hence PCI_LBA is not set.
-  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
-
-Make the use of iosapic_serial_irq() conditional to fix the build error.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-parisc@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Suggested-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_gsc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_gsc.c
-+++ b/drivers/tty/serial/8250/8250_gsc.c
-@@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
- 	unsigned long address;
- 	int err;
- 
--#ifdef CONFIG_64BIT
-+#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
- 	if (!dev->irq && (dev->id.sversion == 0xad))
- 		dev->irq = iosapic_serial_irq(dev);
- #endif
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index a27ae3999ff32..ebe86de9d0acc 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1963,7 +1963,10 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		input_pool.entropy_count = 0;
++		if (xchg(&input_pool.entropy_count, 0) && random_write_wakeup_bits) {
++			wake_up_interruptible(&random_write_wait);
++			kill_fasync(&fasync, SIGIO, POLL_OUT);
++		}
+ 		return 0;
+ 	case RNDRESEEDCRNG:
+ 		if (!capable(CAP_SYS_ADMIN))
+-- 
+2.34.1
+
 
 
