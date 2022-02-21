@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4913BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94720C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352477AbiBUJzr (ORCPT
+        id S1352569AbiBUJ4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:55:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43686 "EHLO
+        Mon, 21 Feb 2022 04:56:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352953AbiBUJsD (ORCPT
+        with ESMTP id S1352951AbiBUJsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:48:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2712121;
-        Mon, 21 Feb 2022 01:21:52 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B96C12ADB;
+        Mon, 21 Feb 2022 01:21:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FD45608C4;
-        Mon, 21 Feb 2022 09:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7534CC340E9;
-        Mon, 21 Feb 2022 09:21:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED5FB608C4;
+        Mon, 21 Feb 2022 09:21:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE41AC340E9;
+        Mon, 21 Feb 2022 09:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435312;
-        bh=RsCP4WFIqIduP2wma7cRCEq1uBfkFWhs7gWJGGRekYY=;
+        s=korg; t=1645435306;
+        bh=cNKbHEAwNRiOzp4mcFCpsdlbV3sVT1yjGvzETBBzb9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1icIj3eds628SL1jnd3NMWMuWZe7PGwYU3RGwj0lTjYsRcU+vfhm32vvh3Z4BIP7
-         mimElq5rqsxpWj2ygM7/16BsJmMo6hMLRxsDR2R6GoBIID1q5IVVeY1NCcF0Cs/dTs
-         JgXXzpPxzMGaOJ7JtnZyp8nRK2acL/ywMA/6UOMY=
+        b=gCT40HzufNtAs9H7ZNi9zBzkzvPS79AYOHFQreSlXhSvmy29AGhCogJFlPsEXk77b
+         Z1GfcvBanyQpcgPeQcGAM8jyIorX6Xa4MkPxcEjUeMe5qWY6uZTitAsI2//D0NIXvg
+         wzxM0lGVG0tcCI1PCQLXsa45gVQ2+cLYITNg2t0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 120/227] crypto: af_alg - get rid of alg_memory_allocated
-Date:   Mon, 21 Feb 2022 09:48:59 +0100
-Message-Id: <20220221084938.847859431@linuxfoundation.org>
+Subject: [PATCH 5.16 110/227] net: dsa: mv88e6xxx: flush switchdev FDB workqueue before removing VLAN
+Date:   Mon, 21 Feb 2022 09:48:49 +0100
+Message-Id: <20220221084938.519965985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,97 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 25206111512de994dfc914f5b2972a22aa904ef3 upstream.
+commit a2614140dc0f467a83aa3bb4b6ee2d6480a76202 upstream.
 
-alg_memory_allocated does not seem to be really used.
+mv88e6xxx is special among DSA drivers in that it requires the VTU to
+contain the VID of the FDB entry it modifies in
+mv88e6xxx_port_db_load_purge(), otherwise it will return -EOPNOTSUPP.
 
-alg_proto does have a .memory_allocated field, but no
-corresponding .sysctl_mem.
+Sometimes due to races this is not always satisfied even if external
+code does everything right (first deletes the FDB entries, then the
+VLAN), because DSA commits to hardware FDB entries asynchronously since
+commit c9eb3e0f8701 ("net: dsa: Add support for learning FDB through
+notification").
 
-This means sk_has_account() returns true, but all sk_prot_mem_limits()
-users will trigger a NULL dereference [1].
+Therefore, the mv88e6xxx driver must close this race condition by
+itself, by asking DSA to flush the switchdev workqueue of any FDB
+deletions in progress, prior to exiting a VLAN.
 
-THis was not a problem until SO_RESERVE_MEM addition.
-
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 1 PID: 3591 Comm: syz-executor153 Not tainted 5.17.0-rc3-syzkaller-00316-gb81b1829e7e3 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:sk_prot_mem_limits include/net/sock.h:1523 [inline]
-RIP: 0010:sock_reserve_memory+0x1d7/0x330 net/core/sock.c:1000
-Code: 08 00 74 08 48 89 ef e8 27 20 bb f9 4c 03 7c 24 10 48 8b 6d 00 48 83 c5 08 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 ef e8 fb 1f bb f9 48 8b 6d 00 4c 89 ff 48
-RSP: 0018:ffffc90001f1fb68 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: ffff88814aabc000 RCX: dffffc0000000000
-RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffffffff90e18120
-RBP: 0000000000000008 R08: dffffc0000000000 R09: fffffbfff21c3025
-R10: fffffbfff21c3025 R11: 0000000000000000 R12: ffffffff8d109840
-R13: 0000000000001002 R14: 0000000000000001 R15: 0000000000000001
-FS:  0000555556e08300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fc74416f130 CR3: 0000000073d9e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- sock_setsockopt+0x14a9/0x3a30 net/core/sock.c:1446
- __sys_setsockopt+0x5af/0x980 net/socket.c:2176
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0xb1/0xc0 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fc7440fddc9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 51 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe98f07968 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fc7440fddc9
-RDX: 0000000000000049 RSI: 0000000000000001 RDI: 0000000000000004
-RBP: 0000000000000000 R08: 0000000000000004 R09: 00007ffe98f07990
-R10: 0000000020000000 R11: 0000000000000246 R12: 00007ffe98f0798c
-R13: 00007ffe98f079a0 R14: 00007ffe98f079e0 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:sk_prot_mem_limits include/net/sock.h:1523 [inline]
-RIP: 0010:sock_reserve_memory+0x1d7/0x330 net/core/sock.c:1000
-Code: 08 00 74 08 48 89 ef e8 27 20 bb f9 4c 03 7c 24 10 48 8b 6d 00 48 83 c5 08 48 89 e8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 ef e8 fb 1f bb f9 48 8b 6d 00 4c 89 ff 48
-RSP: 0018:ffffc90001f1fb68 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: ffff88814aabc000 RCX: dffffc0000000000
-RDX: 0000000000000001 RSI: 0000000000000008 RDI: ffffffff90e18120
-RBP: 0000000000000008 R08: dffffc0000000000 R09: fffffbfff21c3025
-R10: fffffbfff21c3025 R11: 0000000000000000 R12: ffffffff8d109840
-R13: 0000000000001002 R14: 0000000000000001 R15: 0000000000000001
-FS:  0000555556e08300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fc74416f130 CR3: 0000000073d9e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-
-Fixes: 2bb2f5fb21b0 ("net: add new socket option SO_RESERVE_MEM")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Wei Wang <weiwan@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: c9eb3e0f8701 ("net: dsa: Add support for learning FDB through notification")
+Reported-by: Rafael Richter <rafael.richter@gin.de>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/af_alg.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c |    7 +++++++
+ include/net/dsa.h                |    1 +
+ net/dsa/dsa.c                    |    1 +
+ net/dsa/dsa_priv.h               |    1 -
+ 4 files changed, 9 insertions(+), 1 deletion(-)
 
---- a/crypto/af_alg.c
-+++ b/crypto/af_alg.c
-@@ -25,12 +25,9 @@ struct alg_type_list {
- 	struct list_head list;
- };
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2290,6 +2290,13 @@ static int mv88e6xxx_port_vlan_del(struc
+ 	if (!mv88e6xxx_max_vid(chip))
+ 		return -EOPNOTSUPP;
  
--static atomic_long_t alg_memory_allocated;
--
- static struct proto alg_proto = {
- 	.name			= "ALG",
- 	.owner			= THIS_MODULE,
--	.memory_allocated	= &alg_memory_allocated,
- 	.obj_size		= sizeof(struct alg_sock),
- };
++	/* The ATU removal procedure needs the FID to be mapped in the VTU,
++	 * but FDB deletion runs concurrently with VLAN deletion. Flush the DSA
++	 * switchdev workqueue to ensure that all FDB entries are deleted
++	 * before we remove the VLAN.
++	 */
++	dsa_flush_workqueue();
++
+ 	mv88e6xxx_reg_lock(chip);
  
+ 	err = mv88e6xxx_port_get_pvid(chip, port, &pvid);
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -1094,6 +1094,7 @@ void dsa_unregister_switch(struct dsa_sw
+ int dsa_register_switch(struct dsa_switch *ds);
+ void dsa_switch_shutdown(struct dsa_switch *ds);
+ struct dsa_switch *dsa_switch_find(int tree_index, int sw_index);
++void dsa_flush_workqueue(void);
+ #ifdef CONFIG_PM_SLEEP
+ int dsa_switch_suspend(struct dsa_switch *ds);
+ int dsa_switch_resume(struct dsa_switch *ds);
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -349,6 +349,7 @@ void dsa_flush_workqueue(void)
+ {
+ 	flush_workqueue(dsa_owq);
+ }
++EXPORT_SYMBOL_GPL(dsa_flush_workqueue);
+ 
+ int dsa_devlink_param_get(struct devlink *dl, u32 id,
+ 			  struct devlink_param_gset_ctx *ctx)
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -170,7 +170,6 @@ void dsa_tag_driver_put(const struct dsa
+ const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf);
+ 
+ bool dsa_schedule_work(struct work_struct *work);
+-void dsa_flush_workqueue(void);
+ const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops);
+ 
+ static inline int dsa_tag_protocol_overhead(const struct dsa_device_ops *ops)
 
 
