@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B779C35295
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A4CC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353918AbiBUJ6A (ORCPT
+        id S1354315AbiBUJ6W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:58:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42232 "EHLO
+        Mon, 21 Feb 2022 04:58:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352484AbiBUJrb (ORCPT
+        with ESMTP id S1352293AbiBUJrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:31 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A8033E06;
-        Mon, 21 Feb 2022 01:20:02 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:19 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8235026572;
+        Mon, 21 Feb 2022 01:19:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 68B79CE0E7D;
-        Mon, 21 Feb 2022 09:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA9BC340E9;
-        Mon, 21 Feb 2022 09:19:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 015B7CE0E76;
+        Mon, 21 Feb 2022 09:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E87A9C340E9;
+        Mon, 21 Feb 2022 09:19:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435198;
-        bh=qxGRsbf8hg4HMax8tspTmAjZi7JK5DAqGQ7B8X5vXhs=;
+        s=korg; t=1645435159;
+        bh=+qyjXe69TfewTByTir3dxcvjKuJiAOpcbb+rC9WdSJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iOKdH0ZYSCWxUOrauxEonVjETKzN95Cf2ObjwnecooXxNEvlLgd54s8ZH5HCnpwI5
-         ehwzeR1usqgCrP/+x/nui3f/n5LlmUz4Acp9zUkkaDxCHlAgtHBM5xSl31lGiEV6Gl
-         czIKOyOxnbkjwL4nPcxJA+mbXIMoRflZHZvSKk8k=
+        b=Bp1w0gNN/o5CoTiXy6+/0AuD8B2/Wslw7g1QtQH5ArbsnZskDlyzLmEejb/yxqLps
+         4hxq3rr+6/QHkNpvGQj1qM+oGHXyUPPwA6CPdbJOOBm8sTarHFf60PUQ3f/WhDdwhH
+         UBOhM3VYkX6DJKlcWLt3Abj1KwF42OAhQWAFZg+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 048/227] cifs: unlock chan_lock before calling cifs_put_tcp_session
-Date:   Mon, 21 Feb 2022 09:47:47 +0100
-Message-Id: <20220221084936.475750953@linuxfoundation.org>
+Subject: [PATCH 5.16 065/227] drm/amd: Only run s3 or s0ix if system is configured properly
+Date:   Mon, 21 Feb 2022 09:48:04 +0100
+Message-Id: <20220221084937.032051177@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,50 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 489f710a738e24d887823a010b8b206b4124e26f ]
+[ Upstream commit 04ef860469fda6a646dc841190d05b31fae68e8c ]
 
-While removing an smb session, we need to free up the
-tcp session for each channel for that session. We were
-doing this with chan_lock held. This results in a
-cyclic dependency with cifs_tcp_ses_lock.
+This will cause misconfigured systems to not run the GPU suspend
+routines.
 
-For now, unlock the chan_lock temporarily before calling
-cifs_put_tcp_session. This should not cause any problem
-for now, since we do not remove channels anywhere else.
-And this code segment will not be called by two threads.
+* In APUs that are properly configured system will go into s2idle.
+* In APUs that are intended to be S3 but user selects
+  s2idle the GPU will stay fully powered for the suspend.
+* In APUs that are intended to be s2idle and system misconfigured
+  the GPU will stay fully powered for the suspend.
+* In systems that are intended to be s2idle, but AMD dGPU is also
+  present, the dGPU will go through S3
 
-When we do implement the code for removing channels, we
-will need to execute proper ref counting here.
-
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index cefd0e9623ba9..fb69524a992bb 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -1796,13 +1796,9 @@ void cifs_put_smb_ses(struct cifs_ses *ses)
- 		int i;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index c811161ce9f09..ab3851c26f71c 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2236,6 +2236,7 @@ static void amdgpu_drv_delayed_reset_work_handler(struct work_struct *work)
+ static int amdgpu_pmops_prepare(struct device *dev)
+ {
+ 	struct drm_device *drm_dev = dev_get_drvdata(dev);
++	struct amdgpu_device *adev = drm_to_adev(drm_dev);
  
- 		for (i = 1; i < chan_count; i++) {
--			/*
--			 * note: for now, we're okay accessing ses->chans
--			 * without chan_lock. But when chans can go away, we'll
--			 * need to introduce ref counting to make sure that chan
--			 * is not freed from under us.
--			 */
-+			spin_unlock(&ses->chan_lock);
- 			cifs_put_tcp_session(ses->chans[i].server, 0);
-+			spin_lock(&ses->chan_lock);
- 			ses->chans[i].server = NULL;
- 		}
- 	}
+ 	/* Return a positive number here so
+ 	 * DPM_FLAG_SMART_SUSPEND works properly
+@@ -2243,6 +2244,13 @@ static int amdgpu_pmops_prepare(struct device *dev)
+ 	if (amdgpu_device_supports_boco(drm_dev))
+ 		return pm_runtime_suspended(dev);
+ 
++	/* if we will not support s3 or s2i for the device
++	 *  then skip suspend
++	 */
++	if (!amdgpu_acpi_is_s0ix_active(adev) &&
++	    !amdgpu_acpi_is_s3_active(adev))
++		return 1;
++
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
