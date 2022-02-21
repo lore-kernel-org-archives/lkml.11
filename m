@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357856AbiBUMSR (ORCPT
+        id S1357711AbiBUMSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:18:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42282 "EHLO
+        Mon, 21 Feb 2022 07:18:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357699AbiBUMOb (ORCPT
+        with ESMTP id S1357678AbiBUMPl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:14:31 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD623245B9;
-        Mon, 21 Feb 2022 04:11:25 -0800 (PST)
+        Mon, 21 Feb 2022 07:15:41 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F065193EB;
+        Mon, 21 Feb 2022 04:11:32 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 7FFBD2114D;
-        Mon, 21 Feb 2022 12:11:24 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D5FE41F393;
+        Mon, 21 Feb 2022 12:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1645445484; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1645445490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=th62TgbZ/bLuSEztHEYo0jICkQPu6WC+Fjf/hqpJt6Y=;
-        b=HuLyY/AgDAFHs7bbN9jy39cezH5lZfpPgnH3Fk6maF/JahiIvpq00HTn44E5pVfkXFcJ9K
-        rMwH4LqWIEMOs/p4yD5dJ/6elirPOIPUrlv17g9eW9s/4phzL2t2e0fdjqSLh5VYXxjiQH
-        IJkSgnSse3JZpHrSUNH+j7Ilm3nQ9JU=
+        bh=4qEna0uTH1UTHJ6ogfrrmwa3fLSvsnDnWxQkjGAAebI=;
+        b=G5g7N+WLdnY6++W5emhg0qPBZ2jbKWGyIM3FlV5/Ikl3B8b9V1QhqtOWm29mO24U1Soz8U
+        B64jFQjszbHWQu1bjvWSuKFuILFnEbVrm4ksLATdwEpS1VqgT7uiT3J5k5qaz37mw1KHWb
+        PCCyKxS+KP8mpaGYktzozpHn9jZ5g0k=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1645445484;
+        s=susede2_ed25519; t=1645445490;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=th62TgbZ/bLuSEztHEYo0jICkQPu6WC+Fjf/hqpJt6Y=;
-        b=hK8ektQkRXoUVWY/1wFY0IWY+dyjWGpMEHU8626/Zs/PRTZCm4M5cM5sexQF0nXW1OiCqG
-        Qmyvqx9XqaMwuWDQ==
+        bh=4qEna0uTH1UTHJ6ogfrrmwa3fLSvsnDnWxQkjGAAebI=;
+        b=Ak/cqFvhpZPKB5YPH2VE8jK8+HYB/ORCWAlfKWOIK6Plza6AWp3W51dFI6strheEcEfRj3
+        GZEzga7Jc4j9N6Dg==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C2AA13A94;
-        Mon, 21 Feb 2022 12:11:24 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C1E1C13A94;
+        Mon, 21 Feb 2022 12:11:30 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id JnD+GGyBE2KMWwAAMHmgww
-        (envelope-from <nstange@suse.de>); Mon, 21 Feb 2022 12:11:24 +0000
+        id 2JXILXKBE2KnWwAAMHmgww
+        (envelope-from <nstange@suse.de>); Mon, 21 Feb 2022 12:11:30 +0000
 From:   Nicolai Stange <nstange@suse.de>
 To:     Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>
@@ -59,9 +59,9 @@ Cc:     =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
         Jarkko Sakkinen <jarkko@kernel.org>,
         linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         keyrings@vger.kernel.org, Nicolai Stange <nstange@suse.de>
-Subject: [PATCH v4 09/15] crypto: dh - implement private key generation primitive for ffdheXYZ(dh)
-Date:   Mon, 21 Feb 2022 13:10:55 +0100
-Message-Id: <20220221121101.1615-10-nstange@suse.de>
+Subject: [PATCH v4 14/15] lib/mpi: export mpi_rshift
+Date:   Mon, 21 Feb 2022 13:11:00 +0100
+Message-Id: <20220221121101.1615-15-nstange@suse.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20220221121101.1615-1-nstange@suse.de>
 References: <20220221121101.1615-1-nstange@suse.de>
@@ -71,238 +71,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The support for NVME in-band authentication currently in the works ([1])
-needs to generate ephemeral DH keys for use with the RFC 7919 safe-prime
-FFDHE groups.
-
-In analogy to ECDH and its ecc_gen_privkey(), implement a
-dh_safe_prime_gen_privkey() and invoke it from the ffdheXYZ(dh) templates'
-common ->set_secret(), i.e. dh_safe_prime_set_secret(), in case the input
-->key_size is zero.
-
-As the RFC 7919 FFDHE groups are classified as approved safe-prime groups
-by SP800-56Arev3, it's worthwhile to make the new
-dh_safe_prime_gen_privkey() to follow the approach specified in
-SP800-56Arev3, sec. 5.6.1.1.3 ("Key-Pair Generation Using Extra Random
-Bits") in order to achieve conformance.
-
-SP800-56Arev3 specifies a lower as well as an upper bound on the generated
-key's length:
-- it must be >= two times the maximum supported security strength of
-  the group in question and
-- it must be <= the length of the domain parameter Q.
-
-For any safe-prime group Q = (P - 1)/2 by definition and the individual
-maximum supported security strengths as specified by SP800-56Arev3 have
-been made available as part of the FFDHE dh_safe_prime definitions
-introduced with a previous patch. Make dh_safe_prime_gen_privkey() pick
-twice the maximum supported strength rounded up to the next power of two
-for the output key size. This choice respects both, the lower and upper
-bounds given by SP800-90Arev3 for any of the approved safe-prime groups and
-is also in line with the NVME base spec 2.0, which requires the key size to
-be >= 256bits.
-
-[1] https://lore.kernel.org/r/20211202152358.60116-1-hare@suse.de
+A subsequent patch will make the crypto/dh's dh_is_pubkey_valid() to
+calculate a safe-prime groups Q parameter from P: Q = (P - 1) / 2. For
+implementing this, mpi_rshift() will be needed. Export it so that it's
+accessible from crypto/dh.
 
 Signed-off-by: Nicolai Stange <nstange@suse.de>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 ---
- crypto/Kconfig |   1 +
- crypto/dh.c    | 140 +++++++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 138 insertions(+), 3 deletions(-)
+ lib/mpi/mpi-bit.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index ba9434ad06ef..d6d7e84bb7f8 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -234,6 +234,7 @@ config CRYPTO_DH
- config CRYPTO_DH_RFC7919_GROUPS
- 	bool "Support for RFC 7919 FFDHE group parameters"
- 	depends on CRYPTO_DH
-+	select CRYPTO_RNG_DEFAULT
- 	help
- 	  Provide support for RFC 7919 FFDHE group parameters. If unsure, say N.
- 
-diff --git a/crypto/dh.c b/crypto/dh.c
-index d0adb1705fe7..869a0476e5e2 100644
---- a/crypto/dh.c
-+++ b/crypto/dh.c
-@@ -10,6 +10,7 @@
- #include <crypto/internal/kpp.h>
- #include <crypto/kpp.h>
- #include <crypto/dh.h>
-+#include <crypto/rng.h>
- #include <linux/mpi.h>
- 
- struct dh_ctx {
-@@ -315,6 +316,128 @@ static void dh_safe_prime_exit_tfm(struct crypto_kpp *tfm)
- 	crypto_free_kpp(tfm_ctx->dh_tfm);
+diff --git a/lib/mpi/mpi-bit.c b/lib/mpi/mpi-bit.c
+index 142b680835df..070ba784c9f1 100644
+--- a/lib/mpi/mpi-bit.c
++++ b/lib/mpi/mpi-bit.c
+@@ -242,6 +242,7 @@ void mpi_rshift(MPI x, MPI a, unsigned int n)
+ 	}
+ 	MPN_NORMALIZE(x->d, x->nlimbs);
  }
++EXPORT_SYMBOL_GPL(mpi_rshift);
  
-+static u64 __add_u64_to_be(__be64 *dst, unsigned int n, u64 val)
-+{
-+	unsigned int i;
-+
-+	for (i = n; val && i > 0; --i) {
-+		u64 tmp = be64_to_cpu(dst[i - 1]);
-+
-+		tmp += val;
-+		val = tmp >= val ? 0 : 1;
-+		dst[i - 1] = cpu_to_be64(tmp);
-+	}
-+
-+	return val;
-+}
-+
-+static void *dh_safe_prime_gen_privkey(const struct dh_safe_prime *safe_prime,
-+				       unsigned int *key_size)
-+{
-+	unsigned int n, oversampling_size;
-+	__be64 *key;
-+	int err;
-+	u64 h, o;
-+
-+	/*
-+	 * Generate a private key following NIST SP800-56Ar3,
-+	 * sec. 5.6.1.1.1 and 5.6.1.1.3 resp..
-+	 *
-+	 * 5.6.1.1.1: choose key length N such that
-+	 * 2 * ->max_strength <= N <= log2(q) + 1 = ->p_size * 8 - 1
-+	 * with q = (p - 1) / 2 for the safe-prime groups.
-+	 * Choose the lower bound's next power of two for N in order to
-+	 * avoid excessively large private keys while still
-+	 * maintaining some extra reserve beyond the bare minimum in
-+	 * most cases. Note that for each entry in safe_prime_groups[],
-+	 * the following holds for such N:
-+	 * - N >= 256, in particular it is a multiple of 2^6 = 64
-+	 *   bits and
-+	 * - N < log2(q) + 1, i.e. N respects the upper bound.
-+	 */
-+	n = roundup_pow_of_two(2 * safe_prime->max_strength);
-+	WARN_ON_ONCE(n & ((1u << 6) - 1));
-+	n >>= 6; /* Convert N into units of u64. */
-+
-+	/*
-+	 * Reserve one extra u64 to hold the extra random bits
-+	 * required as per 5.6.1.1.3.
-+	 */
-+	oversampling_size = (n + 1) * sizeof(__be64);
-+	key = kmalloc(oversampling_size, GFP_KERNEL);
-+	if (!key)
-+		return ERR_PTR(-ENOMEM);
-+
-+	/*
-+	 * 5.6.1.1.3, step 3 (and implicitly step 4): obtain N + 64
-+	 * random bits and interpret them as a big endian integer.
-+	 */
-+	err = -EFAULT;
-+	if (crypto_get_default_rng())
-+		goto out_err;
-+
-+	err = crypto_rng_get_bytes(crypto_default_rng, (u8 *)key,
-+				   oversampling_size);
-+	crypto_put_default_rng();
-+	if (err)
-+		goto out_err;
-+
-+	/*
-+	 * 5.6.1.1.3, step 5 is implicit: 2^N < q and thus,
-+	 * M = min(2^N, q) = 2^N.
-+	 *
-+	 * For step 6, calculate
-+	 * key = (key[] mod (M - 1)) + 1 = (key[] mod (2^N - 1)) + 1.
-+	 *
-+	 * In order to avoid expensive divisions, note that
-+	 * 2^N mod (2^N - 1) = 1 and thus, for any integer h,
-+	 * 2^N * h mod (2^N - 1) = h mod (2^N - 1) always holds.
-+	 * The big endian integer key[] composed of n + 1 64bit words
-+	 * may be written as key[] = h * 2^N + l, with h = key[0]
-+	 * representing the 64 most significant bits and l
-+	 * corresponding to the remaining 2^N bits. With the remark
-+	 * from above,
-+	 * h * 2^N + l mod (2^N - 1) = l + h mod (2^N - 1).
-+	 * As both, l and h are less than 2^N, their sum after
-+	 * this first reduction is guaranteed to be <= 2^(N + 1) - 2.
-+	 * Or equivalently, that their sum can again be written as
-+	 * h' * 2^N + l' with h' now either zero or one and if one,
-+	 * then l' <= 2^N - 2. Thus, all bits at positions >= N will
-+	 * be zero after a second reduction:
-+	 * h' * 2^N + l' mod (2^N - 1) = l' + h' mod (2^N - 1).
-+	 * At this point, it is still possible that
-+	 * l' + h' = 2^N - 1, i.e. that l' + h' mod (2^N - 1)
-+	 * is zero. This condition will be detected below by means of
-+	 * the final increment overflowing in this case.
-+	 */
-+	h = be64_to_cpu(key[0]);
-+	h = __add_u64_to_be(key + 1, n, h);
-+	h = __add_u64_to_be(key + 1, n, h);
-+	WARN_ON_ONCE(h);
-+
-+	/* Increment to obtain the final result. */
-+	o = __add_u64_to_be(key + 1, n, 1);
-+	/*
-+	 * The overflow bit o from the increment is either zero or
-+	 * one. If zero, key[1:n] holds the final result in big-endian
-+	 * order. If one, key[1:n] is zero now, but needs to be set to
-+	 * one, c.f. above.
-+	 */
-+	if (o)
-+		key[n] = cpu_to_be64(1);
-+
-+	/* n is in units of u64, convert to bytes. */
-+	*key_size = n << 3;
-+	/* Strip the leading extra __be64, which is (virtually) zero by now. */
-+	memmove(key, &key[1], *key_size);
-+
-+	return key;
-+
-+out_err:
-+	kfree_sensitive(key);
-+	return ERR_PTR(err);
-+}
-+
- static int dh_safe_prime_set_secret(struct crypto_kpp *tfm, const void *buffer,
- 				    unsigned int len)
- {
-@@ -322,7 +445,7 @@ static int dh_safe_prime_set_secret(struct crypto_kpp *tfm, const void *buffer,
- 		dh_safe_prime_instance_ctx(tfm);
- 	struct dh_safe_prime_tfm_ctx *tfm_ctx = kpp_tfm_ctx(tfm);
- 	struct dh params;
--	void *buf;
-+	void *buf = NULL, *key = NULL;
- 	unsigned int buf_size;
- 	int err;
- 
-@@ -338,10 +461,20 @@ static int dh_safe_prime_set_secret(struct crypto_kpp *tfm, const void *buffer,
- 	params.g = safe_prime_g;
- 	params.g_size = sizeof(safe_prime_g);
- 
-+	if (!params.key_size) {
-+		key = dh_safe_prime_gen_privkey(inst_ctx->safe_prime,
-+						&params.key_size);
-+		if (IS_ERR(key))
-+			return PTR_ERR(key);
-+		params.key = key;
-+	}
-+
- 	buf_size = crypto_dh_key_len(&params);
- 	buf = kmalloc(buf_size, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
-+	if (!buf) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
- 
- 	err = crypto_dh_encode_key(buf, buf_size, &params);
- 	if (err)
-@@ -350,6 +483,7 @@ static int dh_safe_prime_set_secret(struct crypto_kpp *tfm, const void *buffer,
- 	err = crypto_kpp_set_secret(tfm_ctx->dh_tfm, buf, buf_size);
- out:
- 	kfree_sensitive(buf);
-+	kfree_sensitive(key);
- 	return err;
- }
- 
+ /****************
+  * Shift A by COUNT limbs to the left
 -- 
 2.26.2
 
