@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB910C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C2CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348841AbiBUJQZ (ORCPT
+        id S1348680AbiBUJQH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:16:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60540 "EHLO
+        Mon, 21 Feb 2022 04:16:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347910AbiBUJJu (ORCPT
+        with ESMTP id S1347917AbiBUJJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:50 -0500
+        Mon, 21 Feb 2022 04:09:51 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E38F1C937;
-        Mon, 21 Feb 2022 01:02:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD74A1D0F7;
+        Mon, 21 Feb 2022 01:02:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDAF060FB6;
-        Mon, 21 Feb 2022 09:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F19C340E9;
-        Mon, 21 Feb 2022 09:02:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A1C360FB6;
+        Mon, 21 Feb 2022 09:02:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5803EC340E9;
+        Mon, 21 Feb 2022 09:02:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434132;
-        bh=DzmpeJoKaV7iILY+sZu/gI4+52iSEawvhB6YbzA78R0=;
+        s=korg; t=1645434140;
+        bh=ZH6TUb22N9Jtt2uKbR9l2Y8/rMT1ydmLe5n2WQEZP6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KtZksYF68xcnsitzudtCKmxyBjxIBVjXgPVMANjU3qmfGW5qW+V82jeV21HisLHnb
-         01//wF5WGmo4DelkrCqMO//A7eTWloUw+vGQrztMggk2EUB5y4wHBpvbrWAsAv43kU
-         vzusR9V8xLtVffq7xr64ouYrnSxHUJoY7rABq5Ps=
+        b=1UfJ7hghkEVC0XT04n3n0wtTizzOsl7JLfQoZvQAHH422FrU3QJfIRzEdYH2qtkjd
+         k0BPDsPNGFlEJk8/xRngOYklEPt3EH9ZannTvKdYDJW8iRoyJhwjhmmu6f/4NousGD
+         fYkWPQTkrKMXYEB+kolTyKw0cRL0tsxDqCPPin5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 006/121] can: isotp: prevent race between isotp_bind() and isotp_setsockopt()
-Date:   Mon, 21 Feb 2022 09:48:18 +0100
-Message-Id: <20220221084921.366910498@linuxfoundation.org>
+        stable@vger.kernel.org, Sergio Costas <rastersoft@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH 5.10 009/121] HID:Add support for UGTABLET WP5540
+Date:   Mon, 21 Feb 2022 09:48:21 +0100
+Message-Id: <20220221084921.468890515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,73 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Norbert Slusarek <nslusarek@gmx.net>
+From: Sergio Costas <rastersoft@gmail.com>
 
-commit 2b17c400aeb44daf041627722581ade527bb3c1d upstream.
+commit fd5dd6acd8f823ea804f76d3af64fa1be9d5fb78 upstream.
 
-A race condition was found in isotp_setsockopt() which allows to
-change socket options after the socket was bound.
-For the specific case of SF_BROADCAST support, this might lead to possible
-use-after-free because can_rx_unregister() is not called.
+This patch adds support for the UGTABLET WP5540 digitizer tablet
+devices. Without it, the pen moves the cursor, but neither the
+buttons nor the tap sensor in the tip do work.
 
-Checking for the flag under the socket lock in isotp_bind() and taking
-the lock in isotp_setsockopt() fixes the issue.
-
-Fixes: 921ca574cd38 ("can: isotp: add SF_BROADCAST support for functional addressing")
-Link: https://lore.kernel.org/r/trinity-e6ae9efa-9afb-4326-84c0-f3609b9b8168-1620773528307@3c-app-gmx-bs06
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Sergio Costas <rastersoft@gmail.com>
+Link: https://lore.kernel.org/r/63dece1d-91ca-1b1b-d90d-335be66896be@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ drivers/hid/hid-ids.h    |    1 +
+ drivers/hid/hid-quirks.c |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1193,16 +1193,13 @@ static int isotp_getname(struct socket *
- 	return ISOTP_MIN_NAMELEN;
- }
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -1318,6 +1318,7 @@
+ #define USB_VENDOR_ID_UGTIZER			0x2179
+ #define USB_DEVICE_ID_UGTIZER_TABLET_GP0610	0x0053
+ #define USB_DEVICE_ID_UGTIZER_TABLET_GT5040	0x0077
++#define USB_DEVICE_ID_UGTIZER_TABLET_WP5540	0x0004
  
--static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
- 			    sockptr_t optval, unsigned int optlen)
- {
- 	struct sock *sk = sock->sk;
- 	struct isotp_sock *so = isotp_sk(sk);
- 	int ret = 0;
- 
--	if (level != SOL_CAN_ISOTP)
--		return -EINVAL;
--
- 	if (so->bound)
- 		return -EISCONN;
- 
-@@ -1277,6 +1274,22 @@ static int isotp_setsockopt(struct socke
- 	return ret;
- }
- 
-+static int isotp_setsockopt(struct socket *sock, int level, int optname,
-+			    sockptr_t optval, unsigned int optlen)
-+
-+{
-+	struct sock *sk = sock->sk;
-+	int ret;
-+
-+	if (level != SOL_CAN_ISOTP)
-+		return -EINVAL;
-+
-+	lock_sock(sk);
-+	ret = isotp_setsockopt_locked(sock, level, optname, optval, optlen);
-+	release_sock(sk);
-+	return ret;
-+}
-+
- static int isotp_getsockopt(struct socket *sock, int level, int optname,
- 			    char __user *optval, int __user *optlen)
- {
+ #define USB_VENDOR_ID_VIEWSONIC			0x0543
+ #define USB_DEVICE_ID_VIEWSONIC_PD1011		0xe621
+--- a/drivers/hid/hid-quirks.c
++++ b/drivers/hid/hid-quirks.c
+@@ -187,6 +187,7 @@ static const struct hid_device_id hid_qu
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_TURBOX, USB_DEVICE_ID_TURBOX_KEYBOARD), HID_QUIRK_NOGET },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_KNA5), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_TWA60), HID_QUIRK_MULTI_INPUT },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_UGTIZER, USB_DEVICE_ID_UGTIZER_TABLET_WP5540), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_MEDIA_TABLET_10_6_INCH), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_MEDIA_TABLET_14_1_INCH), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_SIRIUS_BATTERY_FREE_TABLET), HID_QUIRK_MULTI_INPUT },
 
 
