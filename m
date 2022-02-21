@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51335C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9294CC35294
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243837AbiBUJiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:38:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60886 "EHLO
+        id S1351637AbiBUJhc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:37:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350047AbiBUJ3F (ORCPT
+        with ESMTP id S1349248AbiBUJ1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:29:05 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4D7240BE;
-        Mon, 21 Feb 2022 01:13:01 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:37 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA0D237DE;
+        Mon, 21 Feb 2022 01:12:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 89FC7CE0E88;
-        Mon, 21 Feb 2022 09:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C320C340E9;
-        Mon, 21 Feb 2022 09:12:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5AF9ACE0E7A;
+        Mon, 21 Feb 2022 09:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C85C340E9;
+        Mon, 21 Feb 2022 09:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434778;
-        bh=E6A2kwIv4UUnoTr2Zs/vVy+OJVA/kcWOfEpF7UolTxw=;
+        s=korg; t=1645434760;
+        bh=uCDU3Iu8HRlLzNeHWBl0YvfMWpvWbc7yd8s/av4iXHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tnAMl4drPcNIAhoAVaWo8K1LGMkMaqS1PT5iuumU1ALGudFjEEX9Eg0ew/GX3A8b7
-         CLQJuq1KsRm0i0YD2p4/wa3Uk8QDm1/bnG/UInAGCYDVFneNCL+oQef2jIDV9SqEuI
-         jiRuHG/76++JSy4fY/CGnW4uZrKEjbzL38EGgmfs=
+        b=wx0HXON+lfEDzBejFqWPxgZcfsHcQ408Rv/znDspBXaMBIUs55BUPf/paELc+pBKU
+         1bTP1s0IAVdBq78tRnbM61skllJILfhn5nldgzU0pACyozjimo82w4sRibaZpR2j/h
+         kgwswIVy589L8orUbUkVNTFJSAjSZJW7swiALkKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 128/196] ASoC: tas2770: Insert post reset delay
-Date:   Mon, 21 Feb 2022 09:49:20 +0100
-Message-Id: <20220221084935.222292473@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 079/196] netfilter: nft_synproxy: unregister hooks on init error path
+Date:   Mon, 21 Feb 2022 09:48:31 +0100
+Message-Id: <20220221084933.580089245@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,56 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 307f31452078792aab94a729fce33200c6e42dc4 upstream.
+commit 2b4e5fb4d3776c391e40fb33673ba946dd96012d upstream.
 
-Per TAS2770 datasheet there must be a 1 ms delay from reset to first
-command. So insert delays into the driver where appropriate.
+Disable the IPv4 hooks if the IPv6 hooks fail to be registered.
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220204095301.5554-1-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2770.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/netfilter/nft_synproxy.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -38,10 +38,12 @@ static void tas2770_reset(struct tas2770
- 		gpiod_set_value_cansleep(tas2770->reset_gpio, 0);
- 		msleep(20);
- 		gpiod_set_value_cansleep(tas2770->reset_gpio, 1);
-+		usleep_range(1000, 2000);
+--- a/net/netfilter/nft_synproxy.c
++++ b/net/netfilter/nft_synproxy.c
+@@ -191,8 +191,10 @@ static int nft_synproxy_do_init(const st
+ 		if (err)
+ 			goto nf_ct_failure;
+ 		err = nf_synproxy_ipv6_init(snet, ctx->net);
+-		if (err)
++		if (err) {
++			nf_synproxy_ipv4_fini(snet, ctx->net);
+ 			goto nf_ct_failure;
++		}
+ 		break;
  	}
- 
- 	snd_soc_component_write(tas2770->component, TAS2770_SW_RST,
- 		TAS2770_RST);
-+	usleep_range(1000, 2000);
- }
- 
- static int tas2770_set_bias_level(struct snd_soc_component *component,
-@@ -110,6 +112,7 @@ static int tas2770_codec_resume(struct s
- 
- 	if (tas2770->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
- 	} else {
- 		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
- 						    TAS2770_PWR_CTRL_MASK,
-@@ -510,8 +513,10 @@ static int tas2770_codec_probe(struct sn
- 
- 	tas2770->component = component;
- 
--	if (tas2770->sdz_gpio)
-+	if (tas2770->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	tas2770_reset(tas2770);
  
 
 
