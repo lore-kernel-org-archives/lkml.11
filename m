@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9EFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E31C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352592AbiBUJ4I (ORCPT
+        id S1352613AbiBUJ4L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:56:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42660 "EHLO
+        Mon, 21 Feb 2022 04:56:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352936AbiBUJsC (ORCPT
+        with ESMTP id S1352929AbiBUJsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:48:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7837C262F;
-        Mon, 21 Feb 2022 01:21:35 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359F1E0;
+        Mon, 21 Feb 2022 01:21:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E8B83CE0E89;
-        Mon, 21 Feb 2022 09:21:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4700C340E9;
-        Mon, 21 Feb 2022 09:21:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 66EC5CE0E8B;
+        Mon, 21 Feb 2022 09:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3B8C340E9;
+        Mon, 21 Feb 2022 09:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435292;
-        bh=GD8jGo6Q+HJ1uMXDjuZtebM7kKMzIBsEqRPZY3MkF0s=;
+        s=korg; t=1645435286;
+        bh=6Xe4ky1tUFSPYX08fSSpqNJSLerDMV4vyN9oHsuCMQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FJNEeFQ+THCQSC0Nh6Rhet/lPIQeMCmh5gIsJ0TfsmVTFMxThQ6cw7Mvvb6D/Q0uu
-         MWsUPDn09SDBwPZsa03GLL4FCyFwbWVcCN+EmUwQjI8Zrgt9mrtk3rTUa5UgQoCP/H
-         uoS+szlgNV7N6Hf0MFgsVzqLb+vuDlwCImz62iME=
+        b=MjXXYb9dFRoXWWDNcRHms6gdiL4sJ4M0NLKNGBavmFs/fat0koou7hf0H3chUxv6d
+         wRlbxgPWiNkBE0HHdPowj9XRyqRCEM5czx7VV8x3xm5gkNV8gD8blEYsEUO6Y/4bav
+         aRUjsvtswBI/euBJ9YScxtrF9kaHliEJotVnQi/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, fuyufan <fuyufan@huawei.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.16 080/227] drm/atomic: Dont pollute crtc_state->mode_blob with error pointers
-Date:   Mon, 21 Feb 2022 09:48:19 +0100
-Message-Id: <20220221084937.524263514@linuxfoundation.org>
+        stable@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Subject: [PATCH 5.16 078/227] drm/mediatek: mtk_dsi: Avoid EPROBE_DEFER loop with external bridge
+Date:   Mon, 21 Feb 2022 09:48:17 +0100
+Message-Id: <20220221084937.460607763@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,49 +54,260 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-commit 439cf34c8e0a8a33d8c15a31be1b7423426bc765 upstream.
+commit 647474b8d980256b26b1cd112d7333a4dbd4260a upstream.
 
-Make sure we don't assign an error pointer to crtc_state->mode_blob
-as that will break all kinds of places that assume either NULL or a
-valid pointer (eg. drm_property_blob_put()).
+DRM bridge drivers are now attaching their DSI device at probe time,
+which requires us to register our DSI host in order to let the bridge
+to probe: this recently started producing an endless -EPROBE_DEFER
+loop on some machines that are using external bridges, like the
+parade-ps8640, found on the ACER Chromebook R13.
 
-Cc: stable@vger.kernel.org
-Reported-by: fuyufan <fuyufan@huawei.com>
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220209091928.14766-1-ville.syrjala@linux.intel.com
-Acked-by: Maxime Ripard <maxime@cerno.tech>
+Now that the DSI hosts/devices probe sequence is documented, we can
+do adjustments to the mtk_dsi driver as to both fix now and make sure
+to avoid this situation in the future: for this, following what is
+documented in drm_bridge.c, move the mtk_dsi component_add() to the
+mtk_dsi_ops.attach callback and delete it in the detach callback;
+keeping in mind that we are registering a drm_bridge for our DSI,
+which is only used/attached if the DSI Host is bound, it wouldn't
+make sense to keep adding our bridge at probe time (as it would
+be useless to have it if mtk_dsi_ops.attach() fails!), so also move
+that one to the dsi host attach function (and remove it in detach).
+
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_atomic_uapi.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c |  167 ++++++++++++++++++-------------------
+ 1 file changed, 84 insertions(+), 83 deletions(-)
 
---- a/drivers/gpu/drm/drm_atomic_uapi.c
-+++ b/drivers/gpu/drm/drm_atomic_uapi.c
-@@ -76,15 +76,17 @@ int drm_atomic_set_mode_for_crtc(struct
- 	state->mode_blob = NULL;
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -786,18 +786,101 @@ void mtk_dsi_ddp_stop(struct device *dev
+ 	mtk_dsi_poweroff(dsi);
+ }
  
- 	if (mode) {
-+		struct drm_property_blob *blob;
++static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
++{
++	int ret;
 +
- 		drm_mode_convert_to_umode(&umode, mode);
--		state->mode_blob =
--			drm_property_create_blob(state->crtc->dev,
--						 sizeof(umode),
--						 &umode);
--		if (IS_ERR(state->mode_blob))
--			return PTR_ERR(state->mode_blob);
-+		blob = drm_property_create_blob(crtc->dev,
-+						sizeof(umode), &umode);
-+		if (IS_ERR(blob))
-+			return PTR_ERR(blob);
++	ret = drm_simple_encoder_init(drm, &dsi->encoder,
++				      DRM_MODE_ENCODER_DSI);
++	if (ret) {
++		DRM_ERROR("Failed to encoder init to drm\n");
++		return ret;
++	}
++
++	dsi->encoder.possible_crtcs = mtk_drm_find_possible_crtc_by_comp(drm, dsi->host.dev);
++
++	ret = drm_bridge_attach(&dsi->encoder, &dsi->bridge, NULL,
++				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
++	if (ret)
++		goto err_cleanup_encoder;
++
++	dsi->connector = drm_bridge_connector_init(drm, &dsi->encoder);
++	if (IS_ERR(dsi->connector)) {
++		DRM_ERROR("Unable to create bridge connector\n");
++		ret = PTR_ERR(dsi->connector);
++		goto err_cleanup_encoder;
++	}
++	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
++
++	return 0;
++
++err_cleanup_encoder:
++	drm_encoder_cleanup(&dsi->encoder);
++	return ret;
++}
++
++static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
++{
++	int ret;
++	struct drm_device *drm = data;
++	struct mtk_dsi *dsi = dev_get_drvdata(dev);
++
++	ret = mtk_dsi_encoder_init(drm, dsi);
++	if (ret)
++		return ret;
++
++	return device_reset_optional(dev);
++}
++
++static void mtk_dsi_unbind(struct device *dev, struct device *master,
++			   void *data)
++{
++	struct mtk_dsi *dsi = dev_get_drvdata(dev);
++
++	drm_encoder_cleanup(&dsi->encoder);
++}
++
++static const struct component_ops mtk_dsi_component_ops = {
++	.bind = mtk_dsi_bind,
++	.unbind = mtk_dsi_unbind,
++};
++
+ static int mtk_dsi_host_attach(struct mipi_dsi_host *host,
+ 			       struct mipi_dsi_device *device)
+ {
+ 	struct mtk_dsi *dsi = host_to_dsi(host);
++	struct device *dev = host->dev;
++	int ret;
  
- 		drm_mode_copy(&state->mode, mode);
+ 	dsi->lanes = device->lanes;
+ 	dsi->format = device->format;
+ 	dsi->mode_flags = device->mode_flags;
++	dsi->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
++	if (IS_ERR(dsi->next_bridge))
++		return PTR_ERR(dsi->next_bridge);
 +
-+		state->mode_blob = blob;
- 		state->enable = true;
- 		drm_dbg_atomic(crtc->dev,
- 			       "Set [MODE:%s] for [CRTC:%d:%s] state %p\n",
++	drm_bridge_add(&dsi->bridge);
++
++	ret = component_add(host->dev, &mtk_dsi_component_ops);
++	if (ret) {
++		DRM_ERROR("failed to add dsi_host component: %d\n", ret);
++		drm_bridge_remove(&dsi->bridge);
++		return ret;
++	}
+ 
+ 	return 0;
+ }
+ 
++static int mtk_dsi_host_detach(struct mipi_dsi_host *host,
++			       struct mipi_dsi_device *device)
++{
++	struct mtk_dsi *dsi = host_to_dsi(host);
++
++	component_del(host->dev, &mtk_dsi_component_ops);
++	drm_bridge_remove(&dsi->bridge);
++	return 0;
++}
++
+ static void mtk_dsi_wait_for_idle(struct mtk_dsi *dsi)
+ {
+ 	int ret;
+@@ -938,73 +1021,14 @@ static ssize_t mtk_dsi_host_transfer(str
+ 
+ static const struct mipi_dsi_host_ops mtk_dsi_ops = {
+ 	.attach = mtk_dsi_host_attach,
++	.detach = mtk_dsi_host_detach,
+ 	.transfer = mtk_dsi_host_transfer,
+ };
+ 
+-static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+-{
+-	int ret;
+-
+-	ret = drm_simple_encoder_init(drm, &dsi->encoder,
+-				      DRM_MODE_ENCODER_DSI);
+-	if (ret) {
+-		DRM_ERROR("Failed to encoder init to drm\n");
+-		return ret;
+-	}
+-
+-	dsi->encoder.possible_crtcs = mtk_drm_find_possible_crtc_by_comp(drm, dsi->host.dev);
+-
+-	ret = drm_bridge_attach(&dsi->encoder, &dsi->bridge, NULL,
+-				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
+-	if (ret)
+-		goto err_cleanup_encoder;
+-
+-	dsi->connector = drm_bridge_connector_init(drm, &dsi->encoder);
+-	if (IS_ERR(dsi->connector)) {
+-		DRM_ERROR("Unable to create bridge connector\n");
+-		ret = PTR_ERR(dsi->connector);
+-		goto err_cleanup_encoder;
+-	}
+-	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
+-
+-	return 0;
+-
+-err_cleanup_encoder:
+-	drm_encoder_cleanup(&dsi->encoder);
+-	return ret;
+-}
+-
+-static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+-{
+-	int ret;
+-	struct drm_device *drm = data;
+-	struct mtk_dsi *dsi = dev_get_drvdata(dev);
+-
+-	ret = mtk_dsi_encoder_init(drm, dsi);
+-	if (ret)
+-		return ret;
+-
+-	return device_reset_optional(dev);
+-}
+-
+-static void mtk_dsi_unbind(struct device *dev, struct device *master,
+-			   void *data)
+-{
+-	struct mtk_dsi *dsi = dev_get_drvdata(dev);
+-
+-	drm_encoder_cleanup(&dsi->encoder);
+-}
+-
+-static const struct component_ops mtk_dsi_component_ops = {
+-	.bind = mtk_dsi_bind,
+-	.unbind = mtk_dsi_unbind,
+-};
+-
+ static int mtk_dsi_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_dsi *dsi;
+ 	struct device *dev = &pdev->dev;
+-	struct drm_panel *panel;
+ 	struct resource *regs;
+ 	int irq_num;
+ 	int ret;
+@@ -1021,19 +1045,6 @@ static int mtk_dsi_probe(struct platform
+ 		return ret;
+ 	}
+ 
+-	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
+-					  &panel, &dsi->next_bridge);
+-	if (ret)
+-		goto err_unregister_host;
+-
+-	if (panel) {
+-		dsi->next_bridge = devm_drm_panel_bridge_add(dev, panel);
+-		if (IS_ERR(dsi->next_bridge)) {
+-			ret = PTR_ERR(dsi->next_bridge);
+-			goto err_unregister_host;
+-		}
+-	}
+-
+ 	dsi->driver_data = of_device_get_match_data(dev);
+ 
+ 	dsi->engine_clk = devm_clk_get(dev, "engine");
+@@ -1098,14 +1109,6 @@ static int mtk_dsi_probe(struct platform
+ 	dsi->bridge.of_node = dev->of_node;
+ 	dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
+ 
+-	drm_bridge_add(&dsi->bridge);
+-
+-	ret = component_add(&pdev->dev, &mtk_dsi_component_ops);
+-	if (ret) {
+-		dev_err(&pdev->dev, "failed to add component: %d\n", ret);
+-		goto err_unregister_host;
+-	}
+-
+ 	return 0;
+ 
+ err_unregister_host:
+@@ -1118,8 +1121,6 @@ static int mtk_dsi_remove(struct platfor
+ 	struct mtk_dsi *dsi = platform_get_drvdata(pdev);
+ 
+ 	mtk_output_dsi_disable(dsi);
+-	drm_bridge_remove(&dsi->bridge);
+-	component_del(&pdev->dev, &mtk_dsi_component_ops);
+ 	mipi_dsi_host_unregister(&dsi->host);
+ 
+ 	return 0;
 
 
