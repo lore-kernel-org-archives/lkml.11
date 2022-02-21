@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842DDC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348859AbiBUJUw (ORCPT
+        id S1348923AbiBUJUz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:20:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36152 "EHLO
+        Mon, 21 Feb 2022 04:20:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348135AbiBUJLA (ORCPT
+        with ESMTP id S1348163AbiBUJLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84E4201A4;
-        Mon, 21 Feb 2022 01:02:54 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA97555B0;
+        Mon, 21 Feb 2022 01:02:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78B1FB80EB6;
-        Mon, 21 Feb 2022 09:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B5BC340F3;
-        Mon, 21 Feb 2022 09:02:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DAB6112F;
+        Mon, 21 Feb 2022 09:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37069C340E9;
+        Mon, 21 Feb 2022 09:02:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434172;
-        bh=I2o1dGfDTstkhrDwebLcoM7tN/dHqAwLAIWTVj7CiB4=;
+        s=korg; t=1645434177;
+        bh=Kp3T8Uq/wmdAQIvGZCoRhZ+9BMeChwVbO3ac4eqCP1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IE1oaBqspTYHKjuENuJNo20Wyatd2KRpOs0C3egCZVWJUBHt/iT/Yg5t8iZH3zV0m
-         JprNtLfDZjV815BI0oA1B5NeQKO1H8i88j7dVj3aztsWUco23TYyTL5iqzP88+YFXt
-         cS+w/nm+v3b8gCw5dxNlUA5W7xELbtOQ6lk2AzX0=
+        b=bCGIKjyv7izf/py+jgexecSYpdKPu/7hT32LOIww+Z2sA3hUohLr7o1+3t0NE7OJE
+         yQfnbeyCwlidCG+sFH17NwBBo1HCUHbKezrtMhrXGB3em6vjnuCDQ5mUbXQ3RMHES5
+         afvVguBoGBXhXsPJofL+agh2UHy9lIJLwsVeTwBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 038/121] nvme-tcp: fix possible use-after-free in transport error_recovery work
-Date:   Mon, 21 Feb 2022 09:48:50 +0100
-Message-Id: <20220221084922.479783397@linuxfoundation.org>
+Subject: [PATCH 5.10 022/121] selftests: rtc: Increase test timeout so that all tests run
+Date:   Mon, 21 Feb 2022 09:48:34 +0100
+Message-Id: <20220221084921.910037020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,37 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
+[ Upstream commit f034cc1301e7d83d4ec428dd6b8ffb57ca446efb ]
 
-While nvme_tcp_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+The timeout setting for the rtc kselftest is currently 90 seconds. This
+setting is used by the kselftest runner to stop running a test if it
+takes longer than the assigned value.
 
-Tested-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+However, two of the test cases inside rtc set alarms. These alarms are
+set to the next beginning of the minute, so each of these test cases may
+take up to, in the worst case, 60 seconds.
+
+In order to allow for all test cases in rtc to run, even in the worst
+case, when using the kselftest runner, the timeout value should be
+increased to at least 120. Set it to 180, so there's some additional
+slack.
+
+Correct operation can be tested by running the following command right
+after the start of a minute (low second count), and checking that all
+test cases run:
+
+	./run_kselftest.sh -c rtc
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/rtc/settings | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 662028d7a1c6a..6105894a218a5 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -2077,6 +2077,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
- 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
- 
- 	nvme_stop_keep_alive(ctrl);
-+	flush_work(&ctrl->async_event_work);
- 	nvme_tcp_teardown_io_queues(ctrl, false);
- 	/* unquiesce to fail fast pending requests */
- 	nvme_start_queues(ctrl);
+diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+index ba4d85f74cd6b..a953c96aa16e1 100644
+--- a/tools/testing/selftests/rtc/settings
++++ b/tools/testing/selftests/rtc/settings
+@@ -1 +1 @@
+-timeout=90
++timeout=180
 -- 
 2.34.1
 
