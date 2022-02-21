@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A578C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABB8C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349423AbiBUJ0B (ORCPT
+        id S1349614AbiBUJ0W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56932 "EHLO
+        Mon, 21 Feb 2022 04:26:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348312AbiBUJLM (ORCPT
+        with ESMTP id S1348631AbiBUJQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01319237DD;
-        Mon, 21 Feb 2022 01:03:09 -0800 (PST)
+        Mon, 21 Feb 2022 04:16:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C647830F4F;
+        Mon, 21 Feb 2022 01:07:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9165B6112F;
-        Mon, 21 Feb 2022 09:03:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739DFC340E9;
-        Mon, 21 Feb 2022 09:03:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D60F61284;
+        Mon, 21 Feb 2022 09:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C72C340E9;
+        Mon, 21 Feb 2022 09:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434188;
-        bh=AOfI6k1EE62yiMSAf+eafXQyiJyJdqLyx0/J5CvBu24=;
+        s=korg; t=1645434420;
+        bh=PFd0vWbuccoeBz31rmd7XX1dtx0C17Ku1YNGpKvMo6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAtjaG78g8ERxybPEN9/wzjjLQkXFJBt9N0wtVb3lGH8hDnaZmSYZBgdVNZfqGSM+
-         5Vb1isLkoaxCZxePvb8xPsy0yofl8snbXoELTm+glxmQZE77WPcyH5WU75fiiHMvj1
-         1LRJytMC/sz/B1mY5spMoZQrlAhOOMS0NfjWE4Wk=
+        b=WYGA0mn0blY5VwN7JMP5AhNrt78Tsp0gwD60Ro0D8+nbVpfT2Sqswsmas5UVgSShB
+         rQiR0quvFCn1LGS7wEHcAEpK48KU1A6tMFdf9e0jaxO9/PfLhouV+RtgPgyxIOC2q7
+         8hrSo7u+EiiMlRXxLLJTJzaehLsCRZivTKUvizY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Pylypiv <ipylypiv@google.com>,
-        Changyuan Lyu <changyuanl@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Tejun Heo <tj@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 042/121] Revert "module, async: async_synchronize_full() on module init iff async is used"
-Date:   Mon, 21 Feb 2022 09:48:54 +0100
-Message-Id: <20220221084922.637944299@linuxfoundation.org>
+        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 094/121] phy: usb: Leave some clocks running during suspend
+Date:   Mon, 21 Feb 2022 09:49:46 +0100
+Message-Id: <20220221084924.371414385@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -53,150 +50,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Igor Pylypiv <ipylypiv@google.com>
+From: Al Cooper <alcooperx@gmail.com>
 
-[ Upstream commit 67d6212afda218d564890d1674bab28e8612170f ]
+[ Upstream commit 42fed57046fc74586d7058bd51a1c10ac9c690cb ]
 
-This reverts commit 774a1221e862b343388347bac9b318767336b20b.
+The PHY client driver does a phy_exit() call on suspend or rmmod and
+the PHY driver needs to know the difference because some clocks need
+to be kept running for suspend but can be shutdown on unbind/rmmod
+(or if there are no PHY clients at all).
 
-We need to finish all async code before the module init sequence is
-done.  In the reverted commit the PF_USED_ASYNC flag was added to mark a
-thread that called async_schedule().  Then the PF_USED_ASYNC flag was
-used to determine whether or not async_synchronize_full() needs to be
-invoked.  This works when modprobe thread is calling async_schedule(),
-but it does not work if module dispatches init code to a worker thread
-which then calls async_schedule().
+The fix is to use a PM notifier so the driver can tell if a PHY
+client is calling exit() because of a system suspend or a driver
+unbind/rmmod.
 
-For example, PCI driver probing is invoked from a worker thread based on
-a node where device is attached:
-
-	if (cpu < nr_cpu_ids)
-		error = work_on_cpu(cpu, local_pci_probe, &ddi);
-	else
-		error = local_pci_probe(&ddi);
-
-We end up in a situation where a worker thread gets the PF_USED_ASYNC
-flag set instead of the modprobe thread.  As a result,
-async_synchronize_full() is not invoked and modprobe completes without
-waiting for the async code to finish.
-
-The issue was discovered while loading the pm80xx driver:
-(scsi_mod.scan=async)
-
-modprobe pm80xx                      worker
-...
-  do_init_module()
-  ...
-    pci_call_probe()
-      work_on_cpu(local_pci_probe)
-                                     local_pci_probe()
-                                       pm8001_pci_probe()
-                                         scsi_scan_host()
-                                           async_schedule()
-                                           worker->flags |= PF_USED_ASYNC;
-                                     ...
-      < return from worker >
-  ...
-  if (current->flags & PF_USED_ASYNC) <--- false
-  	async_synchronize_full();
-
-Commit 21c3c5d28007 ("block: don't request module during elevator init")
-fixed the deadlock issue which the reverted commit 774a1221e862
-("module, async: async_synchronize_full() on module init iff async is
-used") tried to fix.
-
-Since commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
-request_module() from async workers") synchronous module loading from
-async is not allowed.
-
-Given that the original deadlock issue is fixed and it is no longer
-allowed to call synchronous request_module() from async we can remove
-PF_USED_ASYNC flag to make module init consistently invoke
-async_synchronize_full() unless async module probe is requested.
-
-Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
-Reviewed-by: Changyuan Lyu <changyuanl@google.com>
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-Acked-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Al Cooper <alcooperx@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20211201180653.35097-2-alcooperx@gmail.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h |  1 -
- kernel/async.c        |  3 ---
- kernel/module.c       | 25 +++++--------------------
- 3 files changed, 5 insertions(+), 24 deletions(-)
+ drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index b85b26d9ccefe..f996d1f343bb7 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1544,7 +1544,6 @@ extern struct pid *cad_pid;
- #define PF_MEMALLOC		0x00000800	/* Allocating memory */
- #define PF_NPROC_EXCEEDED	0x00001000	/* set_user() noticed that RLIMIT_NPROC was exceeded */
- #define PF_USED_MATH		0x00002000	/* If unset the fpu must be initialized before use */
--#define PF_USED_ASYNC		0x00004000	/* Used async_schedule*(), used by module init */
- #define PF_NOFREEZE		0x00008000	/* This thread should not be frozen */
- #define PF_FROZEN		0x00010000	/* Frozen for system suspend */
- #define PF_KSWAPD		0x00020000	/* I am kswapd */
-diff --git a/kernel/async.c b/kernel/async.c
-index 33258e6e20f83..1746cd65e271b 100644
---- a/kernel/async.c
-+++ b/kernel/async.c
-@@ -205,9 +205,6 @@ async_cookie_t async_schedule_node_domain(async_func_t func, void *data,
- 	atomic_inc(&entry_count);
- 	spin_unlock_irqrestore(&async_lock, flags);
+diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
+index 99fbc7e4138be..b901a0d4e2a80 100644
+--- a/drivers/phy/broadcom/phy-brcm-usb.c
++++ b/drivers/phy/broadcom/phy-brcm-usb.c
+@@ -17,6 +17,7 @@
+ #include <linux/soc/brcmstb/brcmstb.h>
+ #include <dt-bindings/phy/phy.h>
+ #include <linux/mfd/syscon.h>
++#include <linux/suspend.h>
  
--	/* mark that this task has queued an async job, used by module init */
--	current->flags |= PF_USED_ASYNC;
--
- 	/* schedule for execution */
- 	queue_work_node(node, system_unbound_wq, &entry->work);
+ #include "phy-brcm-usb-init.h"
  
-diff --git a/kernel/module.c b/kernel/module.c
-index 185b2655bc206..5f4403198f04b 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3714,12 +3714,6 @@ static noinline int do_init_module(struct module *mod)
- 	}
- 	freeinit->module_init = mod->init_layout.base;
+@@ -69,12 +70,35 @@ struct brcm_usb_phy_data {
+ 	int			init_count;
+ 	int			wake_irq;
+ 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
++	struct notifier_block	pm_notifier;
++	bool			pm_active;
+ };
  
--	/*
--	 * We want to find out whether @mod uses async during init.  Clear
--	 * PF_USED_ASYNC.  async_schedule*() will set it.
--	 */
--	current->flags &= ~PF_USED_ASYNC;
--
- 	do_mod_ctors(mod);
- 	/* Start the module */
- 	if (mod->init != NULL)
-@@ -3745,22 +3739,13 @@ static noinline int do_init_module(struct module *mod)
+ static s8 *node_reg_names[BRCM_REGS_MAX] = {
+ 	"crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
+ };
  
++static int brcm_pm_notifier(struct notifier_block *notifier,
++			    unsigned long pm_event,
++			    void *unused)
++{
++	struct brcm_usb_phy_data *priv =
++		container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
++
++	switch (pm_event) {
++	case PM_HIBERNATION_PREPARE:
++	case PM_SUSPEND_PREPARE:
++		priv->pm_active = true;
++		break;
++	case PM_POST_RESTORE:
++	case PM_POST_HIBERNATION:
++	case PM_POST_SUSPEND:
++		priv->pm_active = false;
++		break;
++	}
++	return NOTIFY_DONE;
++}
++
+ static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
+ {
+ 	struct phy *gphy = dev_id;
+@@ -90,6 +114,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
+ 	struct brcm_usb_phy_data *priv =
+ 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
+ 
++	if (priv->pm_active)
++		return 0;
++
  	/*
- 	 * We need to finish all async code before the module init sequence
--	 * is done.  This has potential to deadlock.  For example, a newly
--	 * detected block device can trigger request_module() of the
--	 * default iosched from async probing task.  Once userland helper
--	 * reaches here, async_synchronize_full() will wait on the async
--	 * task waiting on request_module() and deadlock.
--	 *
--	 * This deadlock is avoided by perfomring async_synchronize_full()
--	 * iff module init queued any async jobs.  This isn't a full
--	 * solution as it will deadlock the same if module loading from
--	 * async jobs nests more than once; however, due to the various
--	 * constraints, this hack seems to be the best option for now.
--	 * Please refer to the following thread for details.
-+	 * is done. This has potential to deadlock if synchronous module
-+	 * loading is requested from async (which is not allowed!).
- 	 *
--	 * http://thread.gmane.org/gmane.linux.kernel/1420814
-+	 * See commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
-+	 * request_module() from async workers") for more details.
- 	 */
--	if (!mod->async_probe_requested && (current->flags & PF_USED_ASYNC))
-+	if (!mod->async_probe_requested)
- 		async_synchronize_full();
+ 	 * Use a lock to make sure a second caller waits until
+ 	 * the base phy is inited before using it.
+@@ -119,6 +146,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
+ 	struct brcm_usb_phy_data *priv =
+ 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
  
- 	ftrace_free_mem(mod, mod->init_layout.base, mod->init_layout.base +
++	if (priv->pm_active)
++		return 0;
++
+ 	dev_dbg(&gphy->dev, "EXIT\n");
+ 	if (phy->id == BRCM_USB_PHY_2_0)
+ 		brcm_usb_uninit_eohci(&priv->ini);
+@@ -484,6 +514,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
+ 
++	priv->pm_notifier.notifier_call = brcm_pm_notifier;
++	register_pm_notifier(&priv->pm_notifier);
++
+ 	mutex_init(&priv->mutex);
+ 
+ 	/* make sure invert settings are correct */
+@@ -524,7 +557,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
+ 
+ static int brcm_usb_phy_remove(struct platform_device *pdev)
+ {
++	struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
++
+ 	sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
++	unregister_pm_notifier(&priv->pm_notifier);
+ 
+ 	return 0;
+ }
+@@ -535,6 +571,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
+ 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
+ 
+ 	if (priv->init_count) {
++		dev_dbg(dev, "SUSPEND\n");
+ 		priv->ini.wake_enabled = device_may_wakeup(dev);
+ 		if (priv->phys[BRCM_USB_PHY_3_0].inited)
+ 			brcm_usb_uninit_xhci(&priv->ini);
+@@ -574,6 +611,7 @@ static int brcm_usb_phy_resume(struct device *dev)
+ 	 * Uninitialize anything that wasn't previously initialized.
+ 	 */
+ 	if (priv->init_count) {
++		dev_dbg(dev, "RESUME\n");
+ 		if (priv->wake_irq >= 0)
+ 			disable_irq_wake(priv->wake_irq);
+ 		brcm_usb_init_common(&priv->ini);
 -- 
 2.34.1
 
