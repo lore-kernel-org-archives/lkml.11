@@ -2,79 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344420AbiBUI4H (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:56:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43776 "EHLO
+        id S245656AbiBUI4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:56:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345885AbiBUIyG (ORCPT
+        with ESMTP id S1345888AbiBUIyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:54:06 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD7822BD4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:53:01 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60725DC;
+        Mon, 21 Feb 2022 00:53:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 902DA22450;
-        Mon, 21 Feb 2022 09:52:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+etW7jzC7OWPI2fMPjfRTOpJ5DdDj/wXEqI0+Wud4xs=;
-        b=kKyyeJQF2J/aZZqPZqqVMIO0Gph8odo4hir+1jPjYi2gQKZsrJkHRwWoQj8a6v6Oj4ANeU
-        ostalxierQIOiwkatAE6kJlH8cnx1jfdWy7R957SX2Ii/fylziKLDGpcMr62uwhvxE2K0d
-        bS5PEuXdGZRy3WXzRmwQZrvHL2uX3FM=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 23/32] mtd: spi-nor: xilinx: correct the debug message
-Date:   Mon, 21 Feb 2022 09:52:27 +0100
-Message-Id: <20220221085236.1452024-24-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF9DB80EB1;
+        Mon, 21 Feb 2022 08:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D3FC340EB;
+        Mon, 21 Feb 2022 08:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433578;
+        bh=GzzJq11sUkOk/S21zTN7U/+bDeVpu+/snpGeqCzT54s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oa4i+84dozQxLGGRRIEOtXo6LgXPn/pdI97+PXgn036aV9+YBWh1EZBLdANyMaDxI
+         9SWrcpcsD27LoqLIgGN4WG1o2lc31d3bnkPQdvwd8Nj3kIV1x/tPO+lN+ylcFYzUwy
+         REGFNjCzQ0m216YneqZmnu/FqBuo39EmlTCfKyZ0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        Wolfgang Walter <linux@stwm.de>,
+        Jason Self <jason@bluehome.net>,
+        Dominik Behr <dominik@dominikbehr.com>,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 4.14 15/45] iwlwifi: fix use-after-free
+Date:   Mon, 21 Feb 2022 09:49:06 +0100
+Message-Id: <20220221084910.959670963@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-XRDSR is a combination of xilinx and the RDSR opcode, but the register
-is just the status register. Correct the debug message.
+From: Johannes Berg <johannes.berg@intel.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+
+If no firmware was present at all (or, presumably, all of the
+firmware files failed to parse), we end up unbinding by calling
+device_release_driver(), which calls remove(), which then in
+iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
+the new code I added will still erroneously access it after it
+was freed.
+
+Set 'failure=false' in this case to avoid the access, all data
+was already freed anyway.
+
+Cc: stable@vger.kernel.org
+Reported-by: Stefan Agner <stefan@agner.ch>
+Reported-by: Wolfgang Walter <linux@stwm.de>
+Reported-by: Jason Self <jason@bluehome.net>
+Reported-by: Dominik Behr <dominik@dominikbehr.com>
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/spi-nor/xilinx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index ffd5579d45cb..9459ac2609dc 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -87,7 +87,7 @@ static int xilinx_nor_read_sr(struct spi_nor *nor, u8 *sr)
- 	}
- 
- 	if (ret)
--		dev_dbg(nor->dev, "error %d reading XRDSR\n", ret);
-+		dev_dbg(nor->dev, "error %d reading SR\n", ret);
- 
- 	return ret;
- }
--- 
-2.30.2
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1511,6 +1511,8 @@ static void iwl_req_fw_callback(const st
+  out_unbind:
+ 	complete(&drv->request_firmware_complete);
+ 	device_release_driver(drv->trans->dev);
++	/* drv has just been freed by the release */
++	failure = false;
+  free:
+ 	if (failure)
+ 		iwl_dealloc_ucode(drv);
+
 
