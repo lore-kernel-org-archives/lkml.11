@@ -2,194 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5870BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344740AbiBUIqf (ORCPT
+        id S1344709AbiBUIrq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:46:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35194 "EHLO
+        Mon, 21 Feb 2022 03:47:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344711AbiBUIq3 (ORCPT
+        with ESMTP id S231215AbiBUIro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:46:29 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF2913DEB
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:45:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645433159; x=1676969159;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=psltTbQSqTHI37Tn5wwsvdJ9MbHsDu951d9NJsQVf2A=;
-  b=Z2fDi7dxatJxTep6hobC5GzgOo5KJgbztuhfb7XXLIoDoB1ae2g8W0wt
-   os2ZrIPVX+qKKBUYYphb0/QMS4iJGSunrI0S38ouBTrqBtjV4H2KaWICE
-   VQYBIwxxBcI4ncGUfrcFhCoMRw+PvTcCRGSfO1ahvF85uzR44Lz16Mr9u
-   2fDf1rcoERulZLiYaxzZ4j6WKA4/271Zx92m8toZOBTCCIsi9iaHnjBzA
-   8DokxvzGpwmfC5ATW40q0av2PDomgsaIfso06NNfyCZnEKstDcxjYjA3/
-   r4nxwDOu9Utf+n+8zXVNL88NPNu8smFX7Yu2HX8CKtRfXgooUaXjR/8P/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="249045817"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="249045817"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 00:45:59 -0800
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="531774883"
-Received: from yhuang6-desk2.sh.intel.com ([10.239.13.11])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 00:45:55 -0800
-From:   Huang Ying <ying.huang@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Feng Tang <feng.tang@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        Wei Xu <weixugc@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-Subject: [PATCH -V13 3/3] memory tiering: skip to scan fast memory
-Date:   Mon, 21 Feb 2022 16:45:29 +0800
-Message-Id: <20220221084529.1052339-4-ying.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221084529.1052339-1-ying.huang@intel.com>
-References: <20220221084529.1052339-1-ying.huang@intel.com>
+        Mon, 21 Feb 2022 03:47:44 -0500
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693CA2BB;
+        Mon, 21 Feb 2022 00:47:21 -0800 (PST)
+Received: by mail-vs1-xe2f.google.com with SMTP id j3so2571040vsi.7;
+        Mon, 21 Feb 2022 00:47:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7bU+t7iJxXJ0OaoM2yVGvL7go0S1hioO91rPjZv/0z0=;
+        b=FrtcLlrS/mN+1ArTCSqQJP7OwWJSKnAIJoEa5iarc+OoEiID9eblolED3MW+RpC4iI
+         Uj30iVniCj9z114z9iXB5YPM3o8zMMxdE/XyclQUnkTJmjc7xdNvdEXqtX9zBX7B5P9x
+         8NOmjkfVirVkz4mkkYwkCObwJee276QceLrN8lO1ulssWB7HaA27T4BlB8YKaB9Hee+1
+         3g8lLGE+rXQ3gmr7VTsZS9PcV6ZDbMeTWrnyk0fQditLy3NT4JaZ+8/DHH8cgYeg96jp
+         H7kmCh40l0g5eZp7iDk2YhKhCTCI3douvetEz6cRvpjYB4vUamQT9Hk8fKmX9GUj79nr
+         XTyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7bU+t7iJxXJ0OaoM2yVGvL7go0S1hioO91rPjZv/0z0=;
+        b=zkrBsNmYElpzkyYjShqD0+4gYsm+D5lF2Dy+spB4Vi6ZPyO3c9xhnftyWTAMaEIa3i
+         xPr+u7mY29J7HU1kzMfkereHKKy395GI1UIrP9zer/wxKilVqdy247VmBaSqGcE9Xi5c
+         HJ1652JaX1RoCNjcuAbAiBVR0zQM+OnLJNPhlI0qdVeq8GpOLXHJjfCLMQL0Rk5rCHk5
+         OB7Egkhu/VtblNfpWqd4RhVvJ6j61lZoQE7trltEU7Qxw82pD5l32qv3y4YYGcAUBiZp
+         m8mayijVmeu8oi7yFTtjB0QmMd5ZRNUepP4RODjkqVU27wU3ByVNZYEMFtyhlgR7Pti2
+         LOhw==
+X-Gm-Message-State: AOAM5336gcCCPDAaQuCIVz6SZ9kJOkORj1M00uq9WYdtKuPABUQa7dbl
+        VP/osuCj3clSD3oFIj7M7vniuuAjVsmYRnAciw==
+X-Google-Smtp-Source: ABdhPJz87q7UEAPD90zMY5JUvmglimvP7o+lLeN7nmUzh3gNThbLp0iMMhFUe/WQABY4n4qBW73VqlU3+BeJKoEH4IM=
+X-Received: by 2002:a05:6102:370f:b0:31b:60dc:4f76 with SMTP id
+ s15-20020a056102370f00b0031b60dc4f76mr7914160vst.2.1645433240460; Mon, 21 Feb
+ 2022 00:47:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220220035321.3870-1-warp5tw@gmail.com> <5d507fda-525e-4064-3add-0bb0cc23d016@canonical.com>
+ <CACD3sJaXeWLu6=oLgxJcU9R+A1J+jB7xKaGcDFwYxof33yj17Q@mail.gmail.com> <5ce0f6a6-4a5f-4f25-3cc6-ab0f24bf15cf@canonical.com>
+In-Reply-To: <5ce0f6a6-4a5f-4f25-3cc6-ab0f24bf15cf@canonical.com>
+From:   Tyrone Ting <warp5tw@gmail.com>
+Date:   Mon, 21 Feb 2022 16:47:08 +0800
+Message-ID: <CACD3sJaWJMFgwzQgrHFV0KkkbJXzhgFx=umywxSrLszwP+hO2w@mail.gmail.com>
+Subject: Re: [PATCH v2 00/11] i2c: npcm: Bug fixes timeout, spurious interrupts
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, semen.protsenko@linaro.org,
+        yangyicong@hisilicon.com, wsa@kernel.org, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu,
+        christophe.leroy@csgroup.eu, lukas.bulwahn@gmail.com,
+        olof@lixom.net, arnd@arndb.de, digetx@gmail.com,
+        andriy.shevchenko@linux.intel.com, tali.perry@nuvoton.com,
+        Avi.Fishman@nuvoton.com, tomer.maimon@nuvoton.com,
+        KWLIU@nuvoton.com, JJLIU0@nuvoton.com, kfting@nuvoton.com,
+        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the NUMA balancing isn't used to optimize the page placement among
-sockets but only among memory types, the hot pages in the fast memory
-node couldn't be migrated (promoted) to anywhere.  So it's unnecessary
-to scan the pages in the fast memory node via changing their PTE/PMD
-mapping to be PROT_NONE.  So that the page faults could be avoided
-too.
+Hi Krzysztof:
 
-In the test, if only the memory tiering NUMA balancing mode is enabled, the
-number of the NUMA balancing hint faults for the DRAM node is reduced to
-almost 0 with the patch.  While the benchmark score doesn't change
-visibly.
+Got it and thank you for your comments.
 
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Mel Gorman <mgorman@techsingularity.net>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Wei Xu <weixugc@google.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org
----
- mm/huge_memory.c | 30 +++++++++++++++++++++---------
- mm/mprotect.c    | 13 ++++++++++++-
- 2 files changed, 33 insertions(+), 10 deletions(-)
+I'll keep old code as fallback, if getting nuvoton,sys-mgr fails as
+you point out.
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 406a3c28c026..9ce126cb0cfd 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -34,6 +34,7 @@
- #include <linux/oom.h>
- #include <linux/numa.h>
- #include <linux/page_owner.h>
-+#include <linux/sched/sysctl.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-@@ -1766,17 +1767,28 @@ int change_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 	}
- #endif
- 
--	/*
--	 * Avoid trapping faults against the zero page. The read-only
--	 * data is likely to be read-cached on the local CPU and
--	 * local/remote hits to the zero page are not interesting.
--	 */
--	if (prot_numa && is_huge_zero_pmd(*pmd))
--		goto unlock;
-+	if (prot_numa) {
-+		struct page *page;
-+		/*
-+		 * Avoid trapping faults against the zero page. The read-only
-+		 * data is likely to be read-cached on the local CPU and
-+		 * local/remote hits to the zero page are not interesting.
-+		 */
-+		if (is_huge_zero_pmd(*pmd))
-+			goto unlock;
- 
--	if (prot_numa && pmd_protnone(*pmd))
--		goto unlock;
-+		if (pmd_protnone(*pmd))
-+			goto unlock;
- 
-+		page = pmd_page(*pmd);
-+		/*
-+		 * Skip scanning top tier node if normal numa
-+		 * balancing is disabled
-+		 */
-+		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_NORMAL) &&
-+		    node_is_toptier(page_to_nid(page)))
-+			goto unlock;
-+	}
- 	/*
- 	 * In case prot_numa, we are under mmap_read_lock(mm). It's critical
- 	 * to not clear pmd intermittently to avoid race with MADV_DONTNEED
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index 0138dfcdb1d8..2fe03e695c81 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -29,6 +29,7 @@
- #include <linux/uaccess.h>
- #include <linux/mm_inline.h>
- #include <linux/pgtable.h>
-+#include <linux/sched/sysctl.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
-@@ -83,6 +84,7 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 			 */
- 			if (prot_numa) {
- 				struct page *page;
-+				int nid;
- 
- 				/* Avoid TLB flush if possible */
- 				if (pte_protnone(oldpte))
-@@ -109,7 +111,16 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 				 * Don't mess with PTEs if page is already on the node
- 				 * a single-threaded process is running on.
- 				 */
--				if (target_node == page_to_nid(page))
-+				nid = page_to_nid(page);
-+				if (target_node == nid)
-+					continue;
-+
-+				/*
-+				 * Skip scanning top tier node if normal numa
-+				 * balancing is disabled
-+				 */
-+				if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_NORMAL) &&
-+				    node_is_toptier(nid))
- 					continue;
- 			}
- 
--- 
-2.30.2
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=E5=
+=B9=B42=E6=9C=8821=E6=97=A5
+=E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=884:32=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On 21/02/2022 09:16, Tyrone Ting wrote:
+> > Hi Krzysztof:
+> >
+> > Thank you for your comments and please find my reply next to your comme=
+nts.
+> >
+> > Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=
+=E5=B9=B42=E6=9C=8820=E6=97=A5
+> > =E9=80=B1=E6=97=A5 =E4=B8=8B=E5=8D=885:30=E5=AF=AB=E9=81=93=EF=BC=9A
+> >>
+> >> On 20/02/2022 04:53, Tyrone Ting wrote:
+> >>> From: Tyrone Ting <kfting@nuvoton.com>
+> >>>
+> >>> This patchset includes the following fixes:
+> >>>
+> >>> - Add dt-bindings description for NPCM845.
+> >>> - Bug fix for timeout calculation.
+> >>> - Better handling of spurious interrupts.
+> >>> - Fix for event type in slave mode.
+> >>> - Removal of own slave addresses [2:10].
+> >>> - Support for next gen BMC (NPCM845).
+> >>>
+> >>> The NPCM I2C driver is tested on NPCM750 and NPCM845 evaluation board=
+s.
+> >>>
+> >>> Addressed comments from:
+> >>>  - Jonathan Neusch=C3=A4fer : https://lkml.org/lkml/2022/2/7/670
+> >>>  - Krzysztof Kozlowski : https://lkml.org/lkml/2022/2/7/760
+> >>
+> >> How did you address the ABI change comment? I still see you break the
+> >> ABI with the introduction of a new, required property.
+> >>
+> >
+> > I add the new, required property "nuvoton,sys-mgr" in the file
+> > nuvoton-common-npcm7xx.dtsi.
+> > The file nuvoton-common-npcm7xx.dtsi is required by the existing
+> > upstream NPCM devicetree files.
+> > It is also updated and committed in this patch set [PATCH v2 01/11]
+> > arm: dts: add new property for NPCM i2c module.
+> > Please let me know if I misunderstand the meaning of "breaking the ABI"=
+.
+> > Thank you again.
+>
+> Breaking the ABI means that old DTS stop working with new kernel. Your
+> change breaks old (and out-of-tree) DTS.
+>
+> What is more, your change is not bisectable because DTS goes via
+> separate branch or tree than driver change.
+>
+> You need to keep old code as fallback, if getting nuvoton,sys-mgr fails.
+>
+> Best regards,
+> Krzysztof
 
+Best regards,
+Tyrone
