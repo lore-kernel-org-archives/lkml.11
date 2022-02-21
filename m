@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26872C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF88C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351037AbiBUJgk (ORCPT
+        id S1350999AbiBUJgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50992 "EHLO
+        Mon, 21 Feb 2022 04:36:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349121AbiBUJ1e (ORCPT
+        with ESMTP id S1349119AbiBUJ1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:27:34 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B5F12A87;
-        Mon, 21 Feb 2022 01:12:18 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6697413F42;
+        Mon, 21 Feb 2022 01:12:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EBBF0CE0E79;
-        Mon, 21 Feb 2022 09:12:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE53BC340E9;
-        Mon, 21 Feb 2022 09:12:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D1877CE0E7D;
+        Mon, 21 Feb 2022 09:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70EFC340E9;
+        Mon, 21 Feb 2022 09:12:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434735;
-        bh=CuhhGfIoAjBxYF3sdqIAIwU0hvEMEeFHrD/RaIYIkJw=;
+        s=korg; t=1645434738;
+        bh=XHeZTLhOEsGIZMErWZ33p31NioQ7wMoUH7X7H5dXHEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XbPj/umcYvUAAsTvdYSIQejVg5NAy+KXJD52KteZWriFphi8rJ7goU9Sm58epg0fp
-         Zuh5suTc+R6XpiT/+B76QkT7yHrLk/LoTT/liF3RIC9ZX8YiL3r5Gu4S02XJI9Diwu
-         0R9tAtV30b410SdgT19S6kurz5Vc0CDC3jyJAlLQ=
+        b=VPYBUEYV+jRPzcW+djSfzEA0wmHPuXhy+jVqSbrhG7FLondA/x7xqdkhCIxYADgpI
+         jz0rJMwgOBLVtuKQEx2syqtrtbizPPrMfcuC/9X97UnGEC+AmGY2YPNL8aYMJFr6ZE
+         QoywXgoC1o12GhBw0Em+V2xCcYriVVgDLXG2zjVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matteo Martelli <matteomartelli3@gmail.com>,
+        stable@vger.kernel.org, Yu Huang <diwang90@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 111/196] ALSA: usb-audio: revert to IMPLICIT_FB_FIXED_DEV for M-Audio FastTrack Ultra
-Date:   Mon, 21 Feb 2022 09:49:03 +0100
-Message-Id: <20220221084934.653453496@linuxfoundation.org>
+Subject: [PATCH 5.15 112/196] ALSA: hda/realtek: Add quirk for Legion Y9000X 2019
+Date:   Mon, 21 Feb 2022 09:49:04 +0100
+Message-Id: <20220221084934.688894156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,45 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matteo Martelli <matteomartelli3@gmail.com>
+From: Yu Huang <diwang90@gmail.com>
 
-commit 19d20c7a29bf2e46ff1ab8e8c4fcd2da8a4f38e2 upstream.
+commit c07f2c7b45413a9e50ba78630fda04ecfa17b4f2 upstream.
 
-Commit 83b7dcbc51c930fc2079ab6c6fc9d719768321f1 introduced a generic
-implicit feedback parser, which fails to execute for M-Audio FastTrack
-Ultra sound cards. The issue is with the ENDPOINT_SYNCTYPE check in
-add_generic_implicit_fb() where the SYNCTYPE is ADAPTIVE instead of ASYNC.
-The reason is that the sync type of the FastTrack output endpoints are
-set to adaptive in the quirks table since commit
-65f04443c96dbda11b8fff21d6390e082846aa3c.
+Legion Y9000X 2019 has the same speaker with Y9000X 2020,
+but with a different quirk address. Add one quirk entry
+to make the speaker work on Y9000X 2019 too.
 
-Fixes: 83b7dcbc51c9 ("ALSA: usb-audio: Add generic implicit fb parsing")
-Signed-off-by: Matteo Martelli <matteomartelli3@gmail.com>
+Signed-off-by: Yu Huang <diwang90@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220211224913.20683-2-matteomartelli3@gmail.com
+Link: https://lore.kernel.org/r/20220212160835.165065-1-diwang90@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/implicit.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -47,13 +47,13 @@ struct snd_usb_implicit_fb_match {
- static const struct snd_usb_implicit_fb_match playback_implicit_fb_quirks[] = {
- 	/* Generic matching */
- 	IMPLICIT_FB_GENERIC_DEV(0x0499, 0x1509), /* Steinberg UR22 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2080), /* M-Audio FastTrack Ultra */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2081), /* M-Audio FastTrack Ultra */
- 	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2030), /* M-Audio Fast Track C400 */
- 	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2031), /* M-Audio Fast Track C600 */
- 
- 	/* Fixed EP */
- 	/* FIXME: check the availability of generic matching */
-+	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2080, 0x81, 2), /* M-Audio FastTrack Ultra */
-+	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2081, 0x81, 2), /* M-Audio FastTrack Ultra */
- 	IMPLICIT_FB_FIXED_DEV(0x2466, 0x8010, 0x81, 2), /* Fractal Audio Axe-Fx III */
- 	IMPLICIT_FB_FIXED_DEV(0x31e9, 0x0001, 0x81, 2), /* Solid State Logic SSL2 */
- 	IMPLICIT_FB_FIXED_DEV(0x31e9, 0x0002, 0x81, 2), /* Solid State Logic SSL2+ */
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9013,6 +9013,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
+ 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
++	SND_PCI_QUIRK(0x17aa, 0x383d, "Legion Y9000X 2019", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
+ 	SND_PCI_QUIRK(0x17aa, 0x384a, "Lenovo Yoga 7 15ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
 
 
