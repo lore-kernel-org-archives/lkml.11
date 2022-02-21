@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 258C1C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347DEC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353548AbiBUKBv (ORCPT
+        id S1353604AbiBUKCH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:01:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56922 "EHLO
+        Mon, 21 Feb 2022 05:02:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352374AbiBUJxy (ORCPT
+        with ESMTP id S1352201AbiBUJxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:54 -0500
+        Mon, 21 Feb 2022 04:53:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBD33702E;
-        Mon, 21 Feb 2022 01:23:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A75036E22;
+        Mon, 21 Feb 2022 01:23:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EA4B60F8C;
-        Mon, 21 Feb 2022 09:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D2A0C340E9;
-        Mon, 21 Feb 2022 09:23:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A76E608C4;
+        Mon, 21 Feb 2022 09:23:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75564C340E9;
+        Mon, 21 Feb 2022 09:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435429;
-        bh=QtspzRerDno9ochBQSZOIaBlkiKsCe5W6y6V+OTBPv8=;
+        s=korg; t=1645435412;
+        bh=8zpKje5IYFHCszmh7tFQ0f69g0A/tpI2GZ5tmB/KPWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8UH1UoFYTKSZ1v5kG9diLA9JLZa+p4bSnPlgOlxdPUmkjmkiOqgWqoKpM3ZvHzYY
-         K3Qww058K8Xcd+j8mqMBI0PLkD0EsJGk/ltqQULYYceZxIdJxdZmSt0sr1ASXIYWnP
-         k8M3Skta/cbC181Hr/Hnp47SgGU7hS2a4Kz7A++8=
+        b=tnsGo8DaY+4amii9lapt6wJPLtU3ANrIZw9fbI4txZHznuXECRzRpI2H/OYyif3qd
+         3qdDuDoJhLYaNr5kXWJQos7pCIxVz93uKzwTP6SVRa6FZcP4pPsKxgzOkwp1BAE0H4
+         TAn46SrC69aFtFI11mfcOVg3+4Ge9FBjuXlT5XzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.16 161/227] NFS: LOOKUP_DIRECTORY is also ok with symlinks
-Date:   Mon, 21 Feb 2022 09:49:40 +0100
-Message-Id: <20220221084940.176331248@linuxfoundation.org>
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 155/227] scsi: ufs: Remove dead code
+Date:   Mon, 21 Feb 2022 09:49:34 +0100
+Message-Id: <20220221084939.979308283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,43 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit e0caaf75d443e02e55e146fd75fe2efc8aed5540 upstream.
+commit d77ea8226b3be23b0b45aa42851243b62a27bda1 upstream.
 
-Commit ac795161c936 (NFSv4: Handle case where the lookup of a directory
-fails) [1], part of Linux since 5.17-rc2, introduced a regression, where
-a symbolic link on an NFS mount to a directory on another NFS does not
-resolve(?) the first time it is accessed:
+Commit 7252a3603015 ("scsi: ufs: Avoid busy-waiting by eliminating tag
+conflicts") guarantees that 'tag' is not in use by any SCSI command.
+Remove the check that returns early if a conflict occurs.
 
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: ac795161c936 ("NFSv4: Handle case where the lookup of a directory fails")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Link: https://lore.kernel.org/r/20211203231950.193369-6-bvanassche@acm.org
+Tested-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Acked-by: Avri Altman <avri.altman@wdc.com>
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/ufs/ufshcd.c |    7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1982,14 +1982,14 @@ no_open:
- 	if (!res) {
- 		inode = d_inode(dentry);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode))
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))
- 			res = ERR_PTR(-ENOTDIR);
- 		else if (inode && S_ISREG(inode->i_mode))
- 			res = ERR_PTR(-EOPENSTALE);
- 	} else if (!IS_ERR(res)) {
- 		inode = d_inode(res);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode)) {
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode))) {
- 			dput(res);
- 			res = ERR_PTR(-ENOTDIR);
- 		} else if (inode && S_ISREG(inode->i_mode)) {
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -6734,11 +6734,6 @@ static int ufshcd_issue_devman_upiu_cmd(
+ 	tag = req->tag;
+ 	WARN_ONCE(tag < 0, "Invalid tag %d\n", tag);
+ 
+-	if (unlikely(test_bit(tag, &hba->outstanding_reqs))) {
+-		err = -EBUSY;
+-		goto out;
+-	}
+-
+ 	lrbp = &hba->lrb[tag];
+ 	WARN_ON(lrbp->cmd);
+ 	lrbp->cmd = NULL;
+@@ -6806,8 +6801,8 @@ static int ufshcd_issue_devman_upiu_cmd(
+ 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
+ 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
+ 
+-out:
+ 	blk_mq_free_request(req);
++
+ out_unlock:
+ 	up_read(&hba->clk_scaling_lock);
+ 	return err;
 
 
