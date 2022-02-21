@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9675EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C8B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349700AbiBUJbt (ORCPT
+        id S1350198AbiBUJb4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:31:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36972 "EHLO
+        Mon, 21 Feb 2022 04:31:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350189AbiBUJWN (ORCPT
+        with ESMTP id S1350252AbiBUJWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:22:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3421B37A9E;
-        Mon, 21 Feb 2022 01:09:38 -0800 (PST)
+        Mon, 21 Feb 2022 04:22:17 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF6E37BFD;
+        Mon, 21 Feb 2022 01:09:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3C9660B23;
-        Mon, 21 Feb 2022 09:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A636FC36AE7;
-        Mon, 21 Feb 2022 09:09:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4941CCE0E7A;
+        Mon, 21 Feb 2022 09:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E8CC340E9;
+        Mon, 21 Feb 2022 09:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434575;
-        bh=o5gkH2Xv/3W6KkrbX56TKpiDHWD1wxf42jM4NdYGyi8=;
+        s=korg; t=1645434580;
+        bh=fvC8mgEqM0sNPjHWfcaQegTk0lDRPsXfkTgiTAslmzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dotv4y9wwu5uCCDgdqbUZSXvPTH+pChaP25DrUOZLK1wdSh7VTXfNFPmeYuuSHf/Y
-         1E0+Tsu5xIdlQZfulpOTNPIxZjUsCFEjqID5XWLaRFRlgeUdvqLnPzzjHDIL0cYr0k
-         uvgT2gFYXJA+l+xED04VWch7a4wdVSbMmZAbmRdY=
+        b=nID7J0A5bWI+W2MVYLqdbF4BMNCohCdOCcz5OdVRzqoh7UKxL0j7UwQuo7rdO4xdn
+         JbsGRmRuJZdse4vLCsdvGBDVcpVD09sM+X8CKfeEI2EJxgwFScxVMps3I07LQ/yOQJ
+         buuto9n/nZKXFGsADGXlCpDSQRI9bVAF+gRknV0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 056/196] KVM: x86: nSVM/nVMX: set nested_run_pending on VM entry which is a result of RSM
-Date:   Mon, 21 Feb 2022 09:48:08 +0100
-Message-Id: <20220221084932.808896029@linuxfoundation.org>
+Subject: [PATCH 5.15 058/196] KVM: x86: nSVM: fix potential NULL derefernce on nested migration
+Date:   Mon, 21 Feb 2022 09:48:10 +0100
+Message-Id: <20220221084932.884963726@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,49 +51,70 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit 759cbd59674a6c0aec616a3f4f0740ebd3f5fbef upstream.
+commit e1779c2714c3023e4629825762bcbc43a3b943df upstream.
 
-While RSM induced VM entries are not full VM entries,
-they still need to be followed by actual VM entry to complete it,
-unlike setting the nested state.
+Turns out that due to review feedback and/or rebases
+I accidentally moved the call to nested_svm_load_cr3 to be too early,
+before the NPT is enabled, which is very wrong to do.
 
-This patch fixes boot of hyperv and SMM enabled
-windows VM running nested on KVM, which fail due
-to this issue combined with lack of dirty bit setting.
+KVM can't even access guest memory at that point as nested NPT
+is needed for that, and of course it won't initialize the walk_mmu,
+which is main issue the patch was addressing.
+
+Fix this for real.
+
+Fixes: 232f75d3b4b5 ("KVM: nSVM: call nested_svm_load_cr3 on nested state load")
+Cc: stable@vger.kernel.org
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: stable@vger.kernel.org
-Message-Id: <20220207155447.840194-5-mlevitsk@redhat.com>
+Message-Id: <20220207155447.840194-3-mlevitsk@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/svm.c |    5 +++++
- arch/x86/kvm/vmx/vmx.c |    1 +
- 2 files changed, 6 insertions(+)
+ arch/x86/kvm/svm/nested.c |   26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4388,6 +4388,11 @@ static int svm_leave_smm(struct kvm_vcpu
- 	nested_load_control_from_vmcb12(svm, &vmcb12->control);
- 	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -1357,18 +1357,6 @@ static int svm_set_nested_state(struct k
+ 	    !nested_vmcb_valid_sregs(vcpu, save))
+ 		goto out_free;
  
-+	if (ret)
-+		goto unmap_save;
-+
-+	svm->nested.nested_run_pending = 1;
-+
- unmap_save:
- 	kvm_vcpu_unmap(vcpu, &map_save, true);
- unmap_map:
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7532,6 +7532,7 @@ static int vmx_leave_smm(struct kvm_vcpu
- 		if (ret)
- 			return ret;
+-	/*
+-	 * While the nested guest CR3 is already checked and set by
+-	 * KVM_SET_SREGS, it was set when nested state was yet loaded,
+-	 * thus MMU might not be initialized correctly.
+-	 * Set it again to fix this.
+-	 */
+-
+-	ret = nested_svm_load_cr3(&svm->vcpu, vcpu->arch.cr3,
+-				  nested_npt_enabled(svm), false);
+-	if (WARN_ON_ONCE(ret))
+-		goto out_free;
+-
  
-+		vmx->nested.nested_run_pending = 1;
- 		vmx->nested.smm.guest_mode = false;
- 	}
- 	return 0;
+ 	/*
+ 	 * All checks done, we can enter guest mode. Userspace provides
+@@ -1394,6 +1382,20 @@ static int svm_set_nested_state(struct k
+ 
+ 	svm_switch_vmcb(svm, &svm->nested.vmcb02);
+ 	nested_vmcb02_prepare_control(svm);
++
++	/*
++	 * While the nested guest CR3 is already checked and set by
++	 * KVM_SET_SREGS, it was set when nested state was yet loaded,
++	 * thus MMU might not be initialized correctly.
++	 * Set it again to fix this.
++	 */
++
++	ret = nested_svm_load_cr3(&svm->vcpu, vcpu->arch.cr3,
++				  nested_npt_enabled(svm), false);
++	if (WARN_ON_ONCE(ret))
++		goto out_free;
++
++
+ 	kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+ 	ret = 0;
+ out_free:
 
 
