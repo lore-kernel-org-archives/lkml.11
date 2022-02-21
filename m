@@ -2,196 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C29C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 06:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 06:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345258AbiBUGjF (ORCPT
+        id S1345273AbiBUGjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 01:39:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40104 "EHLO
+        Mon, 21 Feb 2022 01:39:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344581AbiBUGjC (ORCPT
+        with ESMTP id S1345259AbiBUGjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 01:39:02 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAA7205C3;
-        Sun, 20 Feb 2022 22:38:38 -0800 (PST)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K2CK22CRMzcfdn;
-        Mon, 21 Feb 2022 14:37:26 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 14:38:36 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 14:38:35 +0800
-Subject: Re: [PATCH v20 5/5] kdump: update Documentation about crashkernel
-To:     Baoquan He <bhe@redhat.com>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        <kexec@lists.infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-6-thunder.leizhen@huawei.com>
- <YhMLoUvxteZVVwqQ@MiWiFi-R3L-srv>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <8ada665b-1917-2f01-477f-baaa562f5502@huawei.com>
-Date:   Mon, 21 Feb 2022 14:38:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <YhMLoUvxteZVVwqQ@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+        Mon, 21 Feb 2022 01:39:10 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE1A5654D;
+        Sun, 20 Feb 2022 22:38:46 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 95DCA113E;
+        Sun, 20 Feb 2022 22:38:46 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.49.67])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2EF0F3F70D;
+        Sun, 20 Feb 2022 22:38:43 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-arch@vger.kernel.org
+Subject: [PATCH V2 00/30] mm/mmap: Drop protection_map[] and platform's __SXXX/__PXXX requirements
+Date:   Mon, 21 Feb 2022 12:08:09 +0530
+Message-Id: <1645425519-9034-1-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+protection_map[] is an array based construct that translates given vm_flags
+combination. This array contains page protection map, which is populated by
+the platform via [__S000 .. __S111] and [__P000 .. __P111] exported macros.
+Primary usage for protection_map[] is for vm_get_page_prot(), which is used
+to determine page protection value for a given vm_flags. vm_get_page_prot()
+implementation, could again call platform overrides arch_vm_get_page_prot()
+and arch_filter_pgprot(). Some platforms override protection_map[] that was
+originally built with __SXXX/__PXXX with different runtime values.
 
+Currently there are multiple layers of abstraction i.e __SXXX/__PXXX macros
+, protection_map[], arch_vm_get_page_prot() and arch_filter_pgprot() built
+between the platform and generic MM, finally defining vm_get_page_prot().
 
-On 2022/2/21 11:48, Baoquan He wrote:
-> On 01/24/22 at 04:47pm, Zhen Lei wrote:
->> From: Chen Zhou <chenzhou10@huawei.com>
->>
->> For arm64, the behavior of crashkernel=X has been changed, which
->> tries low allocation in DMA zone and fall back to high allocation
->> if it fails.
->>
->> We can also use "crashkernel=X,high" to select a high region above
->> DMA zone, which also tries to allocate at least 256M low memory in
->> DMA zone automatically and "crashkernel=Y,low" can be used to allocate
->> specified size low memory.
->>
->> So update the Documentation.
->>
->> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>  Documentation/admin-guide/kdump/kdump.rst       | 11 +++++++++--
->>  Documentation/admin-guide/kernel-parameters.txt | 11 +++++++++--
->>  2 files changed, 18 insertions(+), 4 deletions(-)
->>
->> diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
->> index cb30ca3df27c9b2..d4c287044be0c70 100644
->> --- a/Documentation/admin-guide/kdump/kdump.rst
->> +++ b/Documentation/admin-guide/kdump/kdump.rst
->> @@ -361,8 +361,15 @@ Boot into System Kernel
->>     kernel will automatically locate the crash kernel image within the
->>     first 512MB of RAM if X is not given.
->>  
->> -   On arm64, use "crashkernel=Y[@X]".  Note that the start address of
->> -   the kernel, X if explicitly specified, must be aligned to 2MiB (0x200000).
->> +   On arm64, use "crashkernel=X" to try low allocation in DMA zone and
->> +   fall back to high allocation if it fails.
->> +   We can also use "crashkernel=X,high" to select a high region above
->> +   DMA zone, which also tries to allocate at least 256M low memory in
->> +   DMA zone automatically.
->> +   "crashkernel=Y,low" can be used to allocate specified size low memory.
->> +   Use "crashkernel=Y@X" if you really have to reserve memory from
->> +   specified start address X. Note that the start address of the kernel,
->> +   X if explicitly specified, must be aligned to 2MiB (0x200000).
-> 
-> Hmm, we may not need the details related to crashkernel,high|low in this
-> section. This just gives examples of basic configation for each ARCH.
-> The detailed configuration of all crashkernel setting can be found in
-> "crashkernel syntax" section, I don't think arm64 is so special to need
-> a specific one.
-> 
->>  
->>  Load the Dump-capture Kernel
->>  ============================
->> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
->> index f5a27f067db9ed9..65780c2ca830be0 100644
->> --- a/Documentation/admin-guide/kernel-parameters.txt
->> +++ b/Documentation/admin-guide/kernel-parameters.txt
->> @@ -792,6 +792,9 @@
->>  			[KNL, X86-64] Select a region under 4G first, and
->>  			fall back to reserve region above 4G when '@offset'
->>  			hasn't been specified.
->> +			[KNL, ARM64] Try low allocation in DMA zone and fall back
->> +			to high allocation if it fails when '@offset' hasn't been
->> +			specified.
->>  			See Documentation/admin-guide/kdump/kdump.rst for further details.
-> 
-> How about add ARM64 like below to avoid redundant words?
->   			[KNL, X86-64, ARM64] Select a region under 4G first, and
->   			fall back to reserve region above 4G when '@offset'
->   			hasn't been specified.
+Hence this series proposes to drop all these abstraction levels and instead
+just move the responsibility of defining vm_get_page_prot() to the platform
+itself making it clean and simple.
 
-I agree very much, and I think that's the right thing to do. Thanks.
+This first introduces ARCH_HAS_VM_GET_PAGE_PROT which enables the platforms
+to define custom vm_get_page_prot(). This starts converting platforms that
+either change protection_map[] or define the overrides arch_filter_pgprot()
+or arch_vm_get_page_prot() which enables for those constructs to be dropped
+off completely. This series then converts remaining platforms which enables
+for __SXXX/__PXXX constructs to be dropped off completely. Finally it drops
+the generic vm_get_page_prot() and then ARCH_HAS_VM_GET_PAGE_PROT as every
+platform now defines their own vm_get_page_prot().
 
-I wanted to do the same before, just wasn't sure if the format was correct. I just
-looked at the other descriptions in kernel-parameters.txt and found that there are
-many precedents.
+The series has been inspired from an earlier discuss with Christoph Hellwig
 
-"movablecore=    [KNL,X86,IA-64,PPC]"
+https://lore.kernel.org/all/1632712920-8171-1-git-send-email-anshuman.khandual@arm.com/
 
-> 
->>  
->>  	crashkernel=range1:size1[,range2:size2,...][@offset]
->> @@ -808,6 +811,8 @@
->>  			Otherwise memory region will be allocated below 4G, if
->>  			available.
->>  			It will be ignored if crashkernel=X is specified.
->> +			[KNL, ARM64] range in high memory.
->> +			Allow kernel to allocate physical memory region from top.
-> 
-> Ditto, please don't add redundent words if it's similar to x86_64
-> handling.
-> 
->>  	crashkernel=size[KMG],low
->>  			[KNL, X86-64] range under 4G. When crashkernel=X,high
->>  			is passed, kernel could allocate physical memory region
->> @@ -816,13 +821,15 @@
->>  			requires at least 64M+32K low memory, also enough extra
->>  			low memory is needed to make sure DMA buffers for 32-bit
->>  			devices won't run out. Kernel would try to allocate at
->> -			at least 256M below 4G automatically.
->> +			least 256M below 4G automatically.
->>  			This one let user to specify own low range under 4G
->>  			for second kernel instead.
->>  			0: to disable low allocation.
->>  			It will be ignored when crashkernel=X,high is not used
->>  			or memory reserved is below 4G.
->> -
->> +			[KNL, ARM64] range in low memory.
->> +			This one let user to specify a low range in DMA zone for
->> +			crash dump kernel.
-> 
-> Ditto.
-> 
->>  	cryptomgr.notests
->>  			[KNL] Disable crypto self-tests
->>  
->> -- 
->> 2.25.1
->>
-> 
-> .
-> 
+This series applies on 5.17-rc5 after the following patch.
+
+https://lore.kernel.org/all/1643004823-16441-1-git-send-email-anshuman.khandual@arm.com/
+
+This series has been cross built for multiple platforms.
+
+- Anshuman
+
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Changes in V2:
+
+- Dropped the entire comment block in [PATCH 30/30] per Geert
+- Replaced __P010 (although commented) with __PAGE_COPY on arm platform
+- Replaced __P101 with PAGE_READONLY on um platform
+
+Changes in V1:
+
+https://lore.kernel.org/all/1644805853-21338-1-git-send-email-anshuman.khandual@arm.com/
+
+- Add white spaces around the | operators 
+- Moved powerpc_vm_get_page_prot() near vm_get_page_prot() on powerpc
+- Moved arm64_vm_get_page_prot() near vm_get_page_prot() on arm64
+- Moved sparc_vm_get_page_prot() near vm_get_page_prot() on sparc
+- Compacted vm_get_page_prot() switch cases on all platforms
+-  _PAGE_CACHE040 inclusion is dependent on CPU_IS_040_OR_060
+- VM_SHARED case should return PAGE_NONE (not PAGE_COPY) on SH platform
+- Reorganized VM_SHARED, VM_EXEC, VM_WRITE, VM_READ
+- Dropped the last patch [RFC V1 31/31] which added macros for vm_flags combinations
+  https://lore.kernel.org/all/1643029028-12710-32-git-send-email-anshuman.khandual@arm.com/
+
+Changes in RFC:
+
+https://lore.kernel.org/all/1643029028-12710-1-git-send-email-anshuman.khandual@arm.com/
+
+Anshuman Khandual (29):
+  mm/debug_vm_pgtable: Drop protection_map[] usage
+  mm/mmap: Clarify protection_map[] indices
+  mm/mmap: Add new config ARCH_HAS_VM_GET_PAGE_PROT
+  powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  sparc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  mips/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  m68k/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  arm/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  mm/mmap: Drop protection_map[]
+  mm/mmap: Drop arch_filter_pgprot()
+  mm/mmap: Drop arch_vm_get_page_pgprot()
+  s390/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  riscv/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  alpha/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  sh/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  arc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  csky/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  extensa/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  parisc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  openrisc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  um/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  microblaze/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  nios2/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  hexagon/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  nds32/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  ia64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  mm/mmap: Drop generic vm_get_page_prot()
+  mm/mmap: Drop ARCH_HAS_VM_GET_PAGE_PROT
+
+Christoph Hellwig (1):
+  x86/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+
+ arch/alpha/include/asm/pgtable.h          |  17 ----
+ arch/alpha/mm/init.c                      |  37 ++++++++
+ arch/arc/include/asm/pgtable-bits-arcv2.h |  17 ----
+ arch/arc/mm/mmap.c                        |  41 +++++++++
+ arch/arm/include/asm/pgtable.h            |  18 ----
+ arch/arm/lib/uaccess_with_memcpy.c        |   2 +-
+ arch/arm/mm/mmu.c                         |  44 +++++++--
+ arch/arm64/Kconfig                        |   1 -
+ arch/arm64/include/asm/mman.h             |  24 -----
+ arch/arm64/include/asm/pgtable-prot.h     |  18 ----
+ arch/arm64/include/asm/pgtable.h          |  11 ---
+ arch/arm64/mm/mmap.c                      |  78 ++++++++++++++++
+ arch/csky/include/asm/pgtable.h           |  18 ----
+ arch/csky/mm/init.c                       |  32 +++++++
+ arch/hexagon/include/asm/pgtable.h        |  24 -----
+ arch/hexagon/mm/init.c                    |  67 ++++++++++++++
+ arch/ia64/include/asm/pgtable.h           |  17 ----
+ arch/ia64/mm/init.c                       |  41 ++++++++-
+ arch/m68k/include/asm/mcf_pgtable.h       |  59 ------------
+ arch/m68k/include/asm/motorola_pgtable.h  |  22 -----
+ arch/m68k/include/asm/sun3_pgtable.h      |  22 -----
+ arch/m68k/mm/init.c                       | 104 ++++++++++++++++++++++
+ arch/m68k/mm/motorola.c                   |  48 +++++++++-
+ arch/microblaze/include/asm/pgtable.h     |  17 ----
+ arch/microblaze/mm/init.c                 |  41 +++++++++
+ arch/mips/include/asm/pgtable.h           |  22 -----
+ arch/mips/mm/cache.c                      |  60 +++++++------
+ arch/nds32/include/asm/pgtable.h          |  17 ----
+ arch/nds32/mm/mmap.c                      |  37 ++++++++
+ arch/nios2/include/asm/pgtable.h          |  16 ----
+ arch/nios2/mm/init.c                      |  45 ++++++++++
+ arch/openrisc/include/asm/pgtable.h       |  18 ----
+ arch/openrisc/mm/init.c                   |  41 +++++++++
+ arch/parisc/include/asm/pgtable.h         |  20 -----
+ arch/parisc/mm/init.c                     |  40 +++++++++
+ arch/powerpc/include/asm/mman.h           |  12 ---
+ arch/powerpc/include/asm/pgtable.h        |  19 ----
+ arch/powerpc/mm/mmap.c                    |  59 ++++++++++++
+ arch/riscv/include/asm/pgtable.h          |  16 ----
+ arch/riscv/mm/init.c                      |  42 +++++++++
+ arch/s390/include/asm/pgtable.h           |  17 ----
+ arch/s390/mm/mmap.c                       |  33 +++++++
+ arch/sh/include/asm/pgtable.h             |  17 ----
+ arch/sh/mm/mmap.c                         |  38 ++++++++
+ arch/sparc/include/asm/mman.h             |   6 --
+ arch/sparc/include/asm/pgtable_32.h       |  19 ----
+ arch/sparc/include/asm/pgtable_64.h       |  19 ----
+ arch/sparc/mm/init_32.c                   |  35 ++++++++
+ arch/sparc/mm/init_64.c                   |  70 +++++++++++----
+ arch/um/include/asm/pgtable.h             |  17 ----
+ arch/um/kernel/mem.c                      |  35 ++++++++
+ arch/x86/Kconfig                          |   1 -
+ arch/x86/include/asm/pgtable.h            |   5 --
+ arch/x86/include/asm/pgtable_types.h      |  19 ----
+ arch/x86/include/uapi/asm/mman.h          |  14 ---
+ arch/x86/mm/Makefile                      |   2 +-
+ arch/x86/mm/mem_encrypt_amd.c             |   4 -
+ arch/x86/mm/pgprot.c                      |  71 +++++++++++++++
+ arch/x86/um/mem_32.c                      |   2 +-
+ arch/xtensa/include/asm/pgtable.h         |  18 ----
+ arch/xtensa/mm/init.c                     |  35 ++++++++
+ include/linux/mm.h                        |   6 --
+ include/linux/mman.h                      |   4 -
+ mm/Kconfig                                |   3 -
+ mm/debug_vm_pgtable.c                     |  31 ++++---
+ mm/mmap.c                                 |  42 ---------
+ 66 files changed, 1142 insertions(+), 705 deletions(-)
+ create mode 100644 arch/x86/mm/pgprot.c
 
 -- 
-Regards,
-  Zhen Lei
+2.25.1
+
