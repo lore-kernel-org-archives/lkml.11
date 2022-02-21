@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE60CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3418C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243875AbiBUJcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:32:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37002 "EHLO
+        id S1350103AbiBUJcR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:32:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350315AbiBUJWZ (ORCPT
+        with ESMTP id S1350398AbiBUJWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:22:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19755381A8;
-        Mon, 21 Feb 2022 01:09:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:22:30 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20D0BCB6;
+        Mon, 21 Feb 2022 01:10:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F27E608C4;
-        Mon, 21 Feb 2022 09:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DEA9C340E9;
-        Mon, 21 Feb 2022 09:09:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23700CE0E9C;
+        Mon, 21 Feb 2022 09:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F56C340EB;
+        Mon, 21 Feb 2022 09:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434592;
-        bh=GD8jGo6Q+HJ1uMXDjuZtebM7kKMzIBsEqRPZY3MkF0s=;
+        s=korg; t=1645434597;
+        bh=27GxyIgL3H4PudnK/GThhSqcMFh/8JEiCRGKwE1+/sI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/kqUpcMi20UACvqF4aTPkk1Tr5+D4NWETF+ZHCwwNHQ7tpX/qv/82gQC570JwDya
-         XFHd3ColZKwYoKgFXIznkJsCYrwxC5H2CKEBa7rEvXB0lbGShjhkVkYTeZsO5zaGDD
-         K131+SfK96JxkFM4TjXrgrOAF7rF2V+LPnh2iZto=
+        b=EmHzUJppkslWNNAxNFxGAs+oCQAQqGAXdMkj8A3GBBs5JpVjeHuWcZWeQF6l/SBIp
+         CoM56ABlZqYvv6N3lb0N4GI3lG+TWetTVrDJRK+Xk3M37jvsewtPzTAs5hmSuFKZhJ
+         rG30LHt8zVjT0BOIYSQfDnK/pddtTcPvUYiiNYx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, fuyufan <fuyufan@huawei.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.15 062/196] drm/atomic: Dont pollute crtc_state->mode_blob with error pointers
-Date:   Mon, 21 Feb 2022 09:48:14 +0100
-Message-Id: <20220221084933.007550158@linuxfoundation.org>
+        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 046/196] nvme-rdma: fix possible use-after-free in transport error_recovery work
+Date:   Mon, 21 Feb 2022 09:47:58 +0100
+Message-Id: <20220221084932.468958214@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,49 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-commit 439cf34c8e0a8a33d8c15a31be1b7423426bc765 upstream.
+[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
 
-Make sure we don't assign an error pointer to crtc_state->mode_blob
-as that will break all kinds of places that assume either NULL or a
-valid pointer (eg. drm_property_blob_put()).
+While nvme_rdma_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-Cc: stable@vger.kernel.org
-Reported-by: fuyufan <fuyufan@huawei.com>
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220209091928.14766-1-ville.syrjala@linux.intel.com
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_atomic_uapi.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/nvme/host/rdma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/gpu/drm/drm_atomic_uapi.c
-+++ b/drivers/gpu/drm/drm_atomic_uapi.c
-@@ -76,15 +76,17 @@ int drm_atomic_set_mode_for_crtc(struct
- 	state->mode_blob = NULL;
+diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
+index 0498801542eb6..d51f52e296f50 100644
+--- a/drivers/nvme/host/rdma.c
++++ b/drivers/nvme/host/rdma.c
+@@ -1192,6 +1192,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
+ 			struct nvme_rdma_ctrl, err_work);
  
- 	if (mode) {
-+		struct drm_property_blob *blob;
-+
- 		drm_mode_convert_to_umode(&umode, mode);
--		state->mode_blob =
--			drm_property_create_blob(state->crtc->dev,
--						 sizeof(umode),
--						 &umode);
--		if (IS_ERR(state->mode_blob))
--			return PTR_ERR(state->mode_blob);
-+		blob = drm_property_create_blob(crtc->dev,
-+						sizeof(umode), &umode);
-+		if (IS_ERR(blob))
-+			return PTR_ERR(blob);
- 
- 		drm_mode_copy(&state->mode, mode);
-+
-+		state->mode_blob = blob;
- 		state->enable = true;
- 		drm_dbg_atomic(crtc->dev,
- 			       "Set [MODE:%s] for [CRTC:%d:%s] state %p\n",
+ 	nvme_stop_keep_alive(&ctrl->ctrl);
++	flush_work(&ctrl->ctrl.async_event_work);
+ 	nvme_rdma_teardown_io_queues(ctrl, false);
+ 	nvme_start_queues(&ctrl->ctrl);
+ 	nvme_rdma_teardown_admin_queue(ctrl, false);
+-- 
+2.34.1
+
 
 
