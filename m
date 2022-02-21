@@ -2,166 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE509C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 03:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A619C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 03:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344361AbiBUDmz (ORCPT
+        id S1344377AbiBUDnJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 22:42:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42184 "EHLO
+        Sun, 20 Feb 2022 22:43:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344324AbiBUDmo (ORCPT
+        with ESMTP id S232812AbiBUDnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 22:42:44 -0500
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D025651E54
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 19:42:07 -0800 (PST)
-X-MailGates: (compute_score:DELIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26028:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Mon, 21 Feb 2022 11:29:26 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     robh+dt@kernel.org
-Cc:     mturquette@baylibre.com, sboyd@kernel.org, tglx@linutronix.de,
-        maz@kernel.org, p.zabel@pengutronix.de, linux@armlinux.org.uk,
-        broonie@kernel.org, arnd@arndb.de, stefan.wahren@i2se.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        wells.lu@sunplus.com, Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v9 09/10] ARM: sunplus: Add initial support for Sunplus SP7021 SoC
-Date:   Mon, 21 Feb 2022 11:29:20 +0800
-Message-Id: <f1c536c71be65cf2e4b5af2c477a0ffc88398456.1645413746.git.qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1645413746.git.qinjian@cqplus1.com>
-References: <cover.1645413746.git.qinjian@cqplus1.com>
+        Sun, 20 Feb 2022 22:43:06 -0500
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA073C70E;
+        Sun, 20 Feb 2022 19:42:43 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id CAB523200258;
+        Sun, 20 Feb 2022 22:42:40 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sun, 20 Feb 2022 22:42:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=4Ftth8
+        jIR9thK7FgELPaAjI8cJu47K8WHyuMsUo9B1g=; b=FdoiMWvU0BfcBuxRwZU+21
+        YkXa3ru8QvLBJzmL/AR2f3zSpdyN/RArycC556yS3nEpHXST4J6m2eSpv6RsAfae
+        HVDZ0tHyCtBHkF+ERY5MvQNm5iP2mhYt2LyddO0yYU4fvStJbC0IIM14aXMD33Fd
+        gDIUNKDMi398RCkvE7HHV8/5mkBXoCY3qYqSkxKuCmIYRhjFNNNGujLo6iCqohEo
+        jrcLXcM12/4ynXvJxVvUm8dAIn1OnnbIzU1WSBn6s6cGnMvOO95hNqMNJKpHSPZj
+        kYpA/hauWPYnxQm0ebleiBxI0kcS2gkEmB3L2nA0ujfpiws/nhx5TNz9yHNa5flQ
+        ==
+X-ME-Sender: <xms:LwoTYpCoP_vRoO-_W43C6K6fDJoUfDxtuNFYf33mJAATjxinZwOqbA>
+    <xme:LwoTYnhBQrjcD6W4_JUHEJJ5xXbslYuqYGV2q7GbsGS7sM24JA9cfSloftU9n_920
+    GovhIkTXs473g>
+X-ME-Received: <xmr:LwoTYkkICF2S4BqHYuGwzspmSGfOM82iVlML-aoKIWsuRIHSpPpgyT8Ipq4Ty5RXgEx9qF_BHzRkiTO5CL53ix3RwgdmF7PdYuDnP39P6FH2XPWzMIA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeehgdeitdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvffufffkofggtghogfesthekredtredtjeenucfhrhhomhepofgrrhgvkhcu
+    ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
+    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhephefhfeet
+    ueelvddvtedttdevieeluedtvedtfeejieelhedutdeuheduieejgfegnecuffhomhgrih
+    hnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
+    gsrdgtohhm
+X-ME-Proxy: <xmx:LwoTYjyJDArO5Qikpwxqss0lYz6rfAvZG-o-ZDWrYSHkps5AmaKhPQ>
+    <xmx:LwoTYuQaNlIgZeG2_YCDGLJG9dPE5ErYpcWEQBbdDTU6BHUQWHvkLA>
+    <xmx:LwoTYmbnSKBtsO3el5Uoa9Tu8brFC5fcwyiqug_rUxPPmUavF9DXMA>
+    <xmx:MAoTYrQZH-q9MTuCmeVGtFapoCE7E5IoRirCF9BmYN3iEkXq9iMhtQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 20 Feb 2022 22:42:38 -0500 (EST)
+From:   =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, stable@vger.kernel.org,
+        Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        xen-devel@lists.xenproject.org (moderated list:XEN NETWORK BACKEND
+        DRIVER),
+        netdev@vger.kernel.org (open list:XEN NETWORK BACKEND DRIVER)
+Subject: [PATCH 1/2] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+Date:   Mon, 21 Feb 2022 04:42:12 +0100
+Message-Id: <20220221034214.2237097-1-marmarek@invisiblethingslab.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Organization: Invisible Things Lab
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch aims to add an initial support for Sunplus SP7021 SoC.
+This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+The 'hotplug-status' node should not be removed as long as the vif
+device remains configured. Otherwise the xen-netback would wait for
+re-running the network script even if it was already called (in case of
+the frontent re-connecting). But also, it _should_ be removed when the
+vif device is destroyed (for example when unbinding the driver) -
+otherwise hotplug script would not configure the device whenever it
+re-appear.
+
+Moving removal of the 'hotplug-status' node was a workaround for nothing
+calling network script after xen-netback module is reloaded. But when
+vif interface is re-created (on xen-netback unbind/bind for example),
+the script should be called, regardless of who does that - currently
+this case is not handled by the toolstack, and requires manual
+script call. Keeping hotplug-status=connected to skip the call is wrong
+and leads to not configured interface.
+
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 ---
- MAINTAINERS                    |  1 +
- arch/arm/Kconfig               |  2 ++
- arch/arm/Makefile              |  1 +
- arch/arm/mach-sunplus/Kconfig  | 26 ++++++++++++++++++++++++++
- arch/arm/mach-sunplus/Makefile |  9 +++++++++
- arch/arm/mach-sunplus/sp7021.c | 16 ++++++++++++++++
- 6 files changed, 55 insertions(+)
- create mode 100644 arch/arm/mach-sunplus/Kconfig
- create mode 100644 arch/arm/mach-sunplus/Makefile
- create mode 100644 arch/arm/mach-sunplus/sp7021.c
+Cc: Michael Brown <mcb30@ipxe.org>
+---
+ drivers/net/xen-netback/xenbus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index febbd97bf..0ae537a41 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2664,6 +2664,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
- F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
- F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
- F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-+F:	arch/arm/mach-sunplus/
- F:	drivers/clk/clk-sp7021.c
- F:	drivers/irqchip/irq-sp7021-intc.c
- F:	drivers/reset/reset-sunplus.c
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 59baf6c13..8c7883b5a 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -689,6 +689,8 @@ source "arch/arm/mach-sti/Kconfig"
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index d24b7a7993aa..ce0f3035bee8 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
+ 		unsigned int queue_index;
  
- source "arch/arm/mach-stm32/Kconfig"
+ 		xen_unregister_watchers(vif);
++		xenbus_rm(XBT_NIL, dev->nodename, "hotplug-status");
+ #ifdef CONFIG_DEBUG_FS
+ 		xenvif_debugfs_delif(vif);
+ #endif /* CONFIG_DEBUG_FS */
+@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
  
-+source "arch/arm/mach-sunplus/Kconfig"
-+
- source "arch/arm/mach-sunxi/Kconfig"
- 
- source "arch/arm/mach-tegra/Kconfig"
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 847c31e7c..973ffb830 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -212,6 +212,7 @@ machine-$(CONFIG_ARCH_RENESAS)	 	+= shmobile
- machine-$(CONFIG_ARCH_INTEL_SOCFPGA)	+= socfpga
- machine-$(CONFIG_ARCH_STI)		+= sti
- machine-$(CONFIG_ARCH_STM32)		+= stm32
-+machine-$(CONFIG_ARCH_SUNPLUS)		+= sunplus
- machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
- machine-$(CONFIG_ARCH_TEGRA)		+= tegra
- machine-$(CONFIG_ARCH_U8500)		+= ux500
-diff --git a/arch/arm/mach-sunplus/Kconfig b/arch/arm/mach-sunplus/Kconfig
-new file mode 100644
-index 000000000..e720606dd
---- /dev/null
-+++ b/arch/arm/mach-sunplus/Kconfig
-@@ -0,0 +1,26 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+menuconfig ARCH_SUNPLUS
-+	bool "Sunplus SoCs"
-+	depends on ARCH_MULTI_V7
-+	help
-+	  Support for Sunplus SoC family: SP7021 and succeeding SoC-based systems,
-+	  such as the Banana Pi BPI-F2S development board (and derivatives).
-+	  (<http://www.sinovoip.com.cn/ecp_view.asp?id=586>)
-+	  (<https://tibbo.com/store/plus1.html>)
-+
-+config SOC_SP7021
-+	bool "Sunplus SP7021 SoC support"
-+	depends on ARCH_SUNPLUS
-+	default ARCH_SUNPLUS
-+	select ARM_GIC
-+	select ARM_PSCI
-+	select PINCTRL
-+	select PINCTRL_SPPCTL
-+	select SERIAL_SUNPLUS
-+	select SERIAL_SUNPLUS_CONSOLE
-+	help
-+	  Support for Sunplus SP7021 SoC. It is based on ARM 4-core
-+	  Cortex-A7 with various peripherals (ex: I2C, SPI, SDIO,
-+	  Ethernet and etc.), FPGA interface,  chip-to-chip bus.
-+	  It is designed for industrial control.
-diff --git a/arch/arm/mach-sunplus/Makefile b/arch/arm/mach-sunplus/Makefile
-new file mode 100644
-index 000000000..c902580a7
---- /dev/null
-+++ b/arch/arm/mach-sunplus/Makefile
-@@ -0,0 +1,9 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the linux kernel.
-+#
-+
-+# Object file lists.
-+
-+obj-$(CONFIG_SOC_SP7021)	+= sp7021.o
-+
-diff --git a/arch/arm/mach-sunplus/sp7021.c b/arch/arm/mach-sunplus/sp7021.c
-new file mode 100644
-index 000000000..774d0a5bd
---- /dev/null
-+++ b/arch/arm/mach-sunplus/sp7021.c
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/*
-+ * Copyright (C) Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+#include <linux/kernel.h>
-+#include <asm/mach/arch.h>
-+
-+static const char *sp7021_compat[] __initconst = {
-+	"sunplus,sp7021",
-+	NULL
-+};
-+
-+DT_MACHINE_START(SP7021_DT, "SP7021")
-+	.dt_compat	= sp7021_compat,
-+MACHINE_END
+ 		/* Not interested in this watch anymore. */
+ 		unregister_hotplug_status_watch(be);
+-		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ 	}
+ 	kfree(str);
+ }
 -- 
-2.33.1
+2.31.1
 
