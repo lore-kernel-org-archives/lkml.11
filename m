@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468FEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC174C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380199AbiBUQXU (ORCPT
+        id S1380270AbiBUQX0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:23:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53376 "EHLO
+        Mon, 21 Feb 2022 11:23:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380192AbiBUQXN (ORCPT
+        with ESMTP id S1380193AbiBUQXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 11:23:13 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E63F927152
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:22:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 828AE27170
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:22:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645460568;
+        s=mimecast20190719; t=1645460569;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Cbki0TF8g05gfWmutcV9pyLiWp15y56GQBu92FXt0z8=;
-        b=WPmIbPLnnzH/+zO0qSGMW0dneRlYyx67R1zgoNae+5lG9zl5oJ0yUGGA4oEhhmDo2Kbznx
-        ybQwNOxOhQ/KGPNYUl2m/kEpvBUoIEhOhMaQLSz2mMXKXDpLfaV42+rFSft+Djz8suldOu
-        ypYkWnHOk1KF5+SvmVy80WaxQQ/gGWU=
+        bh=s1Gzsv9tYBkuF5sOn5S6HL4uRB3TRk8wp+l3AAt1BvU=;
+        b=CoR4rQOqShIB1GUHwkTt6NxF6LjVyyQsXuZRGg6LAj8T3DM9rW22S+N4RmUk6utyeAV6gB
+        IQH+Cym1tlZqYkiVylo1Lm7Me/pXRF/mOPRR9nMVYprxKnvoJVRQv8LVd1KacRBKjNrP1t
+        2JMZ+8V4GYHrExCvDk3o+94MGtIyVtQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-sLvUIf3KNZO8i1GSpRjT5w-1; Mon, 21 Feb 2022 11:22:47 -0500
-X-MC-Unique: sLvUIf3KNZO8i1GSpRjT5w-1
+ us-mta-591-1vr4Ohg_PUGXbIkjSjiNBg-1; Mon, 21 Feb 2022 11:22:46 -0500
+X-MC-Unique: 1vr4Ohg_PUGXbIkjSjiNBg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65A482F4C;
-        Mon, 21 Feb 2022 16:22:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EC92E1006AA5;
+        Mon, 21 Feb 2022 16:22:44 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0923177477;
-        Mon, 21 Feb 2022 16:22:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CE4777468;
+        Mon, 21 Feb 2022 16:22:44 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dmatlack@google.com, seanjc@google.com
-Subject: [PATCH v2 05/25] KVM: x86/mmu: rephrase unclear comment
-Date:   Mon, 21 Feb 2022 11:22:23 -0500
-Message-Id: <20220221162243.683208-6-pbonzini@redhat.com>
+Subject: [PATCH v2 02/25] KVM: x86/mmu: nested EPT cannot be used in SMM
+Date:   Mon, 21 Feb 2022 11:22:20 -0500
+Message-Id: <20220221162243.683208-3-pbonzini@redhat.com>
 In-Reply-To: <20220221162243.683208-1-pbonzini@redhat.com>
 References: <20220221162243.683208-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,29 +54,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If accessed bits are not supported there simple isn't any distinction
-between accessed and non-accessed gPTEs, so the comment does not make
-much sense.  Rephrase it in terms of what happens if accessed bits
-*are* supported.
+The role.base.smm flag is always zero when setting up shadow EPT,
+do not bother copying it over from vcpu->arch.root_mmu.
 
+Reviewed-by: David Matlack <dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 80b4b291002a..d1d17d28e81b 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -193,7 +193,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
- 	if (!FNAME(is_present_gpte)(gpte))
- 		goto no_present;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 7051040e15b3..4f9bbd02fb8b 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -4886,9 +4886,11 @@ kvm_calc_shadow_ept_root_page_role(struct kvm_vcpu *vcpu, bool accessed_dirty,
+ {
+ 	union kvm_mmu_role role = {0};
  
--	/* if accessed bit is not supported prefetch non accessed gpte */
-+	/* if accessed bit is supported, prefetch only accessed gpte */
- 	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
- 	    !(gpte & PT_GUEST_ACCESSED_MASK))
- 		goto no_present;
+-	/* SMM flag is inherited from root_mmu */
+-	role.base.smm = vcpu->arch.root_mmu.mmu_role.base.smm;
+-
++	/*
++	 * KVM does not support SMM transfer monitors, and consequently does not
++	 * support the "entry to SMM" control either.  role.base.smm is always 0.
++	 */
++	WARN_ON_ONCE(is_smm(vcpu));
+ 	role.base.level = level;
+ 	role.base.has_4_byte_gpte = false;
+ 	role.base.direct = false;
 -- 
 2.31.1
 
