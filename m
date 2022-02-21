@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B351C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243745AbiBUJ15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:27:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37006 "EHLO
+        id S245277AbiBUJ2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:28:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349208AbiBUJVH (ORCPT
+        with ESMTP id S1349253AbiBUJVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:07 -0500
+        Mon, 21 Feb 2022 04:21:09 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E5E3587F;
-        Mon, 21 Feb 2022 01:08:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DBD36143;
+        Mon, 21 Feb 2022 01:08:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2FE0608C1;
-        Mon, 21 Feb 2022 09:08:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB04C340E9;
-        Mon, 21 Feb 2022 09:07:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0CE6090A;
+        Mon, 21 Feb 2022 09:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A013CC340E9;
+        Mon, 21 Feb 2022 09:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434480;
-        bh=6TGHFzWoBF8VCHFHfVRCuz5fx3lT8j5ALTDaaJYk2OE=;
+        s=korg; t=1645434483;
+        bh=Kp3T8Uq/wmdAQIvGZCoRhZ+9BMeChwVbO3ac4eqCP1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=upcEKe2OZWe8uiihWbEBmNY5gSBrKMp+7ockfU7Aer/cQhmfawGzRER/zLO6iJ2f7
-         s4XinmGMa5+OlCcIxfMFPZm6q2CunFIwsu5FreQarC0yJvG+Y9UGagToXjHaJrnJIL
-         g+k0raQ5BRtwnZ8aQTTgTcDKGOvtn+zPad128vlU=
+        b=U4Pk2RzHlSGeByhcg8p4hUaNjuVZWwcsd3YKbi/VJ68B/23Kzw6EIEbLr1+KjeWMb
+         pEZNMZewBeUSAnxPKH23Ahi2SFTuNx3OONgLz/4cOKYr33jqAYPi5XJ1iUUUxbCet1
+         QqipkPSYZPYPiBeB0h+jkLhaOUAKVJhPPNwDMOZA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/196] kunit: tool: Import missing importlib.abc
-Date:   Mon, 21 Feb 2022 09:47:35 +0100
-Message-Id: <20220221084931.669379418@linuxfoundation.org>
+Subject: [PATCH 5.15 024/196] selftests: rtc: Increase test timeout so that all tests run
+Date:   Mon, 21 Feb 2022 09:47:36 +0100
+Message-Id: <20220221084931.703886597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,40 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michał Winiarski <michal.winiarski@intel.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit 235528072f28b3b0a1446279b7eaddda36dbf743 ]
+[ Upstream commit f034cc1301e7d83d4ec428dd6b8ffb57ca446efb ]
 
-Python 3.10.0 contains:
-9e09849d20 ("bpo-41006: importlib.util no longer imports typing (GH-20938)")
+The timeout setting for the rtc kselftest is currently 90 seconds. This
+setting is used by the kselftest runner to stop running a test if it
+takes longer than the assigned value.
 
-It causes importlib.util to no longer import importlib.abs, which leads
-to the following error when trying to use kunit with qemu:
-AttributeError: module 'importlib' has no attribute 'abc'. Did you mean: '_abc'?
+However, two of the test cases inside rtc set alarms. These alarms are
+set to the next beginning of the minute, so each of these test cases may
+take up to, in the worst case, 60 seconds.
 
-Add the missing import.
+In order to allow for all test cases in rtc to run, even in the worst
+case, when using the kselftest runner, the timeout value should be
+increased to at least 120. Set it to 180, so there's some additional
+slack.
 
-Signed-off-by: Michał Winiarski <michal.winiarski@intel.com>
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Correct operation can be tested by running the following command right
+after the start of a minute (low second count), and checking that all
+test cases run:
+
+	./run_kselftest.sh -c rtc
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/kunit/kunit_kernel.py | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/rtc/settings | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-index 2c6f916ccbafa..0874e512d109b 100644
---- a/tools/testing/kunit/kunit_kernel.py
-+++ b/tools/testing/kunit/kunit_kernel.py
-@@ -6,6 +6,7 @@
- # Author: Felix Guo <felixguoxiuping@gmail.com>
- # Author: Brendan Higgins <brendanhiggins@google.com>
- 
-+import importlib.abc
- import importlib.util
- import logging
- import subprocess
+diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+index ba4d85f74cd6b..a953c96aa16e1 100644
+--- a/tools/testing/selftests/rtc/settings
++++ b/tools/testing/selftests/rtc/settings
+@@ -1 +1 @@
+-timeout=90
++timeout=180
 -- 
 2.34.1
 
