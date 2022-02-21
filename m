@@ -2,132 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbiBUS2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:28:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46886 "EHLO
+        id S231579AbiBUS2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:28:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233413AbiBUS0N (ORCPT
+        with ESMTP id S233417AbiBUS0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:26:13 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD977C7D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:24:33 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id p15so35309670ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:24:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VrJahzZJ/M1x1jlKCya/AAr+tVg0X5cYEeiwY9y7oXw=;
-        b=qnOqGiaChnG940C+mXX+rqoKTtx/ZMYCjlcLfjZ6RW+CRW5Zf2MmiSQUtQR6OduRuQ
-         ut2YxNw024KMpK8H2Wm9+PRRrZmlte3Xuc2NemvqdLvAjERKIqw6cqU9/U1weZn0d4iA
-         KHtLQn85kQt51KZYF3Gtgkvj8b01K+o2uiA4BuDpuwIIWd1zyUI/EZ+HHxOUoCipUahY
-         gPV449t2bucHBkj+iPzoFIXuOee74A8cT5Q+Et+a7rbVlY2SirZfrs7DcCz/TlRk9Sxf
-         GDWVU73VUGoZYkBllBYBEBrhj6k83R38kgm2UkCgZM1/TWRVOvc87MniiRRKr6jZjY81
-         8gwQ==
+        Mon, 21 Feb 2022 13:26:14 -0500
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3813ECC2;
+        Mon, 21 Feb 2022 10:25:47 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id j12so36110590ybh.8;
+        Mon, 21 Feb 2022 10:25:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VrJahzZJ/M1x1jlKCya/AAr+tVg0X5cYEeiwY9y7oXw=;
-        b=bOTHRh01OecLhkUhefwP5A/76J16aJxsrZ6Sktdnb6oeLUNhAAcOVonyo4hBICIdCk
-         4Hj9Q9QFThVwT/7YIU2uEypP7+W1+if5JSSC0/csi8WVTC9W6tkVluI8ueRsve3ONxgS
-         sj2pEjBtDJZ/FVKktY8zE6Vx1pYUYKAzs/8lnMit4DbJI8mL4AsDJT9NTnY2cYerPJkT
-         70BMF8gMDuLXz4Sn1I9/mHQqqhJsp6KsC+OBSuqOV0Pi0H0aX2H7IOWLdlXPNlKdj2r3
-         LqwD22c4NIn9skBQ2CGk2h0JwCJq5Vq8w9B7SQJYHVJNocWPcEx5nakUlmHNorAPdZhB
-         6b+g==
-X-Gm-Message-State: AOAM532hfI9B3SYYd1+7hmfGmJQE6QG5P97447wuuhs37DuilAIVvG8a
-        PEwfW/kuqrGxQ8qnxw0LYGLfBa0aCQQsMw==
-X-Google-Smtp-Source: ABdhPJwrco5rvnrea2wm51FpkRbG+pj00GDNzUojXDuXcdeMT7F6tysHbzvaz0t807k7a6ANgZujpg==
-X-Received: by 2002:a17:906:3a41:b0:6ce:374d:adfa with SMTP id a1-20020a1709063a4100b006ce374dadfamr16941562ejf.199.1645467872286;
-        Mon, 21 Feb 2022 10:24:32 -0800 (PST)
-Received: from krava ([2a00:102a:500a:4c07:3c4e:83d8:8cd9:974f])
-        by smtp.gmail.com with ESMTPSA id h7sm9097346ede.66.2022.02.21.10.24.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 10:24:31 -0800 (PST)
-Date:   Mon, 21 Feb 2022 19:24:28 +0100
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     "Bayduraev, Alexey V" <alexey.v.bayduraev@linux.intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>
-Subject: Re: [PATCH core] perf data: Adding error message if
- perf_data__create_dir fails
-Message-ID: <YhPY3B3QumIZWukQ@krava>
-References: <20220218152341.5197-1-alexey.v.bayduraev@linux.intel.com>
- <YhLEHCttvXmRu78G@krava>
- <60253e6d-e8c5-550e-73b5-40720114c2a4@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7CLmQaOvCMcQvV4r2M9aCLErvPDwRMsrYPEB5OYDfvc=;
+        b=iy8HeJSDefxQLnZfCP2LG1C6oe72ffBB2czp3u0zvdnYvQRtv1nqeesNQNecXBh0fa
+         tK0d3Q2+WNi3kOtedDvWoFJo9w1kZfe73isPYFQIRcun6ynI+mAT3uw/vRyjtwHWFda+
+         wbp715Md6A7cf7j/W/y66Akl4slCMT40haNQ52HxUHmfwG25KtXW4ZC/qtBF2F49dLko
+         BL7eHw9wW4UWhjWu/6atdeC/VKKM2Oa44Z7+LifS5P48QwREcX3J4QZ46zZVRkN4SXns
+         gVlmOuXBShF8HCA2x+MC8DtruH49BvRjIX0qLsaAcg3xwRYwHgkOxh9i1hmNwd4pqn6c
+         Pxjw==
+X-Gm-Message-State: AOAM5324sQkJpE2hZPD9k0pC5BkE72rnaKKWaVdHzNtywVSyRHS2Vtzs
+        hxVCLMdVOjX/ip/cNn6eNXkkvIpdjost4Qs185dLL/Jw
+X-Google-Smtp-Source: ABdhPJz2BLZZm12UCagsI9Nu8EUrFQ6j0vK4AqIIHiwAOAIzhxT3kuPGm9cAToahDQj5WulJZFgZ9Rc7VXPxxC1uy98=
+X-Received: by 2002:a25:378f:0:b0:61d:8e8b:6cf5 with SMTP id
+ e137-20020a25378f000000b0061d8e8b6cf5mr18939628yba.622.1645467946376; Mon, 21
+ Feb 2022 10:25:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <60253e6d-e8c5-550e-73b5-40720114c2a4@linux.intel.com>
+References: <20211126070422.73234-1-xueshuai@linux.alibaba.com>
+ <20220122052618.1074-1-xueshuai@linux.alibaba.com> <YhPXX+CSoK++9MP6@dev-arch.archlinux-ax161>
+In-Reply-To: <YhPXX+CSoK++9MP6@dev-arch.archlinux-ax161>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 21 Feb 2022 19:25:35 +0100
+Message-ID: <CAJZ5v0iwpvOMYt-bAAaN86+6+dzWqMRmdZnVqyw8wjhjh1Mp4w@mail.gmail.com>
+Subject: Re: [PATCH v7 1/2] ACPI: APEI: explicit init HEST and GHES in apci_init
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Shuai Xue <xueshuai@linux.alibaba.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>, Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        luanshi <zhangliguang@linux.alibaba.com>,
+        zhuo.song@linux.alibaba.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux PCI <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 04:24:28PM +0300, Bayduraev, Alexey V wrote:
-> On 21.02.2022 1:43, Jiri Olsa wrote:
-> > On Fri, Feb 18, 2022 at 06:23:40PM +0300, Alexey Bayduraev wrote:
-> >> There is no notification about data directory creation failure. Add it.
-> >>
-> >> Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-> >> ---
-> >>  tools/perf/builtin-record.c | 4 +++-
-> >>  1 file changed, 3 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-> >> index 0bc6529814b2..0306d5911de2 100644
-> >> --- a/tools/perf/builtin-record.c
-> >> +++ b/tools/perf/builtin-record.c
-> >> @@ -1186,8 +1186,10 @@ static int record__mmap_evlist(struct record *rec,
-> >>  
-> >>  	if (record__threads_enabled(rec)) {
-> >>  		ret = perf_data__create_dir(&rec->data, evlist->core.nr_mmaps);
-> >> -		if (ret)
-> >> +		if (ret) {
-> >> +			pr_err("Failed to create data directory: %s\n", strerror(errno));
-> > 
-> > errno will be misleading in here, because perf_data__create_dir
-> > calls other syscalls on error path
-> 
-> Mostly I want to output something like:
-> 
->   Failed to create data dir: Too many open files
-> 
-> This will trigger the user to increase the open files limit.
-> Would it be better to place such message to perf_data__create_dir after 
-> open() syscall?
+On Mon, Feb 21, 2022 at 7:18 PM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Hi Shuai,
+>
+> On Sat, Jan 22, 2022 at 01:26:17PM +0800, Shuai Xue wrote:
+> > From commit e147133a42cb ("ACPI / APEI: Make hest.c manage the estatus
+> > memory pool") was merged, ghes_init() relies on acpi_hest_init() to manage
+> > the estatus memory pool. On the other hand, ghes_init() relies on
+> > sdei_init() to detect the SDEI version and (un)register events. The
+> > dependencies are as follows:
+> >
+> >     ghes_init() => acpi_hest_init() => acpi_bus_init() => acpi_init()
+> >     ghes_init() => sdei_init()
+> >
+> > HEST is not PCI-specific and initcall ordering is implicit and not
+> > well-defined within a level.
+> >
+> > Based on above, remove acpi_hest_init() from acpi_pci_root_init() and
+> > convert ghes_init() and sdei_init() from initcalls to explicit calls in the
+> > following order:
+> >
+> >     acpi_hest_init()
+> >     ghes_init()
+> >         sdei_init()
+> >
+> > Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> > ---
+> >  drivers/acpi/apei/ghes.c    | 19 ++++++++-----------
+> >  drivers/acpi/bus.c          |  2 ++
+> >  drivers/acpi/pci_root.c     |  3 ---
+> >  drivers/firmware/Kconfig    |  1 +
+> >  drivers/firmware/arm_sdei.c | 13 ++-----------
+> >  include/acpi/apei.h         |  4 +++-
+> >  include/linux/arm_sdei.h    |  2 ++
+> >  7 files changed, 18 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+> > index 0c5c9acc6254..aadc0a972f18 100644
+> > --- a/drivers/acpi/apei/ghes.c
+> > +++ b/drivers/acpi/apei/ghes.c
+> > @@ -1457,33 +1457,35 @@ static struct platform_driver ghes_platform_driver = {
+> >       .remove         = ghes_remove,
+> >  };
+> >
+> > -static int __init ghes_init(void)
+> > +void __init ghes_init(void)
+> >  {
+> >       int rc;
+> >
+> > +     sdei_init();
+> > +
+> >       if (acpi_disabled)
+> > -             return -ENODEV;
+> > +             return;
+> >
+> >       switch (hest_disable) {
+> >       case HEST_NOT_FOUND:
+> > -             return -ENODEV;
+> > +             return;
+> >       case HEST_DISABLED:
+> >               pr_info(GHES_PFX "HEST is not enabled!\n");
+> > -             return -EINVAL;
+> > +             return;
+> >       default:
+> >               break;
+> >       }
+> >
+> >       if (ghes_disable) {
+> >               pr_info(GHES_PFX "GHES is not enabled!\n");
+> > -             return -EINVAL;
+> > +             return;
+> >       }
+> >
+> >       ghes_nmi_init_cxt();
+> >
+> >       rc = platform_driver_register(&ghes_platform_driver);
+> >       if (rc)
+> > -             goto err;
+> > +             return;
+> >
+> >       rc = apei_osc_setup();
+> >       if (rc == 0 && osc_sb_apei_support_acked)
+> > @@ -1494,9 +1496,4 @@ static int __init ghes_init(void)
+> >               pr_info(GHES_PFX "APEI firmware first mode is enabled by APEI bit.\n");
+> >       else
+> >               pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
+> > -
+> > -     return 0;
+> > -err:
+> > -     return rc;
+> >  }
+> > -device_initcall(ghes_init);
+> > diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+> > index 07f604832fd6..3f403db20f69 100644
+> > --- a/drivers/acpi/bus.c
+> > +++ b/drivers/acpi/bus.c
+> > @@ -1331,6 +1331,8 @@ static int __init acpi_init(void)
+> >
+> >       pci_mmcfg_late_init();
+> >       acpi_iort_init();
+> > +     acpi_hest_init();
+> > +     ghes_init();
+> >       acpi_scan_init();
+> >       acpi_ec_init();
+> >       acpi_debugfs_init();
+> > diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> > index b76db99cced3..6f9e75d14808 100644
+> > --- a/drivers/acpi/pci_root.c
+> > +++ b/drivers/acpi/pci_root.c
+> > @@ -22,8 +22,6 @@
+> >  #include <linux/slab.h>
+> >  #include <linux/dmi.h>
+> >  #include <linux/platform_data/x86/apple.h>
+> > -#include <acpi/apei.h>       /* for acpi_hest_init() */
+> > -
+> >  #include "internal.h"
+> >
+> >  #define ACPI_PCI_ROOT_CLASS          "pci_bridge"
+> > @@ -943,7 +941,6 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
+> >
+> >  void __init acpi_pci_root_init(void)
+> >  {
+> > -     acpi_hest_init();
+> >       if (acpi_pci_disabled)
+> >               return;
+> >
+> > diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+> > index 75cb91055c17..ad114d9cdf8e 100644
+> > --- a/drivers/firmware/Kconfig
+> > +++ b/drivers/firmware/Kconfig
+> > @@ -40,6 +40,7 @@ config ARM_SCPI_POWER_DOMAIN
+> >  config ARM_SDE_INTERFACE
+> >       bool "ARM Software Delegated Exception Interface (SDEI)"
+> >       depends on ARM64
+> > +     select ACPI_APEI_GHES
+>
+> As the kernel test robot pointed out [1], you cannot do this.
+> CONFIG_ACPI_APEI_GHES is a user selectable symbol that has dependencies,
+> which 'select' completely overrides, resulting in build failures when
+> CONFIG_ACPI_APEI is not enabled.
+>
+> If CONFIG_ARM_SDE_INTERFACE truly requires CONFIG_ACPI_APEI_GHES, you
+> should have "depends on ACPI_APEI_GHES".
+>
+> If CONFIG_ARM_SDE_INTERFACE soft depends on CONFIG_ACPI_APEI_GHES for
+> functionality but can work without it, you could use
+> "imply ACPI_APEI_GHES", which will enable CONFIG_ACPI_APEI_GHES if its
+> dependencies are met.
+>
+> I noticed the same error with Alpine Linux's aarch64 configuration [2]
+> if you wanted a quick configuration to test with.
+>
+> [1]: https://lore.kernel.org/r/202202151504.jWpZGPaH-lkp@intel.com/
+> [2]: https://git.alpinelinux.org/aports/plain/community/linux-edge/config-edge.aarch64
 
-how about something like below (with your change)
-
-jirka
-
-
----
-diff --git a/tools/perf/util/data.c b/tools/perf/util/data.c
-index 15a4547d608e..d3382098d6f9 100644
---- a/tools/perf/util/data.c
-+++ b/tools/perf/util/data.c
-@@ -52,8 +52,10 @@ int perf_data__create_dir(struct perf_data *data, int nr)
- 			goto out_err;
- 
- 		ret = open(file->path, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
--		if (ret < 0)
-+		if (ret < 0) {
-+			ret = -errno;
- 			goto out_err;
-+		}
- 
- 		file->fd = ret;
- 	}
+Note that I've dropped these patches from my linux-next branch now.
