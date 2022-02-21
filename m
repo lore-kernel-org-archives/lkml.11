@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6544BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348386AbiBUJSU (ORCPT
+        id S1348034AbiBUJSZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33914 "EHLO
+        Mon, 21 Feb 2022 04:18:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348619AbiBUJL0 (ORCPT
+        with ESMTP id S1348663AbiBUJLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:26 -0500
+        Mon, 21 Feb 2022 04:11:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9596275CB;
-        Mon, 21 Feb 2022 01:03:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4D127B00;
+        Mon, 21 Feb 2022 01:03:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44765611F4;
-        Mon, 21 Feb 2022 09:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29903C340E9;
-        Mon, 21 Feb 2022 09:03:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C175E6112F;
+        Mon, 21 Feb 2022 09:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1B4EC340E9;
+        Mon, 21 Feb 2022 09:03:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434222;
-        bh=K+V0Yjv0c9Wl1PIaeiW3bFZSkyLjM1ArIlePPGuftA8=;
+        s=korg; t=1645434231;
+        bh=OSHo2PJpIYtB2DIHy0v4CkW2SRFnO9seM4Vk8G09WJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SjDI3hBqRAOJ68Qc5QMjyY9RV5/X6/NwIcNaMprN8+Ow0PDvSTZ1Cx1ZKmUu5J/qj
-         TnVGTQCtOg1+W8XqLAZ9fAn3RxU0aKvIZTLbPIdm9v57ZWI1kHucyHvDtYbEfhAhMC
-         P+decoSun0m6nhUBcJNkUf+Xrtd7UmkGQytMH0uQ=
+        b=WqoIDz/h+NJcdQy2w4uSWXO84+nBPNw2daHAdMiY6XBvM7GB+gcP2ov9gR2iGuzBz
+         FBoH0RgfRCpBKZ0psTrXIeWBqLfphPielosvcJ3SQ2TNedtSqAzCiOTwHFFeTE6BpO
+         0jOceZ4wG84aNzGRHVAob6wrxOpmYDFcLScM/a9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 053/121] iwlwifi: pcie: gen2: fix locking when "HW not ready"
-Date:   Mon, 21 Feb 2022 09:49:05 +0100
-Message-Id: <20220221084923.009995889@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 025/121] selftests/zram: Skip max_comp_streams interface on newer kernel
+Date:   Mon, 21 Feb 2022 09:48:37 +0100
+Message-Id: <20220221084922.020577524@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,34 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-commit 4c29c1e27a1e178a219b3877d055e6dd643bdfda upstream.
+[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
 
-If we run into this error path, we shouldn't unlock the mutex
-since it's not locked since. Fix this in the gen2 code as well.
+Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
+has switched to per-cpu streams. Even kernel still keep this interface for
+some reasons, but writing to max_comp_stream doesn't take any effect. So
+skip it on newer kernel ie 4.7.
 
-Fixes: eda50cde58de ("iwlwifi: pcie: add context information support")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/iwlwifi.20220128142706.b8b0dfce16ef.Ie20f0f7b23e5911350a2766524300d2915e7b677@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The code that comparing kernel version is from xfstests testsuite ext4/053.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-@@ -320,8 +320,7 @@ int iwl_trans_pcie_gen2_start_fw(struct
- 	/* This may fail if AMT took ownership of the device */
- 	if (iwl_pcie_prepare_card_hw(trans)) {
- 		IWL_WARN(trans, "Exit HW not ready\n");
--		ret = -EIO;
--		goto out;
-+		return -EIO;
- 	}
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 6f872f266fd11..f47fc0f27e99e 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -11,6 +11,9 @@ dev_mounted=-1
  
- 	iwl_enable_rfkill_int(trans);
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++kernel_version=`uname -r | cut -d'.' -f1,2`
++kernel_major=${kernel_version%.*}
++kernel_minor=${kernel_version#*.}
+ 
+ trap INT
+ 
+@@ -25,6 +28,20 @@ check_prereqs()
+ 	fi
+ }
+ 
++kernel_gte()
++{
++	major=${1%.*}
++	minor=${1#*.}
++
++	if [ $kernel_major -gt $major ]; then
++		return 0
++	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
++		return 0
++	fi
++
++	return 1
++}
++
+ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+@@ -86,6 +103,13 @@ zram_max_streams()
+ {
+ 	echo "set max_comp_streams to zram device(s)"
+ 
++	kernel_gte 4.7
++	if [ $? -eq 0 ]; then
++		echo "The device attribute max_comp_streams was"\
++		               "deprecated in 4.7"
++		return 0
++	fi
++
+ 	local i=0
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
+-- 
+2.34.1
+
 
 
