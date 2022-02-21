@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7351EC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B2CC3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354129AbiBUKC5 (ORCPT
+        id S1354205AbiBUKDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50492 "EHLO
+        Mon, 21 Feb 2022 05:03:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352440AbiBUJzP (ORCPT
+        with ESMTP id S1352279AbiBUJzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:55:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8190438BDD;
-        Mon, 21 Feb 2022 01:24:17 -0800 (PST)
+        Mon, 21 Feb 2022 04:55:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83CF38D8E;
+        Mon, 21 Feb 2022 01:24:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19FB0B80EC9;
-        Mon, 21 Feb 2022 09:24:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5940DC340E9;
-        Mon, 21 Feb 2022 09:24:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFDEB80EB9;
+        Mon, 21 Feb 2022 09:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF80C340E9;
+        Mon, 21 Feb 2022 09:24:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435454;
-        bh=cpdzsA5c5JM7G2P5UtQuYbH2avba+bmbzjIUFc05maI=;
+        s=korg; t=1645435463;
+        bh=QQ5ZIGrzyf85aJ0Ve7YOb/9ft6x8SGP+hp/fR0elpo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JyQMMjFi6zyz4eM8uNKHwLRlLUKrkHNNma3nvyC/ge+5BlzgF7EkSSrpOEHN+nM8z
-         G+2ciSZor7szCXeD3DrsTgCgLnsTS/ycs3/LVbNyflEyKZH+s8C2pUPYZ69enPkW1k
-         WMHgeB4xNcLrEgRcoK0SxUGH1Ezva7MCQg6wF47A=
+        b=DAtUb89WLuPjd+NFV3byZ1bp/501XYXSaGnxeF7UkfY8VhVFKnB4NJAJzv2fhDPbI
+         bflo/4KlI0Ji9BAg7MFpAdpXmOp5845oES80t63DC5SOWzapFKB8SHoZw2eLSfvcGh
+         OSiy9Tk/k7eNyo/YFNviiXQIvEDiH5hOdZBhRcM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, david regan <dregan@mail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 169/227] mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
-Date:   Mon, 21 Feb 2022 09:49:48 +0100
-Message-Id: <20220221084940.437727857@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Ferreira?= <contact@lsferreira.net>,
+        Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.16 172/227] x86/ptrace: Fix xfpregs_set()s incorrect xmm clearing
+Date:   Mon, 21 Feb 2022 09:49:51 +0100
+Message-Id: <20220221084940.529596581@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,43 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: david regan <dregan@mail.com>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit 36415a7964711822e63695ea67fede63979054d9 upstream.
+commit 44cad52cc14ae10062f142ec16ede489bccf4469 upstream.
 
-The brcmnand driver contains a bug in which if a page (example 2k byte)
-is read from the parallel/ONFI NAND and within that page a subpage (512
-byte) has correctable errors which is followed by a subpage with
-uncorrectable errors, the page read will return the wrong status of
-correctable (as opposed to the actual status of uncorrectable.)
+xfpregs_set() handles 32-bit REGSET_XFP and 64-bit REGSET_FP. The actual
+code treats these regsets as modern FX state (i.e. the beginning part of
+XSTATE). The declarations of the regsets thought they were the legacy
+i387 format. The code thought they were the 32-bit (no xmm8..15) variant
+of XSTATE and, for good measure, made the high bits disappear by zeroing
+the wrong part of the buffer. The latter broke ptrace, and everything
+else confused anyone trying to understand the code. In particular, the
+nonsense definitions of the regsets confused me when I wrote this code.
 
-The bug is in function brcmnand_read_by_pio where there is a check for
-uncorrectable bits which will be preempted if a previous status for
-correctable bits is detected.
+Clean this all up. Change the declarations to match reality (which
+shouldn't change the generated code, let alone the ABI) and fix
+xfpregs_set() to clear the correct bits and to only do so for 32-bit
+callers.
 
-The fix is to stop checking for bad bits only if we already have a bad
-bits status.
-
-Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
-Signed-off-by: david regan <dregan@mail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
+Fixes: 6164331d15f7 ("x86/fpu: Rewrite xfpregs_set()")
+Reported-by: Luís Ferreira <contact@lsferreira.net>
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215524
+Link: https://lore.kernel.org/r/YgpFnZpF01WwR8wU@zn.tnic
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/brcmnand/brcmnand.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/fpu/regset.c |    9 ++++-----
+ arch/x86/kernel/ptrace.c     |    4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
---- a/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-@@ -2106,7 +2106,7 @@ static int brcmnand_read_by_pio(struct m
- 					mtd->oobsize / trans,
- 					host->hwcfg.sector_size_1k);
+--- a/arch/x86/kernel/fpu/regset.c
++++ b/arch/x86/kernel/fpu/regset.c
+@@ -91,11 +91,9 @@ int xfpregs_set(struct task_struct *targ
+ 		const void *kbuf, const void __user *ubuf)
+ {
+ 	struct fpu *fpu = &target->thread.fpu;
+-	struct user32_fxsr_struct newstate;
++	struct fxregs_state newstate;
+ 	int ret;
  
--		if (!ret) {
-+		if (ret != -EBADMSG) {
- 			*err_addr = brcmnand_get_uncorrecc_addr(ctrl);
+-	BUILD_BUG_ON(sizeof(newstate) != sizeof(struct fxregs_state));
+-
+ 	if (!cpu_feature_enabled(X86_FEATURE_FXSR))
+ 		return -ENODEV;
  
- 			if (*err_addr)
+@@ -116,9 +114,10 @@ int xfpregs_set(struct task_struct *targ
+ 	/* Copy the state  */
+ 	memcpy(&fpu->fpstate->regs.fxsave, &newstate, sizeof(newstate));
+ 
+-	/* Clear xmm8..15 */
++	/* Clear xmm8..15 for 32-bit callers */
+ 	BUILD_BUG_ON(sizeof(fpu->__fpstate.regs.fxsave.xmm_space) != 16 * 16);
+-	memset(&fpu->fpstate->regs.fxsave.xmm_space[8], 0, 8 * 16);
++	if (in_ia32_syscall())
++		memset(&fpu->fpstate->regs.fxsave.xmm_space[8*4], 0, 8 * 16);
+ 
+ 	/* Mark FP and SSE as in use when XSAVE is enabled */
+ 	if (use_xsave())
+--- a/arch/x86/kernel/ptrace.c
++++ b/arch/x86/kernel/ptrace.c
+@@ -1224,7 +1224,7 @@ static struct user_regset x86_64_regsets
+ 	},
+ 	[REGSET_FP] = {
+ 		.core_note_type = NT_PRFPREG,
+-		.n = sizeof(struct user_i387_struct) / sizeof(long),
++		.n = sizeof(struct fxregs_state) / sizeof(long),
+ 		.size = sizeof(long), .align = sizeof(long),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
+@@ -1271,7 +1271,7 @@ static struct user_regset x86_32_regsets
+ 	},
+ 	[REGSET_XFP] = {
+ 		.core_note_type = NT_PRXFPREG,
+-		.n = sizeof(struct user32_fxsr_struct) / sizeof(u32),
++		.n = sizeof(struct fxregs_state) / sizeof(u32),
+ 		.size = sizeof(u32), .align = sizeof(u32),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
 
 
