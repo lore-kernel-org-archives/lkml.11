@@ -2,213 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3951C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357542AbiBUOae (ORCPT
+        id S1377824AbiBUOaq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:30:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39218 "EHLO
+        Mon, 21 Feb 2022 09:30:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346906AbiBUOad (ORCPT
+        with ESMTP id S1358822AbiBUOag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:30:33 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9861EC5E;
-        Mon, 21 Feb 2022 06:30:09 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E49B81F437A8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645453808;
-        bh=g3slv7bO+i9JLZnG8f+h6pHx2C2DHBVoYfxFRSRsfkU=;
-        h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=AQ9zpeRHw4BCi6CuLlgjKEZrjpXNSRcN6K234xSdy7JXtdX2dDcmexIqP19rcxAdy
-         QL6qZgpsiQIlYliIHF6Q5CQ3NiTEc82v5ey0ftyb962tbeHWLgBb8pFcmTFKdHmxJO
-         GKXuxeo4muP0TLUli8w8ki4NtrXP4lI7wMGJyHm/ttmnQsupQIRNeMAN/54AgQOIGN
-         gnqCPt3OgXH/+C8BLro2XJhZjQYmhIzmDzbSQ2o9XhEe4gH4NCoT3JAHgEfi/l2IFs
-         9MXk+jRjgWh0LUG2lFnAvA90OziqJq8wz2942w/GJpMedTj7Rg/ty6FtiUrtI0qO6k
-         CYO/LmILCK0aw==
-Message-ID: <c5a83b5f-91cc-61f9-a570-fafb5672de9f@collabora.com>
-Date:   Mon, 21 Feb 2022 15:30:04 +0100
+        Mon, 21 Feb 2022 09:30:36 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E3B1EC7B;
+        Mon, 21 Feb 2022 06:30:13 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nM9ha-0002vS-2G; Mon, 21 Feb 2022 15:30:10 +0100
+Message-ID: <7dce67c2-918e-3553-9dd3-1f59d3d37e05@leemhuis.info>
+Date:   Mon, 21 Feb 2022 15:30:09 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v8 03/19] drm/edid: Add cea_sad helpers for freq/length
-To:     Guillaume Ranquet <granquet@baylibre.com>, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
-        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-References: <20220218145437.18563-1-granquet@baylibre.com>
- <20220218145437.18563-4-granquet@baylibre.com>
-Content-Language: en-US
-In-Reply-To: <20220218145437.18563-4-granquet@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 077/227] iwlwifi: fix use-after-free
+Content-Language: en-BS
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Stefan Agner <stefan@agner.ch>,
+        Wolfgang Walter <linux@stwm.de>,
+        Jason Self <jason@bluehome.net>,
+        Dominik Behr <dominik@dominikbehr.com>,
+        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Johannes Berg <johannes.berg@intel.com>
+References: <20220221084934.836145070@linuxfoundation.org>
+ <20220221084937.429986092@linuxfoundation.org>
+ <fd5bacfa-b357-a2e2-f0b2-2098cdc734f2@leemhuis.info>
+ <87h78swggw.fsf@kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <87h78swggw.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1645453813;dabea8c3;
+X-HE-SMSGID: 1nM9ha-0002vS-2G
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 18/02/22 15:54, Guillaume Ranquet ha scritto:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
+On 21.02.22 13:29, Kalle Valo wrote:
+> Thorsten Leemhuis <regressions@leemhuis.info> writes:
 > 
-> This patch adds two helper functions that extract the frequency and word
-> length from a struct cea_sad.
+>> Hi, this is your Linux kernel regression tracker.
+>>
+>> On 21.02.22 09:48, Greg Kroah-Hartman wrote:
+>>> From: Johannes Berg <johannes.berg@intel.com>
+>>>
+>>> commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+>>>
+>>> If no firmware was present at all (or, presumably, all of the
+>>> firmware files failed to parse), we end up unbinding by calling
+>>> device_release_driver(), which calls remove(), which then in
+>>> iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
+>>> the new code I added will still erroneously access it after it
+>>> was freed.
+>>>
+>>> Set 'failure=false' in this case to avoid the access, all data
+>>> was already freed anyway.
+>>>
+>>> Cc: stable@vger.kernel.org
+>>> Reported-by: Stefan Agner <stefan@agner.ch>
+>>> Reported-by: Wolfgang Walter <linux@stwm.de>
+>>> Reported-by: Jason Self <jason@bluehome.net>
+>>> Reported-by: Dominik Behr <dominik@dominikbehr.com>
+>>> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+>>> Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+>>> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+>>> Signed-off-by: Kalle Valo <kvalo@kernel.org>
+>>> Link:
+>>> https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
+>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>
+>> Great to see that you quickly picked up this patch. Once the new stable
+>> and longterm releases are out on Wednesday, it will fix a regression
+>> that made it into many stable and longterm kernels nearly four weeks
+>> earlier. I tracked the issue, which made me we wonder: should I have
+>> done something differently in this case to get the regression resolved
+>> more quickly? Should I maybe have suggested to remove the culprit
+>> temporarily until the fix was merged to mainline?
+>>
+>> For context, this is the story of the regression afaics: the change
+>> ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+>> was merged for 5.17-rc1 (released on 2022-01-23). Shortly after it was
+>> backported to several stable/longterm series with new versions released
+>> on 2022-01-27. It triggered a general protection fault, if the proper
+>> firmware file was missing. Afaics at least five people reported the
+>> problem between 2022-02-01 and 2022-02-11 for at least 5.10.y, 5.15.y
+>> and 5.16.y (some of those reports were on the stable list), which shows
+>> that such a setup is not that unusual. A fix was posted on 2022-02-08
+>> and approved and committed by a maintainer on 2022-02-10. It was then
+>> merged to mainline on 2022-02-17 (I hope we can find ways to reduce such
+>> particular timeframes in the future, but that's a different story).
 > 
-> For these helper functions new defines are added that help translate the
-> 'freq' and 'byte2' fields into real numbers.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> ---
->   drivers/gpu/drm/drm_edid.c | 74 ++++++++++++++++++++++++++++++++++++++
->   include/drm/drm_edid.h     | 18 ++++++++--
->   2 files changed, 90 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-> index 12893e7be89bb..500279a82167a 100644
-> --- a/drivers/gpu/drm/drm_edid.c
-> +++ b/drivers/gpu/drm/drm_edid.c
-> @@ -4747,6 +4747,80 @@ int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb)
->   }
->   EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
->   
-> +/**
-> + * drm_cea_sad_get_sample_rate - Extract the sample rate from cea_sad
-> + * @sad: Pointer to the cea_sad struct
-> + *
-> + * Extracts the cea_sad frequency field and returns the sample rate in Hz.
-> + *
-> + * Return: Sample rate in Hz or a negative errno if parsing failed.
-> + */
-> +int drm_cea_sad_get_sample_rate(const struct cea_sad *sad)
-> +{
-> +	switch (sad->freq) {
-> +	case DRM_CEA_SAD_FREQ_32KHZ:
-> +		return 32000;
-> +	case DRM_CEA_SAD_FREQ_44KHZ:
-> +		return 44100;
-> +	case DRM_CEA_SAD_FREQ_48KHZ:
-> +		return 48000;
-> +	case DRM_CEA_SAD_FREQ_88KHZ:
-> +		return 88200;
-> +	case DRM_CEA_SAD_FREQ_96KHZ:
-> +		return 96000;
-> +	case DRM_CEA_SAD_FREQ_176KHZ:
-> +		return 176400;
-> +	case DRM_CEA_SAD_FREQ_192KHZ:
-> +		return 192000;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +EXPORT_SYMBOL(drm_cea_sad_get_sample_rate);
-> +
-> +static bool drm_cea_sad_is_uncompressed(const struct cea_sad *sad)
-> +{
-> +	switch (sad->format) {
-> +	case HDMI_AUDIO_CODING_TYPE_STREAM:
-> +	case HDMI_AUDIO_CODING_TYPE_PCM:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +/**
-> + * drm_cea_sad_get_uncompressed_word_length - Extract word length
-> + * @sad: Pointer to the cea_sad struct
-> + *
-> + * Extracts the cea_sad byte2 field and returns the word length for an
-> + * uncompressed stream.
-> + *
-> + * Note: This function may only be called for uncompressed audio.
-> + *
-> + * Return: Word length in bits or a negative errno if parsing failed.
-> + */
-> +int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad)
-> +{
-> +	if (!drm_cea_sad_is_uncompressed(sad)) {
-> +		DRM_WARN("Unable to get the uncompressed word length for a compressed format: %u\n",
-> +			 sad->format);
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (sad->byte2) {
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT:
-> +		return 16;
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT:
-> +		return 20;
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT:
-> +		return 24;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +EXPORT_SYMBOL(drm_cea_sad_get_uncompressed_word_length);
-> +
->   /**
->    * drm_av_sync_delay - compute the HDMI/DP sink audio-video sync delay
->    * @connector: connector associated with the HDMI/DP sink
-> diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-> index 18f6c700f6d02..a30452b313979 100644
-> --- a/include/drm/drm_edid.h
-> +++ b/include/drm/drm_edid.h
-> @@ -361,12 +361,24 @@ struct edid {
->   
->   /* Short Audio Descriptor */
->   struct cea_sad {
-> -	u8 format;
-> +	u8 format; /* See HDMI_AUDIO_CODING_TYPE_* */
+> From mainline point of view there is not really any easy way to make
+> this faster. There are multiple trees involved and pull requests always
+> take time (we cannot submit a pull request for every commit sepately),
 
-Hello Guillaume,
+Well, I'm aware of all that, but OTOH I might be missing something, as
+your reply makes me wonder: what is stopping you from asking Dave/Jakub
+or even Linus himself to directly pick up a regression fix that
+obviously bothers multiple people (the handful we known about might be
+the tip of the iceberg)? Some mailing list posts from Linus iirc
+indicate something like that is not a big problem for him, if it doesn't
+happen too often. With such a approach the issue could have vanished a
+from all our versions a week earlier (if that worth it in this
+particular case is a different question; same for skipping linux-next,
+but you accepted the patch on a Thursday, so it could have been in there
+for one regular work day). Or would that also skip some wireless
+specific CI that you want to chew on the patch first?
 
-since you're adding comments to all the rest of the struct members,
-I think that a small effort to instead convert this to kerneldoc is
-totally worth it.
-Can you please do that?
+The thing is: I noticed how quickly regressions sometimes get fixed when
+Linus is directly involved somehow, especially in cases where he himself
+is affected by the issue. Obviously he deserves some special treatment,
+but OTOH it kinda feels wrong to me when other regression fixes hang
+around in git tree for weeks before they finally make it to mainline
+(which is needed to also get them fixed in stable trees).
 
-Thanks,
-Angelo
+But okay, let's assume for a moment that things can't be sped up, to
+bring me back to the question that made me write the mail you replied
+to: Should I (or you/Johannes?) in that case have asked Greg to
+temporarily revert the culprit in the stable tree until the fix is ready?
 
->   	u8 channels; /* max number of channels - 1 */
-> -	u8 freq;
-> +	u8 freq; /* See CEA_SAD_FREQ_* */
->   	u8 byte2; /* meaning depends on format */
->   };
->   
-> +#define DRM_CEA_SAD_FREQ_32KHZ  BIT(0)
-> +#define DRM_CEA_SAD_FREQ_44KHZ  BIT(1)
-> +#define DRM_CEA_SAD_FREQ_48KHZ  BIT(2)
-> +#define DRM_CEA_SAD_FREQ_88KHZ  BIT(3)
-> +#define DRM_CEA_SAD_FREQ_96KHZ  BIT(4)
-> +#define DRM_CEA_SAD_FREQ_176KHZ BIT(5)
-> +#define DRM_CEA_SAD_FREQ_192KHZ BIT(6)
-> +
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT BIT(0)
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT BIT(1)
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT BIT(2)
-> +
->   struct drm_encoder;
->   struct drm_connector;
->   struct drm_connector_state;
-> @@ -374,6 +386,8 @@ struct drm_display_mode;
->   
->   int drm_edid_to_sad(struct edid *edid, struct cea_sad **sads);
->   int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb);
-> +int drm_cea_sad_get_sample_rate(const struct cea_sad *sad);
-> +int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad);
->   int drm_av_sync_delay(struct drm_connector *connector,
->   		      const struct drm_display_mode *mode);
->   
-
-
+Ciao, Thorsten
