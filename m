@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED6FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FD3C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352654AbiBUKBC (ORCPT
+        id S1352911AbiBUKBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:01:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49880 "EHLO
+        Mon, 21 Feb 2022 05:01:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352076AbiBUJwt (ORCPT
+        with ESMTP id S1352333AbiBUJxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:52:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A874836686;
-        Mon, 21 Feb 2022 01:23:14 -0800 (PST)
+        Mon, 21 Feb 2022 04:53:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8E337006;
+        Mon, 21 Feb 2022 01:23:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6107DB80EA1;
-        Mon, 21 Feb 2022 09:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78823C340E9;
-        Mon, 21 Feb 2022 09:23:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF2CA60FBA;
+        Mon, 21 Feb 2022 09:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FBAC340E9;
+        Mon, 21 Feb 2022 09:23:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435392;
-        bh=8E9nmzjr+oVBPaIx2NahacyRPguKBnPNkSFQybHOK2E=;
+        s=korg; t=1645435423;
+        bh=w+UicoM5DkkuhGVLBhKd8GylSa81D5HTmjneWjIRTwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c9viq9eKochMI1Fs9PXBIEtEwZEUgTvSIgLLTfr3GsbiU/SCS3dVJ8kQZUYaOP8AY
-         AnK3EUkec5Y2HwVE7mYqXERtssqEq7YxeRuVDHHr/6wSzjZRfzadU5/hz5y8CAOawh
-         LN9+Essro1C37FwTnDAxV1EHqTYXfy68R1rPq68M=
+        b=O/qWeRmjDSJI2U1r4/Mf2tGMbu6vbsfxDk4HNvDgnVYK4VBzbsu8ZdqYgCH97whVT
+         vNPZuZSipgNZhv2C2Pn30ZIZIyjr1JJGuM5Oci4QaK/ljsjbRnfroNP13hFIYAyoS0
+         THCCsMccVZRTNdZyzKNFVt5TaRCOkBsPg7onZd7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 115/227] ping: fix the dif and sdif check in ping_lookup
-Date:   Mon, 21 Feb 2022 09:48:54 +0100
-Message-Id: <20220221084938.689761389@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Lei <ming.lei@rehdat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Laibin Qiu <qiulaibin@huawei.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 159/227] block/wbt: fix negative inflight counter when remove scsi device
+Date:   Mon, 21 Feb 2022 09:49:38 +0100
+Message-Id: <20220221084940.107272851@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,78 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Laibin Qiu <qiulaibin@huawei.com>
 
-commit 35a79e64de29e8d57a5989aac57611c0cd29e13e upstream.
+commit e92bc4cd34de2ce454bdea8cd198b8067ee4e123 upstream.
 
-When 'ping' changes to use PING socket instead of RAW socket by:
+Now that we disable wbt by set WBT_STATE_OFF_DEFAULT in
+wbt_disable_default() when switch elevator to bfq. And when
+we remove scsi device, wbt will be enabled by wbt_enable_default.
+If it become false positive between wbt_wait() and wbt_track()
+when submit write request.
 
-   # sysctl -w net.ipv4.ping_group_range="0 100"
+The following is the scenario that triggered the problem.
 
-There is another regression caused when matching sk_bound_dev_if
-and dif, RAW socket is using inet_iif() while PING socket lookup
-is using skb->dev->ifindex, the cmd below fails due to this:
+T1                          T2                           T3
+                            elevator_switch_mq
+                            bfq_init_queue
+                            wbt_disable_default <= Set
+                            rwb->enable_state (OFF)
+Submit_bio
+blk_mq_make_request
+rq_qos_throttle
+<= rwb->enable_state (OFF)
+                                                         scsi_remove_device
+                                                         sd_remove
+                                                         del_gendisk
+                                                         blk_unregister_queue
+                                                         elv_unregister_queue
+                                                         wbt_enable_default
+                                                         <= Set rwb->enable_state (ON)
+q_qos_track
+<= rwb->enable_state (ON)
+^^^^^^ this request will mark WBT_TRACKED without inflight add and will
+lead to drop rqw->inflight to -1 in wbt_done() which will trigger IO hung.
 
-  # ip link add dummy0 type dummy
-  # ip link set dummy0 up
-  # ip addr add 192.168.111.1/24 dev dummy0
-  # ping -I dummy0 192.168.111.1 -c1
+Fix this by move wbt_enable_default() from elv_unregister to
+bfq_exit_queue(). Only re-enable wbt when bfq exit.
 
-The issue was also reported on:
+Fixes: 76a8040817b4b ("blk-wbt: make sure throttle is enabled properly")
 
-  https://github.com/iputils/iputils/issues/104
+Remove oneline stale comment, and kill one oneshot local variable.
 
-But fixed in iputils in a wrong way by not binding to device when
-destination IP is on device, and it will cause some of kselftests
-to fail, as Jianlin noticed.
-
-This patch is to use inet(6)_iif and inet(6)_sdif to get dif and
-sdif for PING socket, and keep consistent with RAW socket.
-
-Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ming Lei <ming.lei@rehdat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/linux-block/20211214133103.551813-1-qiulaibin@huawei.com/
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ping.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ block/bfq-iosched.c |    2 ++
+ block/elevator.c    |    2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -172,16 +172,23 @@ static struct sock *ping_lookup(struct n
- 	struct sock *sk = NULL;
- 	struct inet_sock *isk;
- 	struct hlist_nulls_node *hnode;
--	int dif = skb->dev->ifindex;
-+	int dif, sdif;
- 
- 	if (skb->protocol == htons(ETH_P_IP)) {
-+		dif = inet_iif(skb);
-+		sdif = inet_sdif(skb);
- 		pr_debug("try to find: num = %d, daddr = %pI4, dif = %d\n",
- 			 (int)ident, &ip_hdr(skb)->daddr, dif);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
-+		dif = inet6_iif(skb);
-+		sdif = inet6_sdif(skb);
- 		pr_debug("try to find: num = %d, daddr = %pI6c, dif = %d\n",
- 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6878,6 +6878,8 @@ static void bfq_exit_queue(struct elevat
+ 	spin_unlock_irq(&bfqd->lock);
  #endif
-+	} else {
-+		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
-+		return NULL;
+ 
++	wbt_enable_default(bfqd->queue);
++
+ 	kfree(bfqd);
+ }
+ 
+--- a/block/elevator.c
++++ b/block/elevator.c
+@@ -523,8 +523,6 @@ void elv_unregister_queue(struct request
+ 		kobject_del(&e->kobj);
+ 
+ 		e->registered = 0;
+-		/* Re-enable throttling in case elevator disabled it */
+-		wbt_enable_default(q);
  	}
+ }
  
- 	read_lock_bh(&ping_table.lock);
-@@ -221,7 +228,7 @@ static struct sock *ping_lookup(struct n
- 		}
- 
- 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
--		    sk->sk_bound_dev_if != inet_sdif(skb))
-+		    sk->sk_bound_dev_if != sdif)
- 			continue;
- 
- 		sock_hold(sk);
 
 
