@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 526B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BE3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345235AbiBUIwf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:52:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42098 "EHLO
+        id S241281AbiBUIwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:52:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345218AbiBUIwO (ORCPT
+        with ESMTP id S1345090AbiBUIwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB552DBC;
-        Mon, 21 Feb 2022 00:51:50 -0800 (PST)
+        Mon, 21 Feb 2022 03:52:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA607DCE;
+        Mon, 21 Feb 2022 00:51:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D238B80EB0;
-        Mon, 21 Feb 2022 08:51:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB649C340E9;
-        Mon, 21 Feb 2022 08:51:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6360061133;
+        Mon, 21 Feb 2022 08:51:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43982C340EB;
+        Mon, 21 Feb 2022 08:51:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433508;
-        bh=mM4f9QdzttpBsw563ak0A3lpXkyGsOhV9p3QX3+xpbE=;
+        s=korg; t=1645433513;
+        bh=TVkwyEiJl4gnit6A0Qr1y3D5wjdw3T8KiFQiLsLjYnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pwjJZYE+IENtsosiDepVgJrh5mFe6OdTNI6qZKA02hSc1HcqbZz03R6fGz9DTKLiq
-         tu+o1Hy+ICq8C/YlGppQShezyj7v500PXHOdjpaJESnvxlJLyhp4uxt3qEj/Iv/YiD
-         BPdJF0gQFyqIrkcNcT3F9/0Rq3QxN6gfpRrsEvQs=
+        b=wZQ7tnA7xeOyoeZCKhSDQBvzWyHOyR7ZzwvIbga/5DKu/zl0pjfjuD7IzMItZeGkJ
+         U/0FmJ/MT9hzMP183Xn4hUN0EBZ1Y3nnj/VOqRWsg+Eay4MHq854FgvjpDakdTZbWm
+         N692md7n8bZu8YPVzoY17OYG5pKYFEkJl1Et4Mn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, dmummenschanz@web.de,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 23/33] ALSA: hda: Fix missing codec probe on Shenker Dock 15
-Date:   Mon, 21 Feb 2022 09:49:16 +0100
-Message-Id: <20220221084909.522507999@linuxfoundation.org>
+        stable@vger.kernel.org, Rolf Eike Beer <eike-kernel@sf-tec.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 04/33] parisc: Fix data TLB miss in sba_unmap_sg
+Date:   Mon, 21 Feb 2022 09:48:57 +0100
+Message-Id: <20220221084908.708583362@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -49,33 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit dd8e5b161d7fb9cefa1f1d6e35a39b9e1563c8d3 upstream.
+commit b7d6f44a0fa716a82969725516dc0b16bc7cd514 upstream.
 
-By some unknown reason, BIOS on Shenker Dock 15 doesn't set up the
-codec mask properly for the onboard audio.  Let's set the forced codec
-mask to enable the codec discovery.
+Rolf Eike Beer reported the following bug:
 
-Reported-by: dmummenschanz@web.de
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/trinity-f018660b-95c9-442b-a2a8-c92a56eb07ed-1644345967148@3c-app-webde-bap22
-Link: https://lore.kernel.org/r/20220214100020.8870-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[1274934.746891] Bad Address (null pointer deref?): Code=15 (Data TLB miss fault) at addr 0000004140000018
+[1274934.746891] CPU: 3 PID: 5549 Comm: cmake Not tainted 5.15.4-gentoo-parisc64 #4
+[1274934.746891] Hardware name: 9000/785/C8000
+[1274934.746891]
+[1274934.746891]      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
+[1274934.746891] PSW: 00001000000001001111111000001110 Not tainted
+[1274934.746891] r00-03  000000ff0804fe0e 0000000040bc9bc0 00000000406760e4 0000004140000000
+[1274934.746891] r04-07  0000000040b693c0 0000004140000000 000000004a2b08b0 0000000000000001
+[1274934.746891] r08-11  0000000041f98810 0000000000000000 000000004a0a7000 0000000000000001
+[1274934.746891] r12-15  0000000040bddbc0 0000000040c0cbc0 0000000040bddbc0 0000000040bddbc0
+[1274934.746891] r16-19  0000000040bde3c0 0000000040bddbc0 0000000040bde3c0 0000000000000007
+[1274934.746891] r20-23  0000000000000006 000000004a368950 0000000000000000 0000000000000001
+[1274934.746891] r24-27  0000000000001fff 000000000800000e 000000004a1710f0 0000000040b693c0
+[1274934.746891] r28-31  0000000000000001 0000000041f988b0 0000000041f98840 000000004a171118
+[1274934.746891] sr00-03  00000000066e5800 0000000000000000 0000000000000000 00000000066e5800
+[1274934.746891] sr04-07  0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[1274934.746891]
+[1274934.746891] IASQ: 0000000000000000 0000000000000000 IAOQ: 00000000406760e8 00000000406760ec
+[1274934.746891]  IIR: 48780030    ISR: 0000000000000000  IOR: 0000004140000018
+[1274934.746891]  CPU:        3   CR30: 00000040e3a9c000 CR31: ffffffffffffffff
+[1274934.746891]  ORIG_R28: 0000000040acdd58
+[1274934.746891]  IAOQ[0]: sba_unmap_sg+0xb0/0x118
+[1274934.746891]  IAOQ[1]: sba_unmap_sg+0xb4/0x118
+[1274934.746891]  RP(r2): sba_unmap_sg+0xac/0x118
+[1274934.746891] Backtrace:
+[1274934.746891]  [<00000000402740cc>] dma_unmap_sg_attrs+0x6c/0x70
+[1274934.746891]  [<000000004074d6bc>] scsi_dma_unmap+0x54/0x60
+[1274934.746891]  [<00000000407a3488>] mptscsih_io_done+0x150/0xd70
+[1274934.746891]  [<0000000040798600>] mpt_interrupt+0x168/0xa68
+[1274934.746891]  [<0000000040255a48>] __handle_irq_event_percpu+0xc8/0x278
+[1274934.746891]  [<0000000040255c34>] handle_irq_event_percpu+0x3c/0xd8
+[1274934.746891]  [<000000004025ecb4>] handle_percpu_irq+0xb4/0xf0
+[1274934.746891]  [<00000000402548e0>] generic_handle_irq+0x50/0x70
+[1274934.746891]  [<000000004019a254>] call_on_stack+0x18/0x24
+[1274934.746891]
+[1274934.746891] Kernel panic - not syncing: Bad Address (null pointer deref?)
+
+The bug is caused by overrunning the sglist and incorrectly testing
+sg_dma_len(sglist) before nents. Normally this doesn't cause a crash,
+but in this case sglist crossed a page boundary. This occurs in the
+following code:
+
+	while (sg_dma_len(sglist) && nents--) {
+
+The fix is simply to test nents first and move the decrement of nents
+into the loop.
+
+Reported-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_intel.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/parisc/sba_iommu.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1424,6 +1424,7 @@ static struct snd_pci_quirk probe_mask_l
- 	/* forced codec slots */
- 	SND_PCI_QUIRK(0x1043, 0x1262, "ASUS W5Fm", 0x103),
- 	SND_PCI_QUIRK(0x1046, 0x1262, "ASUS W5F", 0x103),
-+	SND_PCI_QUIRK(0x1558, 0x0351, "Schenker Dock 15", 0x105),
- 	/* WinFast VP200 H (Teradici) user reported broken communication */
- 	SND_PCI_QUIRK(0x3a21, 0x040d, "WinFast VP200 H", 0x101),
- 	{}
+--- a/drivers/parisc/sba_iommu.c
++++ b/drivers/parisc/sba_iommu.c
+@@ -1061,7 +1061,7 @@ sba_unmap_sg(struct device *dev, struct
+ 	spin_unlock_irqrestore(&ioc->res_lock, flags);
+ #endif
+ 
+-	while (sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
+ 
+ 		sba_unmap_page(dev, sg_dma_address(sglist), sg_dma_len(sglist),
+ 				direction, 0);
+@@ -1070,6 +1070,7 @@ sba_unmap_sg(struct device *dev, struct
+ 		ioc->usingle_calls--;	/* kluge since call is unmap_sg() */
+ #endif
+ 		++sglist;
++		nents--;
+ 	}
+ 
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__,  nents);
 
 
