@@ -2,161 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C62EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380132AbiBUQRU (ORCPT
+        id S1380130AbiBUQRj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:17:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41584 "EHLO
+        Mon, 21 Feb 2022 11:17:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380109AbiBUQRJ (ORCPT
+        with ESMTP id S1380124AbiBUQRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:17:09 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2086.outbound.protection.outlook.com [40.107.223.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5CBDECA;
-        Mon, 21 Feb 2022 08:16:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m5tx1Vr4tz3n/fJtUZ02Gb/hS1wswipCm8+GQpmfRONWcDUCWYmSlU3jzta3jahwkzUEdIUcKfnrZVyoOcEgihr8CWRmvRlqGvpKj0+UQhZSNnKkxCXEBAxx30NU9UUPDHZ+V5D9FmdRQ3zoJ396bJWuEsIZl44mH3EkOfxUP5S6UPr3tzZbz4lcsGn4mgcil97ZVFtRDoxTA3FQvK8y6o+pLDfaqiCPFZpsTIYX+lepsc8z5b23WIEgNobiKuDkNCIgHNv+vAP+cXUh1MqUtCwHGTj1ZHWYWLHog49jNH0l1Msm4q++KEKmxng6dfVde4MybNU7RELHVKtCFexByg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/CXzvkWov1jZCRLnfN0btciH9XVwe0p8QUplTQKvEBo=;
- b=PvUhPyska4Mx3I7ZQRVd/amqNHMFPy9ZDYiCBHdK87F0rFbdgTmWvablQsZ615akfP8EIQV4tSw2/yL23nhzmNmZvhboRsJm3ofE1Fq7AEw56OKRvJRjCesghxkj076DIEUbon/bu3IHbmlNb10ysIQSIw9Q8VZOoMzibALK/L9PU0LLNzqjOXm5YL5zTBor+++LMPS/iFS7+4wPCGK52PJnRH8E8IxCm/qRNWcf8bO3GGTR9VBoaozk5hNTH7/3e9ooE8RwpNhKyH3newUf9owTkL4c+gBVjc4/6BFZAUZ13ymRUB4/bGP28CFRyTx14I1owxl1KW2gZz6tE5dmng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/CXzvkWov1jZCRLnfN0btciH9XVwe0p8QUplTQKvEBo=;
- b=L80w8m+SbaGzvVjaJ3fRG4c4a3JeA1oeN27e9UMXD1zLFVyVSs7hYd714WBwzWKVjPZFDzNlLvyB3i58s0eyDn7Ln98WEwpEBxqgXv+a9RMOYeTcvIdLCZIkQzjOK6WgAA4CeCtEh0l77P9Dwm83g8jwVVF14S1WPZd17EGeM3uYyHqOOZGiMzmQdnongAELqnN7p4I1+04Gh/Coh0a7buxcYAYNnceRHe8k5czJcUnWCDuXsxPRQ65xG7Y68/VG8tbL0B0mrdNHYy0yI7ofwRNexT/duj3SG7B4aQ0nizYBAfeEGFRjLGtkdk3KCfKX2xGg/24jOPKT8MOqms4BWA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- MN2PR12MB4045.namprd12.prod.outlook.com (2603:10b6:208:1d6::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Mon, 21 Feb
- 2022 16:16:36 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::3df2:54be:277e:7ed7]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::3df2:54be:277e:7ed7%5]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 16:16:36 +0000
-Message-ID: <20da6f55-682f-4b30-7be7-f425f8efa995@nvidia.com>
-Date:   Mon, 21 Feb 2022 16:16:28 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20210618215455.19986-1-digetx@gmail.com>
- <20210618215455.19986-3-digetx@gmail.com>
- <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
- <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
- <84ddad27-eb22-0ba6-594f-2fc6d098dc2a@nvidia.com>
- <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO2P265CA0461.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a2::17) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+        Mon, 21 Feb 2022 11:17:36 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D6815A1E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:17:13 -0800 (PST)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E9A294025B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:17:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645460231;
+        bh=JOP3F1szvziyyHwwb25WbMBDR7/phOdbs80dtO/BlA0=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=o6EukZQ8zM9KFiyjjWt91Mw/lHEpWlHO3z4p/T1PQ/LyAtU9uJZrkiu6m5+Bv05uA
+         Xmg7qHoxgOykf6BaDg6E4+MY+SZEyAusjIc+Awq7Y2Z0OaQXtF3kFD+rWAojcYtYGq
+         F3cWfb0SKFDUG+4nb0UU3i8oucARxPZY5DLEmN9qT4JPmEFte0G/P5iLg5WIf80eAL
+         YgVOupU/E5NC+gWGNJSevFUNXYA4O2wJujyvfZKwYe65jQflfJiDkEoNRaP7+M3T3j
+         iPuIsXcNOY1aGCUflhS/k1DAz5nmdUPqjvUVDr6EjNyDOuOdcEfJNFBZSfZE0IkpUQ
+         pnSTavhokJelw==
+Received: by mail-wm1-f72.google.com with SMTP id n3-20020a05600c294300b0037bc685b717so4577857wmd.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:17:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JOP3F1szvziyyHwwb25WbMBDR7/phOdbs80dtO/BlA0=;
+        b=DeDM32a9ISPlM2EXlGGp26wz4jFaZZBr5WxlJGTBM8dArQ4tfwZP4m3FjsdEjncPJQ
+         O2JC7t/C0YEblsnWX0TeQisblWHSSXQMVmqi2qtXQewnfpQEnUbdBnstE5/o8bDDLnkR
+         yh9YajcagGF7xBZ/zwa7ksQSUTnt3vrFSeUQQYPDJ1njShFtwaVeEid2qI0HnGXT2bHg
+         YLrCmY5QUGvwSJQcFYdQSOYAxzCqwpKPvSeQEfa0fCF31w8sZW0LTW9M91Z0wJskm/sp
+         Q8OW5GeOtPltj1+ZSP4/A81IW86FzWms4L438XqKBUvPBuRe2ALNQFhiLE5Qzi6r8qdF
+         uwYQ==
+X-Gm-Message-State: AOAM532Krx/ueCIcMrDNmaig6/NqFw1jFsPVF9h3AH6t0ww95jHssynj
+        XEnAvp58qmHYWMe5fwwb8y/uzBfwjC+Q3XaCXdgAOdGe5DlmPEgZratvfEbfP4/lPG3vwjegvsV
+        iI3nSHNwQ8zZxUTA7p+Xbn6fi5RxOJJI9QdggsUL2Uw==
+X-Received: by 2002:a5d:5885:0:b0:1e8:edbf:2d07 with SMTP id n5-20020a5d5885000000b001e8edbf2d07mr15598191wrf.85.1645460231240;
+        Mon, 21 Feb 2022 08:17:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzXKrYccEg4SGZYpkC/dp+cdaF1zX9TsezjyOZb4KizvNQIRmWsWVT22DWvpfUqlPM3f+r6/A==
+X-Received: by 2002:a5d:5885:0:b0:1e8:edbf:2d07 with SMTP id n5-20020a5d5885000000b001e8edbf2d07mr15598169wrf.85.1645460231012;
+        Mon, 21 Feb 2022 08:17:11 -0800 (PST)
+Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
+        by smtp.gmail.com with ESMTPSA id c11-20020a05600c0a4b00b0037c91e085ddsm9825161wmq.40.2022.02.21.08.17.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 08:17:10 -0800 (PST)
+From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH -fixes v2 4/4] riscv: Fix config KASAN && DEBUG_VIRTUAL
+Date:   Mon, 21 Feb 2022 17:12:32 +0100
+Message-Id: <20220221161232.2168364-5-alexandre.ghiti@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
+References: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5b7a5368-68c3-4100-dda1-08d9f55588af
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4045:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB404515E638D006650AC4FE78D93A9@MN2PR12MB4045.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U7SsL/ipEOVcNBU/hJUTkvl8DJ+/WPPGgop+l1ppG8jD2Tuvze+rZ5CVlD3l5UdjpkugHnoRoJ6h7XbwiGSISZyVaQVcn483hncofxRKq7jxBwzGV2dopab9dEP0WW82vJTbmXcw1cfFtYuPLoOz3R8/2GhBhsyDZTxyxRpJLBBvUy/C7ft8r0dd86HuY0DwhcEEr3WcvEZKLmX9Xlbsd9z4vVv9tJoZxy8LV8egeodN6d7VORf5uMxY7r6q+JlLozk1ZCCUZBfKx0oSp0hvpivpKvn02wgE5VLEUpT6Q1ibvqUr1n3vJdA188csYe0AoE8lVHHs3xpMrO96oFHc81zxOzCwoL5Qu8JxhCxPoKuuSFRh0LH/QGXGeGiUyj78Le/kgQ6dlb2JtsXLW5wmhHFL8cps80s7Vpi0C0hf5nbM0n+ZXMZO004OR69t4Oj4b2EWLnU0jcb+d2JuVmBq4lUi5WQ7guCGHIa8kkRrk6FQbg2sEXm33ZTObjIff+aFrrzEmo9FAkCXF8oujXFvc5MDPDeKWK4m38+0hX2KGYtDCwcWYHw6FKp9BXriydZutPeyKVAucQ0xC3XLCxs4t7gHkZz/6ejgpgY2FqCVkfZPwsFiljI2VBFMzR6pBPiaQx4kgYc3Unmfq3B6Th1RPZIgJdt1c+u6eSRFGlrNlEGYr+cz+r/y3sW6qbDjEK4R3GeVOsKgRc2DEsfawaDFmvG98/j1V58RQ/pRPbdSo7I=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(55236004)(6512007)(2616005)(26005)(186003)(6506007)(6666004)(508600001)(53546011)(6486002)(4744005)(316002)(5660300002)(31696002)(110136005)(36756003)(86362001)(31686004)(8676002)(66556008)(66946007)(4326008)(8936002)(66476007)(2906002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZWxpODRZMkNhRWQ1alYyVENJN01oTGVwRmtHM3c3ZDVXUUpwZ0swcGhLamFZ?=
- =?utf-8?B?ZlZVVEZBRmRwREtUMTZWSERFUXJpN1MwUXRsYmp3UHhsNnBRNThjdWlOZ3lh?=
- =?utf-8?B?WGMzekFFazZ6bXBOQmRKQmFqeVdmVStOU3RXbm0zYWZIZTZ0MmVjM0FvRXhR?=
- =?utf-8?B?SXBON29jN04vbnl4VlZYQ1pPSDdKV3FyZVBpUWV5L2xlbjlxYkVjcysxaENG?=
- =?utf-8?B?UFJMUHdmYk5kbGhzbFZQQVgremtIZmh5WWVZeEJtcG41TUFPeXE5Q3JnZmxG?=
- =?utf-8?B?dFpiRW0yMkpLRm1hRnRJU01ZOXF1aUtLQ2R5TjlieUdTMEQwTk93UFVSTjVU?=
- =?utf-8?B?WWp5MnUyNzJDUmgzc2RUOFk0QzEwQnViNm1KWStBVWwxeVZFMWZJREVZcEtC?=
- =?utf-8?B?aHFuTnRPYjlyZHNuR2xFMzdqUDRLUHNPb2pTSnprK0xYVTlOTVlMYWpMaUF3?=
- =?utf-8?B?UWZ5Q0FBZU1vTWZTNmhwODBUWk12eUY4K3RjaWo2VktnYm42bFp0aWo3d2lP?=
- =?utf-8?B?NXd0ZU1ORS8rdER5UzJJa0FvVSswZE11VnZJMWI1L3VQcXBCYnFoSkt6NmxW?=
- =?utf-8?B?cWpLdkVlZ3NGdnY1T1NMUk92NGd1cU5kemwyNVI1NGZSRjVJZmZxTkcrdVVD?=
- =?utf-8?B?ZXdQSWVuS0g2ZGxZUTU0WDZQMS9nMG9ucGhScHhkb1pERXIvWm9BS1JZa2F0?=
- =?utf-8?B?WlNWSG5McVUwZmt0RE9ORGk3Zmw4UEM0RmJxZm04Z3Z2Nmo1NkoxVmtxSndk?=
- =?utf-8?B?cEp1RmQzVTFzSFZ5b3FlaHo3ZVhkd3lnWDJSSEljMkgyUnM5Qk5GQVFrbEpE?=
- =?utf-8?B?NXYwRE1yVmNMODRQWEZpSkVFMEJITnFPRTlVYU9BQmpTVGVmNUk5VnNVWXZM?=
- =?utf-8?B?dE5RQTZjeGFTQkk4Y2huUzFheVRxY3VkV2VJcGFDaGlPcXBZNDZ5dzhIYmNS?=
- =?utf-8?B?QjhIVUQwSWRSaWJRTVFuemZXQkpacmN0KzNkbnJXaXYwVjlWdENyVGE5eU9H?=
- =?utf-8?B?MnppOS8xUmxyelZndXNzNmNPYVZTSEZ3UVJGaWlRL2l4OWU4K0IzOWY0UHEw?=
- =?utf-8?B?cVhqL2VMeU5hNlpzNTliOVJMdUdtUUg2QnVKRUFYZlVFZ1cxUlE3d0g5Y3lS?=
- =?utf-8?B?TTJUdENHakxIcG96VjQyQlNub2NPaFRJdUhMTnA2UUt2Rk40Y0REWEtZNlZv?=
- =?utf-8?B?UmFpMnc1OXVDYTdNR3VNTmJhTjdZVUdsRDFxZ2M0SkEyaDhNdkhHbEFxbjJT?=
- =?utf-8?B?UFFudzhBZUVEbmZobTh2TWNHTEdOL20wTjRjcG9UbUNMNTlyMG5YUXlNZkk4?=
- =?utf-8?B?RC9BRDdaM2VxQmc4Tk1HZHpzN3ZqM0JzOUxvVWNBZ2twQ2wrRm53cXJ1V2Ry?=
- =?utf-8?B?QW9ackM3WjNuNkxHaDdmZVowUGdTOWtMblBLM2NhR005bXhHeGNTM1hIZlpV?=
- =?utf-8?B?K3V0UkNkc2U2OG0rTFVRSUdNNEJiVDFLZFBxQlRBeFJSclpsVzRQKytiQ0RB?=
- =?utf-8?B?Ym5IMlcvS3N5eWwxb1VvREZmRlUyMVl2VDlmREJma2hUSlBhOURPUkg3TWFu?=
- =?utf-8?B?NXNsY0ttWWdYbkpvWmhzaTZKRmlYeXg4a21MZ29HSU9FOVZBUnM2REZOTFRP?=
- =?utf-8?B?SGNkb2Z5VnpwdW1iRTFYbGpYYzZURDFkcm40OFdzVHJjQitIU3pyZE1Sbjcr?=
- =?utf-8?B?Y1NMV1Y5SDdLQytSZ2poWWphTXpKZWlLdC9GYmljS1RiN3hnUW5hbmwyemhG?=
- =?utf-8?B?S1poVzNPUjdBa2JqSG8xYzZTL1N5Ny8vcVJhS0FTZmJPT0pOZUZ2YnhoNkpx?=
- =?utf-8?B?cjRBelJwTjljc2VNZ0cwNWx1MEwvVGVhYkdkdkk0NUdvek95bit2SXhrMXRo?=
- =?utf-8?B?QVpyd2Y5UVJZRUdDZGtqd21tdHBrMGEvMHVxRmFVYjJ1bWNsaVArYzhaSmR2?=
- =?utf-8?B?VUdNZndOR2ZmV1NaVWJlUzdDU0VzQkNvTHNyaEw3MktxWGFsQTd5cDJoWm8w?=
- =?utf-8?B?QnM3cEZwWW00T3lhWXdYU1F6cE12N1pVemoySmVqdy83WmhURWJqaG1KZVNh?=
- =?utf-8?B?ZC9nTmU5RElOTFpSVDRURGVtQUZaa1hNVWhhVHdCS1RYTnJmK01XY2dybmVI?=
- =?utf-8?B?SU5zVXAxMmZkOE0vSmkwTHZkUnZwTk5aRFZUQnBMcGFsNkFGMU1mOW9waUdh?=
- =?utf-8?Q?HBVKrQLG0rXrXZLAC08uiIk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b7a5368-68c3-4100-dda1-08d9f55588af
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 16:16:36.6543
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VY0r9TEoqQUXX/2zau4Rd3qre3/wdHrR/gSbIurexVGq5o/pKxzIGVHJjEPwUlEeOAd5La8TLLAlk3l8iUh/lw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4045
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+__virt_to_phys function is called very early in the boot process (ie
+kasan_early_init) so it should not be instrumented by KASAN otherwise it
+bugs.
 
-On 21/02/2022 16:02, Guenter Roeck wrote:
+Fix this by declaring phys_addr.c as non-kasan instrumentable.
 
-...
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+---
+ arch/riscv/mm/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
 
->> The platform I see this on does use device-tree and it does have a 
->> node for the ti,tmp451 device which uses the lm90 device. This 
->> platform uses the device-tree source 
->> arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts and the tmp451 node 
->> is in arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi.
->>
-> 
-> Interesting. It appears that the call to 
-> devm_thermal_zone_of_sensor_register()
-> in the hwmon core nevertheless returns -ENODEV which is not handled 
-> properly
-> in the hwmon core. I can see a number of reasons for this to happen:
-> - there is no devicetree node for the lm90 device
-> - there is no thermal-zones devicetree node
-> - there is no thermal zone entry in the thermal-zones node which matches
->    the sensor
-
-
-So we definitely have the node for the lm90 device and a thermal-zones 
-node, but I do not see a thermal-sensor node. Maybe this is what we are 
-missing?
-
-Jon
-
+diff --git a/arch/riscv/mm/Makefile b/arch/riscv/mm/Makefile
+index 7ebaef10ea1b..ac7a25298a04 100644
+--- a/arch/riscv/mm/Makefile
++++ b/arch/riscv/mm/Makefile
+@@ -24,6 +24,9 @@ obj-$(CONFIG_KASAN)   += kasan_init.o
+ ifdef CONFIG_KASAN
+ KASAN_SANITIZE_kasan_init.o := n
+ KASAN_SANITIZE_init.o := n
++ifdef CONFIG_DEBUG_VIRTUAL
++KASAN_SANITIZE_physaddr.o := n
++endif
+ endif
+ 
+ obj-$(CONFIG_DEBUG_VIRTUAL) += physaddr.o
 -- 
-nvpublic
+2.32.0
+
