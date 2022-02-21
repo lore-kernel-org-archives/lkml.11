@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A0EC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258C1C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353513AbiBUKBo (ORCPT
+        id S1353548AbiBUKBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:01:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52084 "EHLO
+        Mon, 21 Feb 2022 05:01:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352312AbiBUJxz (ORCPT
+        with ESMTP id S1352374AbiBUJxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C847A1D325;
-        Mon, 21 Feb 2022 01:23:38 -0800 (PST)
+        Mon, 21 Feb 2022 04:53:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBD33702E;
+        Mon, 21 Feb 2022 01:23:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64E7E60FCC;
-        Mon, 21 Feb 2022 09:23:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 477DDC340E9;
-        Mon, 21 Feb 2022 09:23:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EA4B60F8C;
+        Mon, 21 Feb 2022 09:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D2A0C340E9;
+        Mon, 21 Feb 2022 09:23:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435417;
-        bh=E6A2kwIv4UUnoTr2Zs/vVy+OJVA/kcWOfEpF7UolTxw=;
+        s=korg; t=1645435429;
+        bh=QtspzRerDno9ochBQSZOIaBlkiKsCe5W6y6V+OTBPv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFwEnnZNxfQAdGhcd6RqaDZy+hLyOHjCmBJJJCFQbZSS39XHwECQdzb/+sBDqq2YG
-         8DdtXlpJSXIk1D9xEonYSFIyY3dzY22LpU27zkQxWBGEiwoFBRkD8rNlrBa+RpAEYn
-         CyhiCp9ZZ4FaeFH1XVplv0Qx2SP04QlDfyl7TfTE=
+        b=x8UH1UoFYTKSZ1v5kG9diLA9JLZa+p4bSnPlgOlxdPUmkjmkiOqgWqoKpM3ZvHzYY
+         K3Qww058K8Xcd+j8mqMBI0PLkD0EsJGk/ltqQULYYceZxIdJxdZmSt0sr1ASXIYWnP
+         k8M3Skta/cbC181Hr/Hnp47SgGU7hS2a4Kz7A++8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 157/227] ASoC: tas2770: Insert post reset delay
-Date:   Mon, 21 Feb 2022 09:49:36 +0100
-Message-Id: <20220221084940.041806186@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.16 161/227] NFS: LOOKUP_DIRECTORY is also ok with symlinks
+Date:   Mon, 21 Feb 2022 09:49:40 +0100
+Message-Id: <20220221084940.176331248@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,56 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 307f31452078792aab94a729fce33200c6e42dc4 upstream.
+commit e0caaf75d443e02e55e146fd75fe2efc8aed5540 upstream.
 
-Per TAS2770 datasheet there must be a 1 ms delay from reset to first
-command. So insert delays into the driver where appropriate.
+Commit ac795161c936 (NFSv4: Handle case where the lookup of a directory
+fails) [1], part of Linux since 5.17-rc2, introduced a regression, where
+a symbolic link on an NFS mount to a directory on another NFS does not
+resolve(?) the first time it is accessed:
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Link: https://lore.kernel.org/r/20220204095301.5554-1-povik+lin@cutebit.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Fixes: ac795161c936 ("NFSv4: Handle case where the lookup of a directory fails")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Tested-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/tas2770.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/nfs/dir.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -38,10 +38,12 @@ static void tas2770_reset(struct tas2770
- 		gpiod_set_value_cansleep(tas2770->reset_gpio, 0);
- 		msleep(20);
- 		gpiod_set_value_cansleep(tas2770->reset_gpio, 1);
-+		usleep_range(1000, 2000);
- 	}
- 
- 	snd_soc_component_write(tas2770->component, TAS2770_SW_RST,
- 		TAS2770_RST);
-+	usleep_range(1000, 2000);
- }
- 
- static int tas2770_set_bias_level(struct snd_soc_component *component,
-@@ -110,6 +112,7 @@ static int tas2770_codec_resume(struct s
- 
- 	if (tas2770->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
- 	} else {
- 		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
- 						    TAS2770_PWR_CTRL_MASK,
-@@ -510,8 +513,10 @@ static int tas2770_codec_probe(struct sn
- 
- 	tas2770->component = component;
- 
--	if (tas2770->sdz_gpio)
-+	if (tas2770->sdz_gpio) {
- 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
-+		usleep_range(1000, 2000);
-+	}
- 
- 	tas2770_reset(tas2770);
- 
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -1982,14 +1982,14 @@ no_open:
+ 	if (!res) {
+ 		inode = d_inode(dentry);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+-		    !S_ISDIR(inode->i_mode))
++		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))
+ 			res = ERR_PTR(-ENOTDIR);
+ 		else if (inode && S_ISREG(inode->i_mode))
+ 			res = ERR_PTR(-EOPENSTALE);
+ 	} else if (!IS_ERR(res)) {
+ 		inode = d_inode(res);
+ 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
+-		    !S_ISDIR(inode->i_mode)) {
++		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode))) {
+ 			dput(res);
+ 			res = ERR_PTR(-ENOTDIR);
+ 		} else if (inode && S_ISREG(inode->i_mode)) {
 
 
