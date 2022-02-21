@@ -2,125 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C562C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345998AbiBUIyk (ORCPT
+        id S1345889AbiBUIyp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:54:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43116 "EHLO
+        Mon, 21 Feb 2022 03:54:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345668AbiBUIxT (ORCPT
+        with ESMTP id S1345630AbiBUIxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:53:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DE517A9F;
-        Mon, 21 Feb 2022 00:52:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 21 Feb 2022 03:53:22 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A34819C02
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:53 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DC5CB80EAA;
-        Mon, 21 Feb 2022 08:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE66FC340E9;
-        Mon, 21 Feb 2022 08:52:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433570;
-        bh=LX4/1hs1SFohhphc14r6GvrG4GtlOhrrIKgHhAeELbM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PizHHQzcXIhxDglnONON5J5szozpc2mXAdUQnAbkUvUxA9bNTzGPtGunkeHmltuC+
-         bENB8bXXqRQWkYuo4Y2rCPrz+DvydsaMIU9tuIuxowBY1pgctTtxQ6+74sORUNjQ5R
-         /donjcZ6VcyOyk7DJROb/pl/NXtK79PCUO14oEuU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Christian Brauner <brauner@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 12/45] vfs: make freeze_super abort when sync_filesystem returns error
-Date:   Mon, 21 Feb 2022 09:49:03 +0100
-Message-Id: <20220221084910.865394502@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
-References: <20220221084910.454824160@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2955E2241C;
+        Mon, 21 Feb 2022 09:52:50 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645433570;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lNrji++2h4wwqRBGkUOCg0MJwhNDbhP7VF1zV51yR6k=;
+        b=sN1A7jx85wFK0xMnAOfANZwLQcjUgo3O5VjxPwBg4s7GhAfe2fbYTzHwS5hj/prAIFneC7
+        AwKeIK9Fyrsy/CQJOPKMB2ev50o/SjcSTe+abm3Q03LpVkXV1f03ZnULfEdSSAOd6yt4HG
+        S9fvXqqhS1vavkdDDSnQ8eXok6i4K0w=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 07/32] mtd: spi-nor: gigadevice: unify function names
+Date:   Mon, 21 Feb 2022 09:52:11 +0100
+Message-Id: <20220221085236.1452024-8-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
+References: <20220221085236.1452024-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+To avoid name clashes unify all the function and static object names and
+use one of the following prefixes which should be sufficiently unique:
+ - <vendor>_nor_
+ - <flash_family>_nor_
+ - <flash_part>_
 
-[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
+There are no functional changes.
 
-If we fail to synchronize the filesystem while preparing to freeze the
-fs, abort the freeze.
-
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- fs/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/mtd/spi-nor/gigadevice.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/super.c b/fs/super.c
-index 1d7461bca1600..819a33e79a011 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1380,11 +1380,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
- 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
- }
+diff --git a/drivers/mtd/spi-nor/gigadevice.c b/drivers/mtd/spi-nor/gigadevice.c
+index 0807d0263808..119b38e6fc2a 100644
+--- a/drivers/mtd/spi-nor/gigadevice.c
++++ b/drivers/mtd/spi-nor/gigadevice.c
+@@ -23,7 +23,7 @@ static const struct spi_nor_fixups gd25q256_fixups = {
+ 	.default_init = gd25q256_default_init,
+ };
  
--static void sb_freeze_unlock(struct super_block *sb)
-+static void sb_freeze_unlock(struct super_block *sb, int level)
- {
--	int level;
--
--	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
-+	for (level--; level >= 0; level--)
- 		percpu_up_write(sb->s_writers.rw_sem + level);
- }
+-static const struct flash_info gigadevice_parts[] = {
++static const struct flash_info gigadevice_nor_parts[] = {
+ 	{ "gd25q16", INFO(0xc84015, 0, 64 * 1024,  32)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+@@ -61,6 +61,6 @@ static const struct flash_info gigadevice_parts[] = {
  
-@@ -1455,7 +1453,14 @@ int freeze_super(struct super_block *sb)
- 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
- 
- 	/* All writers are done so after syncing there won't be dirty data */
--	sync_filesystem(sb);
-+	ret = sync_filesystem(sb);
-+	if (ret) {
-+		sb->s_writers.frozen = SB_UNFROZEN;
-+		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
-+		wake_up(&sb->s_writers.wait_unfrozen);
-+		deactivate_locked_super(sb);
-+		return ret;
-+	}
- 
- 	/* Now wait for internal filesystem counter */
- 	sb->s_writers.frozen = SB_FREEZE_FS;
-@@ -1467,7 +1472,7 @@ int freeze_super(struct super_block *sb)
- 			printk(KERN_ERR
- 				"VFS:Filesystem freeze failed\n");
- 			sb->s_writers.frozen = SB_UNFROZEN;
--			sb_freeze_unlock(sb);
-+			sb_freeze_unlock(sb, SB_FREEZE_FS);
- 			wake_up(&sb->s_writers.wait_unfrozen);
- 			deactivate_locked_super(sb);
- 			return ret;
-@@ -1519,7 +1524,7 @@ int thaw_super(struct super_block *sb)
- 	}
- 
- 	sb->s_writers.frozen = SB_UNFROZEN;
--	sb_freeze_unlock(sb);
-+	sb_freeze_unlock(sb, SB_FREEZE_FS);
- out:
- 	wake_up(&sb->s_writers.wait_unfrozen);
- 	deactivate_locked_super(sb);
+ const struct spi_nor_manufacturer spi_nor_gigadevice = {
+ 	.name = "gigadevice",
+-	.parts = gigadevice_parts,
+-	.nparts = ARRAY_SIZE(gigadevice_parts),
++	.parts = gigadevice_nor_parts,
++	.nparts = ARRAY_SIZE(gigadevice_nor_parts),
+ };
 -- 
-2.34.1
-
-
+2.30.2
 
