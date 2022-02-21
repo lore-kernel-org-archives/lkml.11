@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48753C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A73EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378717AbiBUPBq (ORCPT
+        id S1378745AbiBUPCe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:01:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60646 "EHLO
+        Mon, 21 Feb 2022 10:02:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378712AbiBUPBm (ORCPT
+        with ESMTP id S1378735AbiBUPCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:01:42 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D32220F2;
-        Mon, 21 Feb 2022 07:01:13 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id gb39so34054496ejc.1;
-        Mon, 21 Feb 2022 07:01:13 -0800 (PST)
+        Mon, 21 Feb 2022 10:02:31 -0500
+X-Greylist: delayed 451 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 07:01:54 PST
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 6C60360CB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:01:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BPtReENKQxU85jH52Zt/PBlxinx1W4smwidmo2G0UFE=;
-        b=ZYjkp8GXtoEuZsbdo36X31dNE58cEe2rktTPHZPI8K7LlbRXI15qdvpryRujuzD5yW
-         MdX9ot123swKKMOIRmHlnVw2I3OlHKCQdh+V6bOc4voyapFiJBSe1KzZCT7qANOMaO+Q
-         kOwtN5IYE/ZM+ureSYHG2urtq303JzY7H6NemmADZPUtWEqszgXfQvnqzUmR/60GtVec
-         UVuy7e64UNSgHsAs67hjzEiJZ3soH0Pbekm2OYiANrDp+oRtkz7205AR12t9jKvIp5c5
-         Ke+JBjYVg/gsEk6X2kD3TYxBQue5nRPinL5dL9W0uNV3tJ0R1uXsmBaaIVlj6/yq17yP
-         Cyrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BPtReENKQxU85jH52Zt/PBlxinx1W4smwidmo2G0UFE=;
-        b=zFcm/BBmwaAKg1tAMXHl29ag3aoP/2D7q0ka8TRkRW7gseEQHP31CNeY9rUAgYhs0C
-         gz5THIYN/IUHRe0XUNc8U+gNBJiY1HE15bxXRSRdXK2Qz9M7W4nd+1FIpppv2qjIjHVN
-         kMSQv4rzjXkdJkhRka1+uVtrO5sRj5C40B+SgjCyeIDjS14O7xbhwAlLqnTsY21HVlz9
-         KjiqXQCtNWbB3GmVeLWh9O30EzBazs++U2mMwUhTENVpDOIpNgg/MjOoX8SbDeq7pNF3
-         +N8q3fJWoviBQyVgKziLQg3QfzNvuXoczFoU6O/7GPOhGNqRiIEP2FQ+Lh07uc+Pquew
-         WufQ==
-X-Gm-Message-State: AOAM533GDxOJw9HZbGyy9mN00DnTlKLTQKhvULbGxowyGxTZnu9v8xAR
-        QNu42iTFXSmOPEltXcT4//vMaLn1kvg=
-X-Google-Smtp-Source: ABdhPJxNhaNGp2hDd0eH4fg7BlyY2bIDbqrZh0nD6r+9ifRR9vGIu7fml3FGrd4hK2xU3AwZGJWCOg==
-X-Received: by 2002:a17:906:1393:b0:6ce:eac4:4ebe with SMTP id f19-20020a170906139300b006ceeac44ebemr15622997ejc.643.1645455671858;
-        Mon, 21 Feb 2022 07:01:11 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id j18sm5261552ejc.166.2022.02.21.07.01.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 07:01:11 -0800 (PST)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <3863d7f1-a551-129d-d218-c4cce40041d3@redhat.com>
-Date:   Mon, 21 Feb 2022 16:01:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 17/18] KVM: x86: flush TLB separately from MMU reset
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-18-pbonzini@redhat.com> <YhAyX+Bc3x4+ZMTG@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YhAyX+Bc3x4+ZMTG@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=C3CPD2J9cJYxe7Oo2F5gECflGlMyalR2tC5MNx+DQ5M=; b=q
+        9dv4a3nq+T/Hogssv+/FRaHxMPKECoNjHIQXri8RdJRAw00rVgM1UkNJG4n0E+Vy
+        yOSiZ73/F4Y3toO9uM6zzZSAvUMmJD3nSNyiTe4u+ORw8sUW2RpUUzuwvWc4pUjN
+        iQ43rGtLIdqxMEOcpmePZNCrEfC5kvdfr0lGolISgk=
+Received: from localhost (unknown [10.129.21.144])
+        by front01 (Coremail) with SMTP id 5oFpogB3fzt9pxNig9HnAQ--.3833S2;
+        Mon, 21 Feb 2022 22:53:49 +0800 (CST)
+From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
+To:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch,
+        thomas.hellstrom@linux.intel.com,
+        maarten.lankhorst@linux.intel.com, matthew.auld@intel.com,
+        matthew.d.roper@intel.com, lyz_cs@pku.edu.cn, tzimmermann@suse.de,
+        michal.winiarski@intel.com
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/i915: Check input parameter for NULL
+Date:   Mon, 21 Feb 2022 06:53:41 -0800
+Message-Id: <1645455221-38580-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: 5oFpogB3fzt9pxNig9HnAQ--.3833S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JF1DGr45Gr1kXw43Jr1fZwb_yoWfGrb_uF
+        y3tr13W3srCrn0kF12kws2yFyIyFy09r4kAw10yrZ3Jry7ArsrXas7tr1UZF18GFWUWasx
+        Gw4ku3Z8ur4DCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb3AFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK
+        6svPMxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_Kr1UJr1l4I8I3I0E4IkC6x
+        0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2
+        zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF
+        4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWU
+        CwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEIBlPy7uKuvgAQsh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/19/22 00:57, Sean Christopherson wrote:
-> I appreciate the cleverness in changing only a single like, but I think both
-> pieces warrant a mention.  How 'bout this, to squeak by with two lines?
-> 
-> 	/*
-> 	 * Reset the MMU and flush the TLB if paging was enabled (INIT only, as
-> 	 * CR0 is currently guaranteed to be '0' prior to RESET).  Unlike the
+[why]
+i915_gem_object_put_pages_phys() frees pages and standard
+pattern is to allow caller to not care if it's
+NULL or not. This will reduce burden on
+the callers to perform this check.
 
-Let's just make it clearer:
+[how]
+Fix it by adding Null check.
 
-          * On the standard CR0/CR4/EFER modification paths, there are several
-          * complex conditions determining whether the MMU has to be reset and/or
-          * which PCIDs have to be flushed.  However, CR0.WP and the paging-related
-          * bits in CR4 and EFER are irrelevant if CR0.PG was '0'; and a reset+flush
-          * is needed anyway if CR0.PG was '1' (which can only happen for INIT, as
-          * CR0 will be '0' prior to RESET).  So we only need to check CR0.PG here.
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+---
+ drivers/gpu/drm/i915/gem/i915_gem_phys.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Paolo
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_phys.c b/drivers/gpu/drm/i915/gem/i915_gem_phys.c
+index ca6faff..5445f41 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_phys.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_phys.c
+@@ -95,6 +95,8 @@ void
+ i915_gem_object_put_pages_phys(struct drm_i915_gem_object *obj,
+ 			       struct sg_table *pages)
+ {
++	if (!pages)
++		return;
+ 	dma_addr_t dma = sg_dma_address(pages->sgl);
+ 	void *vaddr = sg_page(pages->sgl);
+ 
+-- 
+2.7.4
+
