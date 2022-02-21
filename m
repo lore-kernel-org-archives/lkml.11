@@ -2,85 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A31AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380721AbiBUQgO (ORCPT
+        id S1380718AbiBUQil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:36:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44642 "EHLO
+        Mon, 21 Feb 2022 11:38:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380689AbiBUQgJ (ORCPT
+        with ESMTP id S1353674AbiBUQij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:36:09 -0500
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD45220C6;
-        Mon, 21 Feb 2022 08:35:46 -0800 (PST)
-Received: by mail-ed1-f41.google.com with SMTP id z22so30551253edd.1;
-        Mon, 21 Feb 2022 08:35:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YFk+sl4M7Srs5DbyN1lMmhvfVbrNyGzC2wMufF8/rDI=;
-        b=a3nP+7a2WMjKLb+A+/p0mXULvk3eOmZE7OQNybxwWA+KTBhiEBn/YKCi2A9xgZFaVy
-         qnqITPv0RoaSbtukQ7BVl88pQnVAokUdYpVVb5uukUKYUzASu92iUAwdYcaQD1MfWEEz
-         YbWVUuHcQwKweHgvW1VfZTLiYQpcUKKT8iLcYWnEojMX/mTzmQewO2LuEjFAM22se/xm
-         XLhFAMXeglhve9r6T7V9JFII2d2K84yaRu/KumZb9wNKrpz/XfJMl4v6irrBFrLIdGnb
-         qUzC23AtR/kr26ZKSXX6QtnHDCi16qADorsYCU2OW1Qvm/YDlQOvyZADJTRNjweK6T5R
-         3S9g==
-X-Gm-Message-State: AOAM532vxTjN/aVWvA/UowGUz121bmoUKMOqyfSSngCX1oClRXrFji65
-        r7KpDCfl4bnfiUDVN9XT4bI=
-X-Google-Smtp-Source: ABdhPJyoawrcgww37p4WIuGhhpNJtlKE54lAC3oY6WyEM4tYYSDFB2khdaABAB+WyF0xZpbWP+d/XQ==
-X-Received: by 2002:a50:fc81:0:b0:408:4c2d:bf69 with SMTP id f1-20020a50fc81000000b004084c2dbf69mr22229360edq.229.1645461344712;
-        Mon, 21 Feb 2022 08:35:44 -0800 (PST)
-Received: from [192.168.0.122] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.googlemail.com with ESMTPSA id e27sm5482626ejm.18.2022.02.21.08.35.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 08:35:43 -0800 (PST)
-Message-ID: <61e964b4-a406-7721-f3d4-26754c7f865c@kernel.org>
-Date:   Mon, 21 Feb 2022 17:35:42 +0100
+        Mon, 21 Feb 2022 11:38:39 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35BDF21E1B;
+        Mon, 21 Feb 2022 08:38:16 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 7566E92009C; Mon, 21 Feb 2022 17:38:15 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 6E34892009B;
+        Mon, 21 Feb 2022 16:38:15 +0000 (GMT)
+Date:   Mon, 21 Feb 2022 16:38:15 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        chenhuacai@kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: Re: [RFC PATCH 0/3] MIPS: Chaos of barrier misuses
+In-Reply-To: <20220221145531.10479-1-jiaxun.yang@flygoat.com>
+Message-ID: <alpine.DEB.2.21.2202211602080.56785@angie.orcam.me.uk>
+References: <20220221145531.10479-1-jiaxun.yang@flygoat.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 2/3] dt-bindings:iio:amplifiers: add ada4250 doc
-Content-Language: en-US
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
-        robh+dt@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220221092740.25511-1-antoniu.miclaus@analog.com>
- <20220221092740.25511-2-antoniu.miclaus@analog.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220221092740.25511-2-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/02/2022 10:27, Antoniu Miclaus wrote:
-> Add device tree bindings for the ADA4250 driver.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
-> changes in v4:
->  - add `spi-max-frequency` property
->  - use generic node naming
->  .../bindings/iio/amplifiers/adi,ada4250.yaml  | 50 +++++++++++++++++++
->  1 file changed, 50 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-> 
+On Mon, 21 Feb 2022, Jiaxun Yang wrote:
 
-Please do not resend without fixing pointed out issues. It just looks
-you ignore comments.
+> This series clears the chaos of barrier misuse.
+> In prepration of light weight barrier series.
 
-Please fix or respond to previous comments. Please also fix all common
-issues recently pointed out for all Analog devices - folks from Analog
-are making the same mistakes. Reviewing the same mistake is a bit a
-waste of time. Much more appreciated is when team applies one feedback
-to all its submissions. IOW, do not repeat the same mistake second time.
+ What problem are you trying to solve here?
 
+ The MIPS port currently implements the semantics documented in
+Documentation/memory-barriers.txt, in particular the "KERNEL I/O BARRIER 
+EFFECTS" section, with extra I/O barriers borrowed from the PowerPC port 
+for consistency for platform use, due to the weakly ordered architectural 
+MMIO model (implementations are allowed to have a stronger model in place 
+of course, and you are free to optimise for them with the respective 
+configurations).
 
-Best regards,
-Krzysztof
+ Stating that we have a "chaos of barrier misuse" doesn't say anything 
+really in my opinion and isn't particularly constructive either.  This 
+area is very fragile and you need to understand all the consequences when 
+trying to make any changes here and show it with your submission, that is 
+properly describe and justify your changes so that people are convinced 
+your changes are correct and good to make.
+
+  Maciej
+
