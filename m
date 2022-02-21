@@ -2,155 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A67DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 23:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236923AbiBUXcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 18:32:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44808 "EHLO
+        id S237032AbiBUXdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 18:33:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236844AbiBUXcL (ORCPT
+        with ESMTP id S236938AbiBUXcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 18:32:11 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCEF1133
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:31:47 -0800 (PST)
+        Mon, 21 Feb 2022 18:32:54 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678C324F33;
+        Mon, 21 Feb 2022 15:32:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645486307; x=1677022307;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=e+q01QedYHb7A+hgClNwFVG6Ur/ydCjlwf5WcD2ykk4=;
-  b=XgMqXZ2CykCLx4z2q1pPGI0Fskan2klviDU/zHNSyodRkF+ugzTvYqeX
-   IyNwKlBR3BJiyiaojftOIguk5ieasNd3TDfK9J+XtLBcVMd3svPlQ0kH9
-   0JT/LGFxwZ3w35PFzjnXQWLlRM2eyaOZrPQ+iToWjXdwlCEJQxZ4kdC3F
-   VhJbu5rjMGOlRdbvkYLWZJy7Vf4GVXzgf2LmaipBIK+c4GiH+c+vpULlD
-   /dBhORGxTJGD3DABG1kwxystgGJaQXVGNKrQ4E0s7IOnaOFwu9UskPT8V
-   /ENYkboiCM97xpAy06XSpcCCWzxsgVJoh/UTGdAXO2Cw/bEy9V2KpBCqm
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="314841792"
+  t=1645486349; x=1677022349;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PJymbTaSO09XOMHXwdDAoahjL89w8zWaJcq+um8AFW4=;
+  b=e0yFP9kk0sPDyflRjbHheIwRWXTZnL+fg/UdJoPT4igJnKlWb2ot4Mwu
+   FNGhl4IwaBUkYRnPqCfLIXy8D74w6r7LXm6HoFxxn7rpRl3oPzB/3LpAe
+   mkybvi690J3OhkGq1L3sZ/2QLXZU6eayJ2l8FIKkxEOXDJpN2sR7tg+Lu
+   /Sgp48ZORs3OYOZw9T+awmQJOgaJkLYTUJPUhX2YXrNuwgW/zYzrUXVFG
+   N6YFJKQvkWFVmFsAwYMf+yydz+pYRAh8GKKe6MjhnZewAOqci/0Z5IbM+
+   SunsTueT94U5abbLSHn2DQovkHoO6ronCvRBOzPQ7gWvAsbkJJds+3uAI
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="232200044"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="314841792"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:31:47 -0800
+   d="scan'208";a="232200044"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:32:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="507772536"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 21 Feb 2022 15:31:45 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMI9g-000255-SV; Mon, 21 Feb 2022 23:31:44 +0000
-Date:   Tue, 22 Feb 2022 07:30:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Subbaraya Sundeep <sbhatta@marvell.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Geetha sowjanya <gakula@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: drivers/net/ethernet/marvell/octeontx2/af/rvu.c:1964:46: sparse:
- sparse: cast removes address space '__iomem' of expression
-Message-ID: <202202220710.SPJ8ha4K-lkp@intel.com>
+   d="scan'208";a="776116177"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Feb 2022 15:32:27 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id CC28E1ED; Tue, 22 Feb 2022 01:32:43 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH v1 4/8] iio: accel: adxl345: Make use of device properties
+Date:   Tue, 22 Feb 2022 01:32:31 +0200
+Message-Id: <20220221233235.86893-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220221233235.86893-1-andriy.shevchenko@linux.intel.com>
+References: <20220221233235.86893-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   038101e6b2cd5c55f888f85db42ea2ad3aecb4b6
-commit: 98c5611163603d3d8012b1bf64ab48fd932cf734 octeontx2-af: cn10k: Add mbox support for CN10K platform
-date:   1 year ago
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220222/202202220710.SPJ8ha4K-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=98c5611163603d3d8012b1bf64ab48fd932cf734
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 98c5611163603d3d8012b1bf64ab48fd932cf734
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/tegra/ drivers/gpu/host1x/ drivers/hid/ drivers/irqchip/ drivers/net/ethernet/marvell/octeontx2/af/ drivers/net/ethernet/ti/ drivers/remoteproc/ drivers/scsi/hisi_sas/ security/integrity/ima/
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:780:21: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct rvu_fwdata *fwdata @@     got void [noderef] __iomem * @@
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:780:21: sparse:     expected struct rvu_fwdata *fwdata
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:780:21: sparse:     got void [noderef] __iomem *
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:786:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got struct rvu_fwdata *fwdata @@
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:786:28: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:786:28: sparse:     got struct rvu_fwdata *fwdata
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:799:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got struct rvu_fwdata *fwdata @@
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:799:28: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:799:28: sparse:     got struct rvu_fwdata *fwdata
->> drivers/net/ethernet/marvell/octeontx2/af/rvu.c:1964:46: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/net/ethernet/marvell/octeontx2/af/rvu.c:1984:38: sparse: sparse: cast removes address space '__iomem' of expression
-
-vim +/__iomem +1964 drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-
-  1941	
-  1942	static int rvu_get_mbox_regions(struct rvu *rvu, void **mbox_addr,
-  1943					int num, int type)
-  1944	{
-  1945		struct rvu_hwinfo *hw = rvu->hw;
-  1946		int region;
-  1947		u64 bar4;
-  1948	
-  1949		/* For cn10k platform VF mailbox regions of a PF follows after the
-  1950		 * PF <-> AF mailbox region. Whereas for Octeontx2 it is read from
-  1951		 * RVU_PF_VF_BAR4_ADDR register.
-  1952		 */
-  1953		if (type == TYPE_AFVF) {
-  1954			for (region = 0; region < num; region++) {
-  1955				if (hw->cap.per_pf_mbox_regs) {
-  1956					bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-  1957							  RVU_AF_PFX_BAR4_ADDR(0)) +
-  1958							  MBOX_SIZE;
-  1959					bar4 += region * MBOX_SIZE;
-  1960				} else {
-  1961					bar4 = rvupf_read64(rvu, RVU_PF_VF_BAR4_ADDR);
-  1962					bar4 += region * MBOX_SIZE;
-  1963				}
-> 1964				mbox_addr[region] = (void *)ioremap_wc(bar4, MBOX_SIZE);
-  1965				if (!mbox_addr[region])
-  1966					goto error;
-  1967			}
-  1968			return 0;
-  1969		}
-  1970	
-  1971		/* For cn10k platform AF <-> PF mailbox region of a PF is read from per
-  1972		 * PF registers. Whereas for Octeontx2 it is read from
-  1973		 * RVU_AF_PF_BAR4_ADDR register.
-  1974		 */
-  1975		for (region = 0; region < num; region++) {
-  1976			if (hw->cap.per_pf_mbox_regs) {
-  1977				bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-  1978						  RVU_AF_PFX_BAR4_ADDR(region));
-  1979			} else {
-  1980				bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-  1981						  RVU_AF_PF_BAR4_ADDR);
-  1982				bar4 += region * MBOX_SIZE;
-  1983			}
-  1984			mbox_addr[region] = (void *)ioremap_wc(bar4, MBOX_SIZE);
-  1985			if (!mbox_addr[region])
-  1986				goto error;
-  1987		}
-  1988		return 0;
-  1989	
-  1990	error:
-  1991		while (region--)
-  1992			iounmap((void __iomem *)mbox_addr[region]);
-  1993		return -ENOMEM;
-  1994	}
-  1995	
-
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/iio/accel/adxl345.h      |  2 +-
+ drivers/iio/accel/adxl345_core.c |  5 ++++-
+ drivers/iio/accel/adxl345_i2c.c  | 11 ++++-------
+ drivers/iio/accel/adxl345_spi.c  |  3 +--
+ 4 files changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iio/accel/adxl345.h b/drivers/iio/accel/adxl345.h
+index 9b0d4f487c43..d7e67cb08538 100644
+--- a/drivers/iio/accel/adxl345.h
++++ b/drivers/iio/accel/adxl345.h
+@@ -13,6 +13,6 @@ enum adxl345_device_type {
+ 	ADXL375 = 2,
+ };
+ 
+-int adxl345_core_probe(struct device *dev, struct regmap *regmap, enum adxl345_device_type type);
++int adxl345_core_probe(struct device *dev, struct regmap *regmap);
+ 
+ #endif /* _ADXL345_H_ */
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 0f34c349aa1e..315a408115b3 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/module.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ 
+ #include <linux/iio/iio.h>
+@@ -213,14 +214,16 @@ static void adxl345_powerdown(void *regmap)
+ 	regmap_write(regmap, ADXL345_REG_POWER_CTL, ADXL345_POWER_CTL_STANDBY);
+ }
+ 
+-int adxl345_core_probe(struct device *dev, struct regmap *regmap, enum adxl345_device_type type)
++int adxl345_core_probe(struct device *dev, struct regmap *regmap)
+ {
++	enum adxl345_device_type type;
+ 	struct adxl345_data *data;
+ 	struct iio_dev *indio_dev;
+ 	const char *name;
+ 	u32 regval;
+ 	int ret;
+ 
++	type = (uintptr_t)device_get_match_data(dev);
+ 	switch (type) {
+ 	case ADXL345:
+ 		name = "adxl345";
+diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
+index 2da1f73e6f03..581196e72291 100644
+--- a/drivers/iio/accel/adxl345_i2c.c
++++ b/drivers/iio/accel/adxl345_i2c.c
+@@ -19,19 +19,16 @@ static const struct regmap_config adxl345_i2c_regmap_config = {
+ 	.val_bits = 8,
+ };
+ 
+-static int adxl345_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int adxl345_i2c_probe(struct i2c_client *client)
+ {
++	enum adxl345_device_type type;
+ 	struct regmap *regmap;
+ 
+-	if (!id)
+-		return -ENODEV;
+-
+ 	regmap = devm_regmap_init_i2c(client, &adxl345_i2c_regmap_config);
+ 	if (IS_ERR(regmap))
+ 		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+ 
+-	return adxl345_core_probe(&client->dev, regmap, id->driver_data);
++	return adxl345_core_probe(&client->dev, regmap);
+ }
+ 
+ static const struct i2c_device_id adxl345_i2c_id[] = {
+@@ -55,7 +52,7 @@ static struct i2c_driver adxl345_i2c_driver = {
+ 		.name	= "adxl345_i2c",
+ 		.of_match_table = adxl345_of_match,
+ 	},
+-	.probe		= adxl345_i2c_probe,
++	.probe_new	= adxl345_i2c_probe,
+ 	.id_table	= adxl345_i2c_id,
+ };
+ 
+diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
+index 28f8d15cd257..1ea9933a909e 100644
+--- a/drivers/iio/accel/adxl345_spi.c
++++ b/drivers/iio/accel/adxl345_spi.c
+@@ -22,7 +22,6 @@ static const struct regmap_config adxl345_spi_regmap_config = {
+ 
+ static int adxl345_spi_probe(struct spi_device *spi)
+ {
+-	const struct spi_device_id *id = spi_get_device_id(spi);
+ 	struct regmap *regmap;
+ 
+ 	/* Bail out if max_speed_hz exceeds 5 MHz */
+@@ -33,7 +32,7 @@ static int adxl345_spi_probe(struct spi_device *spi)
+ 	if (IS_ERR(regmap))
+ 		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+ 
+-	return adxl345_core_probe(&spi->dev, regmap, id->driver_data);
++	return adxl345_core_probe(&spi->dev, regmap);
+ }
+ 
+ static const struct spi_device_id adxl345_spi_id[] = {
+-- 
+2.34.1
+
