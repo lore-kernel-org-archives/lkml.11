@@ -2,115 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02AF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357526AbiBUMLx (ORCPT
+        id S1346575AbiBUMMC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:11:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40908 "EHLO
+        Mon, 21 Feb 2022 07:12:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357351AbiBUMJD (ORCPT
+        with ESMTP id S1357309AbiBUMJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:09:03 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0555A201B6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:33 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 4A7BF22441;
-        Mon, 21 Feb 2022 13:08:32 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645445312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rgNSAc65R00dUB2WoxMX+ceITRUleNOknrJpVl6XzEI=;
-        b=pur1G2b+j4XfWcrOHUJWoVBvb9odjTCijm0kQrM1eqiqqQQ865i8+8wZSK8443fgn/FKt8
-        9fNMc+9eGVA+psiwIoBhvqdSWnXx/tgvyIi7bKHOGRL05RnmP0BX9+8nUcCipGUuTcVtoP
-        d3TAcwI+of+6/KfO7a8kWW4dNiEnCa4=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 30/32] mtd: spi-nor: spansion: rename vendor specific functions and defines
-Date:   Mon, 21 Feb 2022 13:08:07 +0100
-Message-Id: <20220221120809.1531502-31-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221120809.1531502-1-michael@walle.cc>
-References: <20220221120809.1531502-1-michael@walle.cc>
+        Mon, 21 Feb 2022 07:09:05 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB43665A6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:41 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id o24so26711907wro.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CV5c3iXN0ZDroe+O7EtfCuby385XVMnLRIPAVIqOzLQ=;
+        b=VzDjcwpFw8Bt4+sKQemYRvJXOFpFzlJC4o7nPKh7gBfc/1uZq9iZRUm/gUl0kzALwR
+         oxPa9aCTLOW9FaGrfH7w7pLx0iVwTt/GOXHE768JxURnxqtjvX7Niy6SMgOihwz31ziU
+         yiXn6isvXh+AOxd1bBRHl+XyKf89NyMrYj/FJQQ3/QHE0Lh4zHDWNZfayfVIsXYuqIiP
+         rFEyNLRJGwn/TkVQQNt2eayE/f5SPebnOsJSJuaBmkUDnwTfOvuxe2egfKg+x5OrqbLW
+         gPtWHM3dfsl5OfEkaprLcnzVF2zOuCiq9nLyXw6oGM2riIaq7T2S8PLyEtFKNZuRPqDc
+         uwGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CV5c3iXN0ZDroe+O7EtfCuby385XVMnLRIPAVIqOzLQ=;
+        b=dJ339/nmuTgQHgg8sJ7AMsvMgKokH229g3OqtRtjQbjxiioYZHvCwmmMeZ5X4Q+fVc
+         4fF24ULi6GIKakpDLVeFrBOhPuc69Kdvns+rhL3fCg9T3t3Z6F5oaOZPtpBGAMDHr+6r
+         zDWui4zBrer5cQBoapYuK2wMmJxocTttjZiZcIWOHwcpkJW/DTkJ3iSkU/JDtcWQh5fy
+         eGVZnFFrKs5dLT6qPJHB2pBL+BLETmut3824E9qJYdB92ot8SOxl+T5mmfj4eDfuP395
+         6DymlG/aE2tN9qn8gZ6czvYIFyjUiXGTeLnwdd+OC560K9vF/ytaOpw7FuhrXguG30ii
+         9uOQ==
+X-Gm-Message-State: AOAM531tAAygQw8sXiF9eZi0w7vqIJk4jk+wheLEH2lEwNSEG41iMQDX
+        u8Ky8+T74sJw81wtVhR+vZKPyg==
+X-Google-Smtp-Source: ABdhPJyecBtSfKLHEPz8mlqMUDjEEOgcR2GUvvzZ9e+5PQYFO/+gF3qRyJfmk0DgodzGmHicQFGuPw==
+X-Received: by 2002:adf:ee0d:0:b0:1e3:f28:487f with SMTP id y13-20020adfee0d000000b001e30f28487fmr15441462wrn.620.1645445320385;
+        Mon, 21 Feb 2022 04:08:40 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id a8sm11821546wra.0.2022.02.21.04.08.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 04:08:39 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     herbert@gondor.apana.org.au, jernej.skrabec@gmail.com,
+        linus.walleij@linaro.org, narmstrong@baylibre.com,
+        ulli.kroll@googlemail.com, wens@csie.org
+Cc:     linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 0/5] crypto: completion should be ran with BH disabled
+Date:   Mon, 21 Feb 2022 12:08:28 +0000
+Message-Id: <20220221120833.2618733-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the generic spi_nor prefix for all the spansion functions.
+Hello
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/mtd/spi-nor/spansion.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+This is the follow up of https://lore.kernel.org/lkml/Yd1SIHUNdLIvKhzz@Red/
+and https://patchwork.kernel.org/project/linux-crypto/patch/20220127133332.4011509-1-clabbe@baylibre.com/
+This serie fix all drivers which do not call completion with BH disabled
+and add the check in crypto/engine asked by Herbert.
+I have verified that this check does not generate warnings on all other crypto
+hardware I got (omap, ccree, rockchip)
 
-diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
-index 3606291d421c..0b5cbfa57221 100644
---- a/drivers/mtd/spi-nor/spansion.c
-+++ b/drivers/mtd/spi-nor/spansion.c
-@@ -309,10 +309,10 @@ static const struct flash_info spansion_nor_parts[] = {
- };
- 
- /**
-- * spi_nor_clear_sr() - Clear the Status Register.
-+ * spansion_nor_clear_sr() - Clear the Status Register.
-  * @nor:	pointer to 'struct spi_nor'.
-  */
--static void spi_nor_clear_sr(struct spi_nor *nor)
-+static void spansion_nor_clear_sr(struct spi_nor *nor)
- {
- 	int ret;
- 
-@@ -336,13 +336,13 @@ static void spi_nor_clear_sr(struct spi_nor *nor)
- }
- 
- /**
-- * spi_nor_sr_ready_and_clear() - Query the Status Register to see if the flash
-- * is ready for new commands and clear it.
-+ * spansion_nor_sr_ready_and_clear() - Query the Status Register to see if the
-+ * flash is ready for new commands and clear it.
-  * @nor:	pointer to 'struct spi_nor'.
-  *
-  * Return: 1 if ready, 0 if not ready, -errno on errors.
-  */
--static int spi_nor_sr_ready_and_clear(struct spi_nor *nor)
-+static int spansion_nor_sr_ready_and_clear(struct spi_nor *nor)
- {
- 	int ret;
- 
-@@ -356,7 +356,7 @@ static int spi_nor_sr_ready_and_clear(struct spi_nor *nor)
- 		else
- 			dev_err(nor->dev, "Programming Error occurred\n");
- 
--		spi_nor_clear_sr(nor);
-+		spansion_nor_clear_sr(nor);
- 
- 		/*
- 		 * WEL bit remains set to one when an erase or page program
-@@ -384,7 +384,7 @@ static void spansion_nor_late_init(struct spi_nor *nor)
- 	}
- 
- 	if (nor->info->mfr_flags & USE_CLSR)
--		nor->params->ready = spi_nor_sr_ready_and_clear;
-+		nor->params->ready = spansion_nor_sr_ready_and_clear;
- }
- 
- static const struct spi_nor_fixups spansion_nor_fixups = {
+Regards
+
+Corentin Labbe (5):
+  crypto: sun8i-ss: call finalize with bh disabled
+  crypto: sun8i-ce: call finalize with bh disabled
+  crypto: amlogic: call finalize with bh disabled
+  crypto: gemini: call finalize with bh disabled
+  crypto: engine: check if BH is disabled during completion
+
+ crypto/crypto_engine.c                              | 1 +
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c | 3 +++
+ drivers/crypto/allwinner/sun8i-ce/sun8i-ce-hash.c   | 3 +++
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c | 3 +++
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c   | 3 +++
+ drivers/crypto/amlogic/amlogic-gxl-cipher.c         | 2 ++
+ drivers/crypto/gemini/sl3516-ce-cipher.c            | 2 ++
+ 7 files changed, 17 insertions(+)
+
 -- 
-2.30.2
+2.34.1
 
