@@ -2,79 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BE5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1162C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352428AbiBUKIW (ORCPT
+        id S1352522AbiBUKIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:08:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35532 "EHLO
+        Mon, 21 Feb 2022 05:08:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353325AbiBUJ5W (ORCPT
+        with ESMTP id S1353479AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDAA47042
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:25:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=sWzl2v9v4HujX86aJfCOVrh1k6oCTv+xUn/76FQ75FM=; b=LZ6EwgV7EF75a3KISk36Gc2ZRH
-        O02ROAuni+7t1lYSu4iSkXJSsm9LKxVh6mbLsiZ/TSksq0H5yo8fA9t7t29+lJiylcd5RR+l8g4Ou
-        a/VuJU9/DJjFuSFAFIBtWhQP5aFl0gpYQUuqhXX/bwO5+X9knRreKYcdIwIhrSbAYJ3jzxYGnmDSd
-        DCeWqZ6huOtgmDzWvOP+Z9W5BjsOx1wc9/i6nNbOlOSNJX8OXflVbi/J6CismkoaeDHlfIvHC2xf/
-        LE6ERqYgfXP6rno0hu66kiZ8MjBoNzbqsC1Bs88eeSQFFofdiAnDPVOIrSsbIkxvXb/M7lmSLnOcI
-        W+9dBmrA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nM4wJ-001esK-0l; Mon, 21 Feb 2022 09:25:03 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 65C59988B05; Mon, 21 Feb 2022 10:24:56 +0100 (CET)
-Date:   Mon, 21 Feb 2022 10:24:56 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "Poimboe, Josh" <jpoimboe@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "Milburn, Alyssa" <alyssa.milburn@intel.com>
-Subject: Re: [PATCH 00/29] x86: Kernel IBT
-Message-ID: <20220221092456.GJ23216@worktop.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <7a241b81ccd21da02bc27379b0a837c09fe4f135.camel@intel.com>
- <20220219095827.GI23216@worktop.programming.kicks-ass.net>
- <1C202B85-FCB1-4282-9CA6-ED9115F203BB@chromium.org>
+        Mon, 21 Feb 2022 04:57:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FF339695;
+        Mon, 21 Feb 2022 01:26:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EB7961016;
+        Mon, 21 Feb 2022 09:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29DFAC340EB;
+        Mon, 21 Feb 2022 09:26:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645435571;
+        bh=vTNezd7ITeYogPa6Ic5lEnlszyEHwfYUKwFOjDwVfeY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FFeIsmGjmAtdb6IbDXbgJrJiNskr9o6172dMJDadIZTwmrcWfJKpzqT/vbm/OSck0
+         pUzP55gr3eo68WL4YtIQF1MXmpFjV5HI7L/3So+A2WLsP5kTJUDGu0G5E7T1WwaYQt
+         sJXlphLBOotkRJurkOBl9joj2L7wQwzcGfcOPgPc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 209/227] arm64: dts: meson-g12: add ATF BL32 reserved-memory region
+Date:   Mon, 21 Feb 2022 09:50:28 +0100
+Message-Id: <20220221084941.776436938@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1C202B85-FCB1-4282-9CA6-ED9115F203BB@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 12:42:25AM -0800, Kees Cook wrote:
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-> >+void cet_disable(void)
-> >+{
-> >+	cr4_clear_bits(X86_CR4_CET);
-> 
-> I'd rather keep the pinning...
+[ Upstream commit 08982a1b3aa2611c9c711d24825c9002d28536f4 ]
 
-Uff. is that still enforced at this point?
+Add an additional reserved memory region for the BL32 trusted firmware
+present in many devices that boot from Amlogic vendor u-boot.
 
-> >+	wrmsrl(MSR_IA32_S_CET, 0);
-> >+}
-> 
-> Eh, why not just require kexec to be IBT safe? That seems a reasonable
-> exercise if we ever expect UEFI to enforce IBT when starting the
-> kernel on a normal boot...
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-3-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Well, it makes it impossible to kexec into an 'old' kernel. That might
-not be very nice.
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 428449d98c0ae..a3a1ea0f21340 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -107,6 +107,12 @@
+ 			no-map;
+ 		};
+ 
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
+-- 
+2.34.1
+
+
+
