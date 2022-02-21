@@ -2,94 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59556C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiBUR7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:59:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47310 "EHLO
+        id S231766AbiBUSBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:01:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbiBUR4B (ORCPT
+        with ESMTP id S229665AbiBUR7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:56:01 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B605E021;
-        Mon, 21 Feb 2022 09:50:42 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21L7tWjm002216;
-        Mon, 21 Feb 2022 11:50:39 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=PODMain02222019; bh=DnGKY4K9+L3pccNfwIlhl6v+fqvbpFmhsVI/YK45NYo=;
- b=T9EqJLkqgcJz5SGJ0MqVfMBcPoCn56FklhbjXaDxJg0IztbOqTN2fWorZ5acAbyeDyr/
- LAxQ/Gjq10yAwKUAIN/HeGhjk1f/teKqZCA/PoJ6sR1rAz075n5DMUZOWSAiZUTHyDZ7
- NmzJjcEHSJJIbXUP0C/SZeXN7E69aao/OyWTZ3rsNfq3o+IjEb3d+VsvsvWLezV6vemL
- 2zwlsSi3SlHnHNDMGPU65nbwaTvTmxd6p+bKj9nBfpnF0+7WHrPjJo3KDgyaWG4U6SUn
- S30T8iYB8JyDmrEUP04VfFd9cwOMlvZcn0CzUFJXrCHXKv7WQSdAxUgYL0HKm9ddb8Qo xw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3ec53h8q95-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 21 Feb 2022 11:50:39 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 21 Feb
- 2022 17:50:37 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Mon, 21 Feb 2022 17:50:37 +0000
-Received: from smtpclient.apple (unknown [141.131.78.230])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id B6E4211DA;
-        Mon, 21 Feb 2022 17:50:36 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
-Subject: Re: [RESEND v2 1/2] power: supply: Introduces bypass charging
- property
-From:   "Rivera-Matos, Ricardo" <rriveram@opensource.cirrus.com>
-In-Reply-To: <20220212034400.kg4cy2t6g7espy6n@mercury.elektranox.org>
-Date:   Mon, 21 Feb 2022 11:50:35 -0600
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <FF4489C8-87D4-42CB-A347-1DF55A68A2AE@opensource.cirrus.com>
-References: <20220210154108.641369-1-rriveram@opensource.cirrus.com>
- <20220210154108.641369-2-rriveram@opensource.cirrus.com>
- <20220211204309.apzep7w233vh7iin@mercury.elektranox.org>
- <7DD3FE07-445C-47BC-92AB-B281ABF67068@opensource.cirrus.com>
- <20220212034400.kg4cy2t6g7espy6n@mercury.elektranox.org>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-X-Mailer: Apple Mail (2.3693.60.0.1.1)
-X-Proofpoint-ORIG-GUID: CkuJgU-8jrPo6FpL6eS3qG1e62-H6xbw
-X-Proofpoint-GUID: CkuJgU-8jrPo6FpL6eS3qG1e62-H6xbw
-X-Proofpoint-Spam-Reason: safe
+        Mon, 21 Feb 2022 12:59:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5ADD12AD8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:52:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645465919;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uR7SiZmKCUIFK/y/tnK8VR20eBceG4PVTblPsXxfzUo=;
+        b=FYMx+9KkY46/b0Bd10lgmO3nVAOjSxjFebiz9jlWUil7IQfQT/S0PuqKxd+QeKIihgz1mu
+        CoweTlrytRqnIHXjkYW+ZUWiqcZ7cdy/mhSwibzKWOx4BC/0fzg7VA4R1LSm5a7yGtDMky
+        5l8VEj+3bCPJ3nezXzkEf5jrBsfhNF8=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-65-sL_r1IM4NHGnqUYNOf1uLg-1; Mon, 21 Feb 2022 12:51:58 -0500
+X-MC-Unique: sL_r1IM4NHGnqUYNOf1uLg-1
+Received: by mail-qv1-f72.google.com with SMTP id fq2-20020a056214258200b0042c39c09e5dso17898196qvb.18
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 09:51:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=uR7SiZmKCUIFK/y/tnK8VR20eBceG4PVTblPsXxfzUo=;
+        b=HRWYOu2yXpmKPmWJon3DjjIk1pLZ4B2uv8T/VgyIAyKlpRVzi6oSNahb4hqOLyNgRX
+         Q/LLmRQ5wB0+Zvg6R/JhToE31Eckebdhh8zaX5t7EOz56OCIP4WCZjZ2yvP40ylg56LB
+         hmZhMMByNq07Hr3fjExhDRTQbN48MBfZY1ifT2bwpYA2LIg7WD0BObB0ZFtzsQQ/03yA
+         JUk1WWJUrt2/BTAwbpgBFgu56uNXXUQrgWrjSNOKxkDlV9ung31iUUKYvil6AaAESrqo
+         722sJBvCUO9gmkU2FDRDmdqGSCUupgYRaOtZX1ty+2hMBtBvgQ0aa/o5ARi4qSodJlf6
+         NGFA==
+X-Gm-Message-State: AOAM533UkzLqDAD4PylawVisA4NJbCzaXhkN7LHmhJW4Bfb8uk8tosw0
+        B4XrIun4uzYkUjXClI6XYdYqbx7HkVds38iXcPgDZ0MEGIFrdrvBtRC6fvDJ55I+qdt1amzZ/co
+        3ki3okxxSvY1k9sKi5rY1Xv3w
+X-Received: by 2002:a05:620a:178d:b0:648:e091:6ddc with SMTP id ay13-20020a05620a178d00b00648e0916ddcmr3932720qkb.553.1645465918289;
+        Mon, 21 Feb 2022 09:51:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxmyRGXkrF9r8dCEx8lShg4bsx5h4lZbJMdcKGnZA6fcMkMJIP3gjOKXVy3WZoU33xbu9ZRiw==
+X-Received: by 2002:a05:620a:178d:b0:648:e091:6ddc with SMTP id ay13-20020a05620a178d00b00648e0916ddcmr3932703qkb.553.1645465918085;
+        Mon, 21 Feb 2022 09:51:58 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id x83sm7541757qkb.68.2022.02.21.09.51.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 09:51:57 -0800 (PST)
+Subject: Re: [PATCH v1 3/7] fpga: dfl: Allow for ports with no local bar
+ space.
+To:     matthew.gerlach@linux.intel.com
+Cc:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
+        "Wu, Hao" <hao.wu@intel.com>, "mdf@kernel.org" <mdf@kernel.org>,
+        "Xu, Yilun" <yilun.xu@intel.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com>
+ <20220214112619.219761-4-tianfei.zhang@intel.com>
+ <0fdd3d0d-d280-8104-eccc-8fa8d8a992c2@redhat.com>
+ <BN9PR11MB548314968CBC0CA5E446B366E3379@BN9PR11MB5483.namprd11.prod.outlook.com>
+ <efee5ac0-4c3a-085d-9b9d-0c8ade022f30@redhat.com>
+ <alpine.DEB.2.22.394.2202210912260.117064@rhweight-WRK1>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <8137a208-43e3-3843-eca9-f6ec627e8d0e@redhat.com>
+Date:   Mon, 21 Feb 2022 09:51:55 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.22.394.2202210912260.117064@rhweight-WRK1>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-> On Feb 11, 2022, at 9:44 PM, Sebastian Reichel =
-<sebastian.reichel@collabora.com> wrote:
->=20
-> Hi,
->=20
-> On Fri, Feb 11, 2022 at 03:46:52PM -0600, Rivera-Matos, Ricardo wrote:
->>> I think your patch description is a good explanation for that file.
->>> Also I obviously missed to point this out for the "Long Life" charge
->>> type, so please also add a sentence for that so that the property
->>> is properly documented.
->>=20
->> As I understand it =E2=80=9CLong Life=E2=80=9D means the charger =
-reduces its
->> charging rate in order to prolong the battery health.
->>=20
->> Is this a fit explanation?
->=20
-> Yes, thanks for taking care of it.
+On 2/21/22 9:22 AM, matthew.gerlach@linux.intel.com wrote:
+>
+>
+> On Fri, 18 Feb 2022, Tom Rix wrote:
+>
+>>
+>> On 2/17/22 11:31 PM, Zhang, Tianfei wrote:
+>>>
+>>>> -----Original Message-----
+>>>> From: Tom Rix <trix@redhat.com>
+>>>> Sent: Tuesday, February 15, 2022 11:06 PM
+>>>> To: Zhang, Tianfei <tianfei.zhang@intel.com>; Wu, Hao 
+>>>> <hao.wu@intel.com>;
+>>>> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; 
+>>>> linux-fpga@vger.kernel.org;
+>>>> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org
+>>>> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>> Subject: Re: [PATCH v1 3/7] fpga: dfl: Allow for ports with no 
+>>>> local bar space.
+>>>>
+>>>>
+>>>> On 2/14/22 3:26 AM, Tianfei zhang wrote:
+>>>>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>>>
+>>>>>   From a fpga partial reconfiguration standpoint, a port may not be
+>>>>> connected any local BAR space.  The port could be connected to a
+>>>>> different PCIe Physical Function (PF) or Virtual Function (VF), in
+>>>>> which case another driver instance would manage the endpoint.
+>>>> It is not clear if this is part of iofs or a bug fix.
+>>> This is the new implementation/feature of IOFS.
+>>> On IOFS support multiple methods to access the AFU.
+>>> 1. Legacy Model. This is used for N3000 and N5000 card.
+>>> In this model the entire AFU region is a unit of PR, and there is a 
+>>> Port device connected to this AFU.
+>>> On DFL perspective, there is "Next AFU" point to the AFU, and the 
+>>> "BarID" is  the PCIe Bar ID of AFU.
+>>> In this model, we can use the AFU APIs to access the entire AFU 
+>>> resource, like MMIO.
+>>> 2. Micro-Personas in AFU.
+>>> IOFS intruding new model for PR and AFU access.
+>>> Micro-Personas allow the RTL developer to designate their own 
+>>> AFU-defined PR regions.
+>>> In this model the unit of PR is not the entire AFU, instead
+>>> the unit of PR can be any size block or blocks inside the AFU.
+>>> 3. Multiple VFs per PR slot.
+>>> In this method, we can instance multiple VFs over SRIOV for one PR 
+>>> slot, and access the AFU resource
+>>> by different VFs in virtualization usage. In this case, the Port 
+>>> device would not connected to AFU (the BarID of Port device
+>>> should be set to invalid), so this patch want to support this use 
+>>> model.
+>>
+>> What I am looking for is how the older cards using (my term) dfl 1 
+>> will still work with dfl 2 and vice versa.
+>>
+>> No where do I see a version check for dfl 2 nor a pci id check so 
+>> either this just works or backward compatibility has not be considered.
+>>
+>> Please add a backward compatibility section to the doc patch
+>>
+>>>
+>>>>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>>>> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+>>>>> ---
+>>>>>    drivers/fpga/dfl-pci.c | 8 ++++++++
+>>>>>    1 file changed, 8 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c index
+>>>>> 4d68719e608f..8abd9b408403 100644
+>>>>> --- a/drivers/fpga/dfl-pci.c
+>>>>> +++ b/drivers/fpga/dfl-pci.c
+>>>>> @@ -243,6 +243,7 @@ static int find_dfls_by_default(struct pci_dev 
+>>>>> *pcidev,
+>>>>>            v = readq(base + FME_HDR_CAP);
+>>>>>            port_num = FIELD_GET(FME_CAP_NUM_PORTS, v);
+>>>>>
+>>>>> +        dev_info(&pcidev->dev, "port_num = %d\n", port_num);
+>>>>>            WARN_ON(port_num > MAX_DFL_FPGA_PORT_NUM);
+>>>>>
+>>>>>            for (i = 0; i < port_num; i++) {
+>>>>> @@ -258,6 +259,13 @@ static int find_dfls_by_default(struct 
+>>>>> pci_dev *pcidev,
+>>>>>                 */
+>>>>>                bar = FIELD_GET(FME_PORT_OFST_BAR_ID, v);
+>>>>>                offset = FIELD_GET(FME_PORT_OFST_DFH_OFST, v);
+>>>>> +            if (bar >= PCI_STD_NUM_BARS) {
+>>>> Is bar set to a better magic number that pci_std_num_bars ? maybe 
+>>>> 0xff's
+>>>>
+>>>> How do you tell between this case and broken hw ?
+>>> Yes, I agree that magic number is better, Currently the RTL using 
+>>> PCI_STD_NUM_BARS for an invalid PCIe bar number.
+>>
+>> How do you tell between this case and broken hw ?
+>>
+>> Tom
+>
+> The field, FME_PORT_OFST_BAR_ID, is a three bit field, which is pretty 
+> common for BARs on PCI.  PCI_STD_NUM_BARS is defined as 6. Current HW 
+> implementations are filing this field with the value, 7, which is 
+> close to the suggestion of 0xff's.  How about we define the following 
+> magic number?
+> #define NO_LOCAL_PORT_BAR    7
+>
+> We should also change the dev_info to be a dev_dbg and more precise to 
+> something like the following:
+>
+>     if (bar == NO_LOCAL_PORT_BAR) {
+>         dev_dbg(&pcidev->dev, "No local port BAR space.\n");
+>         continue;
+>     }
 
-Ack.
->=20
-> -- Sebastian
+What I am looking for is way generally is to tell if this is an old 
+framework or a new one.
 
-Ricardo
+Maybe a flag and/or version added to dfl_fpga_cdev on probing ?
+
+(The meaning of released_port_num likely needs to change there as well)
+
+So in this case you could check if this was the new framework before 
+doing the bar check.
+
+Similar checks other places where ofs stuff is being fit it.
+
+My concern is the fitting in without checking will break the old stuff.
+
+And why I wanted to see a probing writeup in the dfl.rst doc
+
+Tom
+
+>
+>>
+>>>> Move up a line and skip getting an offset that will not be used.
+>>> Yes, this line is not necessary, I will remove it on next version 
+>>> patch.
+>>>
+>>>>> + dev_info(&pcidev->dev, "skipping port without
+>>>> local BAR space %d\n",
+>>>>> +                     bar);
+>>>>> +                continue;
+>>>>> +            } else {
+>>>>> +                dev_info(&pcidev->dev, "BAR %d offset %u\n",
+>>>> bar, offset);
+>>>>> +            }
+>>>>>                start = pci_resource_start(pcidev, bar) + offset;
+>>>>>                len = pci_resource_len(pcidev, bar) - offset;
+>>>>>
+>>>> Is similar logic needed for else-if (port) block below this ?
+>>> I think, the else-if is not necessary. I will remove it on next 
+>>> version patch.
+>>>> Tom
+>>
+>>
+>
 
