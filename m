@@ -2,102 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB19EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355308AbiBUKmk (ORCPT
+        id S1355331AbiBUKms (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:42:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37652 "EHLO
+        Mon, 21 Feb 2022 05:42:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355271AbiBUKkF (ORCPT
+        with ESMTP id S1355589AbiBUKlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:40:05 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BF1F35
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:02:03 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id c6so25385054edk.12
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:02:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kMIEQ6EmXrcKF9QOgwi4JP+rN/GpqbWH/lqcMa8liiA=;
-        b=QQbUtc7TFLde+vu666fP1jpn3ZV0FX04icLIemzeQRGi911a0jMrdL8vJdmL3pepEi
-         6okCY+lM3vY8PCpbLkL0CN1RQ4ccaCqElG9sY+NLCKb3+FcPSFZopQ52JY04uQApqnML
-         Q4cY5EH3iUC6W+Su0VttBmEwgrjlKWAQYvTGBsWINSb5FBW79dNR5AY4+0ePzW4cOSBz
-         Q0sUk5AIW65Wwz/1e5NuOnsKKgKEjkWiLU4zNXi8yPSJJtSQpBUtIyP/KtVR7SCVX7xF
-         /nGHil8Eqxvg9T8QZOz9HbijZq4GNAT7JXWKEOQyr7dui6njbDWHiKdx9LVYzym+qEK1
-         yy+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kMIEQ6EmXrcKF9QOgwi4JP+rN/GpqbWH/lqcMa8liiA=;
-        b=JHX6IYTlgCKSpny81UQ9wUX53Dnp3P66UUDMLkfW4cX3fBRpmOy0OTFUaNWRgzC8nE
-         5pplu9Bkupkx2xXeRH26zAaaAMQZDYb6nRPLosA1PPtok8S2U00RvoGXQ3RFv+SpBgrw
-         FE6SchT82k6kaVGst3EwNbusffKeH8fzlaK2+nIBv4tWhFaYaQX1ZKIwcuJNb1385NVM
-         18xeWXxnsZDQAye98S7voTn2KkkWyTktodvWb3YX6avjVluroKTKdRc4TEPR7HB6mQh5
-         x0xXxaWHM+0H+8Rj2X+EvYEzDd8CzqdBQZosmxBfEfF/aljFFRojra5mHl1QFzxdTeak
-         M/4w==
-X-Gm-Message-State: AOAM531dMDwIj5N54dgUoXRcVDa6Wd4g3sWKOpH6XmWMvSFjZCVlgrAy
-        0KZAH5VzDLIhw4gCfnKb5B8QUA==
-X-Google-Smtp-Source: ABdhPJwoxhTQ66ov81uyxAEEkMdXe2eNB3Eu5awgfYyKsjlTo0UYbaWCPMaaN9gxOKo3lAv87zWjkw==
-X-Received: by 2002:a50:f686:0:b0:410:e352:e61a with SMTP id d6-20020a50f686000000b00410e352e61amr19883345edn.23.1645437721836;
-        Mon, 21 Feb 2022 02:02:01 -0800 (PST)
-Received: from ?IPV6:2a02:768:2307:40d6::f9e? ([2a02:768:2307:40d6::f9e])
-        by smtp.gmail.com with ESMTPSA id gs6sm702985ejb.17.2022.02.21.02.02.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 02:02:01 -0800 (PST)
-Message-ID: <f874a9c7-8d8d-fecc-8fc9-51dcf37cf60b@monstr.eu>
-Date:   Mon, 21 Feb 2022 11:02:00 +0100
+        Mon, 21 Feb 2022 05:41:09 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075384D624;
+        Mon, 21 Feb 2022 02:03:14 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id E57DB58025E;
+        Mon, 21 Feb 2022 05:03:11 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 21 Feb 2022 05:03:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=MewriESTXRMbblpSYnQ8yYADa3NnoEjRQEC2H3
+        lKSUI=; b=Mt768FWMLUOeF8jeTm7nkj7ASdVW7s67U6Im0Wy00c2rytVEY+2t8W
+        plTGafbs/POLzovhcntJtXs25qHVz/XcFfimvNGPiD84N33FRLEHQnXPHu8y9RM/
+        62unKA84+3IGrcJEgQR7urG8gi8N6Btu/vc8WtRwCIB5JG3XuZKjVkLQcaXk4sId
+        u2RPC3YU/KWIkMuJygRm6ogYbDUo6qXqVkzxgB6VYUC8ZfOlBZz0f4wQ06Dplrhr
+        7l/pyobImZL6lWzDe/CbdcPjGrIl77Tft0nS4Szn6M62y081r+L15ny6+G2R/LEN
+        KpmKYGGVHxHW+x0KfWi2kfOXntvVShFg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=MewriESTXRMbblpSY
+        nQ8yYADa3NnoEjRQEC2H3lKSUI=; b=PWnPDsKkAXzzlVLbReqFM4ev0+D84Wmj8
+        UXO8s4hvhDp2973lI485LLrFleqMu5Z2xSEMtWpepGxvtUDkC5NYDYKzEvAA2R1u
+        +IDGx4LP70DhXKLJZRrhVPFKCHXq+U0oJmA/zEQDePTOtoT4M4lCXDSu54Bp47C/
+        JA4gRxORqlB66YrgQRNOhVr4Jvl9XxgvDHoK98Lp9e3S2QIfJvBCG+uRyNBIpulU
+        64c/a4Fq9zRPOXrTNEJdKLYcadHfD5pyWYMO35o771FiIaLYYzbsAsQIyz6Zh007
+        UqcSl5oSzox4tIE1TJFkI5Kw17EIRC/wRewu3LeKwkuD9lrc+b73A==
+X-ME-Sender: <xms:X2MTYvc9vVjKn80UQsy7USVcWpMf3QaFKgRQGxIh6pUP7DB15cmcAQ>
+    <xme:X2MTYlNo6Wdazc_lM4SSTMuwXmOQqattlLu8VDPymELmuGE5HeawXUvyGuIHN4UNU
+    p9eYBAa-tOUhpspKS0>
+X-ME-Received: <xmr:X2MTYohVABDQ07AHDI5_6ZDv267i9MnVq-X84H77mRfZ0QPCroS6HeZ_vUduOXFiFnV_d7sLhT4VfDZs6QBd5qOq-v9apDqj-0jScjU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigddutdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeffteetveeijeetuefhffegkeetgffhieelheehtdduudethffhjedtvddtudel
+    vdenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordht
+    vggthh
+X-ME-Proxy: <xmx:X2MTYg8HQCsmowzoLQPVSDV6SuRwknGP0H8muXZFOLqUOvNzp1ysiw>
+    <xmx:X2MTYrs_srCsXTTK-5X6pOTDSJSZmNrU-N30D0cnI1NLEbIVOMv_fA>
+    <xmx:X2MTYvHAccxpkx-tn53rooXHlxc_HLLMyY9o8R0-reF8hsM0whxRuQ>
+    <xmx:X2MTYjN0PEgIm1hOlGQtl1p4RqDvuy9Fp_NwTItBPx4KcmFC3GRsTA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Feb 2022 05:03:10 -0500 (EST)
+Date:   Mon, 21 Feb 2022 11:03:09 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
+        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
+        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
+        tomi.valkeinen@ideasonboard.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v5 03/11] dt-bindings: media: Add bindings for
+ bcm2835-unicam
+Message-ID: <20220221100309.ytcy6bxijwztyhsd@houat>
+References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220208155027.891055-4-jeanmichel.hautbois@ideasonboard.com>
+ <f58bf6a9-c63f-19ab-36c8-a9a7b9182859@i2se.com>
+ <20220214093954.5y4jbqcddmwhgxr5@houat>
+ <YgomyazKaV2QnfYQ@pendragon.ideasonboard.com>
+ <7ba0d8e7-72b9-d139-f29f-45a803ca2fdb@i2se.com>
+ <YhM6474MwSh6bjUe@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] iio: adc: xilinx-ams: Use devm_delayed_work_autocancel()
- to simplify code
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <2626e6a057e40cd2271ef0e5f81d12e607bad5b4.1644776929.git.christophe.jaillet@wanadoo.fr>
- <20220220114552.53fedd33@jic23-huawei>
-From:   Michal Simek <monstr@monstr.eu>
-In-Reply-To: <20220220114552.53fedd33@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hgycafmcvwvkmfnm"
+Content-Disposition: inline
+In-Reply-To: <YhM6474MwSh6bjUe@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On 2/20/22 12:45, Jonathan Cameron wrote:
-> On Sun, 13 Feb 2022 19:29:05 +0100
-> Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
-> 
->> Use devm_delayed_work_autocancel() instead of hand writing it. This is
->> less verbose and saves a few lines of code.
->>
->> devm_delayed_work_autocancel() uses devm_add_action() instead of
->> devm_add_action_or_reset(). This is fine, because if the underlying memory
->> allocation fails, no work has been scheduled yet. So there is nothing to
->> undo.
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Looks good to me, but I'd ideally like some input from someone familiar with
-> the driver.
+--hgycafmcvwvkmfnm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Anand told me that the change is fine that's why here is my
-Acked-by: Michal Simek <michal.simek@xilinx.com>
+On Mon, Feb 21, 2022 at 09:10:27AM +0200, Laurent Pinchart wrote:
+> Hi Stefan,
+>=20
+> On Mon, Feb 14, 2022 at 12:32:59PM +0100, Stefan Wahren wrote:
+> > Am 14.02.22 um 10:54 schrieb Laurent Pinchart:
+> > > On Mon, Feb 14, 2022 at 10:39:54AM +0100, Maxime Ripard wrote:
+> > >> On Sun, Feb 13, 2022 at 04:48:45PM +0100, Stefan Wahren wrote:
+> > >>> as someone with a little more insight to the clocks, i like to know=
+ your
+> > >>> opinion about the bcm2835-unicam binding.
+> > >>>
+> > >>> Am 08.02.22 um 16:50 schrieb Jean-Michel Hautbois:
+> > >>>> Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unic=
+am
+> > >>>> camera interface.
+> > >>>>
+> > >>>> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> > >>>> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> > >>>> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonbo=
+ard.com>
+> > >>>> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > >>>>
+> > >>>> ---
+> > >>>> v4:
+> > >>>> - make MAINTAINERS its own patch
+> > >>>> - describe the reg and clocks correctly
+> > >>>> - use a vendor entry for the number of data lanes
+> > >>>> ---
+> > >>>>  .../bindings/media/brcm,bcm2835-unicam.yaml   | 117 +++++++++++++=
++++++
+> > >>>>  1 file changed, 117 insertions(+)
+> > >>>>  create mode 100644 Documentation/devicetree/bindings/media/brcm,b=
+cm2835-unicam.yaml
+> > >>>>
+> > >>>> diff --git a/Documentation/devicetree/bindings/media/brcm,bcm2835-=
+unicam.yaml b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.y=
+aml
+> > >>>> new file mode 100644
+> > >>>> index 000000000000..1938ace23b3d
+> > >>>> --- /dev/null
+> > >>>> +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.=
+yaml
+> > >>>> @@ -0,0 +1,117 @@
+> > >>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > >>>> +%YAML 1.2
+> > >>>> +---
+> > >>>> +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> > >>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >>>> +
+> > >>>> +title: Broadcom BCM283x Camera Interface (Unicam)
+> > >>>> +
+> > >>>> +maintainers:
+> > >>>> +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> > >>>> +
+> > >>>> +description: |-
+> > >>>> +  The Unicam block on BCM283x SoCs is the receiver for either
+> > >>>> +  CSI-2 or CCP2 data from image sensors or similar devices.
+> > >>>> +
+> > >>>> +  The main platform using this SoC is the Raspberry Pi family of =
+boards.  On
+> > >>>> +  the Pi the VideoCore firmware can also control this hardware bl=
+ock, and
+> > >>>> +  driving it from two different processors will cause issues.  To=
+ avoid this,
+> > >>>> +  the firmware checks the device tree configuration during boot. =
+If it finds
+> > >>>> +  device tree nodes whose name starts with 'csi' then it will sto=
+p the firmware
+> > >>>> +  accessing the block, and it can then safely be used via the dev=
+ice tree
+> > >>>> +  binding.
+> > >>>> +
+> > >>>> +properties:
+> > >>>> +  compatible:
+> > >>>> +    const: brcm,bcm2835-unicam
+> > >>>> +
+> > >>>> +  reg:
+> > >>>> +    items:
+> > >>>> +      - description: Unicam block.
+> > >>>> +      - description: Clock Manager Image (CMI) block.
+> > >>>> +
+> > >>>> +  reg-names:
+> > >>>> +    items:
+> > >>>> +      - const: unicam
+> > >>>> +      - const: cmi
+> > >>>> +
+> > >>>> +  interrupts:
+> > >>>> +    maxItems: 1
+> > >>>> +
+> > >>>> +  clocks:
+> > >>>> +    items:
+> > >>>> +      - description: Clock to drive the LP state machine of Unica=
+m.
+> > >>>> +      - description: Clock for the VPU (core clock).
+> > >>>> +
+> > >>>> +  clock-names:
+> > >>>> +    items:
+> > >>>> +      - const: lp
+> > >>>> +      - const: vpu
+> > >>>> +
+> > >>>
+> > >>> according to this patch [1], the unicam driver only needs the VPU c=
+lock
+> > >>> reference just to enforce a minimum of 250 MHz. The firmware clock
+> > >>> binding and its driver is specific to the bcm2711, but the Unicam IP
+> > >>> exists since bcm2835.
+> > >>>
+> > >>> So do you think the clock part is correct or should be the VPU clock
+> > >>> optional?
+> > >>
+> > >> I think we should keep it mandatory. Indeed, that clock is shared wi=
+th
+> > >> the HVS that will change its rate on a regular basis, so even just
+> > >> enforcing that 250MHz while it's on without a clock handle will be
+> > >> fairly hard.
+> > >>
+> > >> Also, those are the constraints we have now, but having the clock ha=
+ndle
+> > >> all the time will allow us to add any constraint we might need in the
+> > >> future.
+> > >>
+> > >> And BCM2711 or not, the clock has probably always been there.
+> > >
+> > > Furthermore, regardless of what the driver needs, Unicam operates with
+> > > the VPU clock, so I think it makes sense to reference it in the device
+> > > tree.
+> >=20
+> > okay, as a result we need a DTS patch for bcm2835-rpi.dtsi to enable the
+> > firmware clocks and its driver in this series.
+>=20
+> Can't we do that on top, enabling Unicam support for bcm2711 only first
+> ? I have no idea how to deal with firmware clocks on bcm2825, and I'm
+> not sure Jean-Michel even has a hardware platform to test it.
 
-Jonathan: Anand decided to do change in his carrier that's why that emails won't 
-go through. But I am still around if you need something xilinx/amd to test.
+The RPi kernel uses the firmware clocks driver for all the platforms, so
+it shouldn't be too bad.
 
-Thanks,
-Michal
+Maxime
+
+--hgycafmcvwvkmfnm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYhNjXQAKCRDj7w1vZxhR
+xXONAQCmnUupgwvTeLp0tAkmJV3ctRhLRSUsMMeJCaHqExxavAEAlN3LD5YUbQlJ
+ZP3zjKZ/YFbcFLVUD8Dzpvqr5E0xaAg=
+=C2uD
+-----END PGP SIGNATURE-----
+
+--hgycafmcvwvkmfnm--
