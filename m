@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27905C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5598FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244002AbiBUJPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:15:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36068 "EHLO
+        id S1348548AbiBUJQA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:16:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347831AbiBUJJj (ORCPT
+        with ESMTP id S245100AbiBUJJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBB3E0E0;
-        Mon, 21 Feb 2022 01:01:56 -0800 (PST)
+        Mon, 21 Feb 2022 04:09:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3571A3AC;
+        Mon, 21 Feb 2022 01:02:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A9D16112F;
-        Mon, 21 Feb 2022 09:01:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA80AC340E9;
-        Mon, 21 Feb 2022 09:01:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ECDA6112F;
+        Mon, 21 Feb 2022 09:02:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB6CC340E9;
+        Mon, 21 Feb 2022 09:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434115;
-        bh=bUh9fKHd0prqcKbko2AZrnRE8vBsI+Z+fI9LilLTeIg=;
+        s=korg; t=1645434126;
+        bh=68r1lbFBEXPSybdt5UCD58yqBs8OcBN6qrBxektKaR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZ3Hjh9cPniI9i3jVNipwtv+L7R8p1MWHOA2/R8HAxV6Q2lvP/NnYBizebxB1lsWX
-         MkvjZ2+pWPhx8qieJmDLpDydaX6Xrq18PljLfIRnxdJfxLMx0EZCv2x2sxNymc3fy4
-         4v0HoPiFnCnH3LrLztCGAQA6XooTXmAYAs64yyEU=
+        b=h6XO7Z1zfOkEMjQNmO3Z9aIBfH91ZAxp6tR0V3yxunNc166Y48dccXvMfDsONVUcM
+         OfsNs/jxxtiBctsNobqoTlBOEwr3SYojyLBFOX8f8mEtW+r/QpO57Mcz/JN7kPdD2l
+         /2zpkZYjFGd/YoxjGz71IrciGerIZOqHSBDETUsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 018/121] parisc: Add ioread64_lo_hi() and iowrite64_lo_hi()
-Date:   Mon, 21 Feb 2022 09:48:30 +0100
-Message-Id: <20220221084921.769440860@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Carel Si <beibei.si@intel.com>, Jann Horn <jannh@google.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Baokun Li <libaokun1@huawei.com>
+Subject: [PATCH 5.10 004/121] fget: clarify and improve __fget_files() implementation
+Date:   Mon, 21 Feb 2022 09:48:16 +0100
+Message-Id: <20220221084921.300774268@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -49,70 +52,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 18a1d5e1945385d9b5adc3fe11427ce4a9d2826e upstream.
+commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
 
-It's a followup to the previous commit f15309d7ad5d ("parisc: Add
-ioread64_hi_lo() and iowrite64_hi_lo()") which does only half of
-the job. Add the rest, so we won't get a new kernel test robot
-reports.
+Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
+a ref to it") fixed a race with getting a reference to a file just as it
+was being closed.  It was a fairly minimal patch, and I didn't think
+re-checking the file pointer lookup would be a measurable overhead,
+since it was all right there and cached.
 
-Fixes: f15309d7ad5d ("parisc: Add ioread64_hi_lo() and iowrite64_hi_lo()")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+But I was wrong, as pointed out by the kernel test robot.
+
+The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
+quite noticeably.  Admittedly it seems to be a very artificial test:
+doing "poll()" system calls on regular files in a very tight loop in
+multiple threads.
+
+That means that basically all the time is spent just looking up file
+descriptors without ever doing anything useful with them (not that doing
+'poll()' on a regular file is useful to begin with).  And as a result it
+shows the extra "re-check fd" cost as a sore thumb.
+
+Happily, the regression is fixable by just writing the code to loook up
+the fd to be better and clearer.  There's still a cost to verify the
+file pointer, but now it's basically in the noise even for that
+benchmark that does nothing else - and the code is more understandable
+and has better comments too.
+
+[ Side note: this patch is also a classic case of one that looks very
+  messy with the default greedy Myers diff - it's much more legible with
+  either the patience of histogram diff algorithm ]
+
+Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
+Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Tested-by: Carel Si <beibei.si@intel.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/lib/iomap.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ fs/file.c |   72 ++++++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 56 insertions(+), 16 deletions(-)
 
---- a/arch/parisc/lib/iomap.c
-+++ b/arch/parisc/lib/iomap.c
-@@ -346,6 +346,16 @@ u64 ioread64be(const void __iomem *addr)
- 	return *((u64 *)addr);
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -817,28 +817,68 @@ void do_close_on_exec(struct files_struc
+ 	spin_unlock(&files->file_lock);
  }
  
-+u64 ioread64_lo_hi(const void __iomem *addr)
-+{
-+	u32 low, high;
-+
-+	low = ioread32(addr);
-+	high = ioread32(addr + sizeof(u32));
-+
-+	return low + ((u64)high << 32);
-+}
-+
- u64 ioread64_hi_lo(const void __iomem *addr)
+-static struct file *__fget_files(struct files_struct *files, unsigned int fd,
+-				 fmode_t mask, unsigned int refs)
++static inline struct file *__fget_files_rcu(struct files_struct *files,
++	unsigned int fd, fmode_t mask, unsigned int refs)
  {
- 	u32 low, high;
-@@ -419,6 +429,12 @@ void iowrite64be(u64 datum, void __iomem
+-	struct file *file;
++	for (;;) {
++		struct file *file;
++		struct fdtable *fdt = rcu_dereference_raw(files->fdt);
++		struct file __rcu **fdentry;
+ 
+-	rcu_read_lock();
+-loop:
+-	file = fcheck_files(files, fd);
+-	if (file) {
+-		/* File object ref couldn't be taken.
+-		 * dup2() atomicity guarantee is the reason
+-		 * we loop to catch the new file (or NULL pointer)
++		if (unlikely(fd >= fdt->max_fds))
++			return NULL;
++
++		fdentry = fdt->fd + array_index_nospec(fd, fdt->max_fds);
++		file = rcu_dereference_raw(*fdentry);
++		if (unlikely(!file))
++			return NULL;
++
++		if (unlikely(file->f_mode & mask))
++			return NULL;
++
++		/*
++		 * Ok, we have a file pointer. However, because we do
++		 * this all locklessly under RCU, we may be racing with
++		 * that file being closed.
++		 *
++		 * Such a race can take two forms:
++		 *
++		 *  (a) the file ref already went down to zero,
++		 *      and get_file_rcu_many() fails. Just try
++		 *      again:
+ 		 */
+-		if (file->f_mode & mask)
+-			file = NULL;
+-		else if (!get_file_rcu_many(file, refs))
+-			goto loop;
+-		else if (__fcheck_files(files, fd) != file) {
++		if (unlikely(!get_file_rcu_many(file, refs)))
++			continue;
++
++		/*
++		 *  (b) the file table entry has changed under us.
++		 *       Note that we don't need to re-check the 'fdt->fd'
++		 *       pointer having changed, because it always goes
++		 *       hand-in-hand with 'fdt'.
++		 *
++		 * If so, we need to put our refs and try again.
++		 */
++		if (unlikely(rcu_dereference_raw(files->fdt) != fdt) ||
++		    unlikely(rcu_dereference_raw(*fdentry) != file)) {
+ 			fput_many(file, refs);
+-			goto loop;
++			continue;
+ 		}
++
++		/*
++		 * Ok, we have a ref to the file, and checked that it
++		 * still exists.
++		 */
++		return file;
  	}
- }
- 
-+void iowrite64_lo_hi(u64 val, void __iomem *addr)
-+{
-+	iowrite32(val, addr);
-+	iowrite32(val >> 32, addr + sizeof(u32));
 +}
 +
- void iowrite64_hi_lo(u64 val, void __iomem *addr)
- {
- 	iowrite32(val >> 32, addr + sizeof(u32));
-@@ -527,6 +543,7 @@ EXPORT_SYMBOL(ioread32);
- EXPORT_SYMBOL(ioread32be);
- EXPORT_SYMBOL(ioread64);
- EXPORT_SYMBOL(ioread64be);
-+EXPORT_SYMBOL(ioread64_lo_hi);
- EXPORT_SYMBOL(ioread64_hi_lo);
- EXPORT_SYMBOL(iowrite8);
- EXPORT_SYMBOL(iowrite16);
-@@ -535,6 +552,7 @@ EXPORT_SYMBOL(iowrite32);
- EXPORT_SYMBOL(iowrite32be);
- EXPORT_SYMBOL(iowrite64);
- EXPORT_SYMBOL(iowrite64be);
-+EXPORT_SYMBOL(iowrite64_lo_hi);
- EXPORT_SYMBOL(iowrite64_hi_lo);
- EXPORT_SYMBOL(ioread8_rep);
- EXPORT_SYMBOL(ioread16_rep);
++static struct file *__fget_files(struct files_struct *files, unsigned int fd,
++				 fmode_t mask, unsigned int refs)
++{
++	struct file *file;
++
++	rcu_read_lock();
++	file = __fget_files_rcu(files, fd, mask, refs);
+ 	rcu_read_unlock();
+ 
+ 	return file;
 
 
