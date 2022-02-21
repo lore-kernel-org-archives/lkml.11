@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7EFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C1FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349356AbiBUJZy (ORCPT
+        id S1349495AbiBUJ0H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36200 "EHLO
+        Mon, 21 Feb 2022 04:26:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348383AbiBUJLQ (ORCPT
+        with ESMTP id S1348616AbiBUJQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:16 -0500
+        Mon, 21 Feb 2022 04:16:04 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1C024BEC;
-        Mon, 21 Feb 2022 01:03:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D50D26137;
+        Mon, 21 Feb 2022 01:06:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4770ECE0E76;
-        Mon, 21 Feb 2022 09:03:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B189C340E9;
-        Mon, 21 Feb 2022 09:03:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 979FFCE0E8C;
+        Mon, 21 Feb 2022 09:06:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722C0C340E9;
+        Mon, 21 Feb 2022 09:06:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434193;
-        bh=VmR2FKuMpGjEsQMbNhJBpzB0NxIu6gJp2txjedo9OfM=;
+        s=korg; t=1645434415;
+        bh=ct/h/yADFUMU3unEw4AF7pARzuhFBvzMnHEBVlt9lHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x0BrQhmncpPELJ07j9ACwkwICCDkMV7XuspXGR4vLQzm5E+A0mhzK5/OBvPNeg7kN
-         3KetEMCxoCfahyTd8BONuaItwo46aTT2Drb+/WOV2VdZp/yGBZQDJ3fWoJRJcw8VfR
-         bpysQbVcKXInhnGmlQFvgJqNBAd3dbACn/5gxI80=
+        b=dsGkhnIOAJHA4PaQ0YrJUwUs+qpIzQKS7LgPNCcAMmWUwmi/R7eR9Jok4qARjDFkC
+         gHO7fQoxdofpT6mGFPduFk9G0fAqAoVRjCkbHRK/OtXTJoYLU2sgf7oNNzHeDZN9C1
+         y38vcsWMq/vFIeDgPH4rPkkLiz8H/h7cqc9QM6uw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 044/121] random: wake up /dev/random writers after zap
-Date:   Mon, 21 Feb 2022 09:48:56 +0100
-Message-Id: <20220221084922.703246686@linuxfoundation.org>
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.10 120/121] i2c: brcmstb: fix support for DSL and CM variants
+Date:   Mon, 21 Feb 2022 09:50:12 +0100
+Message-Id: <20220221084925.257729514@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,42 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ Upstream commit 042e293e16e3aa9794ce60c29f5b7b0c8170f933 ]
+commit 834cea3a252ed4847db076a769ad9efe06afe2d5 upstream.
 
-When account() is called, and the amount of entropy dips below
-random_write_wakeup_bits, we wake up the random writers, so that they
-can write some more in. However, the RNDZAPENTCNT/RNDCLEARPOOL ioctl
-sets the entropy count to zero -- a potential reduction just like
-account() -- but does not unblock writers. This commit adds the missing
-logic to that ioctl to unblock waiting writers.
+DSL and CM (Cable Modem) support 8 B max transfer size and have a custom
+DT binding for that reason. This driver was checking for a wrong
+"compatible" however which resulted in an incorrect setup.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2e5a2c61837 ("i2c: brcmstb: Adding support for CM and DSL SoCs")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-brcmstb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 5444206f35e22..5f541c9465598 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1987,7 +1987,10 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- 		 */
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		input_pool.entropy_count = 0;
-+		if (xchg(&input_pool.entropy_count, 0) && random_write_wakeup_bits) {
-+			wake_up_interruptible(&random_write_wait);
-+			kill_fasync(&fasync, SIGIO, POLL_OUT);
-+		}
- 		return 0;
- 	case RNDRESEEDCRNG:
- 		if (!capable(CAP_SYS_ADMIN))
--- 
-2.34.1
-
+--- a/drivers/i2c/busses/i2c-brcmstb.c
++++ b/drivers/i2c/busses/i2c-brcmstb.c
+@@ -674,7 +674,7 @@ static int brcmstb_i2c_probe(struct plat
+ 
+ 	/* set the data in/out register size for compatible SoCs */
+ 	if (of_device_is_compatible(dev->device->of_node,
+-				    "brcmstb,brcmper-i2c"))
++				    "brcm,brcmper-i2c"))
+ 		dev->data_regsz = sizeof(u8);
+ 	else
+ 		dev->data_regsz = sizeof(u32);
 
 
