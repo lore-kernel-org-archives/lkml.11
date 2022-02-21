@@ -2,119 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE51AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiBUSbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:31:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49768 "EHLO
+        id S231649AbiBUSbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:31:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiBUSaL (ORCPT
+        with ESMTP id S232420AbiBUS3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:30:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BA9C2A;
-        Mon, 21 Feb 2022 10:29:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70CE0614CE;
-        Mon, 21 Feb 2022 18:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43623C340E9;
-        Mon, 21 Feb 2022 18:29:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645468186;
-        bh=ZfjUNmy1VfVROCOWpX9vGvVVCfkJxiBW68BcBOGRwWQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WaD7mzvKN5pX1/r75f4SHYMAPQpMzXqLS9P6mDzUsc9wDemPRw5za5KM4G1/wKr2N
-         zXIKy35J9NMK3kUlHgwBFOWk+QM3g01FnmQuYmKTloqSH3O83nPj/BoEJMdWz8OxMC
-         aX6KriMB1D+1NlSCFAe9l6vk9U7fzDP/k+ARIYEc=
-Date:   Mon, 21 Feb 2022 19:29:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shanker Donthineni <shankerd@codeaurora.org>,
-        Adam Wallis <awallis@codeaurora.org>,
-        Timur Tabi <timur@codeaurora.org>,
-        Elliot Berman <eberman@codeaurora.org>
-Subject: Re: [PATCHv4] tty: hvc: dcc: Bind driver to CPU core0 for reads and
- writes
-Message-ID: <YhPaGB2xdf6EhEvs@kroah.com>
-References: <20220210135632.24638-1-quic_saipraka@quicinc.com>
- <YgpyMRTo5wVMhUPl@FVFF77S0Q05N>
- <f8ab050f-117b-2c8e-71b8-dbfa38d24c03@quicinc.com>
+        Mon, 21 Feb 2022 13:29:50 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C417DA4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:28:58 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id y6so36148939ybc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:28:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d9PRkAnu4rWgkNf7FMpG/2aRjthJJP/oay+IMr9qlso=;
+        b=h3a9qey6Rf4dTVze8rQGdhclm6vibCyCiZrqdTsDvKU/a29mtdlDJGjg/a9KrJb/+9
+         Sldi+zsLepOlitgV6isaU5ca26ImxtLydIdtGTmOdbuf6pualqJLDqH6+ewJDOHK6BPY
+         5ljFUAV/8LiixoYIqanmKETtU84mdJmsdjyWaGQIzFsSpFjV/E5rZMaZxksisRI+xbhh
+         CHLUJKPt9RY3JrXeoUTek88KiZKH/+sL8d8eeFKS99LnNwKF+uE46LXEbVPmtLhiMNYU
+         5CwXu9YS9qgITWH6zwn5fl0WWmaqtpbpW3slNbWiNS4kCQBtBav/Y8znw4NCmIciPgpC
+         SdlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d9PRkAnu4rWgkNf7FMpG/2aRjthJJP/oay+IMr9qlso=;
+        b=F0KHzXZcGQ8XpOujKT1/9RfcXFaw87bQxCxEXqxAnHwb4GXe6KJaI61VBl3ivECaF3
+         rVG/tW3W+LVfuYgs0YrDKw1QwrhqLcxbD7vtTkiPlJSRI5GxblvtRzcLzSwHQ+9pPV7+
+         cABrTUZ8706DA2bVolaMLrj7QJTgbfGZpnV22+XdYkXip1lZHqWQDVYHq94j5CwEdbJg
+         MuTukPWlzhcF3uvGj7eYUVYHFDfsa89F8A8/ez3KhwCS9N0fYJo346hvjm431BiWVgsg
+         RFafwZ043hAt3iKZ9SPQnGBIA2ES9JGcK5lFJLd61cxBPyIZ3QGuHvTJ4BglAVzRDE+Y
+         KJAA==
+X-Gm-Message-State: AOAM531CoImKrXu55M+XouiqbM+V/LOgyKIgngcnvjw72RKeRtSrs63n
+        HkCvflA33QK2zDbpkf7skMAcO8N2HMYVkek9Vz1w2q+yLiZFyg==
+X-Google-Smtp-Source: ABdhPJwNsokvzVCETZiA+pXCIHC4BZaoSZMPWKx3mOto+E3tTumxE6L4EmjC4Z+RCNEwPML3MlNIPsNrfUTzH1bspDQ=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr19355803ybq.407.1645468137290;
+ Mon, 21 Feb 2022 10:28:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f8ab050f-117b-2c8e-71b8-dbfa38d24c03@quicinc.com>
+References: <CAHk-=wgsMMuMP9_dWps7f25e6G628Hf7-B3hvSDvjhRXqVQvpg@mail.gmail.com>
+ <8f331927-69d4-e4e7-22bc-c2a2a098dc1e@gmail.com> <CAHk-=wiAgNCLq2Lv4qu08P1SRv0D3mXLCqPq-XGJiTbGrP=omg@mail.gmail.com>
+ <CANn89iJkTmDYb5h+ZwSyYEhEfr=jWmbPaVoLAnKkqW5VE47DXA@mail.gmail.com>
+ <CAHk-=wigDNpiLAAS8M=1BUt3FCjWNA8RJr1KRQ=Jm_Q8xWBn-g@mail.gmail.com>
+ <CANn89iJ2tmou5RNqmL22EHf+D2dptJPgpOVufSFEyoeJujw1cw@mail.gmail.com> <YhPZNLWkxH21uDAq@salvia>
+In-Reply-To: <YhPZNLWkxH21uDAq@salvia>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 21 Feb 2022 10:28:46 -0800
+Message-ID: <CANn89i+72dv1AaeE1ThkceMVBHGCh3P49hOwuCkMSb1Y6U=hmg@mail.gmail.com>
+Subject: Re: Linux 5.17-rc5
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Woody Suwalski <wsuwalski@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 09:33:23AM +0530, Sai Prakash Ranjan wrote:
-> Hi Mark,
-> 
-> On 2/14/2022 8:46 PM, Mark Rutland wrote:
-> > Hi,
-> > 
-> > On Thu, Feb 10, 2022 at 07:26:32PM +0530, Sai Prakash Ranjan wrote:
-> > > From: Shanker Donthineni <shankerd@codeaurora.org>
-> > > 
-> > > Some debuggers, such as Trace32 from Lauterbach GmbH, do not handle
-> > > reads/writes from/to DCC on secondary cores. Each core has its
-> > > own DCC device registers, so when a core reads or writes from/to DCC,
-> > > it only accesses its own DCC device. Since kernel code can run on
-> > > any core, every time the kernel wants to write to the console, it
-> > > might write to a different DCC.
-> > > 
-> > > In SMP mode, Trace32 creates multiple windows, and each window shows
-> > > the DCC output only from that core's DCC. The result is that console
-> > > output is either lost or scattered across windows.
-> > This has been the Linux behaviour since the dawn of time, so why is this not
-> > considered to be a bug in the tools? Why can't Lauterbach add an option to
-> > treat the cores as one?
-> 
-> More like a feature request than a bug? And why would tools add such a
-> feature when
-> it is the kernel which runs in SMP mode? Shouldn't kernel be the one having
-> such a feature
-> because there would be number of such tools with the same issue and we can't
-> send a feature
-> request to all those tool vendors to add this feature right. Instead adding
-> this in the kernel would
-> avoid all these centrally at one place.
+On Mon, Feb 21, 2022 at 10:25 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>
+> On Mon, Feb 21, 2022 at 10:21:16AM -0800, Eric Dumazet wrote:
+> > On Mon, Feb 21, 2022 at 10:08 AM Linus Torvalds
+> > <torvalds@linux-foundation.org> wrote:
+> > >
+> > > On Mon, Feb 21, 2022 at 10:02 AM Eric Dumazet <edumazet@google.com> wrote:
+> > > >
+> > > > I am pretty sure Pablo fixed this one week ago.
+> > >
+> > > .. looks about right. Apart from the "it was never sent to me, so -rc5
+> > > ended up showing the problem" part.
+> > >
+> >
+> > Indeed, I personally these kinds of trivial fixes should be sent right away,
+> > especially considering two bots complained about it.
+>
+> I did not consider this so important, that was my fault.
 
-Please fix this in userspace.
+Well, I was the one adding this compile error ;)
 
-> > Importantly, with hotplug we *cannot* guarantee that all messages will go to
-> > the same CPU anyway, since that could be offlined (even if it is CPU 0), so in
-> > general we cann't provide a guarantee here.
-> 
-> Right that is true, in case of CPU hotplug this would be pretty much broken
-> if CPU0 is offlined.
-> We use these during initial bringup stage of SoCs when we don't have debug
-> UART console up and running
-> and at the time we don't much care for testing out hotplugging the CPUs and
-> let alone trying out
-> to offline CPU0 which we use and shoot our own foot :)
-> 
-> Given this is mostly a debug feature, we don't mind if this doesn't
-> guarantee to work in hotplug scenario.
-
-We do not get to choose this type of thing.  Either it will work
-properly, or not.  Offlineing cpu 0 happens with power management
-situations, right?  Especially with big/little systems, if CPU0 was a
-big one, you would remove it while only the little ones were running.
-
-I still feel this should all be handled in userspace.
-
-Especially given the problems that this patch is having with being
-tested properly :(
-
-thanks,
-
-greg k-h
+Testing CONFIG_IPV6=n builds is not my top priority.
