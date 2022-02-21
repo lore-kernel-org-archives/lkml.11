@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12256C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8877DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347327AbiBUJFW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:05:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54510 "EHLO
+        id S244797AbiBUJF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:05:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347692AbiBUJBk (ORCPT
+        with ESMTP id S1347701AbiBUJBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80BCD289BC;
-        Mon, 21 Feb 2022 00:56:57 -0800 (PST)
+        Mon, 21 Feb 2022 04:01:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF79028E04;
+        Mon, 21 Feb 2022 00:56:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDD7611E9;
-        Mon, 21 Feb 2022 08:56:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96979C340EB;
-        Mon, 21 Feb 2022 08:56:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D2361149;
+        Mon, 21 Feb 2022 08:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86C42C340E9;
+        Mon, 21 Feb 2022 08:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433786;
-        bh=NRCPCKCJdTDy5kEECWVvGM5CbdqXXjskW/KnRRKYGMw=;
+        s=korg; t=1645433813;
+        bh=0qosWklo7YAkGYZCSZxwfWdSMTmaGodxjewobnnr6+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XkFvxyNgCRJZYpoePLa3iUpXf88RvSlcXuSudulQc+uDPwqDiGcfnr+LiNMpr10fM
-         aqPvFMIJcAlZTNNvsPOPq3617GXV9hHouGY7S5QDZrtfbVjkKzAkTo7wp0Gr4ky9kq
-         W0VjHDngRBXcFpAkMs4Cr+tr3OoDlhyLWcrm8Y3c=
+        b=S+uk4+GS6XujSUh7DK+anVDkCO3IusR4ohhSH5YrFmTcT2EUm4j4IvX4IB8fAZBX8
+         1S4kMftyHyefQk2wwuLTkJYAOUSsNYdPzWl0xwYy6vNlOV5aGCdzb2UoJpDJBnxvMz
+         abQIHoeqgoTUNb3dn8BETWBl6nSgNBCE64+YK7G4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eliav Farber <farbere@amazon.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 4.19 41/58] EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
-Date:   Mon, 21 Feb 2022 09:49:34 +0100
-Message-Id: <20220221084913.205914156@linuxfoundation.org>
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 50/58] ARM: OMAP2+: hwmod: Add of_node_put() before break
+Date:   Mon, 21 Feb 2022 09:49:43 +0100
+Message-Id: <20220221084913.487906617@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -49,45 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eliav Farber <farbere@amazon.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-commit f8efca92ae509c25e0a4bd5d0a86decea4f0c41e upstream.
+[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
 
-Do alignment logic properly and use the "ptr" local variable for
-calculating the remainder of the alignment.
+Fix following coccicheck warning:
+./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
+for_each_matching_node should have of_node_put() before break
 
-This became an issue because struct edac_mc_layer has a size that is not
-zero modulo eight, and the next offset that was prepared for the private
-data was unaligned, causing an alignment exception.
+Early exits from for_each_matching_node should decrement the
+node reference counter.
 
-The patch in Fixes: which broke this actually wanted to "what we
-actually care about is the alignment of the actual pointer that's about
-to be returned." But it didn't check that alignment.
-
-Use the correct variable "ptr" for that.
-
-  [ bp: Massage commit message. ]
-
-Fixes: 8447c4d15e35 ("edac: Do alignment logic properly in edac_align_ptr()")
-Signed-off-by: Eliav Farber <farbere@amazon.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220113100622.12783-2-farbere@amazon.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/edac_mc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/edac/edac_mc.c
-+++ b/drivers/edac/edac_mc.c
-@@ -265,7 +265,7 @@ void *edac_align_ptr(void **p, unsigned
- 	else
- 		return (char *)ptr;
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index a8269f0a87ced..47c55351df033 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -754,8 +754,10 @@ static int __init _init_clkctrl_providers(void)
  
--	r = (unsigned long)p % align;
-+	r = (unsigned long)ptr % align;
+ 	for_each_matching_node(np, ti_clkctrl_match_table) {
+ 		ret = _setup_clkctrl_provider(np);
+-		if (ret)
++		if (ret) {
++			of_node_put(np);
+ 			break;
++		}
+ 	}
  
- 	if (r == 0)
- 		return (char *)ptr;
+ 	return ret;
+-- 
+2.34.1
+
 
 
