@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF88C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F323C3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350999AbiBUJgg (ORCPT
+        id S1351409AbiBUJhH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48084 "EHLO
+        Mon, 21 Feb 2022 04:37:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349119AbiBUJ1e (ORCPT
+        with ESMTP id S1348809AbiBUJ1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:34 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6697413F42;
-        Mon, 21 Feb 2022 01:12:21 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDDD15A12;
+        Mon, 21 Feb 2022 01:12:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D1877CE0E7D;
-        Mon, 21 Feb 2022 09:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B70EFC340E9;
-        Mon, 21 Feb 2022 09:12:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BF9160B1B;
+        Mon, 21 Feb 2022 09:12:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378E8C340E9;
+        Mon, 21 Feb 2022 09:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434738;
-        bh=XHeZTLhOEsGIZMErWZ33p31NioQ7wMoUH7X7H5dXHEE=;
+        s=korg; t=1645434749;
+        bh=OXvfCS9PD0SNk8WUZWIhK1lM9qzjLIKjwNP/Cekcf6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPYBUEYV+jRPzcW+djSfzEA0wmHPuXhy+jVqSbrhG7FLondA/x7xqdkhCIxYADgpI
-         jz0rJMwgOBLVtuKQEx2syqtrtbizPPrMfcuC/9X97UnGEC+AmGY2YPNL8aYMJFr6ZE
-         QoywXgoC1o12GhBw0Em+V2xCcYriVVgDLXG2zjVo=
+        b=mNIERjcIQSDImQB7EpVEQGea6FJxb/92JyiP1YO27pHzNe/QBARR1IOR6m/JkJsdX
+         jr0Jyvrh9SdI5GBXxpbzVK3t5Hcb3T7+3LxiHit8DzmE5S3XU9eqOy9engqxFnlFZv
+         sUWnkopwDdwOLw48ebWpSZ2OFa3Y7G3h5Su5yIB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Huang <diwang90@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 112/196] ALSA: hda/realtek: Add quirk for Legion Y9000X 2019
-Date:   Mon, 21 Feb 2022 09:49:04 +0100
-Message-Id: <20220221084934.688894156@linuxfoundation.org>
+        stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 085/196] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
+Date:   Mon, 21 Feb 2022 09:48:37 +0100
+Message-Id: <20220221084933.774206153@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,32 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Huang <diwang90@gmail.com>
+From: Jonas Gorski <jonas.gorski@gmail.com>
 
-commit c07f2c7b45413a9e50ba78630fda04ecfa17b4f2 upstream.
+commit 6aba04ee3263669b335458c4cf4c7d97d6940229 upstream.
 
-Legion Y9000X 2019 has the same speaker with Y9000X 2020,
-but with a different quirk address. Add one quirk entry
-to make the speaker work on Y9000X 2019 too.
+This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
 
-Signed-off-by: Yu Huang <diwang90@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220212160835.165065-1-diwang90@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Since idm_base and nicpm_base are still optional resources not present
+on all platforms, this breaks the driver for everything except Northstar
+2 (which has both).
+
+The same change was already reverted once with 755f5738ff98 ("net:
+broadcom: fix a mistake about ioremap resource").
+
+So let's do it again.
+
+Fixes: 3710e80952cf ("net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname")
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+[florian: Added comments to explain the resources are optional]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220216184634.2032460-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bgmac-platform.c |   23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9013,6 +9013,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
- 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
-+	SND_PCI_QUIRK(0x17aa, 0x383d, "Legion Y9000X 2019", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
- 	SND_PCI_QUIRK(0x17aa, 0x384a, "Lenovo Yoga 7 15ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+--- a/drivers/net/ethernet/broadcom/bgmac-platform.c
++++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
+@@ -172,6 +172,7 @@ static int bgmac_probe(struct platform_d
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct bgmac *bgmac;
++	struct resource *regs;
+ 	int ret;
+ 
+ 	bgmac = bgmac_alloc(&pdev->dev);
+@@ -208,15 +209,23 @@ static int bgmac_probe(struct platform_d
+ 	if (IS_ERR(bgmac->plat.base))
+ 		return PTR_ERR(bgmac->plat.base);
+ 
+-	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
+-	if (IS_ERR(bgmac->plat.idm_base))
+-		return PTR_ERR(bgmac->plat.idm_base);
+-	else
++	/* The idm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
++	if (regs) {
++		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
++		if (IS_ERR(bgmac->plat.idm_base))
++			return PTR_ERR(bgmac->plat.idm_base);
+ 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
++	}
+ 
+-	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
+-	if (IS_ERR(bgmac->plat.nicpm_base))
+-		return PTR_ERR(bgmac->plat.nicpm_base);
++	/* The nicpm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
++	if (regs) {
++		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
++							       regs);
++		if (IS_ERR(bgmac->plat.nicpm_base))
++			return PTR_ERR(bgmac->plat.nicpm_base);
++	}
+ 
+ 	bgmac->read = platform_bgmac_read;
+ 	bgmac->write = platform_bgmac_write;
 
 
