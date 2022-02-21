@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4EBC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 744E0C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353594AbiBUJ5f (ORCPT
+        id S1353752AbiBUJ5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:57:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
+        Mon, 21 Feb 2022 04:57:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350932AbiBUJsf (ORCPT
+        with ESMTP id S1352593AbiBUJrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:35 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3FD31903;
-        Mon, 21 Feb 2022 01:22:29 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1595842EF4;
+        Mon, 21 Feb 2022 01:20:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C9574CE0E9F;
-        Mon, 21 Feb 2022 09:22:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8D5C340EB;
-        Mon, 21 Feb 2022 09:22:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A05B260EB3;
+        Mon, 21 Feb 2022 09:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE5BC340EC;
+        Mon, 21 Feb 2022 09:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435346;
-        bh=VLLiuLRtlIOdNKwOXTrIBHRlol07DVdf54qswhdIWCI=;
+        s=korg; t=1645435210;
+        bh=MCHtTJpifQkGD42L/6e6W90C2fxMXP0SRmYINnpTOuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0/JB8SDqupbHfWr1PgwXJVaAfOYLJ4CY5NghQwn6pFdBoTi9XmlenN52XvMIBRCYX
-         cTu4k4FOAgZbWXSwlu+/I5vSUyvO6hw29f/bD4gECGIVwkax6S97x8sYtbMftf85X/
-         nhhzc/7n2NF0b2cXZoAzV/c0HigjCdrhg1rJr9Z0=
+        b=Ly51+vqmFARuLaz0v2jxV8/hwi3ZymoLjez+TDAdhOo95xDJnQgQ5gq5i2QSg2Gw7
+         nmbut2GZfRhysJ6nPL9PFiFrOaKn0yUu3rBCsQWu3X50jc3OeBrSobK/VNojU3Gwwo
+         swcl1xmtzue89XkRvs+Sn5a8G2l2UDsS4ft5V3Po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 131/227] net: bridge: multicast: notify switchdev driver whenever MC processing gets disabled
-Date:   Mon, 21 Feb 2022 09:49:10 +0100
-Message-Id: <20220221084939.208173805@linuxfoundation.org>
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 084/227] drm/i915: Fix dbuf slice config lookup
+Date:   Mon, 21 Feb 2022 09:48:23 +0100
+Message-Id: <20220221084937.660836840@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,49 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit c832962ac972082b3a1f89775c9d4274c8cb5670 upstream.
+commit 698bef8ff5d2edea5d1c9d6e5adf1bfed1e8a106 upstream.
 
-Whenever bridge driver hits the max capacity of MDBs, it disables
-the MC processing (by setting corresponding bridge option), but never
-notifies switchdev about such change (the notifiers are called only upon
-explicit setting of this option, through the registered netlink interface).
+Apparently I totally fumbled the loop condition when I
+removed the ARRAY_SIZE() stuff from the dbuf slice config
+lookup. Comparing the loop index with the active_pipes bitmask
+is utter nonsense, what we want to do is check to see if the
+mask is zero or not.
 
-This could lead to situation when Software MDB processing gets disabled,
-but this event never gets offloaded to the underlying Hardware.
+Note that the code actually ended up working correctly despite
+the fumble, up until commit eef173954432 ("drm/i915: Allow
+!join_mbus cases for adlp+ dbuf configuration") when things
+broke for real.
 
-Fix this by adding a notify message in such case.
-
-Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
-Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Link: https://lore.kernel.org/r/20220215165303.31908-1-oleksandr.mazur@plvision.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 05e8155afe35 ("drm/i915: Use a sentinel to terminate the dbuf slice arrays")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220207132700.481-1-ville.syrjala@linux.intel.com
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+(cherry picked from commit a28fde308c3c1c174249ff9559b57f24e6850086)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bridge/br_multicast.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/i915/intel_pm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(str
- 				     struct net_bridge_port_group *pg);
- static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -4860,7 +4860,7 @@ static u8 compute_dbuf_slices(enum pipe
+ {
+ 	int i;
  
-+static int br_mc_disabled_update(struct net_device *dev, bool value,
-+				 struct netlink_ext_ack *extack);
-+
- static struct net_bridge_port_group *
- br_sg_port_find(struct net_bridge *br,
- 		struct net_bridge_port_group_sg_key *sg_p)
-@@ -1156,6 +1159,7 @@ struct net_bridge_mdb_entry *br_multicas
- 		return mp;
- 
- 	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
-+		br_mc_disabled_update(br->dev, false, NULL);
- 		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
- 		return ERR_PTR(-E2BIG);
- 	}
+-	for (i = 0; i < dbuf_slices[i].active_pipes; i++) {
++	for (i = 0; dbuf_slices[i].active_pipes != 0; i++) {
+ 		if (dbuf_slices[i].active_pipes == active_pipes &&
+ 		    dbuf_slices[i].join_mbus == join_mbus)
+ 			return dbuf_slices[i].dbuf_mask[pipe];
 
 
