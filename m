@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39311C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D6BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350935AbiBUJkk (ORCPT
+        id S1350951AbiBUJkq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:40:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36262 "EHLO
+        Mon, 21 Feb 2022 04:40:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350584AbiBUJdr (ORCPT
+        with ESMTP id S1350598AbiBUJds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:33:47 -0500
+        Mon, 21 Feb 2022 04:33:48 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E3228E3D;
-        Mon, 21 Feb 2022 01:14:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7153029808;
+        Mon, 21 Feb 2022 01:14:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 925D6CE0E86;
-        Mon, 21 Feb 2022 09:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83366C340E9;
-        Mon, 21 Feb 2022 09:14:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C7A3CE0E79;
+        Mon, 21 Feb 2022 09:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3DBC36AF5;
+        Mon, 21 Feb 2022 09:14:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434843;
-        bh=3fs6oNe7Ko7oVKXh9CVZYXEcEJvtYZ0K6qMFrb5P8Jk=;
+        s=korg; t=1645434845;
+        bh=ihAIbfYlvinEEfGKUNpuvcQtGz1ie3/Qc9/kth+Vujs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aBLX6pvA/VBRSmUkM3ZoJOwEcaemnzV2KMB0b3ugdP8a5bNQon8qnLeSXQIrHrWFZ
-         OBY5Bj7SM7QQOqGvpn9FaOBy0suMSOgo8LP2BrubA25F5g5tzgGxK6SMRxvQQut1e4
-         wKB2EpTmfWEvRCOBBzFRIGQ4Z9SgEW5jEH99yra8=
+        b=a6AV1avi7wuvwwX/DGj1W9GsEIG0105d5G18oFvCKAYypN6wV9VmbwPzvcfQSOEc0
+         1VbAqdp/uQeUd/259D7r3HAIiYxBRBJShSZp1B+Ttjnw+PCSlGjwu4cQ3CL2Fw9Dku
+         3DHjoZc/o/K4u9l6zqTRSAYgVt8oTpJ2fsluWciU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 118/196] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_sx()
-Date:   Mon, 21 Feb 2022 09:49:10 +0100
-Message-Id: <20220221084934.887990642@linuxfoundation.org>
+Subject: [PATCH 5.15 119/196] ASoC: ops: Fix stereo change notifications in snd_soc_put_xr_sx()
+Date:   Mon, 21 Feb 2022 09:49:11 +0100
+Message-Id: <20220221084934.918122027@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,7 +50,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mark Brown <broonie@kernel.org>
 
-commit 7f3d90a3519680dfa23e750f80bfdefc0f5eda4a upstream.
+commit 2b7c46369f09c358164d31d17e5695185403185e upstream.
 
 When writing out a stereo control we discard the change notification from
 the first channel, meaning that events are only generated based on changes
@@ -59,42 +59,35 @@ has changed.
 
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220201155629.120510-3-broonie@kernel.org
+Link: https://lore.kernel.org/r/20220201155629.120510-5-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-ops.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/soc/soc-ops.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 --- a/sound/soc/soc-ops.c
 +++ b/sound/soc/soc-ops.c
-@@ -427,6 +427,7 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	int min = mc->min;
- 	unsigned int mask = (1U << (fls(min + max) - 1)) - 1;
- 	int err = 0;
-+	int ret;
- 	unsigned int val, val_mask;
+@@ -895,6 +895,7 @@ int snd_soc_put_xr_sx(struct snd_kcontro
+ 	unsigned long mask = (1UL<<mc->nbits)-1;
+ 	long max = mc->max;
+ 	long val = ucontrol->value.integer.value[0];
++	int ret = 0;
+ 	unsigned int i;
  
- 	val = ucontrol->value.integer.value[0];
-@@ -443,6 +444,7 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
- 	if (err < 0)
- 		return err;
-+	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		unsigned int val2;
-@@ -453,6 +455,11 @@ int snd_soc_put_volsw_sx(struct snd_kcon
- 
- 		err = snd_soc_component_update_bits(component, reg2, val_mask,
- 			val2);
-+
-+		/* Don't discard any error code or drop change flag */
-+		if (ret == 0 || err < 0) {
+ 	if (val < mc->min || val > mc->max)
+@@ -909,9 +910,11 @@ int snd_soc_put_xr_sx(struct snd_kcontro
+ 							regmask, regval);
+ 		if (err < 0)
+ 			return err;
++		if (err > 0)
 +			ret = err;
-+		}
  	}
- 	return err;
+ 
+-	return 0;
++	return ret;
  }
+ EXPORT_SYMBOL_GPL(snd_soc_put_xr_sx);
+ 
 
 
