@@ -2,127 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 13:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242118AbiBUNJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 08:09:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40970 "EHLO
+        id S1358592AbiBUNJ5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 08:09:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349408AbiBUNIy (ORCPT
+        with ESMTP id S244170AbiBUNJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 08:08:54 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50431FA56
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:08:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645448907; x=1676984907;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NdL9GJMZER1d4aJFTjQKh4fUo24Zia4iCGe8G1BZw6o=;
-  b=eyEG9tkUDuj1bpwQ7z/gVDu8S4Eou8sCTwRN202TexhTt4qLweEUhwXW
-   TMU1miorbiKoa3ZASt4GRzxHZLmP4Awu98AMC0pMkWXwqjEnxW3ZZmE1Q
-   MdhK4wVlsEY+1B1e3/YGA+0f8oq3OPn7XutadAsmBKuLHwxk/iAjn333v
-   LzvTiwX2Qk33b9rQGrY7ZKuRbtkD8SBFJ9eutkfbb8tVTn3iidoN4TCdk
-   okh+v08pbf8eDEDrHcJwQhkn80YQuWZ68hpaWwMlFSYt81McBoOXwwVmU
-   Sph+qIcNFD1hJa2ZwZRK+UbJzexPHwHbxCRIWkD4d5ASPIdNjYU6Ek1dl
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238919416"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="238919416"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 05:08:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="683200262"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2022 05:08:15 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM8QJ-0001ch-0b; Mon, 21 Feb 2022 13:08:15 +0000
-Date:   Mon, 21 Feb 2022 21:07:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jessica Zhang <quic_jesszhan@quicinc.com>
-Subject: [drm-msm:msm-next-staging 7/60]
- drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect type in
- return expression (different address spaces)
-Message-ID: <202202212126.kJLPeuny-lkp@intel.com>
+        Mon, 21 Feb 2022 08:09:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AABD81EAFB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:09:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645448971;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VRCEFBw4qErWh8NYSM/VVcTpcNnhAtt5oFPEm9g+Xk0=;
+        b=ggYgCH5SHMQVfvffKNk7oFthn01VgQzpkQ+UO5G426lZL4Gbe0ojaPtwnDhqKpT/e31pda
+        94YucWrtQI92UM+NuNtZUuGpxzAf2XDJSVCeG7GPKMGLdKR7V/1APz2mmUrptELKEwORri
+        hq1YVQuxdroA6+nUcXgg1ejOtLSdlcU=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-570-iEMAAYMaMaCQeE5_3fx9Kw-1; Mon, 21 Feb 2022 08:09:30 -0500
+X-MC-Unique: iEMAAYMaMaCQeE5_3fx9Kw-1
+Received: by mail-wr1-f72.google.com with SMTP id v17-20020adfc5d1000000b001e6405c2b56so7437857wrg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:09:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VRCEFBw4qErWh8NYSM/VVcTpcNnhAtt5oFPEm9g+Xk0=;
+        b=Iq2lLEbP5jyOHJaZzTNIE9fJc/rmsRtdy3oes6fVEDVs2Ddg2bDnBaXhnqKRypBiqW
+         9TkTuS64fbRFymUHeIM58PSdE31sRsx+UZ4zqCThRNOxnRs/4pS4ygbb3ZbRT+Mpf/N4
+         tlSHwqJlicHem3WSN/SPEpPfAasYSnS9l1OZ2lBbElkcN4t6gccXogyW/CorRvs5osRl
+         ARz7++96n/9hkGG4q3mMkCnIL6Dahb2LlAO1csgGmo6TJAynIutVLJC1t65lK30Y+3bP
+         RpA27x9S3TQuetVH1My+Qq3qcPUIg0hLdHJtw36Dnr43kBGLkpO/7IuYirVumJYYSF0Q
+         IzRA==
+X-Gm-Message-State: AOAM531oR23lyVaSIgpvSDfFt9U6/msYOOG/KbYRddL0wFNgAE4qutg0
+        i9fwzPGXg67uyzaACi45Bu7G0ycdjfufGDAeB0mX1iT2d2ak7O3DpQ4Nq/cmJXR26oJxK9FWiBK
+        VeOYrN4Rp1PjhUBL2XUV+j3gX
+X-Received: by 2002:a5d:6f0f:0:b0:1e5:78e4:3a7a with SMTP id ay15-20020a5d6f0f000000b001e578e43a7amr15775877wrb.446.1645448969052;
+        Mon, 21 Feb 2022 05:09:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwi/4FQ8uwubgQNDI4x3QQGpYJScEmSGy+xr+yfKbDMh2x1xP6rz7o+UF/yy63zlo6WiwRCGw==
+X-Received: by 2002:a5d:6f0f:0:b0:1e5:78e4:3a7a with SMTP id ay15-20020a5d6f0f000000b001e578e43a7amr15775864wrb.446.1645448968855;
+        Mon, 21 Feb 2022 05:09:28 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id c4sm30865187wri.22.2022.02.21.05.09.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 05:09:28 -0800 (PST)
+Date:   Mon, 21 Feb 2022 14:09:26 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
+Cc:     hdanton@sina.com, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
+Message-ID: <20220221130926.krw4i5x5y4gjnvsg@sgarzare-redhat>
+References: <20220219125100.835-1-hdanton@sina.com>
+ <000000000000e5720605d85e97d7@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <000000000000e5720605d85e97d7@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/drm/msm.git msm-next-staging
-head:   bc2112583a0b473f5c4ba87c00da84abd5d0b3fd
-commit: d89e5028346bd80f79c3073d132123e7a17e1177 [7/60] drm/msm: move utility functions from msm_drv.c
-config: ia64-randconfig-s031-20220221 (https://download.01.org/0day-ci/archive/20220221/202202212126.kJLPeuny-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        git remote add drm-msm https://gitlab.freedesktop.org/drm/msm.git
-        git fetch --no-tags drm-msm msm-next-staging
-        git checkout d89e5028346bd80f79c3073d132123e7a17e1177
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/gpu/drm/msm/
+It seems that this patch [1] should fix also this issue. (syzbot seems 
+happy).
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I think because we didn't set the backed to NULL, the worker kept 
+running and messing up.
 
+Stefano
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
-   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     expected void [noderef] __iomem *
-   drivers/gpu/drm/msm/msm_io_utils.c:65:31: sparse:     got void *
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __iomem * @@     got void * @@
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     expected void [noderef] __iomem *
-   drivers/gpu/drm/msm/msm_io_utils.c:74:31: sparse:     got void *
+[1] 
+https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com/T/#u
 
-vim +65 drivers/gpu/drm/msm/msm_io_utils.c
+On Sat, Feb 19, 2022 at 05:01:10AM -0800, syzbot wrote:
+>Hello,
+>
+>syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+>kernel BUG in vhost_get_vq_desc
+>
+>------------[ cut here ]------------
+>kernel BUG at drivers/vhost/vhost.c:2338!
+>invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+>CPU: 0 PID: 4071 Comm: vhost-4070 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
+>Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
+>Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+>RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
+>RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+>RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
+>RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+>R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
+>R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
+>FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+>CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>CR2: 0000000000000002 CR3: 000000001d077000 CR4: 00000000003506f0
+>DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>Call Trace:
+> <TASK>
+> vhost_vsock_handle_tx_kick+0x277/0xa20 drivers/vhost/vsock.c:522
+> vhost_worker+0x2e9/0x3e0 drivers/vhost/vhost.c:374
+> kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> </TASK>
+>Modules linked in:
+>---[ end trace 0000000000000000 ]---
+>RIP: 0010:vhost_get_vq_desc+0x1dc5/0x2350 drivers/vhost/vhost.c:2338
+>Code: 00 00 00 48 c7 c6 20 2c 9d 8a 48 c7 c7 98 a6 8e 8d 48 89 ca 48 c1 e1 04 48 01 d9 e8 25 59 28 fd e9 74 ff ff ff e8 cb c7 a1 fa <0f> 0b e8 c4 c7 a1 fa 48 8b 54 24 18 48 b8 00 00 00 00 00 fc ff df
+>RSP: 0018:ffffc900028bfb78 EFLAGS: 00010293
+>RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+>RDX: ffff88801cbd1d00 RSI: ffffffff86d71655 RDI: 0000000000000003
+>RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+>R10: ffffffff86d7072d R11: 0000000000000000 R12: 0000000000000000
+>R13: 0000000000000000 R14: ffff88806ffc4bb0 R15: dffffc0000000000
+>FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+>CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>CR2: 00007fc7293991d0 CR3: 000000001d077000 CR4: 00000000003506e0
+>DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>
+>
+>Tested on:
+>
+>commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
+>git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+>console output: https://syzkaller.appspot.com/x/log.txt?x=11e82d7a700000
+>kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
+>dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
+>compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>patch:          https://syzkaller.appspot.com/x/patch.diff?x=11857326700000
+>
 
-    49	
-    50	static void __iomem *_msm_ioremap(struct platform_device *pdev, const char *name,
-    51					  bool quiet, phys_addr_t *psize)
-    52	{
-    53		struct resource *res;
-    54		unsigned long size;
-    55		void __iomem *ptr;
-    56	
-    57		if (name)
-    58			res = platform_get_resource_byname(pdev, IORESOURCE_MEM, name);
-    59		else
-    60			res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-    61	
-    62		if (!res) {
-    63			if (!quiet)
-    64				DRM_DEV_ERROR(&pdev->dev, "failed to get memory resource: %s\n", name);
-  > 65			return ERR_PTR(-EINVAL);
-    66		}
-    67	
-    68		size = resource_size(res);
-    69	
-    70		ptr = devm_ioremap(&pdev->dev, res->start, size);
-    71		if (!ptr) {
-    72			if (!quiet)
-    73				DRM_DEV_ERROR(&pdev->dev, "failed to ioremap: %s\n", name);
-    74			return ERR_PTR(-ENOMEM);
-    75		}
-    76	
-    77		if (psize)
-    78			*psize = size;
-    79	
-    80		return ptr;
-    81	}
-    82	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
