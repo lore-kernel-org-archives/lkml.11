@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A208C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345204AbiBUIw7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:52:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41878 "EHLO
+        id S244939AbiBUIxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:53:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345487AbiBUIw1 (ORCPT
+        with ESMTP id S1345215AbiBUIwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C65E23;
-        Mon, 21 Feb 2022 00:52:01 -0800 (PST)
+        Mon, 21 Feb 2022 03:52:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3423CE34;
+        Mon, 21 Feb 2022 00:52:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98E7BB80E9E;
-        Mon, 21 Feb 2022 08:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6A8C340E9;
-        Mon, 21 Feb 2022 08:51:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C129761132;
+        Mon, 21 Feb 2022 08:52:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37D1C340E9;
+        Mon, 21 Feb 2022 08:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433519;
-        bh=Ha5FXiN5IM6Ijp+HmsPrFdAwbwKjQeirEg0DSequ2Zk=;
+        s=korg; t=1645433522;
+        bh=a9EQqjP8Moh9UJFD7jPKklyh82183AP2lb4+Dlz/juE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k0esbSUgTSOIYMZx4fDWjENlSW1Vyb5VI5OXo7aje0FnGNoFn9eCoIJ4c0WJ9Cs15
-         o/KVG1nP5ettTeWvJG6pxnuYAT0nUJXeAc8vJ6dwZnmWOmDyjMbT3rQMaE6R0wYglV
-         g12IMe1cqaBMcBSbTt+KiTAWAFDNFUCNiQHWsENA=
+        b=KkdpmrbWKvaCgX07NrVp/V2CYvWC+EGX2F+sEFLX8WQ0d3J1lNK5Y66oMu8oqHu67
+         F6e98n5lMqqQERA4rLN6Wki2v31rlbJBJadtJVubShDi5JIFwq+MGk6V5+LbIWkYjy
+         fuv2F4nwAXiNmaVRaqCO1lKDU87y6uyxqzhJ2U0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.9 06/33] btrfs: send: in case of IO error log it
-Date:   Mon, 21 Feb 2022 09:48:59 +0100
-Message-Id: <20220221084908.769515115@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 07/33] net: ieee802154: at86rf230: Stop leaking skbs
+Date:   Mon, 21 Feb 2022 09:49:00 +0100
+Message-Id: <20220221084908.801620654@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -50,35 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 2e7be9db125a0bf940c5d65eb5c40d8700f738b5 upstream.
+[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
 
-Currently if we get IO error while doing send then we abort without
-logging information about which file caused issue.  So log it to help
-with debugging.
+Upon error the ieee802154_xmit_complete() helper is not called. Only
+ieee802154_wake_queue() is called manually. In the Tx case we then leak
+the skb structure.
 
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Free the skb structure upon error before returning when appropriate.
+
+As the 'is_tx = 0' cannot be moved in the complete handler because of a
+possible race between the delay in switching to STATE_RX_AACK_ON and a
+new interrupt, we introduce an intermediate 'was_tx' boolean just for
+this purpose.
+
+There is no Fixes tag applying here, many changes have been made on this
+area and the issue kind of always existed.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/send.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/send.c
-+++ b/fs/btrfs/send.c
-@@ -4675,6 +4675,10 @@ static ssize_t fill_read_buf(struct send
- 			lock_page(page);
- 			if (!PageUptodate(page)) {
- 				unlock_page(page);
-+				btrfs_err(fs_info,
-+			"send: IO error at offset %llu for inode %llu root %llu",
-+					page_offset(page), sctx->cur_ino,
-+					sctx->send_root->root_key.objectid);
- 				put_page(page);
- 				ret = -EIO;
- 				break;
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index ce3b7fb7eda09..80c8e9abb402e 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -108,6 +108,7 @@ struct at86rf230_local {
+ 	unsigned long cal_timeout;
+ 	bool is_tx;
+ 	bool is_tx_from_off;
++	bool was_tx;
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+@@ -351,7 +352,11 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
+ 
+-	ieee802154_wake_queue(lp->hw);
++	if (lp->was_tx) {
++		lp->was_tx = 0;
++		dev_kfree_skb_any(lp->tx_skb);
++		ieee802154_wake_queue(lp->hw);
++	}
+ }
+ 
+ static void
+@@ -360,7 +365,11 @@ at86rf230_async_error_recover(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
+ 
+-	lp->is_tx = 0;
++	if (lp->is_tx) {
++		lp->was_tx = 1;
++		lp->is_tx = 0;
++	}
++
+ 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
+ 				     at86rf230_async_error_recover_complete);
+ }
+-- 
+2.34.1
+
 
 
