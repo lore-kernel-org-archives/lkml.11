@@ -2,101 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5791C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 028B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359011AbiBUQaG (ORCPT
+        id S1352907AbiBUQdC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:30:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37146 "EHLO
+        Mon, 21 Feb 2022 11:33:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349831AbiBUQaB (ORCPT
+        with ESMTP id S235348AbiBUQc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:30:01 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BA61D0C5;
-        Mon, 21 Feb 2022 08:29:36 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21LGTLYg127812;
-        Mon, 21 Feb 2022 10:29:21 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645460961;
-        bh=06jOtXI4rzCzz8wUf9ZOcz62rwmanvbVaynL0eLkoGs=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=EHb1XOncE8G6tEuQe9TkcoGNaB4bjwYqpKB7qWiQ8OI1FAiSnr80PTZFJF0/Z46ua
-         Bn7cKoTSZuG+e8Yf2v38ZA+IZnkV7rPjdW7V9RWI7wxjZmLnuJVSdbCjJgiikZZLE/
-         ZZ0s6geRJVEUS+6J0Wceg9j/TdURUuDYfuYdUu5U=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21LGTLEB020497
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 21 Feb 2022 10:29:21 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 21
- Feb 2022 10:29:21 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 21 Feb 2022 10:29:21 -0600
-Received: from [10.249.40.134] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21LGTKtH063338;
-        Mon, 21 Feb 2022 10:29:21 -0600
-Message-ID: <c96bffda-73bc-0cdf-c77a-39d57abe1a95@ti.com>
-Date:   Mon, 21 Feb 2022 10:29:20 -0600
+        Mon, 21 Feb 2022 11:32:59 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1F31DA6E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:32:35 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id t4-20020a17090a3b4400b001bc40b548f9so2831577pjf.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:32:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9p9UW1ztCFicl4wOWM1XmJ1UIygmRbUNF3ZrGCMsB54=;
+        b=RvGVcJIpDoAbqeo+wRu4a9HBSsA6WfZNvT54dKmZTS5kHfraG6Ovauc5/MVe0+IGko
+         Rlw4Nl+GtgY/amZ2tKmNyePOAOQbSr/9YiOiXMiVIEgRd2Yxjx7X0Q0X4LqPI6SXgnVM
+         GfIVkld6jJ07wMROX8rskmHCQOycRP6kLZjCnNv8iRV13lyyhq8Y9RBhNxlVBjxLmjk/
+         FNz7DSxW8zns76NCZCUvmAaZwTi5wclz/Vj3/OHcjA158M78lU+HcRUue4j8ZO7JOs1q
+         Fjt/6Uhl0JWDGN350Da0BFXj+v3EulC0rwRkIQUiSYM+THlyZgvNBJLCKgkRBsuh4PdJ
+         bW+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9p9UW1ztCFicl4wOWM1XmJ1UIygmRbUNF3ZrGCMsB54=;
+        b=Vk98XWQaqmJg7YZb7A2b3sBuu/eZ8J3ULUmWDlUDIRij/jGLenT9fUzbE7nLsNsWvm
+         6BM9McldzIypShYd5IT+V1dV67U3JBinrk2FdmYguy1tUvXFQWBTAwwGYUDOB3lW2pbM
+         bTAN17jyQnriLpXt9Nh04I87Ju8heE7icdZLVHtLaMk4EHuBHJ6uD8Iqfnu1Irszrbfp
+         +x7EQ7nBLkkw50bmyUSDc7GHIGm9MjJ1PX8KlGWKQaQ7k8YnXw9CxqI3z/aa9TmeQqe8
+         pyRIcUK7tKiZ5aGWt5/JzMWtIum5R7ybtd97Cw0KWz715GNmLj2Rwdc3bmmQ60NB/KFR
+         P3IQ==
+X-Gm-Message-State: AOAM5307u2YxklfBS9uUlbqnEAo0/rGCgRDLYKbzULrCU0w/LAQeyIce
+        9XOcYM/ijBcYAxwP6yP3CLwmiu25vKbP/g==
+X-Google-Smtp-Source: ABdhPJwlTU+2aKKFbkkqE+oFyktV5D+caaKuDnY7RVSBS9lqdTYgr6jLTDq4s2e55uoX2ugaLsg5eg==
+X-Received: by 2002:a17:902:ccc1:b0:14f:b686:e6ff with SMTP id z1-20020a170902ccc100b0014fb686e6ffmr5876342ple.45.1645461154640;
+        Mon, 21 Feb 2022 08:32:34 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id o14sm8297884pfw.121.2022.02.21.08.32.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 08:32:34 -0800 (PST)
+Message-ID: <50f407fd-d4e3-7c3f-5e8b-1f7fc366216d@kernel.dk>
+Date:   Mon, 21 Feb 2022 09:32:32 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCHv4 3/4] watchdog: rti-wdt: attach to running watchdog
- during probe
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2 2/4] io_uring: update kiocb->ki_pos at execution time
 Content-Language: en-US
-To:     Jan Kiszka <jan.kiszka@siemens.com>, Nishanth Menon <nm@ti.com>
-CC:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <linux-watchdog@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200717132958.14304-1-t-kristo@ti.com>
- <20200717132958.14304-4-t-kristo@ti.com>
- <a80b83c6-cca5-f95c-6930-a6f3e79c6f15@siemens.com>
- <bdecc38d-2b1a-9605-0978-5ad1e8b39e6b@siemens.com>
- <20220221124405.o7vda3zaswi6ycrh@favored>
- <8a3f83be-172b-a0c8-d4ba-befa531e52f6@siemens.com>
- <dae15cec-5d05-a48d-8c3b-392559d8bfb7@siemens.com>
-From:   Hari Nagalla <hnagalla@ti.com>
-In-Reply-To: <dae15cec-5d05-a48d-8c3b-392559d8bfb7@siemens.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Dylan Yudaken <dylany@fb.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <20220221141649.624233-1-dylany@fb.com>
+ <20220221141649.624233-3-dylany@fb.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220221141649.624233-3-dylany@fb.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 10:03, Jan Kiszka wrote:
->> K, so we do want a safety margin for min_hw_heartbeat_ms, make it
->> larger. But I still don't think it is best achieved by bending the
->> frequency. That will also affect other values, e.g. returning a wrong
->> programmed timeout to userspace if that was programmed earlier, using
->> the original frequency.
->>
-> I think I'm starting to get the original logic, and the result now works
-> here:
+On 2/21/22 7:16 AM, Dylan Yudaken wrote:
+> Update kiocb->ki_pos at execution time rather than in io_prep_rw().
+> io_prep_rw() happens before the job is enqueued to a worker and so the
+> offset might be read multiple times before being executed once.
 > 
-> The clock driving the watchdog might be slower than thought, and then we
-> may time out later than intended - generally not an issue. But it may
-> also be faster, and then we will see an expiry earlier than what is
-> supposed to be configured via "heartbeat". For the latter case, we lower
-> the frequency virtually by 10%, crossing fingers that this is enough.
+> Ensures that the file position in a set of _linked_ SQEs will be only
+> obtained after earlier SQEs have completed, and so will include their
+> incremented file position.
 > 
-Humm.. To me it appears the intent is to adjust when the input 32KHz 
-clock is slower? when it is slower we reduce the pulse count by 10% 
-(assuming the crystals are with 10% off clock) so that the desired 
-timeout is achieved with lesser pulse count?
-> The problems are now:
->   - U-Boot (as a known early watchdog starter) does not do that as well,
->     and we will cause at least confusion on Linux side (60s will become
->     66s from Linux POV e.g., and we may expire at 54s already)
->      => U-Boot should add the same 10%, patch will be sent
-Yes, i see that we need similar adjustment in u-boot as well.
->   - even with U-Boot on the same page, the rounding issue will prevent
->     accurate calculations of derived values, namely min_hw_heartbeat_ms.
->      => patch to come
->   - and ...
+> Signed-off-by: Dylan Yudaken <dylany@fb.com>
+> ---
+>  fs/io_uring.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
 > 
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 1f9b4466c269..50b93ff2ee12 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -3000,14 +3000,6 @@ static int io_prep_rw(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+>  		req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
+>  
+>  	kiocb->ki_pos = READ_ONCE(sqe->off);
+> -	if (kiocb->ki_pos == -1) {
+> -		if (!(file->f_mode & FMODE_STREAM)) {
+> -			req->flags |= REQ_F_CUR_POS;
+> -			kiocb->ki_pos = file->f_pos;
+> -		} else {
+> -			kiocb->ki_pos = 0;
+> -		}
+> -	}
+>  	kiocb->ki_flags = iocb_flags(file);
+>  	ret = kiocb_set_rw_flags(kiocb, READ_ONCE(sqe->rw_flags));
+>  	if (unlikely(ret))
+> @@ -3074,6 +3066,19 @@ static inline void io_rw_done(struct kiocb *kiocb, ssize_t ret)
+>  	}
+>  }
+>  
+> +static inline void
+> +io_kiocb_update_pos(struct io_kiocb *req, struct kiocb *kiocb)
+> +{
+> +	if (kiocb->ki_pos == -1) {
+> +		if (!(req->file->f_mode & FMODE_STREAM)) {
+> +			req->flags |= REQ_F_CUR_POS;
+> +			kiocb->ki_pos = req->file->f_pos;
+> +		} else {
+> +			kiocb->ki_pos = 0;
+> +		}
+> +	}
+> +}
+
+
+static inline void io_kiocb_update_pos(struct io_kiocb *req,
+				       struct kiocb *kiocb)
+{
+}
+
+Can we just drop the kiocb argument? It'll always be req->rw.kiocb.
+Should generate the same code if you do:
+
+static inline void io_kiocb_update_pos(struct io_kiocb *req)
+{
+	struct kiocb *kiocb = &req->rw.kiocb;
+
+	...
+}
+
+Apart from that minor thing, looks good to me.
+
+-- 
+Jens Axboe
 
