@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6955DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E86EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346276AbiBUI5r (ORCPT
+        id S1346489AbiBUI5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:57:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43116 "EHLO
+        Mon, 21 Feb 2022 03:57:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245153AbiBUIzT (ORCPT
+        with ESMTP id S1346093AbiBUIzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:55:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3E42459F;
-        Mon, 21 Feb 2022 00:53:35 -0800 (PST)
+        Mon, 21 Feb 2022 03:55:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B4624BC4;
+        Mon, 21 Feb 2022 00:53:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB2616113B;
-        Mon, 21 Feb 2022 08:53:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCCE2C340E9;
-        Mon, 21 Feb 2022 08:53:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 462D761155;
+        Mon, 21 Feb 2022 08:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A56CC340E9;
+        Mon, 21 Feb 2022 08:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433601;
-        bh=bnRgaCYY2Io/dz1lctcW09Cp9g3QrduhEn3iv3fnR8U=;
+        s=korg; t=1645433612;
+        bh=8IUsyVO3CUV/NHmrn9iyf0MiQePqG+1lN0ZMxV/tScY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajqCTmEvlx9/uuH2BRaHcBUoeS86s+JzwxZrv0KHAaXjY3Ej+DAcw69JWC4xRkean
-         LPe32k4v4wAjYueeaBsbbc+/iEicbO5YV2dv4JpgypblMrcTBjy9jbXlka8eQx/qUK
-         OwGUQhJjd7Yba2kpr/6Hpx6nNpEcSNJu+qMkpjI8=
+        b=mF8DOiCxxuD4Ol1jw/V0X7PMTOFQfZeKLK4+dui0R/Qvk9ASptOYqMNXFGwmQvNrX
+         OsQ3HdIYzaID4k9Bt/x1pYJ1MR21HeD4spoYI7w8f0vzNotInhl3G3j1NLnWZ+Rv6E
+         wIpzSeO3vl1wKlb4l8VEe+6EmVOXWAjGXXvysO7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 4.14 22/45] net: ieee802154: ca8210: Fix lifs/sifs periods
-Date:   Mon, 21 Feb 2022 09:49:13 +0100
-Message-Id: <20220221084911.177636856@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Kees Kook <keescook@chromium.org>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-hardening@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 4.14 26/45] libsubcmd: Fix use-after-free for realloc(..., 0)
+Date:   Mon, 21 Feb 2022 09:49:17 +0100
+Message-Id: <20220221084911.300384687@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -49,36 +54,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Kees Cook <keescook@chromium.org>
 
-commit bdc120a2bcd834e571ce4115aaddf71ab34495de upstream.
+commit 52a9dab6d892763b2a8334a568bd4e2c1a6fde66 upstream.
 
-These periods are expressed in time units (microseconds) while 40 and 12
-are the number of symbol durations these periods will last. We need to
-multiply them both with the symbol_duration in order to get these
-values in microseconds.
+GCC 12 correctly reports a potential use-after-free condition in the
+xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
+when size == 0:
 
-Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220201180629.93410-2-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+In file included from help.c:12:
+In function 'xrealloc',
+    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   56 |                 ret = realloc(ptr, size);
+      |                       ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   58 |                         ret = realloc(ptr, 1);
+      |                               ^~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
+
+Fixes: 2f4ce5ec1d447beb ("perf tools: Finalize subcmd independence")
+Reported-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Signed-off-by: Kees Kook <keescook@chromium.org>
+Tested-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: linux-hardening@vger.kernel.org
+Cc: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Link: http://lore.kernel.org/lkml/20220213182443.4037039-1-keescook@chromium.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/ca8210.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/lib/subcmd/subcmd-util.h |   11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2976,8 +2976,8 @@ static void ca8210_hw_setup(struct ieee8
- 	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
- 	ca8210_hw->phy->cca_ed_level = -9800;
- 	ca8210_hw->phy->symbol_duration = 16;
--	ca8210_hw->phy->lifs_period = 40;
--	ca8210_hw->phy->sifs_period = 12;
-+	ca8210_hw->phy->lifs_period = 40 * ca8210_hw->phy->symbol_duration;
-+	ca8210_hw->phy->sifs_period = 12 * ca8210_hw->phy->symbol_duration;
- 	ca8210_hw->flags =
- 		IEEE802154_HW_AFILT |
- 		IEEE802154_HW_OMIT_CKSUM |
+--- a/tools/lib/subcmd/subcmd-util.h
++++ b/tools/lib/subcmd/subcmd-util.h
+@@ -50,15 +50,8 @@ static NORETURN inline void die(const ch
+ static inline void *xrealloc(void *ptr, size_t size)
+ {
+ 	void *ret = realloc(ptr, size);
+-	if (!ret && !size)
+-		ret = realloc(ptr, 1);
+-	if (!ret) {
+-		ret = realloc(ptr, size);
+-		if (!ret && !size)
+-			ret = realloc(ptr, 1);
+-		if (!ret)
+-			die("Out of memory, realloc failed");
+-	}
++	if (!ret)
++		die("Out of memory, realloc failed");
+ 	return ret;
+ }
+ 
 
 
