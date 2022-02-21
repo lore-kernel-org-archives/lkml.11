@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76EF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350670AbiBUJjP (ORCPT
+        id S1350777AbiBUJji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:39:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36710 "EHLO
+        Mon, 21 Feb 2022 04:39:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350010AbiBUJcL (ORCPT
+        with ESMTP id S1350398AbiBUJcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:32:11 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371F527FCB;
-        Mon, 21 Feb 2022 01:13:39 -0800 (PST)
+        Mon, 21 Feb 2022 04:32:21 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24675286C8;
+        Mon, 21 Feb 2022 01:13:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9AD59CE0E86;
-        Mon, 21 Feb 2022 09:13:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDB5C340E9;
-        Mon, 21 Feb 2022 09:13:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 79DACCE0E88;
+        Mon, 21 Feb 2022 09:13:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F91C339C0;
+        Mon, 21 Feb 2022 09:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434809;
-        bh=1RWRw81HnhA40n4kQ9w8rLZmB3UuvQzSg293F+N1jEo=;
+        s=korg; t=1645434795;
+        bh=NKr8jcP1dVRBCsxqTN+6PsHJDCIyuR2K4W8XcO7Uze0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rrE5DRSCAEHFhy6yi2xm7wP+/MboJhRvdYbwz/PaAXhCvdasiInFvmtYtjGYzXsG+
-         rAcVlA175J3NS5nn97xVJV/sMmWEvn7h1pDTNQitWsDLkSP72E6sEfJ5nchHry69XL
-         BBuvH1hYEtnwZDfv2J52XgW6EH0RxXtxkJfVIB+w=
+        b=VxUpccUjO3ogSdV/ajAZFCRUGrSHCIkt3O7+3x2MCVe4DftixC2G9PaQUtVvePU08
+         2Zuoe5xQIzxNGmCJyEG7n5wpvABniLXtdOmkwCgjTmJOfGvyZAeR/xE/WEXVVTfv6s
+         Ullb+M/qVYg4b60flDQtZxIDLitasaArxRyy+eIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 138/196] mtd: parsers: qcom: Fix missing free for pparts in cleanup
-Date:   Mon, 21 Feb 2022 09:49:30 +0100
-Message-Id: <20220221084935.533809199@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 116/196] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw()
+Date:   Mon, 21 Feb 2022 09:49:08 +0100
+Message-Id: <20220221084934.827374205@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,33 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 3dd8ba961b9356c4113b96541c752c73d98fef70 upstream.
+commit 564778d7b1ea465f9487eedeece7527a033549c5 upstream.
 
-Mtdpart doesn't free pparts when a cleanup function is declared.
-Add missing free for pparts in cleanup function for smem to fix the
-leak.
+When writing out a stereo control we discard the change notification from
+the first channel, meaning that events are only generated based on changes
+to the second channel. Ensure that we report a change if either channel
+has changed.
 
-Fixes: 10f3b4d79958 ("mtd: parsers: qcom: Fix leaking of partition name")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220116032211.9728-2-ansuelsmth@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220201155629.120510-2-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/parsers/qcomsmempart.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/soc-ops.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/drivers/mtd/parsers/qcomsmempart.c
-+++ b/drivers/mtd/parsers/qcomsmempart.c
-@@ -173,6 +173,8 @@ static void parse_qcomsmem_cleanup(const
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -308,7 +308,7 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	unsigned int sign_bit = mc->sign_bit;
+ 	unsigned int mask = (1 << fls(max)) - 1;
+ 	unsigned int invert = mc->invert;
+-	int err;
++	int err, ret;
+ 	bool type_2r = false;
+ 	unsigned int val2 = 0;
+ 	unsigned int val, val_mask;
+@@ -350,12 +350,18 @@ int snd_soc_put_volsw(struct snd_kcontro
+ 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
+ 	if (err < 0)
+ 		return err;
++	ret = err;
  
- 	for (i = 0; i < nr_parts; i++)
- 		kfree(pparts[i].name);
-+
-+	kfree(pparts);
+-	if (type_2r)
++	if (type_2r) {
+ 		err = snd_soc_component_update_bits(component, reg2, val_mask,
+-			val2);
++						    val2);
++		/* Don't discard any error code or drop change flag */
++		if (ret == 0 || err < 0) {
++			ret = err;
++		}
++	}
+ 
+-	return err;
++	return ret;
  }
+ EXPORT_SYMBOL_GPL(snd_soc_put_volsw);
  
- static const struct of_device_id qcomsmem_of_match_table[] = {
 
 
