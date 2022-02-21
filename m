@@ -2,96 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E11E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 21:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83359C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 21:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbiBUVE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 16:04:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36676 "EHLO
+        id S234225AbiBUVFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 16:05:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234175AbiBUVEU (ORCPT
+        with ESMTP id S234175AbiBUVFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 16:04:20 -0500
-Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F8123BCE;
-        Mon, 21 Feb 2022 13:03:56 -0800 (PST)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=rainbowdash)
-        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1nMFqW-0002Tl-NS; Mon, 21 Feb 2022 21:03:48 +0000
-Received: from ben by rainbowdash with local (Exim 4.95)
-        (envelope-from <ben@rainbowdash>)
-        id 1nMFqW-005bIb-BU;
-        Mon, 21 Feb 2022 21:03:48 +0000
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-To:     paul.walmsley@sifive.com, greentime.hu@sifive.com
-Cc:     lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCHv4 2/2] PCI: fu740: Force gen1 for initial device probe
-Date:   Mon, 21 Feb 2022 21:03:47 +0000
-Message-Id: <20220221210347.1335004-2-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220221210347.1335004-1-ben.dooks@codethink.co.uk>
-References: <20220221210347.1335004-1-ben.dooks@codethink.co.uk>
+        Mon, 21 Feb 2022 16:05:45 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD7A23BCD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 13:05:21 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5BCDF1EC0528;
+        Mon, 21 Feb 2022 22:05:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645477516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=ZLr4Dbc0Ykgd1Sw1Vf7Q0Pg/edHQ0YaSAAU2I1EwowE=;
+        b=MkwLljycWkQ/Tt3zp7OfEImPdLn+OFcZeTcnVvSFsaAhzdllZuaAZ2oPRC92TpMiyrJa1d
+        WKCJf3rI5uY0Gb5PceboCDuaq83cFk9BtSVqL0K+s/AF/0oVbn2uGP1GEX5K8Q4SupPal5
+        rbLVtbeXSs6AuJ7DWR8t/4XuwiS4A1g=
+Date:   Mon, 21 Feb 2022 22:05:20 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
+        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
+        jpoimboe@redhat.com, kirill.shutemov@linux.intel.com,
+        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
+        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Subject: Re: [PATCHv3.1 2.1/2] x86/coco: Add API to handle encryption mask
+Message-ID: <YhP+kES/UVx7RwYz@zn.tnic>
+References: <YhAWcPbzgUGcJZjI@zn.tnic>
+ <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
+ <20220219001305.22883-2-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220219001305.22883-2-kirill.shutemov@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The fu740 PCIe core does not probe any devices on the SiFive Unmatched
-board without this fix from U-Boot (or having U-Boot explicitly start
-the PCIe via either boot-script or user command).
+On Sat, Feb 19, 2022 at 03:13:05AM +0300, Kirill A. Shutemov wrote:
+> AMD SME/SEV uses a bit in the page table entries to indicate that the
+> page is encrypted and not accessible to the VMM.
+> 
+> TDX uses a similar approach, but the polarity of the mask is opposite to
+> AMD: if the bit is set the page is accessible to VMM.
+> 
+> Provide vendor-neutral API to deal with the mask:
+> 
+>   - cc_mkenc() and cc_mkdec() modify given address to make it
+>     encrypted/decrypted. It can be applied to phys_addr_t, pgprotval_t
+>     or page table entry value.
+> 
+>   - cc_get_mask() returns encryption or decrypthion mask. It is useful
 
-The fix claims to set the link-speed to gen1 to get the probe
-to work. As this is a copy from U-Boot, the code is assumed to be
-correct and does fix the issue on the Unmatched. The code is at:
-https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c#L271
+Unknown word [encrypthion] in commit message.
+Suggestions: ['encryption', 'decryption']
 
-The code has been this way since the driver was commited in:
-https://source.denx.de/u-boot/u-boot/-/commit/416395c772018c6bf52aad36aca163115001793f
+Unknown word [decrypthion] in commit message.
+Suggestions: ['decryption', 'encryption']
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
- drivers/pci/controller/dwc/pcie-fu740.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+>     for set_memory_encrypted() and set_memory_decrypted()
+>     implementation.
+> 
+> The implementation will be extended to cover TDX.
+> 
+> pgprot_decrypted() is used by drivers (i915, virtio_gpu, vfio).
+> cc_mkdec() called by pgprot_decrypted(). Export cc_mkdec().
+> 
+> HyperV doesn't use bits in page table entries, so the mask is 0 for both
+> encrypthion and decrypthion.
 
-diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
-index 842b7202b96e..19501ec8c487 100644
---- a/drivers/pci/controller/dwc/pcie-fu740.c
-+++ b/drivers/pci/controller/dwc/pcie-fu740.c
-@@ -177,11 +177,30 @@ static void fu740_pcie_init_phy(struct fu740_pcie *afp)
- 	fu740_phyregwrite(1, PCIEX8MGMT_PHY_LANE3_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
- }
- 
-+/* This is copied from u-boot. Force system to gen1 otherwise nothing probes
-+ * as found on the SiFive Unmatched board.
-+ */
-+static void fu740_pcie_force_gen1(struct dw_pcie *dw, struct fu740_pcie *afp )
-+{
-+	unsigned val;
-+
-+	dw_pcie_dbi_ro_wr_en(dw);
-+
-+	val = dw_pcie_readl_dbi(dw, 0x70 + PCI_EXP_LNKCAP);
-+	pr_info("%s: link-cap was %08x\n", __func__, val);
-+	dw_pcie_writel_dbi(dw, 0x70 + PCI_EXP_LNKCAP, val | 0xf);
-+
-+	dw_pcie_dbi_ro_wr_dis(dw);
-+}
-+
- static int fu740_pcie_start_link(struct dw_pcie *pci)
- {
- 	struct device *dev = pci->dev;
- 	struct fu740_pcie *afp = dev_get_drvdata(dev);
- 
-+	/* Force PCIe gen1 otherwise Unmatched board does not probe */
-+	fu740_pcie_force_gen1(pci, afp);
-+
- 	/* Enable LTSSM */
- 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
- 	return 0;
+ditto.
+
+> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+> index d77cf3a31f07..9af6be143998 100644
+> --- a/arch/x86/kernel/cpu/mshyperv.c
+> +++ b/arch/x86/kernel/cpu/mshyperv.c
+> @@ -346,7 +346,7 @@ static void __init ms_hyperv_init_platform(void)
+>  		swiotlb_force = SWIOTLB_FORCE;
+>  #endif
+>  		if (hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE)
+> -			cc_init(CC_VENDOR_HYPERV);
+> +			cc_init(CC_VENDOR_HYPERV, 0);
+>  	}
+>  
+>  	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
+> diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
+> index eb7fbd85b77e..fa758247ab57 100644
+> --- a/arch/x86/mm/mem_encrypt_identity.c
+> +++ b/arch/x86/mm/mem_encrypt_identity.c
+> @@ -603,5 +603,5 @@ void __init sme_enable(struct boot_params *bp)
+>  out:
+>  	physical_mask &= ~sme_me_mask;
+>  	if (sme_me_mask)
+> -		cc_init(CC_VENDOR_AMD);
+> +		cc_init(CC_VENDOR_AMD, sme_me_mask);
+
+I'm wondering why this is looking weird... an init function with two
+arguments which get assigned. I think it would be better if you do:
+
+	cc_set_vendor(CC_VENDOR_XXX);
+	cc_set_mask(mask);
+
+and those helpers simply assign to __ro_after_init, local variables.
+
+IOW, simple setter functions.
+
+Thx.
+
 -- 
-2.34.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
