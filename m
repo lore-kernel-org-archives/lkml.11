@@ -2,137 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1878C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19109C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379967AbiBUQNb (ORCPT
+        id S1379958AbiBUQNq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:13:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37832 "EHLO
+        Mon, 21 Feb 2022 11:13:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235938AbiBUQN2 (ORCPT
+        with ESMTP id S235938AbiBUQNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:13:28 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15242BF40;
-        Mon, 21 Feb 2022 08:13:05 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id f37so19520010lfv.8;
-        Mon, 21 Feb 2022 08:13:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9svlVloIRFTm0V9CmprJDnoHOsTYF2+BAhlCr5Fme5A=;
-        b=FfE3wxk/bEL8UTmlDO/hRc28DE6CbLUk0akjgMW+NOVFnCAL3skLaYD4L4OknYwUn6
-         qpffpoihf89dfHeln61E5gIpe5CA5UERdHev6OrUqkGTVjy8z7Ypaj0cxGDV6DvFqel0
-         5BSHV6mrl+fcJ1cbgEMTYdjgjBY5LM4uKYg0luNZiKRqEaB1U0/9Z7UgQeX33JsGFmlV
-         w0Cb4ZLsYICEM0OuQwNbHxiLwBhGbI1Ym5QbdLe5wm/QZugosE5SGU3rcU3yjHNVD1WU
-         7CMDUdUMld4hOcxsXBPhJhcpQBNU7IMfPUt04MUj6+ewMDsOMiC8vg4NnuGotnDVIOlA
-         LksA==
+        Mon, 21 Feb 2022 11:13:39 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ED7BF56
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:13:15 -0800 (PST)
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id BB3D73F1B6
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:13:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645459988;
+        bh=vRzNDqjN6ajBEKsUVpfuJLu9ktKbrLjh36kCMNlOgAc=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=v6CNC7BZR9Ocdtvcv1jam+0lHdQ8OMUZSBLSbigY4Sf5Haf+56Ny33NqBebPNU/b3
+         +jrNnad/nQTAkNvXLVYyUtayrtFBY5sk15XC/KjvA3ERCAJ2mZa/IAdhjrOCrb+G0w
+         w/22fqlLRTgJMVQWYLOaAwUEwquVydTm8x+wrJoenMQCc7pQg5Pef7nslmdpbuXXHS
+         Sch81zexN91+e4wslSXa3qZIS+WfxpyABjNiUs0C+HcM9ZDedUNdqiswx9NmaLsLtU
+         D5pebFl8WqdKuoTBSga8sHJNzDEO2s4nxjsr3WvvDZ3fYp2i8IhX9ydfruASOUNlgC
+         6+Jb5iPFRyUVw==
+Received: by mail-wr1-f70.google.com with SMTP id u9-20020adfae49000000b001e89793bcb0so6133024wrd.17
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:13:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9svlVloIRFTm0V9CmprJDnoHOsTYF2+BAhlCr5Fme5A=;
-        b=vnOPxkwEtE8dST6BPkwrnk0+dQ1MM0HcGIoJd0r5Y7Efyg/Szwgsh5dv+nPj7+YrVl
-         lQh+2wqcgQFzX33XRdABYcil+IiklFqxvLkwqGgifKxCQmOjOj8fGG555FS/97tOnh4R
-         OnEQmb1rtk+YEh+iEzKFnshAGy4nQwJ7YWNoH3GHbAucOh9E0J8taeyZYC7zzgDpun0W
-         kdp8MAy+KUzkTtL4oMEylcNcQ9mbNA1eiF16ONoIbzhBnd7m5LNQwpf7a61YiMcLjnyp
-         4BLFel8qovHaZHiCrMXVVI8aHlL6wxoHl7MqQ+wLPfey/zGtZTXo56GzFbOFwzhQyqkA
-         FMFA==
-X-Gm-Message-State: AOAM531PugxsBWBg+tzVmjS7IC0cGjhB8PmRb6tlMNzAZNIXMczHjgYA
-        IeyeyAP12CVkam1W7lNlmcQ=
-X-Google-Smtp-Source: ABdhPJwNZJrEg1y0eTIOwei9jZ+BJ3p5jeQ6ORrtvrmOUkahCLjrtgLftda6GwQtMMvTU/J9imqkyQ==
-X-Received: by 2002:a05:6512:b91:b0:443:922a:c93b with SMTP id b17-20020a0565120b9100b00443922ac93bmr14640778lfv.121.1645459983314;
-        Mon, 21 Feb 2022 08:13:03 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id s17sm1389500ljc.20.2022.02.21.08.13.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 08:13:02 -0800 (PST)
-Message-ID: <c55b15c8-df49-6458-56ea-a753ae578d18@gmail.com>
-Date:   Mon, 21 Feb 2022 19:13:01 +0300
+        bh=vRzNDqjN6ajBEKsUVpfuJLu9ktKbrLjh36kCMNlOgAc=;
+        b=0GvG7+Mu0A195mXwMbFjDWrvYN+2Cdze67V/jlOmF/gyfJSilcFw161LKTjTZ1cYP9
+         D/xRUlC053C6LIMHS4/0jfvYOTxn5c8xnjFLQb/JIHgTnb+pF6sJ46jvv8sCnJ64Csj1
+         bWOt/KTQqBnnvlpo16a4HOpwI2P+4AVRz5dTAm7E7AcSg7hsSZUoeC2YZ6KQWT4SRkxc
+         R1812i+pHb+h6HR/bTpKNyxaSj4uHaY1SDw/8SYlqo5xh0gE11HT841pR+dkOUwHpORy
+         bGobwHILM3IczRZkDq2wzWgMZMMhUd8K3em3/Boaz1lyFZxE4qj7iI8MtX3Jk2uvypQe
+         M/Pg==
+X-Gm-Message-State: AOAM532LTcnBX90lgqFyIhLQJUSc+rW/+8cZ6uLaFczXHnv3TY1Fj73u
+        rWIW8kEV5VhfI1O6MxgPhipKuzChwFkYWcB0zGEIAZrb6+N+4FAkoaMKuvU3yRr4NoVBa2FMobL
+        1L3wC98TMRYvafd2VzFsq3DIOSrMqBmxUixwyY/vrVA==
+X-Received: by 2002:a5d:5546:0:b0:1e7:39f7:92b9 with SMTP id g6-20020a5d5546000000b001e739f792b9mr16109066wrw.5.1645459986980;
+        Mon, 21 Feb 2022 08:13:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxYARHj/Mj7yrv5G5MA7LwMLl7DKmEUB0He0crX8AOVYhpRiwKK4744czYz8Tb0FwmorU5iiQ==
+X-Received: by 2002:a5d:5546:0:b0:1e7:39f7:92b9 with SMTP id g6-20020a5d5546000000b001e739f792b9mr16109052wrw.5.1645459986740;
+        Mon, 21 Feb 2022 08:13:06 -0800 (PST)
+Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
+        by smtp.gmail.com with ESMTPSA id n7sm7976623wmd.30.2022.02.21.08.13.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 08:13:06 -0800 (PST)
+From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH -fixes v2 0/4] Fixes KASAN and other along the way
+Date:   Mon, 21 Feb 2022 17:12:28 +0100
+Message-Id: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20210618215455.19986-1-digetx@gmail.com>
- <20210618215455.19986-3-digetx@gmail.com>
- <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
- <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
- <84ddad27-eb22-0ba6-594f-2fc6d098dc2a@nvidia.com>
- <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <bdb8b51f-93ac-9f99-914e-e1ce16c0076d@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-21.02.2022 19:02, Guenter Roeck пишет:
-> On 2/21/22 07:49, Jon Hunter wrote:
->>
->> On 21/02/2022 15:43, Guenter Roeck wrote:
->>
->> ...
->>
->>>> We observed a random null pointer deference crash somewhere in the
->>>> thermal core (crash log below is not very helpful) when calling
->>>> mutex_lock(). It looks like we get an interrupt when this crash
->>>> happens.
->>>>
->>>> Looking at the lm90 driver, per the above, I now see we are calling
->>>> hwmon_notify_event() from the lm90 interrupt handler. Looking at
->>>> hwmon_notify_event() I see that ...
->>>>
->>>> hwmon_notify_event()
->>>>    --> hwmon_thermal_notify()
->>>>      --> thermal_zone_device_update()
->>>>        --> update_temperature()
->>>>          --> mutex_lock()
->>>>
->>>> So although I don't completely understand the crash, it does seem
->>>> that we should not be calling hwmon_notify_event() from the
->>>> interrupt handler.
->>>>
->>> As mentioned separately, this is not the problem.
->>
->> Yes I can see that now.
->>
->>> I think the problem may be that this is not a devicetree system
->>> (or the lm90 devide does not have a devicetree node), but thermal
->>> notification currently only works in such systems because the hwmon
->>> subsystem uses the devicetree registration method. At the same time,
->>> CONFIG_THERMAL_OF is obviously enabled. Unfortunately, the hwmon code
->>> does not bail out in that situation due to another bug.
->>
->> The platform I see this on does use device-tree and it does have a
->> node for the ti,tmp451 device which uses the lm90 device. This
->> platform uses the device-tree source
->> arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts and the tmp451 node
->> is in arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi.
->>
-> 
-> Interesting. It appears that the call to
-> devm_thermal_zone_of_sensor_register()
-> in the hwmon core nevertheless returns -ENODEV which is not handled
-> properly
-> in the hwmon core. I can see a number of reasons for this to happen:
-> - there is no devicetree node for the lm90 device
-> - there is no thermal-zones devicetree node
-> - there is no thermal zone entry in the thermal-zones node which matches
->   the sensor
-> 
-> We'll have to revert the lm90 changes until this is sorted out.
+As reported by Aleksandr, syzbot riscv is broken since commit
+54c5639d8f50 ("riscv: Fix asan-stack clang build"). This commit actually
+breaks KASAN_INLINE which is not fixed in this series, that will come later
+when found.
 
-Oh, yeah. Seems there is a problem there and tzd pointer could be
--ENODEV. But it's a hwmon core problem, which apparently existed for a
-long time, not the lm90 problem.
+Nevertheless, this series fixes small things that made the syzbot
+configuration + KASAN_OUTLINE fail to boot.
+
+Note that even though the config at [1] boots fine with this series, I
+was not able to boot the small config at [2] which fails because
+kasan_poison receives a really weird address 0x4075706301000000 (maybe a
+kasan person could provide some hint about what happens below in
+do_ctors -> __asan_register_globals):
+
+Thread 2 hit Breakpoint 1, kasan_poison (addr=<optimized out>, size=<optimized out>, value=<optimized out>, init=<optimized out>) at /home/alex/work/linux/mm/kasan/shadow.c:90
+90		if (WARN_ON((unsigned long)addr & KASAN_GRANULE_MASK))
+1: x/i $pc
+=> 0xffffffff80261712 <kasan_poison>:	andi	a4,a0,7
+5: /x $a0 = 0x4075706301000000
+
+Thread 2 hit Breakpoint 2, handle_exception () at /home/alex/work/linux/arch/riscv/kernel/entry.S:27
+27		csrrw tp, CSR_SCRATCH, tp
+1: x/i $pc
+=> 0xffffffff80004098 <handle_exception>:	csrrw	tp,sscratch,tp
+5: /x $a0 = 0xe80eae0b60200000
+(gdb) bt
+#0  handle_exception () at /home/alex/work/linux/arch/riscv/kernel/entry.S:27
+#1  0xffffffff80261746 in kasan_poison (addr=<optimized out>, size=<optimized out>, value=<optimized out>, init=<optimized out>)
+    at /home/alex/work/linux/mm/kasan/shadow.c:98
+#2  0xffffffff802618b4 in kasan_unpoison (addr=<optimized out>, size=<optimized out>, init=<optimized out>)
+    at /home/alex/work/linux/mm/kasan/shadow.c:138
+#3  0xffffffff80260876 in register_global (global=<optimized out>) at /home/alex/work/linux/mm/kasan/generic.c:214
+#4  __asan_register_globals (globals=<optimized out>, size=<optimized out>) at /home/alex/work/linux/mm/kasan/generic.c:226
+#5  0xffffffff8125efac in _sub_I_65535_1 ()
+#6  0xffffffff81201b32 in do_ctors () at /home/alex/work/linux/init/main.c:1156
+#7  do_basic_setup () at /home/alex/work/linux/init/main.c:1407
+#8  kernel_init_freeable () at /home/alex/work/linux/init/main.c:1613
+#9  0xffffffff81153ddc in kernel_init (unused=<optimized out>) at /home/alex/work/linux/init/main.c:1502
+#10 0xffffffff800041c0 in handle_exception () at /home/alex/work/linux/arch/riscv/kernel/entry.S:231
+
+
+Thanks again to Aleksandr for narrowing down the issues fixed here.
+
+
+[1] https://gist.github.com/a-nogikh/279c85c2d24f47efcc3e865c08844138
+[2] https://gist.github.com/AlexGhiti/a5a0cab0227e2bf38f9d12232591c0e4
+
+
+Changes in v2:
+- Fix kernel test robot failure regarding KERN_VIRT_SIZE that is
+  undefined for nommu config
+
+Alexandre Ghiti (4):
+  riscv: Fix is_linear_mapping with recent move of KASAN region
+  riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
+  riscv: Fix DEBUG_VIRTUAL false warnings
+  riscv: Fix config KASAN && DEBUG_VIRTUAL
+
+ arch/riscv/include/asm/page.h    | 2 +-
+ arch/riscv/include/asm/pgtable.h | 1 +
+ arch/riscv/mm/Makefile           | 3 +++
+ arch/riscv/mm/kasan_init.c       | 3 +--
+ arch/riscv/mm/physaddr.c         | 4 +---
+ 5 files changed, 7 insertions(+), 6 deletions(-)
+
+-- 
+2.32.0
 
