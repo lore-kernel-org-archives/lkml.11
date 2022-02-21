@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9453BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351008AbiBUJkv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:40:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34624 "EHLO
+        id S244680AbiBUJlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:41:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350409AbiBUJeG (ORCPT
+        with ESMTP id S1350635AbiBUJed (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:34:06 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E70A29826;
-        Mon, 21 Feb 2022 01:14:15 -0800 (PST)
+        Mon, 21 Feb 2022 04:34:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839D9C03;
+        Mon, 21 Feb 2022 01:14:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6CB8ACE0E93;
-        Mon, 21 Feb 2022 09:13:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BDC1C340EB;
-        Mon, 21 Feb 2022 09:13:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74704608C4;
+        Mon, 21 Feb 2022 09:14:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52705C340E9;
+        Mon, 21 Feb 2022 09:14:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434811;
-        bh=BNVmtUYVnmuinax3C7ACSj9zjInJX74bgTglaPhnYKw=;
+        s=korg; t=1645434865;
+        bh=KogUK00L+i8EBmOkWaS8EG8eriaWbC3FygQCpclJinU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uMadomUPY9+dE4GKOaPpqoKdxd/5dRu3Y37rV06kW3u0ySZluQyGNB3v9OxJYX0Un
-         x0ISlwB9Lt7YCyyOaNHETtgvLe04gTG/gLS4w636P8bIkcyvACdpm4RM30ftcA3LU3
-         Ob9BVZu5vyYxHSh6O5uVBFyl4LXLQ6wyhUbTAQ1A=
+        b=0PO9XoONp6pFcinA5IzEq7Mths2r9TnuS97hN8wUiOglbqdE9VYHuw2l7yA+CdEGi
+         W2v2gLhV5Zisd2nmlFVQ9ovJWpGt6R+GDLOm47SQpgo7zX4OxCeqjhb8JJMpUHWxJj
+         /HrU8olgULqXjKDFD6MLZDPVu3eIDvhPl0V5em1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 139/196] mtd: phram: Prevent divide by zero bug in phram_setup()
-Date:   Mon, 21 Feb 2022 09:49:31 +0100
-Message-Id: <20220221084935.577841576@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 159/196] arm64: dts: meson-g12: drop BL32 region from SEI510/SEI610
+Date:   Mon, 21 Feb 2022 09:49:51 +0100
+Message-Id: <20220221084936.264749416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,52 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-commit 3e3765875b1b8864898603768fd5c93eeb552211 upstream.
+[ Upstream commit f26573e2bc9dfd551a0d5c6971f18cc546543312 ]
 
-The problem is that "erasesize" is a uint64_t type so it might be
-non-zero but the lower 32 bits are zero so when it's truncated,
-"(uint32_t)erasesize", then that value is zero. This leads to a
-divide by zero bug.
+The BL32/TEE reserved-memory region is now inherited from the common
+family dtsi (meson-g12-common) so we can drop it from board files.
 
-Avoid the bug by delaying the divide until after we have validated
-that "erasesize" is non-zero and within the uint32_t range.
-
-Fixes: dc2b3e5cbc80 ("mtd: phram: use div_u64_rem to stop overwrite len in phram_setup")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220121115505.GI1978@kadam
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-4-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/devices/phram.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts | 8 --------
+ arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts  | 8 --------
+ 2 files changed, 16 deletions(-)
 
---- a/drivers/mtd/devices/phram.c
-+++ b/drivers/mtd/devices/phram.c
-@@ -264,15 +264,19 @@ static int phram_setup(const char *val)
- 		}
- 	}
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index d8838dde0f0f4..4fb31c2ba31c4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -157,14 +157,6 @@
+ 		regulator-always-on;
+ 	};
  
--	if (erasesize)
--		div_u64_rem(len, (uint32_t)erasesize, &rem);
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
 -
- 	if (len == 0 || erasesize == 0 || erasesize > len
--	    || erasesize > UINT_MAX || rem) {
-+	    || erasesize > UINT_MAX) {
- 		parse_err("illegal erasesize or len\n");
- 		ret = -EINVAL;
- 		goto error;
- 	}
-+
-+	div_u64_rem(len, (uint32_t)erasesize, &rem);
-+	if (rem) {
-+		parse_err("len is not multiple of erasesize\n");
-+		ret = -EINVAL;
-+		goto error;
-+	}
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 427475846fc70..a5d79f2f7c196 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -203,14 +203,6 @@
+ 		regulator-always-on;
+ 	};
  
- 	ret = register_device(name, start, len, (uint32_t)erasesize);
- 	if (ret)
+-	reserved-memory {
+-		/* TEE Reserved Memory */
+-		bl32_reserved: bl32@5000000 {
+-			reg = <0x0 0x05300000 0x0 0x2000000>;
+-			no-map;
+-		};
+-	};
+-
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		reset-gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
+-- 
+2.34.1
+
 
 
