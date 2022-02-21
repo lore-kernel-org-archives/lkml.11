@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D723C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350162AbiBUJ3u (ORCPT
+        id S1350169AbiBUJ3y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:29:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38978 "EHLO
+        Mon, 21 Feb 2022 04:29:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350081AbiBUJWE (ORCPT
+        with ESMTP id S1350098AbiBUJWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:22:04 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41F0377DE;
-        Mon, 21 Feb 2022 01:09:26 -0800 (PST)
+        Mon, 21 Feb 2022 04:22:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF67D377EC;
+        Mon, 21 Feb 2022 01:09:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6B256CE0E77;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C6B160B1E;
+        Mon, 21 Feb 2022 09:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B29AC340E9;
         Mon, 21 Feb 2022 09:09:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499B2C340E9;
-        Mon, 21 Feb 2022 09:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434563;
-        bh=u2BL9KfYaOeHl3fDuBSVd0eyNFAA6AtmARcIQBuaaPY=;
+        s=korg; t=1645434566;
+        bh=1bFRTM8LO7/ZxkbpNx4MQ3apa34YplDCU4cZyUycKe8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ws+pCJGHtvAZF2cGOY2rX9jtauEd55jzQm82prr4p00CInVj+cx1Zb99rlxpjY3GW
-         6zaGyVLdU7jAxAlqhR4mOtLkXStCAEE1bnD3fWyGfiR9znAFNoqIKHFSw84uOoG+1u
-         2OQRm+faprCoz/7eaeuLRGTDdfbRIp49fWZqZI78=
+        b=fCEUxvxCSkDBed8Ml7wJ2pyyDx7UuItBJp2fJFB5iZrDGN/VYv3Rszl4mXgQbNqL+
+         7TrA0AQI+fFQXiEQwhDTul3SMJKqMxFozMj/UNs9UMZ6HJab57p4QJon0BT7peeukr
+         39ZD5ilpr15JXGeIGPIfninkJvHSdcxoPbP6yLug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 009/196] parisc: Drop __init from map_pages declaration
-Date:   Mon, 21 Feb 2022 09:47:21 +0100
-Message-Id: <20220221084931.206852763@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 045/196] nvme-tcp: fix possible use-after-free in transport error_recovery work
+Date:   Mon, 21 Feb 2022 09:47:57 +0100
+Message-Id: <20220221084932.436230442@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,61 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-commit 9129886b88185962538180625ca8051362b01327 upstream.
+[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
 
-With huge kernel pages, we randomly eat a SPARC in map_pages(). This
-is fixed by dropping __init from the declaration.
+While nvme_tcp_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-However, map_pages references the __init routine memblock_alloc_try_nid
-via memblock_alloc.  Thus, it needs to be marked with __ref.
-
-memblock_alloc is only called before the kernel text is set to readonly.
-
-The __ref on free_initmem is no longer needed.
-
-Comment regarding map_pages being in the init section is removed.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org # v5.4+
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Tested-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/mm/init.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/nvme/host/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/parisc/mm/init.c
-+++ b/arch/parisc/mm/init.c
-@@ -341,9 +341,9 @@ static void __init setup_bootmem(void)
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index efa9037da53c9..ef65d24639c44 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -2105,6 +2105,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
+ 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
  
- static bool kernel_set_to_readonly;
- 
--static void __init map_pages(unsigned long start_vaddr,
--			     unsigned long start_paddr, unsigned long size,
--			     pgprot_t pgprot, int force)
-+static void __ref map_pages(unsigned long start_vaddr,
-+			    unsigned long start_paddr, unsigned long size,
-+			    pgprot_t pgprot, int force)
- {
- 	pmd_t *pmd;
- 	pte_t *pg_table;
-@@ -453,7 +453,7 @@ void __init set_kernel_text_rw(int enabl
- 	flush_tlb_all();
- }
- 
--void __ref free_initmem(void)
-+void free_initmem(void)
- {
- 	unsigned long init_begin = (unsigned long)__init_begin;
- 	unsigned long init_end = (unsigned long)__init_end;
-@@ -467,7 +467,6 @@ void __ref free_initmem(void)
- 	/* The init text pages are marked R-X.  We have to
- 	 * flush the icache and mark them RW-
- 	 *
--	 * This is tricky, because map_pages is in the init section.
- 	 * Do a dummy remap of the data section first (the data
- 	 * section is already PAGE_KERNEL) to pull in the TLB entries
- 	 * for map_kernel */
+ 	nvme_stop_keep_alive(ctrl);
++	flush_work(&ctrl->async_event_work);
+ 	nvme_tcp_teardown_io_queues(ctrl, false);
+ 	/* unquiesce to fail fast pending requests */
+ 	nvme_start_queues(ctrl);
+-- 
+2.34.1
+
 
 
