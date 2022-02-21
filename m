@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 052D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351546AbiBUJte (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:49:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60820 "EHLO
+        id S244586AbiBUJtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:49:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244944AbiBUJoi (ORCPT
+        with ESMTP id S1351132AbiBUJmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:44:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4273F330;
-        Mon, 21 Feb 2022 01:18:15 -0800 (PST)
+        Mon, 21 Feb 2022 04:42:44 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399173335D;
+        Mon, 21 Feb 2022 01:17:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0F9260F1A;
-        Mon, 21 Feb 2022 09:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC181C340E9;
-        Mon, 21 Feb 2022 09:18:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BA8FACE0E76;
+        Mon, 21 Feb 2022 09:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F23C340E9;
+        Mon, 21 Feb 2022 09:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435094;
-        bh=n8SyEaw3FzEKtjVivgMYrGD1iFZv2h7DZWTikLxCuYY=;
+        s=korg; t=1645435072;
+        bh=4/ma2ZF00qjEG7nCuaP9vuHb1u63RSWI+qRUAE66LXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azyi9D++1/u+7fGbALYMYsh4yBvGQ20DHvE8MG4SVkGa6HxlBjq0G2kqJuL/XaDF7
-         FTNoZHkTfq2j1NJAulfKAFXnvy+m12gfNerx3ifClY+QGbF+dHNOlSVntRXMG0j6/9
-         XuB1YVrQpXUjiKrN3lf+pO25FYv47jV2MuQfr0VE=
+        b=cSEuEkopwUyEc/hjqx45yS8KXP2ZN1hZpZlw5y0npiU1ihxVeoO8lm7sIOKjfQcFn
+         vwyuePXwxk0SB+/QZcmwtSTURG1yGep5V3jNu+gNmL/YEjCEdzgJ20xY3wEi5IcKLm
+         H0TBzVEp3j+/EldYZW283w8muTspKEHH6Qa0tkek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH 5.16 010/227] bpf/selftests: Test PTR_TO_RDONLY_MEM
-Date:   Mon, 21 Feb 2022 09:47:09 +0100
-Message-Id: <20220221084935.184705752@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 034/227] platform/x86: amd-pmc: Correct usage of SMU version
+Date:   Mon, 21 Feb 2022 09:47:33 +0100
+Message-Id: <20220221084935.996720783@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,91 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 9497c458c10b049438ef6e6ddda898edbc3ec6a8 upstream.
+[ Upstream commit b8fb0d9b47660ddb8a8256412784aad7cee9f21a ]
 
-This test verifies that a ksym of non-struct can not be directly
-updated.
+Yellow carp has been outputting versions like `1093.24.0`, but this
+is supposed to be 69.24.0. That is the MSB is being interpreted
+incorrectly.
 
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20211217003152.48334-10-haoluo@google.com
-Cc: stable@vger.kernel.org # 5.16.x
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The MSB is not part of the major version, but has generally been
+treated that way thus far.  It's actually the program, and used to
+distinguish between two programs from a similar family but different
+codebase.
+
+Link: https://patchwork.freedesktop.org/patch/469993/
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://lore.kernel.org/r/20220120174439.12770-1-mario.limonciello@amd.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c             |   14 ++++
- tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c |   29 ++++++++++
- 2 files changed, 43 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
+ drivers/platform/x86/amd-pmc.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-@@ -8,6 +8,7 @@
- #include "test_ksyms_btf_null_check.skel.h"
- #include "test_ksyms_weak.skel.h"
- #include "test_ksyms_weak.lskel.h"
-+#include "test_ksyms_btf_write_check.skel.h"
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index 230593ae5d6de..8c74733530e3d 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -117,9 +117,10 @@ struct amd_pmc_dev {
+ 	u32 cpu_id;
+ 	u32 active_ips;
+ /* SMU version information */
+-	u16 major;
+-	u16 minor;
+-	u16 rev;
++	u8 smu_program;
++	u8 major;
++	u8 minor;
++	u8 rev;
+ 	struct device *dev;
+ 	struct mutex lock; /* generic mutex lock */
+ #if IS_ENABLED(CONFIG_DEBUG_FS)
+@@ -166,11 +167,13 @@ static int amd_pmc_get_smu_version(struct amd_pmc_dev *dev)
+ 	if (rc)
+ 		return rc;
  
- static int duration;
+-	dev->major = (val >> 16) & GENMASK(15, 0);
++	dev->smu_program = (val >> 24) & GENMASK(7, 0);
++	dev->major = (val >> 16) & GENMASK(7, 0);
+ 	dev->minor = (val >> 8) & GENMASK(7, 0);
+ 	dev->rev = (val >> 0) & GENMASK(7, 0);
  
-@@ -137,6 +138,16 @@ cleanup:
- 	test_ksyms_weak_lskel__destroy(skel);
+-	dev_dbg(dev->dev, "SMU version is %u.%u.%u\n", dev->major, dev->minor, dev->rev);
++	dev_dbg(dev->dev, "SMU program %u version is %u.%u.%u\n",
++		dev->smu_program, dev->major, dev->minor, dev->rev);
+ 
+ 	return 0;
  }
- 
-+static void test_write_check(void)
-+{
-+	struct test_ksyms_btf_write_check *skel;
-+
-+	skel = test_ksyms_btf_write_check__open_and_load();
-+	ASSERT_ERR_PTR(skel, "unexpected load of a prog writing to ksym memory\n");
-+
-+	test_ksyms_btf_write_check__destroy(skel);
-+}
-+
- void test_ksyms_btf(void)
- {
- 	int percpu_datasec;
-@@ -167,4 +178,7 @@ void test_ksyms_btf(void)
- 
- 	if (test__start_subtest("weak_ksyms_lskel"))
- 		test_weak_syms_lskel();
-+
-+	if (test__start_subtest("write_check"))
-+		test_write_check();
- }
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Google */
-+
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+
-+extern const int bpf_prog_active __ksym; /* int type global var. */
-+
-+SEC("raw_tp/sys_enter")
-+int handler(const void *ctx)
-+{
-+	int *active;
-+	__u32 cpu;
-+
-+	cpu = bpf_get_smp_processor_id();
-+	active = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);
-+	if (active) {
-+		/* Kernel memory obtained from bpf_{per,this}_cpu_ptr
-+		 * is read-only, should _not_ pass verification.
-+		 */
-+		/* WRITE_ONCE */
-+		*(volatile int *)active = -1;
-+	}
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+-- 
+2.34.1
+
 
 
