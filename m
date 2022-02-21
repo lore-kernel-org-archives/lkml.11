@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80FE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351111AbiBUJmk (ORCPT
+        id S1351147AbiBUJmq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:42:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48412 "EHLO
+        Mon, 21 Feb 2022 04:42:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350838AbiBUJgG (ORCPT
+        with ESMTP id S1351010AbiBUJgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:36:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052492BB37;
-        Mon, 21 Feb 2022 01:14:58 -0800 (PST)
+        Mon, 21 Feb 2022 04:36:37 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805A962C4;
+        Mon, 21 Feb 2022 01:15:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE7E0608C4;
-        Mon, 21 Feb 2022 09:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1ED9C340E9;
-        Mon, 21 Feb 2022 09:14:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B18FBCE0E95;
+        Mon, 21 Feb 2022 09:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 986F7C36AE7;
+        Mon, 21 Feb 2022 09:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434896;
-        bh=irm/IpB0amb9hj620Syux/kXZz0jKhnqBvMBFBvfmTI=;
+        s=korg; t=1645434902;
+        bh=Oi/z8FXJe7HaSYVUhQ0ZeCMIKUhAiYSLwLD4ZSc+Jec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pr7/vi1mCynzxooBWv/pg90t3nQRa8Q1hosYoEozsNkX1bVl1x6I3IFs3CInHGILt
-         syyPHqPxjzxSijXkBmPtNdHQCg83677fjKXH0D8/yXrOO3uZ0Wnhhhq+9RJjlH/Zs4
-         GJ4BOnvkPdFzTOMSdM1ACoB9hZZjhTjSGXJjeQUA=
+        b=ahNQU9da+jun1EcKscnu+ju/anAPpxjSFruHeq8/UJU2mmUvA5/XAKS3jJCKYxERN
+         YcDyvskaDqfEiUF/NRYTH9gwDb4LxqxIByeZPY8Y39pBgBqFStyk2zRqFZpNifYcRt
+         lOIUu4JHxIp/FrHaXMuzoWbb0XhZAIFDTcMJT1bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, JaeSang Yoo <jsyoo5b@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Roman Li <Roman.Li@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 169/196] tracing: Fix tp_printk option related with tp_printk_stop_on_boot
-Date:   Mon, 21 Feb 2022 09:50:01 +0100
-Message-Id: <20220221084936.599307147@linuxfoundation.org>
+Subject: [PATCH 5.15 171/196] drm/amd/display: Cap pflip irqs per max otg number
+Date:   Mon, 21 Feb 2022 09:50:03 +0100
+Message-Id: <20220221084936.666545339@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,47 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JaeSang Yoo <js.yoo.5b@gmail.com>
+From: Roman Li <Roman.Li@amd.com>
 
-[ Upstream commit 3203ce39ac0b2a57a84382ec184c7d4a0bede175 ]
+[ Upstream commit 328e34a5ad227399391891d454043e5d73e598d2 ]
 
-The kernel parameter "tp_printk_stop_on_boot" starts with "tp_printk" which is
-the same as another kernel parameter "tp_printk". If "tp_printk" setup is
-called before the "tp_printk_stop_on_boot", it will override the latter
-and keep it from being set.
+[Why]
+pflip interrupt order are mapped 1 to 1 to otg id.
+e.g. if irq_src=26 corresponds to otg0 then 27->otg1, 28->otg2...
 
-This is similar to other kernel parameter issues, such as:
-  Commit 745a600cf1a6 ("um: console: Ignore console= option")
-or init/do_mounts.c:45 (setup function of "ro" kernel param)
+Linux DM registers pflip interrupts per number of crtcs.
+In fused pipe case crtc numbers can be less than otg id.
 
-Fix it by checking for a "_" right after the "tp_printk" and if that
-exists do not process the parameter.
+e.g. if one pipe out of 3(otg#0-2) is fused adev->mode_info.num_crtc=2
+so DM only registers irq_src 26,27.
+This is a bug since if pipe#2 remains unfused DM never gets
+otg2 pflip interrupt (irq_src=28)
+That may results in gfx failure due to pflip timeout.
 
-Link: https://lkml.kernel.org/r/20220208195421.969326-1-jsyoo5b@gmail.com
+[How]
+Register pflip interrupts per max num of otg instead of num_crtc
 
-Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
-[ Fixed up change log and added space after if condition ]
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Reviewed-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 2 +-
+ drivers/gpu/drm/amd/display/dc/core/dc.c          | 2 ++
+ drivers/gpu/drm/amd/display/dc/dc.h               | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 51a87a67e2abe..618c20ce2479d 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -252,6 +252,10 @@ __setup("trace_clock=", set_trace_boot_clock);
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 16556ae892d4a..5ae9b8133d6da 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3230,7 +3230,7 @@ static int dcn10_register_irq_handlers(struct amdgpu_device *adev)
  
- static int __init set_tracepoint_printk(char *str)
- {
-+	/* Ignore the "tp_printk_stop_on_boot" param */
-+	if (*str == '_')
-+		return 0;
+ 	/* Use GRPH_PFLIP interrupt */
+ 	for (i = DCN_1_0__SRCID__HUBP0_FLIP_INTERRUPT;
+-			i <= DCN_1_0__SRCID__HUBP0_FLIP_INTERRUPT + adev->mode_info.num_crtc - 1;
++			i <= DCN_1_0__SRCID__HUBP0_FLIP_INTERRUPT + dc->caps.max_otg_num - 1;
+ 			i++) {
+ 		r = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_DCE, i, &adev->pageflip_irq);
+ 		if (r) {
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 1860ccc3f4f2c..4fae73478840c 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1118,6 +1118,8 @@ struct dc *dc_create(const struct dc_init_data *init_params)
+ 
+ 		dc->caps.max_dp_protocol_version = DP_VERSION_1_4;
+ 
++		dc->caps.max_otg_num = dc->res_pool->res_cap->num_timing_generator;
 +
- 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
- 		tracepoint_printk = 1;
- 	return 1;
+ 		if (dc->res_pool->dmcu != NULL)
+ 			dc->versions.dmcu_version = dc->res_pool->dmcu->dmcu_version;
+ 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/dc.h b/drivers/gpu/drm/amd/display/dc/dc.h
+index 3ab52d9a82cf6..e0f58fab5e8ed 100644
+--- a/drivers/gpu/drm/amd/display/dc/dc.h
++++ b/drivers/gpu/drm/amd/display/dc/dc.h
+@@ -185,6 +185,7 @@ struct dc_caps {
+ 	struct dc_color_caps color;
+ 	bool vbios_lttpr_aware;
+ 	bool vbios_lttpr_enable;
++	uint32_t max_otg_num;
+ };
+ 
+ struct dc_bug_wa {
 -- 
 2.34.1
 
