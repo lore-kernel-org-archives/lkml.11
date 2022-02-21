@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350693AbiBUJlj (ORCPT
+        id S1350861AbiBUJlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:41:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46466 "EHLO
+        Mon, 21 Feb 2022 04:41:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350686AbiBUJeo (ORCPT
+        with ESMTP id S1350672AbiBUJel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:34:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1929C2AE30;
-        Mon, 21 Feb 2022 01:14:42 -0800 (PST)
+        Mon, 21 Feb 2022 04:34:41 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C6D2AC73;
+        Mon, 21 Feb 2022 01:14:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 486FD60B1E;
-        Mon, 21 Feb 2022 09:14:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B34AC340E9;
-        Mon, 21 Feb 2022 09:14:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E02660E9F;
+        Mon, 21 Feb 2022 09:13:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA36C340F6;
+        Mon, 21 Feb 2022 09:13:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434848;
-        bh=BG1NpXKssJw3yavqv33fIVlY8+0FkZSDOgF69ULv2oo=;
+        s=korg; t=1645434831;
+        bh=ZpfoQcnTmVqebXfBI40itLAdUgbRn0FhwDiHLlfqpqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ZjXzs5LNQ6vdJL+0Ur1TQ4Y63e+TUM255Vi0XyxMh09LgxuPP9U56pdinttuk2z1
-         DD5oCHSxH7YcLgetew+CULR367n/C59+xAONycTl3io1Z9CU8dv96kZkNeuwqrqAOH
-         84Bk549kOXhCoLYcZ/olEicUVYU04NcebsWsbXys=
+        b=uswXPEhonJQ3tk+tXRvX9I06jBqehnlUtj/KONkaC9iqyI4EWgiZ9+HICqSbBrFPT
+         RgxOvJLOhqquVFBZ8sw9FJ6C1E8wfGVOcfofELNUdUrnxPMJ6CZ1IPO611RBiNYueq
+         MdngXMaCIfx0yvj1abWgN1PSrWQU1wrZ1MomJ9p8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 120/196] cifs: fix set of group SID via NTSD xattrs
-Date:   Mon, 21 Feb 2022 09:49:12 +0100
-Message-Id: <20220221084934.949460961@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 145/196] KVM: x86/pmu: Dont truncate the PerfEvtSeln MSR when creating a perf event
+Date:   Mon, 21 Feb 2022 09:49:37 +0100
+Message-Id: <20220221084935.775021299@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,40 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Jim Mattson <jmattson@google.com>
 
-commit dd5a927e411836eaef44eb9b00fece615e82e242 upstream.
+[ Upstream commit b8bfee85f1307426e0242d654f3a14c06ef639c5 ]
 
-'setcifsacl -g <SID>' silently fails to set the group SID on server.
+AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
+a PerfEvtSeln MSR. Don't drop the high nybble when setting up the
+config field of a perf_event_attr structure for a call to
+perf_event_create_kernel_counter().
 
-Actually, the bug existed since commit 438471b67963 ("CIFS: Add support
-for setting owner info, dos attributes, and create time"), but this fix
-will not apply cleanly to kernel versions <= v5.10.
-
-Fixes: 3970acf7ddb9 ("SMB3: Add support for getting and setting SACLs")
-Cc: stable@vger.kernel.org # 5.11+
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Reported-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220203014813.2130559-1-jmattson@google.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/xattr.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/pmu.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/xattr.c
-+++ b/fs/cifs/xattr.c
-@@ -175,11 +175,13 @@ static int cifs_xattr_set(const struct x
- 				switch (handler->flags) {
- 				case XATTR_CIFS_NTSD_FULL:
- 					aclflags = (CIFS_ACL_OWNER |
-+						    CIFS_ACL_GROUP |
- 						    CIFS_ACL_DACL |
- 						    CIFS_ACL_SACL);
- 					break;
- 				case XATTR_CIFS_NTSD:
- 					aclflags = (CIFS_ACL_OWNER |
-+						    CIFS_ACL_GROUP |
- 						    CIFS_ACL_DACL);
- 					break;
- 				case XATTR_CIFS_ACL:
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index eec614de9af30..bfef0c658730e 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -95,7 +95,7 @@ static void kvm_perf_overflow_intr(struct perf_event *perf_event,
+ }
+ 
+ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+-				  unsigned config, bool exclude_user,
++				  u64 config, bool exclude_user,
+ 				  bool exclude_kernel, bool intr,
+ 				  bool in_tx, bool in_tx_cp)
+ {
+@@ -173,7 +173,8 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
+ 
+ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ {
+-	unsigned config, type = PERF_TYPE_RAW;
++	u64 config;
++	u32 type = PERF_TYPE_RAW;
+ 	struct kvm *kvm = pmc->vcpu->kvm;
+ 	struct kvm_pmu_event_filter *filter;
+ 	int i;
+-- 
+2.34.1
+
 
 
