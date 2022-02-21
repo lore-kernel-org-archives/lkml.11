@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B82BC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D25DC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351764AbiBUJqg (ORCPT
+        id S1351812AbiBUJqk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:46:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47138 "EHLO
+        Mon, 21 Feb 2022 04:46:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351314AbiBUJg6 (ORCPT
+        with ESMTP id S1351195AbiBUJgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:36:58 -0500
+        Mon, 21 Feb 2022 04:36:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C6B2DD7A;
-        Mon, 21 Feb 2022 01:15:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D629F2DA81;
+        Mon, 21 Feb 2022 01:15:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80340608C1;
-        Mon, 21 Feb 2022 09:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 639A1C340E9;
-        Mon, 21 Feb 2022 09:15:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E65F060E95;
+        Mon, 21 Feb 2022 09:14:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FF7C340EB;
+        Mon, 21 Feb 2022 09:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434921;
-        bh=udyfW1L3muCkfAB2xkuL09YazwKCow9OUHBy04Zui/A=;
+        s=korg; t=1645434899;
+        bh=v3MER1/Z/1nChzKsMsoSuaIlZ25Q0/0JMr6nMx6ik68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFd1M56BsN+KM7V0V9XXgqRIJ1kfG3kAhsZ21vG8uH/SNuKoZ82XNWvJaBpToAVcL
-         u0u8eaZezTeovo2O1XvLJVG27DTy7Nrn1Wh/uc0Ni2aHD4vjidqbwnytzqkWQB3TU7
-         sA1jP1ifJJol4+WFho3XiezwAZYImWVkFvJflRmQ=
+        b=z2U2AU3yVjgUw5TLuzmWy92+BEkJS9Xve+2sZRy6tg/6DixQE1N/1vBT537d0H2+m
+         dZhNAO2iJweRj8qSN0yUHkLdjKZMe232mSylKMzJ7ov7MZzZDbR7uoetfTCRKhGgld
+         EICvEi3MCwSY94BigQ6N+4QDDHVC3Z4aHmPxc08Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 178/196] ucounts: Handle wrapping in is_ucounts_overlimit
-Date:   Mon, 21 Feb 2022 09:50:10 +0100
-Message-Id: <20220221084936.909589544@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 170/196] display/amd: decrease message verbosity about watermarks table failure
+Date:   Mon, 21 Feb 2022 09:50:02 +0100
+Message-Id: <20220221084936.630009288@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,38 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 0cbae9e24fa7d6c6e9f828562f084da82217a0c5 upstream.
+[ Upstream commit 03ad3093c7c069d6ab4403730009ebafeea9ee37 ]
 
-While examining is_ucounts_overlimit and reading the various messages
-I realized that is_ucounts_overlimit fails to deal with counts that
-may have wrapped.
+A number of BIOS versions have a problem with the watermarks table not
+being configured properly.  This manifests as a very scary looking warning
+during resume from s0i3.  This should be harmless in most cases and is well
+understood, so decrease the assertion to a clearer warning about the problem.
 
-Being wrapped should be a transitory state for counts and they should
-never be wrapped for long, but it can happen so handle it.
-
-Cc: stable@vger.kernel.org
-Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
-Link: https://lkml.kernel.org/r/20220216155832.680775-5-ebiederm@xmission.com
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/ucount.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -344,7 +344,8 @@ bool is_ucounts_overlimit(struct ucounts
- 	if (rlimit > LONG_MAX)
- 		max = LONG_MAX;
- 	for (iter = ucounts; iter; iter = iter->ns->ucounts) {
--		if (get_ucounts_value(iter, type) > max)
-+		long val = get_ucounts_value(iter, type);
-+		if (val < 0 || val > max)
- 			return true;
- 		max = READ_ONCE(iter->ns->ucount_max[type]);
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
+index 162ae71861247..21d2cbc3cbb20 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn31/dcn31_smu.c
+@@ -120,7 +120,11 @@ int dcn31_smu_send_msg_with_param(
+ 	result = dcn31_smu_wait_for_response(clk_mgr, 10, 200000);
+ 
+ 	if (result == VBIOSSMC_Result_Failed) {
+-		ASSERT(0);
++		if (msg_id == VBIOSSMC_MSG_TransferTableDram2Smu &&
++		    param == TABLE_WATERMARKS)
++			DC_LOG_WARNING("Watermarks table not configured properly by SMU");
++		else
++			ASSERT(0);
+ 		REG_WRITE(MP1_SMN_C2PMSG_91, VBIOSSMC_Result_OK);
+ 		return -1;
  	}
+-- 
+2.34.1
+
 
 
