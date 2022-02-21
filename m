@@ -2,173 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B094C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1230C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:53:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379574AbiBUPt4 (ORCPT
+        id S1379694AbiBUPxs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:49:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46594 "EHLO
+        Mon, 21 Feb 2022 10:53:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379526AbiBUPtu (ORCPT
+        with ESMTP id S234109AbiBUPxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:49:50 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2073.outbound.protection.outlook.com [40.107.237.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F7F2459F;
-        Mon, 21 Feb 2022 07:49:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k4DtuTROhG9EOgd90xMxb02BB5YCv+TK7ZuxPKNEGZ5t5TSvzYfdX5YX0Il17jRpVK820ltCz+fSHYczJUhcwLRVjQ5zZY/Tuw2J6JcAzvxLXqxQY0PAK6VJqDL4fbTHzA4V+a4WoyXdhrd5otspHxXH3dm3PKhvR+iOpsOiSahZ+8OFNpu8f2a3u5ZE1IWceAbL/sz+pwf36XvyKyG54oxMDO0q+FrPweTnSLmxnE5MCaxK1m2GHqdeYO+VUBNQC3WZzDXLISz/gxe6X1vdiJnrp21fOANdqIgaiqsWOfZHTGE+jKX+juiHSA09EKSkPsR8Ql1rGJ9RmuAc66M2BQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qKZqDgrQIhTAopC2D34EIHLHiBrEF9oblKvc8/O8i0c=;
- b=EX6NodiRBzHh0ueG4grQze+5yiDpVpVA0ZGO6YF9tvq0uZq7Q6vuZoArJy4SbMlMr62PZ4kTdqqSC6unf6oIaJC2oSZtlp7Eo0cYEoaXUK1B+ud9nif9hPfouVWJFwQwRvyF5aii+OBE2gQ4D5IRuhuG1V5zYYLwiSbdpWWTGFWSxNrtLp7kZM4CpVo96SBG2Z06sEpytpHxTed5hnDRmnc7qdRqlBt5ORPDQvGhqgAO85QEkERxSYIrj+NbCMJEHMS06VDPEdtkU2erKMQdAYTEHti0fXAHbaK6YeD5ettTYnCY+sr/tDo7k6zIihxj65G8L9sdByAssACOD7xSEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qKZqDgrQIhTAopC2D34EIHLHiBrEF9oblKvc8/O8i0c=;
- b=GZMfq6t24tqOF643hZyDguaNGZdN2Oj70XDy/PoRmpAa29OwkKTaT/aSfSUUBLe3WnfcbJkl1nD1JT0s0oNY8Wp1nIIafN/I5IsOlx6kIJycIZh+8FkILynZ3HdYcohm3s1s9ccdZy3DdjabdeKF9At3IWToYl7J065NJ77QqJJPdjNfrRFwkYTtMvm4EfIO+4NtjIYDXkLZpVqX1PwbcyeZ1Dima56XkynokOSd4P2YJPLmaexbs8odZ7kpjXO1gR2Pxshue1wJlliJKC5IZh4NmLTsg/hvxp7Yhvw6T7lUmjUXvoJ0Sicuu86iK9L5xR84SK0unMMfeFQD+w92Gg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- MW3PR12MB4441.namprd12.prod.outlook.com (2603:10b6:303:59::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.17; Mon, 21 Feb 2022 15:49:24 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::3df2:54be:277e:7ed7]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::3df2:54be:277e:7ed7%5]) with mapi id 15.20.4995.027; Mon, 21 Feb 2022
- 15:49:24 +0000
-Message-ID: <84ddad27-eb22-0ba6-594f-2fc6d098dc2a@nvidia.com>
-Date:   Mon, 21 Feb 2022 15:49:16 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20210618215455.19986-1-digetx@gmail.com>
- <20210618215455.19986-3-digetx@gmail.com>
- <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
- <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
-From:   Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <2aae3bac-c9b3-ab47-aae4-a3c7b6fb4bb5@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO2P265CA0016.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:62::28) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+        Mon, 21 Feb 2022 10:53:44 -0500
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40B926578;
+        Mon, 21 Feb 2022 07:53:20 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645458793; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=kcMkvV4bJujhhi/iwpJq22BRjXrfGXD3bMl8t9CYlb4+N2uDJNvF0PUyf7FHN+vcI1t8mV2m+6SIZaNmh2P9OABfi4D7wY7u1uTuhSXUUVt+anJ5R61ngyntJcUU8D7FxdJ+eOuaYDMg7ZH6RSpJ/6kL5etl639vGBdhvic1D3U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645458793; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=0kXkFxDq6TLuP73S4jJQPOam/qXtbkcyh7a1/ej21DU=; 
+        b=Bm3u0+66OtQ6QhZss1rRN6LhgdtiG41wIHM0o5Ha3mbBccCXYvH9Sorg8PEsPwsVXA7FtBqT57XOprM2vH84CJapQlPNBIyS76P4fg0YPWuOBgq0znR3Y8gf3g7kIAHZAjZtEAEH5fvwmWDF+6cqY05djeLOs5Lzw4XsyANgGwU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645458793;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+        bh=0kXkFxDq6TLuP73S4jJQPOam/qXtbkcyh7a1/ej21DU=;
+        b=rs/76UStnm5Bw9o3FNv+laH/Ed0nKr1UJyQB77lgs5i/OXDthtzMqtk2ay+M3MN8
+        ckshVZa9gAxHtZuBVDdzMB2AYpEzXgFB7km2p5P3uhnZVg5WxVNI/vk4sAallDfNYIE
+        putj9AM6HyTHJWskdZoifXWFprL3mI327NGdkWJU=
+Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
+        with SMTPS id 1645458792811216.69575603733483; Mon, 21 Feb 2022 07:53:12 -0800 (PST)
+Date:   Mon, 21 Feb 2022 21:23:04 +0530
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>,
+        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        mail@anirudhrb.com
+Subject: Re: [syzbot] INFO: task hung in vhost_work_dev_flush
+Message-ID: <YhO1YL0A6OjtXmIy@anirudhrb.com>
+References: <00000000000057702a05d8532b18@google.com>
+ <CAGxU2F4nGWxG0wymrDZzd8Hwhm2=8syuEB3fLMd+t7bbN7qWrQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b034f608-2dc2-4d15-f17b-08d9f551bb92
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4441:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB444158B76D1A87BDC12BC65FD93A9@MW3PR12MB4441.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aXUPKXSSL1sx4bKilPn+XZ4Uob4kWuhh+M21l/Dj+FgLUUbNAvuffrmoAVOqn+vxZ2ytZdezMoof6rOO76+ZI1ELHF+XVAJw7rWerST3ouKhCXEa8PR3eCkHv3mg0cPfkGRDtHEsXA5r2RCNA5D78dZI0TtKqy7B9+gt8xNCC02FzZvA03mnhnI3brTMbwtZskVFZF7QnDYNaG8Wq3Maj8P8yhJp0+eHJPTUnS/PzAxAGOVOo+A3iZaRN4usZ6RdU4f5e/lxN9tQvkOMkFUsb1EMYQx/cgjkcozMkmxhCMNh30qywo6y1Y2qUoYXUmRoiM6rl1Ocxo+Swj/QCTWTfNg6qO6zQRG3h1t0vg0WxEtAk0QQwFEvo+zzUBl+WCkQpORtvVP1qSKCbA2p4Ez5KA4mgyxTMQw1FPmhyqNQYbf9UOPRfDcJJJvnEuRAT9OtBlsZpUq5XZzIrf3qqf7MAB6NgoK6LVu2zjKvibnWSBd/QIpdiS7T63tqBXeRWpShG+mCRr9ghZ7m/r1JzjnnMQ4juYGk3ZEb+bjIAPqTGYmXl2o+C3fUdBGDEYAEV/3CxesZoU6wLwnTeDHUHvUE4w7b9C+A+2J6K+CY2Lu7W8k17dc4yluRJIxTMQ5AgjBfSy3HS1OSKjY/BN83/1KvP8jVZltvH4nfqwGBidmErIVhfUvYiPvBLQv7Hpkczr7Fr4+2IKEorUduiPgypXBXLKTqWligR9wekafU3ALIJaN+Dvya6Uws8cj2Cdxq20WN
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(6506007)(6666004)(508600001)(6486002)(6512007)(31686004)(53546011)(2616005)(55236004)(2906002)(38100700002)(66946007)(5660300002)(186003)(110136005)(26005)(8936002)(316002)(31696002)(86362001)(83380400001)(4326008)(66476007)(8676002)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aEltbkY0S2FwRXkydFFnUTlxRFhxUmpxalRtZm0zQ0UwS08weXQyRXJYVm5L?=
- =?utf-8?B?Zi9JdWZCWkI2K3VseDgwVFNGbEhLZWRHOHFvNHc1MHU0WXBWOGxYMlFlZTBW?=
- =?utf-8?B?WHB6dlYwREIvVjg1MCt2RVd5d1hhSUdlc2hYZFJGRFFWa0xUWXZkVm5ROGFI?=
- =?utf-8?B?dlA0cktSMjVNcFdlTVd6blNSOHdyNW13aHV4L1g2NWNiMGphUlBxeVRUWTBo?=
- =?utf-8?B?dFd0MzByRWN1akp6K3JOdCt2T1pJd3NhNHpiK0lESkRnd0ZLZTlvekc4cVNp?=
- =?utf-8?B?TFpRV2Z4SzJlbEVMcElocWh6dTNWV3pMT0JDUDNLVFR6cEhjU3lOaVhGd2Rw?=
- =?utf-8?B?QUlHYmhiQ2Y2cytpcnlUZCtqYnVOUFNuZXVuR3dnNVZhc0t3WnZVOWVSSlEz?=
- =?utf-8?B?a3ZNS0JHTzNoUWZBeXU4M2hFS3MxejF6Vk9IR0NscEg0TE9CT3kwa1ZGampi?=
- =?utf-8?B?QWZzYUNZNG9PbVBBMzlMYjhHT3ZsRThDM2x5NTEwa1l0eFFzOWszbjRwR0NZ?=
- =?utf-8?B?L01QWTVIMDhoVDI0RDB2MDI5aDVqNkN3WHdtUmdtTUZuV1lUSG1iU2VJSVVN?=
- =?utf-8?B?dC95M3NUblMzYkRwVzJ5MkJ2Nk5naHRBcy9lT0xqdDBlbnJ6dHR1MUlSZFlF?=
- =?utf-8?B?ZGtOc1Zoa0NYaUIzU1Q2cG9kcDZxellqZ2JmTFJYK3hkL0R4Q25NOU50WEpX?=
- =?utf-8?B?MG5PYVk4Y0xtVTFzY3BnNXZhU1krRU0rMHcvWFJFM0czRHhicE1WUzVkNlJF?=
- =?utf-8?B?RWhORDhBOS9BdWdqOXprTEhvaEk3SW1OZ1Q3RVpPOXpxMGIwUms5MSs4NytO?=
- =?utf-8?B?UlRyaG9LVFFsR3RERjlNejUxNVhrMGRHVDZTQm9HSzEyTWRNeHVOTEhSa2d2?=
- =?utf-8?B?OFQ5T1NqSStEeVJSRWs4WEkvY05rcWFTRkluMFNaVkNWMUdiMHAweERwUGl4?=
- =?utf-8?B?NUVmR0llV1M1cW1YQkdxcVRzYUxMYThINHdFYmQyNXo3YWluRmRuYzAzVm1v?=
- =?utf-8?B?Q2VMb1dNMUkxaHJmVzdLTjJOd0crYW1xOGc3azg5SzBnYmlEblZsd2tBSExR?=
- =?utf-8?B?MnROT3VSemxRNGVHN29KZW5zVUthcGdPWldzK0RUdDNaQ05vSml6LzkxNXlt?=
- =?utf-8?B?VHhWa3RCYURkZWxKUnAzTjdmcnR3bWdUN2dyZGxYcnRUZG5IRmsyT3dmUTMy?=
- =?utf-8?B?UWZua2V5UWp4NEpxWkZadmZvMk5wZzVBZVlsR21id29MSzgvZnFpMFNoMmtu?=
- =?utf-8?B?bHJNU0RlbWlFNzI2QklUQzdrWUQ0K2h2TGdDT0N2QnU1SkxOa1RGNDZBZjJT?=
- =?utf-8?B?ZVdsZTRFU1VoSlEzcHF4Ymh0VEJBd1JCa2N3aXliQW1vd2dsTXo5d2ZFaWlu?=
- =?utf-8?B?dlYwM0lqdWZ6VUZOanR3NXRKYzVnaVVmSnNQMGZkTkEwTFdsOGFHTXpTVzlI?=
- =?utf-8?B?T2pybFdWVlNsSjAwZjhTY25UbTUreExHbjVteWpxSVY3bXRwQWl1WDhrdDJj?=
- =?utf-8?B?UHdtQTRYMk1HczJXbnNtdzI2dk9DaVptTlM1OGhjK2k2ZG92aTFValNsNW1m?=
- =?utf-8?B?RVcxTkk3K1RPeSsxWTNMeldWUXFFUWZVNWV0SEp3NEpkc3g1dWk5R01zcTNF?=
- =?utf-8?B?ckdHRXUxWEwrVzVvWHZDcERHN2Mrc0VGREFoaVlGWHFVdnE4eFpXdHcvRnZS?=
- =?utf-8?B?VFFKVE8vYTlIYVUxcjRLbEhyTGZ2ZXEzby9qQlRCTmlXMjh5a05Qay8rTXFD?=
- =?utf-8?B?QnFUNzBlanV5NVZsWVZXN3JoSGtHS3hveXVHcjRnUlBQSVo0TWxwNlg0MnVJ?=
- =?utf-8?B?bEdKOE5kMkphdyszaHh3TTlUS2ZPaXdicm82R3ExWmJqaDEzdWNXam5Zb1Yv?=
- =?utf-8?B?S1R1alNZVG52MUd0TmMvVmowVWtYandoY1JrQ1d2ZVlXVDgwTUpnTDVoWm14?=
- =?utf-8?B?VGxsby9DSFlSNUNSejJPYlVlOG8vaGdMZHV6NSs0ckxORE5heEJSNkVTbjRB?=
- =?utf-8?B?d2I5SGhTdUZadDcxOUNwTUc5ZHB4VjFGc210bklMNGtxTlgzWXhPTjFjck1o?=
- =?utf-8?B?YXV4emRrRm5aLzJwNC9DSTl6WHd4a2UzMXcza3VYQVNHeWYxVHZvZVhZZTI5?=
- =?utf-8?B?a1Y3UHRzalVWS3Z2QzNNZDMrNEtWVjBqVzBXT0ZWN1pLejZMaitQSmVOUmpP?=
- =?utf-8?Q?WO16SiGMo3BR0tCxUsY4nqo=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b034f608-2dc2-4d15-f17b-08d9f551bb92
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 15:49:24.0885
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OtdpmebR8J+L31rNaD+22eOPQIAr0EGzHmHdSfhlDwTsK0OpDmlFeljSQg3rLe0i6ehxtDWDJWE3mRAEZWjXaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4441
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGxU2F4nGWxG0wymrDZzd8Hwhm2=8syuEB3fLMd+t7bbN7qWrQ@mail.gmail.com>
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 21, 2022 at 03:12:33PM +0100, Stefano Garzarella wrote:
+> #syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+> f71077a4d84b
+> 
+> Patch sent upstream:
+> https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com/T/#u
 
-On 21/02/2022 15:43, Guenter Roeck wrote:
+I don't see how your patch fixes this issue. It looks unrelated. It is
+surprising that syzbot is happy with it.
 
-...
+I have sent a patch for this issue here:
+https://lore.kernel.org/lkml/20220221072852.31820-1-mail@anirudhrb.com/
 
->> We observed a random null pointer deference crash somewhere in the
->> thermal core (crash log below is not very helpful) when calling
->> mutex_lock(). It looks like we get an interrupt when this crash
->> happens.
->>
->> Looking at the lm90 driver, per the above, I now see we are calling
->> hwmon_notify_event() from the lm90 interrupt handler. Looking at
->> hwmon_notify_event() I see that ...
->>
->> hwmon_notify_event()
->>    --> hwmon_thermal_notify()
->>      --> thermal_zone_device_update()
->>        --> update_temperature()
->>          --> mutex_lock()
->>
->> So although I don't completely understand the crash, it does seem
->> that we should not be calling hwmon_notify_event() from the
->> interrupt handler.
->>
-> As mentioned separately, this is not the problem.
+Thanks!
 
-Yes I can see that now.
+	- Anirudh
 
-> I think the problem may be that this is not a devicetree system
-> (or the lm90 devide does not have a devicetree node), but thermal
-> notification currently only works in such systems because the hwmon
-> subsystem uses the devicetree registration method. At the same time,
-> CONFIG_THERMAL_OF is obviously enabled. Unfortunately, the hwmon code
-> does not bail out in that situation due to another bug.
+> 
+> On Sat, Feb 19, 2022 at 12:23 AM syzbot
+> <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com> wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=163caa3c700000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=108514a4700000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ca671c700000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> >
+> > INFO: task syz-executor117:3632 blocked for more than 143 seconds.
+> >       Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+> > "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> > task:syz-executor117 state:D stack:27512 pid: 3632 ppid:  3631 flags:0x00004002
+> > Call Trace:
+> >  <TASK>
+> >  context_switch kernel/sched/core.c:4986 [inline]
+> >  __schedule+0xab2/0x4db0 kernel/sched/core.c:6295
+> >  schedule+0xd2/0x260 kernel/sched/core.c:6368
+> >  schedule_timeout+0x1db/0x2a0 kernel/time/timer.c:1857
+> >  do_wait_for_common kernel/sched/completion.c:85 [inline]
+> >  __wait_for_common kernel/sched/completion.c:106 [inline]
+> >  wait_for_common kernel/sched/completion.c:117 [inline]
+> >  wait_for_completion+0x174/0x270 kernel/sched/completion.c:138
+> >  vhost_work_dev_flush.part.0+0xbb/0xf0 drivers/vhost/vhost.c:243
+> >  vhost_work_dev_flush drivers/vhost/vhost.c:238 [inline]
+> >  vhost_poll_flush+0x5e/0x80 drivers/vhost/vhost.c:252
+> >  vhost_vsock_flush drivers/vhost/vsock.c:710 [inline]
+> >  vhost_vsock_dev_release+0x1be/0x4b0 drivers/vhost/vsock.c:757
+> >  __fput+0x286/0x9f0 fs/file_table.c:311
+> >  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+> >  exit_task_work include/linux/task_work.h:32 [inline]
+> >  do_exit+0xb29/0x2a30 kernel/exit.c:806
+> >  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
+> >  __do_sys_exit_group kernel/exit.c:946 [inline]
+> >  __se_sys_exit_group kernel/exit.c:944 [inline]
+> >  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:944
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7fbf04b83b89
+> > RSP: 002b:00007fff5bc9ca18 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> > RAX: ffffffffffffffda RBX: 00007fbf04bf8330 RCX: 00007fbf04b83b89
+> > RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+> > RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 00007fff5bc9cc08
+> > R10: 00007fff5bc9cc08 R11: 0000000000000246 R12: 00007fbf04bf8330
+> > R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+> >  </TASK>
+> >
+> > Showing all locks held in the system:
+> > 1 lock held by khungtaskd/26:
+> >  #0: ffffffff8bb83c20 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6460
+> > 2 locks held by getty/3275:
+> >  #0: ffff88807f0db098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
+> >  #1: ffffc90002b662e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2077
+> > 1 lock held by vhost-3632/3633:
+> >
+> > =============================================
+> >
+> > NMI backtrace for cpu 0
+> > CPU: 0 PID: 26 Comm: khungtaskd Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> >  nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
+> >  nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
+> >  trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+> >  check_hung_uninterruptible_tasks kernel/hung_task.c:212 [inline]
+> >  watchdog+0xc1d/0xf50 kernel/hung_task.c:369
+> >  kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> >  </TASK>
+> > Sending NMI from CPU 0 to CPUs 1:
+> > NMI backtrace for cpu 1
+> > CPU: 1 PID: 3633 Comm: vhost-3632 Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
+> > RIP: 0010:__sanitizer_cov_trace_pc+0xd/0x60 kernel/kcov.c:200
+> > Code: 00 00 e9 c6 41 66 02 66 0f 1f 44 00 00 48 8b be b0 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 65 8b 05 29 f7 89 7e 89 c1 48 8b 34 24 <81> e1 00 01 00 00 65 48 8b 14 25 00 70 02 00 a9 00 01 ff 00 74 0e
+> > RSP: 0018:ffffc90000cd7c78 EFLAGS: 00000246
+> > RAX: 0000000080000000 RBX: ffff888079ca8a80 RCX: 0000000080000000
+> > RDX: 0000000000000000 RSI: ffffffff86d3f8fb RDI: 0000000000000003
+> > RBP: 0000000000000000 R08: 0000000000000000 R09: ffffc90000cd7c77
+> > R10: ffffffff86d3f8ed R11: 0000000000000001 R12: 0000000000000000
+> > R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
+> > FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007ffdf716a3b8 CR3: 00000000235b6000 CR4: 00000000003506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+> >  vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+> >  vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+> >  vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+> >  kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> >  </TASK>
+> > ----------------
+> > Code disassembly (best guess):
+> >    0:   00 00                   add    %al,(%rax)
+> >    2:   e9 c6 41 66 02          jmpq   0x26641cd
+> >    7:   66 0f 1f 44 00 00       nopw   0x0(%rax,%rax,1)
+> >    d:   48 8b be b0 01 00 00    mov    0x1b0(%rsi),%rdi
+> >   14:   e8 b4 ff ff ff          callq  0xffffffcd
+> >   19:   31 c0                   xor    %eax,%eax
+> >   1b:   c3                      retq
+> >   1c:   90                      nop
+> >   1d:   65 8b 05 29 f7 89 7e    mov    %gs:0x7e89f729(%rip),%eax        # 0x7e89f74d
+> >   24:   89 c1                   mov    %eax,%ecx
+> >   26:   48 8b 34 24             mov    (%rsp),%rsi
+> > * 2a:   81 e1 00 01 00 00       and    $0x100,%ecx <-- trapping instruction
+> >   30:   65 48 8b 14 25 00 70    mov    %gs:0x27000,%rdx
+> >   37:   02 00
+> >   39:   a9 00 01 ff 00          test   $0xff0100,%eax
+> >   3e:   74 0e                   je     0x4e
+> >
+> >
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
+> >
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CAGxU2F4nGWxG0wymrDZzd8Hwhm2%3D8syuEB3fLMd%2Bt7bbN7qWrQ%40mail.gmail.com.
 
-The platform I see this on does use device-tree and it does have a node 
-for the ti,tmp451 device which uses the lm90 device. This platform uses 
-the device-tree source 
-arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts and the tmp451 node 
-is in arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi.
+> From 4951112bf98d3e10d3e9557986e5ca5419ca738f Mon Sep 17 00:00:00 2001
+> From: Stefano Garzarella <sgarzare@redhat.com>
+> Date: Mon, 21 Feb 2022 11:07:49 +0100
+> Subject: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop() while
+>  releasing
+> 
+> vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+> ownership. It expects current->mm to be valid.
+> 
+> vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+> the user has not done close(), so when we are in do_exit(). In this
+> case current->mm is invalid and we're releasing the device, so we
+> should clean it anyway.
+> 
+> Let's check the owner only when vhost_vsock_stop() is called
+> by an ioctl.
+> 
+> Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+> Cc: stable@vger.kernel.org
+> Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  drivers/vhost/vsock.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index d6ca1c7ad513..f00d2dfd72b7 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -629,16 +629,18 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+>  	return ret;
+>  }
+>  
+> -static int vhost_vsock_stop(struct vhost_vsock *vsock)
+> +static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
+>  {
+>  	size_t i;
+>  	int ret;
+>  
+>  	mutex_lock(&vsock->dev.mutex);
+>  
+> -	ret = vhost_dev_check_owner(&vsock->dev);
+> -	if (ret)
+> -		goto err;
+> +	if (check_owner) {
+> +		ret = vhost_dev_check_owner(&vsock->dev);
+> +		if (ret)
+> +			goto err;
+> +	}
+>  
+>  	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+>  		struct vhost_virtqueue *vq = &vsock->vqs[i];
+> @@ -753,7 +755,7 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+>  	 * inefficient.  Room for improvement here. */
+>  	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+>  
+> -	vhost_vsock_stop(vsock);
+> +	vhost_vsock_stop(vsock, false);
+>  	vhost_vsock_flush(vsock);
+>  	vhost_dev_stop(&vsock->dev);
+>  
+> @@ -868,7 +870,7 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+>  		if (start)
+>  			return vhost_vsock_start(vsock);
+>  		else
+> -			return vhost_vsock_stop(vsock);
+> +			return vhost_vsock_stop(vsock, true);
+>  	case VHOST_GET_FEATURES:
+>  		features = VHOST_VSOCK_FEATURES;
+>  		if (copy_to_user(argp, &features, sizeof(features)))
+> -- 
+> 2.35.1
+> 
 
-Cheers
-Jon
-
--- 
-nvpublic
