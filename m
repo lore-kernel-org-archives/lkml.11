@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3FBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C87DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351493AbiBUJpw (ORCPT
+        id S1351584AbiBUJqL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:45:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48212 "EHLO
+        Mon, 21 Feb 2022 04:46:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351586AbiBUJh2 (ORCPT
+        with ESMTP id S1351465AbiBUJhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BE93A5D0;
-        Mon, 21 Feb 2022 01:16:02 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF91C39B8F;
+        Mon, 21 Feb 2022 01:15:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97453608C1;
-        Mon, 21 Feb 2022 09:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B2EBC340E9;
-        Mon, 21 Feb 2022 09:15:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F0DD60E05;
+        Mon, 21 Feb 2022 09:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9FBC340E9;
+        Mon, 21 Feb 2022 09:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434959;
-        bh=iPC6rs41KA4hADJiYkVNEN+JZ5gWdDD0SEeI8wwJ1HI=;
+        s=korg; t=1645434950;
+        bh=fT0XueLlcxFSWwJyaEOVlF8xILi9wRrnuH8+ypbp0ck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wUoV5KOaO8RlPIWFt86TidVXmidCCb1bpz6XQ0Tt+Nu+AIC8PfMi4u2YX1bOenWJC
-         sKcy0WZ9GLAYq8k8pLFL+mcnRX7mlhbnNAxnDf8bZeJGRtlp8Rcr1o6BTHT4COfXBO
-         L6KIDz+Sz8CMreb+bX78dQ5HIsTvNK5MQxUx5hH0=
+        b=J2Nmwz7MW0bRv3KE7puJ0GxNbKHRaFvyTufSTcHXigq/dr4hSprT6FnjcQovHfohu
+         DqR+1enXcHSGsBN1DuolqD1azQcXkCthaxqXzYJkD66dP0WQ7BoMT7IQF4IbCPUPeB
+         uMXXCkzybEOUa4lpPOpxkjvgFlLtc9QjCwrStnho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 149/196] phy: usb: Leave some clocks running during suspend
-Date:   Mon, 21 Feb 2022 09:49:41 +0100
-Message-Id: <20220221084935.914371020@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 156/196] ksmbd: dont align last entry offset in smb2 query directory
+Date:   Mon, 21 Feb 2022 09:49:48 +0100
+Message-Id: <20220221084936.161922677@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,133 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 42fed57046fc74586d7058bd51a1c10ac9c690cb ]
+[ Upstream commit 04e260948a160d3b7d622bf4c8a96fa4577c09bd ]
 
-The PHY client driver does a phy_exit() call on suspend or rmmod and
-the PHY driver needs to know the difference because some clocks need
-to be kept running for suspend but can be shutdown on unbind/rmmod
-(or if there are no PHY clients at all).
+When checking smb2 query directory packets from other servers,
+OutputBufferLength is different with ksmbd. Other servers add an unaligned
+next offset to OutputBufferLength for the last entry.
 
-The fix is to use a PM notifier so the driver can tell if a PHY
-client is calling exit() because of a system suspend or a driver
-unbind/rmmod.
-
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211201180653.35097-2-alcooperx@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ fs/ksmbd/smb2pdu.c | 7 ++++---
+ fs/ksmbd/vfs.h     | 1 +
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-index 116fb23aebd99..0f1deb6e0eabf 100644
---- a/drivers/phy/broadcom/phy-brcm-usb.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb.c
-@@ -18,6 +18,7 @@
- #include <linux/soc/brcmstb/brcmstb.h>
- #include <dt-bindings/phy/phy.h>
- #include <linux/mfd/syscon.h>
-+#include <linux/suspend.h>
+diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+index 70685cbbec8c0..192d8308afc27 100644
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -3422,9 +3422,9 @@ static int smb2_populate_readdir_entry(struct ksmbd_conn *conn, int info_level,
+ 		goto free_conv_name;
+ 	}
  
- #include "phy-brcm-usb-init.h"
+-	struct_sz = readdir_info_level_struct_sz(info_level);
+-	next_entry_offset = ALIGN(struct_sz - 1 + conv_len,
+-				  KSMBD_DIR_INFO_ALIGNMENT);
++	struct_sz = readdir_info_level_struct_sz(info_level) - 1 + conv_len;
++	next_entry_offset = ALIGN(struct_sz, KSMBD_DIR_INFO_ALIGNMENT);
++	d_info->last_entry_off_align = next_entry_offset - struct_sz;
  
-@@ -70,12 +71,35 @@ struct brcm_usb_phy_data {
- 	int			init_count;
- 	int			wake_irq;
- 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
-+	struct notifier_block	pm_notifier;
-+	bool			pm_active;
+ 	if (next_entry_offset > d_info->out_buf_len) {
+ 		d_info->out_buf_len = 0;
+@@ -3976,6 +3976,7 @@ int smb2_query_dir(struct ksmbd_work *work)
+ 		((struct file_directory_info *)
+ 		((char *)rsp->Buffer + d_info.last_entry_offset))
+ 		->NextEntryOffset = 0;
++		d_info.data_count -= d_info.last_entry_off_align;
+ 
+ 		rsp->StructureSize = cpu_to_le16(9);
+ 		rsp->OutputBufferOffset = cpu_to_le16(72);
+diff --git a/fs/ksmbd/vfs.h b/fs/ksmbd/vfs.h
+index b0d5b8feb4a36..432c947731779 100644
+--- a/fs/ksmbd/vfs.h
++++ b/fs/ksmbd/vfs.h
+@@ -86,6 +86,7 @@ struct ksmbd_dir_info {
+ 	int		last_entry_offset;
+ 	bool		hide_dot_file;
+ 	int		flags;
++	int		last_entry_off_align;
  };
  
- static s8 *node_reg_names[BRCM_REGS_MAX] = {
- 	"crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
- };
- 
-+static int brcm_pm_notifier(struct notifier_block *notifier,
-+			    unsigned long pm_event,
-+			    void *unused)
-+{
-+	struct brcm_usb_phy_data *priv =
-+		container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
-+
-+	switch (pm_event) {
-+	case PM_HIBERNATION_PREPARE:
-+	case PM_SUSPEND_PREPARE:
-+		priv->pm_active = true;
-+		break;
-+	case PM_POST_RESTORE:
-+	case PM_POST_HIBERNATION:
-+	case PM_POST_SUSPEND:
-+		priv->pm_active = false;
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
- static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
- {
- 	struct phy *gphy = dev_id;
-@@ -91,6 +115,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	/*
- 	 * Use a lock to make sure a second caller waits until
- 	 * the base phy is inited before using it.
-@@ -120,6 +147,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	dev_dbg(&gphy->dev, "EXIT\n");
- 	if (phy->id == BRCM_USB_PHY_2_0)
- 		brcm_usb_uninit_eohci(&priv->ini);
-@@ -488,6 +518,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	priv->pm_notifier.notifier_call = brcm_pm_notifier;
-+	register_pm_notifier(&priv->pm_notifier);
-+
- 	mutex_init(&priv->mutex);
- 
- 	/* make sure invert settings are correct */
-@@ -528,7 +561,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 
- static int brcm_usb_phy_remove(struct platform_device *pdev)
- {
-+	struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
-+
- 	sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
-+	unregister_pm_notifier(&priv->pm_notifier);
- 
- 	return 0;
- }
-@@ -539,6 +575,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
- 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
- 
- 	if (priv->init_count) {
-+		dev_dbg(dev, "SUSPEND\n");
- 		priv->ini.wake_enabled = device_may_wakeup(dev);
- 		if (priv->phys[BRCM_USB_PHY_3_0].inited)
- 			brcm_usb_uninit_xhci(&priv->ini);
-@@ -578,6 +615,7 @@ static int brcm_usb_phy_resume(struct device *dev)
- 	 * Uninitialize anything that wasn't previously initialized.
- 	 */
- 	if (priv->init_count) {
-+		dev_dbg(dev, "RESUME\n");
- 		if (priv->wake_irq >= 0)
- 			disable_irq_wake(priv->wake_irq);
- 		brcm_usb_init_common(&priv->ini);
+ struct ksmbd_readdir_data {
 -- 
 2.34.1
 
