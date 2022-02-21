@@ -2,127 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE800C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiBUSar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:30:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48010 "EHLO
+        id S230436AbiBUSa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:30:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiBUS0s (ORCPT
+        with ESMTP id S230154AbiBUS1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:26:48 -0500
-X-Greylist: delayed 273 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 10:26:25 PST
-Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2242CC5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:26:25 -0800 (PST)
-Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 21LIKaY7027189
-        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Mon, 21 Feb 2022 10:20:37 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 21LIKYlq026458
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 21 Feb 2022 10:20:34 -0800 (PST)
-Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Mon, 21 Feb 2022 10:20:34 -0800
-Received: from yow-pgortmak-d4.wrs.com (128.224.56.60) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
- 15.1.2242.12 via Frontend Transport; Mon, 21 Feb 2022 10:20:33 -0800
-From:   Paul Gortmaker <paul.gortmaker@windriver.com>
-To:     <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <fweisbec@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>
-CC:     Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: [PATCH 1/2] sched/isolation: really align nohz_full with rcu_nocbs
-Date:   Mon, 21 Feb 2022 13:20:08 -0500
-Message-ID: <20220221182009.1283-2-paul.gortmaker@windriver.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220221182009.1283-1-paul.gortmaker@windriver.com>
-References: <20220221182009.1283-1-paul.gortmaker@windriver.com>
+        Mon, 21 Feb 2022 13:27:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B3AEC2A
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:26:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645467997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JZ5IPvV3yb/nAnNH+aq40HHCb2PtQ6O64EyaH6AnGYs=;
+        b=TLMp94cimxeF0eLYgW26lJxFD4EWeXxAIHhD9qxtBo29cuTtnaXqEcl5wCiQjzbE5vsAlB
+        bnOqlQImT8KDOhllC+JFbNQn1AQJZD8athJWGY3xD+vC/1Q0jO6rPnja+EtntxKpK6ZAUo
+        jlLAOnPjY1kJg6jw1EKzyoJCaNw+mog=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-N77EW4qDPIumGyhawrvgUw-1; Mon, 21 Feb 2022 13:26:36 -0500
+X-MC-Unique: N77EW4qDPIumGyhawrvgUw-1
+Received: by mail-qk1-f200.google.com with SMTP id c19-20020a05620a11b300b00648cdeae21aso4400852qkk.17
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:26:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JZ5IPvV3yb/nAnNH+aq40HHCb2PtQ6O64EyaH6AnGYs=;
+        b=pT/iv3ccoKDSeRXNQsmU6vI6jZqmBWe8P+ParJz70mHvUb43P8UhfyWGpIXvuz9OtD
+         imgITHptynJAzJNt0QsDaFdsY+uX+GNPXFbHLeSVQrp2Gco2OMGgFs77wTM9rdSexmss
+         kl7k6v+RXmTrmXVhU3KzSHA9LpPCsfhZGLByTxvAKhW/las1zlCwrgzVXmWR8f7gXz6a
+         dNxjfbLkmf5IUkgPy8mk/3z9y1aDTIwJ4KYjAzPVVbkyvf6tjqGigCij3la0jh1jBxR/
+         djRm/Zbq9fNoXUPl3acBhxn5sZukI4RSBjs1JtluBhP1vx7/9C4WyQSaCOyVcEKom5Px
+         1x1w==
+X-Gm-Message-State: AOAM533/N1FTh5zquMfFWwUZqjdprZ75OFtgWNYSwlMts9Q8QRrtvYWr
+        hJLHeGfUbQ6mlywPL/20+mFfSxdsGLfkZckhV1KBW3kXVEMceu7IVnKYqYVjxtZKWuAgOHx58BJ
+        fLaRXTbH8hnorMbl9RkWI5BAM
+X-Received: by 2002:a37:424a:0:b0:47c:cdc:ce63 with SMTP id p71-20020a37424a000000b0047c0cdcce63mr12938107qka.530.1645467994998;
+        Mon, 21 Feb 2022 10:26:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx4Os+URRdB/SGPRTo0xBKVVbUYwpunZIvTXStuObgWhuvPS2PN1PoD2ZEPNCiFy8upFn3MwQ==
+X-Received: by 2002:a37:424a:0:b0:47c:cdc:ce63 with SMTP id p71-20020a37424a000000b0047c0cdcce63mr12938089qka.530.1645467994703;
+        Mon, 21 Feb 2022 10:26:34 -0800 (PST)
+Received: from sgarzare-redhat (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id c12sm832212qtd.45.2022.02.21.10.26.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 10:26:34 -0800 (PST)
+Date:   Mon, 21 Feb 2022 19:26:28 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Anirudh Rayabharam <mail@anirudhrb.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        kvm <kvm@vger.kernel.org>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
+ while releasing
+Message-ID: <20220221182628.vy2bjntxnzqh7elj@sgarzare-redhat>
+References: <20220221114916.107045-1-sgarzare@redhat.com>
+ <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
+ <YhO6bwu7iDtUFQGj@anirudhrb.com>
+ <20220221164420.cnhs6sgxizc6tcok@sgarzare-redhat>
+ <YhPT37ETuSfmxr5G@anirudhrb.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YhPT37ETuSfmxr5G@anirudhrb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment it is currently possible to sneak a core into nohz_full
-that lies between nr_possible and NR_CPUS - but you won't "see" it
-because cpumask_pr_args() implicitly hides anything above nr_cpu_ids.
+On Mon, Feb 21, 2022 at 11:33:11PM +0530, Anirudh Rayabharam wrote:
+>On Mon, Feb 21, 2022 at 05:44:20PM +0100, Stefano Garzarella wrote:
+>> On Mon, Feb 21, 2022 at 09:44:39PM +0530, Anirudh Rayabharam wrote:
+>> > On Mon, Feb 21, 2022 at 02:59:30PM +0100, Stefano Garzarella wrote:
+>> > > On Mon, Feb 21, 2022 at 12:49 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>> > > >
+>> > > > vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+>> > > > ownership. It expects current->mm to be valid.
+>> > > >
+>> > > > vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+>> > > > the user has not done close(), so when we are in do_exit(). In this
+>> > > > case current->mm is invalid and we're releasing the device, so we
+>> > > > should clean it anyway.
+>> > > >
+>> > > > Let's check the owner only when vhost_vsock_stop() is called
+>> > > > by an ioctl.
+>> > > >
+>> > > > Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+>> > > > Cc: stable@vger.kernel.org
+>> > > > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+>> > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> > > > ---
+>> > > >  drivers/vhost/vsock.c | 14 ++++++++------
+>> > > >  1 file changed, 8 insertions(+), 6 deletions(-)
+>> > >
+>> > > Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+>> >
+>> > I don't think this patch fixes "INFO: task hung in vhost_work_dev_flush"
+>> > even though syzbot says so. I am able to reproduce the issue locally
+>> > even with this patch applied.
+>>
+>> Are you using the sysbot reproducer or another test?
+>> In that case, can you share it?
+>
+>I am using the syzbot reproducer.
+>
+>>
+>> From the stack trace it seemed to me that the worker accesses a zone that
+>> has been cleaned (iotlb), so it is invalid and fails.
+>
+>Would the thread hang in that case? How?
 
-This becomes a problem when the nohz_full CPU set doesn't contain at
-least one other valid nohz CPU - in which case we end up with the
-tick_nohz_full_running set and no tick core specified, which trips an
-endless sequence of WARN() and renders the machine unusable.
+Looking at this log [1] it seems that the process is blocked on the 
+wait_for_completion() in vhost_work_dev_flush().
 
-I inadvertently opened the door for this when fixing an overly
-restrictive nohz_full conditional in the below Fixes: commit - and then
-courtesy of my optimistic ACPI reporting nr_possible of 64 (the default
-Kconfig for NR_CPUS) and the not-so helpful implict filtering done by
-cpumask_pr_args, I unfortunately did not spot it during my testing.
+Since we're not setting the backend to NULL to stop the worker, it's 
+likely that the worker will keep running, preventing the flush work from 
+completing.
 
-So here, I don't rely on what was printed anymore, but code exactly what
-our restrictions should be in order to be aligned with rcu_nocbs - which
-was the original goal.  Since the checks lie in "__init" code it is largely
-free for us to do this anyway.
-
-Building with NOHZ_FULL and NR_CPUS=128 on an otherwise defconfig, and
-booting with "rcu_nocbs=8-127 nohz_full=96-127" on the same 16 core T5500
-Dell machine now results in the following (only relevant lines shown):
-
- smpboot: Allowing 64 CPUs, 48 hotplug CPUs
- setup_percpu: NR_CPUS:128 nr_cpumask_bits:128 nr_cpu_ids:64 nr_node_ids:2
- housekeeping: kernel parameter 'nohz_full=' or 'isolcpus=' contains nonexistent CPUs.
- housekeeping: kernel parameter 'nohz_full=' or 'isolcpus=' has no valid CPUs.
- rcu:     RCU restricting CPUs from NR_CPUS=128 to nr_cpu_ids=64.
- rcu:     Note: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.
- rcu:     Offload RCU callbacks from CPUs: 8-63.
-
-One can see both new housekeeping checks are triggered in the above.
-The same invalid boot arg combination would have previously resulted in
-an infinitely scrolling mix of WARN from all cores per tick on this box.
-
-We may need to revisit these sanity checks when nohz_full is accepted as
-a stand alone keyword "enable" w/o a cpuset (see rcu/nohz d2cf0854d728).
-
-Fixes: 915a2bc3c6b7 ("sched/isolation: Reconcile rcu_nocbs= and nohz_full=")
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Paul E. McKenney <paulmck@kernel.org>
-Cc: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
- kernel/sched/isolation.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/kernel/sched/isolation.c b/kernel/sched/isolation.c
-index b4d10815c45a..f7d2406c1f1d 100644
---- a/kernel/sched/isolation.c
-+++ b/kernel/sched/isolation.c
-@@ -126,6 +126,17 @@ static int __init housekeeping_setup(char *str, unsigned long flags)
- 		goto free_non_housekeeping_mask;
- 	}
- 
-+	if (!cpumask_subset(non_housekeeping_mask, cpu_possible_mask)) {
-+		pr_info("housekeeping: kernel parameter 'nohz_full=' or 'isolcpus=' contains nonexistent CPUs.\n");
-+		cpumask_and(non_housekeeping_mask, cpu_possible_mask,
-+			    non_housekeeping_mask);
-+	}
-+
-+	if (cpumask_empty(non_housekeeping_mask)) {
-+		pr_info("housekeeping: kernel parameter 'nohz_full=' or 'isolcpus=' has no valid CPUs.\n");
-+		goto free_non_housekeeping_mask;
-+	}
-+
- 	alloc_bootmem_cpumask_var(&housekeeping_staging);
- 	cpumask_andnot(housekeeping_staging,
- 		       cpu_possible_mask, non_housekeeping_mask);
--- 
-2.17.1
+[1] https://syzkaller.appspot.com/text?tag=CrashLog&x=153f0852700000
 
