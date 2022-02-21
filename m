@@ -2,98 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74906C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA102C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357240AbiBUMCe (ORCPT
+        id S1357258AbiBUMF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:02:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34222 "EHLO
+        Mon, 21 Feb 2022 07:05:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347238AbiBUMCb (ORCPT
+        with ESMTP id S1357241AbiBUMFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:02:31 -0500
-Received: from p3plsmtpa09-01.prod.phx3.secureserver.net (p3plsmtpa09-01.prod.phx3.secureserver.net [173.201.193.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1D72BF8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:02:04 -0800 (PST)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id M7OEn8BQ8VclJM7OFnYqq5; Mon, 21 Feb 2022 05:02:04 -0700
-X-CMAE-Analysis: v=2.4 cv=K4LnowaI c=1 sm=1 tr=0 ts=62137f3c
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=20KFwNOVAAAA:8 a=_I3s7B_8TjLGI8JKYzcA:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Mon, 21 Feb 2022 12:02:02 +0000
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Aaron Tomlin <atomlin@redhat.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Subject: Re: [PATCH v6 09/13] module: Move kallsyms support into a separate
- file
-Message-ID: <20220221120202.rsj3wqz2ycd2tgcm@ava.usersys.com>
-References: <20220218212511.887059-1-atomlin@redhat.com>
- <20220218212511.887059-10-atomlin@redhat.com>
- <40f31a7b-2d06-8316-1a88-128ba72518a5@csgroup.eu>
+        Mon, 21 Feb 2022 07:05:48 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D00201A7;
+        Mon, 21 Feb 2022 04:05:25 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A9FD41EC01A9;
+        Mon, 21 Feb 2022 13:05:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645445119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=G8yP8d3UkjcXD9ochKrIpwMp/vR+RVz3kP09JYxfJtE=;
+        b=UQtOjBpObJD/bt7L3zvjvwkh0kLrD6l+caudCh4+dNXI2/g+LicZs+AJ4DbKLLTJYlqibY
+        kkoTuMYT+u94uOIxxjkSQeo8fYov429fwf3aFvQtraA8WRz4Es1ZwN+PZYwVNStlHv/q+S
+        gBpXi/WYdHPMxkbih3ICruVP/1h1OCs=
+Date:   Mon, 21 Feb 2022 13:05:27 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com,
+        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
+        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
+        jpoimboe@redhat.com, knsathya@kernel.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org,
+        linux-hyperv@vger.kernel.org,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>
+Subject: Re: [PATCHv3.1 2/32] x86/coco: Explicitly declare type of
+ confidential computing platform
+Message-ID: <YhOAB1X+D82eEagt@zn.tnic>
+References: <YhAWcPbzgUGcJZjI@zn.tnic>
+ <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
+ <YhNyY5ErqQHZ961+@zn.tnic>
+ <20220221114451.mljggcmadgvrrxbv@black.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <40f31a7b-2d06-8316-1a88-128ba72518a5@csgroup.eu>
-X-CMAE-Envelope: MS4xfE57LHryfOCe9ugcfLRAXRce7zu0hGZXbsl4qZzo20gLnp5ecJHkCEp7nzcsG6IgDlPOV44dQdr6WNEnpRlGmoPtzLuhHw9jF813OiXpRRy5ZOjiP/16
- lLrjxKwz/Mi+kvNMGqYh6DjB4BLH75z4DLaLN1y0urhCdue76NLrysu30FgXCySO6Dz7CvG8XPIncQCOL7hkIti3iDKOLlnnsqKxB71D7TL4sYgnK5yXhdz0
- xuXMQaM4E2uavG3HJbn4fpbs9N0l0EouuXBq+yQgO4KLjZGjTxVHw5hgXYMc+tuXVm/0p/9WY6ToPiselsbbjvx/gD52yLL9rPB2DIhclaA9i4WCl1Y8JhXJ
- JcvO3Jzy2mSkMheiw7k853sXZjmHxKzQkPVer7VA2afXFf4Vknie1z2AsEeRw6amJ9x0hZXEEMWT98WcXBCzHc9S2Di9uFqy5lCp7uy4wPok8xDRAmjpvfPa
- H2s7DkmYiMY8QDQ+V/lmCCoQxy5AiPnflSMJee9a0a89JLEmc7gIWMwk/TFd2op6pZu1xEFvALP/9hzHRhtkDlk5sjA0lzUTYykwD4ddLDPK4mQR4aH3EXWe
- SLHFIGnAHe7Rwh95xJhCPZZoDMXQW6fg+9VlvMVGw+egRdLSszdT2BmUWqRKyQiD/GJop7J41gkDVPUj8tVNLZem
+In-Reply-To: <20220221114451.mljggcmadgvrrxbv@black.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-21 10:49 +0000, Christophe Leroy wrote:
-> Le 18/02/2022 à 22:25, Aaron Tomlin a écrit :
-> > No functional change.
-> > 
-> > This patch migrates kallsyms code out of core module
-> > code kernel/module/kallsyms.c
-> > 
-> > Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
-> > ---
-> >   kernel/module/Makefile   |   1 +
-> >   kernel/module/internal.h |  32 +++
-> >   kernel/module/kallsyms.c | 502 ++++++++++++++++++++++++++++++++++++
-> >   kernel/module/main.c     | 531 +--------------------------------------
-> >   4 files changed, 541 insertions(+), 525 deletions(-)
-> >   create mode 100644 kernel/module/kallsyms.c
-> > 
-> 
->    CC      kernel/module/main.o
-> kernel/module/main.c: In function 'load_module':
-> kernel/module/main.c:3379:9: error: implicit declaration of function 
-> 'init_build_id' [-Werror=implicit-function-declaration]
->   3379 |         init_build_id(mod, info);
->        |         ^~~~~~~~~~~~~
-> cc1: some warnings being treated as errors
-> make[2]: *** [scripts/Makefile.build:288 : kernel/module/main.o] Erreur 1
+On Mon, Feb 21, 2022 at 02:44:51PM +0300, Kirill A. Shutemov wrote:
+> Hm. Isn't 'vendor' too generic? It may lead to name conflict in the
+> future.
 
-Christophe,
+It's a static variable visible only in this unit.
 
-I assume both Kconfig option CONFIG_KALLSYMS and CONFIG_STACKTRACE_BUILD_ID
-was not enabled. I'll address this.
+> What is wrong with cc_vendor here? I noticed that you don't like name of
+> a variable to match type name. Why?
 
-Thanks,
+Because when I look at the name I don't know whether it is the type or a
+variable of that type. Sure, sure, it depends on the context but let's
+make it as non-ambiguous as possible.
+
+> Currently cc_platform_has() relies on hv_is_isolation_supported() which
+> checks for !HV_ISOLATION_TYPE_NONE. This is direct transfer to the new
+> scheme. It might be wrong, but it is not regression.
+
+I didn't say it is a regression - I'm just wondering why.
+
+Thx.
 
 -- 
-Aaron Tomlin
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
