@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6208DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC09C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348314AbiBUJTr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:19:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34774 "EHLO
+        id S237316AbiBUJTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:19:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349450AbiBUJM3 (ORCPT
+        with ESMTP id S1349528AbiBUJMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:29 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AF02BB32;
-        Mon, 21 Feb 2022 01:05:19 -0800 (PST)
+        Mon, 21 Feb 2022 04:12:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67E223BFE;
+        Mon, 21 Feb 2022 01:05:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4AC11CE0E85;
-        Mon, 21 Feb 2022 09:05:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A157C340E9;
-        Mon, 21 Feb 2022 09:05:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D971E60FB6;
+        Mon, 21 Feb 2022 09:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABEFC340E9;
+        Mon, 21 Feb 2022 09:05:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434314;
-        bh=r1SRfg9nnyENEPqICKXQBUH9uxt2e9BvLhFVnJyJHP8=;
+        s=korg; t=1645434326;
+        bh=qnSnh9JH8x5NjQ7abNLRm4IzMCEKc45hKrIIqnFozoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JPMrz5K29pAwwcX0W7DEqlNRvlbrS7tA/sa1aCsB+J3hNa5G9pU+hV0vc2m8capaP
-         a6MlbabW1sFKh5o1ZuKsqXBjP1rEHvm9gU6glLkUaiFmdjqOIt0PE+ti3xWg/5mSjk
-         ld0CftFA0xgDQ2vK6h9R6p80t7Rrn/ytZwMCk3Hk=
+        b=tBkonuZFzIE2OKnW0koUFRb3NUnCzdVj7OHmKBYqMc/2gMLVFCTPNlZeixWFvDScX
+         GyaZ89cKMfrJTsq2JBsvksedwWwBZRnAud9wN1UW+38NaE3/cSf5WzLY173npbDrHU
+         1uQEokubDqIM6XRs/ZrYhc+va4DS2Jzh5Y2nP0b4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 085/121] mtd: rawnand: qcom: Fix clock sequencing in qcom_nandc_probe()
-Date:   Mon, 21 Feb 2022 09:49:37 +0100
-Message-Id: <20220221084924.082316212@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 089/121] KVM: x86/pmu: Dont truncate the PerfEvtSeln MSR when creating a perf event
+Date:   Mon, 21 Feb 2022 09:49:41 +0100
+Message-Id: <20220221084924.214633843@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,91 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Jim Mattson <jmattson@google.com>
 
-commit 5c23b3f965bc9ee696bf2ed4bdc54d339dd9a455 upstream.
+[ Upstream commit b8bfee85f1307426e0242d654f3a14c06ef639c5 ]
 
-Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
-partition parser was returning -EPROBE_DEFER waiting for the main smem
-driver to load.
+AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
+a PerfEvtSeln MSR. Don't drop the high nybble when setting up the
+config field of a perf_event_attr structure for a call to
+perf_event_create_kernel_counter().
 
-This caused the board to reset. Playing about with the probe() function
-shows that the problem lies in the core clock being switched off before the
-nandc_unalloc() routine has completed.
-
-If we look at how qcom_nandc_remove() tears down allocated resources we see
-the expected order is
-
-qcom_nandc_unalloc(nandc);
-
-clk_disable_unprepare(nandc->aon_clk);
-clk_disable_unprepare(nandc->core_clk);
-
-dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
-		   DMA_BIDIRECTIONAL, 0);
-
-Tweaking probe() to both bring up and tear-down in that order removes the
-reset if we end up deferring elsewhere.
-
-Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Reported-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220203014813.2130559-1-jmattson@google.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/qcom_nandc.c |   14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ arch/x86/kvm/pmu.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/qcom_nandc.c
-+++ b/drivers/mtd/nand/raw/qcom_nandc.c
-@@ -2,7 +2,6 @@
- /*
-  * Copyright (c) 2016, The Linux Foundation. All rights reserved.
-  */
--
- #include <linux/clk.h>
- #include <linux/slab.h>
- #include <linux/bitops.h>
-@@ -2968,10 +2967,6 @@ static int qcom_nandc_probe(struct platf
- 	if (!nandc->base_dma)
- 		return -ENXIO;
- 
--	ret = qcom_nandc_alloc(nandc);
--	if (ret)
--		goto err_nandc_alloc;
--
- 	ret = clk_prepare_enable(nandc->core_clk);
- 	if (ret)
- 		goto err_core_clk;
-@@ -2980,6 +2975,10 @@ static int qcom_nandc_probe(struct platf
- 	if (ret)
- 		goto err_aon_clk;
- 
-+	ret = qcom_nandc_alloc(nandc);
-+	if (ret)
-+		goto err_nandc_alloc;
-+
- 	ret = qcom_nandc_setup(nandc);
- 	if (ret)
- 		goto err_setup;
-@@ -2991,15 +2990,14 @@ static int qcom_nandc_probe(struct platf
- 	return 0;
- 
- err_setup:
-+	qcom_nandc_unalloc(nandc);
-+err_nandc_alloc:
- 	clk_disable_unprepare(nandc->aon_clk);
- err_aon_clk:
- 	clk_disable_unprepare(nandc->core_clk);
- err_core_clk:
--	qcom_nandc_unalloc(nandc);
--err_nandc_alloc:
- 	dma_unmap_resource(dev, res->start, resource_size(res),
- 			   DMA_BIDIRECTIONAL, 0);
--
- 	return ret;
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 20092a56de8b0..2d91e39dbdf67 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -95,7 +95,7 @@ static void kvm_perf_overflow_intr(struct perf_event *perf_event,
  }
  
+ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+-				  unsigned config, bool exclude_user,
++				  u64 config, bool exclude_user,
+ 				  bool exclude_kernel, bool intr,
+ 				  bool in_tx, bool in_tx_cp)
+ {
+@@ -170,7 +170,8 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
+ 
+ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ {
+-	unsigned config, type = PERF_TYPE_RAW;
++	u64 config;
++	u32 type = PERF_TYPE_RAW;
+ 	struct kvm *kvm = pmc->vcpu->kvm;
+ 	struct kvm_pmu_event_filter *filter;
+ 	int i;
+-- 
+2.34.1
+
 
 
