@@ -2,177 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352077AbiBUOMJ (ORCPT
+        id S1377367AbiBUOMY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:12:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45240 "EHLO
+        Mon, 21 Feb 2022 09:12:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240412AbiBUOMH (ORCPT
+        with ESMTP id S1353585AbiBUOMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:12:07 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477ECEBC
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:11:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645452703; x=1676988703;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GU6rFwFDqKG4B1OnKEW8Am385Tn1RSrmpkGTOcSwX7k=;
-  b=PO9KiC+3u4E0QnwGjs2VbS/6kYDtCrO2viVZXOYdqYzx6ZdLPoDXRpx5
-   S12x1IEnVq+dAKyGnFT70uFT733SzdO6j4yWXHbFNXFZTzxcMfwTGQY0B
-   N8/JiBec3Ko7nN8EmMhYcOaroPsodB0X+hxZjUcMYVmZrkCLD9z8vcN6P
-   r5YlS94jZRKnJy8KVz3GAdxJURC6CMDNKkOySlpkrOmKEpkxdFle0SQTM
-   N9ZfUMhGvYw8OZxRS/CdKRxn/stFZd6YtBOu+0K4DQjptfFr+3BjDcKO8
-   C11sRyw0sd6xAsRbOtSRWOc7FMc+tn1OxLqCXH/Tl5gSiXsNr6qOXDyp8
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337946901"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="337946901"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 06:09:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="638566650"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 06:09:17 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM9NM-0001fm-Sl; Mon, 21 Feb 2022 14:09:16 +0000
-Date:   Mon, 21 Feb 2022 22:09:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: arch/mips/mm/tlbex.c:2173 build_r4000_tlb_load_handler() warn:
- inconsistent indenting
-Message-ID: <202202212221.MSvbhv1n-lkp@intel.com>
+        Mon, 21 Feb 2022 09:12:13 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451901EACD;
+        Mon, 21 Feb 2022 06:11:50 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D3E5F1F38E;
+        Mon, 21 Feb 2022 14:11:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645452708; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X6uHCum8Pw6ZWN7KnQa/P524zda2v8fedeXCTldYkBQ=;
+        b=UNHCvmB7fPPddZ/gsqYr1fvwQy++5pXY8+Oy9/5waECnQPJxQw41p+Xkqx5FH57sURlXOO
+        M0d7wyKsom3ytiqlvcYUaI75IhgScZWMPfpdg2kC6pvE/wKj+3N5ILcc5Ri9kddhNJxFFA
+        8o/wXSDMaQq6U4jAhpnhpUP/ei1ZtUM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645452708;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X6uHCum8Pw6ZWN7KnQa/P524zda2v8fedeXCTldYkBQ=;
+        b=+bZ96k2G1tXwyuWbKb4uiHC3+AGk1a0E99+fm9s9ZoilUrM7T49Z1EYsL6ZNZUEAQgQflS
+        sPzdRJd4wLzuCzCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A064713B21;
+        Mon, 21 Feb 2022 14:11:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yr1XJKSdE2JxHgAAMHmgww
+        (envelope-from <hare@suse.de>); Mon, 21 Feb 2022 14:11:48 +0000
+Message-ID: <2cead7a0-8e52-54a6-831d-3ba1e2b277cd@suse.de>
+Date:   Mon, 21 Feb 2022 15:11:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 02/15] crypto: kpp - provide support for KPP spawns
+Content-Language: en-US
+To:     Nicolai Stange <nstange@suse.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     =?UTF-8?Q?Stephan_M=c3=bcller?= <smueller@chronox.de>,
+        Torsten Duwe <duwe@suse.de>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org
+References: <20220221121101.1615-1-nstange@suse.de>
+ <20220221121101.1615-3-nstange@suse.de>
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20220221121101.1615-3-nstange@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-commit: bc431d2153cc290573531601b5004babe7011568 MIPS: Fix fall-through warnings for Clang
-date:   7 months ago
-config: mips-randconfig-m031-20220221 (https://download.01.org/0day-ci/archive/20220221/202202212221.MSvbhv1n-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.2.0
+On 2/21/22 13:10, Nicolai Stange wrote:
+> The upcoming support for the RFC 7919 ffdhe group parameters will be
+> made available in the form of templates like "ffdhe2048(dh)",
+> "ffdhe3072(dh)" and so on. Template instantiations thereof would wrap the
+> inner "dh" kpp_alg and also provide kpp_alg services to the outside again.
+> 
+> The primitves needed for providing kpp_alg services from template instances
+> have been introduced with the previous patch. Continue this work now and
+> implement everything needed for enabling template instances to make use
+> of inner KPP algorithms like "dh".
+> 
+> More specifically, define a struct crypto_kpp_spawn in close analogy to
+> crypto_skcipher_spawn, crypto_shash_spawn and alike. Implement a
+> crypto_grab_kpp() and crypto_drop_kpp() pair for binding such a spawn to
+> some inner kpp_alg and for releasing it respectively. Template
+> implementations can instantiate transforms from the underlying kpp_alg by
+> means of the new crypto_spawn_kpp(). Finally, provide the
+> crypto_spawn_kpp_alg() helper for accessing a spawn's underlying kpp_alg
+> during template instantiation.
+> 
+> Annotate everything with proper kernel-doc comments, even though
+> include/crypto/internal/kpp.h is not considered for the generated docs.
+> 
+> Signed-off-by: Nicolai Stange <nstange@suse.de>
+> ---
+>   crypto/kpp.c                  |  9 +++++
+>   include/crypto/internal/kpp.h | 75 +++++++++++++++++++++++++++++++++++
+>   2 files changed, 84 insertions(+)
+> 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Cheers,
 
-New smatch warnings:
-arch/mips/mm/tlbex.c:2173 build_r4000_tlb_load_handler() warn: inconsistent indenting
-
-Old smatch warnings:
-arch/mips/mm/tlbex.c:1744 iPTE_SW() warn: inconsistent indenting
-arch/mips/mm/tlbex.c:2603 check_pabits() warn: always true condition '(fillbits >= ((__builtin_constant_p(0)) ?(((0) < 2) ?0:63 - __builtin_clzll(0)):((4 <= 4)) ?__ilog2_u32(0):__ilog2_u64(0))) => (0-u32max >= 0)'
-
-vim +2173 arch/mips/mm/tlbex.c
-
-  2114	
-  2115	static void build_r4000_tlb_load_handler(void)
-  2116	{
-  2117		u32 *p = (u32 *)msk_isa16_mode((ulong)handle_tlbl);
-  2118		struct uasm_label *l = labels;
-  2119		struct uasm_reloc *r = relocs;
-  2120		struct work_registers wr;
-  2121	
-  2122		memset(p, 0, handle_tlbl_end - (char *)p);
-  2123		memset(labels, 0, sizeof(labels));
-  2124		memset(relocs, 0, sizeof(relocs));
-  2125	
-  2126		if (bcm1250_m3_war()) {
-  2127			unsigned int segbits = 44;
-  2128	
-  2129			uasm_i_dmfc0(&p, K0, C0_BADVADDR);
-  2130			uasm_i_dmfc0(&p, K1, C0_ENTRYHI);
-  2131			uasm_i_xor(&p, K0, K0, K1);
-  2132			uasm_i_dsrl_safe(&p, K1, K0, 62);
-  2133			uasm_i_dsrl_safe(&p, K0, K0, 12 + 1);
-  2134			uasm_i_dsll_safe(&p, K0, K0, 64 + 12 + 1 - segbits);
-  2135			uasm_i_or(&p, K0, K0, K1);
-  2136			uasm_il_bnez(&p, &r, K0, label_leave);
-  2137			/* No need for uasm_i_nop */
-  2138		}
-  2139	
-  2140		wr = build_r4000_tlbchange_handler_head(&p, &l, &r);
-  2141		build_pte_present(&p, &r, wr.r1, wr.r2, wr.r3, label_nopage_tlbl);
-  2142		if (m4kc_tlbp_war())
-  2143			build_tlb_probe_entry(&p);
-  2144	
-  2145		if (cpu_has_rixi && !cpu_has_rixiex) {
-  2146			/*
-  2147			 * If the page is not _PAGE_VALID, RI or XI could not
-  2148			 * have triggered it.  Skip the expensive test..
-  2149			 */
-  2150			if (use_bbit_insns()) {
-  2151				uasm_il_bbit0(&p, &r, wr.r1, ilog2(_PAGE_VALID),
-  2152					      label_tlbl_goaround1);
-  2153			} else {
-  2154				uasm_i_andi(&p, wr.r3, wr.r1, _PAGE_VALID);
-  2155				uasm_il_beqz(&p, &r, wr.r3, label_tlbl_goaround1);
-  2156			}
-  2157			uasm_i_nop(&p);
-  2158	
-  2159			/*
-  2160			 * Warn if something may race with us & replace the TLB entry
-  2161			 * before we read it here. Everything with such races should
-  2162			 * also have dedicated RiXi exception handlers, so this
-  2163			 * shouldn't be hit.
-  2164			 */
-  2165			WARN(cpu_has_tlbex_tlbp_race(), "Unhandled race in RiXi path");
-  2166	
-  2167			uasm_i_tlbr(&p);
-  2168	
-  2169			switch (current_cpu_type()) {
-  2170			default:
-  2171				if (cpu_has_mips_r2_exec_hazard) {
-  2172					uasm_i_ehb(&p);
-> 2173				fallthrough;
-  2174	
-  2175			case CPU_CAVIUM_OCTEON:
-  2176			case CPU_CAVIUM_OCTEON_PLUS:
-  2177			case CPU_CAVIUM_OCTEON2:
-  2178					break;
-  2179				}
-  2180			}
-  2181	
-  2182			/* Examine  entrylo 0 or 1 based on ptr. */
-  2183			if (use_bbit_insns()) {
-  2184				uasm_i_bbit0(&p, wr.r2, ilog2(sizeof(pte_t)), 8);
-  2185			} else {
-  2186				uasm_i_andi(&p, wr.r3, wr.r2, sizeof(pte_t));
-  2187				uasm_i_beqz(&p, wr.r3, 8);
-  2188			}
-  2189			/* load it in the delay slot*/
-  2190			UASM_i_MFC0(&p, wr.r3, C0_ENTRYLO0);
-  2191			/* load it if ptr is odd */
-  2192			UASM_i_MFC0(&p, wr.r3, C0_ENTRYLO1);
-  2193			/*
-  2194			 * If the entryLo (now in wr.r3) is valid (bit 1), RI or
-  2195			 * XI must have triggered it.
-  2196			 */
-  2197			if (use_bbit_insns()) {
-  2198				uasm_il_bbit1(&p, &r, wr.r3, 1, label_nopage_tlbl);
-  2199				uasm_i_nop(&p);
-  2200				uasm_l_tlbl_goaround1(&l, p);
-  2201			} else {
-  2202				uasm_i_andi(&p, wr.r3, wr.r3, 2);
-  2203				uasm_il_bnez(&p, &r, wr.r3, label_nopage_tlbl);
-  2204				uasm_i_nop(&p);
-  2205			}
-  2206			uasm_l_tlbl_goaround1(&l, p);
-  2207		}
-  2208		build_make_valid(&p, &r, wr.r1, wr.r2, wr.r3);
-  2209		build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
-  2210	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
