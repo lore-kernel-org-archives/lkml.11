@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A810AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347012AbiBUJAn (ORCPT
+        id S1347060AbiBUJAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:00:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59920 "EHLO
+        Mon, 21 Feb 2022 04:00:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346895AbiBUJAE (ORCPT
+        with ESMTP id S1346770AbiBUJAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:00:04 -0500
+        Mon, 21 Feb 2022 04:00:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4967214086;
-        Mon, 21 Feb 2022 00:55:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0318519295;
+        Mon, 21 Feb 2022 00:55:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E97B1B80EAF;
-        Mon, 21 Feb 2022 08:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A96C340E9;
-        Mon, 21 Feb 2022 08:54:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48D69B80E9E;
+        Mon, 21 Feb 2022 08:54:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62414C340E9;
+        Mon, 21 Feb 2022 08:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433686;
-        bh=FND7irY5FD1eoc9+qgWldfdeCJy+ApBZ9xE7IEBQV0o=;
+        s=korg; t=1645433681;
+        bh=HhQaT2I6hTqDmHreQpT5At+njtsHty3J1e80ZceAYXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehfkrpD7+VQGDinnxw2KJ8j4i5HiKZb4fY1rMQHHzPtBhZHhkJ0tudlVYbQEMzfP+
-         HFkyKNXWVXmXnYp1KxulC89cR2xLykyq2ju59pzGldAc86cFNJ7B6NIdxraECYD5HP
-         DUIjSfRXTgdJCFLiIKsMwCID6pVoWAFO7k/bUOEw=
+        b=2CXW1pufR7zRrmSJGoFb4qZeBbnwPH4GaUOEqN+/YaEaqFH5oQDSHONgZPu1FUrFI
+         7nmWTqAdvNopICgU07Al/LZ6bBLED1WAdNbV3zCbOSCMdfotRCRPYM5MR8HrWQEuEt
+         NW9JS96/P5x4pf90cXbQgVPOMVqTCmSZ9nbuGXYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 37/45] mtd: rawnand: brcmnand: Refactored code to introduce helper functions
-Date:   Mon, 21 Feb 2022 09:49:28 +0100
-Message-Id: <20220221084911.651433263@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.14 35/45] dmaengine: sh: rcar-dmac: Check for error num after setting mask
+Date:   Mon, 21 Feb 2022 09:49:26 +0100
+Message-Id: <20220221084911.580279156@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -50,185 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Dasu <kdasu.kdev@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 3c7c1e4594efd57b98ae6f7298f40cff4f4fb47b ]
+commit 2d21543efe332cd8c8f212fb7d365bc8b0690bfa upstream.
 
-Refactored NAND ECC and CMD address configuration code to use helper
-functions.
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
 
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dc312349e875 ("dmaengine: rcar-dmac: Widen DMA mask to 40 bits")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220106030939.2644320-1-jiasheng@iscas.ac.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/brcmnand/brcmnand.c | 100 +++++++++++++++++----------
- 1 file changed, 62 insertions(+), 38 deletions(-)
+ drivers/dma/sh/rcar-dmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/nand/brcmnand/brcmnand.c b/drivers/mtd/nand/brcmnand/brcmnand.c
-index c65724d0c725d..be4c6f256e807 100644
---- a/drivers/mtd/nand/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/brcmnand/brcmnand.c
-@@ -589,6 +589,54 @@ static inline void brcmnand_write_fc(struct brcmnand_controller *ctrl,
- 	__raw_writel(val, ctrl->nand_fc + word * 4);
- }
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1767,7 +1767,9 @@ static int rcar_dmac_probe(struct platfo
+ 	platform_set_drvdata(pdev, dmac);
+ 	dmac->dev->dma_parms = &dmac->parms;
+ 	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
+-	dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
++	if (ret)
++		return ret;
  
-+static void brcmnand_clear_ecc_addr(struct brcmnand_controller *ctrl)
-+{
-+
-+	/* Clear error addresses */
-+	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_ADDR, 0);
-+	brcmnand_write_reg(ctrl, BRCMNAND_CORR_ADDR, 0);
-+	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_EXT_ADDR, 0);
-+	brcmnand_write_reg(ctrl, BRCMNAND_CORR_EXT_ADDR, 0);
-+}
-+
-+static u64 brcmnand_get_uncorrecc_addr(struct brcmnand_controller *ctrl)
-+{
-+	u64 err_addr;
-+
-+	err_addr = brcmnand_read_reg(ctrl, BRCMNAND_UNCORR_ADDR);
-+	err_addr |= ((u64)(brcmnand_read_reg(ctrl,
-+					     BRCMNAND_UNCORR_EXT_ADDR)
-+					     & 0xffff) << 32);
-+
-+	return err_addr;
-+}
-+
-+static u64 brcmnand_get_correcc_addr(struct brcmnand_controller *ctrl)
-+{
-+	u64 err_addr;
-+
-+	err_addr = brcmnand_read_reg(ctrl, BRCMNAND_CORR_ADDR);
-+	err_addr |= ((u64)(brcmnand_read_reg(ctrl,
-+					     BRCMNAND_CORR_EXT_ADDR)
-+					     & 0xffff) << 32);
-+
-+	return err_addr;
-+}
-+
-+static void brcmnand_set_cmd_addr(struct mtd_info *mtd, u64 addr)
-+{
-+	struct nand_chip *chip =  mtd_to_nand(mtd);
-+	struct brcmnand_host *host = nand_get_controller_data(chip);
-+	struct brcmnand_controller *ctrl = host->ctrl;
-+
-+	brcmnand_write_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS,
-+			   (host->cs << 16) | ((addr >> 32) & 0xffff));
-+	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS);
-+	brcmnand_write_reg(ctrl, BRCMNAND_CMD_ADDRESS,
-+			   lower_32_bits(addr));
-+	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS);
-+}
-+
- static inline u16 brcmnand_cs_offset(struct brcmnand_controller *ctrl, int cs,
- 				     enum brcmnand_cs_reg reg)
- {
-@@ -1217,9 +1265,12 @@ static void brcmnand_send_cmd(struct brcmnand_host *host, int cmd)
- {
- 	struct brcmnand_controller *ctrl = host->ctrl;
- 	int ret;
-+	u64 cmd_addr;
-+
-+	cmd_addr = brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS);
-+
-+	dev_dbg(ctrl->dev, "send native cmd %d addr 0x%llx\n", cmd, cmd_addr);
- 
--	dev_dbg(ctrl->dev, "send native cmd %d addr_lo 0x%x\n", cmd,
--		brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS));
- 	BUG_ON(ctrl->cmd_pending != 0);
- 	ctrl->cmd_pending = cmd;
- 
-@@ -1380,12 +1431,7 @@ static void brcmnand_cmdfunc(struct mtd_info *mtd, unsigned command,
- 	if (!native_cmd)
- 		return;
- 
--	brcmnand_write_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS,
--		(host->cs << 16) | ((addr >> 32) & 0xffff));
--	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS);
--	brcmnand_write_reg(ctrl, BRCMNAND_CMD_ADDRESS, lower_32_bits(addr));
--	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS);
--
-+	brcmnand_set_cmd_addr(mtd, addr);
- 	brcmnand_send_cmd(host, native_cmd);
- 	brcmnand_waitfunc(mtd, chip);
- 
-@@ -1605,20 +1651,10 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
- 	struct brcmnand_controller *ctrl = host->ctrl;
- 	int i, j, ret = 0;
- 
--	/* Clear error addresses */
--	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_ADDR, 0);
--	brcmnand_write_reg(ctrl, BRCMNAND_CORR_ADDR, 0);
--	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_EXT_ADDR, 0);
--	brcmnand_write_reg(ctrl, BRCMNAND_CORR_EXT_ADDR, 0);
--
--	brcmnand_write_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS,
--			(host->cs << 16) | ((addr >> 32) & 0xffff));
--	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS);
-+	brcmnand_clear_ecc_addr(ctrl);
- 
- 	for (i = 0; i < trans; i++, addr += FC_BYTES) {
--		brcmnand_write_reg(ctrl, BRCMNAND_CMD_ADDRESS,
--				   lower_32_bits(addr));
--		(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS);
-+		brcmnand_set_cmd_addr(mtd, addr);
- 		/* SPARE_AREA_READ does not use ECC, so just use PAGE_READ */
- 		brcmnand_send_cmd(host, CMD_PAGE_READ);
- 		brcmnand_waitfunc(mtd, chip);
-@@ -1638,21 +1674,15 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
- 					host->hwcfg.sector_size_1k);
- 
- 		if (!ret) {
--			*err_addr = brcmnand_read_reg(ctrl,
--					BRCMNAND_UNCORR_ADDR) |
--				((u64)(brcmnand_read_reg(ctrl,
--						BRCMNAND_UNCORR_EXT_ADDR)
--					& 0xffff) << 32);
-+			*err_addr = brcmnand_get_uncorrecc_addr(ctrl);
-+
- 			if (*err_addr)
- 				ret = -EBADMSG;
- 		}
- 
- 		if (!ret) {
--			*err_addr = brcmnand_read_reg(ctrl,
--					BRCMNAND_CORR_ADDR) |
--				((u64)(brcmnand_read_reg(ctrl,
--						BRCMNAND_CORR_EXT_ADDR)
--					& 0xffff) << 32);
-+			*err_addr = brcmnand_get_correcc_addr(ctrl);
-+
- 			if (*err_addr)
- 				ret = -EUCLEAN;
- 		}
-@@ -1723,7 +1753,7 @@ static int brcmnand_read(struct mtd_info *mtd, struct nand_chip *chip,
- 	dev_dbg(ctrl->dev, "read %llx -> %p\n", (unsigned long long)addr, buf);
- 
- try_dmaread:
--	brcmnand_write_reg(ctrl, BRCMNAND_UNCORR_COUNT, 0);
-+	brcmnand_clear_ecc_addr(ctrl);
- 
- 	if (has_flash_dma(ctrl) && !oob && flash_dma_buf_ok(buf)) {
- 		err = brcmnand_dma_trans(host, addr, buf, trans * FC_BYTES,
-@@ -1863,15 +1893,9 @@ static int brcmnand_write(struct mtd_info *mtd, struct nand_chip *chip,
- 		goto out;
- 	}
- 
--	brcmnand_write_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS,
--			(host->cs << 16) | ((addr >> 32) & 0xffff));
--	(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_EXT_ADDRESS);
--
- 	for (i = 0; i < trans; i++, addr += FC_BYTES) {
- 		/* full address MUST be set before populating FC */
--		brcmnand_write_reg(ctrl, BRCMNAND_CMD_ADDRESS,
--				   lower_32_bits(addr));
--		(void)brcmnand_read_reg(ctrl, BRCMNAND_CMD_ADDRESS);
-+		brcmnand_set_cmd_addr(mtd, addr);
- 
- 		if (buf) {
- 			brcmnand_soc_data_bus_prepare(ctrl->soc, false);
--- 
-2.34.1
-
+ 	ret = rcar_dmac_parse_of(&pdev->dev, dmac);
+ 	if (ret < 0)
 
 
