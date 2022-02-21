@@ -2,150 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B55F9C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E941AC3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354156AbiBUKMH (ORCPT
+        id S1354275AbiBUKMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:12:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35406 "EHLO
+        Mon, 21 Feb 2022 05:12:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352695AbiBUJ40 (ORCPT
+        with ESMTP id S1353582AbiBUKGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:56:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB2344747;
-        Mon, 21 Feb 2022 01:24:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C7D561017;
-        Mon, 21 Feb 2022 09:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8756C340E9;
-        Mon, 21 Feb 2022 09:24:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435477;
-        bh=bVtbcFu1bP+aF7lF8UMTo0RVnvCW+DX0l8LGlJdH/wM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJIYTSXobjtoJOeJulURuEbdRLDVf0T8iZQYX19P2eIQzWlpybHVluYQbN8O51bPr
-         xJcDJ5ljHMnzCmo/9Bo3OORtbc32miVr4u5FjqlZmeE+hvs67RP1n4EAzelfNPywfj
-         ESj//tku4DObXOucCpSxK8oco0SiwEJXTLrzk0wU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Solar Designer <solar@openwall.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 176/227] rlimit: Fix RLIMIT_NPROC enforcement failure caused by capability calls in set_user
-Date:   Mon, 21 Feb 2022 09:49:55 +0100
-Message-Id: <20220221084940.664308892@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 05:06:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E4622611E
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:31:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645435887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=M7GipAFivLru7/FXCZ9Ov73kX45whBG6hrjha1HlyIU=;
+        b=TWFVldRaAzNni9Bl3hNupI7fRmdZmY44TycxJ++WYXL+TCVFumoKO1cBgNfEfrWEzJLemY
+        D3fFfDtUwVNCwD65LovTS5KLGRUb8o7VjYNX3NWaEWA65gHmELPzzXCX6Wi1uOHBsv7RUl
+        IQX/a7CxtSm5cwYk95cBjEGwXyFRoO4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-314-nqE3mU-TM1OCMZzFt6XEeA-1; Mon, 21 Feb 2022 04:31:25 -0500
+X-MC-Unique: nqE3mU-TM1OCMZzFt6XEeA-1
+Received: by mail-wm1-f70.google.com with SMTP id i30-20020a1c541e000000b0037dbf3d7efdso1719863wmb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:31:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=M7GipAFivLru7/FXCZ9Ov73kX45whBG6hrjha1HlyIU=;
+        b=wvPFnFgb8BExilEFblst+QWSpuiZYdjcMHjk67BF/9HwxwNMy5BeAGYbLrbqflje+F
+         ZZrKVPADoPRcXiY8O/l7hoGaZ6yb6HDKxfi+gsNQ2EaClxWpd81tW4QmpOzkAYZ+VwDC
+         6egqnwNDUg4Iuu1PJDIhcj/IcggH7reFrex9Fo85CQ8EPaBg99E7dX84epynWI7kn/Gt
+         g5H4AROgHZql+n2fTQdgPCDfwhr0cNNYw/Oci7RKD7FcHc+yTXMfNkK3UPVTxheTvdZi
+         uBQoyXO5+t6p1emEmymvQe95qgMnsQ8y7RnovAVLw3rxG9hI4qr/msczIsO0nota1254
+         xgiA==
+X-Gm-Message-State: AOAM530VUA2myYxVz8UXTSzZ3njRex2woEy3WH/i6P5EM1s5IBGaTLa5
+        59ze4JhdZPY+WHNHgtZWK963hxMUnqe8gGIbf0Ia607nFfegp+rdn9HYgfCXtN4rSSxwJnQ2tUI
+        MRG50xRCMoA6pqyWBdfJABaqr
+X-Received: by 2002:a5d:598f:0:b0:1e3:649:e6c3 with SMTP id n15-20020a5d598f000000b001e30649e6c3mr15091391wri.520.1645435884410;
+        Mon, 21 Feb 2022 01:31:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzHT0HMNxoGY/7w7S9Z2qpMPtCIP1DkecWzMXFUa68IRpPrLRiHR5foft4LM7SrrciDM7n/aw==
+X-Received: by 2002:a5d:598f:0:b0:1e3:649:e6c3 with SMTP id n15-20020a5d598f000000b001e30649e6c3mr15091376wri.520.1645435884162;
+        Mon, 21 Feb 2022 01:31:24 -0800 (PST)
+Received: from [10.33.192.232] (nat-pool-str-t.redhat.com. [149.14.88.106])
+        by smtp.gmail.com with ESMTPSA id h15-20020a05600c350f00b0037d1e31a25csm7094078wmq.26.2022.02.21.01.31.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 01:31:23 -0800 (PST)
+Message-ID: <6e5acc94-4459-2385-331f-501d47106a20@redhat.com>
+Date:   Mon, 21 Feb 2022 10:31:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] selftests: kvm: Check whether SIDA memop fails for normal
+ guests
+Content-Language: en-US
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220215074824.188440-1-thuth@redhat.com>
+ <d576d8f7-980f-3bc6-87ad-5a6ae45609b8@linuxfoundation.org>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <d576d8f7-980f-3bc6-87ad-5a6ae45609b8@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+On 15/02/2022 16.25, Shuah Khan wrote:
+> On 2/15/22 12:48 AM, Thomas Huth wrote:
+>> Commit 2c212e1baedc ("KVM: s390: Return error on SIDA memop on normal
+>> guest") fixed the behavior of the SIDA memops for normal guests. It
+>> would be nice to have a way to test whether the current kernel has
+>> the fix applied or not. Thus add a check to the KVM selftests for
+>> these two memops.
+>>
+>> Signed-off-by: Thomas Huth <thuth@redhat.com>
+>> ---
+>>   tools/testing/selftests/kvm/s390x/memop.c | 15 +++++++++++++++
+>>   1 file changed, 15 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/kvm/s390x/memop.c 
+>> b/tools/testing/selftests/kvm/s390x/memop.c
+>> index 9f49ead380ab..d19c3ffdea3f 100644
+>> --- a/tools/testing/selftests/kvm/s390x/memop.c
+>> +++ b/tools/testing/selftests/kvm/s390x/memop.c
+>> @@ -160,6 +160,21 @@ int main(int argc, char *argv[])
+>>       run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+>>       vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
+>> +    /* Check that the SIDA calls are rejected for non-protected guests */
+>> +    ksmo.gaddr = 0;
+>> +    ksmo.flags = 0;
+>> +    ksmo.size = 8;
+>> +    ksmo.op = KVM_S390_MEMOP_SIDA_READ;
+>> +    ksmo.buf = (uintptr_t)mem1;
+>> +    ksmo.sida_offset = 0x1c0;
+>> +    rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+>> +    TEST_ASSERT(rv == -1 && errno == EINVAL,
+>> +            "ioctl does not reject SIDA_READ in non-protected mode");
+> 
+> Printing what passed would be a good addition to understand the tests that
+> get run and expected to pass.
 
-commit c16bdeb5a39ffa3f32b32f812831a2092d2a3061 upstream.
+Yes, I agree ... I'll add that for a follow-up patch to my TODO list.
 
-Solar Designer <solar@openwall.com> wrote:
-> I'm not aware of anyone actually running into this issue and reporting
-> it.  The systems that I personally know use suexec along with rlimits
-> still run older/distro kernels, so would not yet be affected.
->
-> So my mention was based on my understanding of how suexec works, and
-> code review.  Specifically, Apache httpd has the setting RLimitNPROC,
-> which makes it set RLIMIT_NPROC:
->
-> https://httpd.apache.org/docs/2.4/mod/core.html#rlimitnproc
->
-> The above documentation for it includes:
->
-> "This applies to processes forked from Apache httpd children servicing
-> requests, not the Apache httpd children themselves. This includes CGI
-> scripts and SSI exec commands, but not any processes forked from the
-> Apache httpd parent, such as piped logs."
->
-> In code, there are:
->
-> ./modules/generators/mod_cgid.c:        ( (cgid_req.limits.limit_nproc_set) && ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
-> ./modules/generators/mod_cgi.c:        ((rc = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC,
-> ./modules/filters/mod_ext_filter.c:    rv = apr_procattr_limit_set(procattr, APR_LIMIT_NPROC, conf->limit_nproc);
->
-> For example, in mod_cgi.c this is in run_cgi_child().
->
-> I think this means an httpd child sets RLIMIT_NPROC shortly before it
-> execs suexec, which is a SUID root program.  suexec then switches to the
-> target user and execs the CGI script.
->
-> Before 2863643fb8b9, the setuid() in suexec would set the flag, and the
-> target user's process count would be checked against RLIMIT_NPROC on
-> execve().  After 2863643fb8b9, the setuid() in suexec wouldn't set the
-> flag because setuid() is (naturally) called when the process is still
-> running as root (thus, has those limits bypass capabilities), and
-> accordingly execve() would not check the target user's process count
-> against RLIMIT_NPROC.
+>> +    ksmo.op = KVM_S390_MEMOP_SIDA_WRITE;
+>> +    rv = _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+>> +    TEST_ASSERT(rv == -1 && errno == EINVAL,
+>> +            "ioctl does not reject SIDA_WRITE in non-protected mode");
+>> +
+> 
+> Same here.
+> 
+>>       kvm_vm_free(vm);
+>>       return 0;
+>>
+> 
+> Something to consider in a follow-on patch and future changes to these tests.
+> 
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-In commit 2863643fb8b9 ("set_user: add capability check when
-rlimit(RLIMIT_NPROC) exceeds") capable calls were added to set_user to
-make it more consistent with fork.  Unfortunately because of call site
-differences those capable calls were checking the credentials of the
-user before set*id() instead of after set*id().
+  Thanks!
 
-This breaks enforcement of RLIMIT_NPROC for applications that set the
-rlimit and then call set*id() while holding a full set of
-capabilities.  The capabilities are only changed in the new credential
-in security_task_fix_setuid().
-
-The code in apache suexec appears to follow this pattern.
-
-Commit 909cc4ae86f3 ("[PATCH] Fix two bugs with process limits
-(RLIMIT_NPROC)") where this check was added describes the targes of this
-capability check as:
-
-  2/ When a root-owned process (e.g. cgiwrap) sets up process limits and then
-      calls setuid, the setuid should fail if the user would then be running
-      more than rlim_cur[RLIMIT_NPROC] processes, but it doesn't.  This patch
-      adds an appropriate test.  With this patch, and per-user process limit
-      imposed in cgiwrap really works.
-
-So the original use case of this check also appears to match the broken
-pattern.
-
-Restore the enforcement of RLIMIT_NPROC by removing the bad capable
-checks added in set_user.  This unfortunately restores the
-inconsistent state the code has been in for the last 11 years, but
-dealing with the inconsistencies looks like a larger problem.
-
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/all/20210907213042.GA22626@openwall.com/
-Link: https://lkml.kernel.org/r/20220212221412.GA29214@openwall.com
-Link: https://lkml.kernel.org/r/20220216155832.680775-1-ebiederm@xmission.com
-Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
-History-Tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
-Reviewed-by: Solar Designer <solar@openwall.com>
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/sys.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -480,8 +480,7 @@ static int set_user(struct cred *new)
- 	 * failure to the execve() stage.
- 	 */
- 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
--			new_user != INIT_USER &&
--			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
-+			new_user != INIT_USER)
- 		current->flags |= PF_NPROC_EXCEEDED;
- 	else
- 		current->flags &= ~PF_NPROC_EXCEEDED;
+   Thomas
 
 
