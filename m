@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C233C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD104C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357801AbiBUMYN (ORCPT
+        id S1357823AbiBUMYj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:24:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35574 "EHLO
+        Mon, 21 Feb 2022 07:24:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232731AbiBUMYJ (ORCPT
+        with ESMTP id S1357803AbiBUMYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:24:09 -0500
+        Mon, 21 Feb 2022 07:24:36 -0500
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5AB13E20;
-        Mon, 21 Feb 2022 04:23:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF97913E1C;
+        Mon, 21 Feb 2022 04:24:13 -0800 (PST)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 4EEE31C0B7C; Mon, 21 Feb 2022 13:23:41 +0100 (CET)
-Date:   Mon, 21 Feb 2022 13:23:40 +0100
+        id BD2C41C0B7C; Mon, 21 Feb 2022 13:24:12 +0100 (CET)
+Date:   Mon, 21 Feb 2022 13:24:12 +0100
 From:   Pavel Machek <pavel@denx.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -27,63 +27,54 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/58] 4.19.231-rc1 review
-Message-ID: <20220221122340.GA15152@duo.ucw.cz>
-References: <20220221084911.895146879@linuxfoundation.org>
+Subject: Re: [PATCH 5.10 000/121] 5.10.102-rc1 review
+Message-ID: <20220221122412.GB15152@duo.ucw.cz>
+References: <20220221084921.147454846@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
+        protocol="application/pgp-signature"; boundary="vGgW1X5XWziG23Ko"
 Content-Disposition: inline
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
+In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---5mCyUwZo2JvN/JJP
+--vGgW1X5XWziG23Ko
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> This is the start of the stable review cycle for the 4.19.231 release.
-> There are 58 patches in this series, all will be posted as a response
+> This is the start of the stable review cycle for the 5.10.102 release.
+> There are 121 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git=
- linux-4.19.y
-> and the diffstat can be found below.
-
-Do you think you could quote git hash of the respective commit here?
-It would be good to double-check we tested right commit.
-
-We tested df7ca783, and CIP testing did not find any problems here:
+CIP testing did not find any problems here:
 
 https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y
+5.10.y
 
 Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
 Best regards,
                                                                 Pavel
 
-
 --=20
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---5mCyUwZo2JvN/JJP
+--vGgW1X5XWziG23Ko
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhOETAAKCRAw5/Bqldv6
-8rBPAJsH5h5jWJ2P7EXDvq9eKdqAMU+oxACeNFwdstatsvA+LAY/2x30MRLV8D0=
-=II4i
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhOEbAAKCRAw5/Bqldv6
+8nTLAJ9+kPsbuHOno6xgyrFfWpq8qCLgTQCcCjwIUe3kNsq4SyqUT367RWv4cIc=
+=ls7c
 -----END PGP SIGNATURE-----
 
---5mCyUwZo2JvN/JJP--
+--vGgW1X5XWziG23Ko--
