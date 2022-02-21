@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346572AbiBUI55 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:57:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44708 "EHLO
+        id S240885AbiBUI6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:58:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346184AbiBUIzl (ORCPT
+        with ESMTP id S1346264AbiBUIzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:55:41 -0500
+        Mon, 21 Feb 2022 03:55:42 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B14324BD0;
-        Mon, 21 Feb 2022 00:53:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79D524BE4;
+        Mon, 21 Feb 2022 00:53:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEA18B80EB5;
-        Mon, 21 Feb 2022 08:53:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 114DCC340E9;
-        Mon, 21 Feb 2022 08:53:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEF0AB80EB2;
+        Mon, 21 Feb 2022 08:53:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8F6CC340E9;
+        Mon, 21 Feb 2022 08:53:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433615;
-        bh=7olKYaqtu+BxZjg1A+48Fj6BNudVjfaeR4CAz1kvzAY=;
+        s=korg; t=1645433618;
+        bh=UaSgY94cpIw3Kq+VL3L3kwDcvctXgZSVInyJ4w1tZ9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vqAHCmnN9n3A5BK3GfOpLMPEzyM4YU/hBDHfilTn+Ys45MfH9Sa3FHfU+Fos5EpTS
-         +kLfUN41hVT9O5A0FGS6q5zG0rThBRorWupZn+DW8Cg+RZ7qufcUaeAMkr19RTOqNm
-         Z1Fmv4rzl1U/jnq4V2D/mxzueKijkYgMkyRdmPc0=
+        b=gYu8ZhAdRNGjOLVPTzrX2DFXktl4dP3FFq1GhuMg0Tl7kJgB8ecWCEnQyKdJHKpXc
+         /kBI/3ViqCqLyaIkUzaw/NTxBtruFS2jLjBfhPmcFo1TbKJ6wpIQnOWwkIlu+V/0/M
+         fpI2HqV9dBnXT3fpNCRP+q7jKSlMTww2EIKrR8NM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, dmummenschanz@web.de,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 27/45] ALSA: hda: Fix regression on forced probe mask option
-Date:   Mon, 21 Feb 2022 09:49:18 +0100
-Message-Id: <20220221084911.332791452@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 03/45] serial: parisc: GSC: fix build when IOSAPIC is not set
+Date:   Mon, 21 Feb 2022 09:48:54 +0100
+Message-Id: <20220221084910.570137153@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -49,45 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 6317f7449348a897483a2b4841f7a9190745c81b upstream.
+commit 6e8793674bb0d1135ca0e5c9f7e16fecbf815926 upstream.
 
-The forced probe mask via probe_mask 0x100 bit doesn't work any longer
-as expected since the bus init code was moved and it's clearing the
-codec_mask value that was set beforehand.  This patch fixes the
-long-time regression by moving the check_probe_mask() call.
+There is a build error when using a kernel .config file from
+'kernel test robot' for a different build problem:
 
-Fixes: a41d122449be ("ALSA: hda - Embed bus into controller object")
-Reported-by: dmummenschanz@web.de
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/trinity-f018660b-95c9-442b-a2a8-c92a56eb07ed-1644345967148@3c-app-webde-bap22
-Link: https://lore.kernel.org/r/20220214100020.8870-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
+
+when:
+  CONFIG_GSC=y
+  CONFIG_SERIO_GSCPS2=y
+  CONFIG_SERIAL_8250_GSC=y
+  CONFIG_PCI is not set
+    and hence PCI_LBA is not set.
+  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
+
+Make the use of iosapic_serial_irq() conditional to fix the build error.
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-parisc@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Suggested-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_intel.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_gsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1821,8 +1821,6 @@ static int azx_create(struct snd_card *c
+--- a/drivers/tty/serial/8250/8250_gsc.c
++++ b/drivers/tty/serial/8250/8250_gsc.c
+@@ -30,7 +30,7 @@ static int __init serial_init_chip(struc
+ 	unsigned long address;
+ 	int err;
  
- 	assign_position_fix(chip, check_position_fix(chip, position_fix[dev]));
- 
--	check_probe_mask(chip, dev);
--
- 	if (single_cmd < 0) /* allow fallback to single_cmd at errors */
- 		chip->fallback_to_single_cmd = 1;
- 	else /* explicitly set to single_cmd or not */
-@@ -1851,6 +1849,8 @@ static int azx_create(struct snd_card *c
- 		chip->bus.needs_damn_long_delay = 1;
- 	}
- 
-+	check_probe_mask(chip, dev);
-+
- 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
- 	if (err < 0) {
- 		dev_err(card->dev, "Error creating device [card]!\n");
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
+ 	if (!dev->irq && (dev->id.sversion == 0xad))
+ 		dev->irq = iosapic_serial_irq(dev);
+ #endif
 
 
