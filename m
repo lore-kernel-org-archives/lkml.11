@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0899DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350646AbiBUJjG (ORCPT
+        id S1350716AbiBUJjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:39:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36338 "EHLO
+        Mon, 21 Feb 2022 04:39:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350332AbiBUJav (ORCPT
+        with ESMTP id S1350183AbiBUJbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:30:51 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F42C25E9B;
-        Mon, 21 Feb 2022 01:13:18 -0800 (PST)
+        Mon, 21 Feb 2022 04:31:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDDD27CF1;
+        Mon, 21 Feb 2022 01:13:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id ED8FCCE0E92;
-        Mon, 21 Feb 2022 09:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C73C1C339C1;
-        Mon, 21 Feb 2022 09:13:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE5D2608C1;
+        Mon, 21 Feb 2022 09:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8CD7C340E9;
+        Mon, 21 Feb 2022 09:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434789;
-        bh=LlrEcvhY71E33DIPn31y+UFouQ9wZxklBPAu27DkQ20=;
+        s=korg; t=1645434806;
+        bh=kPsipjtm5BFbOtdKq1wVwjsC6HImBrZUVW4TMQmoygI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hlUvpoT6Ndag7uLDRJ9HkoJMS7xjQ79yVfmqEXBDkL4HbL69GFhLW/PcZiWj3Chg+
-         WARBeg0tv2U5gvoj1AzqmQnLTZTxENKsiriGz2E6GX2uH2fI2iTlLBXZBc6VBJ3/ug
-         skJkoYEwzwzV3dKhloetR34YPuHvS4BQZLxfZ1Bs=
+        b=ztN97UbMiiNtu0HdB+SQNdd5PGE9DQQLZPYHio+J0dBAKTI0x9qpS0udHzxVT0rNR
+         K2HkVfRl3jno/7b695XaN2ojzUG1JjdbawQAzpuKiiIVATtWBQBygEUijBfB2HHds1
+         d2Tg+gFm8RPH0y9KTM+uHGMtXpaFqxTxwCgK02AQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.15 132/196] NFS: LOOKUP_DIRECTORY is also ok with symlinks
-Date:   Mon, 21 Feb 2022 09:49:24 +0100
-Message-Id: <20220221084935.342839045@linuxfoundation.org>
+        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.15 137/196] mtd: parsers: qcom: Fix kernel panic on skipped partition
+Date:   Mon, 21 Feb 2022 09:49:29 +0100
+Message-Id: <20220221084935.502531213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,43 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Ansuel Smith <ansuelsmth@gmail.com>
 
-commit e0caaf75d443e02e55e146fd75fe2efc8aed5540 upstream.
+commit 65d003cca335cabc0160d3cd7daa689eaa9dd3cd upstream.
 
-Commit ac795161c936 (NFSv4: Handle case where the lookup of a directory
-fails) [1], part of Linux since 5.17-rc2, introduced a regression, where
-a symbolic link on an NFS mount to a directory on another NFS does not
-resolve(?) the first time it is accessed:
+In the event of a skipped partition (case when the entry name is empty)
+the kernel panics in the cleanup function as the name entry is NULL.
+Rework the parser logic by first checking the real partition number and
+then allocate the space and set the data for the valid partitions.
 
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: ac795161c936 ("NFSv4: Handle case where the lookup of a directory fails")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+The logic was also fundamentally wrong as with a skipped partition, the
+parts number returned was incorrect by not decreasing it for the skipped
+partitions.
+
+Fixes: 803eb124e1a6 ("mtd: parsers: Add Qcom SMEM parser")
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220116032211.9728-1-ansuelsmth@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/parsers/qcomsmempart.c |   31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1987,14 +1987,14 @@ no_open:
- 	if (!res) {
- 		inode = d_inode(dentry);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode))
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))
- 			res = ERR_PTR(-ENOTDIR);
- 		else if (inode && S_ISREG(inode->i_mode))
- 			res = ERR_PTR(-EOPENSTALE);
- 	} else if (!IS_ERR(res)) {
- 		inode = d_inode(res);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode)) {
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode))) {
- 			dput(res);
- 			res = ERR_PTR(-ENOTDIR);
- 		} else if (inode && S_ISREG(inode->i_mode)) {
+--- a/drivers/mtd/parsers/qcomsmempart.c
++++ b/drivers/mtd/parsers/qcomsmempart.c
+@@ -58,11 +58,11 @@ static int parse_qcomsmem_part(struct mt
+ 			       const struct mtd_partition **pparts,
+ 			       struct mtd_part_parser_data *data)
+ {
++	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
++	int ret, i, j, tmpparts, numparts = 0;
+ 	struct smem_flash_pentry *pentry;
+ 	struct smem_flash_ptable *ptable;
+-	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
+ 	struct mtd_partition *parts;
+-	int ret, i, numparts;
+ 	char *name, *c;
+ 
+ 	if (IS_ENABLED(CONFIG_MTD_SPI_NOR_USE_4K_SECTORS)
+@@ -87,8 +87,8 @@ static int parse_qcomsmem_part(struct mt
+ 	}
+ 
+ 	/* Ensure that # of partitions is less than the max we have allocated */
+-	numparts = le32_to_cpu(ptable->numparts);
+-	if (numparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
++	tmpparts = le32_to_cpu(ptable->numparts);
++	if (tmpparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
+ 		pr_err("Partition numbers exceed the max limit\n");
+ 		return -EINVAL;
+ 	}
+@@ -116,11 +116,17 @@ static int parse_qcomsmem_part(struct mt
+ 		return PTR_ERR(ptable);
+ 	}
+ 
++	for (i = 0; i < tmpparts; i++) {
++		pentry = &ptable->pentry[i];
++		if (pentry->name[0] != '\0')
++			numparts++;
++	}
++
+ 	parts = kcalloc(numparts, sizeof(*parts), GFP_KERNEL);
+ 	if (!parts)
+ 		return -ENOMEM;
+ 
+-	for (i = 0; i < numparts; i++) {
++	for (i = 0, j = 0; i < tmpparts; i++) {
+ 		pentry = &ptable->pentry[i];
+ 		if (pentry->name[0] == '\0')
+ 			continue;
+@@ -135,24 +141,25 @@ static int parse_qcomsmem_part(struct mt
+ 		for (c = name; *c != '\0'; c++)
+ 			*c = tolower(*c);
+ 
+-		parts[i].name = name;
+-		parts[i].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
+-		parts[i].mask_flags = pentry->attr;
+-		parts[i].size = le32_to_cpu(pentry->length) * mtd->erasesize;
++		parts[j].name = name;
++		parts[j].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
++		parts[j].mask_flags = pentry->attr;
++		parts[j].size = le32_to_cpu(pentry->length) * mtd->erasesize;
+ 		pr_debug("%d: %s offs=0x%08x size=0x%08x attr:0x%08x\n",
+ 			 i, pentry->name, le32_to_cpu(pentry->offset),
+ 			 le32_to_cpu(pentry->length), pentry->attr);
++		j++;
+ 	}
+ 
+ 	pr_debug("SMEM partition table found: ver: %d len: %d\n",
+-		 le32_to_cpu(ptable->version), numparts);
++		 le32_to_cpu(ptable->version), tmpparts);
+ 	*pparts = parts;
+ 
+ 	return numparts;
+ 
+ out_free_parts:
+-	while (--i >= 0)
+-		kfree(parts[i].name);
++	while (--j >= 0)
++		kfree(parts[j].name);
+ 	kfree(parts);
+ 	*pparts = NULL;
+ 
 
 
