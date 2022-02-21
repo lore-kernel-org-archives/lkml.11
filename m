@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E832C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348318AbiBUJRv (ORCPT
+        id S1348326AbiBUJR7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:17:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36152 "EHLO
+        Mon, 21 Feb 2022 04:17:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348268AbiBUJLK (ORCPT
+        with ESMTP id S1348365AbiBUJLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD47B237CB;
-        Mon, 21 Feb 2022 01:03:07 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:16 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0C823BDC;
+        Mon, 21 Feb 2022 01:03:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80E31B80EB1;
-        Mon, 21 Feb 2022 09:03:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9623BC36AE3;
-        Mon, 21 Feb 2022 09:03:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 608BACE0E79;
+        Mon, 21 Feb 2022 09:03:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49614C340E9;
+        Mon, 21 Feb 2022 09:03:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434185;
-        bh=Y8q/J0Iry0Dpi9EHXI2yalvcbthB960zMJ7G+0SH+Rw=;
+        s=korg; t=1645434190;
+        bh=gBR3Ce/pJ47IRQg4FP9Z/vuY4SpFZJm7Vp0omlNnSeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KA6krGMNkPYm1nD9LDX2Bu27j0cod9Pvgc6bCw91UDUh3uzE2iajerpEmOoVp36OI
-         p1k1b+N10WLbOtvfw0TjFpEgESO0mMdN7E3yLbu8cbTL4RpVidKUemwlJx61R61+cE
-         KHf5INhfflRg2CBWaWvPd6UPZ5vVYPmrWxI5dziI=
+        b=njrCeZjdHsg2VcyShX0hQTHPPpW1WJ3Bom7GIwN7laGJUEtJ5W7/1wpi2aV958qfK
+         6eZhkE9KYyLUFUcS63xppJ7TJL0VgGSneIrypCgTwpop1JDC2FAUUvjMBw7EKA5Ta8
+         6gr/WijwAHPP/RXS5TlLb4/rzMMFwdCpLH5F8xjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Alexander Popov <alex.popov@linux.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 041/121] x86/Xen: streamline (and fix) PV CPU enumeration
-Date:   Mon, 21 Feb 2022 09:48:53 +0100
-Message-Id: <20220221084922.600374607@linuxfoundation.org>
+Subject: [PATCH 5.10 043/121] gcc-plugins/stackleak: Use noinstr in favor of notrace
+Date:   Mon, 21 Feb 2022 09:48:55 +0100
+Message-Id: <20220221084922.671268396@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,104 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Beulich <jbeulich@suse.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit e25a8d959992f61b64a58fc62fb7951dc6f31d1f ]
+[ Upstream commit dcb85f85fa6f142aae1fe86f399d4503d49f2b60 ]
 
-This started out with me noticing that "dom0_max_vcpus=<N>" with <N>
-larger than the number of physical CPUs reported through ACPI tables
-would not bring up the "excess" vCPU-s. Addressing this is the primary
-purpose of the change; CPU maps handling is being tidied only as far as
-is necessary for the change here (with the effect of also avoiding the
-setting up of too much per-CPU infrastructure, i.e. for CPUs which can
-never come online).
+While the stackleak plugin was already using notrace, objtool is now a
+bit more picky.  Update the notrace uses to noinstr.  Silences the
+following objtool warnings when building with:
 
-Noticing that xen_fill_possible_map() is called way too early, whereas
-xen_filter_cpu_maps() is called too late (after per-CPU areas were
-already set up), and further observing that each of the functions serves
-only one of Dom0 or DomU, it looked like it was better to simplify this.
-Use the .get_smp_config hook instead, uniformly for Dom0 and DomU.
-xen_fill_possible_map() can be dropped altogether, while
-xen_filter_cpu_maps() is re-purposed but not otherwise changed.
+CONFIG_DEBUG_ENTRY=y
+CONFIG_STACK_VALIDATION=y
+CONFIG_VMLINUX_VALIDATION=y
+CONFIG_GCC_PLUGIN_STACKLEAK=y
 
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/2dbd5f0a-9859-ca2d-085e-a02f7166c610@suse.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+  vmlinux.o: warning: objtool: do_syscall_64()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: do_int80_syscall_32()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: exc_general_protection()+0x22: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: fixup_bad_iret()+0x20: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: do_machine_check()+0x27: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .text+0x5346e: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x143: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x10eb: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x17f9: call to stackleak_erase() leaves .noinstr.text section
+
+Note that the plugin's addition of calls to stackleak_track_stack() from
+noinstr functions is expected to be safe, as it isn't runtime
+instrumentation and is self-contained.
+
+Cc: Alexander Popov <alex.popov@linux.com>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/xen/enlighten_pv.c |  4 ----
- arch/x86/xen/smp_pv.c       | 26 ++++++--------------------
- 2 files changed, 6 insertions(+), 24 deletions(-)
+ kernel/stackleak.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-index 16ff25d6935e7..804c65d2b95f3 100644
---- a/arch/x86/xen/enlighten_pv.c
-+++ b/arch/x86/xen/enlighten_pv.c
-@@ -1387,10 +1387,6 @@ asmlinkage __visible void __init xen_start_kernel(void)
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index ce161a8e8d975..dd07239ddff9f 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -48,7 +48,7 @@ int stack_erasing_sysctl(struct ctl_table *table, int write,
+ #define skip_erasing()	false
+ #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
  
- 		xen_acpi_sleep_register();
- 
--		/* Avoid searching for BIOS MP tables */
--		x86_init.mpparse.find_smp_config = x86_init_noop;
--		x86_init.mpparse.get_smp_config = x86_init_uint_noop;
--
- 		xen_boot_params_init_edd();
- 
- #ifdef CONFIG_ACPI
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index c2ac319f11a4b..8f9e7e2407c87 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -149,28 +149,12 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	return rc;
- }
- 
--static void __init xen_fill_possible_map(void)
--{
--	int i, rc;
--
--	if (xen_initial_domain())
--		return;
--
--	for (i = 0; i < nr_cpu_ids; i++) {
--		rc = HYPERVISOR_vcpu_op(VCPUOP_is_up, i, NULL);
--		if (rc >= 0) {
--			num_processors++;
--			set_cpu_possible(i, true);
--		}
--	}
--}
--
--static void __init xen_filter_cpu_maps(void)
-+static void __init _get_smp_config(unsigned int early)
+-asmlinkage void notrace stackleak_erase(void)
++asmlinkage void noinstr stackleak_erase(void)
  {
- 	int i, rc;
- 	unsigned int subtract = 0;
- 
--	if (!xen_initial_domain())
-+	if (early)
- 		return;
- 
- 	num_processors = 0;
-@@ -211,7 +195,6 @@ static void __init xen_pv_smp_prepare_boot_cpu(void)
- 		 * sure the old memory can be recycled. */
- 		make_lowmem_page_readwrite(xen_initial_gdt);
- 
--	xen_filter_cpu_maps();
- 	xen_setup_vcpu_info_placement();
- 
- 	/*
-@@ -491,5 +474,8 @@ static const struct smp_ops xen_smp_ops __initconst = {
- void __init xen_smp_init(void)
- {
- 	smp_ops = xen_smp_ops;
--	xen_fill_possible_map();
-+
-+	/* Avoid searching for BIOS MP tables */
-+	x86_init.mpparse.find_smp_config = x86_init_noop;
-+	x86_init.mpparse.get_smp_config = _get_smp_config;
+ 	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
+ 	unsigned long kstack_ptr = current->lowest_stack;
+@@ -102,9 +102,8 @@ asmlinkage void notrace stackleak_erase(void)
+ 	/* Reset the 'lowest_stack' value for the next syscall */
+ 	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
  }
+-NOKPROBE_SYMBOL(stackleak_erase);
+ 
+-void __used __no_caller_saved_registers notrace stackleak_track_stack(void)
++void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
+ {
+ 	unsigned long sp = current_stack_pointer;
+ 
 -- 
 2.34.1
 
