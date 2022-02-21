@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C2BC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520BEC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352875AbiBUJ4y (ORCPT
+        id S1352804AbiBUJ4t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:56:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43808 "EHLO
+        Mon, 21 Feb 2022 04:56:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352885AbiBUJsA (ORCPT
+        with ESMTP id S1352887AbiBUJsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:48:00 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986DB192AA;
-        Mon, 21 Feb 2022 01:20:58 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CE6193EC;
+        Mon, 21 Feb 2022 01:20:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0E224CE0E88;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4659608C4;
+        Mon, 21 Feb 2022 09:20:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8152C340E9;
         Mon, 21 Feb 2022 09:20:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDAE7C340EB;
-        Mon, 21 Feb 2022 09:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435255;
-        bh=uCDU3Iu8HRlLzNeHWBl0YvfMWpvWbc7yd8s/av4iXHI=;
+        s=korg; t=1645435258;
+        bh=bN043WedEhBYdSu+Ret7cNF7R/i2stufqlZsoE2K6Es=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CwdNvDJ3rRus+Yiw+2jp4xQBaweqCK3EiEQBnyXpeIaksP1JNPCBbRzI7IG3C70Kc
-         GmcbcF1o/quBDe5JAnXpo9HKIoYMEvDyn3/CVgdaCCIuB19WSsCDOG49ZD7tmiJDTU
-         v8JwuVx3eK5bjoAew2bKNFR6zpMRuODtvYInUznk=
+        b=teak/tgj4gnJFFmOuILb/GUQNQXIw0/Ealqsu06K4E6zZgE2juWcJqnW16nIgtkGA
+         K2hn5DmHQNNTTyh9VjWj89iGMX2tI/L43I9xPWzkt32zchSvapHCklUA5bYwZffJBu
+         NIoJ4leV38dQSCyXPpU7fRpCtz0y+eAop2ksECjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 099/227] netfilter: nft_synproxy: unregister hooks on init error path
-Date:   Mon, 21 Feb 2022 09:48:38 +0100
-Message-Id: <20220221084938.170112613@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Chen <yiche@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.16 100/227] selftests: netfilter: disable rp_filter on router
+Date:   Mon, 21 Feb 2022 09:48:39 +0100
+Message-Id: <20220221084938.206979851@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -48,32 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-commit 2b4e5fb4d3776c391e40fb33673ba946dd96012d upstream.
+commit bbe4c0896d25009a7c86285d2ab024eed4374eea upstream.
 
-Disable the IPv4 hooks if the IPv6 hooks fail to be registered.
+Some distros may enable rp_filter by default. After ns1 change addr to
+10.0.2.99 and set default router to 10.0.2.1, while the connected router
+address is still 10.0.1.1. The router will not reply the arp request
+from ns1. Fix it by setting the router's veth0 rp_filter to 0.
 
-Fixes: ad49d86e07a4 ("netfilter: nf_tables: Add synproxy support")
+Before the fix:
+  # ./nft_fib.sh
+  PASS: fib expression did not cause unwanted packet drops
+  Netns nsrouter-HQkDORO2 fib counter doesn't match expected packet count of 1 for 1.1.1.1
+  table inet filter {
+          chain prerouting {
+                  type filter hook prerouting priority filter; policy accept;
+                  ip daddr 1.1.1.1 fib saddr . iif oif missing counter packets 0 bytes 0 drop
+                  ip6 daddr 1c3::c01d fib saddr . iif oif missing counter packets 0 bytes 0 drop
+          }
+  }
+
+After the fix:
+  # ./nft_fib.sh
+  PASS: fib expression did not cause unwanted packet drops
+  PASS: fib expression did drop packets for 1.1.1.1
+  PASS: fib expression did drop packets for 1c3::c01d
+
+Fixes: 82944421243e ("selftests: netfilter: add fib test case")
+Signed-off-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_synproxy.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/netfilter/nft_fib.sh |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/netfilter/nft_synproxy.c
-+++ b/net/netfilter/nft_synproxy.c
-@@ -191,8 +191,10 @@ static int nft_synproxy_do_init(const st
- 		if (err)
- 			goto nf_ct_failure;
- 		err = nf_synproxy_ipv6_init(snet, ctx->net);
--		if (err)
-+		if (err) {
-+			nf_synproxy_ipv4_fini(snet, ctx->net);
- 			goto nf_ct_failure;
-+		}
- 		break;
- 	}
+--- a/tools/testing/selftests/netfilter/nft_fib.sh
++++ b/tools/testing/selftests/netfilter/nft_fib.sh
+@@ -174,6 +174,7 @@ test_ping() {
+ ip netns exec ${nsrouter} sysctl net.ipv6.conf.all.forwarding=1 > /dev/null
+ ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
+ ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
++ip netns exec ${nsrouter} sysctl net.ipv4.conf.veth0.rp_filter=0 > /dev/null
+ 
+ sleep 3
  
 
 
