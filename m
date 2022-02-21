@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B655C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BB4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243034AbiBUJij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:38:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33080 "EHLO
+        id S1350304AbiBUJi4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:38:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349708AbiBUJa1 (ORCPT
+        with ESMTP id S1350182AbiBUJbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:30:27 -0500
+        Mon, 21 Feb 2022 04:31:41 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C2325C59;
-        Mon, 21 Feb 2022 01:13:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB71E2717A;
+        Mon, 21 Feb 2022 01:13:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F3861CE0E86;
-        Mon, 21 Feb 2022 09:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD92C339C8;
-        Mon, 21 Feb 2022 09:13:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AC173CE0E8B;
+        Mon, 21 Feb 2022 09:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F1E7C339C1;
+        Mon, 21 Feb 2022 09:13:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434786;
-        bh=hUv1vw7+SG1GUc+ciH6Lke2YWRLHdxDggbqlY0eKXdo=;
+        s=korg; t=1645434792;
+        bh=D5JJpy/c72AVrlauMZGzdolk6JLEapyqWRS8VLnIalA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbRMKrhAvz44L25CsWeU4MxIC8OijPRIZGSVLPKLXWZh/fcKGmPZLG0zOaX34pYX5
-         r3Oh/dmgy/qnPfgQPxV04iBHbJv8dVdjX3QYov++XseUtOQJrNOs2mZVuUI9FScJq5
-         mDWzybyjCVGL0FQk9cjwjFDI3HoZUv28oOatbvtY=
+        b=ET6ZUQvuyVwe/GPXLsFvgG8pdsDEdK7XGw+t7DU+/rFRqsIZf4gWokw0aUWnVOrrf
+         hfroDTZFRyqQU0oLNGqUZOpYtx3KuIlJ+mboHODWGkthEFlWbX9nOk/bbTmyHMJZ6m
+         1hZ+ZR1bK+NlWwuTAiTjAVZVujeA6gkV8/4fDRNw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.15 131/196] NFS: Remove an incorrect revalidation in nfs4_update_changeattr_locked()
-Date:   Mon, 21 Feb 2022 09:49:23 +0100
-Message-Id: <20220221084935.311257381@linuxfoundation.org>
+Subject: [PATCH 5.15 133/196] NFS: Do not report writeback errors in nfs_getattr()
+Date:   Mon, 21 Feb 2022 09:49:25 +0100
+Message-Id: <20220221084935.373328706@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -51,36 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 9d047bf68fe8cdb4086deaf4edd119731a9481ed upstream.
+commit d19e0183a88306acda07f4a01fedeeffe2a2a06b upstream.
 
-In nfs4_update_changeattr_locked(), we don't need to set the
-NFS_INO_REVAL_PAGECACHE flag, because we already know the value of the
-change attribute, and we're already flagging the size. In fact, this
-forces us to revalidate the change attribute a second time for no good
-reason.
-This extra flag appears to have been introduced as part of the xattr
-feature, when update_changeattr_locked() was converted for use by the
-xattr code.
+The result of the writeback, whether it is an ENOSPC or an EIO, or
+anything else, does not inhibit the NFS client from reporting the
+correct file timestamps.
 
-Fixes: 1b523ca972ed ("nfs: modify update_changeattr to deal with regular files")
+Fixes: 79566ef018f5 ("NFS: Getattr doesn't require data sync semantics")
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ fs/nfs/inode.c |    9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -1232,8 +1232,7 @@ nfs4_update_changeattr_locked(struct ino
- 				NFS_INO_INVALID_ACCESS | NFS_INO_INVALID_ACL |
- 				NFS_INO_INVALID_SIZE | NFS_INO_INVALID_OTHER |
- 				NFS_INO_INVALID_BLOCKS | NFS_INO_INVALID_NLINK |
--				NFS_INO_INVALID_MODE | NFS_INO_INVALID_XATTR |
--				NFS_INO_REVAL_PAGECACHE;
-+				NFS_INO_INVALID_MODE | NFS_INO_INVALID_XATTR;
- 		nfsi->attrtimeo = NFS_MINATTRTIMEO(inode);
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -840,12 +840,9 @@ int nfs_getattr(struct user_namespace *m
  	}
- 	nfsi->attrtimeo_timestamp = jiffies;
+ 
+ 	/* Flush out writes to the server in order to update c/mtime.  */
+-	if ((request_mask & (STATX_CTIME|STATX_MTIME)) &&
+-			S_ISREG(inode->i_mode)) {
+-		err = filemap_write_and_wait(inode->i_mapping);
+-		if (err)
+-			goto out;
+-	}
++	if ((request_mask & (STATX_CTIME | STATX_MTIME)) &&
++	    S_ISREG(inode->i_mode))
++		filemap_write_and_wait(inode->i_mapping);
+ 
+ 	/*
+ 	 * We may force a getattr if the user cares about atime.
 
 
