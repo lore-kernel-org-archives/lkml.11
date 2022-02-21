@@ -2,120 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E646AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A105C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348481AbiBUJ1b (ORCPT
+        id S1349432AbiBUJ1n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:27:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36976 "EHLO
+        Mon, 21 Feb 2022 04:27:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348809AbiBUJUt (ORCPT
+        with ESMTP id S1349115AbiBUJVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:20:49 -0500
+        Mon, 21 Feb 2022 04:21:02 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2001340FD;
-        Mon, 21 Feb 2022 01:07:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC35C35272;
+        Mon, 21 Feb 2022 01:07:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55AF0611D0;
-        Mon, 21 Feb 2022 09:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6806C340F1;
-        Mon, 21 Feb 2022 09:07:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645434458;
-        bh=ZzDL3b2R2zK8e9c5lboDQVpGxcxRvRsX/D5OltykcNQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YBNmfx/8bxtTm/uF3GwG7r1Z0cSJ7PiXf9cabrefPXoRxEKlej9SA4EEKYvsUlKfE
-         S2mrqtenCZ3OlgFd+Nl/M9eeiCogh3+tNCE+Wad38jzmXWDDqX6tLDjxKPYSE5YhKn
-         +/8hpSw2RhIgoeigTD+pF1XoFFeNdWPZNhUpGrpqUoA6criwArcm66h9VfqmzZK6It
-         Pw+WsdIlnCNqDQYOr7zF5sCVOR49sdkZJ1OJLjwQAZP1X9WiUS51qtX/v+X7aJmkvU
-         ByzT+f1fIuHXLv7DSwcrRJLMAVT0ZVKdx8k2IBANoeqSO/+nupsgH41lCbj61Ikqol
-         bRHuL9SNGky0g==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nM4fP-0004xn-Rs; Mon, 21 Feb 2022 10:07:35 +0100
-Date:   Mon, 21 Feb 2022 10:07:35 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] USB: serial: option: add support for DW5829e
-Message-ID: <YhNWV5lXm0d7lyfL@hovoldconsulting.com>
-References: <20220209031535.9668-1-slark_xiao@163.com>
- <YgPPNVzyg7Gypzv9@hovoldconsulting.com>
- <62feaf3.248f.17ee1ac3017.Coremail.slark_xiao@163.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 620BC6092A;
+        Mon, 21 Feb 2022 09:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4435CC340F1;
+        Mon, 21 Feb 2022 09:07:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645434474;
+        bh=rJqkONifNZkKsNztAUsXBO+i58TXXXnD/CHomPNqq44=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aELT26m/wbDegCD2Jd5WUuj9Ts+9fcdKDv5L1HFfUnNNdjLBhAIyzIUqjs99Cj2TL
+         qr3nb0cmIPFz4cmstSKcrdEaG0F70L8+brq6z+mWhP70Lat4PczbFSvdL2SRxILumu
+         CHhL4riJC8MkjjD92TETtD/kacSAr1GDZPMACIDw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yuka Kawajiri <yukx00@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 021/196] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
+Date:   Mon, 21 Feb 2022 09:47:33 +0100
+Message-Id: <20220221084931.607356103@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
+References: <20220221084930.872957717@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62feaf3.248f.17ee1ac3017.Coremail.slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 11:27:45AM +0800, Slark Xiao wrote:
-> At 2022-02-09 22:27:01, "Johan Hovold" <johan@kernel.org> wrote:
-> >On Wed, Feb 09, 2022 at 11:15:35AM +0800, Slark Xiao wrote:
+From: Yuka Kawajiri <yukx00@gmail.com>
 
-> >> DW5829e RMNET mode:
-> >> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-> >> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-> >> P:  Vendor=413c ProdID=81e6 Rev=03.18
-> >> S:  Manufacturer=Dell Inc.
-> >> S:  Product=DW5829e Snapdragon X20 LTE
-> >> S:  SerialNumber=0123456789ABCDEF
-> >> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-> >> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-> >> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-> >> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
 
-> >> DW5829e-eSIM RMNET mode:
-> >> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-> >> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-> >> P:  Vendor=413c ProdID=81e4 Rev=03.18
-> >> S:  Manufacturer=Dell Inc.
-> >> S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-> >> S:  SerialNumber=0123456789ABCDEF
-> >> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-> >> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-> >> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-> >> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> >> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
 
-> >>  #define KYOCERA_VENDOR_ID			0x0c88
-> >>  #define KYOCERA_PRODUCT_KPC650			0x17da
-> >> @@ -1063,6 +1065,10 @@ static const struct usb_device_id option_ids[] = {
-> >>  	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
-> >>  	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
-> >>  	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
-> >> +	{ USB_DEVICE_INTERFACE_CLASS(DELL_VENDOR_ID, DELL_PRODUCT_5829E, 0xff),
-> >> +	  .driver_info = RSVD(6) },
-> >> +	{ USB_DEVICE_INTERFACE_CLASS(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM, 0xff),
-> >> +	  .driver_info = RSVD(6) },
-> >
-> >It looks like these entries will cause the driver to bind also to the
-> >QMI port however.
-> >
+Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
+Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-> Actually not,  currently RMNET port would load the qmi_wwan driver
-> successfully even the class of QMI is also 0xff.
-
-That's not guaranteed so RMNET mode could break depending on probe
-order with the above entries.
-
-> Do you mean I should add RSVD(0) to reduce confusion?
-
-You need to reserve it for correctness (or restructure the entries in
-some other way to achieve the same result).
+diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
+index 033f797861d8a..c608078538a79 100644
+--- a/drivers/platform/x86/touchscreen_dmi.c
++++ b/drivers/platform/x86/touchscreen_dmi.c
+@@ -773,6 +773,21 @@ static const struct ts_dmi_data predia_basic_data = {
+ 	.properties	= predia_basic_props,
+ };
  
-> >>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
-> >>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
-> >>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
++static const struct property_entry rwc_nanote_p8_props[] = {
++	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
++	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
++	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
++	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
++	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
++	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
++	{ }
++};
++
++static const struct ts_dmi_data rwc_nanote_p8_data = {
++	.acpi_name = "MSSL1680:00",
++	.properties = rwc_nanote_p8_props,
++};
++
+ static const struct property_entry schneider_sct101ctm_props[] = {
+ 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
+ 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
+@@ -1379,6 +1394,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
+ 		},
+ 	},
++	{
++		/* RWC NANOTE P8 */
++		.driver_data = (void *)&rwc_nanote_p8_data,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
++			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
++		},
++	},
+ 	{
+ 		/* Schneider SCT101CTM */
+ 		.driver_data = (void *)&schneider_sct101ctm_data,
+-- 
+2.34.1
 
-Johan
+
+
