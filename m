@@ -2,234 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E78C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A14E8C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349776AbiBUJ0j (ORCPT
+        id S1349684AbiBUJ03 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51590 "EHLO
+        Mon, 21 Feb 2022 04:26:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348203AbiBUJRn (ORCPT
+        with ESMTP id S1348931AbiBUJQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:17:43 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A1133A2A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:07:13 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id j78so11172157qke.2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:07:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FmpSAZ3hEbOmM+YcJkuE6s+XdxEo4hs8YZ+zU2PSQ7Y=;
-        b=fcflqexApJQ2RAjR6lFL13izeadAkDp1hvnRFrmC/oL1FUnkyhRjsqPEAydCKiTSZo
-         miMjo+XOzfki5PT+YFHaLkC2T4YCpi2PfuFcnAsz1WEmHAYqyKQcy8YqZO46HkV0Nfxh
-         GcPKRHMpmwkIZ0sTXCb+mEo8vQBF4c5iuAKfc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FmpSAZ3hEbOmM+YcJkuE6s+XdxEo4hs8YZ+zU2PSQ7Y=;
-        b=zDPfid9z/ct6MDiPJSRywrbgkV+ot8FmyxDK4pkDhe+TWYF+C347ZKB4v3FsKExJTS
-         rqF9qbYEIepw59sTE5124A9zxKgVls4GJ4RuUczyGKFAv2Xz5A+mgx0t7hgjThtEP2w5
-         VpmoS2CwMCLvMEbHoPHSVQzLyzaef+QTfncZ5wLWKT7scwzW/YUpNg9awbM+5LHaP357
-         XtSJu4/GWhskHIvIijCSFNSHMgNaavs72eVb0kpzktxlj3yW0S6H+3Io05IiuycB+roD
-         wcYKcndTjpwqX2ajuvg225y6sJv8i0lM2hI5ul3sRTAhxU9TjOUboqIZMMc/1jG28v9K
-         ZYdw==
-X-Gm-Message-State: AOAM533menPTI/yLdjDRyFaCGqJBnqk/NN1m+AXk1btAuDK/RWSJQZY1
-        lN830ArDqc1dwAxrKbcx2kmCnhMAPvy/qjdBu5A=
-X-Google-Smtp-Source: ABdhPJzROqfyPwLpRY4kLr3wsUUMPSD8zJLC0BprwPfRH5+TxUOlJdbNhqz9Lur7GQSWRk5D3YaINIW0/K5wH4QOWEE=
-X-Received: by 2002:ae9:e841:0:b0:508:1f6e:f020 with SMTP id
- a62-20020ae9e841000000b005081f6ef020mr11264614qkg.243.1645434432469; Mon, 21
- Feb 2022 01:07:12 -0800 (PST)
+        Mon, 21 Feb 2022 04:16:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F153207D;
+        Mon, 21 Feb 2022 01:07:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A0FB6112F;
+        Mon, 21 Feb 2022 09:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E77C340E9;
+        Mon, 21 Feb 2022 09:07:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645434423;
+        bh=IN67m1B3ZHGoI5hJjuFTOuQe6kviWvaaiA1kqxlzm1w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FAzui8dcCvl9O26SaZyfTqct0WTDyRUzMv2pdRBfjMxf8nKJjg7idm0Y0bt3X/U8q
+         2fP4H5/FaqJSRLZF/Or6TpA8aNRgBTPkTT5ZBweIogdAlUVUmXtwh0vxW9/fxJsG/D
+         I9cl+xQ+VRBS5odSBVnSBeddwTOdGg0ImJE4VGhw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Anup Patel <anup@brainfault.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 095/121] irqchip/sifive-plic: Add missing thead,c900-plic match string
+Date:   Mon, 21 Feb 2022 09:49:47 +0100
+Message-Id: <20220221084924.402858559@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
+References: <20220221084921.147454846@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220208152235.19686-1-eajames@linux.ibm.com>
-In-Reply-To: <20220208152235.19686-1-eajames@linux.ibm.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 21 Feb 2022 09:07:00 +0000
-Message-ID: <CACPK8Xe-amsBm=Q7pLgyMvdrxP4oCXB4YgxFuQJLvvmM+4g3NQ@mail.gmail.com>
-Subject: Re: [PATCH v2] fsi: occ: Improve response status checking
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-fsi@lists.ozlabs.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jeremy Kerr <jk@ozlabs.org>,
-        Alistair Popple <alistair@popple.id.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 at 15:22, Eddie James <eajames@linux.ibm.com> wrote:
->
-> If the driver sequence number coincidentally equals the previous
-> command response sequence number, the driver may proceed with
-> fetching the entire buffer before the OCC has processed the current
-> command. To be sure the correct response is obtained, check the
-> command type and also retry if any of the response parameters have
-> changed when the rest of the buffer is fetched. Also initialize the
-> driver with a random sequence number in order to reduce the chances
-> of this happening.
->
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Reviewed-by: Joel Stanley <joel@jms.id.au>
+[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
 
-I've applied this for v5.18.
+The thead,c900-plic has been used in opensbi to distinguish
+PLIC [1]. Although PLICs have the same behaviors in Linux,
+they are different hardware with some custom initializing in
+firmware(opensbi).
 
-> ---
-> Changes since v1:
->  - Refactor the retry into one loop
->  - Add a comment about the pseudo-random number
->
->  drivers/fsi/fsi-occ.c | 87 ++++++++++++++++++++++++++++---------------
->  1 file changed, 56 insertions(+), 31 deletions(-)
->
-> diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-> index 7eaab1be0aa4..c9cc75fbdfb9 100644
-> --- a/drivers/fsi/fsi-occ.c
-> +++ b/drivers/fsi/fsi-occ.c
-> @@ -451,6 +451,14 @@ static int occ_trigger_attn(struct occ *occ)
->         return rc;
->  }
->
-> +static bool fsi_occ_response_not_ready(struct occ_response *resp, u8 seq_no,
-> +                                      u8 cmd_type)
-> +{
-> +       return resp->return_status == OCC_RESP_CMD_IN_PRG ||
-> +               resp->return_status == OCC_RESP_CRIT_INIT ||
-> +               resp->seq_no != seq_no || resp->cmd_type != cmd_type;
-> +}
-> +
->  int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
->                    void *response, size_t *resp_len)
->  {
-> @@ -461,10 +469,11 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
->         struct occ_response *resp = response;
->         size_t user_resp_len = *resp_len;
->         u8 seq_no;
-> +       u8 cmd_type;
->         u16 checksum = 0;
->         u16 resp_data_length;
->         const u8 *byte_request = (const u8 *)request;
-> -       unsigned long start;
-> +       unsigned long end;
->         int rc;
->         size_t i;
->
-> @@ -478,6 +487,8 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
->                 return -EINVAL;
->         }
->
-> +       cmd_type = byte_request[1];
-> +
->         /* Checksum the request, ignoring first byte (sequence number). */
->         for (i = 1; i < req_len - 2; ++i)
->                 checksum += byte_request[i];
-> @@ -509,51 +520,61 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
->         if (rc)
->                 goto done;
->
-> -       /* Read occ response header */
-> -       start = jiffies;
-> -       do {
-> +       end = jiffies + timeout;
-> +       while (true) {
-> +               /* Read occ response header */
->                 rc = occ_getsram(occ, 0, resp, 8);
->                 if (rc)
->                         goto done;
->
-> -               if (resp->return_status == OCC_RESP_CMD_IN_PRG ||
-> -                   resp->return_status == OCC_RESP_CRIT_INIT ||
-> -                   resp->seq_no != seq_no) {
-> -                       rc = -ETIMEDOUT;
-> -
-> -                       if (time_after(jiffies, start + timeout)) {
-> -                               dev_err(occ->dev, "resp timeout status=%02x "
-> -                                       "resp seq_no=%d our seq_no=%d\n",
-> +               if (fsi_occ_response_not_ready(resp, seq_no, cmd_type)) {
-> +                       if (time_after(jiffies, end)) {
-> +                               dev_err(occ->dev,
-> +                                       "resp timeout status=%02x seq=%d cmd=%d, our seq=%d cmd=%d\n",
->                                         resp->return_status, resp->seq_no,
-> -                                       seq_no);
-> +                                       resp->cmd_type, seq_no, cmd_type);
-> +                               rc = -ETIMEDOUT;
->                                 goto done;
->                         }
->
->                         set_current_state(TASK_UNINTERRUPTIBLE);
->                         schedule_timeout(wait_time);
-> -               }
-> -       } while (rc);
-> -
-> -       /* Extract size of response data */
-> -       resp_data_length = get_unaligned_be16(&resp->data_length);
-> +               } else {
-> +                       /* Extract size of response data */
-> +                       resp_data_length =
-> +                               get_unaligned_be16(&resp->data_length);
-> +
-> +                       /*
-> +                        * Message size is data length + 5 bytes header + 2
-> +                        * bytes checksum
-> +                        */
-> +                       if ((resp_data_length + 7) > user_resp_len) {
-> +                               rc = -EMSGSIZE;
-> +                               goto done;
-> +                       }
->
-> -       /* Message size is data length + 5 bytes header + 2 bytes checksum */
-> -       if ((resp_data_length + 7) > user_resp_len) {
-> -               rc = -EMSGSIZE;
-> -               goto done;
-> +                       /*
-> +                        * Get the entire response including the header again,
-> +                        * in case it changed
-> +                        */
-> +                       if (resp_data_length > 1) {
-> +                               rc = occ_getsram(occ, 0, resp,
-> +                                                resp_data_length + 7);
-> +                               if (rc)
-> +                                       goto done;
-> +
-> +                               if (!fsi_occ_response_not_ready(resp, seq_no,
-> +                                                               cmd_type))
-> +                                       break;
-> +                       } else {
-> +                               break;
-> +                       }
-> +               }
->         }
->
->         dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
->                 resp->return_status, resp_data_length);
->
-> -       /* Grab the rest */
-> -       if (resp_data_length > 1) {
-> -               /* already got 3 bytes resp, also need 2 bytes checksum */
-> -               rc = occ_getsram(occ, 8, &resp->data[3], resp_data_length - 1);
-> -               if (rc)
-> -                       goto done;
-> -       }
-> -
->         occ->client_response_size = resp_data_length + 7;
->         rc = occ_verify_checksum(occ, resp, resp_data_length);
->
-> @@ -598,7 +619,11 @@ static int occ_probe(struct platform_device *pdev)
->         occ->version = (uintptr_t)of_device_get_match_data(dev);
->         occ->dev = dev;
->         occ->sbefifo = dev->parent;
-> -       occ->sequence_number = 1;
-> +       /*
-> +        * Quickly derive a pseudo-random number from jiffies so that
-> +        * re-probing the driver doesn't accidentally overlap sequence numbers.
-> +        */
-> +       occ->sequence_number = (u8)((jiffies % 0xff) + 1);
->         mutex_init(&occ->occ_lock);
->
->         if (dev->of_node) {
-> --
-> 2.27.0
->
+Qute opensbi patch commit-msg by Samuel:
+
+  The T-HEAD PLIC implementation requires setting a delegation bit
+  to allow access from S-mode. Now that the T-HEAD PLIC has its own
+  compatible string, set this bit automatically from the PLIC driver,
+  instead of reaching into the PLIC's MMIO space from another driver.
+
+[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Cc: Anup Patel <anup@brainfault.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Samuel Holland <samuel@sholland.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/irqchip/irq-sifive-plic.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+index 926e55d838cb1..bd99ee0ae433d 100644
+--- a/drivers/irqchip/irq-sifive-plic.c
++++ b/drivers/irqchip/irq-sifive-plic.c
+@@ -400,3 +400,4 @@ static int __init plic_init(struct device_node *node,
+ 
+ IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+ IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
++IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+-- 
+2.34.1
+
+
+
