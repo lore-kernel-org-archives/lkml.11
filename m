@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B888DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352018AbiBUJy5 (ORCPT
+        id S1352128AbiBUJzA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
+        Mon, 21 Feb 2022 04:55:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352960AbiBUJsE (ORCPT
+        with ESMTP id S1352983AbiBUJsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:04 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81632E4;
-        Mon, 21 Feb 2022 01:22:00 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE0210AF;
+        Mon, 21 Feb 2022 01:22:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2C484CE0E80;
-        Mon, 21 Feb 2022 09:21:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EBDC340E9;
-        Mon, 21 Feb 2022 09:21:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DCE4608C4;
+        Mon, 21 Feb 2022 09:22:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF59C340E9;
+        Mon, 21 Feb 2022 09:22:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435317;
-        bh=w9TKH42L6B9iXXuJURWlxaWPGp24Nh54zZwHeSNNMm8=;
+        s=korg; t=1645435332;
+        bh=2EEr04gVgGbLsytWBTlmHhQnd4tyf8xiRRSDPKxgK2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uWTKWtAf5g62SNW0X6TNkKAQVblE78yWkbdgVSUr5hXZ48jLqaZE/VDQqBKrSR6cz
-         HXXSRVRIwOR8nUyLSt4ODbsYD2jU/C07uWDV1B3IUeLHwu96FoIkyNoWyn9wDgQ5Xv
-         3U2cVNUDfu/Sqh9KA9vwOGU04MdbYK7qg3wrxPjM=
+        b=fnQ3I+aLn65PCCJEEnHoRCqHfuaVN5yES7yOFfc5vMDP/cq2lwb/tmEm4ezpLSxFh
+         CbrNX5y4U6f4N3y52PaqCRgOZSRWlXWmqG9JcRQuAE0IZnVg6mBgSLfQinm+Y7eLcA
+         9uWEft/T4WDMJaKn3lahFk1Brnd95OxVRGRg2mqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Danie du Toit <danie.dutoit@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
+        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 122/227] nfp: flower: netdev offload check for ip6gretap
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084938.910019696@linuxfoundation.org>
+Subject: [PATCH 5.16 127/227] tipc: fix wrong publisher node address in link publications
+Date:   Mon, 21 Feb 2022 09:49:06 +0100
+Message-Id: <20220221084939.075238258@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,41 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Danie du Toit <danie.dutoit@corigine.com>
+From: Jon Maloy <jmaloy@redhat.com>
 
-commit 7dbcda584eaa5bdb4a281c379207dacc1a5e6081 upstream.
+commit 032062f363b4bf02b1d547f329aa5d97b6a17410 upstream.
 
-IPv6 GRE tunnels are not being offloaded, this is caused by a missing
-netdev offload check. The functionality of IPv6 GRE tunnel offloading
-was previously added but this check was not included. Adding the
-ip6gretap check allows IPv6 GRE tunnels to be offloaded correctly.
+When a link comes up we add its presence to the name table to make it
+possible for users to subscribe for link up/down events. However, after
+a previous call signature change the binding is wrongly published with
+the peer node as publishing node, instead of the own node as it should
+be. This has the effect that the command 'tipc name table show' will
+list the link binding (service type 2) with node scope and a peer node
+as originator, something that obviously is impossible.
 
-Fixes: f7536ffb0986 ("nfp: flower: Allow ipv6gretap interface for offloading")
-Signed-off-by: Danie du Toit <danie.dutoit@corigine.com>
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220217124820.40436-1-louis.peens@corigine.com
+We correct this bug here.
+
+Fixes: 50a3499ab853 ("tipc: simplify signature of tipc_namtbl_publish()")
+Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+Link: https://lore.kernel.org/r/20220214013852.2803940-1-jmaloy@redhat.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/cmsg.h | 2 ++
- 1 file changed, 2 insertions(+)
+ net/tipc/node.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-index 784292b16290..1543e47456d5 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-@@ -723,6 +723,8 @@ static inline bool nfp_fl_is_netdev_to_offload(struct net_device *netdev)
- 		return true;
- 	if (netif_is_gretap(netdev))
- 		return true;
-+	if (netif_is_ip6gretap(netdev))
-+		return true;
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -413,7 +413,7 @@ static void tipc_node_write_unlock(struc
+ 	tipc_uaddr(&ua, TIPC_SERVICE_RANGE, TIPC_NODE_SCOPE,
+ 		   TIPC_LINK_STATE, n->addr, n->addr);
+ 	sk.ref = n->link_id;
+-	sk.node = n->addr;
++	sk.node = tipc_own_addr(net);
+ 	bearer_id = n->link_id & 0xffff;
+ 	publ_list = &n->publ_list;
  
- 	return false;
- }
--- 
-2.35.1
-
 
 
