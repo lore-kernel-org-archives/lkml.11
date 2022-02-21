@@ -2,95 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38471C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 20:36:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8213C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 20:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233744AbiBUUge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 15:36:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52482 "EHLO
+        id S233804AbiBUUhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 15:37:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233425AbiBUUgc (ORCPT
+        with ESMTP id S233778AbiBUUhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 15:36:32 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A345237D8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:36:08 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5F21740041
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 20:36:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645475764;
-        bh=U1X8yA1Izrtu66/dEyXiQXCP/Yonm2UMSc/H4P/UzfQ=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=RgffgGfANB2Q5Y9AqrynMK7Sn7kFtHYKCLzl1PusPvRlWXm5M/DG4RYNW1RnaRk7R
-         m4nVh8UBdL+UzfvebqX/H18o+BdhbuqPwvM29/2857Q67tt+0zTggf1AdwR/0YUutT
-         e+RUCh2w1J8VrdP6hzTyqkg2ChY9SRwqzcvXlUSOnlds9x6XWmkfIhZjcW0NngijVi
-         5WWtEhtwptNwD80oxQUEk1jgvTVSha7KJ7PSXcg6vZ5tlFxqiPag4QCNZuD4PUTIES
-         BHsvmbpYS4X0rqKE6BOrdWxIB99I4Od5vMH4yUcQ+K9KHiRHNzGi3mmL17A7TKXjNy
-         a1HGb9QABzN+A==
-Received: by mail-ed1-f71.google.com with SMTP id j10-20020a05640211ca00b004090fd8a936so10726688edw.23
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:36:04 -0800 (PST)
+        Mon, 21 Feb 2022 15:37:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6E33237CB
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645475812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OkxKWpQx5iuNsF54dXkXbOPAbRKT1pxdxrwColcc4Lg=;
+        b=bew/PE3MqGBLA6Iuz3xelkWqqTvrNfq61Kmwk1CvwDYyYHl+bgmgF+LVvQvNQx746hRa7C
+        AlBX5R6Ft/yg2rH8K6tn+V9sMoEGf6SFnEiFqc1VpnlGGIE3Q1TV6nvHeq0YT4QQSsTaSc
+        ryQlUPvo1FeVbs1l/nMkxGqSPhH6R58=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-516-QeIhbjlzPGK_VOqX14Iulw-1; Mon, 21 Feb 2022 15:36:50 -0500
+X-MC-Unique: QeIhbjlzPGK_VOqX14Iulw-1
+Received: by mail-qk1-f199.google.com with SMTP id i10-20020a05620a144a00b00648d4fa059dso4497733qkl.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:36:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=U1X8yA1Izrtu66/dEyXiQXCP/Yonm2UMSc/H4P/UzfQ=;
-        b=L8ZcptFOSe5FN+6myF1in57D9QqQbu+V06woJAwtPNRK9kriG5bO/ysJgTri/Q9E4a
-         /o4mc/42MLaHKHnuKV7/GiIWKvzjzQ9ILlYUUn83/Qeei73wRihsxqjIzw5zXda4b6e0
-         koQjDVWy/d/ghkr48qXW9vHN7egmO55ULWmoEeCEkGUv0eI05ICHi/tHTDOQ12SAtdN0
-         nlkTIKN81qEGvZRYyzJrM1jHZPHLZ+jrj7rls2dg4YIWCALcgpeC0auMCKqpNKUD6GSZ
-         e4J1K0zs3edST+ZlYN51nsDpPu6gNEmSGGk/Oz1PYy/czSiRv+kf2A9AmgDwkdwfL455
-         jf+g==
-X-Gm-Message-State: AOAM530YEcsyHubQ9qGDy3elMolFwtBtQeP0oWsu6NmhiiyEhB/Bx+V2
-        dDAcptDULvWJd+f2rJTdpEUrZfpFNAB189e2VpXve/4XVLgAQwxOfybUeU5M7U+OmLmxSgf71Q1
-        Ql4xRtgJGk10EDir6gD5wTNCMwW7fArYqDgC0H06C8g==
-X-Received: by 2002:a17:907:2954:b0:6cf:7634:c6b7 with SMTP id et20-20020a170907295400b006cf7634c6b7mr16672981ejc.683.1645475764049;
-        Mon, 21 Feb 2022 12:36:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7JyJzqH58SpigIPgDM+kaxx8HSCtkrYGrEFZflvAXrNDd7Y3eppYCEgvt5S9ho/TzPnIXtQ==
-X-Received: by 2002:a17:907:2954:b0:6cf:7634:c6b7 with SMTP id et20-20020a170907295400b006cf7634c6b7mr16672965ejc.683.1645475763784;
-        Mon, 21 Feb 2022 12:36:03 -0800 (PST)
-Received: from [192.168.0.122] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id ka26sm992729ejc.170.2022.02.21.12.36.03
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=OkxKWpQx5iuNsF54dXkXbOPAbRKT1pxdxrwColcc4Lg=;
+        b=Ei/E+LWCQJE9C7jS7MxVgzpvD6z7NVKWdvlQBO1EGr3XJ7aDjm9Y6efnXWaORQtAnV
+         2lI6sjU5W06bvhSVyBKiy1DlEN8OrcChVYtG9GbLM4ATYU5jLxqiLozMH8N43w6pZukU
+         GfzkMYfHD71udEti0oeGOS1saqZeMhnnP36vXjB+ContvmA30fgnyr6ST7ULnDox110b
+         gY4L/8LZug/kvJYxuHs4nZzst2KcTTVCWDgDrcDQBt22Dsp4OtNjsbJ7Ud5v6qOe6NT9
+         M2LeNjBgoGlUlbG/Ryoeqbw4n5+ktyL6fB4fGTHXkPZY28kqsN7vddlpNhquLkOkVCit
+         CBEg==
+X-Gm-Message-State: AOAM533XAlqgGp0XiyGW9wr3fwJOnqATa44j3w+fH3jWSJLHoltRJYqI
+        F6fzL/Ef0bumoiNggZR2MRxEmUnuJjqurOLK10c0h1sc3xfl62wielOihun3Uz9cc9DM0Muh8Jn
+        KLhjL8wPgzpEq8PILctCHlARt
+X-Received: by 2002:a05:622a:187:b0:2d6:8444:e30c with SMTP id s7-20020a05622a018700b002d68444e30cmr19439467qtw.413.1645475810352;
+        Mon, 21 Feb 2022 12:36:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy1SIyikKpt7KcdTkPlcwI08+ZgJfv7m97UYuDDAl3EUY10LCmode/caJrxhfn3/liH99A5Rw==
+X-Received: by 2002:a05:622a:187:b0:2d6:8444:e30c with SMTP id s7-20020a05622a018700b002d68444e30cmr19439455qtw.413.1645475810151;
+        Mon, 21 Feb 2022 12:36:50 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id x13sm28560921qko.114.2022.02.21.12.36.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 12:36:03 -0800 (PST)
-Message-ID: <eb9d0fa9-78c7-30d9-b9d3-5ab9490cf38d@canonical.com>
-Date:   Mon, 21 Feb 2022 21:36:02 +0100
+        Mon, 21 Feb 2022 12:36:49 -0800 (PST)
+Subject: Re: [PATCH] drm/amdgpu: fix printk format for size_t variable
+To:     Luben Tuikov <luben.tuikov@amd.com>, alexander.deucher@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, guchun.chen@amd.com, Prike.Liang@amd.com,
+        Hawking.Zhang@amd.com
+Cc:     dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>
+References: <20220221173737.3725760-1-trix@redhat.com>
+ <84e354ec-cfbf-a23f-ddd5-417d6f029873@amd.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <e490241d-9a22-f873-2b15-18b12896ea65@redhat.com>
+Date:   Mon, 21 Feb 2022 12:36:46 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v6 1/1] arm64: dts: exynos: Add initial device tree
- support for Exynos7885 SoC
-Content-Language: en-US
-To:     David Virag <virag.david003@gmail.com>
-Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
-        phone-devel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220221194958.117361-1-virag.david003@gmail.com>
- <20220221194958.117361-2-virag.david003@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220221194958.117361-2-virag.david003@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <84e354ec-cfbf-a23f-ddd5-417d6f029873@amd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/02/2022 20:49, David Virag wrote:
-> Add initial Exynos7885 device tree nodes with dts for the Samsung Galaxy
-> A8 (2018), a.k.a. "jackpotlte", with model number "SM-A530F".
-> Currently this includes some clock support, UART support, and I2C nodes.
-> 
-> Signed-off-by: David Virag <virag.david003@gmail.com>
 
-I guess this goes with (from v5):
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+On 2/21/22 11:57 AM, Luben Tuikov wrote:
+> Hi Tom,
+>
+> This was already fixed with this patch, and LKML was CC-ed. See the CC tags in the patch below,
+>
+> commit 4f7d7cda90cbd7
+> Author: Luben Tuikov <luben.tuikov@amd.com>
+> Date:   Wed Feb 16 16:47:32 2022 -0500
+>
+>      drm/amdgpu: Fix ARM compilation warning
+>      
+>      Fix this ARM warning:
 
-Best regards,
-Krzysztof
+I glad it wasn't just mips ;)
+
+There have been a couple of build breaks with amdgpu recently.
+
+Nick asked about adding clang to your ci.
+
+Could at least one non x86_64 gcc also be added, maybe aarch64 ?
+
+Tom
+
+>      
+>      drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:664:35: warning: format '%ld'
+>      expects argument of type 'long int', but argument 4 has type 'size_t' {aka
+>      'unsigned int'} [-Wformat=]
+>      
+>      Cc: Alex Deucher <Alexander.Deucher@amd.com>
+>      Cc: kbuild-all@lists.01.org
+>      Cc: linux-kernel@vger.kernel.org
+>      Reported-by: kernel test robot <lkp@intel.com>
+>      Fixes: 7e60fbfbdc10a0 ("drm/amdgpu: Show IP discovery in sysfs")
+>      Signed-off-by: Luben Tuikov <luben.tuikov@amd.com>
+>      Acked-by: Alex Deucher <Alexander.Deucher@amd.com>
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+> index 2506bcf36c870c..6c7ec058125e1d 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+> @@ -668,7 +668,7 @@ static int amdgpu_discovery_sysfs_ips(struct amdgpu_device *adev,
+>                              le16_to_cpu(ip->hw_id) != ii)
+>                                  goto next_ip;
+>   
+> -                       DRM_DEBUG("match:%d @ ip_offset:%ld", ii, ip_offset);
+> +                       DRM_DEBUG("match:%d @ ip_offset:%zu", ii, ip_offset);
+>   
+>                          /* We have a hw_id match; register the hw
+>                           * block if not yet registered.
+>
+> Regards,
+> Luben
+>
+> On 2022-02-21 12:37, trix@redhat.com wrote:
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> On mips64 allyesconfig, there is this build break
+>> amdgpu_discovery.c:671:35: error: format '%ld' expects
+>>    argument of type 'long int', but argument 4 has
+>>    type 'size_t' {aka 'unsigned int'}
+>>    DRM_DEBUG("match:%d @ ip_offset:%ld", ii, ip_offset);
+>>
+>> For size_t, use %zu.
+>>
+>> Fixes: a6c40b178092 ("drm/amdgpu: Show IP discovery in sysfs")
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>   drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+>> index 7c7e28fd912e..58238f67b1d3 100644
+>> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+>> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+>> @@ -668,7 +668,7 @@ static int amdgpu_discovery_sysfs_ips(struct amdgpu_device *adev,
+>>   			    le16_to_cpu(ip->hw_id) != ii)
+>>   				goto next_ip;
+>>   
+>> -			DRM_DEBUG("match:%d @ ip_offset:%ld", ii, ip_offset);
+>> +			DRM_DEBUG("match:%d @ ip_offset:%zu", ii, ip_offset);
+>>   
+>>   			/* We have a hw_id match; register the hw
+>>   			 * block if not yet registered.
+> Regards,
+
