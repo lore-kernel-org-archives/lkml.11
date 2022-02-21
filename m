@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE51C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350156AbiBUJ3p (ORCPT
+        id S1350162AbiBUJ3u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:29:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36976 "EHLO
+        Mon, 21 Feb 2022 04:29:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350002AbiBUJV5 (ORCPT
+        with ESMTP id S1350081AbiBUJWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53A537003;
-        Mon, 21 Feb 2022 01:09:21 -0800 (PST)
+        Mon, 21 Feb 2022 04:22:04 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41F0377DE;
+        Mon, 21 Feb 2022 01:09:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7253A6077B;
-        Mon, 21 Feb 2022 09:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C8CC340E9;
-        Mon, 21 Feb 2022 09:09:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6B256CE0E77;
+        Mon, 21 Feb 2022 09:09:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499B2C340E9;
+        Mon, 21 Feb 2022 09:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434560;
-        bh=Vz4WDZtoUOzAcf9QAL9mQykts41Q8Xh0KlaY1mwEN2o=;
+        s=korg; t=1645434563;
+        bh=u2BL9KfYaOeHl3fDuBSVd0eyNFAA6AtmARcIQBuaaPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LQ7NzSrQaDEyJflxgDs0y9W3BFlRrnnoqU6tW9vw9rV2DFiRLYi73d9S43pCqkbhB
-         5W4ST+dMiU2+04+ib6yuB3ec1hcGAeR6lCsBjdpJ1TcqhXQRo8zNFNDLxAK5ebV6k8
-         LwvQOCK3Lq0SMQ4XwW5TvkCS5C1P/7u/TnS6YRTg=
+        b=Ws+pCJGHtvAZF2cGOY2rX9jtauEd55jzQm82prr4p00CInVj+cx1Zb99rlxpjY3GW
+         6zaGyVLdU7jAxAlqhR4mOtLkXStCAEE1bnD3fWyGfiR9znAFNoqIKHFSw84uOoG+1u
+         2OQRm+faprCoz/7eaeuLRGTDdfbRIp49fWZqZI78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Long Li <longli@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Wei Liu <wei.liu@kernel.org>
-Subject: [PATCH 5.15 018/196] PCI: hv: Fix NUMA node assignment when kernel boots with custom NUMA topology
-Date:   Mon, 21 Feb 2022 09:47:30 +0100
-Message-Id: <20220221084931.498848452@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 009/196] parisc: Drop __init from map_pages declaration
+Date:   Mon, 21 Feb 2022 09:47:21 +0100
+Message-Id: <20220221084931.206852763@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,49 +49,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Long Li <longli@microsoft.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit 3149efcdf2c6314420c418dfc94de53bfd076b1f upstream.
+commit 9129886b88185962538180625ca8051362b01327 upstream.
 
-When kernel boots with a NUMA topology with some NUMA nodes offline, the PCI
-driver should only set an online NUMA node on the device. This can happen
-during KDUMP where some NUMA nodes are not made online by the KDUMP kernel.
+With huge kernel pages, we randomly eat a SPARC in map_pages(). This
+is fixed by dropping __init from the declaration.
 
-This patch also fixes the case where kernel is booting with "numa=off".
+However, map_pages references the __init routine memblock_alloc_try_nid
+via memblock_alloc.  Thus, it needs to be marked with __ref.
 
-Fixes: 999dd956d838 ("PCI: hv: Add support for protocol 1.3 and support PCI_BUS_RELATIONS2")
-Signed-off-by: Long Li <longli@microsoft.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Tested-by: Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/1643247814-15184-1-git-send-email-longli@linuxonhyperv.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+memblock_alloc is only called before the kernel text is set to readonly.
+
+The __ref on free_initmem is no longer needed.
+
+Comment regarding map_pages being in the init section is removed.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org # v5.4+
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ arch/parisc/mm/init.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1899,8 +1899,17 @@ static void hv_pci_assign_numa_node(stru
- 		if (!hv_dev)
- 			continue;
+--- a/arch/parisc/mm/init.c
++++ b/arch/parisc/mm/init.c
+@@ -341,9 +341,9 @@ static void __init setup_bootmem(void)
  
--		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY)
--			set_dev_node(&dev->dev, hv_dev->desc.virtual_numa_node);
-+		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY &&
-+		    hv_dev->desc.virtual_numa_node < num_possible_nodes())
-+			/*
-+			 * The kernel may boot with some NUMA nodes offline
-+			 * (e.g. in a KDUMP kernel) or with NUMA disabled via
-+			 * "numa=off". In those cases, adjust the host provided
-+			 * NUMA node to a valid NUMA node used by the kernel.
-+			 */
-+			set_dev_node(&dev->dev,
-+				     numa_map_to_online_node(
-+					     hv_dev->desc.virtual_numa_node));
+ static bool kernel_set_to_readonly;
  
- 		put_pcichild(hv_dev);
- 	}
+-static void __init map_pages(unsigned long start_vaddr,
+-			     unsigned long start_paddr, unsigned long size,
+-			     pgprot_t pgprot, int force)
++static void __ref map_pages(unsigned long start_vaddr,
++			    unsigned long start_paddr, unsigned long size,
++			    pgprot_t pgprot, int force)
+ {
+ 	pmd_t *pmd;
+ 	pte_t *pg_table;
+@@ -453,7 +453,7 @@ void __init set_kernel_text_rw(int enabl
+ 	flush_tlb_all();
+ }
+ 
+-void __ref free_initmem(void)
++void free_initmem(void)
+ {
+ 	unsigned long init_begin = (unsigned long)__init_begin;
+ 	unsigned long init_end = (unsigned long)__init_end;
+@@ -467,7 +467,6 @@ void __ref free_initmem(void)
+ 	/* The init text pages are marked R-X.  We have to
+ 	 * flush the icache and mark them RW-
+ 	 *
+-	 * This is tricky, because map_pages is in the init section.
+ 	 * Do a dummy remap of the data section first (the data
+ 	 * section is already PAGE_KERNEL) to pull in the TLB entries
+ 	 * for map_kernel */
 
 
