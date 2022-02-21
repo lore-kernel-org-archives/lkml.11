@@ -2,91 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28908C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC28C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345872AbiBUIyU (ORCPT
+        id S1345877AbiBUIyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:54:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43196 "EHLO
+        Mon, 21 Feb 2022 03:54:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345629AbiBUIxT (ORCPT
+        with ESMTP id S1345398AbiBUIxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:53:19 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167B6193E7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:51 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9600E1093;
+        Mon, 21 Feb 2022 00:52:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id ED9EB223F0;
-        Mon, 21 Feb 2022 09:52:48 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433569;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hmo81Sb3vYtqKwqBd4CJg7BRHgMci0G5Rym0Baoee0U=;
-        b=Cj4+KySZw3sulmGqPSfPjhZ0OLoSBRtGuq7rUQmGN65ntKdWtFCmARaS6GEtfSgjuF81kq
-        wSRhf60y5iR0QpTi1+wINTCdsb8n7RGiZ2yRIrMp+rTj/CRBqyrqwVpQG4FVrga95n9Kdb
-        ZIPw+WBYfZ9u5yy+XE1zEmKFpP+PlMo=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 04/32] mtd: spi-nor: esmt: unify function names
-Date:   Mon, 21 Feb 2022 09:52:08 +0100
-Message-Id: <20220221085236.1452024-5-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3107961132;
+        Mon, 21 Feb 2022 08:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E421C340E9;
+        Mon, 21 Feb 2022 08:52:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433567;
+        bh=CiNSoGFlVE7Yc/N15ISxD4jbOC0FtDELKkzSvEf6aAY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Yc/EknQW6tKHsiPzBi8koqaJIa/vnXeio1UE6CS3osLkqsx0HQ3lnxEae6ScP5+lb
+         8bC28EjlrnSEmaC25xXFtITIwbyL/1D/CgedTJNiwgIo/GXU2uHAE3nF0ofPqT7KVG
+         CgrmgIX/nr2MzACPPXJDe4SNSzsRyxUlV1jeU5zY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 11/45] ax25: improve the incomplete fix to avoid UAF and NPD bugs
+Date:   Mon, 21 Feb 2022 09:49:02 +0100
+Message-Id: <20220221084910.834764470@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid name clashes unify all the function and static object names and
-use one of the following prefixes which should be sufficiently unique:
- - <vendor>_nor_
- - <flash_family>_nor_
- - <flash_part>_
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-There are no functional changes.
+[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
+AX25 device") introduce lock_sock() into ax25_kill_by_device to
+prevent NPD bug. But the concurrency NPD or UAF bug will occur,
+when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+
+The NULL pointer dereference bug can be shown as below:
+
+ax25_kill_by_device()        | ax25_release()
+                             |   ax25_destroy_socket()
+                             |     ax25_cb_del()
+  ...                        |     ...
+                             |     ax25->sk=NULL;
+  lock_sock(s->sk); //(1)    |
+  s->ax25_dev = NULL;        |     ...
+  release_sock(s->sk); //(2) |
+  ...                        |
+
+The root cause is that the sock is set to null before dereference
+site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
+in advance, and uses ax25_list_lock to protect it, which can synchronize
+with ax25_cb_del() and ensure the value of sock is not null before
+dereference sites.
+
+The concurrency UAF bug can be shown as below:
+
+ax25_kill_by_device()        | ax25_release()
+                             |   ax25_destroy_socket()
+  ...                        |   ...
+                             |   sock_put(sk); //FREE
+  lock_sock(s->sk); //(1)    |
+  s->ax25_dev = NULL;        |   ...
+  release_sock(s->sk); //(2) |
+  ...                        |
+
+The root cause is that the sock is released before dereference
+site (1) or (2). Therefore, this patch uses sock_hold() to increase
+the refcount of sock and uses ax25_list_lock to protect it, which
+can synchronize with ax25_cb_del() in ax25_destroy_socket() and
+ensure the sock wil not be released before dereference sites.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/spi-nor/esmt.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ax25/af_ax25.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/esmt.c b/drivers/mtd/spi-nor/esmt.c
-index ace1da221566..79e2408f4998 100644
---- a/drivers/mtd/spi-nor/esmt.c
-+++ b/drivers/mtd/spi-nor/esmt.c
-@@ -8,7 +8,7 @@
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 0232afd9d9c3c..36d2e1dfa1e6b 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -80,6 +80,7 @@ static void ax25_kill_by_device(struct net_device *dev)
+ {
+ 	ax25_dev *ax25_dev;
+ 	ax25_cb *s;
++	struct sock *sk;
  
- #include "core.h"
- 
--static const struct flash_info esmt_parts[] = {
-+static const struct flash_info esmt_nor_parts[] = {
- 	/* ESMT */
- 	{ "f25l32pa", INFO(0x8c2016, 0, 64 * 1024, 64)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
-@@ -23,6 +23,6 @@ static const struct flash_info esmt_parts[] = {
- 
- const struct spi_nor_manufacturer spi_nor_esmt = {
- 	.name = "esmt",
--	.parts = esmt_parts,
--	.nparts = ARRAY_SIZE(esmt_parts),
-+	.parts = esmt_nor_parts,
-+	.nparts = ARRAY_SIZE(esmt_nor_parts),
- };
+ 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
+ 		return;
+@@ -88,13 +89,15 @@ static void ax25_kill_by_device(struct net_device *dev)
+ again:
+ 	ax25_for_each(s, &ax25_list) {
+ 		if (s->ax25_dev == ax25_dev) {
++			sk = s->sk;
++			sock_hold(sk);
+ 			spin_unlock_bh(&ax25_list_lock);
+-			lock_sock(s->sk);
++			lock_sock(sk);
+ 			s->ax25_dev = NULL;
+-			release_sock(s->sk);
++			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
+ 			spin_lock_bh(&ax25_list_lock);
+-
++			sock_put(sk);
+ 			/* The entry could have been deleted from the
+ 			 * list meanwhile and thus the next pointer is
+ 			 * no longer valid.  Play it safe and restart
 -- 
-2.30.2
+2.34.1
+
+
 
