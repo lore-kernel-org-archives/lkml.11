@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B116C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351233AbiBUJn3 (ORCPT
+        id S1351237AbiBUJnc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:43:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48728 "EHLO
+        Mon, 21 Feb 2022 04:43:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351347AbiBUJhA (ORCPT
+        with ESMTP id S1351362AbiBUJhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96EC2E088;
-        Mon, 21 Feb 2022 01:15:41 -0800 (PST)
+        Mon, 21 Feb 2022 04:37:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDA815A38;
+        Mon, 21 Feb 2022 01:15:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D3E60ED4;
-        Mon, 21 Feb 2022 09:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D7ADC340E9;
-        Mon, 21 Feb 2022 09:15:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52A4360C1D;
+        Mon, 21 Feb 2022 09:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39414C340E9;
+        Mon, 21 Feb 2022 09:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434939;
-        bh=7/FBbwrvHWUltZ4Jxxrkk2lhlNEV2NohBiXF+5Bj8II=;
+        s=korg; t=1645434924;
+        bh=ZD01o9rSSE8LUE0dVcK7GaEZOVJK7nnDEiRaEzbfzEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zn03hV+92fPA/KDU27CMmNBNyzd1ncBfrkNfCnLRHACZ5gWsosX+hOSX1Ds+hzBb0
-         7fN4hK4dcOgo45fw4IJ/rwksyu+8Q0Fo6UGoBTivbi+g8BzQkrYIm+/t7dP+Pc/+v8
-         DA1H6mWGFDVn4huBc8b/5ooLExPsqGDiugsKBBy8=
+        b=f2dI+tP9N8QiNdepq3bUIwu49qnvTpijgDH7xnTXoZWtNVq74oaZnsU8AE1sysMOu
+         /skaV6dXLwVfT/xr60BRWRa6UwfNZbz35w2YPRG6ShTMMNuXTzhXW5Y32CetrfSe0g
+         l5XodPFikYOSF2PBQw0pVV4WJ0M0k6PQNlp8Ptm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 183/196] ucounts: Move RLIMIT_NPROC handling after set_user
-Date:   Mon, 21 Feb 2022 09:50:15 +0100
-Message-Id: <20220221084937.065172247@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Anup Patel <anup@brainfault.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 152/196] irqchip/sifive-plic: Add missing thead,c900-plic match string
+Date:   Mon, 21 Feb 2022 09:49:44 +0100
+Message-Id: <20220221084936.014638002@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -48,89 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit c923a8e7edb010da67424077cbf1a6f1396ebd2e upstream.
+[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
 
-During set*id() which cred->ucounts to charge the the current process
-to is not known until after set_cred_ucounts.  So move the
-RLIMIT_NPROC checking into a new helper flag_nproc_exceeded and call
-flag_nproc_exceeded after set_cred_ucounts.
+The thead,c900-plic has been used in opensbi to distinguish
+PLIC [1]. Although PLICs have the same behaviors in Linux,
+they are different hardware with some custom initializing in
+firmware(opensbi).
 
-This is very much an arbitrary subset of the places where we currently
-change the RLIMIT_NPROC accounting, designed to preserve the existing
-logic.
+Qute opensbi patch commit-msg by Samuel:
 
-Fixing the existing logic will be the subject of another series of
-changes.
+  The T-HEAD PLIC implementation requires setting a delegation bit
+  to allow access from S-mode. Now that the T-HEAD PLIC has its own
+  compatible string, set this bit automatically from the PLIC driver,
+  instead of reaching into the PLIC's MMIO space from another driver.
 
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220216155832.680775-4-ebiederm@xmission.com
-Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Cc: Anup Patel <anup@brainfault.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Samuel Holland <samuel@sholland.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sys.c |   19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ drivers/irqchip/irq-sifive-plic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -472,6 +472,16 @@ static int set_user(struct cred *new)
- 	if (!new_user)
- 		return -EAGAIN;
+diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
+index 259065d271ef0..09cc98266d30f 100644
+--- a/drivers/irqchip/irq-sifive-plic.c
++++ b/drivers/irqchip/irq-sifive-plic.c
+@@ -398,3 +398,4 @@ static int __init plic_init(struct device_node *node,
  
-+	free_uid(new->user);
-+	new->user = new_user;
-+	return 0;
-+}
-+
-+static void flag_nproc_exceeded(struct cred *new)
-+{
-+	if (new->ucounts == current_ucounts())
-+		return;
-+
- 	/*
- 	 * We don't fail in case of NPROC limit excess here because too many
- 	 * poorly written programs don't check set*uid() return code, assuming
-@@ -480,14 +490,10 @@ static int set_user(struct cred *new)
- 	 * failure to the execve() stage.
- 	 */
- 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
--			new_user != INIT_USER)
-+			new->user != INIT_USER)
- 		current->flags |= PF_NPROC_EXCEEDED;
- 	else
- 		current->flags &= ~PF_NPROC_EXCEEDED;
--
--	free_uid(new->user);
--	new->user = new_user;
--	return 0;
- }
- 
- /*
-@@ -562,6 +568,7 @@ long __sys_setreuid(uid_t ruid, uid_t eu
- 	if (retval < 0)
- 		goto error;
- 
-+	flag_nproc_exceeded(new);
- 	return commit_creds(new);
- 
- error:
-@@ -624,6 +631,7 @@ long __sys_setuid(uid_t uid)
- 	if (retval < 0)
- 		goto error;
- 
-+	flag_nproc_exceeded(new);
- 	return commit_creds(new);
- 
- error:
-@@ -703,6 +711,7 @@ long __sys_setresuid(uid_t ruid, uid_t e
- 	if (retval < 0)
- 		goto error;
- 
-+	flag_nproc_exceeded(new);
- 	return commit_creds(new);
- 
- error:
+ IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
+ IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
++IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+-- 
+2.34.1
+
 
 
