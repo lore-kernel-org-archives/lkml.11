@@ -2,69 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9731BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 03:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 03:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344322AbiBUDks (ORCPT
+        id S1344319AbiBUDmj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 22:40:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38638 "EHLO
+        Sun, 20 Feb 2022 22:42:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiBUDkn (ORCPT
+        with ESMTP id S1344202AbiBUDmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 22:40:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BF151331;
-        Sun, 20 Feb 2022 19:40:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC65AB80DCD;
-        Mon, 21 Feb 2022 03:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F633C340E9;
-        Mon, 21 Feb 2022 03:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645414819;
-        bh=mOvCX6u+abSiUuhsoaVypqdnne4NQ17bIT2BYtNcIcw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mmEib9tLjEKL1jLwoEJX0pIWeCdntkr7n9x3segpilyuR8R/PidvhHEopoAC0ghvO
-         pbnde5MzWkegGtyw17cYdyBfrWQ6QHiFtRiTlOyRwAPfGQMETVk+vzVJKhVMw3xWQ4
-         k4d//5nHt/wJaY/BAAcZYrUs6lYgG5NDLaZXBEvZZTUCGtEi+8KiCG3LmOE7aOX96s
-         FNoEDmtK5zhVNdZPVSusj6bUX4CDTpEzWYjNap9z6axsdRBjwG4jtzuQQopNs/lEfR
-         0ZLQc2RqG4E+SdtJkD7lSbcT/AdZjefrsEvaA3x1X9YHfEvvTC30PzQOHMAizhyiOr
-         A0J3fEGYufKrw==
-Date:   Sun, 20 Feb 2022 19:40:17 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tytso@mit.edu, linux@dominikbrodowski.net
-Subject: Re: [PATCH v2 8/9] random: use hash function for crng_slow_load()
-Message-ID: <YhMJoYykeNTVpz7w@sol.localdomain>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
- <20220209011919.493762-9-Jason@zx2c4.com>
+        Sun, 20 Feb 2022 22:42:37 -0500
+X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Feb 2022 19:42:06 PST
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82A0D3C70E
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 19:42:06 -0800 (PST)
+X-MailGates: (compute_score:DELIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26028:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Mon, 21 Feb 2022 11:29:23 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     robh+dt@kernel.org
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, tglx@linutronix.de,
+        maz@kernel.org, p.zabel@pengutronix.de, linux@armlinux.org.uk,
+        broonie@kernel.org, arnd@arndb.de, stefan.wahren@i2se.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        wells.lu@sunplus.com, Qin Jian <qinjian@cqplus1.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for Sunplus SP7021 SoC boards
+Date:   Mon, 21 Feb 2022 11:29:13 +0800
+Message-Id: <87cc20bb3ef747c4da89f9e60c0847532bb0a679.1645413746.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1645413746.git.qinjian@cqplus1.com>
+References: <cover.1645413746.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209011919.493762-9-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 02:19:18AM +0100, Jason A. Donenfeld wrote:
-> Since we have a hash function that's really fast, and the goal of
-> crng_slow_load() is reportedly to "touch all of the crng's state", we
-> can just hash the old state together with the new state and call it a
-> day. This way we dont need to reason about another LFSR or worry about
-> various attacks there. This code is only ever used at early boot and
-> then never again.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 42 +++++++++++++++---------------------------
->  1 file changed, 15 insertions(+), 27 deletions(-)
+This introduces bindings for boards based Sunplus SP7021 SoC.
 
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ .../bindings/arm/sunplus,sp7021.yaml          | 27 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
 
-- Eric
+diff --git a/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+new file mode 100644
+index 000000000..5b9985b73
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/sunplus,sp7021.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 Boards Device Tree Bindings
++
++maintainers:
++  - qinjian <qinjian@cqplus1.com>
++
++description: |
++  ARM platforms using Sunplus SP7021, an ARM Cortex A7 (4-cores) based SoC.
++  Wiki: https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
++
++properties:
++  $nodename:
++    const: '/'
++  compatible:
++    oneOf:
++      - items:
++          - const: sunplus,sp7021-achip
++
++additionalProperties: true
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e0bca0de0..6a5422f10 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2655,6 +2655,13 @@ F:	drivers/clocksource/armv7m_systick.c
+ N:	stm32
+ N:	stm
+ 
++ARM/SUNPLUS SP7021 SOC SUPPORT
++M:	Qin Jian <qinjian@cqplus1.com>
++L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
++S:	Maintained
++W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
++F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++
+ ARM/Synaptics SoC support
+ M:	Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+ M:	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+-- 
+2.33.1
+
