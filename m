@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 310EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348031AbiBUJRK (ORCPT
+        id S1347981AbiBUJRQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:17:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36734 "EHLO
+        Mon, 21 Feb 2022 04:17:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347650AbiBUJKH (ORCPT
+        with ESMTP id S1347862AbiBUJJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:10:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDE81D328;
-        Mon, 21 Feb 2022 01:02:34 -0800 (PST)
+        Mon, 21 Feb 2022 04:09:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD810BCB6;
+        Mon, 21 Feb 2022 01:01:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C443B80EAC;
-        Mon, 21 Feb 2022 09:02:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8016C340E9;
-        Mon, 21 Feb 2022 09:02:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40F8D6112B;
+        Mon, 21 Feb 2022 09:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 275E5C340E9;
+        Mon, 21 Feb 2022 09:01:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434152;
-        bh=GDe3jRGeoV8MhQkHc5TTNRZYGcruBsUt0qonQe0epg4=;
+        s=korg; t=1645434109;
+        bh=jpZH6xrh9hccXtiZXWyWHqnt+rfjkT9gFkXP6XsvMPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J006aznAibKs+SQbLxsw+By1HfDvWmFr4uXDoRHooLT/gEGld7FiuF9sgIsmh3n7v
-         YFq/xalR1L1RyPf+Qign8V24PtRENHVFx2GYnzybWKiAuiGRiBqocjt7MshZbpeKGc
-         daDVM7zjKNmpS1Vh31mvSgLdtoa5I/A12Zcc2JSY=
+        b=agi0BXEy6NlT8XYmL8wETOH7xpSsoQazZ4zTgYwXV1AqcwxYXzz7lyInjXkmIPBOC
+         I4TNr0Ti5sNuxPgkJfICg5U+yQMz/8+jdg9OzR0PT9MoOyzZQY6qD8DKzh28z4gkEB
+         u8omsYIJydnyfpooHt1QLJ0f+LCnT2dU9nn7CnZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 031/121] selftests: skip mincore.check_file_mmap when fs lacks needed support
-Date:   Mon, 21 Feb 2022 09:48:43 +0100
-Message-Id: <20220221084922.236450727@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Oded Gabbay <oded.gabbay@gmail.com>
+Subject: [PATCH 5.10 016/121] mm: dont try to NUMA-migrate COW pages that have other uses
+Date:   Mon, 21 Feb 2022 09:48:28 +0100
+Message-Id: <20220221084921.697909406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,66 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit dae1d8ac31896988e7313384c0370176a75e9b45 ]
+commit 80d47f5de5e311cbc0d01ebb6ee684e8f4c196c6 upstream.
 
-Report mincore.check_file_mmap as SKIP instead of FAIL if the underlying
-filesystem lacks support of O_TMPFILE or fallocate since such failures
-are not really related to mincore functionality.
+Oded Gabbay reports that enabling NUMA balancing causes corruption with
+his Gaudi accelerator test load:
 
-Cc: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ "All the details are in the bug, but the bottom line is that somehow,
+  this patch causes corruption when the numa balancing feature is
+  enabled AND we don't use process affinity AND we use GUP to pin pages
+  so our accelerator can DMA to/from system memory.
+
+  Either disabling numa balancing, using process affinity to bind to
+  specific numa-node or reverting this patch causes the bug to
+  disappear"
+
+and Oded bisected the issue to commit 09854ba94c6a ("mm: do_wp_page()
+simplification").
+
+Now, the NUMA balancing shouldn't actually be changing the writability
+of a page, and as such shouldn't matter for COW.  But it appears it
+does.  Suspicious.
+
+However, regardless of that, the condition for enabling NUMA faults in
+change_pte_range() is nonsensical.  It uses "page_mapcount(page)" to
+decide if a COW page should be NUMA-protected or not, and that makes
+absolutely no sense.
+
+The number of mappings a page has is irrelevant: not only does GUP get a
+reference to a page as in Oded's case, but the other mappings migth be
+paged out and the only reference to them would be in the page count.
+
+Since we should never try to NUMA-balance a page that we can't move
+anyway due to other references, just fix the code to use 'page_count()'.
+Oded confirms that that fixes his issue.
+
+Now, this does imply that something in NUMA balancing ends up changing
+page protections (other than the obvious one of making the page
+inaccessible to get the NUMA faulting information).  Otherwise the COW
+simplification wouldn't matter - since doing the GUP on the page would
+make sure it's writable.
+
+The cause of that permission change would be good to figure out too,
+since it clearly results in spurious COW events - but fixing the
+nonsensical test that just happened to work before is obviously the
+CorrectThing(tm) to do regardless.
+
+Fixes: 09854ba94c6a ("mm: do_wp_page() simplification")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215616
+Link: https://lore.kernel.org/all/CAFCwf10eNmwq2wD71xjUhqkvv5+_pJMR1nPug2RqNDcFT4H86Q@mail.gmail.com/
+Reported-and-tested-by: Oded Gabbay <oded.gabbay@gmail.com>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Peter Xu <peterx@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../selftests/mincore/mincore_selftest.c      | 20 +++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ mm/mprotect.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/mincore/mincore_selftest.c b/tools/testing/selftests/mincore/mincore_selftest.c
-index 5a1e85ff5d32a..2cf6f2f277ab8 100644
---- a/tools/testing/selftests/mincore/mincore_selftest.c
-+++ b/tools/testing/selftests/mincore/mincore_selftest.c
-@@ -208,15 +208,21 @@ TEST(check_file_mmap)
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -94,7 +94,7 @@ static unsigned long change_pte_range(st
  
- 	errno = 0;
- 	fd = open(".", O_TMPFILE | O_RDWR, 0600);
--	ASSERT_NE(-1, fd) {
--		TH_LOG("Can't create temporary file: %s",
--			strerror(errno));
-+	if (fd < 0) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Can't create temporary file: %s",
-+			       strerror(errno));
-+		}
-+		SKIP(goto out_free, "O_TMPFILE not supported by filesystem.");
- 	}
- 	errno = 0;
- 	retval = fallocate(fd, 0, 0, FILE_SIZE);
--	ASSERT_EQ(0, retval) {
--		TH_LOG("Error allocating space for the temporary file: %s",
--			strerror(errno));
-+	if (retval) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Error allocating space for the temporary file: %s",
-+			       strerror(errno));
-+		}
-+		SKIP(goto out_close, "fallocate not supported by filesystem.");
- 	}
+ 				/* Also skip shared copy-on-write pages */
+ 				if (is_cow_mapping(vma->vm_flags) &&
+-				    page_mapcount(page) != 1)
++				    page_count(page) != 1)
+ 					continue;
  
- 	/*
-@@ -272,7 +278,9 @@ TEST(check_file_mmap)
- 	}
- 
- 	munmap(addr, FILE_SIZE);
-+out_close:
- 	close(fd);
-+out_free:
- 	free(vec);
- }
- 
--- 
-2.34.1
-
+ 				/*
 
 
