@@ -2,90 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4909EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 042B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 17:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381703AbiBUR0v (ORCPT
+        id S1381708AbiBUR2T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 12:26:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58686 "EHLO
+        Mon, 21 Feb 2022 12:28:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236985AbiBUR0s (ORCPT
+        with ESMTP id S236985AbiBUR2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 12:26:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71FAE67;
-        Mon, 21 Feb 2022 09:26:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAAB36145B;
-        Mon, 21 Feb 2022 17:26:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E26DC340E9;
-        Mon, 21 Feb 2022 17:26:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645464384;
-        bh=qBj7d9tqvyTrDe+jWiLg29epXyfUz1hfeK++4JVGmVk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=M6kK0PUmEHFlsMnWb9+vjHramr2qb7w17MMGVH1XG7r33RWg1yWvRaKS2NMNNWZfN
-         3Ie7iVXOVTyipUk7BYbkGz7tcstInHR88fjKt3UCjVsXfU/wzkyI1sIKG96G67ltC7
-         MLVakHJI7Ae7Ux9jFq58fqBaW7B1NChs5PyvJJO1cJXbiOT0+xDDPt1ZHLR/duGjyK
-         nMuud5YTo60laoCJLEmNBGog0S0EMDsOfYg6fIyAiXhh5yYZ9nDjRmr5N7tpdhil56
-         dKZkrlXQci3XQnyGDp4IkTHtrPUAKrUyeQu7o95JfcQDowdAY6GVSzsV2M8KuHki+n
-         f+rPXNl5vTs+A==
-Date:   Mon, 21 Feb 2022 11:34:15 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] usbnet: gl620a: Replace one-element array with
- flexible-array member
-Message-ID: <20220221173415.GA1149599@embeddedor>
+        Mon, 21 Feb 2022 12:28:08 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C624419C02;
+        Mon, 21 Feb 2022 09:27:44 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8F5DB1063;
+        Mon, 21 Feb 2022 09:27:44 -0800 (PST)
+Received: from [10.57.40.147] (unknown [10.57.40.147])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D1663F70D;
+        Mon, 21 Feb 2022 09:27:42 -0800 (PST)
+Message-ID: <71e94ac3-20fc-6f41-270f-fe246740e7e0@arm.com>
+Date:   Mon, 21 Feb 2022 17:27:30 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
+Content-Language: en-GB
+To:     Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org,
+        robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+        linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-9-mperttunen@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220218113952.3077606-9-mperttunen@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use “flexible array members”[1] for these cases. The older
-style of one-element or zero-length arrays should no longer be used[2].
+On 2022-02-18 11:39, Mikko Perttunen via iommu wrote:
+> Implement the get_streamid_offset required for supporting context
+> isolation. Since old firmware cannot support context isolation
+> without hacks that we don't want to implement, check the firmware
+> binary to see if context isolation should be enabled.
+> 
+> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> ---
+>   drivers/gpu/drm/tegra/vic.c | 38 +++++++++++++++++++++++++++++++++++++
+>   1 file changed, 38 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+> index 1e342fa3d27b..2863ee5e0e67 100644
+> --- a/drivers/gpu/drm/tegra/vic.c
+> +++ b/drivers/gpu/drm/tegra/vic.c
+> @@ -38,6 +38,8 @@ struct vic {
+>   	struct clk *clk;
+>   	struct reset_control *rst;
+>   
+> +	bool can_use_context;
+> +
+>   	/* Platform configuration */
+>   	const struct vic_config *config;
+>   };
+> @@ -229,6 +231,7 @@ static int vic_load_firmware(struct vic *vic)
+>   {
+>   	struct host1x_client *client = &vic->client.base;
+>   	struct tegra_drm *tegra = vic->client.drm;
+> +	u32 fce_bin_data_offset;
+>   	dma_addr_t iova;
+>   	size_t size;
+>   	void *virt;
+> @@ -277,6 +280,25 @@ static int vic_load_firmware(struct vic *vic)
+>   		vic->falcon.firmware.phys = phys;
+>   	}
+>   
+> +	/*
+> +	 * Check if firmware is new enough to not require mapping firmware
+> +	 * to data buffer domains.
+> +	 */
+> +	fce_bin_data_offset = *(u32 *)(virt + VIC_UCODE_FCE_DATA_OFFSET);
+> +
+> +	if (!vic->config->supports_sid) {
+> +		vic->can_use_context = false;
+> +	} else if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 0xa5a5a5a5) {
+> +		/*
+> +		 * Firmware will access FCE through STREAMID0, so context
+> +		 * isolation cannot be used.
+> +		 */
+> +		vic->can_use_context = false;
+> +		dev_warn_once(vic->dev, "context isolation disabled due to old firmware\n");
+> +	} else {
+> +		vic->can_use_context = true;
+> +	}
+> +
+>   	return 0;
+>   
+>   cleanup:
+> @@ -358,10 +380,26 @@ static void vic_close_channel(struct tegra_drm_context *context)
+>   	host1x_channel_put(context->channel);
+>   }
+>   
+> +static int vic_get_streamid_offset(struct tegra_drm_client *client)
+> +{
+> +	struct vic *vic = to_vic(client);
+> +	int err;
+> +
+> +	err = vic_load_firmware(vic);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (vic->can_use_context)
+> +		return 0x30;
+> +	else
+> +		return -ENOTSUPP;
+> +}
+> +
+>   static const struct tegra_drm_client_ops vic_ops = {
+>   	.open_channel = vic_open_channel,
+>   	.close_channel = vic_close_channel,
+>   	.submit = tegra_drm_submit,
+> +	.get_streamid_offset = vic_get_streamid_offset,
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
+The patch order seems off here, since the .get_streamid_offset member 
+isn't defined yet.
 
-This issue was found with the help of Coccinelle and audited and fixed,
-manually.
+Robin.
 
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-
-Link: https://github.com/KSPP/linux/issues/79
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/usb/gl620a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/usb/gl620a.c b/drivers/net/usb/gl620a.c
-index 13a9a83b8538..46af78caf457 100644
---- a/drivers/net/usb/gl620a.c
-+++ b/drivers/net/usb/gl620a.c
-@@ -56,7 +56,7 @@
- 
- struct gl_packet {
- 	__le32		packet_length;
--	char		packet_data [1];
-+	char		packet_data[];
- };
- 
- struct gl_header {
--- 
-2.27.0
-
+>   };
+>   
+>   #define NVIDIA_TEGRA_124_VIC_FIRMWARE "nvidia/tegra124/vic03_ucode.bin"
