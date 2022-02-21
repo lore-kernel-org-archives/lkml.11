@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14389C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABB4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347277AbiBUJGL (ORCPT
+        id S1347361AbiBUJGS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:06:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59958 "EHLO
+        Mon, 21 Feb 2022 04:06:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348063AbiBUJCR (ORCPT
+        with ESMTP id S1348176AbiBUJCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333552AE31;
-        Mon, 21 Feb 2022 00:57:30 -0800 (PST)
+        Mon, 21 Feb 2022 04:02:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E9A2B242;
+        Mon, 21 Feb 2022 00:57:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FBA0B80EB0;
-        Mon, 21 Feb 2022 08:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC80C340E9;
-        Mon, 21 Feb 2022 08:57:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DE93B80EAF;
+        Mon, 21 Feb 2022 08:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F969C340E9;
+        Mon, 21 Feb 2022 08:57:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433825;
-        bh=ayBA+JOMEhE7qYzAKjNDLAdlwScjlpp/KMXI+tHUAZg=;
+        s=korg; t=1645433859;
+        bh=TanTU/HQXWpUVAY2S/Nii3BJF6WfDiYa98MzpohSQPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cy7Q1MIWjDS/I/9NU5xv7de7p03gkNQa8/GOr/bo2YGFT/enau8X/sRnNmEy7kZPB
-         HviXBaPI4uO5SeZCu85Ha5k36hZK0HZrUFJxfhBEKoxd5wLxmUtLTqXyfpB7ioevLV
-         OkIaVDf/A7e89of7gYQMeR4a1NnzUCcw7Cej4CHQ=
+        b=qA47XPeK8LenqPgHTMrEQXmtdJgKn1obmf0jZwE6WtRhZg9SuMz0oQufIJmctX2Vg
+         8uIzajpFlnI4BsvrVX1Sz/E+E9otNVDEjIy9qnntjczH7PgQTsYnggAS05MeglcDld
+         TkEnvGDR91Ff4Aq/gZuv/DetBlVsfg39yDnoeGr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.19 23/58] iwlwifi: pcie: fix locking when "HW not ready"
-Date:   Mon, 21 Feb 2022 09:49:16 +0100
-Message-Id: <20220221084912.631412691@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5.4 01/80] Makefile.extrawarn: Move -Wunaligned-access to W=1
+Date:   Mon, 21 Feb 2022 09:48:41 +0100
+Message-Id: <20220221084915.605586081@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
-References: <20220221084911.895146879@linuxfoundation.org>
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,34 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit e9848aed147708a06193b40d78493b0ef6abccf2 upstream.
+commit 1cf5f151d25fcca94689efd91afa0253621fb33a upstream.
 
-If we run into this error path, we shouldn't unlock the mutex
-since it's not locked since. Fix this.
+-Wunaligned-access is a new warning in clang that is default enabled for
+arm and arm64 under certain circumstances within the clang frontend (see
+LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
+1284 total/70 unique instances of this warning (most of the instances
+are in header files), which is quite noisy.
 
-Fixes: a6bd005fe92d ("iwlwifi: pcie: fix RF-Kill vs. firmware load race")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/iwlwifi.20220128142706.5d16821d1433.Id259699ddf9806459856d6aefbdbe54477aecffd@changeid
+To keep a normal build green through CONFIG_WERROR, only show this
+warning with W=1, which will allow automated build systems to catch new
+instances of the warning so that the total number can be driven down to
+zero eventually since catching unaligned accesses at compile time would
+be generally useful.
+
+Cc: stable@vger.kernel.org
+Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
+Link: https://github.com/ClangBuiltLinux/linux/issues/1569
+Link: https://github.com/ClangBuiltLinux/linux/issues/1576
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[nathan: Fix conflict due to lack of afe956c577b2d]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -1363,8 +1363,7 @@ static int iwl_trans_pcie_start_fw(struc
- 	/* This may fail if AMT took ownership of the device */
- 	if (iwl_pcie_prepare_card_hw(trans)) {
- 		IWL_WARN(trans, "Exit HW not ready\n");
--		ret = -EIO;
--		goto out;
-+		return -EIO;
- 	}
+---
+ scripts/Makefile.extrawarn |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -49,6 +49,7 @@ KBUILD_CFLAGS += -Wno-format
+ KBUILD_CFLAGS += -Wno-sign-compare
+ KBUILD_CFLAGS += -Wno-format-zero-length
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
++KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
+ endif
  
- 	iwl_enable_rfkill_int(trans);
+ endif
 
 
