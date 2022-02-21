@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4025C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348024AbiBUJPZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:15:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34776 "EHLO
+        id S239073AbiBUJP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:15:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347777AbiBUJJO (ORCPT
+        with ESMTP id S240863AbiBUJJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D4E60E0;
-        Mon, 21 Feb 2022 01:01:40 -0800 (PST)
+        Mon, 21 Feb 2022 04:09:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0912264F3;
+        Mon, 21 Feb 2022 01:01:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59EB9B80EB3;
-        Mon, 21 Feb 2022 09:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91ADFC340E9;
-        Mon, 21 Feb 2022 09:01:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ACC76112B;
+        Mon, 21 Feb 2022 09:01:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82872C340E9;
+        Mon, 21 Feb 2022 09:01:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434098;
-        bh=D5BeF7ORIpjrg18ZTSztcItjTnnVDILUKmtchbDAmlo=;
+        s=korg; t=1645434104;
+        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rxU0CEFMa+A9ernkeyRCMm68r0kBAoIurTnGsFRMgzohv/pkvTVNthJb3jEyXae9z
-         DWYamrwWX+79GA/AB9RZO2dFKRDjTu7l1m8NFb0Myk3eGh0YtljBfirsgMpMO0ZG7m
-         7EqdE3tvstdMnF/o55mRnBJ6B4rQK39rk3g19TmU=
+        b=iFUuudVPf2bBrP2Y7D9gIock/ItKDTMOBnQ6nBOHd/FSLsqBTig2Je9l6x+lP+TfO
+         n4u11egMOSHx7BtYM/pq350DcB6TJ5KOOicncKl+2KpNpJNk7Ayx2FeBNQ8cP/BXj/
+         EpFckTBjqg7ktEKlUdxfUJigTFGzRvFlsuLq+jt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
         Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 012/121] parisc: Drop __init from map_pages declaration
-Date:   Mon, 21 Feb 2022 09:48:24 +0100
-Message-Id: <20220221084921.559838914@linuxfoundation.org>
+Subject: [PATCH 5.10 014/121] parisc: Fix sglist access in ccio-dma.c
+Date:   Mon, 21 Feb 2022 09:48:26 +0100
+Message-Id: <20220221084921.629623675@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,59 +50,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: John David Anglin <dave.anglin@bell.net>
 
-commit 9129886b88185962538180625ca8051362b01327 upstream.
+commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
 
-With huge kernel pages, we randomly eat a SPARC in map_pages(). This
-is fixed by dropping __init from the declaration.
-
-However, map_pages references the __init routine memblock_alloc_try_nid
-via memblock_alloc.  Thus, it needs to be marked with __ref.
-
-memblock_alloc is only called before the kernel text is set to readonly.
-
-The __ref on free_initmem is no longer needed.
-
-Comment regarding map_pages being in the init section is removed.
+This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
+It ensures that only the allocated entries of the sglist are accessed.
 
 Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org # v5.4+
+Cc: stable@vger.kernel.org
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/mm/init.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/parisc/ccio-dma.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/parisc/mm/init.c
-+++ b/arch/parisc/mm/init.c
-@@ -346,9 +346,9 @@ static void __init setup_bootmem(void)
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 	ioc->usg_calls++;
+ #endif
  
- static bool kernel_set_to_readonly;
+-	while(sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
  
--static void __init map_pages(unsigned long start_vaddr,
--			     unsigned long start_paddr, unsigned long size,
--			     pgprot_t pgprot, int force)
-+static void __ref map_pages(unsigned long start_vaddr,
-+			    unsigned long start_paddr, unsigned long size,
-+			    pgprot_t pgprot, int force)
- {
- 	pmd_t *pmd;
- 	pte_t *pg_table;
-@@ -458,7 +458,7 @@ void __init set_kernel_text_rw(int enabl
- 	flush_tlb_all();
- }
+ #ifdef CCIO_COLLECT_STATS
+ 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
+@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
+ 		ccio_unmap_page(dev, sg_dma_address(sglist),
+ 				  sg_dma_len(sglist), direction, 0);
+ 		++sglist;
++		nents--;
+ 	}
  
--void __ref free_initmem(void)
-+void free_initmem(void)
- {
- 	unsigned long init_begin = (unsigned long)__init_begin;
- 	unsigned long init_end = (unsigned long)__init_end;
-@@ -472,7 +472,6 @@ void __ref free_initmem(void)
- 	/* The init text pages are marked R-X.  We have to
- 	 * flush the icache and mark them RW-
- 	 *
--	 * This is tricky, because map_pages is in the init section.
- 	 * Do a dummy remap of the data section first (the data
- 	 * section is already PAGE_KERNEL) to pull in the TLB entries
- 	 * for map_kernel */
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
 
 
