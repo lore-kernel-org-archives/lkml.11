@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585D0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:23:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349023AbiBUJXj (ORCPT
+        id S1349086AbiBUJXp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:23:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33876 "EHLO
+        Mon, 21 Feb 2022 04:23:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349390AbiBUJMY (ORCPT
+        with ESMTP id S1349356AbiBUJMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:24 -0500
+        Mon, 21 Feb 2022 04:12:22 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACDA2BB08;
-        Mon, 21 Feb 2022 01:05:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403622B26B;
+        Mon, 21 Feb 2022 01:05:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7473DCE0E77;
-        Mon, 21 Feb 2022 09:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68678C340E9;
-        Mon, 21 Feb 2022 09:05:11 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B105CCE0E89;
+        Mon, 21 Feb 2022 09:05:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90CBEC340E9;
+        Mon, 21 Feb 2022 09:05:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434311;
-        bh=BwN+w4h2VZEKhGNP1surtVczvg8sqWYqM7akq4g9dEQ=;
+        s=korg; t=1645434309;
+        bh=aK5WrDo+aEP63iaa5Ahj4m2YzjMqVpO8HdxIG1B/vQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hB2GwNOTZeZv5GMuM+MZHUbOgUpdzWTWjOHeD6APzUScCeJLzeXgRkg1LXhYGyxv5
-         dClTzVFVjqqqHEquz8BEfUQztaLNj/eT5mdtSSrdi1rDjscAylN2q4i1puJwaYBUtv
-         SxUwYInXJBKTBC8sGZIbgzcTxWOOpnB3yzEJBD8Q=
+        b=zsEMGED3NVbEfJZAZJLXug01cuCqGWIR+voMvWOG1AwKlC1+CTjCY71n9n5FfgMkI
+         beTmizmLHQo28qWQcZ9FZ9UBkVXVE39R8xt8CwFuBUnTVfHHQlP31K2E0bkBoSsdsn
+         uPcAw5lDq6J5Yjed/9jUfNztxMyDkGZI0sqPb2wA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 058/121] net: dsa: lantiq_gswip: fix use after free in gswip_remove()
-Date:   Mon, 21 Feb 2022 09:49:10 +0100
-Message-Id: <20220221084923.182435760@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Gibson <metalcaedes@gmail.com>
+Subject: [PATCH 5.10 084/121] tty: n_tty: do not look ahead for EOL character past the end of the buffer
+Date:   Mon, 21 Feb 2022 09:49:36 +0100
+Message-Id: <20220221084924.052613384@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -49,34 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 8c6ae46150a453f8ae9a6cd49b45f354f478587d upstream.
+commit 3593030761630e09200072a4bd06468892c27be3 upstream.
 
-of_node_put(priv->ds->slave_mii_bus->dev.of_node) should be
-done before mdiobus_free(priv->ds->slave_mii_bus).
+Daniel Gibson reports that the n_tty code gets line termination wrong in
+very specific cases:
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Fixes: 0d120dfb5d67 ("net: dsa: lantiq_gswip: don't use devres for mdiobus")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/1644921768-26477-1-git-send-email-khoroshilov@ispras.ru
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ "If you feed a line with exactly 64 chars + terminating newline, and
+  directly afterwards (without reading) another line into a pseudo
+  terminal, the the first read() on the other side will return the 64
+  char line *without* terminating newline, and the next read() will
+  return the missing terminating newline AND the complete next line (if
+  it fits in the buffer)"
+
+and bisected the behavior to commit 3b830a9c34d5 ("tty: convert
+tty_ldisc_ops 'read()' function to take a kernel pointer").
+
+Now, digging deeper, it turns out that the behavior isn't exactly new:
+what changed in commit 3b830a9c34d5 was that the tty line discipline
+.read() function is now passed an intermediate kernel buffer rather than
+the final user space buffer.
+
+And that intermediate kernel buffer is 64 bytes in size - thus that
+special case with exactly 64 bytes plus terminating newline.
+
+The same problem did exist before, but historically the boundary was not
+the 64-byte chunk, but the user-supplied buffer size, which is obviously
+generally bigger (and potentially bigger than N_TTY_BUF_SIZE, which
+would hide the issue entirely).
+
+The reason is that the n_tty canon_copy_from_read_buf() code would look
+ahead for the EOL character one byte further than it would actually
+copy.  It would then decide that it had found the terminator, and unmark
+it as an EOL character - which in turn explains why the next read
+wouldn't then be terminated by it.
+
+Now, the reason it did all this in the first place is related to some
+historical and pretty obscure EOF behavior, see commit ac8f3bf8832a
+("n_tty: Fix poll() after buffer-limited eof push read") and commit
+40d5e0905a03 ("n_tty: Fix EOF push handling").
+
+And the reason for the EOL confusion is that we treat EOF as a special
+EOL condition, with the EOL character being NUL (aka "__DISABLED_CHAR"
+in the kernel sources).
+
+So that EOF look-ahead also affects the normal EOL handling.
+
+This patch just removes the look-ahead that causes problems, because EOL
+is much more critical than the historical "EOF in the middle of a line
+that coincides with the end of the buffer" handling ever was.
+
+Now, it is possible that we should indeed re-introduce the "look at next
+character to see if it's a EOF" behavior, but if so, that should be done
+not at the kernel buffer chunk boundary in canon_copy_from_read_buf(),
+but at a higher level, when we run out of the user buffer.
+
+In particular, the place to do that would be at the top of
+'n_tty_read()', where we check if it's a continuation of a previously
+started read, and there is no more buffer space left, we could decide to
+just eat the __DISABLED_CHAR at that point.
+
+But that would be a separate patch, because I suspect nobody actually
+cares, and I'd like to get a report about it before bothering.
+
+Fixes: 3b830a9c34d5 ("tty: convert tty_ldisc_ops 'read()' function to take a kernel pointer")
+Fixes: ac8f3bf8832a ("n_tty: Fix  poll() after buffer-limited eof push read")
+Fixes: 40d5e0905a03 ("n_tty: Fix EOF push handling")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215611
+Reported-and-tested-by: Daniel Gibson <metalcaedes@gmail.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/lantiq_gswip.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_tty.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -2114,8 +2114,8 @@ static int gswip_remove(struct platform_
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2024,7 +2024,7 @@ static bool canon_copy_from_read_buf(str
+ 		return false;
  
- 	if (priv->ds->slave_mii_bus) {
- 		mdiobus_unregister(priv->ds->slave_mii_bus);
--		mdiobus_free(priv->ds->slave_mii_bus);
- 		of_node_put(priv->ds->slave_mii_bus->dev.of_node);
-+		mdiobus_free(priv->ds->slave_mii_bus);
- 	}
+ 	canon_head = smp_load_acquire(&ldata->canon_head);
+-	n = min(*nr + 1, canon_head - ldata->read_tail);
++	n = min(*nr, canon_head - ldata->read_tail);
  
- 	for (i = 0; i < priv->num_gphy_fw; i++)
+ 	tail = ldata->read_tail & (N_TTY_BUF_SIZE - 1);
+ 	size = min_t(size_t, tail + n, N_TTY_BUF_SIZE);
+@@ -2046,10 +2046,8 @@ static bool canon_copy_from_read_buf(str
+ 		n += N_TTY_BUF_SIZE;
+ 	c = n + found;
+ 
+-	if (!found || read_buf(ldata, eol) != __DISABLED_CHAR) {
+-		c = min(*nr, c);
++	if (!found || read_buf(ldata, eol) != __DISABLED_CHAR)
+ 		n = c;
+-	}
+ 
+ 	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu tail:%zu more:%zu\n",
+ 		    __func__, eol, found, n, c, tail, more);
 
 
