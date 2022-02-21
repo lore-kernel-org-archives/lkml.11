@@ -2,104 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E58FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357538AbiBUMMF (ORCPT
+        id S1357552AbiBUMMO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:12:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41054 "EHLO
+        Mon, 21 Feb 2022 07:12:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357354AbiBUMJD (ORCPT
+        with ESMTP id S1357339AbiBUMJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:09:03 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6541A205C8
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:34 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C7CF42244F;
-        Mon, 21 Feb 2022 13:08:32 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645445312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BUHjRq3B/3JjsHlcHc+UiOV+3YaaqpA1vvTF3QO9238=;
-        b=doGpxk+b7xf6u2c6+9lQDIXwDrIq7JeBZE9K+Da7uW7Urd+Nd0Yw3u7OJPneSWE0LCVbgt
-        WE81ROjoQcx10W5NYaXhxO9e6YBXXZH2bxSPJ39FFcT5MaHe4W0tQKPJWXrmdSVa14YcLy
-        6MzXgWmBkCWZSeRNVbeAZCv+jj0XBc4=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 32/32] mtd: spi-nor: renumber flags
-Date:   Mon, 21 Feb 2022 13:08:09 +0100
-Message-Id: <20220221120809.1531502-33-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221120809.1531502-1-michael@walle.cc>
-References: <20220221120809.1531502-1-michael@walle.cc>
+        Mon, 21 Feb 2022 07:09:05 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995AF201B9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:42 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso8261074wmi.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mrY/YH1b9s1O9jMerN3hmkMMZmwmjWK0cZUfx1sY+dQ=;
+        b=EHxIl7XNaoQqifbAvm4pywi+Wi6IHmxkBODFSm+hpEkuqO2pcABRHVqZhfTEPj1C/x
+         qh6elN871Df9GMwQuyaZdPJC3DxREktLEXIZvvlF0OV8gP3GwT0NsKoTwz65WJst/8T+
+         Jc6I9zU5zpMgjdlDS5KnRSSt+Pqg+BmmfkewzG/0DiGhzUSgxV0HMYXTaOW8wULF3qPX
+         ZlGHJKkX0klQhkX6VeZciYbt82ixAoV6ySkls8QVrWpDNVBDuSBnlgHxWIJO0XM0hqLG
+         4CM/AUl9hfEj+n4UcteK6q2IVldLU4dmeJWbD1pH+2+6uaTjbF4hpUtFn66Vvd/UVwvy
+         JWOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mrY/YH1b9s1O9jMerN3hmkMMZmwmjWK0cZUfx1sY+dQ=;
+        b=0If4vVmHvT8iMLbr8EC72wvx61t3D8aYZOnQmVWMjLOi254ylanpbRWhC4mVikOcT9
+         r/aGuGQbBObR2D8lPxHmTpsk/KpfuKVW/sSyS4x6VKHnlxkKd7UfnPd3v1kAfio3NAyP
+         T/JZ7uzs6mWY09g9qq7FhzulxUqKWRtH87b2xQZaj+KOl/43eEziqDCvNlim7nOtVGam
+         RtPkGcf/xa6rNvm5m12I8UP/HX+c5+EVuX5sbMzhSoAqJfQy7BsBJ4c+appeLe0cQXaH
+         jLLc/DtX3mf5H0kf0RUJgzqtU0CurxKN62V7IPer8FZ5kq8vu/aGXc59g3nnfMzVSvCR
+         PC4A==
+X-Gm-Message-State: AOAM531qIIX8BfKgniuZTnen/spX2blUhGTnPQPd5ZBEN76trOdVUaSK
+        BbdQTo4H15FUuzNbG/sTfPaatVI+p0oz8g==
+X-Google-Smtp-Source: ABdhPJxZOj3bAaqzQpMpwIZwq1rULq8jrXuaL/D3GX2+h/JhGdZn8tGDnxnawe+BhPseDP53wiUJlg==
+X-Received: by 2002:a05:600c:1f16:b0:37b:c7f2:fbb4 with SMTP id bd22-20020a05600c1f1600b0037bc7f2fbb4mr20467582wmb.47.1645445321196;
+        Mon, 21 Feb 2022 04:08:41 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id a8sm11821546wra.0.2022.02.21.04.08.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 04:08:40 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     herbert@gondor.apana.org.au, jernej.skrabec@gmail.com,
+        linus.walleij@linaro.org, narmstrong@baylibre.com,
+        ulli.kroll@googlemail.com, wens@csie.org
+Cc:     linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 1/5] crypto: sun8i-ss: call finalize with bh disabled
+Date:   Mon, 21 Feb 2022 12:08:29 +0000
+Message-Id: <20220221120833.2618733-2-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220221120833.2618733-1-clabbe@baylibre.com>
+References: <20220221120833.2618733-1-clabbe@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As we have deleted some flag, lets renumber them so there are no holes.
+Doing ipsec produces a spinlock recursion warning.
+This is due to not disabling BH during crypto completion function.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Fixes: f08fcced6d00 ("crypto: allwinner - Add sun8i-ss cryptographic offloader")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/mtd/spi-nor/core.h | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c | 3 +++
+ drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c   | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index 2130a96e2044..b7fd760e3b47 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -12,20 +12,20 @@
- #define SPI_NOR_MAX_ID_LEN	6
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
+index 9ef1c85c4aaa..554e400d41ca 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-cipher.c
+@@ -11,6 +11,7 @@
+  * You could find a link for the datasheet in Documentation/arm/sunxi.rst
+  */
  
- enum spi_nor_option_flags {
--	SNOR_F_HAS_SR_TB	= BIT(1),
--	SNOR_F_NO_OP_CHIP_ERASE	= BIT(2),
--	SNOR_F_BROKEN_RESET	= BIT(5),
--	SNOR_F_4B_OPCODES	= BIT(6),
--	SNOR_F_HAS_4BAIT	= BIT(7),
--	SNOR_F_HAS_LOCK		= BIT(8),
--	SNOR_F_HAS_16BIT_SR	= BIT(9),
--	SNOR_F_NO_READ_CR	= BIT(10),
--	SNOR_F_HAS_SR_TB_BIT6	= BIT(11),
--	SNOR_F_HAS_4BIT_BP      = BIT(12),
--	SNOR_F_HAS_SR_BP3_BIT6  = BIT(13),
--	SNOR_F_IO_MODE_EN_VOLATILE = BIT(14),
--	SNOR_F_SOFT_RESET	= BIT(15),
--	SNOR_F_SWP_IS_VOLATILE	= BIT(16),
-+	SNOR_F_HAS_SR_TB	= BIT(0),
-+	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
-+	SNOR_F_BROKEN_RESET	= BIT(2),
-+	SNOR_F_4B_OPCODES	= BIT(3),
-+	SNOR_F_HAS_4BAIT	= BIT(4),
-+	SNOR_F_HAS_LOCK		= BIT(5),
-+	SNOR_F_HAS_16BIT_SR	= BIT(6),
-+	SNOR_F_NO_READ_CR	= BIT(7),
-+	SNOR_F_HAS_SR_TB_BIT6	= BIT(8),
-+	SNOR_F_HAS_4BIT_BP      = BIT(9),
-+	SNOR_F_HAS_SR_BP3_BIT6  = BIT(10),
-+	SNOR_F_IO_MODE_EN_VOLATILE = BIT(11),
-+	SNOR_F_SOFT_RESET	= BIT(12),
-+	SNOR_F_SWP_IS_VOLATILE	= BIT(13),
- };
++#include <linux/bottom_half.h>
+ #include <linux/crypto.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/io.h>
+@@ -274,7 +275,9 @@ static int sun8i_ss_handle_cipher_request(struct crypto_engine *engine, void *ar
+ 	struct skcipher_request *breq = container_of(areq, struct skcipher_request, base);
  
- struct spi_nor_read_command {
+ 	err = sun8i_ss_cipher(breq);
++	local_bh_disable();
+ 	crypto_finalize_skcipher_request(engine, breq, err);
++	local_bh_enable();
+ 
+ 	return 0;
+ }
+diff --git a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
+index d8c333fe5eb2..0c2ca296bede 100644
+--- a/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
++++ b/drivers/crypto/allwinner/sun8i-ss/sun8i-ss-hash.c
+@@ -9,6 +9,7 @@
+  *
+  * You could find the datasheet in Documentation/arm/sunxi.rst
+  */
++#include <linux/bottom_half.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/scatterlist.h>
+@@ -633,6 +634,8 @@ int sun8i_ss_hash_run(struct crypto_engine *engine, void *breq)
+ 
+ 	memcpy(areq->result, result, algt->alg.hash.halg.digestsize);
+ theend:
++	local_bh_disable();
+ 	crypto_finalize_hash_request(engine, breq, err);
++	local_bh_enable();
+ 	return 0;
+ }
 -- 
-2.30.2
+2.34.1
 
