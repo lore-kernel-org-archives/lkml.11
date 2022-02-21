@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C12EC35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBAEC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350034AbiBUJNI (ORCPT
+        id S1347597AbiBUJNN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:13:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34778 "EHLO
+        Mon, 21 Feb 2022 04:13:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347833AbiBUJI5 (ORCPT
+        with ESMTP id S238727AbiBUJI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:08:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38B710C7;
-        Mon, 21 Feb 2022 01:00:57 -0800 (PST)
+        Mon, 21 Feb 2022 04:08:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048B11115;
+        Mon, 21 Feb 2022 01:01:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 854CAB80E9F;
-        Mon, 21 Feb 2022 09:00:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8E82C340EB;
-        Mon, 21 Feb 2022 09:00:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93079611D0;
+        Mon, 21 Feb 2022 09:01:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74336C340E9;
+        Mon, 21 Feb 2022 09:01:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434055;
-        bh=8EwKBdDVSWMetdB7ddbuUVk0uMEgmlhr2j3tMEZx9HQ=;
+        s=korg; t=1645434061;
+        bh=rojVUV0GG1fSvXX88QZI35YPMHRuRihnLfELbps2iD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O4+Ig2NRIShy3DxKxo2wigrC0pYDzxPN2ZHqaNb3M59jyeLy2x+SDyNhgeHJMXoIR
-         xQ7YCKhfQh85gs/q+1x/Kukl8i9YowDqMoB0ssZA6YqWNsAEdnMNiYHNhMx2qJ3kYq
-         NOv+HeRLArBQcQb6SiHiSzwLp6+iJ0RymcPFid5o=
+        b=aZ0gYPac3w0YWrSJqx8jRzWqFGrQ68rf18/0MR6BCVoqW3XcV9dBWPWITf+vl3wjS
+         phdxXtdNzPSv3LdKXyvW9SGadjmPB17AuHiepSio6F4Oh6wo76Z5radYHz+XqVsFEV
+         JgHOLGdRQGqOfCn3dmrkmXgdxqpy4l8L/5SfW018=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 50/80] powerpc/lib/sstep: fix ptesync build error
-Date:   Mon, 21 Feb 2022 09:49:30 +0100
-Message-Id: <20220221084917.214820783@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 78/80] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Mon, 21 Feb 2022 09:49:58 +0100
+Message-Id: <20220221084918.144239783@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,56 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit fe663df7825811358531dc2e8a52d9eaa5e3515e upstream.
+[ Upstream commit 8ecbb179286cbc91810c16caeb3396e06305cd0c ]
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-  {standard input}: Assembler messages:
-  {standard input}:2088: Error: unrecognized opcode: `ptesync'
-  make[3]: *** [/builds/linux/scripts/Makefile.build:287: arch/powerpc/lib/sstep.o] Error 1
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Add the 'ifdef CONFIG_PPC64' around the 'ptesync' in function
-'emulate_update_regs()' to like it is in 'analyse_instr()'. Since it looks like
-it got dropped inadvertently by commit 3cdfcbfd32b9 ("powerpc: Change
-analyse_instr so it doesn't modify *regs").
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-A key detail is that analyse_instr() will never recognise lwsync or
-ptesync on 32-bit (because of the existing ifdef), and as a result
-emulate_update_regs() should never be called with an op specifying
-either of those on 32-bit. So removing them from emulate_update_regs()
-should be a nop in terms of runtime behaviour.
-
-Fixes: 3cdfcbfd32b9 ("powerpc: Change analyse_instr so it doesn't modify *regs")
-Cc: stable@vger.kernel.org # v4.14+
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-[mpe: Add last paragraph of change log mentioning analyse_instr() details]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220211005113.1361436-1-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Acked-by: Bjørn Mork <bjorn@mork.no>
+Link: https://lore.kernel.org/r/20220209024717.8564-1-slark_xiao@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/sstep.c |    2 ++
+ drivers/net/usb/qmi_wwan.c | 2 ++
  1 file changed, 2 insertions(+)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -2787,12 +2787,14 @@ void emulate_update_regs(struct pt_regs
- 		case BARRIER_EIEIO:
- 			eieio();
- 			break;
-+#ifdef CONFIG_PPC64
- 		case BARRIER_LWSYNC:
- 			asm volatile("lwsync" : : : "memory");
- 			break;
- 		case BARRIER_PTESYNC:
- 			asm volatile("ptesync" : : : "memory");
- 			break;
-+#endif
- 		}
- 		break;
- 
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 6508d70056b3a..566ea48fd6078 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1355,6 +1355,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
+-- 
+2.34.1
+
 
 
