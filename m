@@ -2,115 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352340AbiBUJzg (ORCPT
+        id S1352362AbiBUJzn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:55:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43786 "EHLO
+        Mon, 21 Feb 2022 04:55:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352963AbiBUJsF (ORCPT
+        with ESMTP id S1353206AbiBUJsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8377CCFE;
-        Mon, 21 Feb 2022 01:22:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 219DE608C4;
-        Mon, 21 Feb 2022 09:22:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF05DC340E9;
-        Mon, 21 Feb 2022 09:21:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435320;
-        bh=8IUsyVO3CUV/NHmrn9iyf0MiQePqG+1lN0ZMxV/tScY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qdjUFveKP9l+CTHTunC4vSQcq1/JQX+VMIn3E3VD8lbmMPHwtIRjnymnsVvhOuhuY
-         UJAzQc6Ej+HLJhBt9l09EIQUFgwwmqldXY8PJhgw999+ZrMDFWl9Sj8DiRqL4MtAQf
-         +VsUHVqZ9pwVw8PuQKVGrUfJMyraBxnJVxhyhS2E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Kees Kook <keescook@chromium.org>,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-hardening@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 123/227] libsubcmd: Fix use-after-free for realloc(..., 0)
-Date:   Mon, 21 Feb 2022 09:49:02 +0100
-Message-Id: <20220221084938.941272051@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:48:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EE2226ADD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:22:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645435344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ad6pMafFuKoh5sHuoaKN4WCBkg6hpge8kEYbZzG0l/U=;
+        b=BShNKK4/BRPPO07L0KZiROY5AvXts06ccZyVVVCYlDtLuKnZ0uj/j5yXaQ1ZLDzJfhJCJD
+        AP4xFGruoa8Y+E8Pw4Fi8UHj7knkM12CD/560yvT4BqDwwt1CDJSOCmJMgybVCN6J8MPH0
+        EZEdT8w5snYH6EFlwMaMEguCzZ9Ul3U=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-663-9pTVpVzEN0yKGiNRA4D5ZA-1; Mon, 21 Feb 2022 04:22:23 -0500
+X-MC-Unique: 9pTVpVzEN0yKGiNRA4D5ZA-1
+Received: by mail-lj1-f197.google.com with SMTP id v5-20020a2ea605000000b00246322afc8cso1894625ljp.4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:22:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ad6pMafFuKoh5sHuoaKN4WCBkg6hpge8kEYbZzG0l/U=;
+        b=V8IOjExkCQ5JflR82qgsCZA70tEk7/0r8KK6kcAouAbN1cvHJqH2FG+kFSgp0R6JAh
+         /txvLaD7rWIeDavDYzv4w49Na9w+hvCBHPW6fBDWxsl8t2jswruk1y8fP1qxSt57vP6p
+         dyxdUa5i+snvHT/1pHU8N8919iWpcf+FWYpfn3BYOqfFy6VEiL93NGSfW/TIa7DvACqV
+         sfuZ50Kx15IdVY0GLXXrV90ID0H5Qw7yzbgzBM/t8d2PIXGCyLYK2vTC33okqfyIp4hs
+         bb+aCzskSCNQ0rQpnwfWjeiuRs+uUt5KgYLxElkCpW8YYaJo5Ulk35j37ao8VVpEuUK5
+         I2TA==
+X-Gm-Message-State: AOAM533Vvjry3ujQwL/NqhHZaoVfDOmnwb60bpRExexbuk8vniN4vJVX
+        kQTnJlHtIYwp/EKE7LdML6yZ3rK6Iks2avrUXSRyDgRhqghaV0TnHTZ4BA/iJ69RFOHgCejMtOm
+        2pqApmcQQ/upJZ+zvFUZ3TeF1L7YA0WAt3IHR5X0=
+X-Received: by 2002:a2e:8856:0:b0:246:3bfd:dfc8 with SMTP id z22-20020a2e8856000000b002463bfddfc8mr4005584ljj.405.1645435341124;
+        Mon, 21 Feb 2022 01:22:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwqqElMWCPmmeG9e4i5Pf9cAy5vbIeUUzK6mO8pXI5G7HWPoGAJ9x/Nr5EHYWLmz2n3K18txAXAxXAugY7cAS4=
+X-Received: by 2002:a2e:8856:0:b0:246:3bfd:dfc8 with SMTP id
+ z22-20020a2e8856000000b002463bfddfc8mr4005570ljj.405.1645435340975; Mon, 21
+ Feb 2022 01:22:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220218212511.887059-1-atomlin@redhat.com> <20220218212511.887059-10-atomlin@redhat.com>
+ <98cff67e-d2ca-705b-7c83-bd3f41df98d9@csgroup.eu> <0ea89614-9bab-99f5-47a8-2a2996c38966@csgroup.eu>
+In-Reply-To: <0ea89614-9bab-99f5-47a8-2a2996c38966@csgroup.eu>
+From:   Aaron Tomlin <atomlin@redhat.com>
+Date:   Mon, 21 Feb 2022 09:22:09 +0000
+Message-ID: <CANfR36iGqX93rvv1M6AwGdR=C-Ev314iKCMpEzHOO0-LXAzJig@mail.gmail.com>
+Subject: Re: [PATCH v6 09/13] module: Move kallsyms support into a separate file
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        "Lameter, Christoph" <cl@linux.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
+        Aaron Tomlin <atomlin@atomlin.com>,
+        Grzegorz Halat <ghalat@redhat.com>,
+        Allen <allen.lkml@gmail.com>, Joe Perches <joe@perches.com>,
+        Michal Suchanek <msuchanek@suse.de>, oleksandr@natalenko.name
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+On Mon 2022-02-21 09:35 +0100, Christophe Leroy wrote:
+> Fixup:
+>
+> diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
+> index 6c8f1f390cf5..2ee8d2e67068 100644
+> --- a/kernel/module/kallsyms.c
+> +++ b/kernel/module/kallsyms.c
+> @@ -171,8 +171,7 @@ void add_kallsyms(struct module *mod, const struct
+> load_info *info)
+>      Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
+>
+>      /* Set up to point into init section. */
+> -    mod->kallsyms = (struct mod_kallsyms __rcu *)mod->init_layout.base +
+> -        info->mod_kallsyms_init_off;
+> +    mod->kallsyms = (void __rcu *)mod->init_layout.base +
+> info->mod_kallsyms_init_off;
+>
+>      /* The following is safe since this pointer cannot change */
+>      rcu_dereference_sched(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
 
-commit 52a9dab6d892763b2a8334a568bd4e2c1a6fde66 upstream.
+Agreed.
 
-GCC 12 correctly reports a potential use-after-free condition in the
-xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
-when size == 0:
-
-In file included from help.c:12:
-In function 'xrealloc',
-    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
-   56 |                 ret = realloc(ptr, size);
-      |                       ^~~~~~~~~~~~~~~~~~
-subcmd-util.h:52:21: note: call to 'realloc' here
-   52 |         void *ret = realloc(ptr, size);
-      |                     ^~~~~~~~~~~~~~~~~~
-subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
-   58 |                         ret = realloc(ptr, 1);
-      |                               ^~~~~~~~~~~~~~~
-subcmd-util.h:52:21: note: call to 'realloc' here
-   52 |         void *ret = realloc(ptr, size);
-      |                     ^~~~~~~~~~~~~~~~~~
-
-Fixes: 2f4ce5ec1d447beb ("perf tools: Finalize subcmd independence")
-Reported-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Signed-off-by: Kees Kook <keescook@chromium.org>
-Tested-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: linux-hardening@vger.kernel.org
-Cc: Valdis Klētnieks <valdis.kletnieks@vt.edu>
-Link: http://lore.kernel.org/lkml/20220213182443.4037039-1-keescook@chromium.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/lib/subcmd/subcmd-util.h |   11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
-
---- a/tools/lib/subcmd/subcmd-util.h
-+++ b/tools/lib/subcmd/subcmd-util.h
-@@ -50,15 +50,8 @@ static NORETURN inline void die(const ch
- static inline void *xrealloc(void *ptr, size_t size)
- {
- 	void *ret = realloc(ptr, size);
--	if (!ret && !size)
--		ret = realloc(ptr, 1);
--	if (!ret) {
--		ret = realloc(ptr, size);
--		if (!ret && !size)
--			ret = realloc(ptr, 1);
--		if (!ret)
--			die("Out of memory, realloc failed");
--	}
-+	if (!ret)
-+		die("Out of memory, realloc failed");
- 	return ret;
- }
- 
-
+-- 
+Aaron Tomlin
 
