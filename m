@@ -2,86 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343698AbiBUJHD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:07:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59592 "EHLO
+        id S229758AbiBUJHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:07:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348422AbiBUJCt (ORCPT
+        with ESMTP id S1346966AbiBUJA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:02:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADA42C64C;
-        Mon, 21 Feb 2022 00:58:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 21 Feb 2022 04:00:29 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA0A24BD5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:55:35 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A83C7210F7;
+        Mon, 21 Feb 2022 08:55:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645433712; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LUrIgAk+aJhrM5t+S1YG62SjatqnJIxam/q/SPE6sz0=;
+        b=GZXQc3KC7uHsZNDNR5bIuR62yqjIJHx3BcEpZsaDbSHrvOHd8yfqWRFcIV14cTqHQJ5VfF
+        +lfbfTsw4UbBU4dVCx+8TGogei6sAbpYL4pKxshnxjOAyKEWnzmRKJ7q5BoL+2j4Vfvpxs
+        9xWQzgLLdjtg9xvgaz0CguJxMq4AUSU=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18B7CB80EB6;
-        Mon, 21 Feb 2022 08:58:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD4FC340F1;
-        Mon, 21 Feb 2022 08:58:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433881;
-        bh=B3V/EFHY9+d/uJRBcFrB7LlPclALnd89vW1EiTlJXt4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MVJGgM1/TqRqNajntrmNviImMIf8mQ5+XL+PpZaPZHBQQTNEAoUYAVUvyU9w7kmnD
-         2WSSIYTXZVUyuqgi1VsTaMXtt+/UZvTTzLr4OQTpwJ1YalljWk88E/IibXGbifPe65
-         dYZNOIKkcTqd8wKKoKY29L82NkzDqpEeRvYkecqw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 07/80] parisc: Fix sglist access in ccio-dma.c
-Date:   Mon, 21 Feb 2022 09:48:47 +0100
-Message-Id: <20220221084915.835383796@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
-References: <20220221084915.554151737@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 73090A3B81;
+        Mon, 21 Feb 2022 08:55:12 +0000 (UTC)
+Date:   Mon, 21 Feb 2022 09:55:12 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org,
+        peterz@infradead.org, guro@fb.com, shakeelb@google.com,
+        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH 1/1] mm: count time in drain_all_pages during direct
+ reclaim as memory pressure
+Message-ID: <YhNTcM9XtqA1zUUi@dhcp22.suse.cz>
+References: <20220219174940.2570901-1-surenb@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220219174940.2570901-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+On Sat 19-02-22 09:49:40, Suren Baghdasaryan wrote:
+> When page allocation in direct reclaim path fails, the system will
+> make one attempt to shrink per-cpu page lists and free pages from
+> high alloc reserves. Draining per-cpu pages into buddy allocator can
+> be a very slow operation because it's done using workqueues and the
+> task in direct reclaim waits for all of them to finish before
+> proceeding. Currently this time is not accounted as psi memory stall.
+> 
+> While testing mobile devices under extreme memory pressure, when
+> allocations are failing during direct reclaim, we notices that psi
+> events which would be expected in such conditions were not triggered.
+> After profiling these cases it was determined that the reason for
+> missing psi events was that a big chunk of time spent in direct
+> reclaim is not accounted as memory stall, therefore psi would not
+> reach the levels at which an event is generated. Further investigation
+> revealed that the bulk of that unaccounted time was spent inside
+> drain_all_pages call.
 
-commit d7da660cab47183cded65e11b64497d0f56c6edf upstream.
+It would be cool to have some numbers here.
 
-This patch implements the same bug fix to ccio-dma.c as to sba_iommu.c.
-It ensures that only the allocated entries of the sglist are accessed.
+> Annotate drain_all_pages and unreserve_highatomic_pageblock during
+> page allocation failure in the direct reclaim path so that delays
+> caused by these calls are accounted as memory stall.
 
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/parisc/ccio-dma.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -1003,7 +1003,7 @@ ccio_unmap_sg(struct device *dev, struct
- 	ioc->usg_calls++;
- #endif
- 
--	while(sg_dma_len(sglist) && nents--) {
-+	while (nents && sg_dma_len(sglist)) {
- 
- #ifdef CCIO_COLLECT_STATS
- 		ioc->usg_pages += sg_dma_len(sglist) >> PAGE_SHIFT;
-@@ -1011,6 +1011,7 @@ ccio_unmap_sg(struct device *dev, struct
- 		ccio_unmap_page(dev, sg_dma_address(sglist),
- 				  sg_dma_len(sglist), direction, 0);
- 		++sglist;
-+		nents--;
- 	}
- 
- 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__, nents);
-
-
+If the draining is too slow and dependent on the current CPU/WQ
+contention then we should address that. The original intention was that
+having a dedicated WQ with WQ_MEM_RECLAIM would help to isolate the
+operation from the rest of WQ activity. Maybe we need to fine tune
+mm_percpu_wq. If that doesn't help then we should revise the WQ model
+and use something else. Memory reclaim shouldn't really get stuck behind
+other unrelated work.
+-- 
+Michal Hocko
+SUSE Labs
