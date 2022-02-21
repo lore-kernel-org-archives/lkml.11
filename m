@@ -2,242 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D38C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B93EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245377AbiBUI1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:27:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41554 "EHLO
+        id S245534AbiBUI3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:29:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245406AbiBUI1r (ORCPT
+        with ESMTP id S231290AbiBUI3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:27:47 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBE512A98
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:27:24 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id v8-20020a17090a634800b001bb78857ccdso15920820pjs.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:27:24 -0800 (PST)
+        Mon, 21 Feb 2022 03:29:46 -0500
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD0BBC;
+        Mon, 21 Feb 2022 00:29:23 -0800 (PST)
+Received: by mail-vs1-xe35.google.com with SMTP id j3so2527675vsi.7;
+        Mon, 21 Feb 2022 00:29:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Mr2BoYtb31MdV+XPz+c55LRfQ5ShVB+NJKIE9aF3JDA=;
-        b=FIk7NA8r6IbSKOuUc5aajgjTq3bjgZp0huvOtWOl/DKJdhQTt7N4srPkTQSrHl6gab
-         ePWgzrd465v8/X68Ol4h0UhYqBtQdOctA5G5qD5SS4UAQRgWT2G1XiFGOvtuSHRzuYz/
-         qe8AS12nF1xw3ESJd2QYfHOgz/yxbTLqMEiCA=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=z7GbsHFki7BHmmijQLgu4jj0JzXWxy6jSKULjvaUMy8=;
+        b=YAe/FOh3YSDtYtbR4PnOKeb4K5dDoW+FBsI8qeLiL3vGVsklbxiZNspPuYQ7qJDmrQ
+         VMY/g5C96ioabxZxaqBJxV9ZwxOwHHk//+aLa4GlP1zEnq4ao/ojIBoqmpTINNqJyz63
+         kxl1dPlUHvkcaxDaQt2g7NyFo/afKAAWQ4A7+h2WoU2SMyTTXhb9885eyU5v22W7+JiV
+         6P32BHphxsl7ac4qJ2dXLKTu8EAnJc6K1qxfDr8MeAl2oPzF2Qi7i5PeZb39PbUuByTq
+         PC8rPkA4b1xX+5G7RL4wxAxYfNB47mUHsNYZGvs4TNx2pdpEEHNHRcA4/8CbCHqTv6zq
+         Lgyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=Mr2BoYtb31MdV+XPz+c55LRfQ5ShVB+NJKIE9aF3JDA=;
-        b=43qGwPm1bfYyZdSrXFzVyJ+MhC+vdB7rmL+vS/Kbk8Z4Qtq/IVF0YPqhcVtASaiMRQ
-         sf3pJeUJMtIOq+u2cQoQCKhLmSoKmMiKuMU9URJ2TP91pNf/rQ2pNkqrIIngWow0L2I7
-         JaicJUN0U2dey5J718ciBz5Krkp8Guu8CBq81tz4OeWCosC55scuASWioHSuYs10ThMi
-         MEFK56D6g1+wmff9rur4u+QeBXvMs9560rasLz5tRDvNu/3eLUgJ8zFJUKsyCYMPkSYI
-         4m5W1jczVXJKxFonlCjfVOxhQ59tJnm2l2cTzz3/8VcsR8+mXpWJK6yEASvzr6sijSN2
-         7Qrw==
-X-Gm-Message-State: AOAM530Dv2AVkMyxJeFnXsW1zTmkMyxB1eeofSVrUAPldShKz8Hem9/j
-        4MfNva+C778s70xBAzDLX6uRcQ==
-X-Google-Smtp-Source: ABdhPJzNwLbo0XeGJA0ueKqD968h+lgXGAPUsw1+JuUkPszC8hcTuOpeIxyLNOzgkidgJaVhBRd1oQ==
-X-Received: by 2002:a17:903:1d0:b0:14d:a620:5828 with SMTP id e16-20020a17090301d000b0014da6205828mr17501446plh.64.1645432044153;
-        Mon, 21 Feb 2022 00:27:24 -0800 (PST)
-Received: from ?IPv6:::1? ([2600:6c55:6300:7238:34b8:edf8:24ec:9845])
-        by smtp.gmail.com with ESMTPSA id f67sm17849518pgc.38.2022.02.21.00.27.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 00:27:23 -0800 (PST)
-Date:   Mon, 21 Feb 2022 00:27:20 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com
-CC:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        ndesaulniers@google.com, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com
-Subject: Re: [PATCH 15/29] x86: Disable IBT around firmware
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20220218171409.456054276@infradead.org>
-References: <20220218164902.008644515@infradead.org> <20220218171409.456054276@infradead.org>
-Message-ID: <831051EB-FF09-4B75-98EE-A7C8D0054CFE@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=z7GbsHFki7BHmmijQLgu4jj0JzXWxy6jSKULjvaUMy8=;
+        b=DubekVlca61rsQZdWyYEDEExcAQAlDs6O7ZilkA8GCN6Z3oGFIcerE6TkYf20ex85u
+         U5IwGi9ugHmu0TAtT3Iz7RfplHcMkOkycgiP3YASsGkgr7oJS/+35bsuBG6Zrc3caURe
+         1448xq9vJjxq5MevZ9Qtiz/xP9I4UT9+sE350A3Fnyi+mX8WpGciW5gun/W0YsRnENkI
+         lck3pB20GgOsiZJBsZt8N8uXndUOxgqxyVgftbnG81+9dhSg0q9nXcC4205Su9mZsfQ2
+         prsZsY45wvKeAdbpCkhMuXzXLCqJ+G/XMMQm7kx82iKLL8QnIHEUQGmPfdvm1L8rrswu
+         eUUQ==
+X-Gm-Message-State: AOAM533JXMYflbWjgMnrdPcmn0SP+xjCIFsP2KzuRz9AZIAd5KqSaMDq
+        EjPML5gEKVx6AgVAgJ67WumNk5XvgYzA3ENIDA==
+X-Google-Smtp-Source: ABdhPJxrwy07YYidAlOGzW8ZJV9eYQ1bjoVO5usicU/jUamQDPj0Kh2S1a/A8IpLOP9uhc2ftnW2l1cER8DZgG31qNU=
+X-Received: by 2002:a67:b807:0:b0:31b:b306:a5c with SMTP id
+ i7-20020a67b807000000b0031bb3060a5cmr7001993vsf.50.1645432162605; Mon, 21 Feb
+ 2022 00:29:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+References: <20220220035321.3870-1-warp5tw@gmail.com> <20220220035321.3870-5-warp5tw@gmail.com>
+ <ae927203-794b-06c6-3bcc-d67f13ab841d@canonical.com>
+In-Reply-To: <ae927203-794b-06c6-3bcc-d67f13ab841d@canonical.com>
+From:   Tyrone Ting <warp5tw@gmail.com>
+Date:   Mon, 21 Feb 2022 16:29:10 +0800
+Message-ID: <CACD3sJbn7EK71+3yjok8Qg3DRrRNgEVne0mNs8vRBiJu3mpxbQ@mail.gmail.com>
+Subject: Re: [PATCH v2 04/11] i2c: npcm: Update gcr property name
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, semen.protsenko@linaro.org,
+        yangyicong@hisilicon.com, wsa@kernel.org, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu,
+        christophe.leroy@csgroup.eu, lukas.bulwahn@gmail.com,
+        olof@lixom.net, arnd@arndb.de, digetx@gmail.com,
+        andriy.shevchenko@linux.intel.com, tali.perry@nuvoton.com,
+        Avi.Fishman@nuvoton.com, tomer.maimon@nuvoton.com,
+        KWLIU@nuvoton.com, JJLIU0@nuvoton.com, kfting@nuvoton.com,
+        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Krzysztof:
 
+Thank you for your comments and please find my reply next to your comments.
 
-On February 18, 2022 8:49:17 AM PST, Peter Zijlstra <peterz@infradead=2Eor=
-g> wrote:
->Assume firmware isn't IBT clean and disable it across calls=2E
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=E5=
+=B9=B42=E6=9C=8820=E6=97=A5
+=E9=80=B1=E6=97=A5 =E4=B8=8B=E5=8D=885:32=E5=AF=AB=E9=81=93=EF=BC=9A
 >
->Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead=2Eorg>
->---
-> arch/x86/include/asm/efi=2Eh   |    9 +++++++--
-> arch/x86/include/asm/ibt=2Eh   |   10 ++++++++++
-> arch/x86/kernel/apm_32=2Ec     |    7 +++++++
-> arch/x86/kernel/cpu/common=2Ec |   28 ++++++++++++++++++++++++++++
-> 4 files changed, 52 insertions(+), 2 deletions(-)
+> On 20/02/2022 04:53, Tyrone Ting wrote:
+> > From: Tali Perry <tali.perry1@gmail.com>
+> >
+> > Use a generic name for NPCM system manager reigster.
 >
->--- a/arch/x86/include/asm/efi=2Eh
->+++ b/arch/x86/include/asm/efi=2Eh
->@@ -7,6 +7,7 @@
-> #include <asm/tlb=2Eh>
-> #include <asm/nospec-branch=2Eh>
-> #include <asm/mmu_context=2Eh>
->+#include <asm/ibt=2Eh>
-> #include <linux/build_bug=2Eh>
-> #include <linux/kernel=2Eh>
-> #include <linux/pgtable=2Eh>
->@@ -120,8 +121,12 @@ extern asmlinkage u64 __efi_call(void *f
-> 	efi_enter_mm();							\
-> })
->=20
->-#define arch_efi_call_virt(p, f, args=2E=2E=2E)				\
->-	efi_call((void *)p->f, args)					\
->+#define arch_efi_call_virt(p, f, args=2E=2E=2E) ({				\
->+	u64 ret, ibt =3D ibt_save();					\
->+	ret =3D efi_call((void *)p->f, args);				\
->+	ibt_restore(ibt);						\
->+	ret;								\
->+})
->=20
-> #define arch_efi_call_virt_teardown()					\
-> ({									\
->--- a/arch/x86/include/asm/ibt=2Eh
->+++ b/arch/x86/include/asm/ibt=2Eh
->@@ -6,6 +6,8 @@
->=20
-> #ifndef __ASSEMBLY__
->=20
->+#include <linux/types=2Eh>
->+
-> #ifdef CONFIG_X86_64
-> #define ASM_ENDBR	"endbr64\n\t"
-> #else
->@@ -25,6 +27,9 @@ static inline bool is_endbr(const void *
-> 	return val =3D=3D ~0xfa1e0ff3;
-> }
->=20
->+extern u64 ibt_save(void);
->+extern void ibt_restore(u64 save);
->+
-> #else /* __ASSEMBLY__ */
->=20
-> #ifdef CONFIG_X86_64
->@@ -39,10 +44,15 @@ static inline bool is_endbr(const void *
->=20
-> #ifndef __ASSEMBLY__
->=20
->+#include <linux/types=2Eh>
->+
-> #define ASM_ENDBR
->=20
-> #define __noendbr
->=20
->+static inline u64 ibt_save(void) { return 0; }
->+static inline void ibt_restore(u64 save) { }
->+
-> #else /* __ASSEMBLY__ */
->=20
-> #define ENDBR
->--- a/arch/x86/kernel/apm_32=2Ec
->+++ b/arch/x86/kernel/apm_32=2Ec
->@@ -232,6 +232,7 @@
-> #include <asm/paravirt=2Eh>
-> #include <asm/reboot=2Eh>
-> #include <asm/nospec-branch=2Eh>
->+#include <asm/ibt=2Eh>
->=20
-> #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
-> extern int (*console_blank_hook)(int);
->@@ -598,6 +599,7 @@ static long __apm_bios_call(void *_call)
-> 	struct desc_struct	save_desc_40;
-> 	struct desc_struct	*gdt;
-> 	struct apm_bios_call	*call =3D _call;
->+	u64			ibt;
->=20
-> 	cpu =3D get_cpu();
-> 	BUG_ON(cpu !=3D 0);
->@@ -607,11 +609,13 @@ static long __apm_bios_call(void *_call)
->=20
-> 	apm_irq_save(flags);
-> 	firmware_restrict_branch_speculation_start();
->+	ibt =3D ibt_save();
-> 	APM_DO_SAVE_SEGS;
-> 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
-> 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
-> 			  &call->esi);
-> 	APM_DO_RESTORE_SEGS;
->+	ibt_restore(ibt);
-> 	firmware_restrict_branch_speculation_end();
-> 	apm_irq_restore(flags);
-> 	gdt[0x40 / 8] =3D save_desc_40;
->@@ -676,6 +680,7 @@ static long __apm_bios_call_simple(void
-> 	struct desc_struct	save_desc_40;
-> 	struct desc_struct	*gdt;
-> 	struct apm_bios_call	*call =3D _call;
->+	u64			ibt;
->=20
-> 	cpu =3D get_cpu();
-> 	BUG_ON(cpu !=3D 0);
->@@ -685,10 +690,12 @@ static long __apm_bios_call_simple(void
->=20
-> 	apm_irq_save(flags);
-> 	firmware_restrict_branch_speculation_start();
->+	ibt =3D ibt_save();
-> 	APM_DO_SAVE_SEGS;
-> 	error =3D apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
-> 					 &call->eax);
-> 	APM_DO_RESTORE_SEGS;
->+	ibt_restore(ibt);
-> 	firmware_restrict_branch_speculation_end();
-> 	apm_irq_restore(flags);
-> 	gdt[0x40 / 8] =3D save_desc_40;
->--- a/arch/x86/kernel/cpu/common=2Ec
->+++ b/arch/x86/kernel/cpu/common=2Ec
->@@ -592,6 +592,34 @@ static __init int setup_disable_pku(char
-> __setup("nopku", setup_disable_pku);
-> #endif /* CONFIG_X86_64 */
->=20
->+#ifdef CONFIG_X86_IBT
->+
->+u64 ibt_save(void)
->+{
->+	u64 msr =3D 0;
->+
->+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
->+		rdmsrl(MSR_IA32_S_CET, msr);
->+		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
->+	}
->+
->+	return msr;
->+}
->+
->+void ibt_restore(u64 save)
-
-Please make these both __always_inline so there no risk of them ever gaini=
-ng ENDBRs and being used by ROP to disable IBT=2E=2E=2E
-
->+{
->+	u64 msr;
->+
->+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
->+		rdmsrl(MSR_IA32_S_CET, msr);
->+		msr &=3D ~CET_ENDBR_EN;
->+		msr |=3D (save & CET_ENDBR_EN);
->+		wrmsrl(MSR_IA32_S_CET, msr);
->+	}
->+}
->+
->+#endif
->+
-> static __always_inline void setup_cet(struct cpuinfo_x86 *c)
-> {
-> 	u64 msr;
+> The subject is not accurate and you entirely skipped in commit msg the
+> fact of an ABI break.
 >
+> You do not update a property name but you change the way of getting GCR
+> regmap.
 >
 
---=20
-Kees Cook
+I'll change the subject since the patch is to change the way to getting GCR
+regmap as you indicated.
+
+About the ABI break, I responded in the discussion thread of
+[PATCH v2 00/11] i2c: npcm: Bug fixes timeout, spurious interrupts.
+
+> Best regards,
+> Krzysztof
+
+Best regards,
+Tyrone
