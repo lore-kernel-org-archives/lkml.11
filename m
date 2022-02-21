@@ -2,102 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB19DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 18:04:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbiBUSCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 13:02:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47488 "EHLO
+        id S231485AbiBUSFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 13:05:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbiBUSAS (ORCPT
+        with ESMTP id S232463AbiBUSEY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 13:00:18 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256E813F42;
-        Mon, 21 Feb 2022 09:52:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645465942; x=1677001942;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=OrEv3F6FgsXMjqfDJb0SV1SRw1/e6rm3avDRQpoxBMw=;
-  b=ePu6voQ5Ls9nnCOG+jpW7TLNde1JAnHHkhZuMX2cinkHFemtX+bZd/I0
-   c4xgyFG8pGRf8no8vtMmQhmOOG6ZBOhcwqXP3Z64V5K7cgPHnRQvcamN0
-   wJuRV0Nmu7r32n7js8C3R1RlQw4fL56JHgmXFR4fLmzu8HIlZD5wVLO7s
-   ocdcPG1dwY3/F/PVz1hFA0kOzSjMXpylqky2tR9SAIl5YQ9MnhZWeGcW4
-   93dH66qaxqWS4j39GHy+m0u+hB10emIOihcCo2ZPTqNXVoUdBrxaVA5L5
-   yOXBo61ys29yDvky1rZdrnHwzI7I3RQXEHc98j9ZMDW4/lklydWh6aCuA
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251306658"
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251306658"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:52:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="627436451"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 09:52:17 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMCqL-006s3s-4m;
-        Mon, 21 Feb 2022 19:51:25 +0200
-Date:   Mon, 21 Feb 2022 19:51:24 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 04/10] property: add a callback parameter to
- fwnode_property_match_string()
-Message-ID: <YhPRHJWGYKjM4kk7@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-5-clement.leger@bootlin.com>
+        Mon, 21 Feb 2022 13:04:24 -0500
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D071AD90;
+        Mon, 21 Feb 2022 09:56:03 -0800 (PST)
+Received: by mail-wr1-f53.google.com with SMTP id d27so28483240wrb.5;
+        Mon, 21 Feb 2022 09:56:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FQ/Oyj3CQfmniV07x3o++/fZN+iiONMTqxiWxhJRUlY=;
+        b=IaeQ3I2f6ayb3wpZCA4cKOoVf/SepEdNbhwAXPV23UjaibSB9oUR47V4Lekl+g3G0S
+         LaOiWiQLmD/hMKwb19+0IENZXqkkeBMUFmfN66PE7vkpwak5ryQEXgzuyym/b5u/47O0
+         AkXEx3HY4KgDv0inu88D68NNoj2ag9vRwKG+PsIjSgLjPSexGxAmmYNdxoWqU4J/Zgv1
+         Q16XWGyeI42WIxFOt2fRBjQSYti3ZqZenvhIW/fDE+arwIBQePPAAv/1nrMST7L+f+Yx
+         h1eRjhjXocerZqjz05hOE5ZNnRHAt96BT+Omv9no/rrfl/Q/MWV26+mLMTx3cSgNV2YG
+         1J+Q==
+X-Gm-Message-State: AOAM530ufGRl7J9qPKqmj7EUBPJu0wfgfd8DQhizr03IVaf7kivWPaWI
+        BqmDKOwPPpsOz2vK/yCZNoE=
+X-Google-Smtp-Source: ABdhPJxP5lu5chi+n8ksMNCmt7siV/ZlHwzfFSI60qorTjR4H+rzP++PgZMJY8qoNLyww1EqY9tqwQ==
+X-Received: by 2002:a5d:4d0d:0:b0:1e7:a9e7:ad31 with SMTP id z13-20020a5d4d0d000000b001e7a9e7ad31mr16266827wrt.281.1645466161856;
+        Mon, 21 Feb 2022 09:56:01 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id d2sm22558483wro.49.2022.02.21.09.56.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 09:56:01 -0800 (PST)
+Date:   Mon, 21 Feb 2022 17:56:00 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Sunil Muthuswamy <sunilmut@linux.microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v2] PCI: hv: Avoid the retarget interrupt hypercall
+ in irq_unmask() on ARM64
+Message-ID: <20220221175600.gxbphsnbytgytcpz@liuwe-devbox-debian-v2>
+References: <20220217034525.1687678-1-boqun.feng@gmail.com>
+ <MWHPR21MB1593A265118977A57FF3B329D7369@MWHPR21MB1593.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220221162652.103834-5-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <MWHPR21MB1593A265118977A57FF3B329D7369@MWHPR21MB1593.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:46PM +0100, Clément Léger wrote:
-> This function will be modified to be reused for
-> fwnode_property_read_string_index(). In order to avoid copy/paste of
-> existing code, split the existing function and pass a callback that
-> will be executed once the string array has been retrieved.
+On Thu, Feb 17, 2022 at 04:31:06PM +0000, Michael Kelley (LINUX) wrote:
+> From: Boqun Feng <boqun.feng@gmail.com> Sent: Wednesday, February 16, 2022 7:45 PM
+> > 
+> > On ARM64 Hyper-V guests, SPIs are used for the interrupts of virtual PCI
+> > devices, and SPIs can be managed directly via GICD registers. Therefore
+> > the retarget interrupt hypercall is not needed on ARM64.
+> > 
+> > An arch-specific interface hv_arch_irq_unmask() is introduced to handle
+> > the architecture level differences on this. For x86, the behavior
+> > remains unchanged, while for ARM64 no hypercall is invoked when
+> > unmasking an irq for virtual PCI devices.
+> > 
+> > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> > ---
+> > v1 -> v2:
+> > 
+> > *	Introduce arch-specific interface hv_arch_irq_unmask() as
+> > 	suggested by Bjorn
+> > 
+> >  drivers/pci/controller/pci-hyperv.c | 233 +++++++++++++++-------------
+> >  1 file changed, 122 insertions(+), 111 deletions(-)
 > 
-> In order to reuse this function with other actions.
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 
-...
+I expect this to go through the PCI tree. Let me know if I should pick
+this up.
 
-> +int fwnode_property_match_string(const struct fwnode_handle *fwnode,
-> +				 const char *propname, const char *string)
-> +{
-> +	return fwnode_property_string_match(fwnode, propname,
-> +					    match_string_callback,
-
-> +					    (void *)string);
-
-We want to keep const qualifier.
-
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks,
+Wei.
