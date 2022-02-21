@@ -2,96 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46600C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:16:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380041AbiBUQQj (ORCPT
+        id S1380051AbiBUQQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:16:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40250 "EHLO
+        Mon, 21 Feb 2022 11:16:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379981AbiBUQPx (ORCPT
+        with ESMTP id S1379993AbiBUQPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:15:53 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3115F23BD4;
-        Mon, 21 Feb 2022 08:15:28 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645460114; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=DuraJutovSGUPCk2XURRrMVrKu6VjFrkpxn3ohqo5fprZYZythN4kZr5L9vB+4OWuIwfdwPp+RpUOJquHBSulT8FY/qwXVq43kqpJaKCM9aJM2wf7dl29hIRxg7vzkYPpGh2RMi+ark3/46aurhztCscwZ1lXvxWARegXKg5BD0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645460114; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=WKgVCY1x560wjpb2d6+V1DLhy9frcWvJFP7CwbCVLYo=; 
-        b=nicyYhark7OR16sCX1xhUBcwDGIYt4LknSzouz0gc7yc5uN5RKAAm8i9TKH/DRcPHjW8wTWm7vmGVvlD9PBKLQiAhutmoNm2zD4KL4rynz9FX3JxcFggEgUyRTIkgWPodjkn3d3po5z4HU+hnL/RWx6iATs5fF4HkVVIhIygPvE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645460114;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=WKgVCY1x560wjpb2d6+V1DLhy9frcWvJFP7CwbCVLYo=;
-        b=jGUZ9sbhScheWcPDrud7NDlwDJxZu5m76omQlDu2Vg5+271FB2w8f/PRG7UQpB2f
-        2EjASNOE+EbFI/B0ooZl7DSteqIpUvjkw0RXrCMT3fHe+bdJDeSJIv/Cp0CMN4t4RX6
-        QgxShMv7rSPGHGKHtXew11+2odP6x1wKSZ0tz0FA=
-Received: from anirudhrb.com (49.207.206.107 [49.207.206.107]) by mx.zohomail.com
-        with SMTPS id 1645460088394764.7856299620081; Mon, 21 Feb 2022 08:14:48 -0800 (PST)
-Date:   Mon, 21 Feb 2022 21:44:39 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Mike Christie <michael.christie@oracle.com>,
-        Jason Wang <jasowang@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        kvm <kvm@vger.kernel.org>, Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH] vhost/vsock: don't check owner in vhost_vsock_stop()
- while releasing
-Message-ID: <YhO6bwu7iDtUFQGj@anirudhrb.com>
-References: <20220221114916.107045-1-sgarzare@redhat.com>
- <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
+        Mon, 21 Feb 2022 11:15:33 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C6F275E4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:15:10 -0800 (PST)
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7911A40017
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:15:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645460109;
+        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=VN7Dhyuauh9RFyBI5ipyI8n0C4NYgAO5DDi3VIbLmt2nWXCkqkNF1wof+aCWixrsh
+         /iQaN/+hGGWRSRs3qwaFNhXGD5H6kf3XAgNRxCmC3ywbMQprU5caJ3rKqdqDYJ15xt
+         qcPVTUbbWI5yB9eHFRY+gjN+r9sJpc3AO4J+xyGKz8uo4jeYeAIs2RLjoTlG/QBVsa
+         jE7JHGHtu99yCWUNDlFJ10biaXkmKRSMgfpz+ME/ZRimaAG3IzaE6SYimmLcHDNYsO
+         tZSw9hQBd1aBo7LH8UPcCzH8sVdIGM/EBNNf462KqKilE8xpr5F81Xvoky59UHMN2P
+         E2Xc8KWvic/7Q==
+Received: by mail-wr1-f70.google.com with SMTP id v17-20020adfc5d1000000b001e6405c2b56so7654825wrg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:15:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
+        b=2+NVqBsyEPvIwVs1H8YF2ZjzisKe4hFp7h1fNzPXmbkUBMcOWFdP+3qae/GrOAqjKs
+         mWJGnqzsAzamc3UxcqxhHP8SIZu9ZciE684d4BA6NtMPQXlM3yqtAxeAHcbKjXFXxppM
+         PxJnvHU1jgJpY1UfYtd7W1+QNOBCMKue6UzDiS1GFBu5kfgd/HZThX1lDLOjVnRaiWCS
+         CJdQ5Gt1Z5LlLHMIGtHnpZkxPSdAXp5yLvqioNUguyEXPv4K3d4T80qS9FBZEsgBTkKG
+         ftlvK17gkwOeDhGqnzpxqVrbZp+F9YoPFqD5TfrMvDxu3vDGyGCnb6YEZgK7q7pTfVVA
+         K2CQ==
+X-Gm-Message-State: AOAM532lTlioXVDRDyw4g5M95y1ebuTG8I+6lJ53CM4/9aIq6R8aOMDA
+        fPamyh+fEagtDM7MgYCVN8UQ49ahX6A+33z0rwc1yr7CyO968o/z0vR1fkATpWEM6xpmjTuBmr1
+        gvIoZcodVg80k/iRdpikxebs4zPe13AJCFxeJtwspAg==
+X-Received: by 2002:adf:e952:0:b0:1e3:39ed:d990 with SMTP id m18-20020adfe952000000b001e339edd990mr16495594wrn.215.1645460109057;
+        Mon, 21 Feb 2022 08:15:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4/RK1fIWDS+henbbXZJgauSuqwElTcKvG20tpmepmsmnqy5mytufnWbPM6q+0YBF1+QKZTA==
+X-Received: by 2002:adf:e952:0:b0:1e3:39ed:d990 with SMTP id m18-20020adfe952000000b001e339edd990mr16495579wrn.215.1645460108908;
+        Mon, 21 Feb 2022 08:15:08 -0800 (PST)
+Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
+        by smtp.gmail.com with ESMTPSA id 3sm49978552wrz.86.2022.02.21.08.15.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 08:15:08 -0800 (PST)
+From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH -fixes v2 2/4] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
+Date:   Mon, 21 Feb 2022 17:12:30 +0100
+Message-Id: <20220221161232.2168364-3-alexandre.ghiti@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
+References: <20220221161232.2168364-1-alexandre.ghiti@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGxU2F6aMqTaNaeO7xChtf=veDJYtBjDRayRRYkZ_FOq4CYJWQ@mail.gmail.com>
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 02:59:30PM +0100, Stefano Garzarella wrote:
-> On Mon, Feb 21, 2022 at 12:49 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> >
-> > vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
-> > ownership. It expects current->mm to be valid.
-> >
-> > vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
-> > the user has not done close(), so when we are in do_exit(). In this
-> > case current->mm is invalid and we're releasing the device, so we
-> > should clean it anyway.
-> >
-> > Let's check the owner only when vhost_vsock_stop() is called
-> > by an ioctl.
-> >
-> > Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-> > Cc: stable@vger.kernel.org
-> > Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > ---
-> >  drivers/vhost/vsock.c | 14 ++++++++------
-> >  1 file changed, 8 insertions(+), 6 deletions(-)
-> 
-> Reported-and-tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+In order to get the pfn of a struct page* when sparsemem is enabled
+without vmemmap, the mem_section structures need to be initialized which
+happens in sparse_init.
 
-I don't think this patch fixes "INFO: task hung in vhost_work_dev_flush"
-even though syzbot says so. I am able to reproduce the issue locally
-even with this patch applied.
+But kasan_early_init calls pfn_to_page way before sparse_init is called,
+which then tries to dereference a null mem_section pointer.
 
-Thanks,
+Fix this by removing the usage of this function in kasan_early_init.
 
-	- Anirudh.
+Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+---
+ arch/riscv/mm/kasan_init.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-> 
+diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
+index f61f7ca6fe0f..85e849318389 100644
+--- a/arch/riscv/mm/kasan_init.c
++++ b/arch/riscv/mm/kasan_init.c
+@@ -202,8 +202,7 @@ asmlinkage void __init kasan_early_init(void)
+ 
+ 	for (i = 0; i < PTRS_PER_PTE; ++i)
+ 		set_pte(kasan_early_shadow_pte + i,
+-			mk_pte(virt_to_page(kasan_early_shadow_page),
+-			       PAGE_KERNEL));
++			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
+ 
+ 	for (i = 0; i < PTRS_PER_PMD; ++i)
+ 		set_pmd(kasan_early_shadow_pmd + i,
+-- 
+2.32.0
+
