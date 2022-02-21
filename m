@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC923C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 052D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351457AbiBUJtY (ORCPT
+        id S1351546AbiBUJte (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:49:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40158 "EHLO
+        Mon, 21 Feb 2022 04:49:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351185AbiBUJoW (ORCPT
+        with ESMTP id S244944AbiBUJoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:44:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0C43F31D;
-        Mon, 21 Feb 2022 01:18:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:44:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4273F330;
+        Mon, 21 Feb 2022 01:18:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 608F8CE0E88;
-        Mon, 21 Feb 2022 09:18:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F38C340E9;
-        Mon, 21 Feb 2022 09:18:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0F9260F1A;
+        Mon, 21 Feb 2022 09:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC181C340E9;
+        Mon, 21 Feb 2022 09:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435088;
-        bh=VIQquFzGDHKbKcmGm6RKoojybnkJGoVldTQZYNSMAJU=;
+        s=korg; t=1645435094;
+        bh=n8SyEaw3FzEKtjVivgMYrGD1iFZv2h7DZWTikLxCuYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M1yNxDePhFYgDq+PgrRCFTjRv75TkBonTuhcpVBl1idHgCzpqDnQC2wGvzxxsuyeG
-         GGfg5l8cS4Rg8bmlqpcTRNHbZMBFQa9uY1VS1sSZJwsvi4rvsbT81C7/2mPCwcJr3g
-         usNpxdcaSBpzeyKDiAHYHA/1WFyljTSKpy9iX1zY=
+        b=azyi9D++1/u+7fGbALYMYsh4yBvGQ20DHvE8MG4SVkGa6HxlBjq0G2kqJuL/XaDF7
+         FTNoZHkTfq2j1NJAulfKAFXnvy+m12gfNerx3ifClY+QGbF+dHNOlSVntRXMG0j6/9
+         XuB1YVrQpXUjiKrN3lf+pO25FYv47jV2MuQfr0VE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 039/227] net: ieee802154: at86rf230: Stop leaking skbs
-Date:   Mon, 21 Feb 2022 09:47:38 +0100
-Message-Id: <20220221084936.161035574@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH 5.16 010/227] bpf/selftests: Test PTR_TO_RDONLY_MEM
+Date:   Mon, 21 Feb 2022 09:47:09 +0100
+Message-Id: <20220221084935.184705752@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,74 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Hao Luo <haoluo@google.com>
 
-[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
+commit 9497c458c10b049438ef6e6ddda898edbc3ec6a8 upstream.
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. In the Tx case we then leak
-the skb structure.
+This test verifies that a ksym of non-struct can not be directly
+updated.
 
-Free the skb structure upon error before returning when appropriate.
-
-As the 'is_tx = 0' cannot be moved in the complete handler because of a
-possible race between the delay in switching to STATE_RX_AACK_ON and a
-new interrupt, we introduce an intermediate 'was_tx' boolean just for
-this purpose.
-
-There is no Fixes tag applying here, many changes have been made on this
-area and the issue kind of always existed.
-
-Suggested-by: Alexander Aring <alex.aring@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211217003152.48334-10-haoluo@google.com
+Cc: stable@vger.kernel.org # 5.16.x
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c             |   14 ++++
+ tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c |   29 ++++++++++
+ 2 files changed, 43 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
 
-diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 7d67f41387f55..4f5ef8a9a9a87 100644
---- a/drivers/net/ieee802154/at86rf230.c
-+++ b/drivers/net/ieee802154/at86rf230.c
-@@ -100,6 +100,7 @@ struct at86rf230_local {
- 	unsigned long cal_timeout;
- 	bool is_tx;
- 	bool is_tx_from_off;
-+	bool was_tx;
- 	u8 tx_retry;
- 	struct sk_buff *tx_skb;
- 	struct at86rf230_state_change tx;
-@@ -343,7 +344,11 @@ at86rf230_async_error_recover_complete(void *context)
- 	if (ctx->free)
- 		kfree(ctx);
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+@@ -8,6 +8,7 @@
+ #include "test_ksyms_btf_null_check.skel.h"
+ #include "test_ksyms_weak.skel.h"
+ #include "test_ksyms_weak.lskel.h"
++#include "test_ksyms_btf_write_check.skel.h"
  
--	ieee802154_wake_queue(lp->hw);
-+	if (lp->was_tx) {
-+		lp->was_tx = 0;
-+		dev_kfree_skb_any(lp->tx_skb);
-+		ieee802154_wake_queue(lp->hw);
-+	}
+ static int duration;
+ 
+@@ -137,6 +138,16 @@ cleanup:
+ 	test_ksyms_weak_lskel__destroy(skel);
  }
  
- static void
-@@ -352,7 +357,11 @@ at86rf230_async_error_recover(void *context)
- 	struct at86rf230_state_change *ctx = context;
- 	struct at86rf230_local *lp = ctx->lp;
++static void test_write_check(void)
++{
++	struct test_ksyms_btf_write_check *skel;
++
++	skel = test_ksyms_btf_write_check__open_and_load();
++	ASSERT_ERR_PTR(skel, "unexpected load of a prog writing to ksym memory\n");
++
++	test_ksyms_btf_write_check__destroy(skel);
++}
++
+ void test_ksyms_btf(void)
+ {
+ 	int percpu_datasec;
+@@ -167,4 +178,7 @@ void test_ksyms_btf(void)
  
--	lp->is_tx = 0;
-+	if (lp->is_tx) {
-+		lp->was_tx = 1;
-+		lp->is_tx = 0;
+ 	if (test__start_subtest("weak_ksyms_lskel"))
+ 		test_weak_syms_lskel();
++
++	if (test__start_subtest("write_check"))
++		test_write_check();
+ }
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Google */
++
++#include "vmlinux.h"
++
++#include <bpf/bpf_helpers.h>
++
++extern const int bpf_prog_active __ksym; /* int type global var. */
++
++SEC("raw_tp/sys_enter")
++int handler(const void *ctx)
++{
++	int *active;
++	__u32 cpu;
++
++	cpu = bpf_get_smp_processor_id();
++	active = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);
++	if (active) {
++		/* Kernel memory obtained from bpf_{per,this}_cpu_ptr
++		 * is read-only, should _not_ pass verification.
++		 */
++		/* WRITE_ONCE */
++		*(volatile int *)active = -1;
 +	}
 +
- 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
- 				     at86rf230_async_error_recover_complete);
- }
--- 
-2.34.1
-
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 
 
