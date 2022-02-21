@@ -2,179 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA40EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355300AbiBUKjY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:39:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35366 "EHLO
+        id S230088AbiBUKmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:42:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355149AbiBUKjG (ORCPT
+        with ESMTP id S1355175AbiBUKkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:39:06 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988894754C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:00:58 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id m27so14262789wrb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:00:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7npSal4SAMLSZn16NnNEeHrBcHYcH9kBYIO1Ec8tAsc=;
-        b=DRpO3yTE0tJVGaIevyQWmDT4RQw4sj581lnPgma9i9lP1rhY61Bq1uu/GvtgnD3uV7
-         gIrwWki58uWVDY2GZ+5DlmBI7oqhldUaH+45qGF1HZZ1oLWNsLSFeoh3YsYnNHySFt9Y
-         fBoBdQF5sMvBRH0jZoE5mCS5Fwd1kISVZAFaYFNAtXZXvVdzne2RoiNXh1my7ulWKySy
-         wzLdcSVXjb0jU4+vCsciegp3jmfXInwK/FY5HHbt7mYZcoZeg2vqRTffm5XjM9RLpsUv
-         vyBrQq9XwoOsptZ7IZrTTrW0SIflvV21Y+LFjiSBJEGkakiWaLNWjaqEQ8+Q0xUqiNZ5
-         ryZQ==
+        Mon, 21 Feb 2022 05:40:01 -0500
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24C2E9B;
+        Mon, 21 Feb 2022 02:01:53 -0800 (PST)
+Received: by mail-wr1-f49.google.com with SMTP id m27so14267219wrb.4;
+        Mon, 21 Feb 2022 02:01:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7npSal4SAMLSZn16NnNEeHrBcHYcH9kBYIO1Ec8tAsc=;
-        b=ABxIXsNSSRyvYWkiN9Ml9cFwMoSfNY4a++qMHucVhgy3WReCVEUylMJHXsbmzSfWKG
-         7tOMbtfV09i4AjiK8sQ9ODo8FLLxtYWXJLQlnBLE9k5jepd8jPxhwDv6S3mHredqNRi2
-         3MfjuY2WR50AcPo6HiPkP67ozQcJetAcWNM2N0iuVS8qha+HYFP8Y29qtYf959F+XIA5
-         UZSbeYwrUbc8PlyVReqkZktxQAVOE1QzuL8uoQSkGfZcpiauWI1BbyxF/9YEVsyGtAr9
-         IIOnMBjttmIs8wWcwDUWHKh7FmISTDbYBiLxoB1MTmpyRGHxf619+6rOhqHv1W8Plikw
-         xmuQ==
-X-Gm-Message-State: AOAM533SVFN4ZSFDNLYOqHhdrA+Fk8jcazHpptR/ysDC+RFLeRpbu8pJ
-        9fj6uXmExZfEyPduYGX7HnAc6+p6oMridAI3Uk0bYw==
-X-Google-Smtp-Source: ABdhPJyirlkP3M5wFmhNEqfDBiCxvzzJb4WX23P3G7dkN1Z8LtUASSB2cPoUO5TP0OREOq8+oImfrKDuUqpRPFnu/s4=
-X-Received: by 2002:a5d:6507:0:b0:1e5:eb6d:a851 with SMTP id
- x7-20020a5d6507000000b001e5eb6da851mr15148810wru.313.1645437656564; Mon, 21
- Feb 2022 02:00:56 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YZ+si3odyYtBfKCwmZtlljyYoUebhhvf4uslsh/s+F4=;
+        b=7j90WRpima8SkDjbxZ99PgrwljlxTuf3uJ0AEu8yOKNK0T8/TrPJBEKduV1EssbyI5
+         HnQO4t0f03epmXHqXpZE4j4+gQkH/cPMXLSF4ewvft/IG6mY+eDjOMGPdt9/BJ01T+Dm
+         o/mBlqmwuXn78aIZzzDSMcqwXMEQ7X2CMwXdxqpAQwTx4ZjAAHnVlNwlggvNcpaRvFPA
+         VgikTqi1Hbg1jKVQago4AbxrcOVhu2M7ZbQYgEo9d3RBhxJ1WINAOSFkO3BNpizkfVBb
+         gjIGMqA/1lwArnLlBmJfY6gkcN8zIzBaJ0vNY7I9JYlfaW8pEp65NcRbpwBeeSqOTDK2
+         hOSg==
+X-Gm-Message-State: AOAM533huutrR9fSqTSiT3QCh69Z9QXiz2Sgh2t7zzNyVxD6pYDuInOG
+        7H8GCRuzyCdvxct8r8eENYTeUl/SEt0=
+X-Google-Smtp-Source: ABdhPJxiSwRwEHfd8Q+eqMRaMd1mC5EXxdtAwlKOfu4jlIozdrPKqmXsyZiymQ3sUemzBc2KSw7yWQ==
+X-Received: by 2002:adf:fb8e:0:b0:1e3:241b:218c with SMTP id a14-20020adffb8e000000b001e3241b218cmr15194533wrr.359.1645437712057;
+        Mon, 21 Feb 2022 02:01:52 -0800 (PST)
+Received: from [192.168.0.120] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.googlemail.com with ESMTPSA id q76sm7668095wme.1.2022.02.21.02.01.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 02:01:51 -0800 (PST)
+Message-ID: <acf6d02d-0e17-b84a-5bd8-9f5165f73915@kernel.org>
+Date:   Mon, 21 Feb 2022 11:01:49 +0100
 MIME-Version: 1.0
-References: <20220220050854.743420-1-apatel@ventanamicro.com>
- <20220220050854.743420-3-apatel@ventanamicro.com> <87czjg4kf4.wl-maz@kernel.org>
-In-Reply-To: <87czjg4kf4.wl-maz@kernel.org>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 21 Feb 2022 15:30:44 +0530
-Message-ID: <CAAhSdy1nKMySggjH83JBEDxiFnfFY46DdYyGH=ib1b0D6Qn7jg@mail.gmail.com>
-Subject: Re: [PATCH v3 2/6] irqchip/riscv-intc: Allow drivers to directly
- discover INTC hwnode
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 1/4] MIPS: Loongson64: dts: update the display
+ controller device node
+Content-Language: en-US
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Sui Jingfeng <15330273260@189.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+References: <20220220145554.117854-1-15330273260@189.cn>
+ <20220220145554.117854-2-15330273260@189.cn>
+ <08abcb14-f1f6-8be5-6309-cd16e0578c05@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <08abcb14-f1f6-8be5-6309-cd16e0578c05@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 3:21 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Sun, 20 Feb 2022 05:08:50 +0000,
-> Anup Patel <apatel@ventanamicro.com> wrote:
-> >
-> > Various RISC-V drivers (such as SBI IPI, SBI Timer, SBI PMU, and
-> > KVM RISC-V) don't have associated DT node but these drivers need
-> > standard per-CPU (local) interrupts defined by the RISC-V privileged
-> > specification.
-> >
-> > We add riscv_get_intc_hwnode() in arch/riscv which allows RISC-V
-> > drivers not having DT node to discover INTC hwnode which in-turn
-> > helps these drivers to map per-CPU (local) interrupts provided
-> > by the INTC driver.
-> >
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  arch/riscv/include/asm/irq.h     |  4 ++++
-> >  arch/riscv/kernel/irq.c          | 19 +++++++++++++++++++
-> >  drivers/irqchip/irq-riscv-intc.c |  7 +++++++
-> >  3 files changed, 30 insertions(+)
-> >
-> > diff --git a/arch/riscv/include/asm/irq.h b/arch/riscv/include/asm/irq.h
-> > index e4c435509983..43b9ebfbd943 100644
-> > --- a/arch/riscv/include/asm/irq.h
-> > +++ b/arch/riscv/include/asm/irq.h
-> > @@ -12,6 +12,10 @@
-> >
-> >  #include <asm-generic/irq.h>
-> >
-> > +void riscv_set_intc_hwnode_fn(struct fwnode_handle *(*fn)(void));
-> > +
-> > +struct fwnode_handle *riscv_get_intc_hwnode(void);
-> > +
-> >  extern void __init init_IRQ(void);
-> >
-> >  #endif /* _ASM_RISCV_IRQ_H */
-> > diff --git a/arch/riscv/kernel/irq.c b/arch/riscv/kernel/irq.c
-> > index 7207fa08d78f..ead92432df8c 100644
-> > --- a/arch/riscv/kernel/irq.c
-> > +++ b/arch/riscv/kernel/irq.c
-> > @@ -7,9 +7,28 @@
-> >
-> >  #include <linux/interrupt.h>
-> >  #include <linux/irqchip.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/module.h>
-> >  #include <linux/seq_file.h>
-> >  #include <asm/smp.h>
-> >
-> > +static struct fwnode_handle *(*__get_intc_node)(void);
-> > +
-> > +void riscv_set_intc_hwnode_fn(struct fwnode_handle *(*fn)(void))
-> > +{
-> > +     __get_intc_node = fn;
-> > +}
-> > +EXPORT_SYMBOL_GPL(riscv_set_intc_hwnode_fn);
->
-> We're talking about the root interrupt controller here. How can this
-> ever be implemented as a module?
->
-> > +
-> > +struct fwnode_handle *riscv_get_intc_hwnode(void)
-> > +{
-> > +     if (__get_intc_node)
-> > +             return __get_intc_node();
-> > +
-> > +     return NULL;
-> > +}
-> > +EXPORT_SYMBOL_GPL(riscv_get_intc_hwnode);
-> > +
-> >  int arch_show_interrupts(struct seq_file *p, int prec)
-> >  {
-> >       show_ipi_stats(p, prec);
-> > diff --git a/drivers/irqchip/irq-riscv-intc.c b/drivers/irqchip/irq-riscv-intc.c
-> > index b65bd8878d4f..fa24ecd01d39 100644
-> > --- a/drivers/irqchip/irq-riscv-intc.c
-> > +++ b/drivers/irqchip/irq-riscv-intc.c
-> > @@ -92,6 +92,11 @@ static const struct irq_domain_ops riscv_intc_domain_ops = {
-> >       .xlate  = irq_domain_xlate_onecell,
-> >  };
-> >
-> > +static struct fwnode_handle *riscv_intc_hwnode(void)
-> > +{
-> > +     return (intc_domain) ? intc_domain->fwnode : NULL;
-> > +}
->
-> This makes no sense. Either you have found the interrupt controller
-> and allocated the domain, or you haven't. But you don't register a
-> callback without having found it.
+On 21/02/2022 10:19, Sergei Shtylyov wrote:
+> On 2/20/22 5:55 PM, Sui Jingfeng wrote:
+> 
+>> From: suijingfeng <suijingfeng@loongson.cn>
+>>
+>> The display controller is a pci device, its PCI vendor id is 0x0014
+>> its PCI device id is 0x7a06.
+>>
+>> 1) In order to let the driver to know which chip the DC is contained
+>>    in, the compatible string of the display controller is updated
+>>    according to the chip's name.
+>>
+>> 2) Add display controller device node for ls2k1000 SoC
+>>
+>> Reported-by: Krzysztof Kozlowski <krzk@kernel.org>
+>> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+>> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+>> ---
+>>  arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 8 ++++++++
+>>  arch/mips/boot/dts/loongson/ls7a-pch.dtsi          | 7 ++-----
+>>  2 files changed, 10 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+>> index 768cf2abcea3..af9cda540f9e 100644
+>> --- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+>> +++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
+>> @@ -209,6 +209,14 @@ gpu@5,0 {
+>>  				interrupt-parent = <&liointc0>;
+>>  			};
+>>  
+>> +			lsdc: display-controller@6,0 {
+> 
+>    Shouldn't the node name just be "display", according to the section 2.2.2
+> of the DT spec?
 
-Okay, I will drop the check on intc_domain since we are registering
-callback after creating a single INTC domain common for all CPUs.
+lcd-controller, led-controller. As I understood from the bindings, this
+is not physical device displaying something (like a panel) but rather a
+device controlling such panel. Therefore display-controller feels
+appropriate.
 
->
-> And you have totally ignored my previous comments about the multitude
-> of irq domains for the INTC. Either you get rid of all but one and you
-> can register a single fwnode, or you stay with what you have today,
->
-> You can't have it both ways.
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
 
-Regards,
-Anup
+Best regards,
+Krzysztof
