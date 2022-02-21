@@ -2,80 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 610A3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 01:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245175AbiBUB3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 20:29:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48868 "EHLO
+        id S245394AbiBUBay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 20:30:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233987AbiBUB3B (ORCPT
+        with ESMTP id S245351AbiBUBav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 20:29:01 -0500
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8D3517C0;
-        Sun, 20 Feb 2022 17:28:38 -0800 (PST)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 21L1HQCl026167;
-        Mon, 21 Feb 2022 09:17:26 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Feb
- 2022 09:26:16 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <billy_tsai@aspeedtech.com>,
-        <colin.king@canonical.com>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-CC:     Konstantin Klubnichkin <kitsok@yandex-team.ru>
-Subject: [PATCH v2] iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
-Date:   Mon, 21 Feb 2022 09:27:05 +0800
-Message-ID: <20220221012705.22008-1-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 20 Feb 2022 20:30:51 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4DB23BF1;
+        Sun, 20 Feb 2022 17:30:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=VFWu6FF6B226VEQnYoQRekqNHswkG9aByXJfytB6bzo=; b=b3OfuSUR6AMVVVnb3vshC/GIgR
+        QQv0uw4IqiEF6OfbOTeJJ7TdNYh6FIF2fhn/F+wgMZBYdVkr0sjum1CvBws7tajyADMWfYhtQGvy6
+        PAeRfFke5eqoePVuydlFtpl9kaRldpUGThh78AxnBsGi4kVOR2SpptOBthBmnYMVs/L6JyYvl2l4e
+        CTquI+wtbdgxKTFp/GPGDi8sARz6LBGhLDmczToqDXwK0G9m3eD3z0uNIPD4wlo5Vfsv7H7rFLhXZ
+        qD8pHG3/YwiSjSVd9dFNgq58aoB7cVTu/eW78aRgitFEBFI1KKW8NkrO3HWfXZHwiV4NG1OfJwAUT
+        3Osyni/Q==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nLxWg-00BWc0-AU; Mon, 21 Feb 2022 01:30:07 +0000
+Message-ID: <a7c2bc3c-16e6-735f-4bc8-b57a48daec7d@infradead.org>
+Date:   Sun, 20 Feb 2022 17:29:58 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 21L1HQCl026167
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] bpf: cleanup comments
+Content-Language: en-US
+To:     Song Liu <song@kernel.org>, trix@redhat.com
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220220184055.3608317-1-trix@redhat.com>
+ <CAPhsuW7j9SK5OJxK-ZnDYgwVhoPJGP8K+1Q+pUJ8mGUA41ZvHQ@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAPhsuW7j9SK5OJxK-ZnDYgwVhoPJGP8K+1Q+pUJ8mGUA41ZvHQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The formula for the ADC sampling period in ast2400/ast2500 is:
-ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
-When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
-expected, because the hardware may not have enough time to
-charge/discharge to a stable voltage. This patch use the flag
-CLK_DIVIDER_ONE_BASED which will use the raw value read from the
-register, with the value of zero considered invalid to conform to the
-corrected formula.
 
-Fixes: 573803234e72 ("iio: Aspeed ADC")
-Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- drivers/iio/adc/aspeed_adc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index a957cad1bfab..ffae64f39221 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	data->clk_scaler = devm_clk_hw_register_divider(
- 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
- 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
--		data->model_data->scaler_bit_width, 0, &data->clk_lock);
-+		data->model_data->scaler_bit_width,
-+		data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
-+		&data->clk_lock);
- 	if (IS_ERR(data->clk_scaler))
- 		return PTR_ERR(data->clk_scaler);
- 
+On 2/20/22 17:28, Song Liu wrote:
+> On Sun, Feb 20, 2022 at 10:41 AM <trix@redhat.com> wrote:
+>>
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> Add leading space to spdx tag
+>> Use // for spdx c file comment
+>>
+>> Replacements
+>> resereved to reserved
+>> inbetween to in between
+>> everytime to every time
+> 
+> I think everytime could be a single word? Other than that,
+
+Nope. :)
+
+> 
+> Acked-by: Song Liu <songliubraving@fb.com>
+> 
+>> intutivie to intuitive
+>> currenct to current
+>> encontered to encountered
+>> referenceing to referencing
+>> upto to up to
+>> exectuted to executed
+>>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>  kernel/bpf/bpf_local_storage.c | 2 +-
+>>  kernel/bpf/btf.c               | 6 +++---
+>>  kernel/bpf/cgroup.c            | 8 ++++----
+>>  kernel/bpf/hashtab.c           | 2 +-
+>>  kernel/bpf/helpers.c           | 2 +-
+>>  kernel/bpf/local_storage.c     | 2 +-
+>>  kernel/bpf/reuseport_array.c   | 2 +-
+>>  kernel/bpf/syscall.c           | 2 +-
+>>  kernel/bpf/trampoline.c        | 2 +-
+>>  9 files changed, 14 insertions(+), 14 deletions(-)
+
 -- 
-2.25.1
-
+~Randy
