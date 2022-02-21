@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345753AbiBUI6f (ORCPT
+        id S1346420AbiBUI6k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:58:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54504 "EHLO
+        Mon, 21 Feb 2022 03:58:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346506AbiBUI5A (ORCPT
+        with ESMTP id S1346525AbiBUI5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:57:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AABD24F3A;
-        Mon, 21 Feb 2022 00:54:14 -0800 (PST)
+        Mon, 21 Feb 2022 03:57:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6AD25597;
+        Mon, 21 Feb 2022 00:54:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF5D3B80EA5;
-        Mon, 21 Feb 2022 08:54:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A424C340EB;
-        Mon, 21 Feb 2022 08:54:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB835B80EB1;
+        Mon, 21 Feb 2022 08:53:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEC0C340E9;
+        Mon, 21 Feb 2022 08:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433646;
-        bh=AovC+t2MnHuCX0ndjB/Skwurxy39IYuMANZuvykWO4U=;
+        s=korg; t=1645433621;
+        bh=3aeJ4K8mGPvLbExQZh8J2vrKTND+KovPGC40Rfk0SME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v/jtUM4Uwo7jmbsaZ9BsK1W6OOwFTWt6yo15tIJnaJOVTA80Vg6ArR41HwOpIa4HC
-         kGCIbp7FR0t+Keeq3RAW9jGwBgMoGrCK4IaTt0aBD4DvUeWjTofEvfLQ2KNxI2OAXC
-         cOdLPUrQodaKMHYgmOF1Vh+TCi6+YKI0fCBAGNBw=
+        b=yQt9IHBY2LnBzwDcnrsExF9yhF6az21187L+Zyi2yCxvBEqVsp7awj8i/atKQ3qBz
+         tBe2FUMdxXc+SoSCcb1VC8St5eQwUoEXK6x79b3/KC/xIzlb+5XXcQsROpTaUVnQNU
+         dhJ3Q4wHyX7CDiitl8qUkibQHuTG+5vS2P51PxSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 39/45] KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
-Date:   Mon, 21 Feb 2022 09:49:30 +0100
-Message-Id: <20220221084911.726249988@linuxfoundation.org>
+        stable@vger.kernel.org, Rolf Eike Beer <eike-kernel@sf-tec.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.14 04/45] parisc: Fix data TLB miss in sba_unmap_sg
+Date:   Mon, 21 Feb 2022 09:48:55 +0100
+Message-Id: <20220221084910.604623890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -51,39 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 710c476514313c74045c41c0571bb5178fd16e3d ]
+commit b7d6f44a0fa716a82969725516dc0b16bc7cd514 upstream.
 
-AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
-a PerfEvtSeln MSR. Don't mask off the high nybble when configuring a
-RAW perf event.
+Rolf Eike Beer reported the following bug:
 
-Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Message-Id: <20220203014813.2130559-2-jmattson@google.com>
-Reviewed-by: David Dunn <daviddunn@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[1274934.746891] Bad Address (null pointer deref?): Code=15 (Data TLB miss fault) at addr 0000004140000018
+[1274934.746891] CPU: 3 PID: 5549 Comm: cmake Not tainted 5.15.4-gentoo-parisc64 #4
+[1274934.746891] Hardware name: 9000/785/C8000
+[1274934.746891]
+[1274934.746891]      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
+[1274934.746891] PSW: 00001000000001001111111000001110 Not tainted
+[1274934.746891] r00-03  000000ff0804fe0e 0000000040bc9bc0 00000000406760e4 0000004140000000
+[1274934.746891] r04-07  0000000040b693c0 0000004140000000 000000004a2b08b0 0000000000000001
+[1274934.746891] r08-11  0000000041f98810 0000000000000000 000000004a0a7000 0000000000000001
+[1274934.746891] r12-15  0000000040bddbc0 0000000040c0cbc0 0000000040bddbc0 0000000040bddbc0
+[1274934.746891] r16-19  0000000040bde3c0 0000000040bddbc0 0000000040bde3c0 0000000000000007
+[1274934.746891] r20-23  0000000000000006 000000004a368950 0000000000000000 0000000000000001
+[1274934.746891] r24-27  0000000000001fff 000000000800000e 000000004a1710f0 0000000040b693c0
+[1274934.746891] r28-31  0000000000000001 0000000041f988b0 0000000041f98840 000000004a171118
+[1274934.746891] sr00-03  00000000066e5800 0000000000000000 0000000000000000 00000000066e5800
+[1274934.746891] sr04-07  0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[1274934.746891]
+[1274934.746891] IASQ: 0000000000000000 0000000000000000 IAOQ: 00000000406760e8 00000000406760ec
+[1274934.746891]  IIR: 48780030    ISR: 0000000000000000  IOR: 0000004140000018
+[1274934.746891]  CPU:        3   CR30: 00000040e3a9c000 CR31: ffffffffffffffff
+[1274934.746891]  ORIG_R28: 0000000040acdd58
+[1274934.746891]  IAOQ[0]: sba_unmap_sg+0xb0/0x118
+[1274934.746891]  IAOQ[1]: sba_unmap_sg+0xb4/0x118
+[1274934.746891]  RP(r2): sba_unmap_sg+0xac/0x118
+[1274934.746891] Backtrace:
+[1274934.746891]  [<00000000402740cc>] dma_unmap_sg_attrs+0x6c/0x70
+[1274934.746891]  [<000000004074d6bc>] scsi_dma_unmap+0x54/0x60
+[1274934.746891]  [<00000000407a3488>] mptscsih_io_done+0x150/0xd70
+[1274934.746891]  [<0000000040798600>] mpt_interrupt+0x168/0xa68
+[1274934.746891]  [<0000000040255a48>] __handle_irq_event_percpu+0xc8/0x278
+[1274934.746891]  [<0000000040255c34>] handle_irq_event_percpu+0x3c/0xd8
+[1274934.746891]  [<000000004025ecb4>] handle_percpu_irq+0xb4/0xf0
+[1274934.746891]  [<00000000402548e0>] generic_handle_irq+0x50/0x70
+[1274934.746891]  [<000000004019a254>] call_on_stack+0x18/0x24
+[1274934.746891]
+[1274934.746891] Kernel panic - not syncing: Bad Address (null pointer deref?)
+
+The bug is caused by overrunning the sglist and incorrectly testing
+sg_dma_len(sglist) before nents. Normally this doesn't cause a crash,
+but in this case sglist crossed a page boundary. This occurs in the
+following code:
+
+	while (sg_dma_len(sglist) && nents--) {
+
+The fix is simply to test nents first and move the decrement of nents
+into the loop.
+
+Reported-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/parisc/sba_iommu.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 1bca8016ee8ae..b1fde6a548403 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -171,7 +171,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+--- a/drivers/parisc/sba_iommu.c
++++ b/drivers/parisc/sba_iommu.c
+@@ -1063,7 +1063,7 @@ sba_unmap_sg(struct device *dev, struct
+ 	spin_unlock_irqrestore(&ioc->res_lock, flags);
+ #endif
+ 
+-	while (sg_dma_len(sglist) && nents--) {
++	while (nents && sg_dma_len(sglist)) {
+ 
+ 		sba_unmap_page(dev, sg_dma_address(sglist), sg_dma_len(sglist),
+ 				direction, 0);
+@@ -1072,6 +1072,7 @@ sba_unmap_sg(struct device *dev, struct
+ 		ioc->usingle_calls--;	/* kluge since call is unmap_sg() */
+ #endif
+ 		++sglist;
++		nents--;
  	}
  
- 	if (type == PERF_TYPE_RAW)
--		config = eventsel & X86_RAW_EVENT_MASK;
-+		config = eventsel & AMD64_RAW_EVENT_MASK;
- 
- 	pmc_reprogram_counter(pmc, type, config,
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
--- 
-2.34.1
-
+ 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__,  nents);
 
 
