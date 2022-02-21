@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351639AbiBUJys (ORCPT
+        id S1351941AbiBUJyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41670 "EHLO
+        Mon, 21 Feb 2022 04:54:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352978AbiBUJsF (ORCPT
+        with ESMTP id S1352977AbiBUJsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:48:05 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4386BF25;
-        Mon, 21 Feb 2022 01:22:12 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4747FD6D;
+        Mon, 21 Feb 2022 01:22:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A50D1CE0E8B;
-        Mon, 21 Feb 2022 09:22:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C8C2C340E9;
-        Mon, 21 Feb 2022 09:22:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B7906CE0E90;
+        Mon, 21 Feb 2022 09:22:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F4BC340E9;
+        Mon, 21 Feb 2022 09:22:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435329;
-        bh=mc0aKOxSsDuTXpmJoC/IG9w3zf1N4r0QHjUEA7j//a4=;
+        s=korg; t=1645435326;
+        bh=gWrhBUVDvQ6S4mikWmV2cQBDKkGwyarz86IOQR8HysI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6YOrFc9EjaJOeL+Qxfp1il7YRCjFa8+dc1lkTCbDUD9suRhDkMC8OzAeK9A2US0x
-         4GBz0zjhwwU8IMSuqotR8fmtiD/ynJaMjaIbyuc5DYrgpQNDDSzgDhcbtmUMjwLL6Y
-         Nmg4AXsXLT4KZPMzJIqIWzuZ9YUt2ZOzDdlg9vYQ=
+        b=KhOZ+7H8lldPYeS1qrfLaiqkrhBxq/ZHlX//CsvqK21ClAGaxv11DeUjjF9VgrMVN
+         obeGjGWYJLGpiVe3gtWxC+02oDhLBWGiCDGZ1EyiS1X3WNdMbwmKLZlFP1ojqJuDeU
+         t9trafOeTrmh/bY6mIyY7s4KQxInOAG00JCT5Gh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gatis Peisenieks <gatis@mikrotik.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 126/227] atl1c: fix tx timeout after link flap on Mikrotik 10/25G NIC
-Date:   Mon, 21 Feb 2022 09:49:05 +0100
-Message-Id: <20220221084939.035155227@linuxfoundation.org>
+        stable@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 125/227] net: phy: mediatek: remove PHY mode check on MT7531
+Date:   Mon, 21 Feb 2022 09:49:04 +0100
+Message-Id: <20220221084939.004206929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,35 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gatis Peisenieks <gatis@mikrotik.com>
+From: DENG Qingfang <dqfext@gmail.com>
 
-commit bf8e59fd315f304eb538546e35de6dc603e4709f upstream.
+commit 525b108e6d95b643eccbd84fb10aa9aa101b18dd upstream.
 
-If NIC had packets in tx queue at the moment link down event
-happened, it could result in tx timeout when link got back up.
+The function mt7531_phy_mode_supported in the DSA driver set supported
+mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
+for the internal PHY, so this check breaks the PHY initialization:
 
-Since device has more than one tx queue we need to reset them
-accordingly.
+mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
 
-Fixes: 057f4af2b171 ("atl1c: add 4 RX/TX queue support for Mikrotik 10/25G NIC")
-Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
-Link: https://lore.kernel.org/r/20220211065123.4187615-1-gatis@mikrotik.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Remove the check to make it work again.
+
+Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
+Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Tested-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/atheros/atl1c/atl1c_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/mediatek-ge.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -900,7 +900,7 @@ static void atl1c_clean_tx_ring(struct a
- 		atl1c_clean_buffer(pdev, buffer_info);
- 	}
+--- a/drivers/net/phy/mediatek-ge.c
++++ b/drivers/net/phy/mediatek-ge.c
+@@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct
  
--	netdev_reset_queue(adapter->netdev);
-+	netdev_tx_reset_queue(netdev_get_tx_queue(adapter->netdev, queue));
+ static int mt7531_phy_config_init(struct phy_device *phydev)
+ {
+-	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
+-		return -EINVAL;
+-
+ 	mtk_gephy_config_init(phydev);
  
- 	/* Zero out Tx-buffers */
- 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
+ 	/* PHY link down power saving enable */
 
 
