@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A03BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B45C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349227AbiBUJZB (ORCPT
+        id S1349073AbiBUJZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33880 "EHLO
+        Mon, 21 Feb 2022 04:25:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348906AbiBUJLt (ORCPT
+        with ESMTP id S1348324AbiBUJO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:49 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2AC289B6;
-        Mon, 21 Feb 2022 01:04:25 -0800 (PST)
+        Mon, 21 Feb 2022 04:14:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1CD13F9B;
+        Mon, 21 Feb 2022 01:06:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 43729CE0E85;
-        Mon, 21 Feb 2022 09:04:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26321C340E9;
-        Mon, 21 Feb 2022 09:04:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AE7960FB6;
+        Mon, 21 Feb 2022 09:06:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1B5C340F3;
+        Mon, 21 Feb 2022 09:06:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434262;
-        bh=qaRvoCYE7nQqXFaHyTkUVm02t8lUFcpW7qmIJoRN/vw=;
+        s=korg; t=1645434403;
+        bh=3aV9bHzykKizB1J+5Ksl6TyTU0mBhVe4TvtLefKoCRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IlhHrXrILKl1UQYfNO5MbzvRdMNpnd8vbFdmVnpSI38xD+Dr1WpHLLVRaGxj231Rv
-         AeGSFwS4bS4JbiWQfRQ0513bwGqwA6xdGEmzDdCyD920Z7DdVwKnsartYdGhX2SXKl
-         1GRM2n7rnxP5hyDweAnk5GP7qQpA+73+FURNj/Fg=
+        b=0V7hFNn9wnRUnszHGPBzF3VJjEoxmQlqcr9hKDA/M/+BZTDg+kEuzh210or9JuHKl
+         Au+FXbKUeaZ14p6Yyd1UY91qng44Ne1rGnp9YTEXDsoS13UTZq28ZFhga4evTN74sm
+         4PF7Dxg2O5hkWmzBu5qi4+o4hsrpsats9t42FcHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Huang <diwang90@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 069/121] ALSA: hda/realtek: Add quirk for Legion Y9000X 2019
-Date:   Mon, 21 Feb 2022 09:49:21 +0100
-Message-Id: <20220221084923.538399666@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.10 117/121] i2c: qcom-cci: dont delete an unregistered adapter
+Date:   Mon, 21 Feb 2022 09:50:09 +0100
+Message-Id: <20220221084925.150729759@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -49,32 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Huang <diwang90@gmail.com>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-commit c07f2c7b45413a9e50ba78630fda04ecfa17b4f2 upstream.
+commit a0d48505a1d68e27220369e2dd1e3573a2f362d2 upstream.
 
-Legion Y9000X 2019 has the same speaker with Y9000X 2020,
-but with a different quirk address. Add one quirk entry
-to make the speaker work on Y9000X 2019 too.
+If i2c_add_adapter() fails to add an I2C adapter found on QCOM CCI
+controller, on error path i2c_del_adapter() is still called.
 
-Signed-off-by: Yu Huang <diwang90@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220212160835.165065-1-diwang90@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fortunately there is a sanity check in the I2C core, so the only
+visible implication is a printed debug level message:
+
+    i2c-core: attempting to delete unregistered adapter [Qualcomm-CCI]
+
+Nevertheless it would be reasonable to correct the probe error path.
+
+Fixes: e517526195de ("i2c: Add Qualcomm CCI I2C driver")
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-qcom-cci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8948,6 +8948,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
- 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
-+	SND_PCI_QUIRK(0x17aa, 0x383d, "Legion Y9000X 2019", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
- 	SND_PCI_QUIRK(0x17aa, 0x384a, "Lenovo Yoga 7 15ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+--- a/drivers/i2c/busses/i2c-qcom-cci.c
++++ b/drivers/i2c/busses/i2c-qcom-cci.c
+@@ -655,7 +655,7 @@ static int cci_probe(struct platform_dev
+ 	return 0;
+ 
+ error_i2c:
+-	for (; i >= 0; i--) {
++	for (--i ; i >= 0; i--) {
+ 		if (cci->master[i].cci)
+ 			i2c_del_adapter(&cci->master[i].adap);
+ 	}
 
 
