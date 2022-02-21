@@ -2,97 +2,416 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245656AbiBUI4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:56:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43262 "EHLO
+        id S1346223AbiBUI4P (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:56:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345888AbiBUIyG (ORCPT
+        with ESMTP id S1345894AbiBUIyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:54:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60725DC;
-        Mon, 21 Feb 2022 00:53:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2422B25E5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:53:01 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF9DB80EB1;
-        Mon, 21 Feb 2022 08:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D3FC340EB;
-        Mon, 21 Feb 2022 08:52:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433578;
-        bh=GzzJq11sUkOk/S21zTN7U/+bDeVpu+/snpGeqCzT54s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oa4i+84dozQxLGGRRIEOtXo6LgXPn/pdI97+PXgn036aV9+YBWh1EZBLdANyMaDxI
-         9SWrcpcsD27LoqLIgGN4WG1o2lc31d3bnkPQdvwd8Nj3kIV1x/tPO+lN+ylcFYzUwy
-         REGFNjCzQ0m216YneqZmnu/FqBuo39EmlTCfKyZ0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
-        Wolfgang Walter <linux@stwm.de>,
-        Jason Self <jason@bluehome.net>,
-        Dominik Behr <dominik@dominikbehr.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.14 15/45] iwlwifi: fix use-after-free
-Date:   Mon, 21 Feb 2022 09:49:06 +0100
-Message-Id: <20220221084910.959670963@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
-References: <20220221084910.454824160@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 226C12223E;
+        Mon, 21 Feb 2022 09:53:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645433580;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y6Gbu5ONm2hlRADzx/R6Xoo589VHVIGFuGyeHW81kPk=;
+        b=bm5F2WaXpG9tBoQFtLqzIt7kHOUtmprfxCxxxC+lk2f9NKRa4p1V7JKBxtgwTJ+qw4QHRn
+        dAdN+yFYpYx3c8mJ/zwYrO6ZTC8JjjXHEIFCOHwiWQYau9YAJUrrFYJqodsh3Gp7+/SvuY
+        KfkyPU47f4YzYr1/UDA2b5bSyQDjPGw=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 24/32] mtd: spi-nor: move all micron-st specifics into micron-st.c
+Date:   Mon, 21 Feb 2022 09:52:28 +0100
+Message-Id: <20220221085236.1452024-25-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
+References: <20220221085236.1452024-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+The flag status register is only available on micron flashes. Move all
+the functions around that into the micron module.
 
-commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
+This is almost a mechanical move except for the spi_nor_fsr_ready()
+which now also checks the normal status register. Previously, this was
+done in spi_nor_ready().
 
-If no firmware was present at all (or, presumably, all of the
-firmware files failed to parse), we end up unbinding by calling
-device_release_driver(), which calls remove(), which then in
-iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
-the new code I added will still erroneously access it after it
-was freed.
-
-Set 'failure=false' in this case to avoid the access, all data
-was already freed anyway.
-
-Cc: stable@vger.kernel.org
-Reported-by: Stefan Agner <stefan@agner.ch>
-Reported-by: Wolfgang Walter <linux@stwm.de>
-Reported-by: Jason Self <jason@bluehome.net>
-Reported-by: Dominik Behr <dominik@dominikbehr.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/spi-nor/core.c      | 123 +----------------------------
+ drivers/mtd/spi-nor/micron-st.c | 133 ++++++++++++++++++++++++++++++++
+ include/linux/mtd/spi-nor.h     |   8 --
+ 3 files changed, 134 insertions(+), 130 deletions(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1511,6 +1511,8 @@ static void iwl_req_fw_callback(const st
-  out_unbind:
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-+	/* drv has just been freed by the release */
-+	failure = false;
-  free:
- 	if (failure)
- 		iwl_dealloc_ucode(drv);
-
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index ae1560250c48..5b56d718692b 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -412,50 +412,6 @@ int spi_nor_read_sr(struct spi_nor *nor, u8 *sr)
+ 	return ret;
+ }
+ 
+-/**
+- * spi_nor_read_fsr() - Read the Flag Status Register.
+- * @nor:	pointer to 'struct spi_nor'
+- * @fsr:	pointer to a DMA-able buffer where the value of the
+- *              Flag Status Register will be written. Should be at least 2
+- *              bytes.
+- *
+- * Return: 0 on success, -errno otherwise.
+- */
+-static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
+-{
+-	int ret;
+-
+-	if (nor->spimem) {
+-		struct spi_mem_op op =
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),
+-				   SPI_MEM_OP_NO_ADDR,
+-				   SPI_MEM_OP_NO_DUMMY,
+-				   SPI_MEM_OP_DATA_IN(1, fsr, 0));
+-
+-		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
+-			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
+-			op.dummy.nbytes = nor->params->rdsr_dummy;
+-			/*
+-			 * We don't want to read only one byte in DTR mode. So,
+-			 * read 2 and then discard the second byte.
+-			 */
+-			op.data.nbytes = 2;
+-		}
+-
+-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+-
+-		ret = spi_mem_exec_op(nor->spimem, &op);
+-	} else {
+-		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_RDFSR, fsr,
+-						      1);
+-	}
+-
+-	if (ret)
+-		dev_dbg(nor->dev, "error %d reading FSR\n", ret);
+-
+-	return ret;
+-}
+-
+ /**
+  * spi_nor_read_cr() - Read the Configuration Register using the
+  * SPINOR_OP_RDCR (35h) command.
+@@ -664,75 +620,6 @@ int spi_nor_sr_ready(struct spi_nor *nor)
+ 	return !(nor->bouncebuf[0] & SR_WIP);
+ }
+ 
+-/**
+- * spi_nor_clear_fsr() - Clear the Flag Status Register.
+- * @nor:	pointer to 'struct spi_nor'.
+- */
+-static void spi_nor_clear_fsr(struct spi_nor *nor)
+-{
+-	int ret;
+-
+-	if (nor->spimem) {
+-		struct spi_mem_op op =
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),
+-				   SPI_MEM_OP_NO_ADDR,
+-				   SPI_MEM_OP_NO_DUMMY,
+-				   SPI_MEM_OP_NO_DATA);
+-
+-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+-
+-		ret = spi_mem_exec_op(nor->spimem, &op);
+-	} else {
+-		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLFSR,
+-						       NULL, 0);
+-	}
+-
+-	if (ret)
+-		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);
+-}
+-
+-/**
+- * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
+- * ready for new commands.
+- * @nor:	pointer to 'struct spi_nor'.
+- *
+- * Return: 1 if ready, 0 if not ready, -errno on errors.
+- */
+-static int spi_nor_fsr_ready(struct spi_nor *nor)
+-{
+-	int ret = spi_nor_read_fsr(nor, nor->bouncebuf);
+-
+-	if (ret)
+-		return ret;
+-
+-	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
+-		if (nor->bouncebuf[0] & FSR_E_ERR)
+-			dev_err(nor->dev, "Erase operation failed.\n");
+-		else
+-			dev_err(nor->dev, "Program operation failed.\n");
+-
+-		if (nor->bouncebuf[0] & FSR_PT_ERR)
+-			dev_err(nor->dev,
+-			"Attempted to modify a protected sector.\n");
+-
+-		spi_nor_clear_fsr(nor);
+-
+-		/*
+-		 * WEL bit remains set to one when an erase or page program
+-		 * error occurs. Issue a Write Disable command to protect
+-		 * against inadvertent writes that can possibly corrupt the
+-		 * contents of the memory.
+-		 */
+-		ret = spi_nor_write_disable(nor);
+-		if (ret)
+-			return ret;
+-
+-		return -EIO;
+-	}
+-
+-	return !!(nor->bouncebuf[0] & FSR_READY);
+-}
+-
+ /**
+  * spi_nor_ready() - Query the flash to see if it is ready for new commands.
+  * @nor:	pointer to 'struct spi_nor'.
+@@ -741,19 +628,11 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+  */
+ static int spi_nor_ready(struct spi_nor *nor)
+ {
+-	int sr, fsr;
+-
+ 	/* Flashes might override the standard routine. */
+ 	if (nor->params->ready)
+ 		return nor->params->ready(nor);
+ 
+-	sr = spi_nor_sr_ready(nor);
+-	if (sr < 0)
+-		return sr;
+-	fsr = nor->flags & SNOR_F_USE_FSR ? spi_nor_fsr_ready(nor) : 1;
+-	if (fsr < 0)
+-		return fsr;
+-	return sr && fsr;
++	return spi_nor_sr_ready(nor);
+ }
+ 
+ /**
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index 7a68f2ad3ea1..8877b122cf42 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -8,6 +8,8 @@
+ 
+ #include "core.h"
+ 
++#define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
++#define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
+ #define SPINOR_OP_MT_DTR_RD	0xfd	/* Fast Read opcode in DTR mode */
+ #define SPINOR_OP_MT_RD_ANY_REG	0x85	/* Read volatile register */
+ #define SPINOR_OP_MT_WR_ANY_REG	0x81	/* Write volatile register */
+@@ -17,6 +19,12 @@
+ #define SPINOR_MT_OCT_DTR	0xe7	/* Enable Octal DTR. */
+ #define SPINOR_MT_EXSPI		0xff	/* Enable Extended SPI (default) */
+ 
++/* Flag Status Register bits */
++#define FSR_READY		BIT(7)	/* Device status, 0 = Busy, 1 = Ready */
++#define FSR_E_ERR		BIT(5)	/* Erase operation status */
++#define FSR_P_ERR		BIT(4)	/* Program operation status */
++#define FSR_PT_ERR		BIT(1)	/* Protection error bit */
++
+ static int micron_st_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
+ {
+ 	struct spi_mem_op op;
+@@ -273,6 +281,124 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+ 	return spi_nor_write_disable(nor);
+ }
+ 
++/**
++ * spi_nor_read_fsr() - Read the Flag Status Register.
++ * @nor:	pointer to 'struct spi_nor'
++ * @fsr:	pointer to a DMA-able buffer where the value of the
++ *              Flag Status Register will be written. Should be at least 2
++ *              bytes.
++ *
++ * Return: 0 on success, -errno otherwise.
++ */
++static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
++{
++	int ret;
++
++	if (nor->spimem) {
++		struct spi_mem_op op =
++			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),
++				   SPI_MEM_OP_NO_ADDR,
++				   SPI_MEM_OP_NO_DUMMY,
++				   SPI_MEM_OP_DATA_IN(1, fsr, 0));
++
++		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
++			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
++			op.dummy.nbytes = nor->params->rdsr_dummy;
++			/*
++			 * We don't want to read only one byte in DTR mode. So,
++			 * read 2 and then discard the second byte.
++			 */
++			op.data.nbytes = 2;
++		}
++
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
++
++		ret = spi_mem_exec_op(nor->spimem, &op);
++	} else {
++		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_RDFSR, fsr,
++						      1);
++	}
++
++	if (ret)
++		dev_dbg(nor->dev, "error %d reading FSR\n", ret);
++
++	return ret;
++}
++
++/**
++ * spi_nor_clear_fsr() - Clear the Flag Status Register.
++ * @nor:	pointer to 'struct spi_nor'.
++ */
++static void spi_nor_clear_fsr(struct spi_nor *nor)
++{
++	int ret;
++
++	if (nor->spimem) {
++		struct spi_mem_op op =
++			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),
++				   SPI_MEM_OP_NO_ADDR,
++				   SPI_MEM_OP_NO_DUMMY,
++				   SPI_MEM_OP_NO_DATA);
++
++		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
++
++		ret = spi_mem_exec_op(nor->spimem, &op);
++	} else {
++		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLFSR,
++						       NULL, 0);
++	}
++
++	if (ret)
++		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);
++}
++
++/**
++ * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
++ * ready for new commands.
++ * @nor:	pointer to 'struct spi_nor'.
++ *
++ * Return: 1 if ready, 0 if not ready, -errno on errors.
++ */
++static int spi_nor_fsr_ready(struct spi_nor *nor)
++{
++	int sr_ready, ret;
++
++	sr_ready = spi_nor_sr_ready(nor);
++	if (sr_ready < 0)
++		return sr_ready;
++
++	ret = spi_nor_read_fsr(nor, nor->bouncebuf);
++	if (ret)
++		return ret;
++
++	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
++		if (nor->bouncebuf[0] & FSR_E_ERR)
++			dev_err(nor->dev, "Erase operation failed.\n");
++		else
++			dev_err(nor->dev, "Program operation failed.\n");
++
++		if (nor->bouncebuf[0] & FSR_PT_ERR)
++			dev_err(nor->dev,
++				"Attempted to modify a protected sector.\n");
++
++		spi_nor_clear_fsr(nor);
++
++		/*
++		 * WEL bit remains set to one when an erase or page program
++		 * error occurs. Issue a Write Disable command to protect
++		 * against inadvertent writes that can possibly corrupt the
++		 * contents of the memory.
++		 */
++		ret = spi_nor_write_disable(nor);
++		if (ret)
++			return ret;
++
++		return -EIO;
++	}
++
++	return sr_ready && !!(nor->bouncebuf[0] & FSR_READY);
++}
++
+ static void micron_st_nor_default_init(struct spi_nor *nor)
+ {
+ 	nor->flags |= SNOR_F_HAS_LOCK;
+@@ -281,8 +407,15 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
+ 	nor->params->set_4byte_addr_mode = micron_st_nor_set_4byte_addr_mode;
+ }
+ 
++static void micron_st_nor_late_init(struct spi_nor *nor)
++{
++	if (nor->flags & SNOR_F_USE_FSR)
++		nor->params->ready = spi_nor_fsr_ready;
++}
++
+ static const struct spi_nor_fixups micron_st_nor_fixups = {
+ 	.default_init = micron_st_nor_default_init,
++	.late_init = micron_st_nor_late_init,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_micron = {
+diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
+index b44b05a6f934..4622251a79ff 100644
+--- a/include/linux/mtd/spi-nor.h
++++ b/include/linux/mtd/spi-nor.h
+@@ -47,8 +47,6 @@
+ #define SPINOR_OP_RDID		0x9f	/* Read JEDEC ID */
+ #define SPINOR_OP_RDSFDP	0x5a	/* Read SFDP */
+ #define SPINOR_OP_RDCR		0x35	/* Read configuration register */
+-#define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
+-#define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
+ #define SPINOR_OP_RDEAR		0xc8	/* Read Extended Address Register */
+ #define SPINOR_OP_WREAR		0xc5	/* Write Extended Address Register */
+ #define SPINOR_OP_SRSTEN	0x66	/* Software Reset Enable */
+@@ -126,12 +124,6 @@
+ /* Enhanced Volatile Configuration Register bits */
+ #define EVCR_QUAD_EN_MICRON	BIT(7)	/* Micron Quad I/O */
+ 
+-/* Flag Status Register bits */
+-#define FSR_READY		BIT(7)	/* Device status, 0 = Busy, 1 = Ready */
+-#define FSR_E_ERR		BIT(5)	/* Erase operation status */
+-#define FSR_P_ERR		BIT(4)	/* Program operation status */
+-#define FSR_PT_ERR		BIT(1)	/* Protection error bit */
+-
+ /* Status Register 2 bits. */
+ #define SR2_QUAD_EN_BIT1	BIT(1)
+ #define SR2_LB1			BIT(3)	/* Security Register Lock Bit 1 */
+-- 
+2.30.2
 
