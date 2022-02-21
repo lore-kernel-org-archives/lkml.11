@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5926FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842DDC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348807AbiBUJUs (ORCPT
+        id S1348859AbiBUJUw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:20:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33916 "EHLO
+        Mon, 21 Feb 2022 04:20:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349892AbiBUJNB (ORCPT
+        with ESMTP id S1348135AbiBUJLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:13:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4072DA84;
-        Mon, 21 Feb 2022 01:06:06 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84E4201A4;
+        Mon, 21 Feb 2022 01:02:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 490D0CE0E95;
-        Mon, 21 Feb 2022 09:06:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30FB0C340EB;
-        Mon, 21 Feb 2022 09:06:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78B1FB80EB6;
+        Mon, 21 Feb 2022 09:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B5BC340F3;
+        Mon, 21 Feb 2022 09:02:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434363;
-        bh=yuq7N6KXFH+m2wC+MZgvdB7GI5U4Ag5FX7Z/OFPQx8I=;
+        s=korg; t=1645434172;
+        bh=I2o1dGfDTstkhrDwebLcoM7tN/dHqAwLAIWTVj7CiB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2ij6y27JBkqv5Ioz38pKCK30FmZb+NXKhwP1PPzTS+2yS/ddNAUA6IAjkRcZNq0Z
-         K7KZXEar5g0NfAAb9mLXzew991dBpddvqsks+w50GTSjNffYaT7kEzFUYI7e1aqkJx
-         Bj5NAm4ksyv7Ni7ufUcRXLkHoO4INY9Vvwr4wAmI=
+        b=IE1oaBqspTYHKjuENuJNo20Wyatd2KRpOs0C3egCZVWJUBHt/iT/Yg5t8iZH3zV0m
+         JprNtLfDZjV815BI0oA1B5NeQKO1H8i88j7dVj3aztsWUco23TYyTL5iqzP88+YFXt
+         cS+w/nm+v3b8gCw5dxNlUA5W7xELbtOQ6lk2AzX0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Iwona Winiarska <iwona.winiarska@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 104/121] soc: aspeed: lpc-ctrl: Block error printing on probe defer cases
-Date:   Mon, 21 Feb 2022 09:49:56 +0100
-Message-Id: <20220221084924.694568480@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Leech <cleech@redhat.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 038/121] nvme-tcp: fix possible use-after-free in transport error_recovery work
+Date:   Mon, 21 Feb 2022 09:48:50 +0100
+Message-Id: <20220221084922.479783397@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -53,44 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit 301a5d3ad2432d7829f59432ca0a93a6defbb9a1 ]
+[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
 
-Add a checking code when it gets -EPROBE_DEFER while getting a clock
-resource. In this case, it doesn't need to print out an error message
-because the probing will be re-visited.
+While nvme_tcp_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Reviewed-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Link: https://lore.kernel.org/r/20211104173709.222912-1-jae.hyun.yoo@intel.com
-Link: https://lore.kernel.org/r/20220201070118.196372-1-joel@jms.id.au'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Tested-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/aspeed/aspeed-lpc-ctrl.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/nvme/host/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soc/aspeed/aspeed-lpc-ctrl.c b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
-index 040c7dc1d4792..71b555c715d2e 100644
---- a/drivers/soc/aspeed/aspeed-lpc-ctrl.c
-+++ b/drivers/soc/aspeed/aspeed-lpc-ctrl.c
-@@ -251,10 +251,9 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index 662028d7a1c6a..6105894a218a5 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -2077,6 +2077,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
+ 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
  
- 	lpc_ctrl->clk = devm_clk_get(dev, NULL);
--	if (IS_ERR(lpc_ctrl->clk)) {
--		dev_err(dev, "couldn't get clock\n");
--		return PTR_ERR(lpc_ctrl->clk);
--	}
-+	if (IS_ERR(lpc_ctrl->clk))
-+		return dev_err_probe(dev, PTR_ERR(lpc_ctrl->clk),
-+				     "couldn't get clock\n");
- 	rc = clk_prepare_enable(lpc_ctrl->clk);
- 	if (rc) {
- 		dev_err(dev, "couldn't enable clock\n");
+ 	nvme_stop_keep_alive(ctrl);
++	flush_work(&ctrl->async_event_work);
+ 	nvme_tcp_teardown_io_queues(ctrl, false);
+ 	/* unquiesce to fail fast pending requests */
+ 	nvme_start_queues(ctrl);
 -- 
 2.34.1
 
