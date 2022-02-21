@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD9BC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E10F0C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352683AbiBUJrs (ORCPT
+        id S1352610AbiBUJri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59638 "EHLO
+        Mon, 21 Feb 2022 04:47:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343960AbiBUJlR (ORCPT
+        with ESMTP id S1350932AbiBUJkk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:41:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC8C3CA51;
-        Mon, 21 Feb 2022 01:17:29 -0800 (PST)
+        Mon, 21 Feb 2022 04:40:40 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9853C72B;
+        Mon, 21 Feb 2022 01:17:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A868608C4;
-        Mon, 21 Feb 2022 09:17:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AACFC340E9;
-        Mon, 21 Feb 2022 09:17:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2D1DDCE0E80;
+        Mon, 21 Feb 2022 09:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17864C340E9;
+        Mon, 21 Feb 2022 09:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435047;
-        bh=Vz4WDZtoUOzAcf9QAL9mQykts41Q8Xh0KlaY1mwEN2o=;
+        s=korg; t=1645435035;
+        bh=Sb1/oLxtF230QlfTreXW7Wx98AaF9vDhD7/AD7g450I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x2ShE3k6FL4OA7b54Jz3FoaBhJsF1JTiW/biKgjjzNU8GbKGekguLv24XgzoeEQV+
-         lunGosk41cNzm6O3dfVAu4RFUPE+dyQK0d0x6SmZHJez4pdVgqV//yVU4/dzGTbduL
-         3Sws32DwHpoPiIEw7v0RujyYQSTkcEVvHkAPxAW8=
+        b=CpFcnG+0t4Jvp36KFhtTQMczibNXXEbf99QqZ1OYF0939RjRAB8EQskdlXaSVFt8M
+         oLvgJAfNoCvmByfmAhZ0M8vJgj6lcyo9SQlXCLJ0Rw1FzvdKLe6IrAFy/CiwCBDUmB
+         I34xeu5LB0S+0g0tp9lEZAV9MpzGL+utSuR8IO+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Long Li <longli@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Wei Liu <wei.liu@kernel.org>
-Subject: [PATCH 5.16 025/227] PCI: hv: Fix NUMA node assignment when kernel boots with custom NUMA topology
-Date:   Mon, 21 Feb 2022 09:47:24 +0100
-Message-Id: <20220221084935.674987825@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.16 022/227] HID: amd_sfh: Increase sensor command timeout
+Date:   Mon, 21 Feb 2022 09:47:21 +0100
+Message-Id: <20220221084935.584019784@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,49 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Long Li <longli@microsoft.com>
+From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit 3149efcdf2c6314420c418dfc94de53bfd076b1f upstream.
+commit a7072c01c3ac3ae6ecd08fa7b43431cfc8ed331f upstream.
 
-When kernel boots with a NUMA topology with some NUMA nodes offline, the PCI
-driver should only set an online NUMA node on the device. This can happen
-during KDUMP where some NUMA nodes are not made online by the KDUMP kernel.
+HPD sensors take more time to initialize. Hence increasing sensor
+command timeout to get response with status within a max timeout.
 
-This patch also fixes the case where kernel is booting with "numa=off".
-
-Fixes: 999dd956d838 ("PCI: hv: Add support for protocol 1.3 and support PCI_BUS_RELATIONS2")
-Signed-off-by: Long Li <longli@microsoft.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Tested-by: Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/1643247814-15184-1-git-send-email-longli@linuxonhyperv.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: 173709f50e98 ("HID: amd_sfh: Add command response to check command status")
+Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1899,8 +1899,17 @@ static void hv_pci_assign_numa_node(stru
- 		if (!hv_dev)
- 			continue;
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -37,11 +37,11 @@ static int amd_sfh_wait_response_v2(stru
+ {
+ 	union cmd_response cmd_resp;
  
--		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY)
--			set_dev_node(&dev->dev, hv_dev->desc.virtual_numa_node);
-+		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY &&
-+		    hv_dev->desc.virtual_numa_node < num_possible_nodes())
-+			/*
-+			 * The kernel may boot with some NUMA nodes offline
-+			 * (e.g. in a KDUMP kernel) or with NUMA disabled via
-+			 * "numa=off". In those cases, adjust the host provided
-+			 * NUMA node to a valid NUMA node used by the kernel.
-+			 */
-+			set_dev_node(&dev->dev,
-+				     numa_map_to_online_node(
-+					     hv_dev->desc.virtual_numa_node));
+-	/* Get response with status within a max of 800 ms timeout */
++	/* Get response with status within a max of 1600 ms timeout */
+ 	if (!readl_poll_timeout(mp2->mmio + AMD_P2C_MSG(0), cmd_resp.resp,
+ 				(cmd_resp.response_v2.response == sensor_sts &&
+ 				cmd_resp.response_v2.status == 0 && (sid == 0xff ||
+-				cmd_resp.response_v2.sensor_id == sid)), 500, 800000))
++				cmd_resp.response_v2.sensor_id == sid)), 500, 1600000))
+ 		return cmd_resp.response_v2.response;
  
- 		put_pcichild(hv_dev);
- 	}
+ 	return SENSOR_DISABLED;
 
 
