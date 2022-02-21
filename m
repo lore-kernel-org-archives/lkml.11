@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F64C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352514AbiBUJrd (ORCPT
+        id S1352383AbiBUJrY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48738 "EHLO
+        Mon, 21 Feb 2022 04:47:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350634AbiBUJkM (ORCPT
+        with ESMTP id S1350847AbiBUJkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:40:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D323C4A3;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B7B3C4AD;
         Mon, 21 Feb 2022 01:17:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF2EB608C1;
-        Mon, 21 Feb 2022 09:17:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69B7C340E9;
-        Mon, 21 Feb 2022 09:17:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 955E5CE0E95;
+        Mon, 21 Feb 2022 09:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B454C340E9;
+        Mon, 21 Feb 2022 09:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435041;
-        bh=mYHp2j2kVIa5fz2wvM3QZPJjPf4jO/gaOjFC/WzNFx4=;
+        s=korg; t=1645435030;
+        bh=4Lw5sX1tifu8IyOSlRMu1EukX6y0YMtLS+3/GtEkHug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fh4v/DDvXlVr6hkhZqzkU2gAzzat5qz6Eo8Lkdt6iMrrIfmc35pHZP58ZQ1qgqKXF
-         dlVExVAYCYzWruoWqC153jJ3ftgb4FkFTA4RYxqJ2b5CjNjmPcpnGn2u3Yp+XBY+M1
-         rkOUXwSmELiJxptedHXGyRdoylZsBQGnGvZ3KxOE=
+        b=aI9KmIzaChUaaYg/bwprM6RiqXF0RdXg2o6hcL1qp6Ep8wYXLUWvRv7ByxCxz+//e
+         N/HKxSikpBkD5sPfUcmTnsbjygXXaoif2tTlTsCIfyWRwHz0WZbhmOKONFdut8dsP+
+         dGLfAlh1u4kMaIW0HfrJQhjM1ltCRwSCDlMHyJYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.16 024/227] HID: amd_sfh: Correct the structure field name
-Date:   Mon, 21 Feb 2022 09:47:23 +0100
-Message-Id: <20220221084935.645213897@linuxfoundation.org>
+Subject: [PATCH 5.16 020/227] HID: amd_sfh: Add illuminance mask to limit ALS max value
+Date:   Mon, 21 Feb 2022 09:47:19 +0100
+Message-Id: <20220221084935.512948346@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,29 +52,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit aa0b724a2bf041036e56cbb3b4b3afde7c5e7c9e upstream.
+commit 91aaea527bc3b707c5d3208cde035421ed54f79c upstream.
 
-Misinterpreted intr_enable field name. Hence correct the structure
-field name accordingly to reflect the functionality.
+ALS illuminance value present only in first 15 bits from SFH firmware
+for V2 platforms. Hence added a mask of 15 bit to limit ALS max
+illuminance values to get correct illuminance value.
 
-Fixes: f264481ad614 ("HID: amd_sfh: Extend driver capabilities for multi-generation support")
+Fixes: 0aad9c95eb9a ("HID: amd_sfh: Extend ALS support for newer AMD platform")
 Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h
-+++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.h
-@@ -49,7 +49,7 @@ union sfh_cmd_base {
- 	} s;
- 	struct {
- 		u32 cmd_id : 4;
--		u32 intr_enable : 1;
-+		u32 intr_disable : 1;
- 		u32 rsvd1 : 3;
- 		u32 length : 7;
- 		u32 mem_type : 1;
+--- a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
++++ b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
+@@ -27,6 +27,7 @@
+ #define HID_USAGE_SENSOR_STATE_READY_ENUM                             0x02
+ #define HID_USAGE_SENSOR_STATE_INITIALIZING_ENUM                      0x05
+ #define HID_USAGE_SENSOR_EVENT_DATA_UPDATED_ENUM                      0x04
++#define ILLUMINANCE_MASK					GENMASK(14, 0)
+ 
+ int get_report_descriptor(int sensor_idx, u8 *rep_desc)
+ {
+@@ -246,7 +247,8 @@ u8 get_input_report(u8 current_index, in
+ 		get_common_inputs(&als_input.common_property, report_id);
+ 		/* For ALS ,V2 Platforms uses C2P_MSG5 register instead of DRAM access method */
+ 		if (supported_input == V2_STATUS)
+-			als_input.illuminance_value = (int)readl(privdata->mmio + AMD_C2P_MSG(5));
++			als_input.illuminance_value =
++				readl(privdata->mmio + AMD_C2P_MSG(5)) & ILLUMINANCE_MASK;
+ 		else
+ 			als_input.illuminance_value =
+ 				(int)sensor_virt_addr[0] / AMD_SFH_FW_MULTIPLIER;
 
 
