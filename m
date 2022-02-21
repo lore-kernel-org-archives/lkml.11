@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA26C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE320C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355491AbiBULLI (ORCPT
+        id S1355513AbiBULLO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:11:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40802 "EHLO
+        Mon, 21 Feb 2022 06:11:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355438AbiBULKV (ORCPT
+        with ESMTP id S1355563AbiBULKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:10:21 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB641176
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:42 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id d3so10600793wrf.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o+5vqkQXPirAu/1Sjt7YkAPFccDLqMMWnr+8F22imTk=;
-        b=nPaWk5LfwzEn0LL7hDjXHx+adKazsGK3boQBxuXVtBNxfdkOK746wnkgp6LMGfbhNb
-         3KhQCNaITzFt30AfGjK/tMU6Ty0Y1aPMFmaXUWXdSX3geNrC4MbtJgK9NPA6Yi8KYO1o
-         EX2g32al3a6ytLBMQhRI0spcxQ9/mBc+6ltz1kvW7dHU3NqyrHAKC2vhfes1UCWGIy4p
-         jrYsuSRudJi9MWk7Fmvr9vgyfKZXrma/Y5v6yIlFaDHOZ6O5MQtRWS3HlhGu4Kh9aN/1
-         6TvoM04B93mNPWb7ajM4h1WPBNwewoS/SuCfZ7+1gsLqUkKzAQwyQ+veib4QgYSn/z5Z
-         wx8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o+5vqkQXPirAu/1Sjt7YkAPFccDLqMMWnr+8F22imTk=;
-        b=Zpd0XrkqmUlCTmjBvw1XCc87jvL34qMA9tcHU3t0KkaVLK6PKj3MVWhcmFLC3qYb6y
-         KHO/lULliR9hn5WrMvUZumsuIisHDuFLZIbKhV+YEz5/aB1yCPkLncXKzbnBOpFhzLwV
-         5slWeC+b0Xa4LnA9cppJ19ZMx116zeK5cbWfWcD574HEoLWH9iN+z2PEOqVIlPgq/SKP
-         tl5SYmP5zmJXcMJWZkGZSlm+hujbA/E+DoY20A4SptROHQdYQ3sIpYA4+ufFoUcCOvnp
-         a7BLp4an8YCVYgHRHSIcRFcNvsdg5/46+l8CKwSKJ8ZKS5AYDiDIEXeYTKhiJN8HfguR
-         ny1w==
-X-Gm-Message-State: AOAM5300KQ6lWeGVwBLL986tkOWm5hgO+P53i47+JLSiDxxg8blE8PbF
-        6L1RrN4DgQQNf3eY6iaDCWMBDQ==
-X-Google-Smtp-Source: ABdhPJzpstyVfklHCpbOqUjZGxa3zUfwEkkM2h9RLHKyNYm3+7V5P1Ua7b4QPNqF21HRAwBj9jw2Ng==
-X-Received: by 2002:adf:efcc:0:b0:1e7:cf03:b419 with SMTP id i12-20020adfefcc000000b001e7cf03b419mr15153603wrp.122.1645440101330;
-        Mon, 21 Feb 2022 02:41:41 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n19-20020a05600c4f9300b0037c06fe68casm7584817wmq.44.2022.02.21.02.41.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:41:40 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 2/3] dt-bindings: soundwire: qcom: document optional wake irq
-Date:   Mon, 21 Feb 2022 10:41:26 +0000
-Message-Id: <20220221104127.15670-3-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
-References: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
+        Mon, 21 Feb 2022 06:10:23 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53157765B
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:42:00 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 82D832223E;
+        Mon, 21 Feb 2022 11:41:58 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645440119;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/oFMNHJ9Vt/cbN7UZwsXwP2TGn4Fh6S9plzC8KDPhWw=;
+        b=Vkqt80mzuse0ER9la84yeucxS3JKND+I1DI/w9usr/Hjm9HGfo8KLwkCAn3/C6Q3gZUZMR
+        3ySdi7+9VcM51vKGTwh5ShkhCGdbgFw3/u2WeSfUIMcq+Zt2p7CiVe2qTtuKxogCPj6AAN
+        dEzuYLUpC/tDZmGgtN8xFWgZeNn24rs=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Feb 2022 11:41:58 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Li Yang <leoyang.li@nxp.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Sudeep Holla <Sudeep.Holla@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH v2 0/7] soc: fsl: guts: cleanups and serial_number support
+In-Reply-To: <20220209163242.430265-1-michael@walle.cc>
+References: <20220209163242.430265-1-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <1e46ae6508997c2bb3f1f0c922ae81d8@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wake IRQ is optional interrupt that can be wired up on SoundWire controller
-instances like RX path along with MBHC(Multi Button Headset connection).
-Document this in bindings.
+Hi,
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- Documentation/devicetree/bindings/soundwire/qcom,sdw.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+any news here? Through which tree is this supposed to go?
 
-diff --git a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
-index b93a2b3e029d..bade68f429b0 100644
---- a/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
-+++ b/Documentation/devicetree/bindings/soundwire/qcom,sdw.txt
-@@ -22,7 +22,7 @@ board specific bus parameters.
- - interrupts:
- 	Usage: required
- 	Value type: <prop-encoded-array>
--	Definition: should specify the SoundWire Controller IRQ
-+	Definition: should specify the SoundWire Controller and optional wake IRQ
- 
- - clock-names:
- 	Usage: required
--- 
-2.21.0
+Am 2022-02-09 17:32, schrieb Michael Walle:
+> This series converts the guts driver from a platform driver to just an
+> core_initcall. The driver itself cannot (or rather should never) be
+> unloaded because others depends on detecting the current SoC revision
+> to apply chip errata. Other SoC drivers do it the same way. Overall I
+> got rid of all the global static variables.
+> 
+> The last patch finally adds unique id support to the guts driver. But
+> because the binding [1] for the security fuse processor is still 
+> pending,
+> it is marked as RFC.
 
+As I was about to resend this series without the RFC tag, I noticed
+that I forgot to mark patch 7/7 as RFC in v2 anyway. So no need for
+resending.
+
+The binding was acked by Rob and already picked up via the nvmem tree.
+
+-michael
+
+> 
+> [1] 
+> https://lore.kernel.org/linux-devicetree/20220127163728.3650648-2-michael@walle.cc/
+> 
+> changes since v1:
+>  - call kfree() in error case, thanks Dan
+>  - add missing of_node_put(np), thanks Dan
+> 
+> Michael Walle (7):
+>   soc: fsl: guts: machine variable might be unset
+>   soc: fsl: guts: remove module_exit() and fsl_guts_remove()
+>   soc: fsl: guts: embed fsl_guts_get_svr() in probe()
+>   soc: fsl: guts: allocate soc_dev_attr on the heap
+>   soc: fsl: guts: use of_root instead of own reference
+>   soc: fsl: guts: drop platform driver
+>   soc: fsl: guts: add serial_number support
+> 
+>  drivers/soc/fsl/guts.c | 219 ++++++++++++++++++++++-------------------
+>  1 file changed, 118 insertions(+), 101 deletions(-)
