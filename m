@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABB4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347361AbiBUJGS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:06:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32920 "EHLO
+        id S243066AbiBUJGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:06:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348176AbiBUJCY (ORCPT
+        with ESMTP id S1348186AbiBUJCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:02:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E9A2B242;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEF32B248;
         Mon, 21 Feb 2022 00:57:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DE93B80EAF;
-        Mon, 21 Feb 2022 08:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F969C340E9;
-        Mon, 21 Feb 2022 08:57:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B10ECB80EB7;
+        Mon, 21 Feb 2022 08:57:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC602C340E9;
+        Mon, 21 Feb 2022 08:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433859;
-        bh=TanTU/HQXWpUVAY2S/Nii3BJF6WfDiYa98MzpohSQPY=;
+        s=korg; t=1645433836;
+        bh=rokptrUqyaAJxAqsK0Nb4wu+vt33Umkfp6lUiUybKu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qA47XPeK8LenqPgHTMrEQXmtdJgKn1obmf0jZwE6WtRhZg9SuMz0oQufIJmctX2Vg
-         8uIzajpFlnI4BsvrVX1Sz/E+E9otNVDEjIy9qnntjczH7PgQTsYnggAS05MeglcDld
-         TkEnvGDR91Ff4Aq/gZuv/DetBlVsfg39yDnoeGr4=
+        b=cRJs+M3Q0wdbLOH4+POQ6PukS4IMy9E07QLJ1cX8/xY9cYm3Db1PPQDCpqSeTgI1L
+         LvS2lutFNLC/3yBAhszntka+pc+31DTFiezJisH+8OgPxUTIN/qjnHlOHg9ZElWilN
+         ns3vrY0B5zg7h7MNakprkR4u7RyflP4FXpN2HGyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 5.4 01/80] Makefile.extrawarn: Move -Wunaligned-access to W=1
-Date:   Mon, 21 Feb 2022 09:48:41 +0100
-Message-Id: <20220221084915.605586081@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        Wolfgang Walter <linux@stwm.de>,
+        Jason Self <jason@bluehome.net>,
+        Dominik Behr <dominik@dominikbehr.com>,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 4.19 17/58] iwlwifi: fix use-after-free
+Date:   Mon, 21 Feb 2022 09:49:10 +0100
+Message-Id: <20220221084912.444718683@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
-References: <20220221084915.554151737@linuxfoundation.org>
+In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
+References: <20220221084911.895146879@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,46 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 1cf5f151d25fcca94689efd91afa0253621fb33a upstream.
+commit bea2662e7818e15d7607d17d57912ac984275d94 upstream.
 
--Wunaligned-access is a new warning in clang that is default enabled for
-arm and arm64 under certain circumstances within the clang frontend (see
-LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
-1284 total/70 unique instances of this warning (most of the instances
-are in header files), which is quite noisy.
+If no firmware was present at all (or, presumably, all of the
+firmware files failed to parse), we end up unbinding by calling
+device_release_driver(), which calls remove(), which then in
+iwlwifi calls iwl_drv_stop(), freeing the 'drv' struct. However
+the new code I added will still erroneously access it after it
+was freed.
 
-To keep a normal build green through CONFIG_WERROR, only show this
-warning with W=1, which will allow automated build systems to catch new
-instances of the warning so that the total number can be driven down to
-zero eventually since catching unaligned accesses at compile time would
-be generally useful.
+Set 'failure=false' in this case to avoid the access, all data
+was already freed anyway.
 
 Cc: stable@vger.kernel.org
-Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
-Link: https://github.com/ClangBuiltLinux/linux/issues/1569
-Link: https://github.com/ClangBuiltLinux/linux/issues/1576
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-[nathan: Fix conflict due to lack of afe956c577b2d]
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reported-by: Stefan Agner <stefan@agner.ch>
+Reported-by: Wolfgang Walter <linux@stwm.de>
+Reported-by: Jason Self <jason@bluehome.net>
+Reported-by: Dominik Behr <dominik@dominikbehr.com>
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Fixes: ab07506b0454 ("iwlwifi: fix leaks/bad data after failed firmware load")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220208114728.e6b514cf4c85.Iffb575ca2a623d7859b542c33b2a507d01554251@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
 ---
- scripts/Makefile.extrawarn |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/scripts/Makefile.extrawarn
-+++ b/scripts/Makefile.extrawarn
-@@ -49,6 +49,7 @@ KBUILD_CFLAGS += -Wno-format
- KBUILD_CFLAGS += -Wno-sign-compare
- KBUILD_CFLAGS += -Wno-format-zero-length
- KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
-+KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
- endif
- 
- endif
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1549,6 +1549,8 @@ static void iwl_req_fw_callback(const st
+  out_unbind:
+ 	complete(&drv->request_firmware_complete);
+ 	device_release_driver(drv->trans->dev);
++	/* drv has just been freed by the release */
++	failure = false;
+  free:
+ 	if (failure)
+ 		iwl_dealloc_ucode(drv);
 
 
