@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 443FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B63CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346164AbiBUJEq (ORCPT
+        id S1347266AbiBUJEv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:04:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33072 "EHLO
+        Mon, 21 Feb 2022 04:04:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347410AbiBUJBV (ORCPT
+        with ESMTP id S1347434AbiBUJBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB14127FFD;
-        Mon, 21 Feb 2022 00:56:26 -0800 (PST)
+        Mon, 21 Feb 2022 04:01:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD09310A8;
+        Mon, 21 Feb 2022 00:56:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D5A061132;
-        Mon, 21 Feb 2022 08:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C94C340E9;
-        Mon, 21 Feb 2022 08:56:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C539B80EB0;
+        Mon, 21 Feb 2022 08:56:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAAFC340EB;
+        Mon, 21 Feb 2022 08:56:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433774;
-        bh=Fx69TGtCU+DC6D/k/su0vz+KUpPNih+GxX4SBwdw02A=;
+        s=korg; t=1645433783;
+        bh=Wy4mJoN20U98Cm52ZyFWsaPcCLt5lNHiuQSa3YpeI+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NPAMku/hOewOw1ayIE02iToFCS8ppjT10M9tkE0Pmm/phRyMffjnPTruZMu2ElW71
-         SdPJ0zAHit6cQZU8sq74Yz4Ycs3UG3/TlU4WGvNQWvVtRLReXcIKMvz3WSw2gZgKox
-         uT/ByyG5rwNQ1DjHPCEerDey5bDyqeLchCkNtJt0=
+        b=ZeBi8rTAcGgMhgu40tSPjSZl20hp5PVonKvJFuZurXaMQHOuzMbfJKLPTKfWwGG5u
+         +jKytDCVB3naVbr8fFbkdvvalqov2d489vljgpENtmADj3dC/YFZ3Bz28Mz/izQtDu
+         5Q/Jo4mVcQxqQP+h6vD6iYvlujgsJZnaCLwpFE9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Lei <ming.lei@rehdat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Laibin Qiu <qiulaibin@huawei.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.19 37/58] block/wbt: fix negative inflight counter when remove scsi device
-Date:   Mon, 21 Feb 2022 09:49:30 +0100
-Message-Id: <20220221084913.075259372@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 4.19 40/58] mtd: rawnand: qcom: Fix clock sequencing in qcom_nandc_probe()
+Date:   Mon, 21 Feb 2022 09:49:33 +0100
+Message-Id: <20220221084913.172673927@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,77 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laibin Qiu <qiulaibin@huawei.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit e92bc4cd34de2ce454bdea8cd198b8067ee4e123 upstream.
+commit 5c23b3f965bc9ee696bf2ed4bdc54d339dd9a455 upstream.
 
-Now that we disable wbt by set WBT_STATE_OFF_DEFAULT in
-wbt_disable_default() when switch elevator to bfq. And when
-we remove scsi device, wbt will be enabled by wbt_enable_default.
-If it become false positive between wbt_wait() and wbt_track()
-when submit write request.
+Interacting with a NAND chip on an IPQ6018 I found that the qcomsmem NAND
+partition parser was returning -EPROBE_DEFER waiting for the main smem
+driver to load.
 
-The following is the scenario that triggered the problem.
+This caused the board to reset. Playing about with the probe() function
+shows that the problem lies in the core clock being switched off before the
+nandc_unalloc() routine has completed.
 
-T1                          T2                           T3
-                            elevator_switch_mq
-                            bfq_init_queue
-                            wbt_disable_default <= Set
-                            rwb->enable_state (OFF)
-Submit_bio
-blk_mq_make_request
-rq_qos_throttle
-<= rwb->enable_state (OFF)
-                                                         scsi_remove_device
-                                                         sd_remove
-                                                         del_gendisk
-                                                         blk_unregister_queue
-                                                         elv_unregister_queue
-                                                         wbt_enable_default
-                                                         <= Set rwb->enable_state (ON)
-q_qos_track
-<= rwb->enable_state (ON)
-^^^^^^ this request will mark WBT_TRACKED without inflight add and will
-lead to drop rqw->inflight to -1 in wbt_done() which will trigger IO hung.
+If we look at how qcom_nandc_remove() tears down allocated resources we see
+the expected order is
 
-Fix this by move wbt_enable_default() from elv_unregister to
-bfq_exit_queue(). Only re-enable wbt when bfq exit.
+qcom_nandc_unalloc(nandc);
 
-Fixes: 76a8040817b4b ("blk-wbt: make sure throttle is enabled properly")
+clk_disable_unprepare(nandc->aon_clk);
+clk_disable_unprepare(nandc->core_clk);
 
-Remove oneline stale comment, and kill one oneshot local variable.
+dma_unmap_resource(&pdev->dev, nandc->base_dma, resource_size(res),
+		   DMA_BIDIRECTIONAL, 0);
 
-Signed-off-by: Ming Lei <ming.lei@rehdat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/linux-block/20211214133103.551813-1-qiulaibin@huawei.com/
-Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Tweaking probe() to both bring up and tear-down in that order removes the
+reset if we end up deferring elsewhere.
+
+Fixes: c76b78d8ec05 ("mtd: nand: Qualcomm NAND controller driver")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220103030316.58301-2-bryan.odonoghue@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bfq-iosched.c |    2 ++
- block/elevator.c    |    2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/nand/raw/qcom_nandc.c |   14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5417,6 +5417,8 @@ static void bfq_exit_queue(struct elevat
- 	spin_unlock_irq(&bfqd->lock);
- #endif
+--- a/drivers/mtd/nand/raw/qcom_nandc.c
++++ b/drivers/mtd/nand/raw/qcom_nandc.c
+@@ -10,7 +10,6 @@
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  */
+-
+ #include <linux/clk.h>
+ #include <linux/slab.h>
+ #include <linux/bitops.h>
+@@ -2959,10 +2958,6 @@ static int qcom_nandc_probe(struct platf
+ 	if (!nandc->base_dma)
+ 		return -ENXIO;
  
-+	wbt_enable_default(bfqd->queue);
+-	ret = qcom_nandc_alloc(nandc);
+-	if (ret)
+-		goto err_nandc_alloc;
+-
+ 	ret = clk_prepare_enable(nandc->core_clk);
+ 	if (ret)
+ 		goto err_core_clk;
+@@ -2971,6 +2966,10 @@ static int qcom_nandc_probe(struct platf
+ 	if (ret)
+ 		goto err_aon_clk;
+ 
++	ret = qcom_nandc_alloc(nandc);
++	if (ret)
++		goto err_nandc_alloc;
 +
- 	kfree(bfqd);
- }
+ 	ret = qcom_nandc_setup(nandc);
+ 	if (ret)
+ 		goto err_setup;
+@@ -2982,15 +2981,14 @@ static int qcom_nandc_probe(struct platf
+ 	return 0;
  
---- a/block/elevator.c
-+++ b/block/elevator.c
-@@ -877,8 +877,6 @@ void elv_unregister_queue(struct request
- 		kobject_del(&e->kobj);
- 
- 		e->registered = 0;
--		/* Re-enable throttling in case elevator disabled it */
--		wbt_enable_default(q);
- 	}
+ err_setup:
++	qcom_nandc_unalloc(nandc);
++err_nandc_alloc:
+ 	clk_disable_unprepare(nandc->aon_clk);
+ err_aon_clk:
+ 	clk_disable_unprepare(nandc->core_clk);
+ err_core_clk:
+-	qcom_nandc_unalloc(nandc);
+-err_nandc_alloc:
+ 	dma_unmap_resource(dev, res->start, resource_size(res),
+ 			   DMA_BIDIRECTIONAL, 0);
+-
+ 	return ret;
  }
  
 
