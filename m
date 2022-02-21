@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 873C1C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CD7C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350886AbiBUJgN (ORCPT
+        id S1350918AbiBUJgV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47558 "EHLO
+        Mon, 21 Feb 2022 04:36:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348860AbiBUJ1d (ORCPT
+        with ESMTP id S232073AbiBUJ1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799BD6369;
-        Mon, 21 Feb 2022 01:11:56 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B9F6377;
+        Mon, 21 Feb 2022 01:12:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1538D60B1B;
-        Mon, 21 Feb 2022 09:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66E4C340E9;
-        Mon, 21 Feb 2022 09:11:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C897B60018;
+        Mon, 21 Feb 2022 09:12:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE416C340E9;
+        Mon, 21 Feb 2022 09:12:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434715;
-        bh=nq4RGDjMqlFVwtDTrTSQfcMRT5Kyveke7zxrDBK+h7U=;
+        s=korg; t=1645434721;
+        bh=VLLiuLRtlIOdNKwOXTrIBHRlol07DVdf54qswhdIWCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fndYfZffTN7QVZaRi+qDxPJsAloo6J8ToOP1ialIM2LsGaT2yx0eFaej6D21/Pt1I
-         ljLAZSwSW+rW3dhZmD+Tm18TcJvNPnoEz1bqZE7+tjbh/TnolQESoZUql4ScxVG9fw
-         dxUIZGHbxiaEj9dx9bRbzW677cS1aztZL//KLP0g=
+        b=aejGP5ginPYXfzs4AIYwtAkhUI2/eYaSomg6wiQ5Jz06qfm8tzPPTlOXWyUtPLxt+
+         SKxMrDMDXPLo4Tq1KwZKrnD6NIYNuXTchAfZ2vuFmjn7mFMPYLaNvJgvICwzWx9FWS
+         VSWW2qvPptn6mIUo6fJosfjrW0lhpDFrB6FYhC38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 105/196] dpaa2-switch: fix default return of dpaa2_switch_flower_parse_mirror_key
-Date:   Mon, 21 Feb 2022 09:48:57 +0100
-Message-Id: <20220221084934.442475821@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 107/196] net: bridge: multicast: notify switchdev driver whenever MC processing gets disabled
+Date:   Mon, 21 Feb 2022 09:48:59 +0100
+Message-Id: <20220221084934.516798082@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,49 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-commit 2a36ed7c1cd55742503bed81d2cc0ea83bd0ad0c upstream.
+commit c832962ac972082b3a1f89775c9d4274c8cb5670 upstream.
 
-Clang static analysis reports this representative problem
-dpaa2-switch-flower.c:616:24: warning: The right operand of '=='
-  is a garbage value
-  tmp->cfg.vlan_id == vlan) {
-                   ^  ~~~~
-vlan is set in dpaa2_switch_flower_parse_mirror_key(). However
-this function can return success without setting vlan.  So
-change the default return to -EOPNOTSUPP.
+Whenever bridge driver hits the max capacity of MDBs, it disables
+the MC processing (by setting corresponding bridge option), but never
+notifies switchdev about such change (the notifiers are called only upon
+explicit setting of this option, through the registered netlink interface).
 
-Fixes: 0f3faece5808 ("dpaa2-switch: add VLAN based mirroring")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This could lead to situation when Software MDB processing gets disabled,
+but this event never gets offloaded to the underlying Hardware.
+
+Fix this by adding a notify message in such case.
+
+Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Link: https://lore.kernel.org/r/20220215165303.31908-1-oleksandr.mazur@plvision.eu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/bridge/br_multicast.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-@@ -532,6 +532,7 @@ static int dpaa2_switch_flower_parse_mir
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
- 	struct flow_dissector *dissector = rule->match.dissector;
- 	struct netlink_ext_ack *extack = cls->common.extack;
-+	int ret = -EOPNOTSUPP;
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(str
+ 				     struct net_bridge_port_group *pg);
+ static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
  
- 	if (dissector->used_keys &
- 	    ~(BIT(FLOW_DISSECTOR_KEY_BASIC) |
-@@ -561,9 +562,10 @@ static int dpaa2_switch_flower_parse_mir
- 		}
++static int br_mc_disabled_update(struct net_device *dev, bool value,
++				 struct netlink_ext_ack *extack);
++
+ static struct net_bridge_port_group *
+ br_sg_port_find(struct net_bridge *br,
+ 		struct net_bridge_port_group_sg_key *sg_p)
+@@ -1156,6 +1159,7 @@ struct net_bridge_mdb_entry *br_multicas
+ 		return mp;
  
- 		*vlan = (u16)match.key->vlan_id;
-+		ret = 0;
+ 	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
++		br_mc_disabled_update(br->dev, false, NULL);
+ 		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
+ 		return ERR_PTR(-E2BIG);
  	}
- 
--	return 0;
-+	return ret;
- }
- 
- static int
 
 
