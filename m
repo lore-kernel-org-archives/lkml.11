@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ED0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346765AbiBUI74 (ORCPT
+        id S1346859AbiBUJAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:59:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59280 "EHLO
+        Mon, 21 Feb 2022 04:00:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346895AbiBUI72 (ORCPT
+        with ESMTP id S1346913AbiBUI7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:59:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2480326128;
-        Mon, 21 Feb 2022 00:55:08 -0800 (PST)
+        Mon, 21 Feb 2022 03:59:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1947025EAB;
+        Mon, 21 Feb 2022 00:55:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E2F36112B;
-        Mon, 21 Feb 2022 08:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748F5C340E9;
-        Mon, 21 Feb 2022 08:55:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63646B80EB6;
+        Mon, 21 Feb 2022 08:55:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B3FFC36AE7;
+        Mon, 21 Feb 2022 08:55:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433707;
-        bh=IbxYndShaUN1LdttA6NiRREW3GWMiaYelf0xxIh24h0=;
+        s=korg; t=1645433701;
+        bh=EvN0GrYMLAEr8DvuwAt9cCcnYzuYRDJPR2oa4KU8Eq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rca1V6MZb7+jWqmQSvHz0QP1u/4BFR1p85IpUl3HSpvKwn7qM1gY8UTM8/uTUpd8c
-         LBaYuhzD7VBUPStZLz3//XBORfnRXPVBjNxPK98TFd8mqrf7B8mZS2Uk22eLR8j9wq
-         YPQgYCCN8Ci+sKmh7OkDYbEwj4pgYtstEBO3jBKs=
+        b=lrxqP4mMhxXSZN/xgEt0csonlpVXWvnSMS+ACQgayzbK//KTIaK6vsDe9U7Fl2FXJ
+         0SnmjQsLKPzf8MUCXVigFGb7JcMdI8CMWQnSOxHMjywQgvQOZapN7kxczrDk+wWXWv
+         FaLV6w3nexCeqSloO+wERKT5uwt2+CAflvf9Lmg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 14/58] nvme: fix a possible use-after-free in controller reset during load
-Date:   Mon, 21 Feb 2022 09:49:07 +0100
-Message-Id: <20220221084912.351863300@linuxfoundation.org>
+Subject: [PATCH 4.19 12/58] vfs: make freeze_super abort when sync_filesystem returns error
+Date:   Mon, 21 Feb 2022 09:49:05 +0100
+Message-Id: <20220221084912.286653712@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -49,61 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Darrick J. Wong <djwong@kernel.org>
 
-[ Upstream commit 0fa0f99fc84e41057cbdd2efbfe91c6b2f47dd9d ]
+[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
 
-Unlike .queue_rq, in .submit_async_event drivers may not check the ctrl
-readiness for AER submission. This may lead to a use-after-free
-condition that was observed with nvme-tcp.
+If we fail to synchronize the filesystem while preparing to freeze the
+fs, abort the freeze.
 
-The race condition may happen in the following scenario:
-1. driver executes its reset_ctrl_work
-2. -> nvme_stop_ctrl - flushes ctrl async_event_work
-3. ctrl sends AEN which is received by the host, which in turn
-   schedules AEN handling
-4. teardown admin queue (which releases the queue socket)
-5. AEN processed, submits another AER, calling the driver to submit
-6. driver attempts to send the cmd
-==> use-after-free
-
-In order to fix that, add ctrl state check to validate the ctrl
-is actually able to accept the AER submission.
-
-This addresses the above race in controller resets because the driver
-during teardown should:
-1. change ctrl state to RESETTING
-2. flush async_event_work (as well as other async work elements)
-
-So after 1,2, any other AER command will find the
-ctrl state to be RESETTING and bail out without submitting the AER.
-
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ fs/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e64310f2296f8..a0a805a5ab6b2 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3463,7 +3463,14 @@ static void nvme_async_event_work(struct work_struct *work)
- 		container_of(work, struct nvme_ctrl, async_event_work);
- 
- 	nvme_aen_uevent(ctrl);
--	ctrl->ops->submit_async_event(ctrl);
-+
-+	/*
-+	 * The transport drivers must guarantee AER submission here is safe by
-+	 * flushing ctrl async_event_work after changing the controller state
-+	 * from LIVE and before freeing the admin queue.
-+	*/
-+	if (ctrl->state == NVME_CTRL_LIVE)
-+		ctrl->ops->submit_async_event(ctrl);
+diff --git a/fs/super.c b/fs/super.c
+index 9fb4553c46e63..8dc26e23f1a35 100644
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -1404,11 +1404,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
+ 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
  }
  
- static bool nvme_ctrl_pp_status(struct nvme_ctrl *ctrl)
+-static void sb_freeze_unlock(struct super_block *sb)
++static void sb_freeze_unlock(struct super_block *sb, int level)
+ {
+-	int level;
+-
+-	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
++	for (level--; level >= 0; level--)
+ 		percpu_up_write(sb->s_writers.rw_sem + level);
+ }
+ 
+@@ -1479,7 +1477,14 @@ int freeze_super(struct super_block *sb)
+ 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
+ 
+ 	/* All writers are done so after syncing there won't be dirty data */
+-	sync_filesystem(sb);
++	ret = sync_filesystem(sb);
++	if (ret) {
++		sb->s_writers.frozen = SB_UNFROZEN;
++		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
++		wake_up(&sb->s_writers.wait_unfrozen);
++		deactivate_locked_super(sb);
++		return ret;
++	}
+ 
+ 	/* Now wait for internal filesystem counter */
+ 	sb->s_writers.frozen = SB_FREEZE_FS;
+@@ -1491,7 +1496,7 @@ int freeze_super(struct super_block *sb)
+ 			printk(KERN_ERR
+ 				"VFS:Filesystem freeze failed\n");
+ 			sb->s_writers.frozen = SB_UNFROZEN;
+-			sb_freeze_unlock(sb);
++			sb_freeze_unlock(sb, SB_FREEZE_FS);
+ 			wake_up(&sb->s_writers.wait_unfrozen);
+ 			deactivate_locked_super(sb);
+ 			return ret;
+@@ -1542,7 +1547,7 @@ static int thaw_super_locked(struct super_block *sb)
+ 	}
+ 
+ 	sb->s_writers.frozen = SB_UNFROZEN;
+-	sb_freeze_unlock(sb);
++	sb_freeze_unlock(sb, SB_FREEZE_FS);
+ out:
+ 	wake_up(&sb->s_writers.wait_unfrozen);
+ 	deactivate_locked_super(sb);
 -- 
 2.34.1
 
