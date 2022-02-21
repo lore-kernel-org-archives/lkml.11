@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2442C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33489C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348750AbiBUJLl (ORCPT
+        id S1349279AbiBUJMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:11:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48254 "EHLO
+        Mon, 21 Feb 2022 04:12:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347523AbiBUJGr (ORCPT
+        with ESMTP id S1347797AbiBUJIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:06:47 -0500
+        Mon, 21 Feb 2022 04:08:40 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F6B31234;
-        Mon, 21 Feb 2022 00:59:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BC226576;
+        Mon, 21 Feb 2022 01:00:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AB461132;
-        Mon, 21 Feb 2022 08:59:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9839C340E9;
-        Mon, 21 Feb 2022 08:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA5D61202;
+        Mon, 21 Feb 2022 09:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B61C340E9;
+        Mon, 21 Feb 2022 09:00:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433987;
-        bh=68TEqlEr7oRnJi0vtYWnGuAH20gM7jHIJnUnx/9lt/Y=;
+        s=korg; t=1645434027;
+        bh=0ajMXluSAqvhHBE5hWclvfBMFrRyAUrOhetBDh6ThaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XkPUP21T1ls3EqkntP6J4VMC3kja1GSsmV6/fH5hMGU83jOkARl6VsR8+y9zTG2nL
-         xjYssCn5XXvvQkfOcohSJehZhuc1/83E5WtbN8UH4hXmL7PWVeETSDRJvR+y6A/x9k
-         kMuTPM0kJX4KUURLIDPF0thk1LLNcdWJw/Zd+9c4=
+        b=YQcZrTqWRmNqglp5RY08vyEUwKCk81SB76XfOcdQ/IiWHU7RInTcrSwT34GX8kk+o
+         Gzi8L9VHL43//uOQmAZK7X6yM0EnemMd8CSg4s4ru9+RwHMj9qUg8Ud8zL5VSiF/Hv
+         fog2Oj1COB/vDrL0Z++GZ8CJhZkwwNGXlqMJcidc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 21/80] drm/amdgpu: fix logic inversion in check
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084916.278671251@linuxfoundation.org>
+Subject: [PATCH 5.4 67/80] ARM: OMAP2+: hwmod: Add of_node_put() before break
+Date:   Mon, 21 Feb 2022 09:49:47 +0100
+Message-Id: <20220221084917.783210821@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -52,34 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
+[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
 
-We probably never trigger this, but the logic inside the check is
-inverted.
+Fix following coccicheck warning:
+./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
+for_each_matching_node should have of_node_put() before break
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Early exits from for_each_matching_node should decrement the
+node reference counter.
+
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 58e14d3040f03..870dd78d5a21a 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -1976,7 +1976,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
- 	unsigned i;
- 	int r;
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index 6289b288d60a6..202b740adee0e 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -782,8 +782,10 @@ static int __init _init_clkctrl_providers(void)
  
--	if (direct_submit && !ring->sched.ready) {
-+	if (!direct_submit && !ring->sched.ready) {
- 		DRM_ERROR("Trying to move memory with ring turned off.\n");
- 		return -EINVAL;
+ 	for_each_matching_node(np, ti_clkctrl_match_table) {
+ 		ret = _setup_clkctrl_provider(np);
+-		if (ret)
++		if (ret) {
++			of_node_put(np);
+ 			break;
++		}
  	}
+ 
+ 	return ret;
 -- 
 2.34.1
 
