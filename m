@@ -2,114 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2705CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355390AbiBUKqb (ORCPT
+        id S1355417AbiBUKqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:46:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44068 "EHLO
+        Mon, 21 Feb 2022 05:46:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355249AbiBUKpm (ORCPT
+        with ESMTP id S1355326AbiBUKpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:45:42 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D77D69
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:06:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RpBKsVZQGw9BH4QPev42eXnbVs5cNcqTAyBEyLsnM0U=; b=hqoT0z2W1y5VOYy+ndSdVNBa0b
-        MCVpWQcRp4KkJzPLTOAToIaLhE72Vwncn4hGPwExWubQlKcNvpETWbX0FuY8ZksyVHfFEkGc4t/tE
-        IT3Z7AGmlMprhRPVeNfh66BYJqnIQCqoAL7uSDgnzD82XbI3rgmmagg/8No3p4V6B48Aw7NXsAb/O
-        /Y5/jxxRsn0A7Llejh9P9uhBc1hSJcu2WFFA8B14GB2FLiXq9Jdu1RCa1Tkg1/zjs4kUBDhzjiw2a
-        WEimjO6TofBE2AILLdsIgdvl6XLnksVyt4nmNj4fG5JMny+DfUR+wBLvvBIvGNjDoKi6uQzx8nKBI
-        kXDtL1ag==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nM5aD-00BcH4-8Y; Mon, 21 Feb 2022 10:06:17 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B423A9857C7; Mon, 21 Feb 2022 11:06:15 +0100 (CET)
-Date:   Mon, 21 Feb 2022 11:06:15 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 15/29] x86: Disable IBT around firmware
-Message-ID: <20220221100615.GK23216@worktop.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.456054276@infradead.org>
- <831051EB-FF09-4B75-98EE-A7C8D0054CFE@chromium.org>
+        Mon, 21 Feb 2022 05:45:44 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E8E25EB5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:07:07 -0800 (PST)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D44FB3F1D0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 10:07:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645438023;
+        bh=cW/QUWxRYPJ01JIv+IxhlaCd34Ezps7vx3XaRgs0k38=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=mE650o2OFMEldwIsOHtit9UymdWipuSPrEBD5QlJtznspRv00LfH1mO5r77YBaspI
+         SIkNPYdXnowj2ckEJJIQmV7rn8vfU1A/PREyS7JgPWUiOSlQi7V+npMg11XOfr0wzv
+         hs5H7WOA0tDfKBZhDE3EaoM4LasnPgiukfhHK4e7+JFVIaRNmIwJYFrF12LYnfWlX6
+         c6ujWJ/d1iNalE/M25cPUngXkG2p8oFWeZReg5y+Vj9QOZ2lvs739C1nfkFMyl42NG
+         po3oLscVXRBumYpOzRwjCa9i+KbFn69rI4+4MlDriWO2Hh/fFpRjRZhygwwqQzHUB5
+         pPp7NWQk/Wo/Q==
+Received: by mail-wm1-f72.google.com with SMTP id 125-20020a1c0283000000b0037bf720e6a8so7810404wmc.8
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:07:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cW/QUWxRYPJ01JIv+IxhlaCd34Ezps7vx3XaRgs0k38=;
+        b=J9PpbF5kZnIoGC1erxhbw8wLCHjma90FIpI6VGZJdgXcdkeP0uEDEWOT/rwCcw6dRe
+         VLaokEK2E09tHp7H58Imc9ZcXVCGSUAD5xebBdZNSdHv8FLHZtEWGhyKGF/n1zv1C5Xm
+         Uy2yRdZQLtI7YzIVt9Q5+Qmmh23ne7S8WBJ9Gbs5v6G2CpKp41PSV0i+pgOGNuwXMbQh
+         aANQFpEugOMaX5bQdkn9o2FySMyNogXyGoKMDh3VB+v8Y/PvE5Z2XSf65U1O0OgSVqG8
+         l71JNd5BrTvTBfyumfSjHvvHIyLI+k/mBjXCKgVrj/hDdM3ERMyvkqFlRBAEp3pBSQ0Z
+         DX9A==
+X-Gm-Message-State: AOAM531+lcpUQyiMUyQHXWoc7PYwME4aA4mgDNfsItLJJCjEnSTA97aW
+        zcGa4UWcvvUE4BM4zlY+8fyFLsq4Gv0kuC2S0S4flUUwz73mE5ESpyqjWK+28nOnn46CLNFpJDg
+        arQNk7nnFII7Ltmenrp7EMypNoFk9nqNvtELh8RnWWQ==
+X-Received: by 2002:adf:fbc4:0:b0:1e7:2060:d65 with SMTP id d4-20020adffbc4000000b001e720600d65mr14402417wrs.583.1645438023620;
+        Mon, 21 Feb 2022 02:07:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzSDnIuvhfhf6ztWmXo0/EYg1RcHqQ7IBUSFa3H9QTNRrd4GTrHx0Vh3osgtoGhA5uLVbSAgA==
+X-Received: by 2002:adf:fbc4:0:b0:1e7:2060:d65 with SMTP id d4-20020adffbc4000000b001e720600d65mr14402401wrs.583.1645438023436;
+        Mon, 21 Feb 2022 02:07:03 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id x18sm49516678wrw.17.2022.02.21.02.07.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 02:07:03 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH] dt-bindings: update Roger Quadros email
+Date:   Mon, 21 Feb 2022 11:07:01 +0100
+Message-Id: <20220221100701.48593-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <831051EB-FF09-4B75-98EE-A7C8D0054CFE@chromium.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Emails to Roger Quadros TI account bounce with:
+  550 Invalid recipient <rogerq@ti.com> (#5.1.1)
 
-Could you trim replies so that I can actually find what you write?
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-On Mon, Feb 21, 2022 at 12:27:20AM -0800, Kees Cook wrote:
+---
 
-> >+#ifdef CONFIG_X86_IBT
-> >+
-> >+u64 ibt_save(void)
-> >+{
-> >+	u64 msr = 0;
-> >+
-> >+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
-> >+		rdmsrl(MSR_IA32_S_CET, msr);
-> >+		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
-> >+	}
-> >+
-> >+	return msr;
-> >+}
-> >+
-> >+void ibt_restore(u64 save)
-> 
-> Please make these both __always_inline so there no risk of them ever gaining ENDBRs and being used by ROP to disable IBT...
+Roger,
+You should also add a mailmap entry for your inactive emails.
 
-Either that or mark them __noendbr. The below seems to work.
+Best regards,
+Krzysztof
+---
+ .../devicetree/bindings/mfd/ti,j721e-system-controller.yaml     | 2 +-
+ Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml         | 2 +-
+ Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml         | 2 +-
+ Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml     | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-Do we have a preference?
+diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+index 272832e9f8f2..fa86691ebf16 100644
+--- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
++++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
+@@ -20,7 +20,7 @@ description: |
+ 
+ maintainers:
+   - Kishon Vijay Abraham I <kishon@ti.com>
+-  - Roger Quadros <rogerq@ti.com
++  - Roger Quadros <rogerq@kernel.org>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml b/Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml
+index 51c8a36e61f0..8694b9eb52f9 100644
+--- a/Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml
++++ b/Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml
+@@ -8,7 +8,7 @@ title: OMAP USB2 PHY
+ 
+ maintainers:
+   - Kishon Vijay Abraham I <kishon@ti.com>
+-  - Roger Quadros <rogerq@ti.com>
++  - Roger Quadros <rogerq@kernel.org>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
+index a634774c537c..eedde385d299 100644
+--- a/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
++++ b/Documentation/devicetree/bindings/usb/ti,j721e-usb.yaml
+@@ -7,7 +7,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
+ title: Bindings for the TI wrapper module for the Cadence USBSS-DRD controller
+ 
+ maintainers:
+-  - Roger Quadros <rogerq@ti.com>
++  - Roger Quadros <rogerq@kernel.org>
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml b/Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml
+index f6e91a5fd8fe..4f7a212fddd3 100644
+--- a/Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: TI Keystone Soc USB Controller
+ 
+ maintainers:
+-  - Roger Quadros <rogerq@ti.com>
++  - Roger Quadros <rogerq@kernel.org>
+ 
+ properties:
+   compatible:
+-- 
+2.32.0
 
-
---- a/arch/x86/include/asm/ibt.h
-+++ b/arch/x86/include/asm/ibt.h
-@@ -48,8 +48,8 @@ static inline bool is_endbr(const void *
- 	return val == gen_endbr64();
- }
- 
--extern u64 ibt_save(void);
--extern void ibt_restore(u64 save);
-+extern __noendbr u64 ibt_save(void);
-+extern __noendbr void ibt_restore(u64 save);
- 
- #else /* __ASSEMBLY__ */
- 
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -596,7 +596,7 @@ __setup("nopku", setup_disable_pku);
- 
- #ifdef CONFIG_X86_IBT
- 
--u64 ibt_save(void)
-+__noendbr u64 ibt_save(void)
- {
- 	u64 msr = 0;
- 
-@@ -608,7 +608,7 @@ u64 ibt_save(void)
- 	return msr;
- }
- 
--void ibt_restore(u64 save)
-+__noendbr void ibt_restore(u64 save)
- {
- 	u64 msr;
- 
