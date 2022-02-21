@@ -2,91 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F44C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F58C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348700AbiBUJXN (ORCPT
+        id S1348919AbiBUJXS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:23:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33972 "EHLO
+        Mon, 21 Feb 2022 04:23:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349825AbiBUJM5 (ORCPT
+        with ESMTP id S1349727AbiBUJMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:12:57 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380322D1E4;
-        Mon, 21 Feb 2022 01:06:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A12C8CE0E92;
-        Mon, 21 Feb 2022 09:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86C73C340E9;
-        Mon, 21 Feb 2022 09:05:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434358;
-        bh=mlCVfXCI/MPFLPPvRfg1e5hONyIiSJQMvH37hKzLE5Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZdPbRpyA9qYycU2D2gvUcyASb9SC29JtFDOhLlgEkhArqQzMhev3cNJlKBpGYi41
-         sqHOPTmyXmmaNO7Qq426isKIrdFctFQUvNW3SmrAGkLPGv8fiWixfJDf7F+HTnmx1Z
-         BO5GtY7FX/84UzvL+s3bsvF6AAeeu2p99sIpEIu0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brenda Streiff <brenda.streiff@ni.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 102/121] kconfig: let shell return enough output for deep path names
-Date:   Mon, 21 Feb 2022 09:49:54 +0100
-Message-Id: <20220221084924.632791683@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
-References: <20220221084921.147454846@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:12:52 -0500
+X-Greylist: delayed 530 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 01:05:52 PST
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C7A2CC86;
+        Mon, 21 Feb 2022 01:05:51 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id ED5B45C0112;
+        Mon, 21 Feb 2022 03:56:21 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 21 Feb 2022 03:56:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=GuQIZ2iZqIrEQEflPSXrk8GW5VDt9CYqd8elpg
+        nUzwA=; b=q9tvO2zYfehBWwAthoML4tuldJGHH5qeZCO5nuuOyTnGgfjaqewO3K
+        hwWlZWjv9BVuI8ycEiMUyEfXPmJ1HeFA+j0dyv9e9IHAso0m2i73ezhUcOPNcFBj
+        WaYdyPt351hF2AGQu3vtfIbGW0cZrBuuu6dVlD2i9RXQYu3Fc7oAYBhnfC3J05/L
+        q4uDL1HY/x6SWUr1WiUP6XMlhtOWtc7yZ0kIhl+HuvNFN1XEVebaXpWfOdZrj6fy
+        Z25CQNn0yZ4NSC6iji6A4PinRW5uJlfFrBaWN8U/X4jRuuDd645POzr06shXfrcY
+        ZJ3/EjjO6oNYocvVIgJk/Xa7cgmeS5Qg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=GuQIZ2iZqIrEQEflP
+        SXrk8GW5VDt9CYqd8elpgnUzwA=; b=nmMnI7VHIGfRzaG6PRSKtTE6jQVvD9kta
+        CXS+Oz19iOLMdrHwGEv+FLCsX9yO5N97SLJ1RR0Xy/1LLb/xaPyeQx9XAkIVL00H
+        1IAdlT6cdEyjAaURNzABnCUVa1ZQeJKBTW23wY81Zehc9ilb2pfyoHjuyPPLsvOY
+        XKcCfndRkgzpfIQlwoWIn135H33HDgXUzxK4L53jbIIO8lnfcswm70r2xtg8OQKM
+        vRLg8bG/ucYuEbpGcqaMJvo2ft2TxUsTlmby3PIzMgVwxfOyeWX8HdXMDwKDGCXY
+        5komf+wPlVoCbd30D4P/SYgUPNFR9kHIl+GrFJX48Q24J2EMc2+8g==
+X-ME-Sender: <xms:tVMTYg1d8MmLyU1nY1Os2gEKIeY6hr2ZaNzlwTY5MIFuKN3AD8E6nw>
+    <xme:tVMTYrFo40QPH8RC59s_Fz3UpE_7zSN4U09a3pwXGj8Jp80JJrRGOjNX2tAOfcGBP
+    Q02C-KTYVLnVuQj9TQ>
+X-ME-Received: <xmr:tVMTYo7xbp3-lPXR_wxxtdkjQiPb20Dth4IgD2tZ1KFSWrhafVXdG6RvWvta3OBq-VUH0N1BB5J_aagXMh2-idtSm2HBAJTfpeCheQ4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeehgdduvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
+    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:tVMTYp3ZDc2dutWoYagaZiGdUcVydtJlheCR0viksTc0IrYVXjLu3w>
+    <xmx:tVMTYjF6aL-sANvVxWIN-44MYNmT7FBx4DCKuJBmoGKgnPXCKykfiA>
+    <xmx:tVMTYi-pVgGcJ4gfirP7OpRvQzn9bha6H4aTi5tKpAFw0B4w2xdIGA>
+    <xmx:tVMTYo4fE9zY91To63P92_EfnvrEUtPsqlqgGBGMTrF_ilCuHA_PxQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Feb 2022 03:56:21 -0500 (EST)
+Date:   Mon, 21 Feb 2022 09:56:19 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     laurent.pinchart@ideasonboard.com,
+        kieran.bingham+renesas@ideasonboard.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm: rcar-du: switch to devm_drm_of_get_bridge
+Message-ID: <20220221085619.bqyr2etq4xjjqa4p@houat>
+References: <20220221073757.12181-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="6ofdvmxr6sl77fz6"
+Content-Disposition: inline
+In-Reply-To: <20220221073757.12181-1-jose.exposito89@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brenda Streiff <brenda.streiff@ni.com>
 
-[ Upstream commit 8a4c5b2a6d8ea079fa36034e8167de87ab6f8880 ]
+--6ofdvmxr6sl77fz6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The 'shell' built-in only returns the first 256 bytes of the command's
-output. In some cases, 'shell' is used to return a path; by bumping up
-the buffer size to 4096 this lets us capture up to PATH_MAX.
+On Mon, Feb 21, 2022 at 08:37:57AM +0100, Jos=E9 Exp=F3sito wrote:
+> The function "drm_of_find_panel_or_bridge" has been deprecated in
+> favor of "devm_drm_of_get_bridge".
+>=20
+> Switch to the new function and reduce boilerplate.
+>=20
+> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+> ---
+>  drivers/gpu/drm/rcar-du/rcar_lvds.c | 16 +++++-----------
+>  1 file changed, 5 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/rcar-du/rcar_lvds.c b/drivers/gpu/drm/rcar-d=
+u/rcar_lvds.c
+> index 72a272cfc11e..99b0febc56d1 100644
+> --- a/drivers/gpu/drm/rcar-du/rcar_lvds.c
+> +++ b/drivers/gpu/drm/rcar-du/rcar_lvds.c
+> @@ -712,18 +712,12 @@ static int rcar_lvds_parse_dt(struct rcar_lvds *lvd=
+s)
+>  {
+>  	int ret;
+> =20
+> -	ret =3D drm_of_find_panel_or_bridge(lvds->dev->of_node, 1, 0,
+> -					  &lvds->panel, &lvds->next_bridge);
 
-The specific case where I ran into this was due to commit 1e860048c53e
-("gcc-plugins: simplify GCC plugin-dev capability test"). After this
-change, we now use `$(shell,$(CC) -print-file-name=plugin)` to return
-a path; if the gcc path is particularly long, then the path ends up
-truncated at the 256 byte mark, which makes the HAVE_GCC_PLUGINS
-depends test always fail.
+I guess lvds->panel can be removed from the rcar_lvds struct as well?
 
-Signed-off-by: Brenda Streiff <brenda.streiff@ni.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- scripts/kconfig/preprocess.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maxime
 
-diff --git a/scripts/kconfig/preprocess.c b/scripts/kconfig/preprocess.c
-index 0590f86df6e40..748da578b418c 100644
---- a/scripts/kconfig/preprocess.c
-+++ b/scripts/kconfig/preprocess.c
-@@ -141,7 +141,7 @@ static char *do_lineno(int argc, char *argv[])
- static char *do_shell(int argc, char *argv[])
- {
- 	FILE *p;
--	char buf[256];
-+	char buf[4096];
- 	char *cmd;
- 	size_t nread;
- 	int i;
--- 
-2.34.1
+--6ofdvmxr6sl77fz6
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYhNTswAKCRDj7w1vZxhR
+xU/eAQCmw1HQxm098L+p+YiwegyR3+twcrqcOxK/DodXRAomOgD6A8vHaRQWuB1Q
+D5yYUwJMY5F66g25xbAN1hUn0IQd9g4=
+=bNix
+-----END PGP SIGNATURE-----
 
+--6ofdvmxr6sl77fz6--
