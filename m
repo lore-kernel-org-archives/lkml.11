@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABB8C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C76CC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349614AbiBUJ0W (ORCPT
+        id S1349565AbiBUJ0R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49310 "EHLO
+        Mon, 21 Feb 2022 04:26:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348631AbiBUJQF (ORCPT
+        with ESMTP id S1348628AbiBUJQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:16:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C647830F4F;
-        Mon, 21 Feb 2022 01:07:01 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12C62FFEF;
+        Mon, 21 Feb 2022 01:07:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D60F61284;
-        Mon, 21 Feb 2022 09:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C72C340E9;
-        Mon, 21 Feb 2022 09:07:00 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5F157CE0E88;
+        Mon, 21 Feb 2022 09:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E8FC340E9;
+        Mon, 21 Feb 2022 09:06:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434420;
-        bh=PFd0vWbuccoeBz31rmd7XX1dtx0C17Ku1YNGpKvMo6I=;
+        s=korg; t=1645434417;
+        bh=ZKi/bLqqju7qcD3QmZX7AFlsHmscIrQpQ7OS5N+ecjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYGA0mn0blY5VwN7JMP5AhNrt78Tsp0gwD60Ro0D8+nbVpfT2Sqswsmas5UVgSShB
-         rQiR0quvFCn1LGS7wEHcAEpK48KU1A6tMFdf9e0jaxO9/PfLhouV+RtgPgyxIOC2q7
-         8hrSo7u+EiiMlRXxLLJTJzaehLsCRZivTKUvizY8=
+        b=M/jxbarz8MukDRR7LW86HasE7lAGlvFYJdLfff34B2Qw6/Wh+qJ7gqcexVlePx/M5
+         UlEF7jGwG1klkh4Y3jvjHiS605nklVGB3g+PqNdMsh1ButtE2NVfDkeOvIxYcH8W+B
+         HzuLYC/KZEasfh/oewmoEUr070GTd3VqJ2LmSSrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 094/121] phy: usb: Leave some clocks running during suspend
-Date:   Mon, 21 Feb 2022 09:49:46 +0100
-Message-Id: <20220221084924.371414385@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Cheng Jui Wang <cheng-jui.wang@mediatek.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Subject: [PATCH 5.10 121/121] lockdep: Correct lock_classes index mapping
+Date:   Mon, 21 Feb 2022 09:50:13 +0100
+Message-Id: <20220221084925.287423462@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,135 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
+From: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
 
-[ Upstream commit 42fed57046fc74586d7058bd51a1c10ac9c690cb ]
+commit 28df029d53a2fd80c1b8674d47895648ad26dcfb upstream.
 
-The PHY client driver does a phy_exit() call on suspend or rmmod and
-the PHY driver needs to know the difference because some clocks need
-to be kept running for suspend but can be shutdown on unbind/rmmod
-(or if there are no PHY clients at all).
+A kernel exception was hit when trying to dump /proc/lockdep_chains after
+lockdep report "BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low!":
 
-The fix is to use a PM notifier so the driver can tell if a PHY
-client is calling exit() because of a system suspend or a driver
-unbind/rmmod.
+Unable to handle kernel paging request at virtual address 00054005450e05c3
+...
+00054005450e05c3] address between user and kernel address ranges
+...
+pc : [0xffffffece769b3a8] string+0x50/0x10c
+lr : [0xffffffece769ac88] vsnprintf+0x468/0x69c
+...
+ Call trace:
+  string+0x50/0x10c
+  vsnprintf+0x468/0x69c
+  seq_printf+0x8c/0xd8
+  print_name+0x64/0xf4
+  lc_show+0xb8/0x128
+  seq_read_iter+0x3cc/0x5fc
+  proc_reg_read_iter+0xdc/0x1d4
 
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211201180653.35097-2-alcooperx@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The cause of the problem is the function lock_chain_get_class() will
+shift lock_classes index by 1, but the index don't need to be shifted
+anymore since commit 01bb6f0af992 ("locking/lockdep: Change the range
+of class_idx in held_lock struct") already change the index to start
+from 0.
+
+The lock_classes[-1] located at chain_hlocks array. When printing
+lock_classes[-1] after the chain_hlocks entries are modified, the
+exception happened.
+
+The output of lockdep_chains are incorrect due to this problem too.
+
+Fixes: f611e8cf98ec ("lockdep: Take read/write status in consideration when generate chainkey")
+Signed-off-by: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
+Link: https://lore.kernel.org/r/20220210105011.21712-1-cheng-jui.wang@mediatek.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ kernel/locking/lockdep.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-index 99fbc7e4138be..b901a0d4e2a80 100644
---- a/drivers/phy/broadcom/phy-brcm-usb.c
-+++ b/drivers/phy/broadcom/phy-brcm-usb.c
-@@ -17,6 +17,7 @@
- #include <linux/soc/brcmstb/brcmstb.h>
- #include <dt-bindings/phy/phy.h>
- #include <linux/mfd/syscon.h>
-+#include <linux/suspend.h>
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -3387,7 +3387,7 @@ struct lock_class *lock_chain_get_class(
+ 	u16 chain_hlock = chain_hlocks[chain->base + i];
+ 	unsigned int class_idx = chain_hlock_class_idx(chain_hlock);
  
- #include "phy-brcm-usb-init.h"
- 
-@@ -69,12 +70,35 @@ struct brcm_usb_phy_data {
- 	int			init_count;
- 	int			wake_irq;
- 	struct brcm_usb_phy	phys[BRCM_USB_PHY_ID_MAX];
-+	struct notifier_block	pm_notifier;
-+	bool			pm_active;
- };
- 
- static s8 *node_reg_names[BRCM_REGS_MAX] = {
- 	"crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
- };
- 
-+static int brcm_pm_notifier(struct notifier_block *notifier,
-+			    unsigned long pm_event,
-+			    void *unused)
-+{
-+	struct brcm_usb_phy_data *priv =
-+		container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
-+
-+	switch (pm_event) {
-+	case PM_HIBERNATION_PREPARE:
-+	case PM_SUSPEND_PREPARE:
-+		priv->pm_active = true;
-+		break;
-+	case PM_POST_RESTORE:
-+	case PM_POST_HIBERNATION:
-+	case PM_POST_SUSPEND:
-+		priv->pm_active = false;
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
- static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
- {
- 	struct phy *gphy = dev_id;
-@@ -90,6 +114,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	/*
- 	 * Use a lock to make sure a second caller waits until
- 	 * the base phy is inited before using it.
-@@ -119,6 +146,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
- 	struct brcm_usb_phy_data *priv =
- 		container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
- 
-+	if (priv->pm_active)
-+		return 0;
-+
- 	dev_dbg(&gphy->dev, "EXIT\n");
- 	if (phy->id == BRCM_USB_PHY_2_0)
- 		brcm_usb_uninit_eohci(&priv->ini);
-@@ -484,6 +514,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	priv->pm_notifier.notifier_call = brcm_pm_notifier;
-+	register_pm_notifier(&priv->pm_notifier);
-+
- 	mutex_init(&priv->mutex);
- 
- 	/* make sure invert settings are correct */
-@@ -524,7 +557,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
- 
- static int brcm_usb_phy_remove(struct platform_device *pdev)
- {
-+	struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
-+
- 	sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
-+	unregister_pm_notifier(&priv->pm_notifier);
- 
- 	return 0;
+-	return lock_classes + class_idx - 1;
++	return lock_classes + class_idx;
  }
-@@ -535,6 +571,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
- 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
  
- 	if (priv->init_count) {
-+		dev_dbg(dev, "SUSPEND\n");
- 		priv->ini.wake_enabled = device_may_wakeup(dev);
- 		if (priv->phys[BRCM_USB_PHY_3_0].inited)
- 			brcm_usb_uninit_xhci(&priv->ini);
-@@ -574,6 +611,7 @@ static int brcm_usb_phy_resume(struct device *dev)
- 	 * Uninitialize anything that wasn't previously initialized.
- 	 */
- 	if (priv->init_count) {
-+		dev_dbg(dev, "RESUME\n");
- 		if (priv->wake_irq >= 0)
- 			disable_irq_wake(priv->wake_irq);
- 		brcm_usb_init_common(&priv->ini);
--- 
-2.34.1
-
+ /*
+@@ -3455,7 +3455,7 @@ static void print_chain_keys_chain(struc
+ 		hlock_id = chain_hlocks[chain->base + i];
+ 		chain_key = print_chain_key_iteration(hlock_id, chain_key);
+ 
+-		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id) - 1);
++		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id));
+ 		printk("\n");
+ 	}
+ }
 
 
