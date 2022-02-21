@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350134AbiBUJ3d (ORCPT
+        id S1350146AbiBUJ3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:29:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36980 "EHLO
+        Mon, 21 Feb 2022 04:29:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349870AbiBUJVw (ORCPT
+        with ESMTP id S1349932AbiBUJVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:52 -0500
+        Mon, 21 Feb 2022 04:21:54 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888E1369F9;
-        Mon, 21 Feb 2022 01:09:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511742DDC;
+        Mon, 21 Feb 2022 01:09:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 058F4CE0E77;
-        Mon, 21 Feb 2022 09:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA350C340E9;
-        Mon, 21 Feb 2022 09:09:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B6D1ACE0E86;
+        Mon, 21 Feb 2022 09:09:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95101C340E9;
+        Mon, 21 Feb 2022 09:09:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434549;
-        bh=Pn+e5CQp2HkV2HlvCbZDTNJZ4gGw6N/ypn6UzL9jeAE=;
+        s=korg; t=1645434555;
+        bh=73vwgUD43t7AoZddUTnSrZqXoWbzL9ptrVd6gHU2/qM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mP15QBsDHqQqF6xrW8XxMKunXpSj52Woc6po+MMoeIBpv1GlZ88orV4blxrQFJJEV
-         8Opm+V6CDZq+COAyMlX5N0inhXWkeQMIGEdEr7owySCm4GmM67ySERl8k6wQ7gfCVZ
-         6YJyzgWvu1tGQ54hwcIN6kzezSSMQSq2rO/XZ7sk=
+        b=Bc08qcQ1mJZZ8N6HGHxb5WNwGf8mfSwg75KY+ehrUVKnBIgI7ZT9HaOziMhcGoafi
+         g0PjEHIoboSz0PUgucIXmXh6uZwhTyl3E8CU7TRB7YoUcqSsT8Pi+C2K6cbQuj8yHk
+         mIeeSFOkZnU1VHddhpeP9lnZ6I+h/x7OBdi3lLos=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 014/196] HID: amd_sfh: Add illuminance mask to limit ALS max value
-Date:   Mon, 21 Feb 2022 09:47:26 +0100
-Message-Id: <20220221084931.367555413@linuxfoundation.org>
+Subject: [PATCH 5.15 016/196] HID: amd_sfh: Increase sensor command timeout
+Date:   Mon, 21 Feb 2022 09:47:28 +0100
+Message-Id: <20220221084931.437834667@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,39 +52,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 
-commit 91aaea527bc3b707c5d3208cde035421ed54f79c upstream.
+commit a7072c01c3ac3ae6ecd08fa7b43431cfc8ed331f upstream.
 
-ALS illuminance value present only in first 15 bits from SFH firmware
-for V2 platforms. Hence added a mask of 15 bit to limit ALS max
-illuminance values to get correct illuminance value.
+HPD sensors take more time to initialize. Hence increasing sensor
+command timeout to get response with status within a max timeout.
 
-Fixes: 0aad9c95eb9a ("HID: amd_sfh: Extend ALS support for newer AMD platform")
+Fixes: 173709f50e98 ("HID: amd_sfh: Add command response to check command status")
 Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
-+++ b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_desc.c
-@@ -26,6 +26,7 @@
- #define HID_USAGE_SENSOR_STATE_READY_ENUM                             0x02
- #define HID_USAGE_SENSOR_STATE_INITIALIZING_ENUM                      0x05
- #define HID_USAGE_SENSOR_EVENT_DATA_UPDATED_ENUM                      0x04
-+#define ILLUMINANCE_MASK					GENMASK(14, 0)
- 
- int get_report_descriptor(int sensor_idx, u8 *rep_desc)
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_pcie.c
+@@ -36,11 +36,11 @@ static int amd_sfh_wait_response_v2(stru
  {
-@@ -245,7 +246,8 @@ u8 get_input_report(u8 current_index, in
- 		get_common_inputs(&als_input.common_property, report_id);
- 		/* For ALS ,V2 Platforms uses C2P_MSG5 register instead of DRAM access method */
- 		if (supported_input == V2_STATUS)
--			als_input.illuminance_value = (int)readl(privdata->mmio + AMD_C2P_MSG(5));
-+			als_input.illuminance_value =
-+				readl(privdata->mmio + AMD_C2P_MSG(5)) & ILLUMINANCE_MASK;
- 		else
- 			als_input.illuminance_value =
- 				(int)sensor_virt_addr[0] / AMD_SFH_FW_MULTIPLIER;
+ 	union cmd_response cmd_resp;
+ 
+-	/* Get response with status within a max of 800 ms timeout */
++	/* Get response with status within a max of 1600 ms timeout */
+ 	if (!readl_poll_timeout(mp2->mmio + AMD_P2C_MSG(0), cmd_resp.resp,
+ 				(cmd_resp.response_v2.response == sensor_sts &&
+ 				cmd_resp.response_v2.status == 0 && (sid == 0xff ||
+-				cmd_resp.response_v2.sensor_id == sid)), 500, 800000))
++				cmd_resp.response_v2.sensor_id == sid)), 500, 1600000))
+ 		return cmd_resp.response_v2.response;
+ 
+ 	return SENSOR_DISABLED;
 
 
