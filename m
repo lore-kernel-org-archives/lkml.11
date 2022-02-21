@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B50C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 12:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357414AbiBUMKG (ORCPT
+        id S1357429AbiBUMKL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 07:10:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40772 "EHLO
+        Mon, 21 Feb 2022 07:10:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357319AbiBUMIu (ORCPT
+        with ESMTP id S1357322AbiBUMIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 07:08:50 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A064205C0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:27 -0800 (PST)
+        Mon, 21 Feb 2022 07:08:51 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C359201B9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 04:08:28 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 952B422455;
-        Mon, 21 Feb 2022 13:08:25 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 460ED223ED;
+        Mon, 21 Feb 2022 13:08:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645445305;
+        t=1645445306;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eOr1V8e1egjKEQO/tpfMSEdK5Q3J9NZ9drx5r7CgO00=;
-        b=qrFJrlxAa6+LhzorxQUtqOGEsFWGjqwKOk/ZzsJswIO5uwX2zSks0h1g3auLprwxvpKQmD
-        9SPuawhxGFDcZIfoDAz1LKlZC/7tdNwEN1QrMvoGKgyT3Wr39cZP9Tx9NdGXt2bd0wTrJx
-        FG+vya4v/quWPSB7jW9fQgqYEI+uXfg=
+        bh=FPwyUqw9bIye7MTeMw3+l2+GgFM/jhis7VAg9kKcJLA=;
+        b=Cx1SDM6drLPnBQgdsBPDO11W9D4ga9wyeZOOBXXsbIh0DpqPa/t+GhoancUsSMZ0xhhAsH
+        KFcl7+RqLwL/KqF1dHiTT9JhjPw646jqq/lQuBsGHTa5UIySEIXWwpnJySEvzQwDIvcgdA
+        EMim0/Dm7+cSq+s0/hD3/rg0aQiGLbU=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,9 +40,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 15/32] mtd: spi-nor: xilinx: unify function names
-Date:   Mon, 21 Feb 2022 13:07:52 +0100
-Message-Id: <20220221120809.1531502-16-michael@walle.cc>
+Subject: [PATCH v4 17/32] mtd: spi-nor: slightly refactor the spi_nor_setup()
+Date:   Mon, 21 Feb 2022 13:07:54 +0100
+Message-Id: <20220221120809.1531502-18-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221120809.1531502-1-michael@walle.cc>
 References: <20220221120809.1531502-1-michael@walle.cc>
@@ -52,74 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid name clashes unify all the function and static object names and
-use one of the following prefixes which should be sufficiently unique:
- - <vendor>_nor_
- - <flash_family>_nor_
- - <flash_part>_
+Instead of always using a function pointer (and initializing it to our
+default), just call the default function if the flash didn't set its own
+one. That will make the call flow easier to follow.
 
-There are no functional changes.
+Also mark the parameter as optional now.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/xilinx.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/mtd/spi-nor/core.c | 10 +++++-----
+ drivers/mtd/spi-nor/core.h |  8 ++++----
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 580562bc1e45..07dd11788df5 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -8,7 +8,7 @@
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 04ea180118e3..4d2036cdce42 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -2532,11 +2532,12 @@ static int spi_nor_setup(struct spi_nor *nor,
+ {
+ 	int ret;
  
- #include "core.h"
+-	if (nor->params->setup) {
++	if (nor->params->setup)
+ 		ret = nor->params->setup(nor, hwcaps);
+-		if (ret)
+-			return ret;
+-	}
++	else
++		ret = spi_nor_default_setup(nor, hwcaps);
++	if (ret)
++		return ret;
  
--static const struct flash_info xilinx_parts[] = {
-+static const struct flash_info xilinx_nor_parts[] = {
- 	/* Xilinx S3AN Internal Flash */
- 	{ "3S50AN", S3AN_INFO(0x1f2200, 64, 264) },
- 	{ "3S200AN", S3AN_INFO(0x1f2400, 256, 264) },
-@@ -26,7 +26,7 @@ static const struct flash_info xilinx_parts[] = {
-  * Addr can safely be unsigned int, the biggest S3AN device is smaller than
-  * 4 MiB.
+ 	return spi_nor_set_addr_width(nor);
+ }
+@@ -2786,7 +2787,6 @@ static void spi_nor_init_default_params(struct spi_nor *nor)
+ 
+ 	params->quad_enable = spi_nor_sr2_bit1_quad_enable;
+ 	params->set_4byte_addr_mode = spansion_set_4byte_addr_mode;
+-	params->setup = spi_nor_default_setup;
+ 	params->otp.org = &info->otp_org;
+ 
+ 	/* Default to 16-bit Write Status (01h) Command */
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 2afb610853a9..4fe16b5aa3f5 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -257,10 +257,10 @@ struct spi_nor_otp {
+  * @convert_addr:	converts an absolute address into something the flash
+  *                      will understand. Particularly useful when pagesize is
+  *                      not a power-of-2.
+- * @setup:              configures the SPI NOR memory. Useful for SPI NOR
+- *                      flashes that have peculiarities to the SPI NOR standard
+- *                      e.g. different opcodes, specific address calculation,
+- *                      page size, etc.
++ * @setup:		(optional) configures the SPI NOR memory. Useful for
++ *			SPI NOR flashes that have peculiarities to the SPI NOR
++ *			standard e.g. different opcodes, specific address
++ *			calculation, page size, etc.
+  * @locking_ops:	SPI NOR locking methods.
   */
--static u32 s3an_convert_addr(struct spi_nor *nor, u32 addr)
-+static u32 s3an_nor_convert_addr(struct spi_nor *nor, u32 addr)
- {
- 	u32 page_size = nor->params->page_size;
- 	u32 offset, page;
-@@ -73,25 +73,25 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- 		nor->mtd.erasesize = 8 * page_size;
- 	} else {
- 		/* Flash in Default addressing mode */
--		nor->params->convert_addr = s3an_convert_addr;
-+		nor->params->convert_addr = s3an_nor_convert_addr;
- 		nor->mtd.erasesize = nor->info->sector_size;
- 	}
- 
- 	return 0;
- }
- 
--static void xilinx_late_init(struct spi_nor *nor)
-+static void xilinx_nor_late_init(struct spi_nor *nor)
- {
- 	nor->params->setup = xilinx_nor_setup;
- }
- 
--static const struct spi_nor_fixups xilinx_fixups = {
--	.late_init = xilinx_late_init,
-+static const struct spi_nor_fixups xilinx_nor_fixups = {
-+	.late_init = xilinx_nor_late_init,
- };
- 
- const struct spi_nor_manufacturer spi_nor_xilinx = {
- 	.name = "xilinx",
--	.parts = xilinx_parts,
--	.nparts = ARRAY_SIZE(xilinx_parts),
--	.fixups = &xilinx_fixups,
-+	.parts = xilinx_nor_parts,
-+	.nparts = ARRAY_SIZE(xilinx_nor_parts),
-+	.fixups = &xilinx_nor_fixups,
- };
+ struct spi_nor_flash_parameter {
 -- 
 2.30.2
 
