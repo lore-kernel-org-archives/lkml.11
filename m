@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351177AbiBUJnH (ORCPT
+        id S1351184AbiBUJnN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:43:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49234 "EHLO
+        Mon, 21 Feb 2022 04:43:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351290AbiBUJg5 (ORCPT
+        with ESMTP id S1351289AbiBUJg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:36:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409DF2DD54;
-        Mon, 21 Feb 2022 01:15:35 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF36F2DABB;
+        Mon, 21 Feb 2022 01:15:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AA4960E9F;
-        Mon, 21 Feb 2022 09:15:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F26C340EB;
-        Mon, 21 Feb 2022 09:15:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F7C60B1E;
+        Mon, 21 Feb 2022 09:15:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3698C340E9;
+        Mon, 21 Feb 2022 09:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434913;
-        bh=SZn9YT+v2QlZSehP82U1/aaErN9Any7H5WRysuZTHaY=;
+        s=korg; t=1645434930;
+        bh=ndV0d7LE6q+zLbv7DPboGaYMp5aB/82uoAfM0/0l9TQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wghFsFR7OYJ16Dtoq3FJHj7Uzq0LIQiiTiPZcd36DuzbL3SZiq4kUy9vK0rT2Zlgh
-         sEyolUgGdt0bCTQo5SHCHMVO8BDJbP+7xydlj7dB4H/l2S20sBI0OeW5hUtjhi04T2
-         E46msXDA8qgOSMtV4GEzidEurv9b5k6tpYeDV4YU=
+        b=jAevjQv6EDPoO12WI3GOJzVpprw42czspLAhaKLQfhG8T1SHvYNhDms+f6lUFi1ZH
+         FbMJqhj1oaLqV/Y/rsPRtpGIfYtSmyY3kPkhrEq6vgiU8CaxUwO2ByeZmBKZR6oivo
+         Hty6+8CUCcKNiUH0NI7wLjbanFFhG7CQheuP9V7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 175/196] kconfig: fix failing to generate auto.conf
-Date:   Mon, 21 Feb 2022 09:50:07 +0100
-Message-Id: <20220221084936.812326895@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.15 180/196] ucounts: Base set_cred_ucounts changes on the real user
+Date:   Mon, 21 Feb 2022 09:50:12 +0100
+Message-Id: <20220221084936.968722973@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,52 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
+commit a55d07294f1e9b576093bdfa95422f8119941e83 upstream.
 
-When the KCONFIG_AUTOCONFIG is specified (e.g. export \
-KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
-include/config/ will not be created, so kconfig can't create deps
-files in it and auto.conf can't be generated.
+Michal Koutný <mkoutny@suse.com> wrote:
+> Tasks are associated to multiple users at once. Historically and as per
+> setrlimit(2) RLIMIT_NPROC is enforce based on real user ID.
+>
+> The commit 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+> made the accounting structure "indexed" by euid and hence potentially
+> account tasks differently.
+>
+> The effective user ID may be different e.g. for setuid programs but
+> those are exec'd into already existing task (i.e. below limit), so
+> different accounting is moot.
+>
+> Some special setresuid(2) users may notice the difference, justifying
+> this fix.
 
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+I looked at cred->ucount and it is only used for rlimit operations
+that were previously stored in cred->user.  Making the fact
+cred->ucount can refer to a different user from cred->user a bug,
+affecting all uses of cred->ulimit not just RLIMIT_NPROC.
+
+Fix set_cred_ucounts to always use the real uid not the effective uid.
+
+Further simplify set_cred_ucounts by noticing that set_cred_ucounts
+somehow retained a draft version of the check to see if alloc_ucounts
+was needed that checks the new->user and new->user_ns against the
+current_real_cred().  Remove that draft version of the check.
+
+All that matters for setting the cred->ucounts are the user_ns and uid
+fields in the cred.
+
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220207121800.5079-4-mkoutny@suse.com
+Link: https://lkml.kernel.org/r/20220216155832.680775-3-ebiederm@xmission.com
+Reported-by: Michal Koutný <mkoutny@suse.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/kconfig/confdata.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ kernel/cred.c |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index cf72680cd7692..4a828bca071e8 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -983,14 +983,19 @@ static int conf_write_dep(const char *name)
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -665,21 +665,16 @@ EXPORT_SYMBOL(cred_fscmp);
  
- static int conf_touch_deps(void)
+ int set_cred_ucounts(struct cred *new)
  {
--	const char *name;
-+	const char *name, *tmp;
- 	struct symbol *sym;
- 	int res, i;
+-	struct task_struct *task = current;
+-	const struct cred *old = task->real_cred;
+ 	struct ucounts *new_ucounts, *old_ucounts = new->ucounts;
  
--	strcpy(depfile_path, "include/config/");
--	depfile_prefix_len = strlen(depfile_path);
+-	if (new->user == old->user && new->user_ns == old->user_ns)
+-		return 0;
 -
- 	name = conf_get_autoconfig_name();
-+	tmp = strrchr(name, '/');
-+	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
-+	if (depfile_prefix_len + 1 > sizeof(depfile_path))
-+		return -1;
-+
-+	strncpy(depfile_path, name, depfile_prefix_len);
-+	depfile_path[depfile_prefix_len] = 0;
-+
- 	conf_read_simple(name, S_DEF_AUTO);
- 	sym_calc_value(modules_sym);
+ 	/*
+ 	 * This optimization is needed because alloc_ucounts() uses locks
+ 	 * for table lookups.
+ 	 */
+-	if (old_ucounts->ns == new->user_ns && uid_eq(old_ucounts->uid, new->euid))
++	if (old_ucounts->ns == new->user_ns && uid_eq(old_ucounts->uid, new->uid))
+ 		return 0;
  
--- 
-2.34.1
-
+-	if (!(new_ucounts = alloc_ucounts(new->user_ns, new->euid)))
++	if (!(new_ucounts = alloc_ucounts(new->user_ns, new->uid)))
+ 		return -EAGAIN;
+ 
+ 	new->ucounts = new_ucounts;
 
 
