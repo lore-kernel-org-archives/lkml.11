@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84985C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352230AbiBUJye (ORCPT
+        id S1351875AbiBUJyh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42254 "EHLO
+        Mon, 21 Feb 2022 04:54:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352521AbiBUJrd (ORCPT
+        with ESMTP id S1352910AbiBUJsB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:33 -0500
+        Mon, 21 Feb 2022 04:48:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCF533E8E;
-        Mon, 21 Feb 2022 01:20:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809D120199;
+        Mon, 21 Feb 2022 01:21:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F66060B1E;
-        Mon, 21 Feb 2022 09:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAF60C340E9;
-        Mon, 21 Feb 2022 09:20:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CC3060EDF;
+        Mon, 21 Feb 2022 09:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03C2DC340E9;
+        Mon, 21 Feb 2022 09:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435204;
-        bh=OSHo2PJpIYtB2DIHy0v4CkW2SRFnO9seM4Vk8G09WJg=;
+        s=korg; t=1645435275;
+        bh=OXvfCS9PD0SNk8WUZWIhK1lM9qzjLIKjwNP/Cekcf6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i7XJABFyNBCCh7qRL5X9MoKI2z+qSpcnEwSGMqs1DznJbYalBwHUBYY4Cjqx6z+xv
-         qYImAPrXxD+bjme+1W13JH/Fl1iOeQwGFpkojvCiDRobBtY5eqP6olWAIa4sWi8m8Q
-         VsLf3T4K+oc6DWZ6s/RNgbraU16I6LZ8eSb9dT4w=
+        b=Bs3uHlCzBGTpb4Fpk8rTBUaPXesGLgGvMlQ6HkKp1sJcPFUoHySeFzxlEBcguUUjE
+         gPAxh7jcqJ7z7OBSeQKS6fhWaxLyW1Rq/Wk/ouYR4zwUt/CL3PikUFQAIlWQjDl/PI
+         ROBpe3d7wMoeYdWwEhQtW94z9VMIFo+uL3FS5mCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 040/227] selftests/zram: Skip max_comp_streams interface on newer kernel
-Date:   Mon, 21 Feb 2022 09:47:39 +0100
-Message-Id: <20220221084936.197002900@linuxfoundation.org>
+        stable@vger.kernel.org, Jonas Gorski <jonas.gorski@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 105/227] Revert "net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname"
+Date:   Mon, 21 Feb 2022 09:48:44 +0100
+Message-Id: <20220221084938.366020326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,75 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Jonas Gorski <jonas.gorski@gmail.com>
 
-[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
+commit 6aba04ee3263669b335458c4cf4c7d97d6940229 upstream.
 
-Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
-has switched to per-cpu streams. Even kernel still keep this interface for
-some reasons, but writing to max_comp_stream doesn't take any effect. So
-skip it on newer kernel ie 4.7.
+This reverts commit 3710e80952cf2dc48257ac9f145b117b5f74e0a5.
 
-The code that comparing kernel version is from xfstests testsuite ext4/053.
+Since idm_base and nicpm_base are still optional resources not present
+on all platforms, this breaks the driver for everything except Northstar
+2 (which has both).
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The same change was already reverted once with 755f5738ff98 ("net:
+broadcom: fix a mistake about ioremap resource").
+
+So let's do it again.
+
+Fixes: 3710e80952cf ("net: ethernet: bgmac: Use devm_platform_ioremap_resource_byname")
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+[florian: Added comments to explain the resources are optional]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220216184634.2032460-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/net/ethernet/broadcom/bgmac-platform.c |   23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 6f872f266fd11..f47fc0f27e99e 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -11,6 +11,9 @@ dev_mounted=-1
- 
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+kernel_version=`uname -r | cut -d'.' -f1,2`
-+kernel_major=${kernel_version%.*}
-+kernel_minor=${kernel_version#*.}
- 
- trap INT
- 
-@@ -25,6 +28,20 @@ check_prereqs()
- 	fi
- }
- 
-+kernel_gte()
-+{
-+	major=${1%.*}
-+	minor=${1#*.}
-+
-+	if [ $kernel_major -gt $major ]; then
-+		return 0
-+	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
- zram_cleanup()
+--- a/drivers/net/ethernet/broadcom/bgmac-platform.c
++++ b/drivers/net/ethernet/broadcom/bgmac-platform.c
+@@ -172,6 +172,7 @@ static int bgmac_probe(struct platform_d
  {
- 	echo "zram cleanup"
-@@ -86,6 +103,13 @@ zram_max_streams()
- {
- 	echo "set max_comp_streams to zram device(s)"
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct bgmac *bgmac;
++	struct resource *regs;
+ 	int ret;
  
-+	kernel_gte 4.7
-+	if [ $? -eq 0 ]; then
-+		echo "The device attribute max_comp_streams was"\
-+		               "deprecated in 4.7"
-+		return 0
-+	fi
-+
- 	local i=0
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
--- 
-2.34.1
-
+ 	bgmac = bgmac_alloc(&pdev->dev);
+@@ -208,15 +209,23 @@ static int bgmac_probe(struct platform_d
+ 	if (IS_ERR(bgmac->plat.base))
+ 		return PTR_ERR(bgmac->plat.base);
+ 
+-	bgmac->plat.idm_base = devm_platform_ioremap_resource_byname(pdev, "idm_base");
+-	if (IS_ERR(bgmac->plat.idm_base))
+-		return PTR_ERR(bgmac->plat.idm_base);
+-	else
++	/* The idm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
++	if (regs) {
++		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
++		if (IS_ERR(bgmac->plat.idm_base))
++			return PTR_ERR(bgmac->plat.idm_base);
+ 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
++	}
+ 
+-	bgmac->plat.nicpm_base = devm_platform_ioremap_resource_byname(pdev, "nicpm_base");
+-	if (IS_ERR(bgmac->plat.nicpm_base))
+-		return PTR_ERR(bgmac->plat.nicpm_base);
++	/* The nicpm_base resource is optional for some platforms */
++	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
++	if (regs) {
++		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
++							       regs);
++		if (IS_ERR(bgmac->plat.nicpm_base))
++			return PTR_ERR(bgmac->plat.nicpm_base);
++	}
+ 
+ 	bgmac->read = platform_bgmac_read;
+ 	bgmac->write = platform_bgmac_write;
 
 
