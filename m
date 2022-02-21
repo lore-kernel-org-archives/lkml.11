@@ -2,65 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377333AbiBUOKd (ORCPT
+        id S1352077AbiBUOMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:10:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43768 "EHLO
+        Mon, 21 Feb 2022 09:12:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377318AbiBUOKW (ORCPT
+        with ESMTP id S240412AbiBUOMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:10:22 -0500
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9C61EAC2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:09:58 -0800 (PST)
-Received: by mail-vs1-xe2c.google.com with SMTP id e5so17661581vsg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:09:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7+WcxmhaLYcJ+8pluGn0/oWg/SAXibHCywaoZcD3M+k=;
-        b=CUb60dhdXmw4ncFzQuHXXsgnJnX7JNIF197o+EN3b+b+wyYQ8vLLr9cBpaBOgj3r/s
-         NgoyMjGyrv5Uy1jX0NoFJbsjmJMCGppdOlovWoHRdlnDd7V9ZNKCGYQXtAhhOOjxr5La
-         MeRZzs42F1R6QyzbMaOXRm1lp+qh/ZL4znWP4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7+WcxmhaLYcJ+8pluGn0/oWg/SAXibHCywaoZcD3M+k=;
-        b=Ps27fzCqb/d3pkQUpPqwneRyfRTUYy7ytp0oVB/eWstMCtvcwsI5qA55UTWlUGp0v4
-         0N2dPD0GvG/SLTkstxN0pRe587/SCJvl92qr7mdQbfVqLDO5jZ6/X6qMGDGMLIw2tzKy
-         BoFPARTvJfSMujPVXiTfULP6erSCVLzDFX8d1HCbT5S9SSWe8O0jN4NbCgZ/FwJjmVGl
-         pydKymdx4lMJfdFBe56N+Daf7qjFbfL7/42tIINbzdx90QXhK2HfQuqHVRH2v4Z0XXY6
-         88dtSKHZ0PnVvZwZ8bkIM06QHTQSAGtQQz5my4duaDBLTFG4pO4esdBcte9Ki4b+HxgN
-         ss5w==
-X-Gm-Message-State: AOAM531doMeoG0+ptS1k9MPRT83Y/V+yIh2qnB50G6HFLO8cY8pAadUK
-        wnmxix2zj+VEr9v2aDcfbEtZwTrKcjn3z04/LyupoQ==
-X-Google-Smtp-Source: ABdhPJyQMpd7yYaTSY0oqRBS+NVBJD9xwwqBnymrxaPZ/UfchwBdEYzHUvnV66r3tYDpNqKJHCvEr7U1+zqYVkjcrQQ=
-X-Received: by 2002:a05:6102:15ac:b0:31b:fc94:f0de with SMTP id
- g44-20020a05610215ac00b0031bfc94f0demr6436149vsv.48.1645452598020; Mon, 21
- Feb 2022 06:09:58 -0800 (PST)
+        Mon, 21 Feb 2022 09:12:07 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477ECEBC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 06:11:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645452703; x=1676988703;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GU6rFwFDqKG4B1OnKEW8Am385Tn1RSrmpkGTOcSwX7k=;
+  b=PO9KiC+3u4E0QnwGjs2VbS/6kYDtCrO2viVZXOYdqYzx6ZdLPoDXRpx5
+   S12x1IEnVq+dAKyGnFT70uFT733SzdO6j4yWXHbFNXFZTzxcMfwTGQY0B
+   N8/JiBec3Ko7nN8EmMhYcOaroPsodB0X+hxZjUcMYVmZrkCLD9z8vcN6P
+   r5YlS94jZRKnJy8KVz3GAdxJURC6CMDNKkOySlpkrOmKEpkxdFle0SQTM
+   N9ZfUMhGvYw8OZxRS/CdKRxn/stFZd6YtBOu+0K4DQjptfFr+3BjDcKO8
+   C11sRyw0sd6xAsRbOtSRWOc7FMc+tn1OxLqCXH/Tl5gSiXsNr6qOXDyp8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337946901"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="337946901"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 06:09:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="638566650"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 06:09:17 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM9NM-0001fm-Sl; Mon, 21 Feb 2022 14:09:16 +0000
+Date:   Mon, 21 Feb 2022 22:09:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/mips/mm/tlbex.c:2173 build_r4000_tlb_load_handler() warn:
+ inconsistent indenting
+Message-ID: <202202212221.MSvbhv1n-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220110235252.138931-1-jlayton@kernel.org>
-In-Reply-To: <20220110235252.138931-1-jlayton@kernel.org>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Mon, 21 Feb 2022 15:09:47 +0100
-Message-ID: <CAJfpegswypcKcFAk3+wvJ9xg098Nik02_dT1PLUnsRRLdmrZSg@mail.gmail.com>
-Subject: Re: [PATCH] fuse: move FUSE_SUPER_MAGIC definition to magic.h
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022 at 00:52, Jeff Layton <jlayton@kernel.org> wrote:
->
-> ...to help userland apps that need to identify FUSE mounts.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
+commit: bc431d2153cc290573531601b5004babe7011568 MIPS: Fix fall-through warnings for Clang
+date:   7 months ago
+config: mips-randconfig-m031-20220221 (https://download.01.org/0day-ci/archive/20220221/202202212221.MSvbhv1n-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 11.2.0
 
-Thanks, applied.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Miklos
+New smatch warnings:
+arch/mips/mm/tlbex.c:2173 build_r4000_tlb_load_handler() warn: inconsistent indenting
+
+Old smatch warnings:
+arch/mips/mm/tlbex.c:1744 iPTE_SW() warn: inconsistent indenting
+arch/mips/mm/tlbex.c:2603 check_pabits() warn: always true condition '(fillbits >= ((__builtin_constant_p(0)) ?(((0) < 2) ?0:63 - __builtin_clzll(0)):((4 <= 4)) ?__ilog2_u32(0):__ilog2_u64(0))) => (0-u32max >= 0)'
+
+vim +2173 arch/mips/mm/tlbex.c
+
+  2114	
+  2115	static void build_r4000_tlb_load_handler(void)
+  2116	{
+  2117		u32 *p = (u32 *)msk_isa16_mode((ulong)handle_tlbl);
+  2118		struct uasm_label *l = labels;
+  2119		struct uasm_reloc *r = relocs;
+  2120		struct work_registers wr;
+  2121	
+  2122		memset(p, 0, handle_tlbl_end - (char *)p);
+  2123		memset(labels, 0, sizeof(labels));
+  2124		memset(relocs, 0, sizeof(relocs));
+  2125	
+  2126		if (bcm1250_m3_war()) {
+  2127			unsigned int segbits = 44;
+  2128	
+  2129			uasm_i_dmfc0(&p, K0, C0_BADVADDR);
+  2130			uasm_i_dmfc0(&p, K1, C0_ENTRYHI);
+  2131			uasm_i_xor(&p, K0, K0, K1);
+  2132			uasm_i_dsrl_safe(&p, K1, K0, 62);
+  2133			uasm_i_dsrl_safe(&p, K0, K0, 12 + 1);
+  2134			uasm_i_dsll_safe(&p, K0, K0, 64 + 12 + 1 - segbits);
+  2135			uasm_i_or(&p, K0, K0, K1);
+  2136			uasm_il_bnez(&p, &r, K0, label_leave);
+  2137			/* No need for uasm_i_nop */
+  2138		}
+  2139	
+  2140		wr = build_r4000_tlbchange_handler_head(&p, &l, &r);
+  2141		build_pte_present(&p, &r, wr.r1, wr.r2, wr.r3, label_nopage_tlbl);
+  2142		if (m4kc_tlbp_war())
+  2143			build_tlb_probe_entry(&p);
+  2144	
+  2145		if (cpu_has_rixi && !cpu_has_rixiex) {
+  2146			/*
+  2147			 * If the page is not _PAGE_VALID, RI or XI could not
+  2148			 * have triggered it.  Skip the expensive test..
+  2149			 */
+  2150			if (use_bbit_insns()) {
+  2151				uasm_il_bbit0(&p, &r, wr.r1, ilog2(_PAGE_VALID),
+  2152					      label_tlbl_goaround1);
+  2153			} else {
+  2154				uasm_i_andi(&p, wr.r3, wr.r1, _PAGE_VALID);
+  2155				uasm_il_beqz(&p, &r, wr.r3, label_tlbl_goaround1);
+  2156			}
+  2157			uasm_i_nop(&p);
+  2158	
+  2159			/*
+  2160			 * Warn if something may race with us & replace the TLB entry
+  2161			 * before we read it here. Everything with such races should
+  2162			 * also have dedicated RiXi exception handlers, so this
+  2163			 * shouldn't be hit.
+  2164			 */
+  2165			WARN(cpu_has_tlbex_tlbp_race(), "Unhandled race in RiXi path");
+  2166	
+  2167			uasm_i_tlbr(&p);
+  2168	
+  2169			switch (current_cpu_type()) {
+  2170			default:
+  2171				if (cpu_has_mips_r2_exec_hazard) {
+  2172					uasm_i_ehb(&p);
+> 2173				fallthrough;
+  2174	
+  2175			case CPU_CAVIUM_OCTEON:
+  2176			case CPU_CAVIUM_OCTEON_PLUS:
+  2177			case CPU_CAVIUM_OCTEON2:
+  2178					break;
+  2179				}
+  2180			}
+  2181	
+  2182			/* Examine  entrylo 0 or 1 based on ptr. */
+  2183			if (use_bbit_insns()) {
+  2184				uasm_i_bbit0(&p, wr.r2, ilog2(sizeof(pte_t)), 8);
+  2185			} else {
+  2186				uasm_i_andi(&p, wr.r3, wr.r2, sizeof(pte_t));
+  2187				uasm_i_beqz(&p, wr.r3, 8);
+  2188			}
+  2189			/* load it in the delay slot*/
+  2190			UASM_i_MFC0(&p, wr.r3, C0_ENTRYLO0);
+  2191			/* load it if ptr is odd */
+  2192			UASM_i_MFC0(&p, wr.r3, C0_ENTRYLO1);
+  2193			/*
+  2194			 * If the entryLo (now in wr.r3) is valid (bit 1), RI or
+  2195			 * XI must have triggered it.
+  2196			 */
+  2197			if (use_bbit_insns()) {
+  2198				uasm_il_bbit1(&p, &r, wr.r3, 1, label_nopage_tlbl);
+  2199				uasm_i_nop(&p);
+  2200				uasm_l_tlbl_goaround1(&l, p);
+  2201			} else {
+  2202				uasm_i_andi(&p, wr.r3, wr.r3, 2);
+  2203				uasm_il_bnez(&p, &r, wr.r3, label_nopage_tlbl);
+  2204				uasm_i_nop(&p);
+  2205			}
+  2206			uasm_l_tlbl_goaround1(&l, p);
+  2207		}
+  2208		build_make_valid(&p, &r, wr.r1, wr.r2, wr.r3);
+  2209		build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
+  2210	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
