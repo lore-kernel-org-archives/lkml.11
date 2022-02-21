@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6D9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82355C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353893AbiBUKCa (ORCPT
+        id S1354164AbiBUKDD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:02:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49824 "EHLO
+        Mon, 21 Feb 2022 05:03:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352070AbiBUJyW (ORCPT
+        with ESMTP id S1352445AbiBUJzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:54:22 -0500
+        Mon, 21 Feb 2022 04:55:16 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B213A37BC0;
-        Mon, 21 Feb 2022 01:24:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A1638BE7;
+        Mon, 21 Feb 2022 01:24:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45C56608C4;
-        Mon, 21 Feb 2022 09:24:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2760AC340E9;
-        Mon, 21 Feb 2022 09:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4634D608C4;
+        Mon, 21 Feb 2022 09:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 324A4C340E9;
+        Mon, 21 Feb 2022 09:24:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435440;
-        bh=PZ4zbWHG6FHr4c5kMC4jycMZlER2SHA6mGK3PahdE2c=;
+        s=korg; t=1645435457;
+        bh=QcUBMHPNBxs3Vwa65XpqXRo4gnp1hYylS8Di3NrTDAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zFWNgB5UiEKQuMzACl88vYmkxpqpJTSbxZS1Sl4JMLWshLwzD6kkaqmfjUiue6qLn
-         KCO2W178uvXymlmNYlIN6mJK4RyR3oZmRUE3hJyxu/B9/Vhaa/wOglOkMgApp15Ywm
-         t0gT756+eOvcfWFv7u5MjJZLE2wX8EYsuOvxVd9Q=
+        b=ztqWIt1HItv0OwsQC04beqZjDjVz++1wRifnj3ZqzuhgFR1F+EYfmYMTVq1ZneAkG
+         U8V2XyKIvIgVn5dmhkowlQPG/Mpj1tcTnGCIMBfgWDFopIIcWXCVwMcqZLVnUktx68
+         7OklWq/HqVJCS+6uhLFDxx03NEuC2/0pCadl2ZgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Markus=20Bl=C3=B6chl?= <markus.bloechl@ipetronik.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 164/227] block: fix surprise removal for drivers calling blk_set_queue_dying
-Date:   Mon, 21 Feb 2022 09:49:43 +0100
-Message-Id: <20220221084940.279885173@linuxfoundation.org>
+        stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 170/227] scsi: lpfc: Fix pt2pt NVMe PRLI reject LOGO loop
+Date:   Mon, 21 Feb 2022 09:49:49 +0100
+Message-Id: <20220221084940.468721356@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,163 +50,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: James Smart <jsmart2021@gmail.com>
 
-commit 7a5428dcb7902700b830e912feee4e845df7c019 upstream.
+commit 7f4c5a26f735dea4bbc0eb8eb9da99cda95a8563 upstream.
 
-Various block drivers call blk_set_queue_dying to mark a disk as dead due
-to surprise removal events, but since commit 8e141f9eb803 that doesn't
-work given that the GD_DEAD flag needs to be set to stop I/O.
+When connected point to point, the driver does not know the FC4's supported
+by the other end. In Fabrics, it can query the nameserver.  Thus the driver
+must send PRLIs for the FC4s it supports and enable support based on the
+acc(ept) or rej(ect) of the respective FC4 PRLI.  Currently the driver
+supports SCSI and NVMe PRLIs.
 
-Replace the driver calls to blk_set_queue_dying with a new (and properly
-documented) blk_mark_disk_dead API, and fold blk_set_queue_dying into the
-only remaining caller.
+Unfortunately, although the behavior is per standard, many devices have
+come to expect only SCSI PRLIs. In this particular example, the NVMe PRLI
+is properly RJT'd but the target decided that it must LOGO after seeing the
+unexpected NVMe PRLI. The LOGO causes the sequence to restart and login is
+now in an infinite failure loop.
 
-Fixes: 8e141f9eb803 ("block: drain file system I/O on del_gendisk")
-Reported-by: Markus Blöchl <markus.bloechl@ipetronik.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Link: https://lore.kernel.org/r/20220217075231.1140-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix the problem by having the driver, on a pt2pt link, remember NVMe PRLI
+accept or reject status across logout as long as the link stays "up".  When
+retrying login, if the prior NVMe PRLI was rejected, it will not be sent on
+the next login.
+
+Link: https://lore.kernel.org/r/20220212163120.15385-1-jsmart2021@gmail.com
+Cc: <stable@vger.kernel.org> # v5.4+
+Reviewed-by: Ewan D. Milne <emilne@redhat.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-core.c                  |   10 ++--------
- block/genhd.c                     |   14 ++++++++++++++
- drivers/block/mtip32xx/mtip32xx.c |    2 +-
- drivers/block/rbd.c               |    2 +-
- drivers/block/xen-blkfront.c      |    2 +-
- drivers/md/dm.c                   |    2 +-
- drivers/nvme/host/core.c          |    2 +-
- drivers/nvme/host/multipath.c     |    2 +-
- include/linux/blkdev.h            |    3 ++-
- 9 files changed, 24 insertions(+), 15 deletions(-)
+ drivers/scsi/lpfc/lpfc.h           |    1 +
+ drivers/scsi/lpfc/lpfc_attr.c      |    3 +++
+ drivers/scsi/lpfc/lpfc_els.c       |   20 +++++++++++++++++++-
+ drivers/scsi/lpfc/lpfc_nportdisc.c |    5 +++--
+ 4 files changed, 26 insertions(+), 3 deletions(-)
 
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -324,13 +324,6 @@ void blk_queue_start_drain(struct reques
- 	wake_up_all(&q->mq_freeze_wq);
- }
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -594,6 +594,7 @@ struct lpfc_vport {
+ #define FC_VPORT_LOGO_RCVD      0x200    /* LOGO received on vport */
+ #define FC_RSCN_DISCOVERY       0x400	 /* Auth all devices after RSCN */
+ #define FC_LOGO_RCVD_DID_CHNG   0x800    /* FDISC on phys port detect DID chng*/
++#define FC_PT2PT_NO_NVME        0x1000   /* Don't send NVME PRLI */
+ #define FC_SCSI_SCAN_TMO        0x4000	 /* scsi scan timer running */
+ #define FC_ABORT_DISCOVERY      0x8000	 /* we want to abort discovery */
+ #define FC_NDISC_ACTIVE         0x10000	 /* NPort discovery active */
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -1315,6 +1315,9 @@ lpfc_issue_lip(struct Scsi_Host *shost)
+ 	pmboxq->u.mb.mbxCommand = MBX_DOWN_LINK;
+ 	pmboxq->u.mb.mbxOwner = OWN_HOST;
  
--void blk_set_queue_dying(struct request_queue *q)
--{
--	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
--	blk_queue_start_drain(q);
--}
--EXPORT_SYMBOL_GPL(blk_set_queue_dying);
--
- /**
-  * blk_cleanup_queue - shutdown a request queue
-  * @q: request queue to shutdown
-@@ -348,7 +341,8 @@ void blk_cleanup_queue(struct request_qu
- 	WARN_ON_ONCE(blk_queue_registered(q));
- 
- 	/* mark @q DYING, no new request or merges will be allowed afterwards */
--	blk_set_queue_dying(q);
-+	blk_queue_flag_set(QUEUE_FLAG_DYING, q);
-+	blk_queue_start_drain(q);
- 
- 	blk_queue_flag_set(QUEUE_FLAG_NOMERGES, q);
- 	blk_queue_flag_set(QUEUE_FLAG_NOXMERGES, q);
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -550,6 +550,20 @@ out_free_ext_minor:
- EXPORT_SYMBOL(device_add_disk);
- 
- /**
-+ * blk_mark_disk_dead - mark a disk as dead
-+ * @disk: disk to mark as dead
-+ *
-+ * Mark as disk as dead (e.g. surprise removed) and don't accept any new I/O
-+ * to this disk.
-+ */
-+void blk_mark_disk_dead(struct gendisk *disk)
-+{
-+	set_bit(GD_DEAD, &disk->state);
-+	blk_queue_start_drain(disk->queue);
-+}
-+EXPORT_SYMBOL_GPL(blk_mark_disk_dead);
++	if ((vport->fc_flag & FC_PT2PT) && (vport->fc_flag & FC_PT2PT_NO_NVME))
++		vport->fc_flag &= ~FC_PT2PT_NO_NVME;
 +
-+/**
-  * del_gendisk - remove the gendisk
-  * @disk: the struct gendisk to remove
-  *
---- a/drivers/block/mtip32xx/mtip32xx.c
-+++ b/drivers/block/mtip32xx/mtip32xx.c
-@@ -4113,7 +4113,7 @@ static void mtip_pci_remove(struct pci_d
- 			"Completion workers still active!\n");
- 	}
+ 	mbxstatus = lpfc_sli_issue_mbox_wait(phba, pmboxq, LPFC_MBOX_TMO * 2);
  
--	blk_set_queue_dying(dd->queue);
-+	blk_mark_disk_dead(dd->disk);
- 	set_bit(MTIP_DDF_REMOVE_PENDING_BIT, &dd->dd_flag);
+ 	if ((mbxstatus == MBX_SUCCESS) &&
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -1072,7 +1072,8 @@ stop_rr_fcf_flogi:
  
- 	/* Clean up the block layer. */
---- a/drivers/block/rbd.c
-+++ b/drivers/block/rbd.c
-@@ -7186,7 +7186,7 @@ static ssize_t do_rbd_remove(struct bus_
- 		 * IO to complete/fail.
+ 		/* FLOGI failed, so there is no fabric */
+ 		spin_lock_irq(shost->host_lock);
+-		vport->fc_flag &= ~(FC_FABRIC | FC_PUBLIC_LOOP);
++		vport->fc_flag &= ~(FC_FABRIC | FC_PUBLIC_LOOP |
++				    FC_PT2PT_NO_NVME);
+ 		spin_unlock_irq(shost->host_lock);
+ 
+ 		/* If private loop, then allow max outstanding els to be
+@@ -4607,6 +4608,23 @@ lpfc_els_retry(struct lpfc_hba *phba, st
+ 		/* Added for Vendor specifc support
+ 		 * Just keep retrying for these Rsn / Exp codes
  		 */
- 		blk_mq_freeze_queue(rbd_dev->disk->queue);
--		blk_set_queue_dying(rbd_dev->disk->queue);
-+		blk_mark_disk_dead(rbd_dev->disk);
- 	}
- 
- 	del_gendisk(rbd_dev->disk);
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -2129,7 +2129,7 @@ static void blkfront_closing(struct blkf
- 
- 	/* No more blkif_request(). */
- 	blk_mq_stop_hw_queues(info->rq);
--	blk_set_queue_dying(info->rq);
-+	blk_mark_disk_dead(info->gd);
- 	set_capacity(info->gd, 0);
- 
- 	for_each_rinfo(info, rinfo, i) {
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -2140,7 +2140,7 @@ static void __dm_destroy(struct mapped_d
- 	set_bit(DMF_FREEING, &md->flags);
- 	spin_unlock(&_minor_lock);
- 
--	blk_set_queue_dying(md->queue);
-+	blk_mark_disk_dead(md->disk);
- 
- 	/*
- 	 * Take suspend_lock so that presuspend and postsuspend methods
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4578,7 +4578,7 @@ static void nvme_set_queue_dying(struct
- 	if (test_and_set_bit(NVME_NS_DEAD, &ns->flags))
- 		return;
- 
--	blk_set_queue_dying(ns->queue);
-+	blk_mark_disk_dead(ns->disk);
- 	nvme_start_ns_queue(ns);
- 
- 	set_capacity_and_notify(ns->disk, 0);
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -817,7 +817,7 @@ void nvme_mpath_remove_disk(struct nvme_
- {
- 	if (!head->disk)
- 		return;
--	blk_set_queue_dying(head->disk->queue);
-+	blk_mark_disk_dead(head->disk);
- 	/* make sure all pending bios are cleaned up */
- 	kblockd_schedule_work(&head->requeue_work);
- 	flush_work(&head->requeue_work);
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -740,7 +740,8 @@ extern bool blk_queue_can_use_dma_map_me
- 
- bool __must_check blk_get_queue(struct request_queue *);
- extern void blk_put_queue(struct request_queue *);
--extern void blk_set_queue_dying(struct request_queue *);
-+
-+void blk_mark_disk_dead(struct gendisk *disk);
- 
- #ifdef CONFIG_BLOCK
- /*
++		if ((vport->fc_flag & FC_PT2PT) &&
++		    cmd == ELS_CMD_NVMEPRLI) {
++			switch (stat.un.b.lsRjtRsnCode) {
++			case LSRJT_UNABLE_TPC:
++			case LSRJT_INVALID_CMD:
++			case LSRJT_LOGICAL_ERR:
++			case LSRJT_CMD_UNSUPPORTED:
++				lpfc_printf_vlog(vport, KERN_WARNING, LOG_ELS,
++						 "0168 NVME PRLI LS_RJT "
++						 "reason %x port doesn't "
++						 "support NVME, disabling NVME\n",
++						 stat.un.b.lsRjtRsnCode);
++				retry = 0;
++				vport->fc_flag |= FC_PT2PT_NO_NVME;
++				goto out_retry;
++			}
++		}
+ 		switch (stat.un.b.lsRjtRsnCode) {
+ 		case LSRJT_UNABLE_TPC:
+ 			/* The driver has a VALID PLOGI but the rport has
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -1961,8 +1961,9 @@ lpfc_cmpl_reglogin_reglogin_issue(struct
+ 			 * is configured try it.
+ 			 */
+ 			ndlp->nlp_fc4_type |= NLP_FC4_FCP;
+-			if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+-			    (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)) {
++			if ((!(vport->fc_flag & FC_PT2PT_NO_NVME)) &&
++			    (vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH ||
++			    vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)) {
+ 				ndlp->nlp_fc4_type |= NLP_FC4_NVME;
+ 				/* We need to update the localport also */
+ 				lpfc_nvme_update_localport(vport);
 
 
