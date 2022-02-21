@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DECEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F87C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345358AbiBUJQq (ORCPT
+        id S1347882AbiBUJQu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:16:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36150 "EHLO
+        Mon, 21 Feb 2022 04:16:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347891AbiBUJJj (ORCPT
+        with ESMTP id S1347869AbiBUJJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A1117056;
-        Mon, 21 Feb 2022 01:02:04 -0800 (PST)
+        Mon, 21 Feb 2022 04:09:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B290DFF3;
+        Mon, 21 Feb 2022 01:01:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7016E6112B;
-        Mon, 21 Feb 2022 09:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525DAC340E9;
-        Mon, 21 Feb 2022 09:02:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBA85B80EB3;
+        Mon, 21 Feb 2022 09:01:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA257C340E9;
+        Mon, 21 Feb 2022 09:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434123;
-        bh=w2bj+uRNxPvFzmRn/JB2yhzxL3f5rybf+22Jh/VvINE=;
+        s=korg; t=1645434112;
+        bh=ZuE/Z/bq3S+9y920nyWf42fUMdYekNAaXDde+xO2nPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/QMoLPsXOzIUbdggsdVLZRee586a2GnLb0hmfjNtywK1K6xqdzSfbEp2y+Ft7N5B
-         wBF3C5ylMqLENZNKd1BtA3jltFzvm5tS5/5JLnbuwXWVsigwMhvXhvzFxD66Ky510d
-         3HM+W3/kM7vMixz7Rrl+3vWZ29in22oJtkANMtLQ=
+        b=WD4tuGIOEPkD7Ubw5hVU24o8Sn+kKOLVSjviY1+vKC/4gXccvH0DOI6MyR1yeZFX0
+         aTcxZt1nxWtHc4b6xkG4w7KGNfIPcs3I6Rxw+UmZE8FrTTWQVB8tmsqVVWMxsEw9F/
+         PeXgmFVoMfYcW6VG9waC1aZXPIckeJDrrXvCt3Ik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Jann Horn <jannh@google.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 5.10 003/121] rcu: Do not report strict GPs for outgoing CPUs
-Date:   Mon, 21 Feb 2022 09:48:15 +0100
-Message-Id: <20220221084921.270896602@linuxfoundation.org>
+        stable@vger.kernel.org, Long Li <longli@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Wei Liu <wei.liu@kernel.org>
+Subject: [PATCH 5.10 017/121] PCI: hv: Fix NUMA node assignment when kernel boots with custom NUMA topology
+Date:   Mon, 21 Feb 2022 09:48:29 +0100
+Message-Id: <20220221084921.732987240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,52 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Long Li <longli@microsoft.com>
 
-commit bfb3aa735f82c8d98b32a669934ee7d6b346264d upstream.
+commit 3149efcdf2c6314420c418dfc94de53bfd076b1f upstream.
 
-An outgoing CPU is marked offline in a stop-machine handler and most
-of that CPU's services stop at that point, including IRQ work queues.
-However, that CPU must take another pass through the scheduler and through
-a number of CPU-hotplug notifiers, many of which contain RCU readers.
-In the past, these readers were not a problem because the outgoing CPU
-has interrupts disabled, so that rcu_read_unlock_special() would not
-be invoked, and thus RCU would never attempt to queue IRQ work on the
-outgoing CPU.
+When kernel boots with a NUMA topology with some NUMA nodes offline, the PCI
+driver should only set an online NUMA node on the device. This can happen
+during KDUMP where some NUMA nodes are not made online by the KDUMP kernel.
 
-This changed with the advent of the CONFIG_RCU_STRICT_GRACE_PERIOD
-Kconfig option, in which rcu_read_unlock_special() is invoked upon exit
-from almost all RCU read-side critical sections.  Worse yet, because
-interrupts are disabled, rcu_read_unlock_special() cannot immediately
-report a quiescent state and will therefore attempt to defer this
-reporting, for example, by queueing IRQ work.  Which fails with a splat
-because the CPU is already marked as being offline.
+This patch also fixes the case where kernel is booting with "numa=off".
 
-But it turns out that there is no need to report this quiescent state
-because rcu_report_dead() will do this job shortly after the outgoing
-CPU makes its final dive into the idle loop.  This commit therefore
-makes rcu_read_unlock_special() refrain from queuing IRQ work onto
-outgoing CPUs.
-
-Fixes: 44bad5b3cca2 ("rcu: Do full report for .need_qs for strict GPs")
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Cc: Jann Horn <jannh@google.com>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Fixes: 999dd956d838 ("PCI: hv: Add support for protocol 1.3 and support PCI_BUS_RELATIONS2")
+Signed-off-by: Long Li <longli@microsoft.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Tested-by: Purna Pavan Chandra Aekkaladevi <paekkaladevi@microsoft.com>
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/1643247814-15184-1-git-send-email-longli@linuxonhyperv.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/rcu/tree_plugin.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-hyperv.c |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -628,7 +628,7 @@ static void rcu_read_unlock_special(stru
- 			set_tsk_need_resched(current);
- 			set_preempt_need_resched();
- 			if (IS_ENABLED(CONFIG_IRQ_WORK) && irqs_were_disabled &&
--			    !rdp->defer_qs_iw_pending && exp) {
-+			    !rdp->defer_qs_iw_pending && exp && cpu_online(rdp->cpu)) {
- 				// Get scheduler to re-evaluate and call hooks.
- 				// If !IRQ_WORK, FQS scan will eventually IPI.
- 				init_irq_work(&rdp->defer_qs_iw,
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1841,8 +1841,17 @@ static void hv_pci_assign_numa_node(stru
+ 		if (!hv_dev)
+ 			continue;
+ 
+-		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY)
+-			set_dev_node(&dev->dev, hv_dev->desc.virtual_numa_node);
++		if (hv_dev->desc.flags & HV_PCI_DEVICE_FLAG_NUMA_AFFINITY &&
++		    hv_dev->desc.virtual_numa_node < num_possible_nodes())
++			/*
++			 * The kernel may boot with some NUMA nodes offline
++			 * (e.g. in a KDUMP kernel) or with NUMA disabled via
++			 * "numa=off". In those cases, adjust the host provided
++			 * NUMA node to a valid NUMA node used by the kernel.
++			 */
++			set_dev_node(&dev->dev,
++				     numa_map_to_online_node(
++					     hv_dev->desc.virtual_numa_node));
+ 
+ 		put_pcichild(hv_dev);
+ 	}
 
 
