@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086B5C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFD2C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353715AbiBUKL1 (ORCPT
+        id S1353688AbiBUKLV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:11:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57110 "EHLO
+        Mon, 21 Feb 2022 05:11:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353086AbiBUJ5F (ORCPT
+        with ESMTP id S1353171AbiBUJ5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108DC45ADF;
-        Mon, 21 Feb 2022 01:25:00 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D264615D;
+        Mon, 21 Feb 2022 01:25:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8A4BB80EB1;
-        Mon, 21 Feb 2022 09:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 039BCC340E9;
-        Mon, 21 Feb 2022 09:24:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6A3AB80EC8;
+        Mon, 21 Feb 2022 09:25:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C45C340E9;
+        Mon, 21 Feb 2022 09:24:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435497;
-        bh=S/iVw1ZUHEf93QErcB6ZooCHz2LvyqWyuvWT1BdyIyU=;
+        s=korg; t=1645435500;
+        bh=Lts16D0Gxmn1OitEUWNDJk37CTFz0Sy/ettipvu2gf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AHwQeuxckMdw5DYgEyC83VgZ9TuZip+Piu3wVi4ZxtCbhEiN/4y2+y24+82IhZ/PH
-         MZZKEG0RYTqbssI2hix7aUSXEIZ54r86KpzM6vp8dGOS9zI1LIe8bP4vxlbyX/Mqq0
-         bKjFUPACLfn1exiMV2KsbgO3m3DFF3UrBibvrWoY=
+        b=A6zYW9j8O0Gp0E06XAR7CdBPE59TgUZDMfZo2svRCvUrVEfJarz0IjmoMyw5rR3Kr
+         MPhEL8jWV1wEH3OJ/ZZJEYm9eu5iny82YdHGfpbiN5t4hbS1V2Vj/1iS7vzeWtuBlA
+         qJ66sSn7zMvIevJSHJUpMULAyLZGs7XRCw9Bf0SQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Christian Eggers <ceggers@arri.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 152/227] mtd: rawnand: gpmi: dont leak PM reference in error path
-Date:   Mon, 21 Feb 2022 09:49:31 +0100
-Message-Id: <20220221084939.884740253@linuxfoundation.org>
+        stable@vger.kernel.org, ruckajan10@gmail.com,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 153/227] smb3: fix snapshot mount option
+Date:   Mon, 21 Feb 2022 09:49:32 +0100
+Message-Id: <20220221084939.915559513@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,42 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+From: Steve French <stfrench@microsoft.com>
 
-commit 9161f365c91614e5a3f5c6dcc44c3b1b33bc59c0 upstream.
+commit 9405b5f8b20c2bfa6523a555279a0379640dc136 upstream.
 
-If gpmi_nfc_apply_timings() fails, the PM runtime usage counter must be
-dropped.
+The conversion to the new API broke the snapshot mount option
+due to 32 vs. 64 bit type mismatch
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Fixes: f53d4c109a66 ("mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220125081619.6286-1-ceggers@arri.de
+Fixes: 24e0a1eff9e2 ("cifs: switch to new mount api")
+Cc: stable@vger.kernel.org # 5.11+
+Reported-by: <ruckajan10@gmail.com>
+Acked-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/cifs/fs_context.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -2291,7 +2291,7 @@ static int gpmi_nfc_exec_op(struct nand_
- 		this->hw.must_apply_timings = false;
- 		ret = gpmi_nfc_apply_timings(this);
- 		if (ret)
--			return ret;
-+			goto out_pm;
- 	}
+--- a/fs/cifs/fs_context.c
++++ b/fs/cifs/fs_context.c
+@@ -147,7 +147,7 @@ const struct fs_parameter_spec smb3_fs_p
+ 	fsparam_u32("echo_interval", Opt_echo_interval),
+ 	fsparam_u32("max_credits", Opt_max_credits),
+ 	fsparam_u32("handletimeout", Opt_handletimeout),
+-	fsparam_u32("snapshot", Opt_snapshot),
++	fsparam_u64("snapshot", Opt_snapshot),
+ 	fsparam_u32("max_channels", Opt_max_channels),
  
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
-@@ -2420,6 +2420,7 @@ unmap:
- 
- 	this->bch = false;
- 
-+out_pm:
- 	pm_runtime_mark_last_busy(this->dev);
- 	pm_runtime_put_autosuspend(this->dev);
- 
+ 	/* Mount options which take string value */
+@@ -1072,7 +1072,7 @@ static int smb3_fs_context_parse_param(s
+ 		ctx->echo_interval = result.uint_32;
+ 		break;
+ 	case Opt_snapshot:
+-		ctx->snapshot_time = result.uint_32;
++		ctx->snapshot_time = result.uint_64;
+ 		break;
+ 	case Opt_max_credits:
+ 		if (result.uint_32 < 20 || result.uint_32 > 60000) {
 
 
