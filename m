@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96830C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77ABC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348806AbiBUJQT (ORCPT
+        id S1348288AbiBUJRl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:16:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60638 "EHLO
+        Mon, 21 Feb 2022 04:17:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347915AbiBUJJv (ORCPT
+        with ESMTP id S1348203AbiBUJLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:51 -0500
+        Mon, 21 Feb 2022 04:11:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E61A1D0F2;
-        Mon, 21 Feb 2022 01:02:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECB722BDA;
+        Mon, 21 Feb 2022 01:03:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E695B80EAC;
-        Mon, 21 Feb 2022 09:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D34DC340E9;
-        Mon, 21 Feb 2022 09:02:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D903FB80EB6;
+        Mon, 21 Feb 2022 09:03:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0776BC340E9;
+        Mon, 21 Feb 2022 09:02:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434137;
-        bh=fY2l95feaFzhw++5GbsdRjIvm2NcSG/lDajlKI9Tnns=;
+        s=korg; t=1645434180;
+        bh=QgUJ0saQrzTCOm1uQHXtsWV+3Cf/ARFeMpt2TfXoKWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AC9QHYk4lyhnethz1likCIGCpsg1VNjUcEmpYztTD7xKYNBdxX/QtaTiuklhlMPX3
-         MSK0bIUDgWMbn0aOz/Lp6YcNl0JyQg5Dw+kc/3Vy8kMzCzuetGrWTm5RN32q55RZpj
-         IgaZJbOsOfbqCiACrfh8qzV37Ih5xQl7XV5Tb1Ck=
+        b=G4K0OkVk3RpOE/iaREtNN53YW4Hd0J1+PT5H0zCDWM6Jz+QteMi4AUNfnWudGIzB5
+         7TAc4uZij0VNhZpXzf0R27NpoMt2fvy7eJcKLz9J/ljB8pVbBvbQm0qR/ZuriroGAo
+         z80D2Edqov/TGVmkfN+sGj4KaVbdMcBc3fVKui9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nigel Kirkland <nkirkland2304@gmail.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 008/121] scsi: lpfc: Fix mailbox command failure during driver initialization
-Date:   Mon, 21 Feb 2022 09:48:20 +0100
-Message-Id: <20220221084921.432277744@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 040/121] drm/amdgpu: fix logic inversion in check
+Date:   Mon, 21 Feb 2022 09:48:52 +0100
+Message-Id: <20220221084922.565852698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,77 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Christian König <christian.koenig@amd.com>
 
-commit efe1dc571a5b808baa26682eef16561be2e356fd upstream.
+[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
 
-Contention for the mailbox interface may occur during driver initialization
-(immediately after a function reset), between mailbox commands initiated
-via ioctl (bsg) and those driver requested by the driver.
+We probably never trigger this, but the logic inside the check is
+inverted.
 
-After setting SLI_ACTIVE flag for a port, there is a window in which the
-driver will allow an ioctl to be initiated while the adapter is
-initializing and issuing mailbox commands via polling. The polling logic
-then gets confused.
-
-Correct by having thread setting SLI_ACTIVE spot an active mailbox command
-and allow it complete before proceeding.
-
-Link: https://lore.kernel.org/r/20210921143008.64212-1-jsmart2021@gmail.com
-Co-developed-by: Nigel Kirkland <nkirkland2304@gmail.com>
-Signed-off-by: Nigel Kirkland <nkirkland2304@gmail.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -7372,6 +7372,7 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phb
- 	struct lpfc_vport *vport = phba->pport;
- 	struct lpfc_dmabuf *mp;
- 	struct lpfc_rqb *rqbp;
-+	u32 flg;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 5207ad654f18e..0b162928a248b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -2120,7 +2120,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
+ 	unsigned i;
+ 	int r;
  
- 	/* Perform a PCI function reset to start from clean */
- 	rc = lpfc_pci_function_reset(phba);
-@@ -7385,7 +7386,17 @@ lpfc_sli4_hba_setup(struct lpfc_hba *phb
- 	else {
- 		spin_lock_irq(&phba->hbalock);
- 		phba->sli.sli_flag |= LPFC_SLI_ACTIVE;
-+		flg = phba->sli.sli_flag;
- 		spin_unlock_irq(&phba->hbalock);
-+		/* Allow a little time after setting SLI_ACTIVE for any polled
-+		 * MBX commands to complete via BSG.
-+		 */
-+		for (i = 0; i < 50 && (flg & LPFC_SLI_MBOX_ACTIVE); i++) {
-+			msleep(20);
-+			spin_lock_irq(&phba->hbalock);
-+			flg = phba->sli.sli_flag;
-+			spin_unlock_irq(&phba->hbalock);
-+		}
+-	if (direct_submit && !ring->sched.ready) {
++	if (!direct_submit && !ring->sched.ready) {
+ 		DRM_ERROR("Trying to move memory with ring turned off.\n");
+ 		return -EINVAL;
  	}
- 
- 	lpfc_sli4_dip(phba);
-@@ -8922,7 +8933,7 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *
- 					"(%d):2541 Mailbox command x%x "
- 					"(x%x/x%x) failure: "
- 					"mqe_sta: x%x mcqe_sta: x%x/x%x "
--					"Data: x%x x%x\n,",
-+					"Data: x%x x%x\n",
- 					mboxq->vport ? mboxq->vport->vpi : 0,
- 					mboxq->u.mb.mbxCommand,
- 					lpfc_sli_config_mbox_subsys_get(phba,
-@@ -8956,7 +8967,7 @@ lpfc_sli_issue_mbox_s4(struct lpfc_hba *
- 					"(%d):2597 Sync Mailbox command "
- 					"x%x (x%x/x%x) failure: "
- 					"mqe_sta: x%x mcqe_sta: x%x/x%x "
--					"Data: x%x x%x\n,",
-+					"Data: x%x x%x\n",
- 					mboxq->vport ? mboxq->vport->vpi : 0,
- 					mboxq->u.mb.mbxCommand,
- 					lpfc_sli_config_mbox_subsys_get(phba,
+-- 
+2.34.1
+
 
 
