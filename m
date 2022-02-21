@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC57C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352269AbiBUJzH (ORCPT
+        id S1352393AbiBUJzO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:55:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
+        Mon, 21 Feb 2022 04:55:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352971AbiBUJsF (ORCPT
+        with ESMTP id S1353081AbiBUJsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FA4DB;
-        Mon, 21 Feb 2022 01:22:04 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:11 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A6022B0F;
+        Mon, 21 Feb 2022 01:22:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5DAA608C4;
-        Mon, 21 Feb 2022 09:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA0FC340E9;
-        Mon, 21 Feb 2022 09:22:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 37DEACE0EAD;
+        Mon, 21 Feb 2022 09:22:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18764C340EB;
+        Mon, 21 Feb 2022 09:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435323;
-        bh=FP0noNME49WxSoqRCZ0EQn1amRs1cgcJIiNqgWL8IT8=;
+        s=korg; t=1645435337;
+        bh=a292F22ich2hR+K5m+shwMroaVcVa7kwvVPUJP6WEck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p9XoP/xwn4MFr1K2C67Io2ZQbc/oTKLbobyw+ldgALPMfXzTgq8dSOz/OdCu4wnpV
-         HbBBSgLehzliWVeuAsey826N1bMwnWU9IVrQg+uaE96tJeTidSgIX1dimXWlpiGc/9
-         tINpAAT8VHh2yD0QkHAwkOkll/Ja5RK6SV0QTiMI=
+        b=BdJsH0j2VGDblkpOkU3vAkbIuG6hknMs7EXtgld1EHzMeO1K83FPopGySwrUnHvQF
+         JpUd4vn2Op8Ks6sSxEmXR05JOl0eZRoBYN4ZeO/KJgGuw2A4QLJv3kHCkOdw4qHc8s
+         0zoaNfoxEyju1Dp5cSv021u4bqkLkSGZEqjng0vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com,
-        Wen Gu <guwen@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 124/227] net/smc: Avoid overwriting the copies of clcsock callback functions
-Date:   Mon, 21 Feb 2022 09:49:03 +0100
-Message-Id: <20220221084938.974189993@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 111/227] net: dsa: lantiq_gswip: fix use after free in gswip_remove()
+Date:   Mon, 21 Feb 2022 09:48:50 +0100
+Message-Id: <20220221084938.551272179@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,66 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gu <guwen@linux.alibaba.com>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-commit 1de9770d121ee9294794cca0e0be8fbfa0134ee8 upstream.
+commit 8c6ae46150a453f8ae9a6cd49b45f354f478587d upstream.
 
-The callback functions of clcsock will be saved and replaced during
-the fallback. But if the fallback happens more than once, then the
-copies of these callback functions will be overwritten incorrectly,
-resulting in a loop call issue:
+of_node_put(priv->ds->slave_mii_bus->dev.of_node) should be
+done before mdiobus_free(priv->ds->slave_mii_bus).
 
-clcsk->sk_error_report
- |- smc_fback_error_report() <------------------------------|
-     |- smc_fback_forward_wakeup()                          | (loop)
-         |- clcsock_callback()  (incorrectly overwritten)   |
-             |- smc->clcsk_error_report() ------------------|
-
-So this patch fixes the issue by saving these function pointers only
-once in the fallback and avoiding overwriting.
-
-Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
-Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
-Link: https://lore.kernel.org/r/0000000000006d045e05d78776f6@google.com
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 0d120dfb5d67 ("net: dsa: lantiq_gswip: don't use devres for mdiobus")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/1644921768-26477-1-git-send-email-khoroshilov@ispras.ru
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/af_smc.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -667,14 +667,17 @@ static void smc_fback_error_report(struc
- static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
- {
- 	struct sock *clcsk;
-+	int rc = 0;
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -2217,8 +2217,8 @@ static int gswip_remove(struct platform_
  
- 	mutex_lock(&smc->clcsock_release_lock);
- 	if (!smc->clcsock) {
--		mutex_unlock(&smc->clcsock_release_lock);
--		return -EBADF;
-+		rc = -EBADF;
-+		goto out;
+ 	if (priv->ds->slave_mii_bus) {
+ 		mdiobus_unregister(priv->ds->slave_mii_bus);
+-		mdiobus_free(priv->ds->slave_mii_bus);
+ 		of_node_put(priv->ds->slave_mii_bus->dev.of_node);
++		mdiobus_free(priv->ds->slave_mii_bus);
  	}
- 	clcsk = smc->clcsock->sk;
  
-+	if (smc->use_fallback)
-+		goto out;
- 	smc->use_fallback = true;
- 	smc->fallback_rsn = reason_code;
- 	smc_stat_fallback(smc);
-@@ -702,8 +705,9 @@ static int smc_switch_to_fallback(struct
- 		smc->clcsock->sk->sk_user_data =
- 			(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
- 	}
-+out:
- 	mutex_unlock(&smc->clcsock_release_lock);
--	return 0;
-+	return rc;
- }
- 
- /* fall back during connect */
+ 	for (i = 0; i < priv->num_gphy_fw; i++)
 
 
