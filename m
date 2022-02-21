@@ -2,112 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3746C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 20:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE983C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 20:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234074AbiBUUz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 15:55:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33200 "EHLO
+        id S234093AbiBUU65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 15:58:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiBUUz5 (ORCPT
+        with ESMTP id S234020AbiBUU6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 15:55:57 -0500
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C90E237F1;
-        Mon, 21 Feb 2022 12:55:33 -0800 (PST)
-Received: from dread.disaster.area (pa49-186-17-0.pa.vic.optusnet.com.au [49.186.17.0])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 80EBD10C8085;
-        Tue, 22 Feb 2022 07:55:30 +1100 (AEDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nMFiT-00EobO-F8; Tue, 22 Feb 2022 07:55:29 +1100
-Date:   Tue, 22 Feb 2022 07:55:29 +1100
-From:   Dave Chinner <david@fromorbit.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     kernel test robot <oliver.sang@intel.com>, lkp@lists.01.org,
-        lkp@intel.com, LKML <linux-kernel@vger.kernel.org>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        linux-xfs@vger.kernel.org, Christoph Hellwig <hch@infradead.org>
-Subject: Re: [mm/readahead]  a0b99df1aa: xfstests.xfs.421.fail
-Message-ID: <20220221205529.GH59715@dread.disaster.area>
-References: <20220221080217.GB835@xsang-OptiPlex-9020>
- <YhOaJ4cZU/1MiNI2@casper.infradead.org>
+        Mon, 21 Feb 2022 15:58:54 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E02B237F4
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:58:30 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so323204pjw.5
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 12:58:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=a6R3uiwBvQCzSW4IZ+vEVAnPpskx5ZOkFf1DXk8xFS0=;
+        b=oWK2h0gA5Vxrrnw5yuR7cTomlH6B1SfEtqRGX6nMnZ3VwtIqdXGXM7IEmQ05mx0KtU
+         XUTmq6ACHafZL8hyqOnHwU84L9PgFUYXsAvalt+INQ081ZwjdgNbXYsBZp8Zmhwag0m0
+         JQeI8nHe8ztzQSHBVu7zhx3LqRNA34xE9KONk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=a6R3uiwBvQCzSW4IZ+vEVAnPpskx5ZOkFf1DXk8xFS0=;
+        b=fnOnpRiysLkCsVFms8mZ1/U+c4ylZ6EmbWlvUCdL/4FZmgo+/QrJaph+V9AhfW9Vkg
+         yMna4oiPR+2qBhMjWWR0m3Lgsk3fnvuMznIjrXToJPc5ioCFPI/BIJ4V2f5buI8fMAUN
+         K5ykWfcWw7jyukjk7tS8KoaDVM5ETuv+t4+mc8GALsybp3LOJclWyVUe6Ezyi4czbX7u
+         Hb2+s9ReyujzClMv9NbZOak0AKSDxa1Rc6i4D4QwuvIqty0CAyqJkAOOitXUmTCS4Eqz
+         hPdTmXAeX3XW0sZZka1a/0z2FNMBGOpSIWo8vSfUzwHpWglW0dJxy6NgPVdD1hhOpz0Y
+         Uygg==
+X-Gm-Message-State: AOAM5317QH2IvTXBUHyEFDVn+5WTMDcaGzxj8Y+Ij7Vt8XkV2BJkN4jH
+        z1ytwzYOYpywn6l752srEZmP7A==
+X-Google-Smtp-Source: ABdhPJwTzUj3oImdd2yhD2sZDVqdPHjySvfH8Q4/jdqzKMlaWiAqLrTil9g53jvldHuKwbydPxYm7g==
+X-Received: by 2002:a17:90a:da04:b0:1b9:8539:b45e with SMTP id e4-20020a17090ada0400b001b98539b45emr712980pjv.151.1645477109671;
+        Mon, 21 Feb 2022 12:58:29 -0800 (PST)
+Received: from [127.0.0.1] (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id a9sm18813346pgb.56.2022.02.21.12.58.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 12:58:29 -0800 (PST)
+Date:   Mon, 21 Feb 2022 12:58:22 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>
+CC:     matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+User-Agent: K-9 Mail for Android
+In-Reply-To: <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info> <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info> <03497313-A472-4152-BD28-41C35E4E824E@chromium.org> <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+Message-ID: <9A1F30F8-3DE2-4075-B103-81D891773246@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhOaJ4cZU/1MiNI2@casper.infradead.org>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=6213fc44
-        a=+dVDrTVfsjPpH/ci3UuFng==:117 a=+dVDrTVfsjPpH/ci3UuFng==:17
-        a=kj9zAlcOel0A:10 a=oGFeUVbbRNcA:10 a=7-415B0cAAAA:8
-        a=Mg3Te0UgBqLNUB_3bJUA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 01:56:55PM +0000, Matthew Wilcox wrote:
-> On Mon, Feb 21, 2022 at 04:02:18PM +0800, kernel test robot wrote:
-> > commit: a0b99df1aa37d714eb80be5fb54efd56c88a3336 ("mm/readahead: Add large folio readahead")
-> 
-> > xfs/420	- output mismatch (see /lkp/benchmarks/xfstests/results//xfs/420.out.bad)
-> >     --- tests/xfs/420.out	2022-02-17 11:55:00.000000000 +0000
-> >     +++ /lkp/benchmarks/xfstests/results//xfs/420.out.bad	2022-02-20 20:34:22.430378506 +0000
-> >     @@ -13,9 +13,7 @@
-> >      Seek holes and data in file2
-> >      Whence	Result
-> >      DATA	0
-> >     -HOLE	131072
-> >     -DATA	196608
-> >     -HOLE	262144
-> >     +HOLE	524288
-> 
-> Confirm this test now fails.  I don't think it's actually a bug,
-> though.  I think the test is now using larger pages to cache the
-> file, and it fails to report that there's a hole in the file.
-> Maybe there actually isn't a hole in the file any more; using
-> larger pages to cache the file means we'll now write more data
-> than we used to.
-> 
-> Adding XFS people for their thoughts.
-> 
-> Complete output:
-> 
-> $ diff -u ../ktest/tests/xfstests/tests/xfs/420.out ktest-out/xfstests/xfs/420.out.bad
-> --- ../ktest/tests/xfstests/tests/xfs/420.out	2021-07-05 15:49:45.539887305 -0400
-> +++ ktest-out/xfstests/xfs/420.out.bad	2022-02-21 08:14:40.000000000 -0500
-> @@ -13,9 +13,7 @@
->  Seek holes and data in file2
->  Whence	Result
->  DATA	0
-> -HOLE	131072
-> -DATA	196608
-> -HOLE	262144
-> +HOLE	524288
->  Compare files
->  c2803804acc9936eef8aab42c119bfac  SCRATCH_MNT/test-420/file1
->  017c08a9320aad844ce86aa9631afb98  SCRATCH_MNT/test-420/file2
-> @@ -28,9 +26,7 @@
->  Seek holes and data in file2
->  Whence	Result
->  DATA	0
-> -HOLE	131072
-> -DATA	196608
-> -HOLE	262144
-> +HOLE	524288
->  Compare files
->  c2803804acc9936eef8aab42c119bfac  SCRATCH_MNT/test-420/file1
->  017c08a9320aad844ce86aa9631afb98  SCRATCH_MNT/test-420/file2
-> 
-> So the file checksums are right, which means I didn't break the COW
-> functionality.  But we're no longer reporting a hole at 128k.
 
-Can you post the contents of the 420.full output file so we can see
-what the output of the various commands that are run are? e.g.
-things like cowextsize that is configured, etc?
 
-Cheers,
+On February 21, 2022 11:49:20 AM PST, John Paul Adrian Glaubitz <glaubitz@=
+physik=2Efu-berlin=2Ede> wrote:
+>Hi Kees!
+>
+>On 2/21/22 08:42, Kees Cook wrote:
+>>>>> Reverting this commit resolves the issue up to and including git tip=
+,
+>>>>> with no (visible) issues=2E
+>>>>>
+>>>>> Hardware:  HP Integrity rx2800 i2 Kernel config attached=2E
+>>>>
+>>>> Could somebody take a look into this? Or was this discussed somewhere
+>>>> else already? Or even fixed?
+>>>>
+>>>> Anyway, to get this tracked:
+>>>>
+>>>> #regzbot introduced: 5f501d555653f8968011a1e65ebb121c8b43c144
+>>>> #regzbot from: matoro <matoro_bugzilla_kernel@matoro=2Etk>
+>>>> #regzbot title: gcc segv at startup on ia64
+>>>> #regzbot link: https://bugzilla=2Ekernel=2Eorg/show_bug=2Ecgi?id=3D21=
+5601
+>>=20
+>> Does this fix it?
+>>=20
+>> https://www=2Eozlabs=2Eorg/~akpm/mmotm/broken-out/elf-fix-overflow-in-t=
+otal-mapping-size-calculation=2Epatch
+>
+>I have applied this patch on top of 038101e6b2cd5c55f888f85db42ea2ad3aecb=
+4b6 and it doesn't
+>fix the problem for me=2E Reverting 5f501d555653f8968011a1e65ebb121c8b43c=
+144, however, fixes
+>the problem=2E
+>
+>FWIW, this problem doesn't just affect GCC but systemd keeps segfaulting =
+with this change as well=2E
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+Very weird! Can you attached either of those binaries to bugzilla (or a UR=
+L I can fetch it from)? I can try to figure out where it is going weird=2E=
+=2E=2E
+
+--=20
+Kees Cook
