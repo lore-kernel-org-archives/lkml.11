@@ -2,181 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36126C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 22:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235666AbiBUWdv convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 17:33:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34156 "EHLO
+        id S235675AbiBUWgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 17:36:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiBUWds (ORCPT
+        with ESMTP id S230287AbiBUWge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 17:33:48 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4073D5FA0
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 14:33:22 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-72-4cM8G8pfPjKRstTRxL7HKQ-1; Mon, 21 Feb 2022 22:33:20 +0000
-X-MC-Unique: 4cM8G8pfPjKRstTRxL7HKQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 21 Feb 2022 22:33:19 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 21 Feb 2022 22:33:19 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Masahiro Yamada' <masahiroy@kernel.org>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Michal Marek" <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: RE: [PATCH] fixdep: use fflush() and ferror() to ensure successful
- write to files
-Thread-Topic: [PATCH] fixdep: use fflush() and ferror() to ensure successful
- write to files
-Thread-Index: AQHYJ0I5ab4KpWmMiEy1rF7ornjtjayelfMA
-Date:   Mon, 21 Feb 2022 22:33:19 +0000
-Message-ID: <04d06889d8ea41589628995a6cb53874@AcuMS.aculab.com>
-References: <20220221164316.113489-1-masahiroy@kernel.org>
-In-Reply-To: <20220221164316.113489-1-masahiroy@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 21 Feb 2022 17:36:34 -0500
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98F712A9E;
+        Mon, 21 Feb 2022 14:36:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1645482971; x=1677018971;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=k0dyxPOLVR5U+xrHOAfkTufymjKXrO3oXF6kdc2fxWo=;
+  b=MMe9o6LVxq2265BCyfjRU4ER/vH/sSs42jSszL2FIoz4o+lG8Nymz208
+   5UKUIZZIdBQh0y7rxRAufBG6MyAHQYE/Ftfd6Dlz51uV+gi4wiQbWCgr5
+   EroH1jdfFzYSHuHoFhK1XnHGELbc/aWPUrfPu86S79ChHBE4MohA4BgL/
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.88,386,1635206400"; 
+   d="scan'208";a="64956749"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 21 Feb 2022 22:36:08 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id 00C4CC0A6C;
+        Mon, 21 Feb 2022 22:36:02 +0000 (UTC)
+Received: from EX13D02UWC002.ant.amazon.com (10.43.162.6) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 21 Feb 2022 22:35:56 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D02UWC002.ant.amazon.com (10.43.162.6) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 21 Feb 2022 22:35:56 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server id 15.0.1497.28 via Frontend Transport; Mon, 21 Feb 2022 22:35:55
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id C73CC1796; Mon, 21 Feb 2022 22:35:55 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        "Will Deacon" <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "James Clark" <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Li Huafei <lihuafei1@huawei.com>
+Subject: [PATCH v2 0/2] perf: arm-spe: Decode SPE source and use for perf c2c
+Date:   Mon, 21 Feb 2022 22:28:44 +0000
+Message-ID: <20220221222853.953-1-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada
-> Sent: 21 February 2022 16:43
-> To: linux-kbuild@vger.kernel.org
-> 
-> Checking the return value of (v)printf does not ensure the successful
-> write to the .cmd file.
-> 
-> Call fflush() and ferror() to make sure that everything has been
-> written to the file.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+When synthesizing data from SPE, augment the type with source information
+for Arm Neoverse cores so we can detect situtions like cache line contention
+and transfers on Arm platforms. 
 
-Reviewed-by: David Laight <dvid.laight@aculab.com>
+This changes enables the expected behavior of perf c2c on a system with SPE where
+lines that are shared among multiple cores show up in perf c2c output. 
 
-I'll note that you've lost the perror("fixdep").
-But I suspect that isn't very meaningful.
-If the disk is full it'd probably get lost anyway.
+These changes switch to use mem_lvl_num to encode the level information instead
+of mem_lvl which is being deprecated, but I haven't found other users of
+mem_lvl_num. 
 
+Changes in v2:
+  * Split the synht_data_source functions into a generic and neoverse version
+  * Use mem_lvl_num instead of mem_lvl
+  * Modify c2c to support mem_lvl_num + HITM
 
-> ---
-> 
->  scripts/basic/fixdep.c | 44 ++++++++++++++++--------------------------
->  1 file changed, 17 insertions(+), 27 deletions(-)
-> 
-> diff --git a/scripts/basic/fixdep.c b/scripts/basic/fixdep.c
-> index 44e887cff49b..fad6f29373a9 100644
-> --- a/scripts/basic/fixdep.c
-> +++ b/scripts/basic/fixdep.c
-> @@ -105,25 +105,6 @@ static void usage(void)
->  	exit(1);
->  }
-> 
-> -/*
-> - * In the intended usage of this program, the stdout is redirected to .*.cmd
-> - * files. The return value of printf() must be checked to catch any error,
-> - * e.g. "No space left on device".
-> - */
-> -static void xprintf(const char *format, ...)
-> -{
-> -	va_list ap;
-> -	int ret;
-> -
-> -	va_start(ap, format);
-> -	ret = vprintf(format, ap);
-> -	if (ret < 0) {
-> -		perror("fixdep");
-> -		exit(1);
-> -	}
-> -	va_end(ap);
-> -}
-> -
->  struct item {
->  	struct item	*next;
->  	unsigned int	len;
-> @@ -189,7 +170,7 @@ static void use_config(const char *m, int slen)
-> 
->  	define_config(m, slen, hash);
->  	/* Print out a dependency path from a symbol name. */
-> -	xprintf("    $(wildcard include/config/%.*s) \\\n", slen, m);
-> +	printf("    $(wildcard include/config/%.*s) \\\n", slen, m);
->  }
-> 
->  /* test if s ends in sub */
-> @@ -318,13 +299,13 @@ static void parse_dep_file(char *m, const char *target)
->  				 */
->  				if (!saw_any_target) {
->  					saw_any_target = 1;
-> -					xprintf("source_%s := %s\n\n",
-> -						target, m);
-> -					xprintf("deps_%s := \\\n", target);
-> +					printf("source_%s := %s\n\n",
-> +					       target, m);
-> +					printf("deps_%s := \\\n", target);
->  				}
->  				is_first_dep = 0;
->  			} else {
-> -				xprintf("  %s \\\n", m);
-> +				printf("  %s \\\n", m);
->  			}
-> 
->  			buf = read_file(m);
-> @@ -347,8 +328,8 @@ static void parse_dep_file(char *m, const char *target)
->  		exit(1);
->  	}
-> 
-> -	xprintf("\n%s: $(deps_%s)\n\n", target, target);
-> -	xprintf("$(deps_%s):\n", target);
-> +	printf("\n%s: $(deps_%s)\n\n", target, target);
-> +	printf("$(deps_%s):\n", target);
->  }
-> 
->  int main(int argc, char *argv[])
-> @@ -363,11 +344,20 @@ int main(int argc, char *argv[])
->  	target = argv[2];
->  	cmdline = argv[3];
-> 
-> -	xprintf("cmd_%s := %s\n\n", target, cmdline);
-> +	printf("cmd_%s := %s\n\n", target, cmdline);
-> 
->  	buf = read_file(depfile);
->  	parse_dep_file(buf, target);
->  	free(buf);
-> 
-> +	fflush(stdout);
-> +
-> +	/*
-> +	 * In the intended usage, the stdout is redirected to .*.cmd files.
-> +	 * Call ferror() to catch errors such as "No space left on device".
-> +	 */
-> +	if (ferror(stdout))
-> +		exit(1);
-> +
->  	return 0;
->  }
-> --
-> 2.32.0
+Ali Saidi (2):
+  perf arm-spe: Use SPE data source for neoverse cores
+  perf mem: Support HITM for when mem_lvl_num is used
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+ .../util/arm-spe-decoder/arm-spe-decoder.c    |   1 +
+ .../util/arm-spe-decoder/arm-spe-decoder.h    |  12 ++
+ tools/perf/util/arm-spe.c                     | 106 +++++++++++++++---
+ tools/perf/util/mem-events.c                  |  14 ++-
+ 4 files changed, 114 insertions(+), 19 deletions(-)
+
+-- 
+2.32.0
 
