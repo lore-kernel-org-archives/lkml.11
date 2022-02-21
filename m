@@ -2,235 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 404C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 14:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378473AbiBUOwr (ORCPT
+        id S1378570AbiBUO4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 09:52:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38778 "EHLO
+        Mon, 21 Feb 2022 09:56:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378442AbiBUOw2 (ORCPT
+        with ESMTP id S1378499AbiBUO4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 09:52:28 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EF413D73;
-        Mon, 21 Feb 2022 06:52:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645455125; x=1676991125;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=H3+DEJkpDEMljnyOr4RtnL4RrB1E5lIn4hbGJmNSw+U=;
-  b=qmLfhCD8oFAZu2l7JstaI0iTuuK0XenV5XYvOSzxWtxVcjzFSvzd/+I6
-   T3/a6HPbDNtmtC3LnQIEkqMvsNoH1pqmIU8CAF4WWQysrIRh5WFOHJKJe
-   eX/r4kXrDCcSFtz6NTFkzcstyMDLF1/TbmPZ+6zQn8/SeubEOUAw7lD7I
-   Y=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 21 Feb 2022 06:52:05 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Feb 2022 06:52:03 -0800
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 21 Feb 2022 20:21:43 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id F14D05392; Mon, 21 Feb 2022 20:21:41 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        robdclark@gmail.com, seanpaul@chromium.org, swboyd@chromium.org,
-        dianders@chromium.org, krzysztof.kozlowski@canonical.com,
-        thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        quic_kalyant@quicinc.com, quic_sbillaka@quicinc.com,
-        quic_vproddut@quicinc.com
-Subject: [PATCH v2 4/4] drm/msm/disp/dpu1: add PSR support for eDP interface in dpu driver
-Date:   Mon, 21 Feb 2022 20:21:26 +0530
-Message-Id: <1645455086-9359-5-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645455086-9359-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1645455086-9359-1-git-send-email-quic_vpolimer@quicinc.com>
+        Mon, 21 Feb 2022 09:56:15 -0500
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E15217AAD;
+        Mon, 21 Feb 2022 06:55:51 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 92E875C0211;
+        Mon, 21 Feb 2022 09:55:50 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 21 Feb 2022 09:55:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; bh=CGhvsw+LhTgD6aZuUFtqqU1Kc3kIvE
+        iqCXe0yRe6810=; b=e4gBrijTOZhpcNy+jnhFPC0M3cR5xv/xVK+BSjrnefBwqq
+        SFusBz1p7/d22M8zErvkzVUZuhZL/Kn4aVsObOPAckG9arsvxG9OH9fxJkDGJ/mh
+        Aae4VRiKLfJgF7GgqDbFtk6CiHUCUnLx3wwquqWWUgl77vxYj1b8TncUXHXPLXEe
+        twShpKTlddijxWNBNPlRiBo3sU76wKQIrUh3WombyMvL1YnrmtQ7bgAldd5dH/Mt
+        GuIjzBIDrHX9GFjvGXwnt9VIU7vn9aBBh1rXvXUxs5dLEmTeHqwN76fiDiq7KQ+c
+        fALbazbPEhzJ229TsG19hQ14L9ekm2CX/ThSwwCg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CGhvsw
+        +LhTgD6aZuUFtqqU1Kc3kIvEiqCXe0yRe6810=; b=C1toCK7qAAJFyiRrFibt9+
+        57z9FhqcL4Xvbg/sQ7+RAz/Ed895TTNAh3ZAEhu0bylS4xyNpTB0hf+1VLi4XNzk
+        Wn2cq2QB1sNAY+VbegcQ2F3VfusZ7f9O00Dbtng61dNk/9xAu9X9KIU1twshDgWT
+        u61YULPepO6EGCl9jHJkt+T1w35l14Gys4Jvel4sQRa1mBXK1ssQaB4tDDmrv+MQ
+        w1Uhb5qygqANjNTX0N635wNgK/8lIwRpZRqNX6vLcBIJsCDPvwGXORwQ48jnnEnF
+        Q6Wk8gMmzTItyY5+BYEwrc6jYM9LOOHUaB10RDe2kRPz6i6n9RZSVaDDp2LeD4pA
+        ==
+X-ME-Sender: <xms:9qcTYs1ofl8S525l3PpMOd4s2dfF_I90I8as3nCupLQi39-jd871JQ>
+    <xme:9qcTYnHp7OW-UGWq0A1uGcO0EtdtF1uPU_8IMGoz_Yf3Jl9kMw8XoGreGRF7twwLz
+    m2CDBhhH9vwZri-eyc>
+X-ME-Received: <xmr:9qcTYk5DJ-m6QT4CVf9jY1uT7j6JQtG5zLbn7f-mq33NRa5SZHZvV4o>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigdeikecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
+    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhepjeeihffgteelkeelffduke
+    dtheevudejvdegkeekjeefhffhhfetudetgfdtffeunecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
+    grthdrtghomh
+X-ME-Proxy: <xmx:9qcTYl0o-4D-kxV25yTc00-7JdMMvua5925zookTqjXreBNIZhQnkg>
+    <xmx:9qcTYvGBM6mO8NUbhLUPbod5oQBC2vpN59UX5wtoptPrEL5WZtP3AQ>
+    <xmx:9qcTYu91v5oDr4KFG3eo1oIyTyeLQFqX__fRrXCpiReatdjaf_8oxw>
+    <xmx:9qcTYjixRSj-jgvxYM2XthMnytd9_zArbnC3RDxckkSFBly0Ni55pg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 21 Feb 2022 09:55:49 -0500 (EST)
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+To:     linux-mips@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, chenhuacai@kernel.org,
+        tsbogend@alpha.franken.de, macro@orcam.me.uk,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Subject: [RFC PATCH 1/3] MIPS: Loongson64: Clearify IO barriers
+Date:   Mon, 21 Feb 2022 14:55:29 +0000
+Message-Id: <20220221145531.10479-2-jiaxun.yang@flygoat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221145531.10479-1-jiaxun.yang@flygoat.com>
+References: <20220221145531.10479-1-jiaxun.yang@flygoat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable PSR on eDP interface using drm self-refresh librabry.
-This patch uses a trigger from self-refresh library to enter/exit
-into PSR, when there are no updates from framework.
+Remove CPU_HAS_WB from Kconfig as all Loongson64 processors
+don't have R3000 style write buffer. This is likely to be
+a legacy of Loongson 2E's Bonito64.
 
-Changes in V2:
-- Move dp functions to bridge code.
-- As per Dmitry review suggestions.
+Remove Loongson64 from war_io_reorder_wmb. Loongson64
+never reorders uncached memory access as per user manual
+of GS464, LS3A2000 and LS3A3000. It was intruduced due
+to a misunderstanding of Store Fill Buffer.
 
-Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    | 31 +++++++++++++++++++++++++----
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 30 +++++++++++++++++++++++++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |  2 +-
- 3 files changed, 57 insertions(+), 6 deletions(-)
+ arch/mips/Kconfig          | 1 -
+ arch/mips/include/asm/io.h | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-index e7c9fe1..ba3240c 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
-@@ -18,6 +18,7 @@
- #include <drm/drm_probe_helper.h>
- #include <drm/drm_rect.h>
- #include <drm/drm_vblank.h>
-+#include <drm/drm_self_refresh_helper.h>
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 058446f01487..6d2e97342723 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -487,7 +487,6 @@ config MACH_LOONGSON64
+ 	select BOARD_SCACHE
+ 	select CSRC_R4K
+ 	select CEVT_R4K
+-	select CPU_HAS_WB
+ 	select FORCE_PCI
+ 	select ISA
+ 	select I8259
+diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
+index 6f5c86d2bab4..065e1ab6401a 100644
+--- a/arch/mips/include/asm/io.h
++++ b/arch/mips/include/asm/io.h
+@@ -219,7 +219,7 @@ void iounmap(const volatile void __iomem *addr);
+ #define ioremap_wc(offset, size)					\
+ 	ioremap_prot((offset), (size), boot_cpu_data.writecombine)
  
- #include "dpu_kms.h"
- #include "dpu_hw_lm.h"
-@@ -951,6 +952,14 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
- 
- 	DRM_DEBUG_KMS("crtc%d\n", crtc->base.id);
- 
-+	if (old_crtc_state->self_refresh_active) {
-+		drm_for_each_encoder_mask(encoder, crtc->dev,
-+				 old_crtc_state->encoder_mask) {
-+			dpu_encoder_assign_crtc(encoder, NULL);
-+		}
-+		return;
-+	}
-+
- 	/* Disable/save vblank irq handling */
- 	drm_crtc_vblank_off(crtc);
- 
-@@ -962,7 +971,12 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
- 		 */
- 		if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
- 			release_bandwidth = true;
--		dpu_encoder_assign_crtc(encoder, NULL);
-+		/* If disable is triggered during psr active(e.g: screen dim in PSR),
-+		 * we will need encoder->crtc connection to process the device sleep &
-+		 * preserve it during psr sequence.
-+		 */
-+		if (!crtc->state->self_refresh_active)
-+			dpu_encoder_assign_crtc(encoder, NULL);
- 	}
- 
- 	/* wait for frame_event_done completion */
-@@ -1010,6 +1024,8 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
- 	struct dpu_crtc *dpu_crtc = to_dpu_crtc(crtc);
- 	struct drm_encoder *encoder;
- 	bool request_bandwidth = false;
-+	struct drm_crtc_state *old_crtc_state =
-+		drm_atomic_get_old_crtc_state(state, crtc);
- 
- 	pm_runtime_get_sync(crtc->dev->dev);
- 
-@@ -1032,8 +1048,10 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
- 	trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
- 	dpu_crtc->enabled = true;
- 
--	drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
--		dpu_encoder_assign_crtc(encoder, crtc);
-+	if (!old_crtc_state->self_refresh_active) {
-+		drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
-+			dpu_encoder_assign_crtc(encoder, crtc);
-+	}
- 
- 	/* Enable/restore vblank irq handling */
- 	drm_crtc_vblank_on(crtc);
-@@ -1497,7 +1515,7 @@ struct drm_crtc *dpu_crtc_init(struct drm_device *dev, struct drm_plane *plane,
- {
- 	struct drm_crtc *crtc = NULL;
- 	struct dpu_crtc *dpu_crtc = NULL;
--	int i;
-+	int i, ret;
- 
- 	dpu_crtc = kzalloc(sizeof(*dpu_crtc), GFP_KERNEL);
- 	if (!dpu_crtc)
-@@ -1534,6 +1552,11 @@ struct drm_crtc *dpu_crtc_init(struct drm_device *dev, struct drm_plane *plane,
- 	/* initialize event handling */
- 	spin_lock_init(&dpu_crtc->event_lock);
- 
-+	ret = drm_self_refresh_helper_init(crtc);
-+	if (ret)
-+		DPU_ERROR("Failed to initialize %s with SR helpers %d\n",
-+			crtc->name, ret);
-+
- 	DRM_DEBUG_KMS("%s: successfully initialized crtc\n", dpu_crtc->name);
- 	return crtc;
- }
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 6eac417..ba9d8ea 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -217,6 +217,14 @@ static u32 dither_matrix[DITHER_MATRIX_SZ] = {
- 	15, 7, 13, 5, 3, 11, 1, 9, 12, 4, 14, 6, 0, 8, 2, 10
- };
- 
-+static inline bool is_self_refresh_active(struct drm_crtc_state *state)
-+{
-+	if (state && state->self_refresh_active)
-+		return true;
-+
-+	return false;
-+}
-+
- static void _dpu_encoder_setup_dither(struct dpu_hw_pingpong *hw_pp, unsigned bpc)
- {
- 	struct dpu_hw_dither_cfg dither_cfg = { 0 };
-@@ -629,7 +637,8 @@ static int dpu_encoder_virt_atomic_check(
- 		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
- 			dpu_rm_release(global_state, drm_enc);
- 
--			if (!crtc_state->active_changed || crtc_state->active)
-+			if (!crtc_state->active_changed || crtc_state->active ||
-+					crtc_state->self_refresh_active)
- 				ret = dpu_rm_reserve(&dpu_kms->rm, global_state,
- 						drm_enc, crtc_state, topology);
- 		}
-@@ -1182,11 +1191,30 @@ static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc,
- {
- 	struct dpu_encoder_virt *dpu_enc = NULL;
- 	struct msm_drm_private *priv;
-+	struct drm_crtc *crtc;
-+	struct drm_crtc_state *old_state;
- 	int i = 0;
- 
- 	dpu_enc = to_dpu_encoder_virt(drm_enc);
- 	DPU_DEBUG_ENC(dpu_enc, "\n");
- 
-+	if (!drm_enc) {
-+		DPU_ERROR("invalid encoder\n");
-+		return;
-+	}
-+	dpu_enc = to_dpu_encoder_virt(drm_enc);
-+
-+	crtc = dpu_enc->crtc;
-+
-+	old_state = drm_atomic_get_old_crtc_state(state, crtc);
-+
-+	/*
-+	 * The encoder turn off already occurred when self refresh mode
-+	 * was set earlier, in the old_state for the corresponding crtc.
-+	 */
-+	if (drm_enc->encoder_type == DRM_MODE_ENCODER_TMDS && is_self_refresh_active(old_state))
-+		return;
-+
- 	mutex_lock(&dpu_enc->enc_lock);
- 	dpu_enc->enabled = false;
- 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 47fe11a..d550f90 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -495,7 +495,7 @@ static void dpu_kms_wait_for_commit_done(struct msm_kms *kms,
- 		return;
- 	}
- 
--	if (!crtc->state->active) {
-+	if (!drm_atomic_crtc_effectively_active(crtc->state)) {
- 		DPU_DEBUG("[crtc:%d] not active\n", crtc->base.id);
- 		return;
- 	}
+-#if defined(CONFIG_CPU_CAVIUM_OCTEON) || defined(CONFIG_CPU_LOONGSON64)
++#if defined(CONFIG_CPU_CAVIUM_OCTEON)
+ #define war_io_reorder_wmb()		wmb()
+ #else
+ #define war_io_reorder_wmb()		barrier()
 -- 
-2.7.4
+2.35.1
 
