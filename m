@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF7EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12901C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352557AbiBUJrf (ORCPT
+        id S1352658AbiBUJrl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:47:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48748 "EHLO
+        Mon, 21 Feb 2022 04:47:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350846AbiBUJkM (ORCPT
+        with ESMTP id S1350943AbiBUJkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:40:12 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895E732EEE;
-        Mon, 21 Feb 2022 01:17:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E81EFCE0E88;
-        Mon, 21 Feb 2022 09:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8715C340E9;
-        Mon, 21 Feb 2022 09:17:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435038;
-        bh=jYwiTOzuxOogEwmmZu7c9TjY0pi0EyrysgTTXTM6OZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wp6DdanR5PfhX5M2ZSY018gKGChmh/qd35NEKSY/P4CXrCpZnxMmx2yVx06Xy993j
-         YSxeHCP4ykEOvF/AQx0nBK/bDz1cGqqd6PYorDlRmiMD+CTDkavX4aZOmVLrm0xW9E
-         5By53FY8wiptYYjUuuCYSYTo7G5FIovwj0V20Xwc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 023/227] selftests: kvm: Remove absent target file
-Date:   Mon, 21 Feb 2022 09:47:22 +0100
-Message-Id: <20220221084935.613639074@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:40:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FF123CA55
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:17:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645435028;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4uMmEYUHbmX6rXgTsQ+VTDhgS4w4FUz1dvxMDB4NcL4=;
+        b=bwiUSjS5Zx+VGAAfYH2G/S0bATuthWZq1rXuATKU7mhhnPRNo1UJtaT5cLufyoKtdqBldp
+        ZeumfIoQyKnssYtuxUYlIqKtBCki1+yIpMZ2H45m1yf69H8vchjS5x+PCRre+/fjl7hBFk
+        sU/5GEZUOmANx+gy3dxnHW+/K2YYgLI=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-492-9uqGIGHHPvqPUMe9CnyZZQ-1; Mon, 21 Feb 2022 04:17:07 -0500
+X-MC-Unique: 9uqGIGHHPvqPUMe9CnyZZQ-1
+Received: by mail-ed1-f70.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so9813643edb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:17:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4uMmEYUHbmX6rXgTsQ+VTDhgS4w4FUz1dvxMDB4NcL4=;
+        b=EZQ3UWw9WVZs6khpZn0LdgZ/njD3ZK8NSxjr6H+bWQb+VNlNlEQweFokmyriYFVx3U
+         ewx5wQn0azKaRxP/xUn7GRKw9f8tKPBNrMMGXNPV3o93fFL9XL0Jpd1rqZuIkjCQWcaW
+         hkFzx7DBbeLZBPpDDMnA20oH7XgAa8usRjo2RZG4zcv31InVG+nYFHax051aHxpEDLmi
+         yZNbToVMlA/DXyYkgghwNZ8tIJICDpqW7cM6SRE5yGcgXLBof74Ea9kDoMNhAq5zoGTz
+         YSawsZXMFVRm3yx7dIGIyGiSfKIkmeXDKgMEfcKDH5lDWp3v3zmhxHmxodPLtsHV6eXZ
+         gqmQ==
+X-Gm-Message-State: AOAM532yIWs9uFwvmXOB5NdcpmrSkR8Z0u7Q8SctG0gNGRniDS3pWXud
+        UQmFXJO+gtPWwPOKMs1RGrNk58OPObSqzCkEevUw5SSelsUlfF3K2MUxSVNe651yJv2YhNpTs2G
+        oZoPsvTwPeJ2If1Q3OpA6XwRt
+X-Received: by 2002:a50:aac8:0:b0:410:ae77:c484 with SMTP id r8-20020a50aac8000000b00410ae77c484mr19984678edc.431.1645435025887;
+        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyBpEa0p3HrEYx+GIqbhwJ9nin5147rOk0KhJ0pTriV1JShySKOfRZ5XC7JzVwzygFMagfvqw==
+X-Received: by 2002:a50:aac8:0:b0:410:ae77:c484 with SMTP id r8-20020a50aac8000000b00410ae77c484mr19984657edc.431.1645435025651;
+        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
+Received: from redhat.com ([2.52.4.205])
+        by smtp.gmail.com with ESMTPSA id v23sm5048559ejy.177.2022.02.21.01.17.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 01:17:05 -0800 (PST)
+Date:   Mon, 21 Feb 2022 04:17:02 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>,
+        jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
+Message-ID: <20220221041626-mutt-send-email-mst@kernel.org>
+References: <20220221040745.1177-1-hdanton@sina.com>
+ <20220221085227.1356-1-hdanton@sina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221085227.1356-1-hdanton@sina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+On Mon, Feb 21, 2022 at 04:52:27PM +0800, Hillf Danton wrote:
+> Another round of attempts to quiesce the
+> WARNING: CPU: 1 PID: 4069 at drivers/vhost/vhost.c:715 after the
+> BUG at drivers/vhost/vhost.c:2337 went home.
 
-commit 0316dbb9a017d3231f86e0188376f067ec26a59c upstream.
+Could you pls clarify what do you mean by "went home" here?
 
-There is no vmx_pi_mmio_test file. Remove it to get rid of error while
-creation of selftest archive:
+Thanks,
 
-rsync: [sender] link_stat "/kselftest/kvm/x86_64/vmx_pi_mmio_test" failed: No such file or directory (2)
-rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
-
-Fixes: 6a58150859fd ("selftest: KVM: Add intra host migration tests")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Message-Id: <20220210172352.1317554-1-usama.anjum@collabora.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/testing/selftests/kvm/Makefile |    1 -
- 1 file changed, 1 deletion(-)
-
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -75,7 +75,6 @@ TEST_GEN_PROGS_x86_64 += x86_64/tsc_msrs
- TEST_GEN_PROGS_x86_64 += x86_64/vmx_pmu_msrs_test
- TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
- TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
--TEST_GEN_PROGS_x86_64 += x86_64/vmx_pi_mmio_test
- TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
- TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
- TEST_GEN_PROGS_x86_64 += demand_paging_test
-
+-- 
+MST
 
