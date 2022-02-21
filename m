@@ -2,241 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B45AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C31C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245561AbiBUIaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:30:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44042 "EHLO
+        id S1343610AbiBUIbP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:31:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiBUIad (ORCPT
+        with ESMTP id S229844AbiBUIbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:30:33 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B55637C
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:30:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645432211; x=1676968211;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qN/8DV6G0j2Vq+y4rJfgwZTCCWSpggHOVyofhaqZkRs=;
-  b=RlVcj2blJPmBKnTYeoo4MOtw6LeX9nNbAScSOQTdmmESD4MB0UAgRhuG
-   BYjHvcEWboqoUH72ZOhwWXv+fXECD2kgys5PVCGQ7EvS/9/EJhHisknAt
-   l5NNx6ZtzAMni89j+1OM7CLELaykXwTxMmpTc9dylirUMBmUC2G94U6hE
-   C1xOuX6m6Bh8AsgejBWAKzvUPMbbEHV5/9uCzCm21Jh5jwgpaiT9v7sBU
-   K1886Lp8Mt8bK6byCX9j2D4uRi1A3MtMt0hVYfvRVp0Lfjfs21hzPRD8P
-   +FIbldQndkSiCXZDBdkyzQObcbywoMTfLwAtJMP+iH81tfmEcL1BgcQqo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="314726559"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="314726559"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 00:30:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="573031805"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Feb 2022 00:30:09 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM45A-0001Pw-BT; Mon, 21 Feb 2022 08:30:08 +0000
-Date:   Mon, 21 Feb 2022 16:29:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: drivers/leds/simple/simatic-ipc-leds.c:42:17: sparse: sparse: symbol
- 'simatic_ipc_led_mem_res' was not declared. Should it be static?
-Message-ID: <202202211603.3Q45j1R6-lkp@intel.com>
+        Mon, 21 Feb 2022 03:31:13 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC00610AD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:30:48 -0800 (PST)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220221083043epoutp047b45135cdf61026f7ec65901945f8ed8~Vv_hVtj8j2080720807epoutp04H
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:30:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220221083043epoutp047b45135cdf61026f7ec65901945f8ed8~Vv_hVtj8j2080720807epoutp04H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1645432243;
+        bh=VeOvNggr2GN4Xhxn4t7sD4lcFmaTZxtJAd+bSZt2yIU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MTKCTYskjqbL1YUaN5JvaJpcskrN51/VbwOhtJjhiT6g/HSGgs9fFoGcShNhqbuO5
+         s6MYLIGPft55xbFw/WiphFd5NmsZhCYsIvnx3PE7B5N7+jXQglEQoDw7Kh6xQMaCC4
+         6XR7KnszCVPRpHh6OQsH0T+4UyK6VYzKFtOoeVpE=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220221083042epcas2p305906d0ede3d7d3a8ef524103b20dc66~Vv_gyWoyh1370513705epcas2p33;
+        Mon, 21 Feb 2022 08:30:42 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.68]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4K2Fqg3WnFz4x9QC; Mon, 21 Feb
+        2022 08:30:39 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D9.28.51767.BAD43126; Mon, 21 Feb 2022 17:30:35 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220221083034epcas2p1c745614d557143a5cebc808bfd71f01f~Vv_ZRhKgO1960519605epcas2p16;
+        Mon, 21 Feb 2022 08:30:34 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220221083034epsmtrp28b9ddbeffdb340a17ae717fab5716d4e~Vv_ZQONmK1620716207epsmtrp2j;
+        Mon, 21 Feb 2022 08:30:34 +0000 (GMT)
+X-AuditID: b6c32a45-447ff7000000ca37-43-62134dab66b4
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        0F.53.29871.AAD43126; Mon, 21 Feb 2022 17:30:34 +0900 (KST)
+Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220221083034epsmtip156748e8f54cce02379f4629415453bdf~Vv_ZG5svj0195601956epsmtip13;
+        Mon, 21 Feb 2022 08:30:34 +0000 (GMT)
+Date:   Mon, 21 Feb 2022 17:28:11 +0900
+From:   Jung Daehwan <dh10.jung@samsung.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-usb@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: usb: gadget: function: add spinlock for rndis response list
+Message-ID: <20220221082811.GA127516@ubuntu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yg9ReVfKxHUPOTvZ@kroah.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMJsWRmVeSWpSXmKPExsWy7bCmue5qX+EkgzNHBC3mrF/DZnGs7Qm7
+        xdZviRbNi9ezWVzeNYfNYtGyVmaLrXuvslscvH+O2YHD49+JNWwejTdusHlsWtXJ5nFixm8W
+        j/1z17B7PJj0htHj8ya5APaobJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMDQ11DSwtzJYW8
+        xNxUWyUXnwBdt8wcoKOUFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUpOQXmBXrFibnF
+        pXnpenmpJVaGBgZGpkCFCdkZ7d2vmAquilYs2PGKvYFxglAXIweHhICJxM2tOl2MnBxCAjsY
+        JZo+1ncxcgHZnxglfky5zQLhfGOU2Nk6gw2kCqSha84zVojEXkaJjv0tUFVPGCW6v51iBqli
+        EVCV+Lr0AyOIzSagJXHvxwmwuIiAsUT/2VnsIA3MAnOYJA6eXcgOkhAW8JBouHQJbAWvgI7E
+        nRdrmSBsQYmTM5+wgNicApoSG6eeYge5W1RAReLVQbBbJQSmckhcWP6UDeIfF4l5y2UgLhWW
+        eHV8CzuELSXx+d1eqA+KJXZ9amWC6G1glGh8AHGcBNBxs561gx3NLJApcXrbaXaImcoSR26x
+        QIT5JDoO/4UK80p0tAlBdCpLTL88gRXClpQ4+PocM0SJh8T7916Q4AGG7ue3J1knMMrPQvLY
+        LCTLIGwdiQW7P7HNAmpnFpCWWP6PA8LUlFi/S38BI+sqRrHUguLc9NRiowJDeFQn5+duYgSn
+        Vi3XHYyT337QO8TIxMF4iFGCg1lJhPcOu3CSEG9KYmVValF+fFFpTmrxIUZTYDRNZJYSTc4H
+        Jve8knhDE0sDEzMzQ3MjUwNzJXFer5QNiUIC6YklqdmpqQWpRTB9TBycUg1MFS0eFlHG7h9n
+        3Fhz8/x8vb7pxzb/+3yP6Ul32ud7Fnv8rOqMpPUym99ITVrt9uN6mxtXeLFcdv/u/k07Jrec
+        fzNh/xw+3itKDef+Lo462O7lkCYa0tLv4r//xK+1cWLvX33+1cK61/jJ6hq1jfxlb45UnIqy
+        Ln5w0tlmm7y54d2Q6VebnBc+nOdz+17pl10rf+fVLkl/wJhg12r9L2zhGo2yjCPJgSEMHQsP
+        tb7w/pyot+Tf+5Utgub2fX9Ls97Ofs7/Vf25+q3w/kQWgbdmAvr3PU5FG1l9lvzExLyrfKWC
+        1hJhj/gJUYdl92xbpinRaJIjnTajIu2MWN6WxNMKn/quGBlbWDn09syz6ohQYinOSDTUYi4q
+        TgQAb6xpjjYEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNLMWRmVeSWpSXmKPExsWy7bCSnO4qX+Ekg/n/tS3mrF/DZnGs7Qm7
+        xdZviRbNi9ezWVzeNYfNYtGyVmaLrXuvslscvH+O2YHD49+JNWwejTdusHlsWtXJ5nFixm8W
+        j/1z17B7PJj0htHj8ya5APYoLpuU1JzMstQifbsEroyW2XOYCyYJV7Q2PGBvYHzG38XIySEh
+        YCLRNecZaxcjF4eQwG5GieebV7BDJCQlls69AWULS9xvOcIKYgsJPGKU2D5JCsRmEVCV+Lr0
+        AyOIzSagJXHvxwlmEFtEwFii/+wsdpChzALzmCS+HfkP1iws4CHRcOkSG4jNK6AjcefFWiaI
+        zTsYJXZ/v8MKkRCUODnzCQuIzQw09ca/l0BFHEC2tMTyfxwgYU4BTYmNU0+xg4RFBVQkXh2s
+        n8AoOAtJ8ywkzbMQmhcwMq9ilEwtKM5Nzy02LDDMSy3XK07MLS7NS9dLzs/dxAiODy3NHYzb
+        V33QO8TIxMF4iFGCg1lJhPcOu3CSEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfjhQTSE0tS
+        s1NTC1KLYLJMHJxSDUwpSrrWufmGen1hHw2eC54o/TZ9hsLEZRrmWc7vb60xYV7YzLrhXXvH
+        kTiH9zXq989v+aPa0n6k7d7y55+e9V0+K227xuVlVsj/ktsBib7+H4PuVn6InrT88w6OdZ4f
+        4lYaiQQ82LN596dpV5XXeiSopbc6TS/jP+Cj+oR7jsavJ/Xrk57L+j8rkHPL4OjMl1ao/KCT
+        fk+qoH/7YWMVV4HUdK0zZyJvelc+4Q3OD5GRe3Zz3rKir+/qkj92vTF4oDn/ddOZA2kX900t
+        6/3mq/BRMG1O+ZLay2UzAsSZj3atef2cpYeHP+O05h3OA6efNr2M9kwS2q7/Ym6JUu/+C8J1
+        76WDSsWD+Cas4Qk+Vq3EUpyRaKjFXFScCAAPk52B/gIAAA==
+X-CMS-MailID: 20220221083034epcas2p1c745614d557143a5cebc808bfd71f01f
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_11fe69_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220218053230epcas2p1c63c8b28e7448988727221e0265c64fc
+References: <CGME20220218053230epcas2p1c63c8b28e7448988727221e0265c64fc@epcas2p1.samsung.com>
+        <1645162195-54476-1-git-send-email-dh10.jung@samsung.com>
+        <Yg9ReVfKxHUPOTvZ@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-commit: 8c78e0614edc628b13313afd28856720b85d86a3 leds: simatic-ipc-leds: add new driver for Siemens Industial PCs
-date:   9 weeks ago
-config: x86_64-randconfig-s022-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211603.3Q45j1R6-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8c78e0614edc628b13313afd28856720b85d86a3
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 8c78e0614edc628b13313afd28856720b85d86a3
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/leds/simple/
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_11fe69_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Fri, Feb 18, 2022 at 08:57:45AM +0100, Greg Kroah-Hartman wrote:
+> On Fri, Feb 18, 2022 at 02:29:55PM +0900, Daehwan Jung wrote:
+> > There's no lock for rndis response list. It could cause list corruption
+> > if two different list_add at the same time like below.
+> > It's better to add in rndis_add_response / rndis_free_response
+> > / rndis_get_next_response to prevent any race condition on response list.
+> > 
+> > [  361.894299] [1:   irq/191-dwc3:16979] list_add corruption.
+> > next->prev should be prev (ffffff80651764d0),
+> > but was ffffff883dc36f80. (next=ffffff80651764d0).
+> > 
+> > [  361.904380] [1:   irq/191-dwc3:16979] Call trace:
+> > [  361.904391] [1:   irq/191-dwc3:16979]  __list_add_valid+0x74/0x90
+> > [  361.904401] [1:   irq/191-dwc3:16979]  rndis_msg_parser+0x168/0x8c0
+> > [  361.904409] [1:   irq/191-dwc3:16979]  rndis_command_complete+0x24/0x84
+> > [  361.904417] [1:   irq/191-dwc3:16979]  usb_gadget_giveback_request+0x20/0xe4
+> > [  361.904426] [1:   irq/191-dwc3:16979]  dwc3_gadget_giveback+0x44/0x60
+> > [  361.904434] [1:   irq/191-dwc3:16979]  dwc3_ep0_complete_data+0x1e8/0x3a0
+> > [  361.904442] [1:   irq/191-dwc3:16979]  dwc3_ep0_interrupt+0x29c/0x3dc
+> > [  361.904450] [1:   irq/191-dwc3:16979]  dwc3_process_event_entry+0x78/0x6cc
+> > [  361.904457] [1:   irq/191-dwc3:16979]  dwc3_process_event_buf+0xa0/0x1ec
+> > [  361.904465] [1:   irq/191-dwc3:16979]  dwc3_thread_interrupt+0x34/0x5c
+> > 
+> > Fixes: f6281af9d62e ("usb: gadget: rndis: use list_for_each_entry_safe")
+> > Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+> > ---
+> >  drivers/usb/gadget/function/rndis.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> > 
+> > diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
+> > index b7ccf1803656..b4d58324e2d2 100644
+> > --- a/drivers/usb/gadget/function/rndis.c
+> > +++ b/drivers/usb/gadget/function/rndis.c
+> > @@ -1011,16 +1011,21 @@ void rndis_add_hdr(struct sk_buff *skb)
+> >  }
+> >  EXPORT_SYMBOL_GPL(rndis_add_hdr);
+> >  
+> > +/* add spinlock to prevent race condition for rndis response list */
+> > +static DEFINE_SPINLOCK(resp_lock);
+> 
+> Shouldn't this be one lock per rndis_params structure, and not a global
+> one for the whole driver?
+> 
+I agree with your comment. I'm going to modify and push it again.
+Thanks for the comment.
+
+Best Regards,
+Jung Daehwan
+
+> thanks,
+> 
+> greg k-h
+> 
+
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_11fe69_
+Content-Type: text/plain; charset="utf-8"
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/leds/simple/simatic-ipc-leds.c:42:17: sparse: sparse: symbol 'simatic_ipc_led_mem_res' was not declared. Should it be static?
->> drivers/leds/simple/simatic-ipc-leds.c:155:40: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *static [toplevel] simatic_ipc_led_memory @@     got void [noderef] __iomem * @@
-   drivers/leds/simple/simatic-ipc-leds.c:155:40: sparse:     expected void *static [toplevel] simatic_ipc_led_memory
-   drivers/leds/simple/simatic-ipc-leds.c:155:40: sparse:     got void [noderef] __iomem *
-
-vim +/simatic_ipc_led_mem_res +42 drivers/leds/simple/simatic-ipc-leds.c
-
-    40	
-    41	/* the actual start will be discovered with PCI, 0 is a placeholder */
-  > 42	struct resource simatic_ipc_led_mem_res = DEFINE_RES_MEM_NAMED(0, SZ_4K, KBUILD_MODNAME);
-    43	
-    44	static void *simatic_ipc_led_memory;
-    45	
-    46	static struct simatic_ipc_led simatic_ipc_leds_mem[] = {
-    47		{0x500 + 0x1A0, "red:" LED_FUNCTION_STATUS "-1"},
-    48		{0x500 + 0x1A8, "green:" LED_FUNCTION_STATUS "-1"},
-    49		{0x500 + 0x1C8, "red:" LED_FUNCTION_STATUS "-2"},
-    50		{0x500 + 0x1D0, "green:" LED_FUNCTION_STATUS "-2"},
-    51		{0x500 + 0x1E0, "red:" LED_FUNCTION_STATUS "-3"},
-    52		{0x500 + 0x198, "green:" LED_FUNCTION_STATUS "-3"},
-    53		{ }
-    54	};
-    55	
-    56	static struct resource simatic_ipc_led_io_res =
-    57		DEFINE_RES_IO_NAMED(SIMATIC_IPC_LED_PORT_BASE, SZ_2, KBUILD_MODNAME);
-    58	
-    59	static DEFINE_SPINLOCK(reg_lock);
-    60	
-    61	static inline struct simatic_ipc_led *cdev_to_led(struct led_classdev *led_cd)
-    62	{
-    63		return container_of(led_cd, struct simatic_ipc_led, cdev);
-    64	}
-    65	
-    66	static void simatic_ipc_led_set_io(struct led_classdev *led_cd,
-    67					   enum led_brightness brightness)
-    68	{
-    69		struct simatic_ipc_led *led = cdev_to_led(led_cd);
-    70		unsigned long flags;
-    71		unsigned int val;
-    72	
-    73		spin_lock_irqsave(&reg_lock, flags);
-    74	
-    75		val = inw(SIMATIC_IPC_LED_PORT_BASE);
-    76		if (brightness == LED_OFF)
-    77			outw(val | led->value, SIMATIC_IPC_LED_PORT_BASE);
-    78		else
-    79			outw(val & ~led->value, SIMATIC_IPC_LED_PORT_BASE);
-    80	
-    81		spin_unlock_irqrestore(&reg_lock, flags);
-    82	}
-    83	
-    84	static enum led_brightness simatic_ipc_led_get_io(struct led_classdev *led_cd)
-    85	{
-    86		struct simatic_ipc_led *led = cdev_to_led(led_cd);
-    87	
-    88		return inw(SIMATIC_IPC_LED_PORT_BASE) & led->value ? LED_OFF : led_cd->max_brightness;
-    89	}
-    90	
-    91	static void simatic_ipc_led_set_mem(struct led_classdev *led_cd,
-    92					    enum led_brightness brightness)
-    93	{
-    94		struct simatic_ipc_led *led = cdev_to_led(led_cd);
-    95	
-    96		u32 *p;
-    97	
-    98		p = simatic_ipc_led_memory + led->value;
-    99		*p = (*p & ~1) | (brightness == LED_OFF);
-   100	}
-   101	
-   102	static enum led_brightness simatic_ipc_led_get_mem(struct led_classdev *led_cd)
-   103	{
-   104		struct simatic_ipc_led *led = cdev_to_led(led_cd);
-   105	
-   106		u32 *p;
-   107	
-   108		p = simatic_ipc_led_memory + led->value;
-   109		return (*p & 1) ? LED_OFF : led_cd->max_brightness;
-   110	}
-   111	
-   112	static int simatic_ipc_leds_probe(struct platform_device *pdev)
-   113	{
-   114		const struct simatic_ipc_platform *plat = pdev->dev.platform_data;
-   115		struct device *dev = &pdev->dev;
-   116		struct simatic_ipc_led *ipcled;
-   117		struct led_classdev *cdev;
-   118		struct resource *res;
-   119		int err, type;
-   120		u32 *p;
-   121	
-   122		switch (plat->devmode) {
-   123		case SIMATIC_IPC_DEVICE_227D:
-   124		case SIMATIC_IPC_DEVICE_427E:
-   125			res = &simatic_ipc_led_io_res;
-   126			ipcled = simatic_ipc_leds_io;
-   127			/* on 227D the two bytes work the other way araound */
-   128			if (plat->devmode == SIMATIC_IPC_DEVICE_227D) {
-   129				while (ipcled->value) {
-   130					ipcled->value = swab16(ipcled->value);
-   131					ipcled++;
-   132				}
-   133				ipcled = simatic_ipc_leds_io;
-   134			}
-   135			type = IORESOURCE_IO;
-   136			if (!devm_request_region(dev, res->start, resource_size(res), KBUILD_MODNAME)) {
-   137				dev_err(dev, "Unable to register IO resource at %pR\n", res);
-   138				return -EBUSY;
-   139			}
-   140			break;
-   141		case SIMATIC_IPC_DEVICE_127E:
-   142			res = &simatic_ipc_led_mem_res;
-   143			ipcled = simatic_ipc_leds_mem;
-   144			type = IORESOURCE_MEM;
-   145	
-   146			/* get GPIO base from PCI */
-   147			res->start = simatic_ipc_get_membase0(PCI_DEVFN(13, 0));
-   148			if (res->start == 0)
-   149				return -ENODEV;
-   150	
-   151			/* do the final address calculation */
-   152			res->start = res->start + (0xC5 << 16);
-   153			res->end += res->start;
-   154	
- > 155			simatic_ipc_led_memory = devm_ioremap_resource(dev, res);
-   156			if (IS_ERR(simatic_ipc_led_memory))
-   157				return PTR_ERR(simatic_ipc_led_memory);
-   158	
-   159			/* initialize power/watchdog LED */
-   160			p = simatic_ipc_led_memory + 0x500 + 0x1D8; /* PM_WDT_OUT */
-   161			*p = (*p & ~1);
-   162			p = simatic_ipc_led_memory + 0x500 + 0x1C0; /* PM_BIOS_BOOT_N */
-   163			*p = (*p | 1);
-   164	
-   165			break;
-   166		default:
-   167			return -ENODEV;
-   168		}
-   169	
-   170		while (ipcled->value) {
-   171			cdev = &ipcled->cdev;
-   172			if (type == IORESOURCE_MEM) {
-   173				cdev->brightness_set = simatic_ipc_led_set_mem;
-   174				cdev->brightness_get = simatic_ipc_led_get_mem;
-   175			} else {
-   176				cdev->brightness_set = simatic_ipc_led_set_io;
-   177				cdev->brightness_get = simatic_ipc_led_get_io;
-   178			}
-   179			cdev->max_brightness = LED_ON;
-   180			cdev->name = ipcled->name;
-   181	
-   182			err = devm_led_classdev_register(dev, cdev);
-   183			if (err < 0)
-   184				return err;
-   185			ipcled++;
-   186		}
-   187	
-   188		return 0;
-   189	}
-   190	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+------2fH_v7u-qooQo7zMtxxTw1wUndVpTJhY--Wv6pszNQmaZVXq=_11fe69_--
