@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FA7C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5393C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346912AbiBUJDh (ORCPT
+        id S1346965AbiBUJDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:03:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58078 "EHLO
+        Mon, 21 Feb 2022 04:03:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347094AbiBUJAu (ORCPT
+        with ESMTP id S1347114AbiBUJAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:00:50 -0500
+        Mon, 21 Feb 2022 04:00:51 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114272717D;
-        Mon, 21 Feb 2022 00:55:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3B1275D7;
+        Mon, 21 Feb 2022 00:55:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AACF0B80EA5;
-        Mon, 21 Feb 2022 08:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5E48C340E9;
-        Mon, 21 Feb 2022 08:55:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35E87B80EC2;
+        Mon, 21 Feb 2022 08:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C8DFC340F1;
+        Mon, 21 Feb 2022 08:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433749;
-        bh=pn7u/oGbP5SpBeqFKRsJCeQbPdo5FoZfq9rzWVoZZR4=;
+        s=korg; t=1645433741;
+        bh=Mai+XZZ5bZosq8IMIflJ00QJoMKyaZmq3O3tVX1mM9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lgbkM9Ubjt5ZXmVkmnDxrvBmUsXn9PBBKWfgAraDd7zUJ2tY8HJSLfW6RTsOj9RaW
-         ADvzqSlVjHNov2SDXPPzAgEa8rOMOefzQpTAdxIX/nFImm1JKj8TEF+dEIsoLnukTq
-         s9j18226FxNbT0wmqCx8dsgcW+Y1WSwN/rb7mNrc=
+        b=m/ZbiAHFOPhCXfO3CFXx9cuWazmZv93BNJTsi+7M8kkClx6rFpZgzXTeZQDOI5kNw
+         +WKDr1vvrwDT6oDcvC2pPdqAz1dbtv2qIJ3+aE4PWyZeAjlIO/YkQREtqBlGtddDGZ
+         bsPae47AOnF4CwRCj6LKbw2QLcZlRhNb8CIxO+Qo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 29/58] bonding: fix data-races around agg_select_timer
-Date:   Mon, 21 Feb 2022 09:49:22 +0100
-Message-Id: <20220221084912.825972694@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicholas Bishop <nicholasbishop@google.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 4.19 18/58] drm/radeon: Fix backlight control on iMac 12,1
+Date:   Mon, 21 Feb 2022 09:49:11 +0100
+Message-Id: <20220221084912.475424562@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -52,138 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Nicholas Bishop <nicholasbishop@google.com>
 
-commit 9ceaf6f76b203682bb6100e14b3d7da4c0bedde8 upstream.
+commit 364438fd629f7611a84c8e6d7de91659300f1502 upstream.
 
-syzbot reported that two threads might write over agg_select_timer
-at the same time. Make agg_select_timer atomic to fix the races.
+The iMac 12,1 does not use the gmux driver for backlight, so the radeon
+backlight device is needed to set the brightness.
 
-BUG: KCSAN: data-race in bond_3ad_initiate_agg_selection / bond_3ad_state_machine_handler
-
-read to 0xffff8881242aea90 of 4 bytes by task 1846 on cpu 1:
- bond_3ad_state_machine_handler+0x99/0x2810 drivers/net/bonding/bond_3ad.c:2317
- process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
- worker_thread+0x616/0xa70 kernel/workqueue.c:2454
- kthread+0x1bf/0x1e0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-write to 0xffff8881242aea90 of 4 bytes by task 25910 on cpu 0:
- bond_3ad_initiate_agg_selection+0x18/0x30 drivers/net/bonding/bond_3ad.c:1998
- bond_open+0x658/0x6f0 drivers/net/bonding/bond_main.c:3967
- __dev_open+0x274/0x3a0 net/core/dev.c:1407
- dev_open+0x54/0x190 net/core/dev.c:1443
- bond_enslave+0xcef/0x3000 drivers/net/bonding/bond_main.c:1937
- do_set_master net/core/rtnetlink.c:2532 [inline]
- do_setlink+0x94f/0x2500 net/core/rtnetlink.c:2736
- __rtnl_newlink net/core/rtnetlink.c:3414 [inline]
- rtnl_newlink+0xfeb/0x13e0 net/core/rtnetlink.c:3529
- rtnetlink_rcv_msg+0x745/0x7e0 net/core/rtnetlink.c:5594
- netlink_rcv_skb+0x14e/0x250 net/netlink/af_netlink.c:2494
- rtnetlink_rcv+0x18/0x20 net/core/rtnetlink.c:5612
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x602/0x6d0 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x728/0x850 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
- ___sys_sendmsg net/socket.c:2467 [inline]
- __sys_sendmsg+0x195/0x230 net/socket.c:2496
- __do_sys_sendmsg net/socket.c:2505 [inline]
- __se_sys_sendmsg net/socket.c:2503 [inline]
- __x64_sys_sendmsg+0x42/0x50 net/socket.c:2503
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000050 -> 0x0000004f
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 25910 Comm: syz-executor.1 Tainted: G        W         5.17.0-rc4-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1838
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c |   30 +++++++++++++++++++++++++-----
- include/net/bond_3ad.h         |    2 +-
- 2 files changed, 26 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/radeon/atombios_encoders.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -249,7 +249,7 @@ static inline int __check_agg_selection_
- 	if (bond == NULL)
- 		return 0;
+--- a/drivers/gpu/drm/radeon/atombios_encoders.c
++++ b/drivers/gpu/drm/radeon/atombios_encoders.c
+@@ -193,7 +193,8 @@ void radeon_atom_backlight_init(struct r
+ 	 * so don't register a backlight device
+ 	 */
+ 	if ((rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE) &&
+-	    (rdev->pdev->device == 0x6741))
++	    (rdev->pdev->device == 0x6741) &&
++	    !dmi_match(DMI_PRODUCT_NAME, "iMac12,1"))
+ 		return;
  
--	return BOND_AD_INFO(bond).agg_select_timer ? 1 : 0;
-+	return atomic_read(&BOND_AD_INFO(bond).agg_select_timer) ? 1 : 0;
- }
- 
- /**
-@@ -1965,7 +1965,7 @@ static void ad_marker_response_received(
-  */
- void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
- {
--	BOND_AD_INFO(bond).agg_select_timer = timeout;
-+	atomic_set(&BOND_AD_INFO(bond).agg_select_timer, timeout);
- }
- 
- /**
-@@ -2250,6 +2250,28 @@ void bond_3ad_update_ad_actor_settings(s
- }
- 
- /**
-+ * bond_agg_timer_advance - advance agg_select_timer
-+ * @bond:  bonding structure
-+ *
-+ * Return true when agg_select_timer reaches 0.
-+ */
-+static bool bond_agg_timer_advance(struct bonding *bond)
-+{
-+	int val, nval;
-+
-+	while (1) {
-+		val = atomic_read(&BOND_AD_INFO(bond).agg_select_timer);
-+		if (!val)
-+			return false;
-+		nval = val - 1;
-+		if (atomic_cmpxchg(&BOND_AD_INFO(bond).agg_select_timer,
-+				   val, nval) == val)
-+			break;
-+	}
-+	return nval == 0;
-+}
-+
-+/**
-  * bond_3ad_state_machine_handler - handle state machines timeout
-  * @bond: bonding struct to work on
-  *
-@@ -2284,9 +2306,7 @@ void bond_3ad_state_machine_handler(stru
- 	if (!bond_has_slaves(bond))
- 		goto re_arm;
- 
--	/* check if agg_select_timer timer after initialize is timed out */
--	if (BOND_AD_INFO(bond).agg_select_timer &&
--	    !(--BOND_AD_INFO(bond).agg_select_timer)) {
-+	if (bond_agg_timer_advance(bond)) {
- 		slave = bond_first_slave_rcu(bond);
- 		port = slave ? &(SLAVE_AD_INFO(slave)->port) : NULL;
- 
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -265,7 +265,7 @@ struct ad_system {
- 
- struct ad_bond_info {
- 	struct ad_system system;	/* 802.3ad system structure */
--	u32 agg_select_timer;		/* Timer to select aggregator after all adapter's hand shakes */
-+	atomic_t agg_select_timer;	/* Timer to select aggregator after all adapter's hand shakes */
- 	u16 aggregator_identifier;
- };
- 
+ 	if (!radeon_encoder->enc_priv)
 
 
