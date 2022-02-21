@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD9B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D308C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343725AbiBUJSK (ORCPT
+        id S1347904AbiBUJSR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36222 "EHLO
+        Mon, 21 Feb 2022 04:18:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348509AbiBUJLV (ORCPT
+        with ESMTP id S1348560AbiBUJLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:21 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072BF255BC;
-        Mon, 21 Feb 2022 01:03:33 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105D827151;
+        Mon, 21 Feb 2022 01:03:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 27FB5CE0E85;
-        Mon, 21 Feb 2022 09:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C015C36AF9;
-        Mon, 21 Feb 2022 09:03:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A11D561249;
+        Mon, 21 Feb 2022 09:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B261C340E9;
+        Mon, 21 Feb 2022 09:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434210;
-        bh=qpsCYUiuoWE+U9Xh6jlyhtneJgquaAruAQbkMcQUG7Y=;
+        s=korg; t=1645434217;
+        bh=d/s8ayMpWGML2APfzZ5mEIE/nV/yXP2sKriiO11BR1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CuggJ1tghIgKIHsvDvKk9gCuaPsGrfprnayeG41EHP6qlcp1j96kR0llxKrbnWM4u
-         t6txbZ7U/jJP9EMhcG6yWjYNOCHCm8Kl1U9KZ/oa+RB0V4EQLHSpAcpCokYe11sXFu
-         akVzavlmiUTnfY2dxAHMcYGyjVjZ4ROYgvGM1p9s=
+        b=qK6XAOUyYnyJA6UUMhYJ6UJLzTIhrQD0/p9V+wBe31LrA3Oi11vFqe4w2NEX+zJNF
+         4J6Bv0CdvQGClnCRPjKclOMW0vAe8iUe+xUpiji1N27KuCrm/DkKfSn8Ys+WtbTc4s
+         AngPB76+fgUqlPKSpANozXlzR5A5pHk/fto8UTAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, yang xu <xuyang2018.jy@cn.fujitsu.com>,
-        Li Zhijian <lizhijian@cn.fujitsu.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 023/121] kselftest: signal all child processes
-Date:   Mon, 21 Feb 2022 09:48:35 +0100
-Message-Id: <20220221084921.940948678@linuxfoundation.org>
+        stable@vger.kernel.org, Siva Mullati <siva.mullati@intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>
+Subject: [PATCH 5.10 051/121] drm/i915/gvt: Make DRM_I915_GVT depend on X86
+Date:   Mon, 21 Feb 2022 09:49:03 +0100
+Message-Id: <20220221084922.940254659@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,54 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Zhijian <lizhijian@cn.fujitsu.com>
+From: Siva Mullati <siva.mullati@intel.com>
 
-[ Upstream commit 92d25637a3a45904292c93f1863c6bbda4e3e38f ]
+commit d72d69abfdb6e0375981cfdda8eb45143f12c77d upstream.
 
-We have some many cases that will create child process as well, such as
-pidfd_wait. Previously, we will signal/kill the parent process when it
-is time out, but this signal will not be sent to its child process. In
-such case, if child process doesn't terminate itself, ksefltest framework
-will hang forever.
+GVT is not supported on non-x86 platforms, So add
+dependency of X86 on config parameter DRM_I915_GVT.
 
-Here we group all its child processes so that kill() can signal all of
-them in timeout.
-
-Fixed change log: Shuah Khan <skhan@linuxfoundation.org>
-
-Suggested-by: yang xu <xuyang2018.jy@cn.fujitsu.com>
-Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0ad35fed618c ("drm/i915: gvt: Introduce the basic architecture of GVT-g")
+Signed-off-by: Siva Mullati <siva.mullati@intel.com>
+Signed-off-by: Zhi Wang <zhi.a.wang@intel.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20220107095235.243448-1-siva.mullati@intel.com
+Reviewed-by: Zhi Wang <zhi.a.wang@intel.com>
+Signed-off-by: Zhi Wang <zhi.a.wang@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/kselftest_harness.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index 5ecb9718e1616..3e7b2e521cde4 100644
---- a/tools/testing/selftests/kselftest_harness.h
-+++ b/tools/testing/selftests/kselftest_harness.h
-@@ -871,7 +871,8 @@ static void __timeout_handler(int sig, siginfo_t *info, void *ucontext)
- 	}
- 
- 	t->timed_out = true;
--	kill(t->pid, SIGKILL);
-+	// signal process group
-+	kill(-(t->pid), SIGKILL);
- }
- 
- void __wait_for_test(struct __test_metadata *t)
-@@ -981,6 +982,7 @@ void __run_test(struct __fixture_metadata *f,
- 		ksft_print_msg("ERROR SPAWNING TEST CHILD\n");
- 		t->passed = 0;
- 	} else if (t->pid == 0) {
-+		setpgrp();
- 		t->fn(t, variant);
- 		if (t->skip)
- 			_exit(255);
--- 
-2.34.1
-
+--- a/drivers/gpu/drm/i915/Kconfig
++++ b/drivers/gpu/drm/i915/Kconfig
+@@ -100,6 +100,7 @@ config DRM_I915_USERPTR
+ config DRM_I915_GVT
+ 	bool "Enable Intel GVT-g graphics virtualization host support"
+ 	depends on DRM_I915
++	depends on X86
+ 	depends on 64BIT
+ 	default n
+ 	help
 
 
