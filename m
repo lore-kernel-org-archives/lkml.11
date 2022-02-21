@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A14E8C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33D1C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349684AbiBUJ03 (ORCPT
+        id S1349813AbiBUJ0n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48298 "EHLO
+        Mon, 21 Feb 2022 04:26:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348931AbiBUJQa (ORCPT
+        with ESMTP id S1348273AbiBUJRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:16:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F153207D;
-        Mon, 21 Feb 2022 01:07:04 -0800 (PST)
+        Mon, 21 Feb 2022 04:17:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6362133A1E;
+        Mon, 21 Feb 2022 01:07:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A0FB6112F;
-        Mon, 21 Feb 2022 09:07:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E77C340E9;
-        Mon, 21 Feb 2022 09:07:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D109DCE0E77;
+        Mon, 21 Feb 2022 09:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5FBFC340E9;
+        Mon, 21 Feb 2022 09:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434423;
-        bh=IN67m1B3ZHGoI5hJjuFTOuQe6kviWvaaiA1kqxlzm1w=;
+        s=korg; t=1645434429;
+        bh=ZFQ7WgqUTu8CtH3NG2StTZxcat9g1wNo++W77OW1kgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FAzui8dcCvl9O26SaZyfTqct0WTDyRUzMv2pdRBfjMxf8nKJjg7idm0Y0bt3X/U8q
-         2fP4H5/FaqJSRLZF/Or6TpA8aNRgBTPkTT5ZBweIogdAlUVUmXtwh0vxW9/fxJsG/D
-         I9cl+xQ+VRBS5odSBVnSBeddwTOdGg0ImJE4VGhw=
+        b=LnWuhwGvxdbIRjQ/dQzyqAPjNqDuLwrHC10vYwyfiK88EeNLGatJSmSx+Cs9m9O9l
+         KhzS/y0tmXXwVnuiA23XozPjd5sVSkqmvvRRNQz76yEXtX98aOjw3sstFVVpPzzCnE
+         35vwDLKBgWD9qyAPhaYdWLjjLh4OQrrSkvw/zbwI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        stable@vger.kernel.org, Mateusz Krzak <kszaquitto@gmail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 095/121] irqchip/sifive-plic: Add missing thead,c900-plic match string
-Date:   Mon, 21 Feb 2022 09:49:47 +0100
-Message-Id: <20220221084924.402858559@linuxfoundation.org>
+Subject: [PATCH 5.10 097/121] arm64: dts: meson-gx: add ATF BL32 reserved-memory region
+Date:   Mon, 21 Feb 2022 09:49:49 +0100
+Message-Id: <20220221084924.465036183@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -54,47 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
+[ Upstream commit 76577c9137456febb05b0e17d244113196a98968 ]
 
-The thead,c900-plic has been used in opensbi to distinguish
-PLIC [1]. Although PLICs have the same behaviors in Linux,
-they are different hardware with some custom initializing in
-firmware(opensbi).
+Add an additional reserved memory region for the BL32 trusted firmware
+present in many devices that boot from Amlogic vendor u-boot.
 
-Qute opensbi patch commit-msg by Samuel:
-
-  The T-HEAD PLIC implementation requires setting a delegation bit
-  to allow access from S-mode. Now that the T-HEAD PLIC has its own
-  compatible string, set this bit automatically from the PLIC driver,
-  instead of reaching into the PLIC's MMIO space from another driver.
-
-[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
-
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Suggested-by: Mateusz Krzak <kszaquitto@gmail.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220126044954.19069-2-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-sifive-plic.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index 926e55d838cb1..bd99ee0ae433d 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -400,3 +400,4 @@ static int __init plic_init(struct device_node *node,
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+index 0edd137151f89..47cbb0a1eb183 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
+@@ -43,6 +43,12 @@
+ 			no-map;
+ 		};
  
- IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
- IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
-+IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
++		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
++		secmon_reserved_bl32: secmon@5300000 {
++			reg = <0x0 0x05300000 0x0 0x2000000>;
++			no-map;
++		};
++
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
 -- 
 2.34.1
 
