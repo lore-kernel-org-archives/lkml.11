@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8C3C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC8CC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349942AbiBUJ05 (ORCPT
+        id S1350006AbiBUJ1B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:26:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51594 "EHLO
+        Mon, 21 Feb 2022 04:27:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348247AbiBUJSz (ORCPT
+        with ESMTP id S1348482AbiBUJSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:18:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF8B31233;
+        Mon, 21 Feb 2022 04:18:41 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2274A26AC7;
         Mon, 21 Feb 2022 01:07:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55E9F61252;
-        Mon, 21 Feb 2022 09:07:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D21DC340E9;
-        Mon, 21 Feb 2022 09:07:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 797AACE0E7C;
+        Mon, 21 Feb 2022 09:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6169DC340E9;
+        Mon, 21 Feb 2022 09:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434440;
-        bh=6cvYlkqn5yFOmgKwTXG4kZ4WRgkDJOCytnbnYwNNro0=;
+        s=korg; t=1645434438;
+        bh=rCLK1isdgnG1EXdfAkFvPKqK2hZ0U3V3404DM11jp34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kdf/UZD6porbSmiXZj1HxdKvzkd+dNioJsRmgrc+oTacRbgq4w5GebK063wdzMbME
-         4s8tnftrqA3VD/tn3Dw/40x3BZ4z4comHUTrP/7kb4ywAeUdFnMH5dUoxr9MpIwQuz
-         YpH2UodB3mH7J5UzSU9PLoI2dynMD5/VsKzdxtX8=
+        b=BKHwV+mloz5tuvkolafOPPtTRcD4PujWKZ1Vmd/g5UMQ1LxG7pZzM+7MRKZGay0Gn
+         d3K1fMTqxh6nDXVQ7R3dW8ePAlzRdyvYVVFIkg2kBlT1ruXnDjJ2OUeDwwDcOC12v7
+         Ty2ePOewWt5Ctda5H0Akm+OYo/VKjb6L3OALlLdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.15 001/196] drm/nouveau/pmu/gm200-: use alternate falcon reset sequence
-Date:   Mon, 21 Feb 2022 09:47:13 +0100
-Message-Id: <20220221084930.923926935@linuxfoundation.org>
+        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 090/121] KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
+Date:   Mon, 21 Feb 2022 09:49:42 +0100
+Message-Id: <20220221084924.244292221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
-References: <20220221084930.872957717@linuxfoundation.org>
+In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
+References: <20220221084921.147454846@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,126 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Jim Mattson <jmattson@google.com>
 
-commit 4cdd2450bf739bada353e82d27b00db9af8c3001 upstream.
+[ Upstream commit 710c476514313c74045c41c0571bb5178fd16e3d ]
 
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
+a PerfEvtSeln MSR. Don't mask off the high nybble when configuring a
+RAW perf event.
+
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220203014813.2130559-2-jmattson@google.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/falcon/base.c      |    8 ++++--
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c |   31 +++++++++++++++++++++++-
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    2 -
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 -
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    2 -
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    2 +
- 6 files changed, 41 insertions(+), 6 deletions(-)
+ arch/x86/kvm/pmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/falcon/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/falcon/base.c
-@@ -117,8 +117,12 @@ nvkm_falcon_disable(struct nvkm_falcon *
- int
- nvkm_falcon_reset(struct nvkm_falcon *falcon)
- {
--	nvkm_falcon_disable(falcon);
--	return nvkm_falcon_enable(falcon);
-+	if (!falcon->func->reset) {
-+		nvkm_falcon_disable(falcon);
-+		return nvkm_falcon_enable(falcon);
-+	}
-+
-+	return falcon->func->reset(falcon);
- }
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 2d91e39dbdf67..2f83b5d948b33 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -214,7 +214,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	}
  
- int
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm200.c
-@@ -23,9 +23,38 @@
-  */
- #include "priv.h"
+ 	if (type == PERF_TYPE_RAW)
+-		config = eventsel & X86_RAW_EVENT_MASK;
++		config = eventsel & AMD64_RAW_EVENT_MASK;
  
-+static int
-+gm200_pmu_flcn_reset(struct nvkm_falcon *falcon)
-+{
-+	struct nvkm_pmu *pmu = container_of(falcon, typeof(*pmu), falcon);
-+
-+	nvkm_falcon_wr32(falcon, 0x014, 0x0000ffff);
-+	pmu->func->reset(pmu);
-+	return nvkm_falcon_enable(falcon);
-+}
-+
-+const struct nvkm_falcon_func
-+gm200_pmu_flcn = {
-+	.debug = 0xc08,
-+	.fbif = 0xe00,
-+	.load_imem = nvkm_falcon_v1_load_imem,
-+	.load_dmem = nvkm_falcon_v1_load_dmem,
-+	.read_dmem = nvkm_falcon_v1_read_dmem,
-+	.bind_context = nvkm_falcon_v1_bind_context,
-+	.wait_for_halt = nvkm_falcon_v1_wait_for_halt,
-+	.clear_interrupt = nvkm_falcon_v1_clear_interrupt,
-+	.set_start_addr = nvkm_falcon_v1_set_start_addr,
-+	.start = nvkm_falcon_v1_start,
-+	.enable = nvkm_falcon_v1_enable,
-+	.disable = nvkm_falcon_v1_disable,
-+	.reset = gm200_pmu_flcn_reset,
-+	.cmdq = { 0x4a0, 0x4b0, 4 },
-+	.msgq = { 0x4c8, 0x4cc, 0 },
-+};
-+
- static const struct nvkm_pmu_func
- gm200_pmu = {
--	.flcn = &gt215_pmu_flcn,
-+	.flcn = &gm200_pmu_flcn,
- 	.enabled = gf100_pmu_enabled,
- 	.reset = gf100_pmu_reset,
- };
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-@@ -211,7 +211,7 @@ gm20b_pmu_recv(struct nvkm_pmu *pmu)
- 
- static const struct nvkm_pmu_func
- gm20b_pmu = {
--	.flcn = &gt215_pmu_flcn,
-+	.flcn = &gm200_pmu_flcn,
- 	.enabled = gf100_pmu_enabled,
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-@@ -39,7 +39,7 @@ gp102_pmu_enabled(struct nvkm_pmu *pmu)
- 
- static const struct nvkm_pmu_func
- gp102_pmu = {
--	.flcn = &gt215_pmu_flcn,
-+	.flcn = &gm200_pmu_flcn,
- 	.enabled = gp102_pmu_enabled,
- 	.reset = gp102_pmu_reset,
- };
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-@@ -78,7 +78,7 @@ gp10b_pmu_acr = {
- 
- static const struct nvkm_pmu_func
- gp10b_pmu = {
--	.flcn = &gt215_pmu_flcn,
-+	.flcn = &gm200_pmu_flcn,
- 	.enabled = gf100_pmu_enabled,
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-@@ -44,6 +44,8 @@ void gf100_pmu_reset(struct nvkm_pmu *);
- 
- void gk110_pmu_pgob(struct nvkm_pmu *, bool);
- 
-+extern const struct nvkm_falcon_func gm200_pmu_flcn;
-+
- void gm20b_pmu_acr_bld_patch(struct nvkm_acr *, u32, s64);
- void gm20b_pmu_acr_bld_write(struct nvkm_acr *, u32, struct nvkm_acr_lsfw *);
- int gm20b_pmu_acr_boot(struct nvkm_falcon *);
+ 	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
+ 		return;
+-- 
+2.34.1
+
 
 
