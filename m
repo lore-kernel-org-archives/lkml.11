@@ -2,125 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3760AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87708C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 05:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344532AbiBUF1f (ORCPT
+        id S1344552AbiBUFfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 00:27:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55798 "EHLO
+        Mon, 21 Feb 2022 00:35:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344522AbiBUF1d (ORCPT
+        with ESMTP id S1344545AbiBUFfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 00:27:33 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28D56557;
-        Sun, 20 Feb 2022 21:27:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645421231; x=1676957231;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dHGj8oHhf1bY1cn6txGNu5geRsuh5pSV2cXKp7lEBiQ=;
-  b=Tqa1sipcYcp5fC1mOcEYYejzZx/zVNhoUmNvUYxSesVknEs021OASzE8
-   TwGdc6dga+goy7T1Opm6H7hQ9v7yhyR4c5BWbSOMCqW1sA+qgcT3AgVsw
-   HFityz3XMJbJ5JHiXLoo0PYTbTRwm/fmESahbp5Eq7oQUkqDxSo6d/vAx
-   wUl7lx00ZpM2n3Us62UejZm4yztHqcIREkv1uBhhEyNmVqPks0KyIvLjz
-   XWeiKhtUPFPSRgq5l3fzMoAkIpw2tAZsXjeswsPhCNk7qEIpjsI5E7vUo
-   cbxIdNM79TmAuzC0KFUV7nAXRD31B2I9KQX2fqcgTOeLFW3NKCX6KNwIU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238851663"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="238851663"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 21:27:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="572985990"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 20 Feb 2022 21:27:07 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM1E2-0001La-LE; Mon, 21 Feb 2022 05:27:06 +0000
-Date:   Mon, 21 Feb 2022 13:26:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     tangmeng <tangmeng@uniontech.com>,
-        James.Bottomley@HansenPartnership.com, deller@gmx.de,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com
-Cc:     kbuild-all@lists.01.org, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        nizhen@uniontech.com, zhanglianjie@uniontech.com,
-        nixiaoming@huawei.com, tangmeng <tangmeng@uniontech.com>
-Subject: Re: [PATCH 01/11] kernel/parisc: move soft-power sysctl to its own
- file
-Message-ID: <202202211342.EcgL15uq-lkp@intel.com>
-References: <20220220060000.13079-1-tangmeng@uniontech.com>
+        Mon, 21 Feb 2022 00:35:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E33E4AE1A
+        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 21:34:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39807611EE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 05:34:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D624C340E9;
+        Mon, 21 Feb 2022 05:34:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645421697;
+        bh=VBlEvlHOLGTDybZZzMukE+NhuuRSv6OX0PR8ydFljic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EJ6WZmhiUMixrg2XcvhdSFs5piFazAVog70zlNWSvSPA9nuHByxBevdFvAmztuie/
+         TXXQOZRDcrFUcuPJvrubIeENCGtia1vlIjITwXF7/m5dClrhxnq0fKbFvCD1VIuZ6o
+         5MlgH2kbYOvHrk9Uuvp6Sf1kb+osVQVCORugiEw8VfDWSu+NGulepuqmUeKWrufxAs
+         LtOEsyLnNP2vUnQ3RMYnYnZzzSHs8IC/lxYD7CAR9R0La8T88iVOyaIqtwtmjXXDPU
+         dNy7RIH9CtwuIj9Z/sGPCBx/2QqZB1xjWKyaezU06/xafclUKyRvfnIHBC/GEFpwny
+         t4M/un8LwrJ7A==
+Date:   Sun, 20 Feb 2022 21:34:56 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux@dominikbrodowski.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] random: do not take pool spinlock at boot
+Message-ID: <YhMkgL3h6puTZX20@sol.localdomain>
+References: <20220212002859.622233-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220220060000.13079-1-tangmeng@uniontech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220212002859.622233-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi tangmeng,
+On Sat, Feb 12, 2022 at 01:28:59AM +0100, Jason A. Donenfeld wrote:
+> Since rand_initialize() is run while interrupts are still off and
+> nothing else is running, we don't need to repeatedly take and release
+> the pool spinlock, especially in the RDSEED loop.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+> Dominik - I'm still a bit unclear about early boot semantics that you
+> seem to know well. Is this patch correct?
+> 
+>  drivers/char/random.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index d4b692c9de68..8088348190e6 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -966,10 +966,10 @@ int __init rand_initialize(void)
+>  			rv = random_get_entropy();
+>  			arch_init = false;
+>  		}
+> -		mix_pool_bytes(&rv, sizeof(rv));
+> +		_mix_pool_bytes(&rv, sizeof(rv));
+>  	}
+> -	mix_pool_bytes(&now, sizeof(now));
+> -	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+> +	_mix_pool_bytes(&now, sizeof(now));
+> +	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+>  
+>  	extract_entropy(base_crng.key, sizeof(base_crng.key));
+>  	++base_crng.generation;
+> -- 
+> 2.35.0
 
-Thank you for the patch! Yet something to improve:
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 
-[auto build test ERROR on hnaz-mm/master]
-[also build test ERROR on deller-parisc/for-next rostedt-trace/for-next linus/master v5.17-rc5 next-20220217]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/tangmeng/kernel-parisc-move-soft-power-sysctl-to-its-own-file/20220220-174553
-base:   https://github.com/hnaz/linux-mm master
-config: parisc-randconfig-s031-20220220 (https://download.01.org/0day-ci/archive/20220221/202202211342.EcgL15uq-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/fc2d0c0a37a34fd9c89e5519f2aea93de690c2ce
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review tangmeng/kernel-parisc-move-soft-power-sysctl-to-its-own-file/20220220-174553
-        git checkout fc2d0c0a37a34fd9c89e5519f2aea93de690c2ce
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash drivers/parisc/ mm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/parisc/power.c:196:12: error: static declaration of 'pwrsw_enabled' follows non-static declaration
-     196 | static int pwrsw_enabled;
-         |            ^~~~~~~~~~~~~
-   drivers/parisc/power.c:112:5: note: previous definition of 'pwrsw_enabled' with type 'int'
-     112 | int pwrsw_enabled __read_mostly = 1;
-         |     ^~~~~~~~~~~~~
-
-
-vim +/pwrsw_enabled +196 drivers/parisc/power.c
-
-   195	
- > 196	static int pwrsw_enabled;
-   197	#ifdef CONFIG_SYSCTL
-   198	static struct ctl_table kern_parisc_power_table[] = {
-   199		{
-   200			.procname       = "soft-power",
-   201			.data           = &pwrsw_enabled,
-   202			.maxlen         = sizeof(int),
-   203			.mode           = 0644,
-   204			.proc_handler   = proc_dointvec,
-   205		},
-   206		{ }
-   207	};
-   208	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+- Eric
