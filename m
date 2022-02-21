@@ -2,207 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F465C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346037AbiBUI44 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:56:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44676 "EHLO
+        id S234323AbiBUI5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:57:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345687AbiBUIyN (ORCPT
+        with ESMTP id S1345773AbiBUIyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:54:13 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337C8237CA
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:53:05 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 21 Feb 2022 03:54:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38F8237CE;
+        Mon, 21 Feb 2022 00:53:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id F4148223F6;
-        Mon, 21 Feb 2022 09:53:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433583;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=di/66tvGWXR7jhbgUIY+qYAsvQLrdk/3pu1/JZ0R3A0=;
-        b=Fm3GVzGSjfVyNBXwedYB8NvPM5yoUI8TqSWiSKrksY4h6wuG1w6auKWHQI1XMG2VglArQV
-        4zyJINYDik08lgyIC6x0vzunVYVmzxkPk/7O1XiIgVVngFYi76TYHKwqVFz0GpdezaNmBk
-        larAgWDz74oSZ7/Jao/KMzZgbGoFxms=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 29/32] mtd: spi-nor: spansion: convert USE_CLSR to a manufacturer flag
-Date:   Mon, 21 Feb 2022 09:52:33 +0100
-Message-Id: <20220221085236.1452024-30-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 179B06114B;
+        Mon, 21 Feb 2022 08:53:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE1D3C340E9;
+        Mon, 21 Feb 2022 08:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433584;
+        bh=3hY4r8/3UO+KDlgWBI1PWNsgwmTFyNxZwI7NNxVqog0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PJrcETf3e23SBoAsaD6+SaKS1ZKUk0gRErAQ9ly8Rh+tCwOQ1tOQ1mBIpvlsdyEjm
+         YAt9DEXBHfSECS0RvntzphlovNhxPbzelwI/902TkgrjTy5sNHziniastZuNAIwin1
+         jcAophyWRbeBLenMfYdtiuLZfJs8FYCmt8RZb3Tg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.14 17/45] xfrm: Dont accidentally set RTO_ONLINK in decode_session4()
+Date:   Mon, 21 Feb 2022 09:49:08 +0100
+Message-Id: <20220221084911.021608828@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that all functions using that flag are local to the spansion module,
-we can convert the flag to a manufacturer one.
+From: Guillaume Nault <gnault@redhat.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+commit 23e7b1bfed61e301853b5e35472820d919498278 upstream.
+
+Similar to commit 94e2238969e8 ("xfrm4: strip ECN bits from tos field"),
+clear the ECN bits from iph->tos when setting ->flowi4_tos.
+This ensures that the last bit of ->flowi4_tos is cleared, so
+ip_route_output_key_hash() isn't going to restrict the scope of the
+route lookup.
+
+Use ~INET_ECN_MASK instead of IPTOS_RT_MASK, because we have no reason
+to clear the high order bits.
+
+Found by code inspection, compile tested only.
+
+Fixes: 4da3089f2b58 ("[IPSEC]: Use TOS when doing tunnel lookups")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[sudip: manually backport to previous location]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/spi-nor/core.c     |  3 --
- drivers/mtd/spi-nor/core.h     |  3 --
- drivers/mtd/spi-nor/spansion.c | 55 +++++++++++++++++++++-------------
- 3 files changed, 34 insertions(+), 27 deletions(-)
+ net/ipv4/xfrm4_policy.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index e2b8b0a438ce..f5a2f37d140e 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -2447,9 +2447,6 @@ static void spi_nor_init_flags(struct spi_nor *nor)
+--- a/net/ipv4/xfrm4_policy.c
++++ b/net/ipv4/xfrm4_policy.c
+@@ -17,6 +17,7 @@
+ #include <net/xfrm.h>
+ #include <net/ip.h>
+ #include <net/l3mdev.h>
++#include <net/inet_ecn.h>
  
- 	if (flags & NO_CHIP_ERASE)
- 		nor->flags |= SNOR_F_NO_OP_CHIP_ERASE;
--
--	if (flags & USE_CLSR)
--		nor->flags |= SNOR_F_USE_CLSR;
- }
+ static struct dst_entry *__xfrm4_dst_lookup(struct net *net, struct flowi4 *fl4,
+ 					    int tos, int oif,
+@@ -126,7 +127,7 @@ _decode_session4(struct sk_buff *skb, st
+ 	fl4->flowi4_proto = iph->protocol;
+ 	fl4->daddr = reverse ? iph->saddr : iph->daddr;
+ 	fl4->saddr = reverse ? iph->daddr : iph->saddr;
+-	fl4->flowi4_tos = iph->tos;
++	fl4->flowi4_tos = iph->tos & ~INET_ECN_MASK;
  
- /**
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index a02bf54289fb..2130a96e2044 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -14,7 +14,6 @@
- enum spi_nor_option_flags {
- 	SNOR_F_HAS_SR_TB	= BIT(1),
- 	SNOR_F_NO_OP_CHIP_ERASE	= BIT(2),
--	SNOR_F_USE_CLSR		= BIT(4),
- 	SNOR_F_BROKEN_RESET	= BIT(5),
- 	SNOR_F_4B_OPCODES	= BIT(6),
- 	SNOR_F_HAS_4BAIT	= BIT(7),
-@@ -347,7 +346,6 @@ struct spi_nor_fixups {
-  *   SPI_NOR_NO_ERASE:        no erase command needed.
-  *   NO_CHIP_ERASE:           chip does not support chip erase.
-  *   SPI_NOR_NO_FR:           can't do fastread.
-- *   USE_CLSR:                use CLSR command.
-  *
-  * @no_sfdp_flags:  flags that indicate support that can be discovered via SFDP.
-  *                  Used when SFDP tables are not defined in the flash. These
-@@ -398,7 +396,6 @@ struct flash_info {
- #define SPI_NOR_NO_ERASE		BIT(6)
- #define NO_CHIP_ERASE			BIT(7)
- #define SPI_NOR_NO_FR			BIT(8)
--#define USE_CLSR			BIT(9)
- 
- 	u8 no_sfdp_flags;
- #define SPI_NOR_SKIP_SFDP		BIT(0)
-diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
-index 88ecf117016f..33ebecbcc3c7 100644
---- a/drivers/mtd/spi-nor/spansion.c
-+++ b/drivers/mtd/spi-nor/spansion.c
-@@ -8,6 +8,9 @@
- 
- #include "core.h"
- 
-+/* flash_info mfr_flag. Used to clear sticky prorietary SR bits. */
-+#define USE_CLSR	BIT(0)
-+
- #define SPINOR_OP_CLSR		0x30	/* Clear status register 1 */
- #define SPINOR_OP_RD_ANY_REG			0x65	/* Read any register */
- #define SPINOR_OP_WR_ANY_REG			0x71	/* Write any register */
-@@ -212,43 +215,53 @@ static const struct flash_info spansion_nor_parts[] = {
- 	{ "s25sl064p",  INFO(0x010216, 0x4d00,  64 * 1024, 128)
- 		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
- 	{ "s25fl128s0", INFO6(0x012018, 0x4d0080, 256 * 1024, 64)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fl128s1", INFO6(0x012018, 0x4d0180, 64 * 1024, 256)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fl256s0", INFO6(0x010219, 0x4d0080, 256 * 1024, 128)
--		FLAGS(USE_CLSR)
- 		NO_SFDP_FLAGS(SPI_NOR_SKIP_SFDP | SPI_NOR_DUAL_READ |
--			      SPI_NOR_QUAD_READ) },
-+			      SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fl256s1", INFO6(0x010219, 0x4d0180, 64 * 1024, 512)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fl512s",  INFO6(0x010220, 0x4d0080, 256 * 1024, 256)
--		FLAGS(SPI_NOR_HAS_LOCK | USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		FLAGS(SPI_NOR_HAS_LOCK)
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fs128s1", INFO6(0x012018, 0x4d0181, 64 * 1024, 256)
--		FLAGS(USE_CLSR)
- 		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
- 		.fixups = &s25fs_s_fixups, },
- 	{ "s25fs256s0", INFO6(0x010219, 0x4d0081, 256 * 1024, 128)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fs256s1", INFO6(0x010219, 0x4d0181, 64 * 1024, 512)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fs512s",  INFO6(0x010220, 0x4d0081, 256 * 1024, 256)
--		FLAGS(USE_CLSR)
- 		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
- 		.fixups = &s25fs_s_fixups, },
- 	{ "s25sl12800", INFO(0x012018, 0x0300, 256 * 1024,  64) },
- 	{ "s25sl12801", INFO(0x012018, 0x0301,  64 * 1024, 256) },
- 	{ "s25fl129p0", INFO(0x012018, 0x4d00, 256 * 1024,  64)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25fl129p1", INFO(0x012018, 0x4d01,  64 * 1024, 256)
--		FLAGS(USE_CLSR)
--		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
-+		NO_SFDP_FLAGS(SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
-+		MFR_FLAGS(USE_CLSR)
-+	},
- 	{ "s25sl004a",  INFO(0x010212,      0,  64 * 1024,   8) },
- 	{ "s25sl008a",  INFO(0x010213,      0,  64 * 1024,  16) },
- 	{ "s25sl016a",  INFO(0x010214,      0,  64 * 1024,  32) },
-@@ -370,7 +383,7 @@ static void spansion_nor_late_init(struct spi_nor *nor)
- 		nor->mtd.erasesize = nor->info->sector_size;
- 	}
- 
--	if (nor->flags & SNOR_F_USE_CLSR)
-+	if (nor->info->mfr_flags & USE_CLSR)
- 		nor->params->ready = spi_nor_sr_ready_and_clear;
- }
- 
--- 
-2.30.2
+ 	if (!ip_is_fragment(iph)) {
+ 		switch (iph->protocol) {
+
 
