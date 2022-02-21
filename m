@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B2CC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C798AC3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354205AbiBUKDO (ORCPT
+        id S1353565AbiBUKB7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:03:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
+        Mon, 21 Feb 2022 05:01:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352279AbiBUJzR (ORCPT
+        with ESMTP id S1352349AbiBUJxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:55:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83CF38D8E;
-        Mon, 21 Feb 2022 01:24:25 -0800 (PST)
+        Mon, 21 Feb 2022 04:53:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3017637019;
+        Mon, 21 Feb 2022 01:23:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FFDEB80EB9;
-        Mon, 21 Feb 2022 09:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF80C340E9;
-        Mon, 21 Feb 2022 09:24:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C136E60FCC;
+        Mon, 21 Feb 2022 09:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9455C340E9;
+        Mon, 21 Feb 2022 09:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435463;
-        bh=QQ5ZIGrzyf85aJ0Ve7YOb/9ft6x8SGP+hp/fR0elpo0=;
+        s=korg; t=1645435426;
+        bh=uLIjypjoYN0GySrz3pbbzUIqlZoebQ0xIGjvV4tfMyQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DAtUb89WLuPjd+NFV3byZ1bp/501XYXSaGnxeF7UkfY8VhVFKnB4NJAJzv2fhDPbI
-         bflo/4KlI0Ji9BAg7MFpAdpXmOp5845oES80t63DC5SOWzapFKB8SHoZw2eLSfvcGh
-         OSiy9Tk/k7eNyo/YFNviiXQIvEDiH5hOdZBhRcM0=
+        b=Keqc9CW8FV7ieQx6iOzQ8pp9C+Vld67q8q/OSTTgkJ7OTc2mBweVP/8s7GPAN14td
+         6hvnubf9xWKW0KKdjPeU2O1gZV1Sw66Ax7MVFIBKQa+ne5VQ+4igwiRJ/887EWyp6x
+         7WEltP95hBW5Ssp3lYwN2lV89E1HLSFUzIjESaMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Ferreira?= <contact@lsferreira.net>,
-        Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.16 172/227] x86/ptrace: Fix xfpregs_set()s incorrect xmm clearing
-Date:   Mon, 21 Feb 2022 09:49:51 +0100
-Message-Id: <20220221084940.529596581@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.16 160/227] NFS: Remove an incorrect revalidation in nfs4_update_changeattr_locked()
+Date:   Mon, 21 Feb 2022 09:49:39 +0100
+Message-Id: <20220221084940.144222029@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,84 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 44cad52cc14ae10062f142ec16ede489bccf4469 upstream.
+commit 9d047bf68fe8cdb4086deaf4edd119731a9481ed upstream.
 
-xfpregs_set() handles 32-bit REGSET_XFP and 64-bit REGSET_FP. The actual
-code treats these regsets as modern FX state (i.e. the beginning part of
-XSTATE). The declarations of the regsets thought they were the legacy
-i387 format. The code thought they were the 32-bit (no xmm8..15) variant
-of XSTATE and, for good measure, made the high bits disappear by zeroing
-the wrong part of the buffer. The latter broke ptrace, and everything
-else confused anyone trying to understand the code. In particular, the
-nonsense definitions of the regsets confused me when I wrote this code.
+In nfs4_update_changeattr_locked(), we don't need to set the
+NFS_INO_REVAL_PAGECACHE flag, because we already know the value of the
+change attribute, and we're already flagging the size. In fact, this
+forces us to revalidate the change attribute a second time for no good
+reason.
+This extra flag appears to have been introduced as part of the xattr
+feature, when update_changeattr_locked() was converted for use by the
+xattr code.
 
-Clean this all up. Change the declarations to match reality (which
-shouldn't change the generated code, let alone the ABI) and fix
-xfpregs_set() to clear the correct bits and to only do so for 32-bit
-callers.
-
-Fixes: 6164331d15f7 ("x86/fpu: Rewrite xfpregs_set()")
-Reported-by: Luís Ferreira <contact@lsferreira.net>
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215524
-Link: https://lore.kernel.org/r/YgpFnZpF01WwR8wU@zn.tnic
+Fixes: 1b523ca972ed ("nfs: modify update_changeattr to deal with regular files")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/fpu/regset.c |    9 ++++-----
- arch/x86/kernel/ptrace.c     |    4 ++--
- 2 files changed, 6 insertions(+), 7 deletions(-)
+ fs/nfs/nfs4proc.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/x86/kernel/fpu/regset.c
-+++ b/arch/x86/kernel/fpu/regset.c
-@@ -91,11 +91,9 @@ int xfpregs_set(struct task_struct *targ
- 		const void *kbuf, const void __user *ubuf)
- {
- 	struct fpu *fpu = &target->thread.fpu;
--	struct user32_fxsr_struct newstate;
-+	struct fxregs_state newstate;
- 	int ret;
- 
--	BUILD_BUG_ON(sizeof(newstate) != sizeof(struct fxregs_state));
--
- 	if (!cpu_feature_enabled(X86_FEATURE_FXSR))
- 		return -ENODEV;
- 
-@@ -116,9 +114,10 @@ int xfpregs_set(struct task_struct *targ
- 	/* Copy the state  */
- 	memcpy(&fpu->fpstate->regs.fxsave, &newstate, sizeof(newstate));
- 
--	/* Clear xmm8..15 */
-+	/* Clear xmm8..15 for 32-bit callers */
- 	BUILD_BUG_ON(sizeof(fpu->__fpstate.regs.fxsave.xmm_space) != 16 * 16);
--	memset(&fpu->fpstate->regs.fxsave.xmm_space[8], 0, 8 * 16);
-+	if (in_ia32_syscall())
-+		memset(&fpu->fpstate->regs.fxsave.xmm_space[8*4], 0, 8 * 16);
- 
- 	/* Mark FP and SSE as in use when XSAVE is enabled */
- 	if (use_xsave())
---- a/arch/x86/kernel/ptrace.c
-+++ b/arch/x86/kernel/ptrace.c
-@@ -1224,7 +1224,7 @@ static struct user_regset x86_64_regsets
- 	},
- 	[REGSET_FP] = {
- 		.core_note_type = NT_PRFPREG,
--		.n = sizeof(struct user_i387_struct) / sizeof(long),
-+		.n = sizeof(struct fxregs_state) / sizeof(long),
- 		.size = sizeof(long), .align = sizeof(long),
- 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
- 	},
-@@ -1271,7 +1271,7 @@ static struct user_regset x86_32_regsets
- 	},
- 	[REGSET_XFP] = {
- 		.core_note_type = NT_PRXFPREG,
--		.n = sizeof(struct user32_fxsr_struct) / sizeof(u32),
-+		.n = sizeof(struct fxregs_state) / sizeof(u32),
- 		.size = sizeof(u32), .align = sizeof(u32),
- 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
- 	},
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -1233,8 +1233,7 @@ nfs4_update_changeattr_locked(struct ino
+ 				NFS_INO_INVALID_ACCESS | NFS_INO_INVALID_ACL |
+ 				NFS_INO_INVALID_SIZE | NFS_INO_INVALID_OTHER |
+ 				NFS_INO_INVALID_BLOCKS | NFS_INO_INVALID_NLINK |
+-				NFS_INO_INVALID_MODE | NFS_INO_INVALID_XATTR |
+-				NFS_INO_REVAL_PAGECACHE;
++				NFS_INO_INVALID_MODE | NFS_INO_INVALID_XATTR;
+ 		nfsi->attrtimeo = NFS_MINATTRTIMEO(inode);
+ 	}
+ 	nfsi->attrtimeo_timestamp = jiffies;
 
 
