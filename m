@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E918C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242271AbiBUJw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:52:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42384 "EHLO
+        id S1351750AbiBUJwb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:52:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352471AbiBUJra (ORCPT
+        with ESMTP id S1352470AbiBUJra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:47:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2124331374;
-        Mon, 21 Feb 2022 01:19:57 -0800 (PST)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F9F31361;
+        Mon, 21 Feb 2022 01:19:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3A4460F46;
-        Mon, 21 Feb 2022 09:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971E4C340E9;
-        Mon, 21 Feb 2022 09:19:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EA1F9CE0E7D;
+        Mon, 21 Feb 2022 09:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7ADC340EC;
+        Mon, 21 Feb 2022 09:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435196;
-        bh=dzgvD5fCB9/BzXR2I4sstOpNngSBG7g9smFuubhhq2Q=;
+        s=korg; t=1645435190;
+        bh=oHwyv9i4nomRFDXyb1ov4PujWD+EPAnMLWxspRvR/Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAtuij+s8Lzgw696nfZmomNu9xji1lU/a/wngf4D2MS76sct0TvvYwmQDa4usmxRf
-         /4JJtimfeiK7jatbmmgfh0BLO+A9ephTUAn80Jdk2eHqwcwSEA8v/8ipRJfpRSkf1S
-         si3/6ulXicnP/bxhqOmc3TBpc4BOYUmyETMPRgCE=
+        b=KdsuUpTTnPPcnRTBmRwY1zyaHBhl4wQkWrmSmm5qYsQo66PqkGOBy85dzM1WbPUDs
+         ppzdx4VFuuTWt67555vnQ1vAx7Okj+7b6BJpa61IU2ss7xnB2alh8vezD1T3ntKOLI
+         +xn5kKnBmAaQBF5TtVEe9+gPt8uzz3ZKsDg37fAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 047/227] ax25: improve the incomplete fix to avoid UAF and NPD bugs
-Date:   Mon, 21 Feb 2022 09:47:46 +0100
-Message-Id: <20220221084936.444795974@linuxfoundation.org>
+Subject: [PATCH 5.16 045/227] selftests: openat2: Skip testcases that fail with EOPNOTSUPP
+Date:   Mon, 21 Feb 2022 09:47:44 +0100
+Message-Id: <20220221084936.371762552@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,88 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
+[ Upstream commit ac9e0a250bb155078601a5b999aab05f2a04d1ab ]
 
-The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
-AX25 device") introduce lock_sock() into ax25_kill_by_device to
-prevent NPD bug. But the concurrency NPD or UAF bug will occur,
-when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+Skip testcases that fail since the requested valid flags combination is not
+supported by the underlying filesystem.
 
-The NULL pointer dereference bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-                             |     ax25_cb_del()
-  ...                        |     ...
-                             |     ax25->sk=NULL;
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |     ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is set to null before dereference
-site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
-in advance, and uses ax25_list_lock to protect it, which can synchronize
-with ax25_cb_del() and ensure the value of sock is not null before
-dereference sites.
-
-The concurrency UAF bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-  ...                        |   ...
-                             |   sock_put(sk); //FREE
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |   ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is released before dereference
-site (1) or (2). Therefore, this patch uses sock_hold() to increase
-the refcount of sock and uses ax25_list_lock to protect it, which
-can synchronize with ax25_cb_del() in ax25_destroy_socket() and
-ensure the sock wil not be released before dereference sites.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ tools/testing/selftests/openat2/openat2_test.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 02f43f3e2c564..44a8730c26acc 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -77,6 +77,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- {
- 	ax25_dev *ax25_dev;
- 	ax25_cb *s;
-+	struct sock *sk;
+diff --git a/tools/testing/selftests/openat2/openat2_test.c b/tools/testing/selftests/openat2/openat2_test.c
+index 1bddbe934204c..7fb902099de45 100644
+--- a/tools/testing/selftests/openat2/openat2_test.c
++++ b/tools/testing/selftests/openat2/openat2_test.c
+@@ -259,6 +259,16 @@ void test_openat2_flags(void)
+ 		unlink(path);
  
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-@@ -85,13 +86,15 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			sk = s->sk;
-+			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
--			lock_sock(s->sk);
-+			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			release_sock(s->sk);
-+			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
+ 		fd = sys_openat2(AT_FDCWD, path, &test->how);
++		if (fd < 0 && fd == -EOPNOTSUPP) {
++			/*
++			 * Skip the testcase if it failed because not supported
++			 * by FS. (e.g. a valid O_TMPFILE combination on NFS)
++			 */
++			ksft_test_result_skip("openat2 with %s fails with %d (%s)\n",
++					      test->name, fd, strerror(-fd));
++			goto next;
++		}
++
+ 		if (test->err >= 0)
+ 			failed = (fd < 0);
+ 		else
+@@ -303,7 +313,7 @@ void test_openat2_flags(void)
+ 		else
+ 			resultfn("openat2 with %s fails with %d (%s)\n",
+ 				 test->name, test->err, strerror(-test->err));
 -
-+			sock_put(sk);
- 			/* The entry could have been deleted from the
- 			 * list meanwhile and thus the next pointer is
- 			 * no longer valid.  Play it safe and restart
++next:
+ 		free(fdpath);
+ 		fflush(stdout);
+ 	}
 -- 
 2.34.1
 
