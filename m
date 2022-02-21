@@ -2,90 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1E1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9DDC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349648AbiBUJMo (ORCPT
+        id S1349693AbiBUJMu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33980 "EHLO
+        Mon, 21 Feb 2022 04:12:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347820AbiBUJI4 (ORCPT
+        with ESMTP id S1347819AbiBUJI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:08:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A676A27140;
-        Mon, 21 Feb 2022 01:00:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 424BD6112C;
-        Mon, 21 Feb 2022 09:00:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F6D2C340EB;
-        Mon, 21 Feb 2022 09:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434049;
-        bh=jl6J5B/Ooq64gp8K9/J7JdHTpm2F2YSPuQwYltenSYo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TfWNe71rRhcaHYCOlzKdHB4G5aYXNIOEX/IhnLbMgEuJPbDZlMdMzCx5o6aBWz5W/
-         H0cUOt2XSMDqWUttkl6Gz3MrH1xD09EcQAQlHN4kDyRzAH6J1C/lyRmF4l2CGoHERw
-         Xa6uQlCnepYJk1F+dq82d2J+D4XoFvACq+7brNaI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Zolt=C3=A1n=20B=C3=B6sz=C3=B6rm=C3=A9nyi?= 
-        <zboszor@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 75/80] ata: libata-core: Disable TRIM on M88V29
-Date:   Mon, 21 Feb 2022 09:49:55 +0100
-Message-Id: <20220221084918.039587269@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
-References: <20220221084915.554151737@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C7327144
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:00:52 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id w20so12341575plq.12
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:00:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dud4wl8y+LZmCLdkFSU7QbiakBoSq1Jeyz9YQqn3rNo=;
+        b=j8DP+wEhblNq85DGtSuK/djC85WwiCCmIZtk/X4JdxyenucKDmSH5VN7O27KlDjzfO
+         h2r4vbZm64h9wVbwBIic0ytf76wuCn/Gi67prU5CXRcbUHbmi7FzmkYIOn72/rIuTWLK
+         Ckw/5cPEqcVWiEapgX9H31QOYSe6eGxf2nfvbjV8KYMAjEgnd90frGoNRCqNGUFgAOrQ
+         AnMFSb5rVKMkJlCddmvsj6y7B6Kg4OjLpuZH4uMiCttMVAVJYLyFLojI9bYfte5kVYel
+         Il9CV9D4EmtflvudRQ44llKaq2QnCgMiTX2AFk8JcrI42ZHVzZC8nsZj79ZwOAbis5DO
+         xz4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dud4wl8y+LZmCLdkFSU7QbiakBoSq1Jeyz9YQqn3rNo=;
+        b=IU33RiMNBs0rQmGGH4VEImuhDpZI9UqCipBlzapGv7MgcyFzSeU48yD/BN76fV0Jjz
+         GrrfaBQYH4UkBX5bn5Ts0VBG3ymKaTbV6k4mPCiRC8qvoqV2pRipaAaoaAzC6QZsjeln
+         8yOdcwn/duxjBF7+wlw4F5eyfxJBy2OkqEW+cGYX3jaSSTvO4S8IMBIi7Xsq9iPBsDVA
+         JO9IbOAVshPlqyzvWxj876pAWZTy+fABDa8Aci9ypct0nxLirpMZB8f9QqbSBQs56s2K
+         UItp2gYD0rFTVwNVuncH8nju38ookEbk07S8vLr9UKo107H3QRK/8w+bkI3YZUm8V7He
+         g+2w==
+X-Gm-Message-State: AOAM53188Tj9si661G5R+p50IrVEb/+8azHAcuK2M3qKj4sC9sz5QY+G
+        Eu4dB/JBpxSg+6wqwiOp4zdhyglxUMlAXpZJQtUFOQ==
+X-Google-Smtp-Source: ABdhPJypnza5WDBfv//wdLcCfitImT4GppEIr1iPQiLUs6bmG84m9QM8ZrlyiOzwoE1AuHLUbKmH+OK6gMwC0+rS2AI=
+X-Received: by 2002:a17:902:e550:b0:14f:a673:bb50 with SMTP id
+ n16-20020a170902e55000b0014fa673bb50mr6666414plf.51.1645434051793; Mon, 21
+ Feb 2022 01:00:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <yonglin.tan@outlook.com> <MEYP282MB237443EA389045F03FF2B48BFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+In-Reply-To: <MEYP282MB237443EA389045F03FF2B48BFD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 21 Feb 2022 10:00:16 +0100
+Message-ID: <CAMZdPi9xN_gQRUz3C2MPoSu9O_byaHnydZm3spX3Buecb8_hng@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: To support SAHARA port for Qualcomm WWAN module.
+To:     Yonglin Tan <yonglin.tan@outlook.com>
+Cc:     ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zoltán Böszörményi <zboszor@gmail.com>
+Hi Yonglin,
 
-[ Upstream commit c8ea23d5fa59f28302d4e3370c75d9c308e64410 ]
+On Mon, 21 Feb 2022 at 09:42, Yonglin Tan <yonglin.tan@outlook.com> wrote:
+>
+> The SAHARA port for Qualcomm WWAN module is used to capture
+> memory dump. But now this feature has not been supported by
+> linux kernel code. Such that no SAHARA driver matched while
+> the device entered to DUMP mode.
 
-This device is a CF card, or possibly an SSD in CF form factor.
-It supports NCQ and high speed DMA.
+So this is SAHARA debug mode? Can you share an example of usage and
+tool to communicate via this channel, AFAIU SAHARA is already partly
+supported in MHI stack to load the firehose programmer automatically,
+so can you elaborate a bit on how it works?
 
-While it also advertises TRIM support, I/O errors are reported
-when the discard mount option fstrim is used. TRIM also fails
-when disabling NCQ and not just as an NCQ command.
-
-TRIM must be disabled for this device.
-
-Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/ata/libata-core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 92fb1f5b240e8..dca1590f295d0 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4595,6 +4595,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
- 
- 	/* devices that don't properly handle TRIM commands */
- 	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
-+	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
- 
- 	/*
- 	 * As defined, the DRAT (Deterministic Read After Trim) and RZAT
--- 
-2.34.1
+Regards,
+Loic
 
 
-
+>
+> Cc: stable@vger.kernel.org
+> Fixes: fa588eba632d ("net: Add Qcom WWAN control driver")
+> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+> ---
+>  drivers/net/wwan/mhi_wwan_ctrl.c | 1 +
+>  drivers/net/wwan/wwan_core.c     | 4 ++++
+>  include/linux/wwan.h             | 1 +
+>  3 files changed, 6 insertions(+)
+>
+> diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
+> index e4d0f69..4cf420e 100644
+> --- a/drivers/net/wwan/mhi_wwan_ctrl.c
+> +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+> @@ -262,6 +262,7 @@ static const struct mhi_device_id mhi_wwan_ctrl_match_table[] = {
+>         { .chan = "QMI", .driver_data = WWAN_PORT_QMI },
+>         { .chan = "DIAG", .driver_data = WWAN_PORT_QCDM },
+>         { .chan = "FIREHOSE", .driver_data = WWAN_PORT_FIREHOSE },
+> +       { .chan = "SAHARA", .driver_data = WWAN_PORT_SAHARA },
+>         {},
+>  };
+>  MODULE_DEVICE_TABLE(mhi, mhi_wwan_ctrl_match_table);
+> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+> index b8c7843..2630677 100644
+> --- a/drivers/net/wwan/wwan_core.c
+> +++ b/drivers/net/wwan/wwan_core.c
+> @@ -318,6 +318,10 @@ static const struct {
+>                 .name = "FIREHOSE",
+>                 .devsuf = "firehose",
+>         },
+> +       [WWAN_PORT_SAHARA] = {
+> +               .name = "SAHARA",
+> +               .devsuf = "sahara",
+> +       },
+>  };
+>
+>  static ssize_t type_show(struct device *dev, struct device_attribute *attr,
+> diff --git a/include/linux/wwan.h b/include/linux/wwan.h
+> index 5ce2acf..fc8ecaf 100644
+> --- a/include/linux/wwan.h
+> +++ b/include/linux/wwan.h
+> @@ -26,6 +26,7 @@ enum wwan_port_type {
+>         WWAN_PORT_QMI,
+>         WWAN_PORT_QCDM,
+>         WWAN_PORT_FIREHOSE,
+> +       WWAN_PORT_SAHARA,
+>
+>         /* Add new port types above this line */
+>
+> --
+> 2.7.4
+>
