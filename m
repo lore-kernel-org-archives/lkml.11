@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF406C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C516C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353420AbiBUKKr (ORCPT
+        id S1353495AbiBUKK4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:10:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35336 "EHLO
+        Mon, 21 Feb 2022 05:10:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353294AbiBUJ5U (ORCPT
+        with ESMTP id S1353276AbiBUJ5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:20 -0500
+        Mon, 21 Feb 2022 04:57:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5726046B05;
-        Mon, 21 Feb 2022 01:25:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62B0C4666B;
+        Mon, 21 Feb 2022 01:25:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3E47B80EC9;
-        Mon, 21 Feb 2022 09:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 248A5C340EC;
-        Mon, 21 Feb 2022 09:25:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED35DB80EB1;
+        Mon, 21 Feb 2022 09:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 318B3C340E9;
+        Mon, 21 Feb 2022 09:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435514;
-        bh=E10zvqeQW5+Fg49smzsMnHYL12P0GYgW1UwTNysAPfA=;
+        s=korg; t=1645435511;
+        bh=siYdtErxRQq6Omyemv47TzjiCPolt1EQ/d8lzU9lmSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJQ/PoU2RpzMIV1Nz4MemJR+IbjnLsDeoMezwD6ZV3Ocwt5T60O8LrklM1ZdTwlCe
-         4MTbgICtdJNZiQWsbg8VXNsLESCFOlKOgS0hDqq9lSaYJCTeSibYeQnLsHyrr08KYt
-         GMe8AKTqCzEECXRsESuGdvIP+UhVs0m3C7d0tcTM=
+        b=mqV2OZ6e09aQFqubQhbHxQrRKR78Qh6FKlhMXkUHKY3AP64IJ74GCAOX2mxV67PIJ
+         BBnCZf5I7ACkqscZ8nGSmIHE2629e4j323FuJAFpU/8Wsg5kr6H3bhI7RUC0p4mE+S
+         a4/qB0gNMMEP2twBsnJ7kMk6CI4a+mVMJY36WKho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cheng Jui Wang <cheng-jui.wang@mediatek.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Subject: [PATCH 5.16 191/227] lockdep: Correct lock_classes index mapping
-Date:   Mon, 21 Feb 2022 09:50:10 +0100
-Message-Id: <20220221084941.166145669@linuxfoundation.org>
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.16 190/227] i2c: brcmstb: fix support for DSL and CM variants
+Date:   Mon, 21 Feb 2022 09:50:09 +0100
+Message-Id: <20220221084941.137141013@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,70 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-commit 28df029d53a2fd80c1b8674d47895648ad26dcfb upstream.
+commit 834cea3a252ed4847db076a769ad9efe06afe2d5 upstream.
 
-A kernel exception was hit when trying to dump /proc/lockdep_chains after
-lockdep report "BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low!":
+DSL and CM (Cable Modem) support 8 B max transfer size and have a custom
+DT binding for that reason. This driver was checking for a wrong
+"compatible" however which resulted in an incorrect setup.
 
-Unable to handle kernel paging request at virtual address 00054005450e05c3
-...
-00054005450e05c3] address between user and kernel address ranges
-...
-pc : [0xffffffece769b3a8] string+0x50/0x10c
-lr : [0xffffffece769ac88] vsnprintf+0x468/0x69c
-...
- Call trace:
-  string+0x50/0x10c
-  vsnprintf+0x468/0x69c
-  seq_printf+0x8c/0xd8
-  print_name+0x64/0xf4
-  lc_show+0xb8/0x128
-  seq_read_iter+0x3cc/0x5fc
-  proc_reg_read_iter+0xdc/0x1d4
-
-The cause of the problem is the function lock_chain_get_class() will
-shift lock_classes index by 1, but the index don't need to be shifted
-anymore since commit 01bb6f0af992 ("locking/lockdep: Change the range
-of class_idx in held_lock struct") already change the index to start
-from 0.
-
-The lock_classes[-1] located at chain_hlocks array. When printing
-lock_classes[-1] after the chain_hlocks entries are modified, the
-exception happened.
-
-The output of lockdep_chains are incorrect due to this problem too.
-
-Fixes: f611e8cf98ec ("lockdep: Take read/write status in consideration when generate chainkey")
-Signed-off-by: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
-Link: https://lore.kernel.org/r/20220210105011.21712-1-cheng-jui.wang@mediatek.com
+Fixes: e2e5a2c61837 ("i2c: brcmstb: Adding support for CM and DSL SoCs")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/locking/lockdep.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-brcmstb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -3462,7 +3462,7 @@ struct lock_class *lock_chain_get_class(
- 	u16 chain_hlock = chain_hlocks[chain->base + i];
- 	unsigned int class_idx = chain_hlock_class_idx(chain_hlock);
+--- a/drivers/i2c/busses/i2c-brcmstb.c
++++ b/drivers/i2c/busses/i2c-brcmstb.c
+@@ -673,7 +673,7 @@ static int brcmstb_i2c_probe(struct plat
  
--	return lock_classes + class_idx - 1;
-+	return lock_classes + class_idx;
- }
- 
- /*
-@@ -3530,7 +3530,7 @@ static void print_chain_keys_chain(struc
- 		hlock_id = chain_hlocks[chain->base + i];
- 		chain_key = print_chain_key_iteration(hlock_id, chain_key);
- 
--		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id) - 1);
-+		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id));
- 		printk("\n");
- 	}
- }
+ 	/* set the data in/out register size for compatible SoCs */
+ 	if (of_device_is_compatible(dev->device->of_node,
+-				    "brcmstb,brcmper-i2c"))
++				    "brcm,brcmper-i2c"))
+ 		dev->data_regsz = sizeof(u8);
+ 	else
+ 		dev->data_regsz = sizeof(u32);
 
 
