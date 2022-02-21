@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A34C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C60C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350233AbiBUJaZ (ORCPT
+        id S1349876AbiBUJa2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:30:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35062 "EHLO
+        Mon, 21 Feb 2022 04:30:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350292AbiBUJWY (ORCPT
+        with ESMTP id S1350346AbiBUJW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:22:24 -0500
+        Mon, 21 Feb 2022 04:22:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133A2381A0;
-        Mon, 21 Feb 2022 01:09:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCFD387A0;
+        Mon, 21 Feb 2022 01:09:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D3F60B1B;
-        Mon, 21 Feb 2022 09:09:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8831AC340E9;
-        Mon, 21 Feb 2022 09:09:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E52560B24;
+        Mon, 21 Feb 2022 09:09:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46DA6C340E9;
+        Mon, 21 Feb 2022 09:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434589;
-        bh=0l6VWU+fCpdLger+iD1JWTeW8k6VwwchU0sRqFBp3no=;
+        s=korg; t=1645434594;
+        bh=lzNlqDpoAJKh6gySC7LSWD1h2RzEJ+837TUQzaYknuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dIXNpfZtlFSctx+cAoYmaosUzMTnTb1FfpdduIdB+ca9WP8x29AmbX5E8q62XAUlJ
-         Q4Ra82wWw6czwYCYcdKAifj48Pno8/EI7rxD+14M1+B/dXBlRMPEUtW+hC5F5DQ8C2
-         hL2gN/VT89SKJP5Suwb+YMyoTi/nxmxBeiRDViaE=
+        b=OYJ0Lvwmn7FZDEY5Fkpm1NPeaxYujDZtApvUuz6okHEQUysLvT8CM9SbzAx0UeHrG
+         fyV4eIoRApp1wbcSveeoQucXsbZyE4MIjyKyuPfn4r6l0D+4/4h/Eoug4Xcd0k26hJ
+         1AHULlPXYBMJ91k/N8BG6bjaFZt4j9ytLTwV5vQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicholas Bishop <nicholasbishop@google.com>,
+        stable@vger.kernel.org, Yifan Zhang <yifan1.zhang@amd.com>,
+        Aaron Liu <aaron.liu@amd.com>, Huang Rui <ray.huang@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 061/196] drm/radeon: Fix backlight control on iMac 12,1
-Date:   Mon, 21 Feb 2022 09:48:13 +0100
-Message-Id: <20220221084932.975931955@linuxfoundation.org>
+Subject: [PATCH 5.15 063/196] drm/amd/pm: correct the sequence of sending gpu reset msg
+Date:   Mon, 21 Feb 2022 09:48:15 +0100
+Message-Id: <20220221084933.041430152@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,33 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Bishop <nicholasbishop@google.com>
+From: Yifan Zhang <yifan1.zhang@amd.com>
 
-commit 364438fd629f7611a84c8e6d7de91659300f1502 upstream.
+commit 9c4f59ea3f865693150edf0c91d1cc6b451360dd upstream.
 
-The iMac 12,1 does not use the gmux driver for backlight, so the radeon
-backlight device is needed to set the brightness.
+the 2nd parameter should be smu msg type rather than asic msg index.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1838
-Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+Fixes: 7d38d9dc4ecc ("drm/amdgpu: add mode2 reset support for yellow carp")
+Signed-off-by: Yifan Zhang <yifan1.zhang@amd.com>
+Acked-by: Aaron Liu <aaron.liu@amd.com>
+Reviewed-by: Huang Rui <ray.huang@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/radeon/atombios_encoders.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
---- a/drivers/gpu/drm/radeon/atombios_encoders.c
-+++ b/drivers/gpu/drm/radeon/atombios_encoders.c
-@@ -198,7 +198,8 @@ void radeon_atom_backlight_init(struct r
- 	 * so don't register a backlight device
- 	 */
- 	if ((rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE) &&
--	    (rdev->pdev->device == 0x6741))
-+	    (rdev->pdev->device == 0x6741) &&
-+	    !dmi_match(DMI_PRODUCT_NAME, "iMac12,1"))
- 		return;
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+@@ -291,14 +291,9 @@ static int yellow_carp_post_smu_init(str
  
- 	if (!radeon_encoder->enc_priv)
+ static int yellow_carp_mode_reset(struct smu_context *smu, int type)
+ {
+-	int ret = 0, index = 0;
++	int ret = 0;
+ 
+-	index = smu_cmn_to_asic_specific_index(smu, CMN2ASIC_MAPPING_MSG,
+-				SMU_MSG_GfxDeviceDriverReset);
+-	if (index < 0)
+-		return index == -EACCES ? 0 : index;
+-
+-	ret = smu_cmn_send_smc_msg_with_param(smu, (uint16_t)index, type, NULL);
++	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_GfxDeviceDriverReset, type, NULL);
+ 	if (ret)
+ 		dev_err(smu->adev->dev, "Failed to mode reset!\n");
+ 
 
 
