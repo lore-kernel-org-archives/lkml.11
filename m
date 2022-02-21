@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B4FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A61C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352442AbiBUKDk (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:03:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57112 "EHLO
+        id S229635AbiBUKDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:03:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352944AbiBUJ45 (ORCPT
+        with ESMTP id S1353022AbiBUJ5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:56:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112B345502;
-        Mon, 21 Feb 2022 01:24:47 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659EF45790;
+        Mon, 21 Feb 2022 01:24:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CC816104F;
-        Mon, 21 Feb 2022 09:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81776C340F3;
-        Mon, 21 Feb 2022 09:24:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26C5BB80ECB;
+        Mon, 21 Feb 2022 09:24:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46CA3C340E9;
+        Mon, 21 Feb 2022 09:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435486;
-        bh=K6IXxwfYf+2EogGduwm0n8GcWNbITrkY/OPsF0vp9b0=;
+        s=korg; t=1645435491;
+        bh=n1f98Y30u1MRoTvXq5oADRdUKbZtJKh6KWD/vuLlgzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZI4peuLW5EgrmZWFMCdC4hV14+rHO4euZJoSbQ1PCwxPfD/HSfrj4F2odU8k+N4Vy
-         X7GUjPHRCwRfYWpsTxyUHD2SLLmJgoqQJ2EYqMFitvnIt5bfr0k339tJumSMJWLPBE
-         0a48a96kX9ooKr2VT0kJQMPP+P1rI38yXcbq6nGg=
+        b=ZZVACbFM/ca8sUwtvgst5CeDNdlR9xGCMD9mZ+c8xYZDUNiPe98G6ogAQeMiCM9LB
+         1M3Z8Ne/ywmKTAMU2PqCgsd+VXGnmJc/SItKGiEXdWY/jmfwzAcCGRWpCdgV9/Tgct
+         U/ulLGUO21PeoQQiJfM29fNulIcVS+2EXmdf5HKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Scarborough <kim@scarborough.kim>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.16 148/227] cifs: fix confusing unneeded warning message on smb2.1 and earlier
-Date:   Mon, 21 Feb 2022 09:49:27 +0100
-Message-Id: <20220221084939.755611375@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 150/227] powerpc/603: Fix boot failure with DEBUG_PAGEALLOC and KFENCE
+Date:   Mon, 21 Feb 2022 09:49:29 +0100
+Message-Id: <20220221084939.819973632@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,53 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 53923e0fe2098f90f339510aeaa0e1413ae99a16 upstream.
+commit 9bb162fa26ed76031ed0e7dbc77ccea0bf977758 upstream.
 
-When mounting with SMB2.1 or earlier, even with nomultichannel, we
-log the confusing warning message:
-  "CIFS: VFS: multichannel is not supported on this protocol version, use 3.0 or above"
+Allthough kernel text is always mapped with BATs, we still have
+inittext mapped with pages, so TLB miss handling is required
+when CONFIG_DEBUG_PAGEALLOC or CONFIG_KFENCE is set.
 
-Fix this so that we don't log this unless they really are trying
-to mount with multichannel.
+The final solution should be to set a BAT that also maps inittext
+but that BAT then needs to be cleared at end of init, and it will
+require more changes to be able to do it properly.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215608
-Reported-by: Kim Scarborough <kim@scarborough.kim>
-Cc: stable@vger.kernel.org # 5.11+
-Reviewed-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+As DEBUG_PAGEALLOC or KFENCE are debugging, performance is not a big
+deal so let's fix it simply for now to enable easy stable application.
+
+Fixes: 035b19a15a98 ("powerpc/32s: Always map kernel text and rodata with BATs")
+Cc: stable@vger.kernel.org # v5.11+
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/aea33b4813a26bdb9378b5f273f00bd5d4abe240.1638857364.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/sess.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/powerpc/kernel/head_book3s_32.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -76,11 +76,6 @@ int cifs_try_adding_channels(struct cifs
- 	struct cifs_server_iface *ifaces = NULL;
- 	size_t iface_count;
- 
--	if (ses->server->dialect < SMB30_PROT_ID) {
--		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
--		return 0;
--	}
--
- 	spin_lock(&ses->chan_lock);
- 
- 	new_chan_count = old_chan_count = ses->chan_count;
-@@ -94,6 +89,12 @@ int cifs_try_adding_channels(struct cifs
- 		return 0;
- 	}
- 
-+	if (ses->server->dialect < SMB30_PROT_ID) {
-+		spin_unlock(&ses->chan_lock);
-+		cifs_dbg(VFS, "multichannel is not supported on this protocol version, use 3.0 or above\n");
-+		return 0;
-+	}
-+
- 	if (!(ses->server->capabilities & SMB2_GLOBAL_CAP_MULTI_CHANNEL)) {
- 		ses->chan_max = 1;
- 		spin_unlock(&ses->chan_lock);
+--- a/arch/powerpc/kernel/head_book3s_32.S
++++ b/arch/powerpc/kernel/head_book3s_32.S
+@@ -421,14 +421,14 @@ InstructionTLBMiss:
+  */
+ 	/* Get PTE (linux-style) and check access */
+ 	mfspr	r3,SPRN_IMISS
+-#ifdef CONFIG_MODULES
++#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
+ 	lis	r1, TASK_SIZE@h		/* check if kernel address */
+ 	cmplw	0,r1,r3
+ #endif
+ 	mfspr	r2, SPRN_SDR1
+ 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC | _PAGE_USER
+ 	rlwinm	r2, r2, 28, 0xfffff000
+-#ifdef CONFIG_MODULES
++#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
+ 	bgt-	112f
+ 	lis	r2, (swapper_pg_dir - PAGE_OFFSET)@ha	/* if kernel address, use */
+ 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC
 
 
