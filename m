@@ -2,142 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329C6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 674BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344173AbiBUI4U (ORCPT
+        id S1346270AbiBUI4Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:56:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42560 "EHLO
+        Mon, 21 Feb 2022 03:56:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345897AbiBUIyI (ORCPT
+        with ESMTP id S1345677AbiBUIyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:54:08 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD68522BEB
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:53:02 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24AA22BE8;
+        Mon, 21 Feb 2022 00:53:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1CEA3223EF;
-        Mon, 21 Feb 2022 09:53:01 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433581;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yvCsGo+Zzlp+j51uBwOYnmVN4vdWTxdhsRo6HA993sA=;
-        b=bws+oA4CcXFNlfE30VC5WBhsaxnVL9eaKU98ZE7Viogwjq2x5J4Q7t283nJIKUWoGvmpyn
-        iMAb8vw3C6WSLwLf0BDObQTK0VUEtVmfQlBMmpg7JThZaIB4zNLvFnETHAao1P3KL00Ykh
-        t7TtMo0pbFZYfUdJVb9SlbEBu+/mmFU=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 26/32] mtd: spi-nor: micron-st: rename vendor specific functions and defines
-Date:   Mon, 21 Feb 2022 09:52:30 +0100
-Message-Id: <20220221085236.1452024-27-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
-References: <20220221085236.1452024-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 497BE6113B;
+        Mon, 21 Feb 2022 08:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33883C340E9;
+        Mon, 21 Feb 2022 08:53:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433581;
+        bh=Mai+XZZ5bZosq8IMIflJ00QJoMKyaZmq3O3tVX1mM9s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r3uQQO+S4areDwmyb2HiKwXx1PADChCSCWGfTwRTNXi7tzLpkMgSBa0s3mQdn5l8y
+         TZpjOx+VZhQUkWwO3prQ77Y/AizPbibjN2u5iiaX56rWA7VFGZvKzzmR7NBvjdm5Jp
+         kzjM1Egdy/nb2U13I9Dp1fNxvNgz6257duMWbEGE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Nicholas Bishop <nicholasbishop@google.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 4.14 16/45] drm/radeon: Fix backlight control on iMac 12,1
+Date:   Mon, 21 Feb 2022 09:49:07 +0100
+Message-Id: <20220221084910.990926868@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the generic spi_nor prefix for all the micron-st functions.
+From: Nicholas Bishop <nicholasbishop@google.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+commit 364438fd629f7611a84c8e6d7de91659300f1502 upstream.
+
+The iMac 12,1 does not use the gmux driver for backlight, so the radeon
+backlight device is needed to set the brightness.
+
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1838
+Signed-off-by: Nicholas Bishop <nicholasbishop@google.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/spi-nor/micron-st.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/radeon/atombios_encoders.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-index f693f8720541..de450495e1ab 100644
---- a/drivers/mtd/spi-nor/micron-st.c
-+++ b/drivers/mtd/spi-nor/micron-st.c
-@@ -309,7 +309,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
- }
+--- a/drivers/gpu/drm/radeon/atombios_encoders.c
++++ b/drivers/gpu/drm/radeon/atombios_encoders.c
+@@ -193,7 +193,8 @@ void radeon_atom_backlight_init(struct r
+ 	 * so don't register a backlight device
+ 	 */
+ 	if ((rdev->pdev->subsystem_vendor == PCI_VENDOR_ID_APPLE) &&
+-	    (rdev->pdev->device == 0x6741))
++	    (rdev->pdev->device == 0x6741) &&
++	    !dmi_match(DMI_PRODUCT_NAME, "iMac12,1"))
+ 		return;
  
- /**
-- * spi_nor_read_fsr() - Read the Flag Status Register.
-+ * micron_st_nor_read_fsr() - Read the Flag Status Register.
-  * @nor:	pointer to 'struct spi_nor'
-  * @fsr:	pointer to a DMA-able buffer where the value of the
-  *              Flag Status Register will be written. Should be at least 2
-@@ -317,7 +317,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
-  *
-  * Return: 0 on success, -errno otherwise.
-  */
--static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
-+static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
- {
- 	int ret;
- 
-@@ -353,10 +353,10 @@ static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
- }
- 
- /**
-- * spi_nor_clear_fsr() - Clear the Flag Status Register.
-+ * micron_st_nor_clear_fsr() - Clear the Flag Status Register.
-  * @nor:	pointer to 'struct spi_nor'.
-  */
--static void spi_nor_clear_fsr(struct spi_nor *nor)
-+static void micron_st_nor_clear_fsr(struct spi_nor *nor)
- {
- 	int ret;
- 
-@@ -380,13 +380,13 @@ static void spi_nor_clear_fsr(struct spi_nor *nor)
- }
- 
- /**
-- * spi_nor_fsr_ready() - Query the Flag Status Register to see if the flash is
-- * ready for new commands.
-+ * micron_st_nor_fsr_ready() - Query the Flag Status Register to see if the
-+ * flash is ready for new commands.
-  * @nor:	pointer to 'struct spi_nor'.
-  *
-  * Return: 1 if ready, 0 if not ready, -errno on errors.
-  */
--static int spi_nor_fsr_ready(struct spi_nor *nor)
-+static int micron_st_nor_fsr_ready(struct spi_nor *nor)
- {
- 	int sr_ready, ret;
- 
-@@ -394,7 +394,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
- 	if (sr_ready < 0)
- 		return sr_ready;
- 
--	ret = spi_nor_read_fsr(nor, nor->bouncebuf);
-+	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
- 	if (ret)
- 		return ret;
- 
-@@ -408,7 +408,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
- 			dev_err(nor->dev,
- 				"Attempted to modify a protected sector.\n");
- 
--		spi_nor_clear_fsr(nor);
-+		micron_st_nor_clear_fsr(nor);
- 
- 		/*
- 		 * WEL bit remains set to one when an erase or page program
-@@ -437,7 +437,7 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
- static void micron_st_nor_late_init(struct spi_nor *nor)
- {
- 	if (nor->info->mfr_flags & USE_FSR)
--		nor->params->ready = spi_nor_fsr_ready;
-+		nor->params->ready = micron_st_nor_fsr_ready;
- }
- 
- static const struct spi_nor_fixups micron_st_nor_fixups = {
--- 
-2.30.2
+ 	if (!radeon_encoder->enc_priv)
+
 
