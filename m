@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351941AbiBUJyz (ORCPT
+        id S1352018AbiBUJy5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42384 "EHLO
+        Mon, 21 Feb 2022 04:54:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352977AbiBUJsF (ORCPT
+        with ESMTP id S1352960AbiBUJsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:48:05 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4747FD6D;
-        Mon, 21 Feb 2022 01:22:09 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:04 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81632E4;
+        Mon, 21 Feb 2022 01:22:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B7906CE0E90;
-        Mon, 21 Feb 2022 09:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F4BC340E9;
-        Mon, 21 Feb 2022 09:22:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2C484CE0E80;
+        Mon, 21 Feb 2022 09:21:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EBDC340E9;
+        Mon, 21 Feb 2022 09:21:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435326;
-        bh=gWrhBUVDvQ6S4mikWmV2cQBDKkGwyarz86IOQR8HysI=;
+        s=korg; t=1645435317;
+        bh=w9TKH42L6B9iXXuJURWlxaWPGp24Nh54zZwHeSNNMm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KhOZ+7H8lldPYeS1qrfLaiqkrhBxq/ZHlX//CsvqK21ClAGaxv11DeUjjF9VgrMVN
-         obeGjGWYJLGpiVe3gtWxC+02oDhLBWGiCDGZ1EyiS1X3WNdMbwmKLZlFP1ojqJuDeU
-         t9trafOeTrmh/bY6mIyY7s4KQxInOAG00JCT5Gh8=
+        b=uWTKWtAf5g62SNW0X6TNkKAQVblE78yWkbdgVSUr5hXZ48jLqaZE/VDQqBKrSR6cz
+         HXXSRVRIwOR8nUyLSt4ODbsYD2jU/C07uWDV1B3IUeLHwu96FoIkyNoWyn9wDgQ5Xv
+         3U2cVNUDfu/Sqh9KA9vwOGU04MdbYK7qg3wrxPjM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 125/227] net: phy: mediatek: remove PHY mode check on MT7531
-Date:   Mon, 21 Feb 2022 09:49:04 +0100
-Message-Id: <20220221084939.004206929@linuxfoundation.org>
+        stable@vger.kernel.org, Danie du Toit <danie.dutoit@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 122/227] nfp: flower: netdev offload check for ip6gretap
+Date:   Mon, 21 Feb 2022 09:49:01 +0100
+Message-Id: <20220221084938.910019696@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,40 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: DENG Qingfang <dqfext@gmail.com>
+From: Danie du Toit <danie.dutoit@corigine.com>
 
-commit 525b108e6d95b643eccbd84fb10aa9aa101b18dd upstream.
+commit 7dbcda584eaa5bdb4a281c379207dacc1a5e6081 upstream.
 
-The function mt7531_phy_mode_supported in the DSA driver set supported
-mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
-for the internal PHY, so this check breaks the PHY initialization:
+IPv6 GRE tunnels are not being offloaded, this is caused by a missing
+netdev offload check. The functionality of IPv6 GRE tunnel offloading
+was previously added but this check was not included. Adding the
+ip6gretap check allows IPv6 GRE tunnels to be offloaded correctly.
 
-mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
-
-Remove the check to make it work again.
-
-Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
-Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Tested-by: Hauke Mehrtens <hauke@hauke-m.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: f7536ffb0986 ("nfp: flower: Allow ipv6gretap interface for offloading")
+Signed-off-by: Danie du Toit <danie.dutoit@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220217124820.40436-1-louis.peens@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/mediatek-ge.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/cmsg.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/phy/mediatek-ge.c
-+++ b/drivers/net/phy/mediatek-ge.c
-@@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
+index 784292b16290..1543e47456d5 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
+@@ -723,6 +723,8 @@ static inline bool nfp_fl_is_netdev_to_offload(struct net_device *netdev)
+ 		return true;
+ 	if (netif_is_gretap(netdev))
+ 		return true;
++	if (netif_is_ip6gretap(netdev))
++		return true;
  
- static int mt7531_phy_config_init(struct phy_device *phydev)
- {
--	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
--		return -EINVAL;
--
- 	mtk_gephy_config_init(phydev);
- 
- 	/* PHY link down power saving enable */
+ 	return false;
+ }
+-- 
+2.35.1
+
 
 
