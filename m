@@ -2,67 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B740C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:23:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237184AbiBULWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:22:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53558 "EHLO
+        id S1356306AbiBULXd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 06:23:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356142AbiBULUd (ORCPT
+        with ESMTP id S1356299AbiBULXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:20:33 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0026EB84;
-        Mon, 21 Feb 2022 03:10:18 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4K2KMs3QTKz9sTl;
-        Mon, 21 Feb 2022 12:10:17 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1645441815;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=e4UTnxG31OsKXvhGbLIn3zqVzpZWQDRqr7eJQX+6OmQ=;
-        b=tTIq0QAN58sgjEvcGw9YR9ZhfkEi8N6H35/LfwnHX5vM1qFIyWQ59H6xRsuS9FnTUTn9MX
-        HwH8OG+w3wSEI5ANFtZsO5IadUziUf/7ZEMyqc542UZQPQkOhOXSou5mQXrHEF6bmlbDIK
-        U1tz4Q0urGniRFnsu9N8jeEFsEkdvwL2hjmflUw4uFhOYUFEF7skYA3Z/yPQYqMekX4iIp
-        dUL2vBc7gXOH2Bc4YTZeS1aj7BhMzRdcZpM6BAOm6Tc09Haqh1tbIDflaOkqNQKdWPwzS5
-        +5CGxi+HEZuKNP5orYqTJFt0yR50ozeCEt1O4AD+LSKoZk7V65r1hkJTfwvC3A==
-From:   Marcello Sylvester Bauer <sylv@sylv.io>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Marcello Sylvester Bauer <sylv@sylv.io>
-Subject: [PATCH v2 0/1] Add supply into PWBUS_REGULATOR macro
-Date:   Mon, 21 Feb 2022 12:09:55 +0100
-Message-Id: <cover.1645437439.git.sylv@sylv.io>
+        Mon, 21 Feb 2022 06:23:06 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0849892
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:15:25 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2d6923bca1aso125049407b3.9
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:15:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aW+puJnFP6GDgHHGWDtmoEv/OAIRXfNxeTuS1KHKS4k=;
+        b=ouaPUyc5S5AFk1T7BxP0W0fhHLsDrC1X05D49SErp1xkWV9WjlDmH/BG8/BhlD++F9
+         AT+4MGNLApzlCASeujOqYro1ZV8advB1PdCWuxdmmgixehhzJykeKLDDOqbMg/JkzY/6
+         rnq12h426up1wRYeC10q6kegTee8TO07+5um77gBiNcyGEaIORHSDfbUM1BstxfamRP9
+         grWcbQpNcTxhADWewkL5NuY6rahD3ZCPdUdpAAEpS9eI5oznaRHDJmcFixfdLNo/u+WN
+         E8+LgKgf0MghrhwbqqY0TSVIs7YPxomaod3TrD9B1Eoi7ak7V39fxTeek92jejy85ncN
+         TLyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aW+puJnFP6GDgHHGWDtmoEv/OAIRXfNxeTuS1KHKS4k=;
+        b=JYaRq1oTmKZRdD4J/JFhSyh14DGBd+sdGBp4OO4l4ee8StU1TN1iWQ27zCM8+lavyw
+         r9zkpq7c561ahIM2WeDSOWMim7YlZ1R4Cf3MhZLJAccuHg5WIQArkZ2N/j1jJQ68tLHy
+         JOvdUuc+pn6AmNtTPVKKbVQRrFJAaJS+T+czAUVTiIaywPIpAshj72bhMFojgGugXGiU
+         cq4Ey+vzseWfHn41lA30cTzEDWOjGshdELHj4TTy3feTEqMK3yjqmD7yqv+b2JJkXCx+
+         BAuJUsE9Q+NGVVVsaTFc4PNnR6DIKi+T/kd8naDlzUNKWY99dWygL+FgzPBEpBCEgox4
+         w27Q==
+X-Gm-Message-State: AOAM5328RKTvQDbKvfxDE6DViBW8xJsC+W4KVoAe9xoiJOG5272/mMEa
+        PUXxPx8SvkStu9gfvLud8w8Ftw6EUpCGbmidlcXC+nzihXvhcQ==
+X-Google-Smtp-Source: ABdhPJyE6n7bniNE5YxwK4dvryGKYZY5CGm6vwxplnSM1NRRpYP8o6nDdeY+frPLwgGsECDDDHkRoX52uu4YXmh5jss=
+X-Received: by 2002:a0d:fb07:0:b0:2ca:287c:6c97 with SMTP id
+ l7-20020a0dfb07000000b002ca287c6c97mr18617337ywf.316.1645442123922; Mon, 21
+ Feb 2022 03:15:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220219012433.890941-1-pcc@google.com> <7a6afd53-a5c8-1be3-83cc-832596702401@huawei.com>
+In-Reply-To: <7a6afd53-a5c8-1be3-83cc-832596702401@huawei.com>
+From:   Marco Elver <elver@google.com>
+Date:   Mon, 21 Feb 2022 12:15:12 +0100
+Message-ID: <CANpmjNO=1utdh_52sVWb1rNCDme+hbMJzP9GMfF1xWigmy2WsA@mail.gmail.com>
+Subject: Re: [PATCH] kasan: update function name in comments
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Peter Collingbourne <pcc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sat, 19 Feb 2022 at 03:00, Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> On 2022/2/19 9:24, Peter Collingbourne wrote:
+> > The function kasan_global_oob was renamed to kasan_global_oob_right,
+> > but the comments referring to it were not updated. Do so.
+> >
+> > Link: https://linux-review.googlesource.com/id/I20faa90126937bbee77d9d44709556c3dd4b40be
+> > Signed-off-by: Peter Collingbourne <pcc@google.com>
+> > Fixes: e5f4728767d2 ("kasan: test: add globals left-out-of-bounds test")
+>
+> This Fixes tag is unneeded.
+>
+> Except the above nit, this patch looks good to me. Thanks.
+>
+> Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-I would like to extend the PWBUS_REGULATOR macro to be able to define
-a vin-supply. This makes it possible to regulate the voltage input
-supply and even turn it off, if not required.
+Reviewed-by: Marco Elver <elver@google.com>
 
-Change in v2:
-- Adapt commit message.
+And yes, the Fixes tag should be removed to not have stable teams do
+unnecessary work.
 
-Marcello Sylvester Bauer (1):
-  hwmon: (pmbus) Add regulator supply into macro
++Cc'ing missing mailing lists (use get_maintainers.pl - in particular,
+LKML is missing, which should always be Cc'd for archival purposes so
+that things like b4 can work properly).
 
- drivers/hwmon/pmbus/pmbus.h | 1 +
- 1 file changed, 1 insertion(+)
-
--- 
-2.34.1
-
+> > ---
+> >  lib/test_kasan.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/lib/test_kasan.c b/lib/test_kasan.c
+> > index 26a5c9007653..a8dfda9b9630 100644
+> > --- a/lib/test_kasan.c
+> > +++ b/lib/test_kasan.c
+> > @@ -780,7 +780,7 @@ static void ksize_uaf(struct kunit *test)
+> >  static void kasan_stack_oob(struct kunit *test)
+> >  {
+> >       char stack_array[10];
+> > -     /* See comment in kasan_global_oob. */
+> > +     /* See comment in kasan_global_oob_right. */
+> >       char *volatile array = stack_array;
+> >       char *p = &array[ARRAY_SIZE(stack_array) + OOB_TAG_OFF];
+> >
+> > @@ -793,7 +793,7 @@ static void kasan_alloca_oob_left(struct kunit *test)
+> >  {
+> >       volatile int i = 10;
+> >       char alloca_array[i];
+> > -     /* See comment in kasan_global_oob. */
+> > +     /* See comment in kasan_global_oob_right. */
+> >       char *volatile array = alloca_array;
+> >       char *p = array - 1;
+> >
+> > @@ -808,7 +808,7 @@ static void kasan_alloca_oob_right(struct kunit *test)
+> >  {
+> >       volatile int i = 10;
+> >       char alloca_array[i];
+> > -     /* See comment in kasan_global_oob. */
+> > +     /* See comment in kasan_global_oob_right. */
+> >       char *volatile array = alloca_array;
+> >       char *p = array + i;
+> >
+> >
+>
