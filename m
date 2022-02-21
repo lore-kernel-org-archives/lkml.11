@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3643C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24907C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349267AbiBUJZS (ORCPT
+        id S1349280AbiBUJZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:25:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33916 "EHLO
+        Mon, 21 Feb 2022 04:25:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348781AbiBUJLm (ORCPT
+        with ESMTP id S1348681AbiBUJLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA3627FF2;
-        Mon, 21 Feb 2022 01:04:05 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:35 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CCE27CE1;
+        Mon, 21 Feb 2022 01:03:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3CF0ECE0E7C;
-        Mon, 21 Feb 2022 09:04:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3B3C340E9;
-        Mon, 21 Feb 2022 09:04:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A80DECE0E8C;
+        Mon, 21 Feb 2022 09:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3FAC340F3;
+        Mon, 21 Feb 2022 09:03:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434242;
-        bh=LbpS3Y/VfwBZOHuEtHeMd4iAvaPoeairLJWLJwAYa1A=;
+        s=korg; t=1645434234;
+        bh=G/siQvji3HalXvhT5qhWku0cnOVs8mMRnHkwATbA3bA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P/TDJc+yeIIYwI1eGE5VIuG4J8rNFw3t4zWqODF866GDWY6+5/uZUIHQVlYNBvQ60
-         U0oouBb7qoVC3o3JxzC17b8fwV+xpbS0UaSXB8l2cokkEPZCdgrLjIP2luPzogHTAr
-         /VPN+nRtqXP/nfFHVHd9KW8WMRvxstZBYhx9qnMU=
+        b=y9Ujw6nYkvF6rmQWIeR9zF/UbKajR9yFw4zyZRNUoA/4Fc0QdRsSbXa0Ej5g+gxBu
+         B6bN7saOi+kZTkUpwQbKR/H8bnTpBrrCeiNu24mHftdi7j1jp+QlUSop1pZb2MeDXb
+         yiDeTFVP+VVl1cKYEHoSoaswmxE0A/M/1szOzFdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
+        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
         Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 029/121] selftests: openat2: Add missing dependency in Makefile
-Date:   Mon, 21 Feb 2022 09:48:41 +0100
-Message-Id: <20220221084922.169849260@linuxfoundation.org>
+Subject: [PATCH 5.10 026/121] selftests/zram01.sh: Fix compression ratio calculation
+Date:   Mon, 21 Feb 2022 09:48:38 +0100
+Message-Id: <20220221084922.051259795@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -51,44 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-[ Upstream commit ea3396725aa143dd42fe388cb67e44c90d2fb719 ]
+[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
 
-Add a dependency on header helpers.h to the main target; while at that add
-to helpers.h also a missing include for bool types.
+zram01 uses `free -m` to measure zram memory usage. The results are no
+sense because they are polluted by all running processes on the system.
 
-Cc: Aleksa Sarai <cyphar@cyphar.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+We Should only calculate the free memory delta for the current process.
+So use the third field of /sys/block/zram<id>/mm_stat to measure memory
+usage instead. The file is available since kernel 4.1.
+
+orig_data_size(first): uncompressed size of data stored in this disk.
+compr_data_size(second): compressed size of data stored in this disk
+mem_used_total(third): the amount of memory allocated for this disk
+
+Also remove useless zram cleanup call in zram_fill_fs and so we don't
+need to cleanup zram twice if fails.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
 Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/openat2/Makefile  | 2 +-
- tools/testing/selftests/openat2/helpers.h | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
-diff --git a/tools/testing/selftests/openat2/Makefile b/tools/testing/selftests/openat2/Makefile
-index 4b93b1417b862..843ba56d8e49e 100644
---- a/tools/testing/selftests/openat2/Makefile
-+++ b/tools/testing/selftests/openat2/Makefile
-@@ -5,4 +5,4 @@ TEST_GEN_PROGS := openat2_test resolve_test rename_attack_test
+diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
+index 114863d9fb876..e9e9eb777e2c7 100755
+--- a/tools/testing/selftests/zram/zram01.sh
++++ b/tools/testing/selftests/zram/zram01.sh
+@@ -33,8 +33,6 @@ zram_algs="lzo"
  
- include ../lib.mk
+ zram_fill_fs()
+ {
+-	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
+-
+ 	for i in $(seq 0 $(($dev_num - 1))); do
+ 		echo "fill zram$i..."
+ 		local b=0
+@@ -45,29 +43,17 @@ zram_fill_fs()
+ 			b=$(($b + 1))
+ 		done
+ 		echo "zram$i can be filled with '$b' KB"
+-	done
  
--$(TEST_GEN_PROGS): helpers.c
-+$(TEST_GEN_PROGS): helpers.c helpers.h
-diff --git a/tools/testing/selftests/openat2/helpers.h b/tools/testing/selftests/openat2/helpers.h
-index ad5d0ba5b6ce9..7056340b9339e 100644
---- a/tools/testing/selftests/openat2/helpers.h
-+++ b/tools/testing/selftests/openat2/helpers.h
-@@ -9,6 +9,7 @@
+-	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
+-	local used_mem=$(($mem_free0 - $mem_free1))
++		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
++		local v=$((100 * 1024 * $b / $mem_used_total))
++		if [ "$v" -lt 100 ]; then
++			 echo "FAIL compression ratio: 0.$v:1"
++			 ERR_CODE=-1
++			 return
++		fi
  
- #define _GNU_SOURCE
- #include <stdint.h>
-+#include <stdbool.h>
- #include <errno.h>
- #include <linux/types.h>
- #include "../kselftest.h"
+-	local total_size=0
+-	for sm in $zram_sizes; do
+-		local s=$(echo $sm | sed 's/M//')
+-		total_size=$(($total_size + $s))
++		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ 	done
+-
+-	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
+-
+-	local v=$((100 * $total_size / $used_mem))
+-
+-	if [ "$v" -lt 100 ]; then
+-		echo "FAIL compression ratio: 0.$v:1"
+-		ERR_CODE=-1
+-		zram_cleanup
+-		return
+-	fi
+-
+-	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ }
+ 
+ check_prereqs
 -- 
 2.34.1
 
