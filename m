@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352372AbiBUKAw (ORCPT
+        id S1352654AbiBUKBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:00:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55806 "EHLO
+        Mon, 21 Feb 2022 05:01:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351783AbiBUJwb (ORCPT
+        with ESMTP id S1352076AbiBUJwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:52:31 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF3436156;
-        Mon, 21 Feb 2022 01:23:00 -0800 (PST)
+        Mon, 21 Feb 2022 04:52:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A874836686;
+        Mon, 21 Feb 2022 01:23:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 06539CE0EAA;
-        Mon, 21 Feb 2022 09:22:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E101FC340E9;
-        Mon, 21 Feb 2022 09:22:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6107DB80EA1;
+        Mon, 21 Feb 2022 09:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78823C340E9;
+        Mon, 21 Feb 2022 09:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435377;
-        bh=JYWDbU6bgdel2TqJfbkLMIvMsCB9bZCENyJtEUYeeMQ=;
+        s=korg; t=1645435392;
+        bh=8E9nmzjr+oVBPaIx2NahacyRPguKBnPNkSFQybHOK2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7zeJ2WFEEhtyJ//OvsEDhAqPI4RJqLkmIouP/Dx76GrZmiRJ7dgen0h7kk9TlCOJ
-         slsAVTJehBC/X8SpzCYdSuCMKndTsHt+dGaJ3GeL0q61WjeiAtuMs9ooah7eloiyWv
-         GIFeRgc2IS59pv35VqSZRGdOKTyOO/3G9VYmrftU=
+        b=c9viq9eKochMI1Fs9PXBIEtEwZEUgTvSIgLLTfr3GsbiU/SCS3dVJ8kQZUYaOP8AY
+         AnK3EUkec5Y2HwVE7mYqXERtssqEq7YxeRuVDHHr/6wSzjZRfzadU5/hz5y8CAOawh
+         LN9+Essro1C37FwTnDAxV1EHqTYXfy68R1rPq68M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, dmummenschanz@web.de,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 141/227] ALSA: hda: Fix regression on forced probe mask option
-Date:   Mon, 21 Feb 2022 09:49:20 +0100
-Message-Id: <20220221084939.527424025@linuxfoundation.org>
+        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 115/227] ping: fix the dif and sdif check in ping_lookup
+Date:   Mon, 21 Feb 2022 09:48:54 +0100
+Message-Id: <20220221084938.689761389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,45 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit 6317f7449348a897483a2b4841f7a9190745c81b upstream.
+commit 35a79e64de29e8d57a5989aac57611c0cd29e13e upstream.
 
-The forced probe mask via probe_mask 0x100 bit doesn't work any longer
-as expected since the bus init code was moved and it's clearing the
-codec_mask value that was set beforehand.  This patch fixes the
-long-time regression by moving the check_probe_mask() call.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Fixes: a41d122449be ("ALSA: hda - Embed bus into controller object")
-Reported-by: dmummenschanz@web.de
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/trinity-f018660b-95c9-442b-a2a8-c92a56eb07ed-1644345967148@3c-app-webde-bap22
-Link: https://lore.kernel.org/r/20220214100020.8870-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+   # sysctl -w net.ipv4.ping_group_range="0 100"
+
+There is another regression caused when matching sk_bound_dev_if
+and dif, RAW socket is using inet_iif() while PING socket lookup
+is using skb->dev->ifindex, the cmd below fails due to this:
+
+  # ip link add dummy0 type dummy
+  # ip link set dummy0 up
+  # ip addr add 192.168.111.1/24 dev dummy0
+  # ping -I dummy0 192.168.111.1 -c1
+
+The issue was also reported on:
+
+  https://github.com/iputils/iputils/issues/104
+
+But fixed in iputils in a wrong way by not binding to device when
+destination IP is on device, and it will cause some of kselftests
+to fail, as Jianlin noticed.
+
+This patch is to use inet(6)_iif and inet(6)_sdif to get dif and
+sdif for PING socket, and keep consistent with RAW socket.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_intel.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/ping.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -1794,8 +1794,6 @@ static int azx_create(struct snd_card *c
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -172,16 +172,23 @@ static struct sock *ping_lookup(struct n
+ 	struct sock *sk = NULL;
+ 	struct inet_sock *isk;
+ 	struct hlist_nulls_node *hnode;
+-	int dif = skb->dev->ifindex;
++	int dif, sdif;
  
- 	assign_position_fix(chip, check_position_fix(chip, position_fix[dev]));
- 
--	check_probe_mask(chip, dev);
--
- 	if (single_cmd < 0) /* allow fallback to single_cmd at errors */
- 		chip->fallback_to_single_cmd = 1;
- 	else /* explicitly set to single_cmd or not */
-@@ -1821,6 +1819,8 @@ static int azx_create(struct snd_card *c
- 		chip->bus.core.needs_damn_long_delay = 1;
+ 	if (skb->protocol == htons(ETH_P_IP)) {
++		dif = inet_iif(skb);
++		sdif = inet_sdif(skb);
+ 		pr_debug("try to find: num = %d, daddr = %pI4, dif = %d\n",
+ 			 (int)ident, &ip_hdr(skb)->daddr, dif);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
++		dif = inet6_iif(skb);
++		sdif = inet6_sdif(skb);
+ 		pr_debug("try to find: num = %d, daddr = %pI6c, dif = %d\n",
+ 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
+ #endif
++	} else {
++		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
++		return NULL;
  	}
  
-+	check_probe_mask(chip, dev);
-+
- 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
- 	if (err < 0) {
- 		dev_err(card->dev, "Error creating device [card]!\n");
+ 	read_lock_bh(&ping_table.lock);
+@@ -221,7 +228,7 @@ static struct sock *ping_lookup(struct n
+ 		}
+ 
+ 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
+-		    sk->sk_bound_dev_if != inet_sdif(skb))
++		    sk->sk_bound_dev_if != sdif)
+ 			continue;
+ 
+ 		sock_hold(sk);
 
 
