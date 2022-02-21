@@ -2,97 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 378B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BE5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353072AbiBUKF7 (ORCPT
+        id S1352428AbiBUKIW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:05:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37516 "EHLO
+        Mon, 21 Feb 2022 05:08:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353822AbiBUJ54 (ORCPT
+        with ESMTP id S1353325AbiBUJ5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542C447AE8;
-        Mon, 21 Feb 2022 01:27:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4BE660FEB;
-        Mon, 21 Feb 2022 09:27:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A5CC340EB;
-        Mon, 21 Feb 2022 09:27:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435631;
-        bh=PLmuZlGQB3wkV2WY+5sGt6AGb9o9xYw66zjJl/MsaLY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ruTmhibarKgHz1Juqrodt6/6p3urdSW/C+PHkoz7A8LdQ/seww8E5u6vXPjwejQvu
-         piAcBS+EVANqeTFH2UiaSRKNIWSKFTxe2TASFKBcrFQmGs7YN6FEAtEijYLbDHmB4D
-         k34zQC/zWekiVsRTA3S01w+OYX9NF1lVIec8YlfU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, JaeSang Yoo <jsyoo5b@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 220/227] tracing: Fix tp_printk option related with tp_printk_stop_on_boot
-Date:   Mon, 21 Feb 2022 09:50:39 +0100
-Message-Id: <20220221084942.117672344@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 21 Feb 2022 04:57:22 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDAA47042
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=sWzl2v9v4HujX86aJfCOVrh1k6oCTv+xUn/76FQ75FM=; b=LZ6EwgV7EF75a3KISk36Gc2ZRH
+        O02ROAuni+7t1lYSu4iSkXJSsm9LKxVh6mbLsiZ/TSksq0H5yo8fA9t7t29+lJiylcd5RR+l8g4Ou
+        a/VuJU9/DJjFuSFAFIBtWhQP5aFl0gpYQUuqhXX/bwO5+X9knRreKYcdIwIhrSbAYJ3jzxYGnmDSd
+        DCeWqZ6huOtgmDzWvOP+Z9W5BjsOx1wc9/i6nNbOlOSNJX8OXflVbi/J6CismkoaeDHlfIvHC2xf/
+        LE6ERqYgfXP6rno0hu66kiZ8MjBoNzbqsC1Bs88eeSQFFofdiAnDPVOIrSsbIkxvXb/M7lmSLnOcI
+        W+9dBmrA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nM4wJ-001esK-0l; Mon, 21 Feb 2022 09:25:03 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 65C59988B05; Mon, 21 Feb 2022 10:24:56 +0100 (CET)
+Date:   Mon, 21 Feb 2022 10:24:56 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "Poimboe, Josh" <jpoimboe@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
+        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "Milburn, Alyssa" <alyssa.milburn@intel.com>
+Subject: Re: [PATCH 00/29] x86: Kernel IBT
+Message-ID: <20220221092456.GJ23216@worktop.programming.kicks-ass.net>
+References: <20220218164902.008644515@infradead.org>
+ <7a241b81ccd21da02bc27379b0a837c09fe4f135.camel@intel.com>
+ <20220219095827.GI23216@worktop.programming.kicks-ass.net>
+ <1C202B85-FCB1-4282-9CA6-ED9115F203BB@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1C202B85-FCB1-4282-9CA6-ED9115F203BB@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: JaeSang Yoo <js.yoo.5b@gmail.com>
+On Mon, Feb 21, 2022 at 12:42:25AM -0800, Kees Cook wrote:
 
-[ Upstream commit 3203ce39ac0b2a57a84382ec184c7d4a0bede175 ]
+> >+void cet_disable(void)
+> >+{
+> >+	cr4_clear_bits(X86_CR4_CET);
+> 
+> I'd rather keep the pinning...
 
-The kernel parameter "tp_printk_stop_on_boot" starts with "tp_printk" which is
-the same as another kernel parameter "tp_printk". If "tp_printk" setup is
-called before the "tp_printk_stop_on_boot", it will override the latter
-and keep it from being set.
+Uff. is that still enforced at this point?
 
-This is similar to other kernel parameter issues, such as:
-  Commit 745a600cf1a6 ("um: console: Ignore console= option")
-or init/do_mounts.c:45 (setup function of "ro" kernel param)
+> >+	wrmsrl(MSR_IA32_S_CET, 0);
+> >+}
+> 
+> Eh, why not just require kexec to be IBT safe? That seems a reasonable
+> exercise if we ever expect UEFI to enforce IBT when starting the
+> kernel on a normal boot...
 
-Fix it by checking for a "_" right after the "tp_printk" and if that
-exists do not process the parameter.
-
-Link: https://lkml.kernel.org/r/20220208195421.969326-1-jsyoo5b@gmail.com
-
-Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
-[ Fixed up change log and added space after if condition ]
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/trace/trace.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index ae9f9e4af9314..bb15059020445 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -252,6 +252,10 @@ __setup("trace_clock=", set_trace_boot_clock);
- 
- static int __init set_tracepoint_printk(char *str)
- {
-+	/* Ignore the "tp_printk_stop_on_boot" param */
-+	if (*str == '_')
-+		return 0;
-+
- 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
- 		tracepoint_printk = 1;
- 	return 1;
--- 
-2.34.1
-
-
-
+Well, it makes it impossible to kexec into an 'old' kernel. That might
+not be very nice.
