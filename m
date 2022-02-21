@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3AC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA819C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351842AbiBUJwm (ORCPT
+        id S1351915AbiBUJwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:52:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43754 "EHLO
+        Mon, 21 Feb 2022 04:52:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352668AbiBUJro (ORCPT
+        with ESMTP id S1352702AbiBUJru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:44 -0500
+        Mon, 21 Feb 2022 04:47:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7043AC0;
-        Mon, 21 Feb 2022 01:20:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4975643AD5;
+        Mon, 21 Feb 2022 01:20:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35FCE60F46;
-        Mon, 21 Feb 2022 09:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A00C340E9;
-        Mon, 21 Feb 2022 09:20:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA51260F73;
+        Mon, 21 Feb 2022 09:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA70CC340E9;
+        Mon, 21 Feb 2022 09:20:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435215;
-        bh=u1VESbYTBB2j0uL6y0zoMIwdzny/GFPCUlEFzINx4XA=;
+        s=korg; t=1645435218;
+        bh=y4dyzwMA4Ye/Nn2ch2A16olWeGshC71P46/7dxjNB60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyUbQ9j+rSPTWuvTmp56IkntTD2xbXHTGjsGVf/gZ7g7HHqeVUQ3mCpllq0rgcAhL
-         PLqXYN4iQtr0rBKkx4F0GczCq1elf5Dmxq2AkHvkPsC0kbFaJEJQTukOIHn/44Vpnh
-         rQiUZ8JOaxxxnxe72y3SGKHnsnKlRyS9e8/tSGXQ=
+        b=uMTbCu4EP+VnkmVpFO0IEERXokGZt8LnkgYpXvtx/ixaqvysNIZytX8xL/ONcPCFC
+         iTkjdrHE859hpOYAN6TDXj2F55965XGYRlOvA9hiYkuS7K0qYutntEmBjeovPtrW0h
+         PIuSLdR/icc8np9JOF70GDNej8jmdwsfqeuPHzYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 086/227] vsock: remove vsock from connected table when connect is interrupted by a signal
-Date:   Mon, 21 Feb 2022 09:48:25 +0100
-Message-Id: <20220221084937.737285754@linuxfoundation.org>
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 087/227] tee: export teedev_open() and teedev_close_context()
+Date:   Mon, 21 Feb 2022 09:48:26 +0100
+Message-Id: <20220221084937.767338199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,46 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Seth Forshee <sforshee@digitalocean.com>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-commit b9208492fcaecff8f43915529ae34b3bcb03877c upstream.
+[ Upstream commit 1e2c3ef0496e72ba9001da5fd1b7ed56ccb30597 ]
 
-vsock_connect() expects that the socket could already be in the
-TCP_ESTABLISHED state when the connecting task wakes up with a signal
-pending. If this happens the socket will be in the connected table, and
-it is not removed when the socket state is reset. In this situation it's
-common for the process to retry connect(), and if the connection is
-successful the socket will be added to the connected table a second
-time, corrupting the list.
+Exports the two functions teedev_open() and teedev_close_context() in
+order to make it easier to create a driver internal struct tee_context.
 
-Prevent this by calling vsock_remove_connected() if a signal is received
-while waiting for a connection. This is harmless if the socket is not in
-the connected table, and if it is in the table then removing it will
-prevent list corruption from a double add.
-
-Note for backporting: this patch requires d5afa82c977e ("vsock: correct
-removal of socket from the list"), which is in all current stable trees
-except 4.9.y.
-
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
-Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Link: https://lore.kernel.org/r/20220217141312.2297547-1-sforshee@digitalocean.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/af_vsock.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/tee/tee_core.c  |  6 ++++--
+ include/linux/tee_drv.h | 14 ++++++++++++++
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1400,6 +1400,7 @@ static int vsock_connect(struct socket *
- 			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
- 			sock->state = SS_UNCONNECTED;
- 			vsock_transport_cancel_pkt(vsk);
-+			vsock_remove_connected(vsk);
- 			goto out_wait;
- 		} else if (timeout == 0) {
- 			err = -ETIMEDOUT;
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index 85102d12d7169..3fc426dad2df3 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -43,7 +43,7 @@ static DEFINE_SPINLOCK(driver_lock);
+ static struct class *tee_class;
+ static dev_t tee_devt;
+ 
+-static struct tee_context *teedev_open(struct tee_device *teedev)
++struct tee_context *teedev_open(struct tee_device *teedev)
+ {
+ 	int rc;
+ 	struct tee_context *ctx;
+@@ -70,6 +70,7 @@ static struct tee_context *teedev_open(struct tee_device *teedev)
+ 	return ERR_PTR(rc);
+ 
+ }
++EXPORT_SYMBOL_GPL(teedev_open);
+ 
+ void teedev_ctx_get(struct tee_context *ctx)
+ {
+@@ -96,13 +97,14 @@ void teedev_ctx_put(struct tee_context *ctx)
+ 	kref_put(&ctx->refcount, teedev_ctx_release);
+ }
+ 
+-static void teedev_close_context(struct tee_context *ctx)
++void teedev_close_context(struct tee_context *ctx)
+ {
+ 	struct tee_device *teedev = ctx->teedev;
+ 
+ 	teedev_ctx_put(ctx);
+ 	tee_device_put(teedev);
+ }
++EXPORT_SYMBOL_GPL(teedev_close_context);
+ 
+ static int tee_open(struct inode *inode, struct file *filp)
+ {
+diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
+index cf5999626e28d..5e1533ee3785b 100644
+--- a/include/linux/tee_drv.h
++++ b/include/linux/tee_drv.h
+@@ -587,4 +587,18 @@ struct tee_client_driver {
+ #define to_tee_client_driver(d) \
+ 		container_of(d, struct tee_client_driver, driver)
+ 
++/**
++ * teedev_open() - Open a struct tee_device
++ * @teedev:	Device to open
++ *
++ * @return a pointer to struct tee_context on success or an ERR_PTR on failure.
++ */
++struct tee_context *teedev_open(struct tee_device *teedev);
++
++/**
++ * teedev_close_context() - closes a struct tee_context
++ * @ctx:	The struct tee_context to close
++ */
++void teedev_close_context(struct tee_context *ctx);
++
+ #endif /*__TEE_DRV_H*/
+-- 
+2.34.1
+
 
 
