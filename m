@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C87DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07D1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351584AbiBUJqL (ORCPT
+        id S1351604AbiBUJqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:46:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48738 "EHLO
+        Mon, 21 Feb 2022 04:46:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351465AbiBUJhQ (ORCPT
+        with ESMTP id S1351455AbiBUJhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:37:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF91C39B8F;
+        Mon, 21 Feb 2022 04:37:15 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB03539838;
         Mon, 21 Feb 2022 01:15:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F0DD60E05;
-        Mon, 21 Feb 2022 09:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9FBC340E9;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2B5C2CE0E8B;
         Mon, 21 Feb 2022 09:15:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11116C340E9;
+        Mon, 21 Feb 2022 09:15:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434950;
-        bh=fT0XueLlcxFSWwJyaEOVlF8xILi9wRrnuH8+ypbp0ck=;
+        s=korg; t=1645434947;
+        bh=jtUIix8YE2fPyTynYc8qgmVp0lmvN90YoZI+APmQjhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2Nmwz7MW0bRv3KE7puJ0GxNbKHRaFvyTufSTcHXigq/dr4hSprT6FnjcQovHfohu
-         DqR+1enXcHSGsBN1DuolqD1azQcXkCthaxqXzYJkD66dP0WQ7BoMT7IQF4IbCPUPeB
-         uMXXCkzybEOUa4lpPOpxkjvgFlLtc9QjCwrStnho=
+        b=dakPIsi5v9Fpt19+V776r3v5s6HWvvrABY6SmV/x1FFfmEY9xwCetAmNCEjHj291e
+         oSZHy0uuRDIH4nG3njpl8xBCnbXZyrxMNxacm+SyJIFDibt6RJuBqcX48UjUZHL9Cp
+         +uatGR9L8VQXVKm9cGWGh811ebw4tWkx4zBAaTf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
         Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 156/196] ksmbd: dont align last entry offset in smb2 query directory
-Date:   Mon, 21 Feb 2022 09:49:48 +0100
-Message-Id: <20220221084936.161922677@linuxfoundation.org>
+Subject: [PATCH 5.15 155/196] ksmbd: fix same UniqueId for dot and dotdot entries
+Date:   Mon, 21 Feb 2022 09:49:47 +0100
+Message-Id: <20220221084936.120538087@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,57 +52,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 04e260948a160d3b7d622bf4c8a96fa4577c09bd ]
+[ Upstream commit 97550c7478a2da93e348d8c3075d92cddd473a78 ]
 
-When checking smb2 query directory packets from other servers,
-OutputBufferLength is different with ksmbd. Other servers add an unaligned
-next offset to OutputBufferLength for the last entry.
+ksmbd sets the inode number to UniqueId. However, the same UniqueId for
+dot and dotdot entry is set to the inode number of the parent inode.
+This patch set them using the current inode and parent inode.
 
 Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb2pdu.c | 7 ++++---
- fs/ksmbd/vfs.h     | 1 +
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ fs/ksmbd/smb_common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index 70685cbbec8c0..192d8308afc27 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -3422,9 +3422,9 @@ static int smb2_populate_readdir_entry(struct ksmbd_conn *conn, int info_level,
- 		goto free_conv_name;
- 	}
+diff --git a/fs/ksmbd/smb_common.c b/fs/ksmbd/smb_common.c
+index 707490ab1f4c4..f2e7e3a654b34 100644
+--- a/fs/ksmbd/smb_common.c
++++ b/fs/ksmbd/smb_common.c
+@@ -308,14 +308,17 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 	for (i = 0; i < 2; i++) {
+ 		struct kstat kstat;
+ 		struct ksmbd_kstat ksmbd_kstat;
++		struct dentry *dentry;
  
--	struct_sz = readdir_info_level_struct_sz(info_level);
--	next_entry_offset = ALIGN(struct_sz - 1 + conv_len,
--				  KSMBD_DIR_INFO_ALIGNMENT);
-+	struct_sz = readdir_info_level_struct_sz(info_level) - 1 + conv_len;
-+	next_entry_offset = ALIGN(struct_sz, KSMBD_DIR_INFO_ALIGNMENT);
-+	d_info->last_entry_off_align = next_entry_offset - struct_sz;
+ 		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
+ 			if (i == 0) {
+ 				d_info->name = ".";
+ 				d_info->name_len = 1;
++				dentry = dir->filp->f_path.dentry;
+ 			} else {
+ 				d_info->name = "..";
+ 				d_info->name_len = 2;
++				dentry = dir->filp->f_path.dentry->d_parent;
+ 			}
  
- 	if (next_entry_offset > d_info->out_buf_len) {
- 		d_info->out_buf_len = 0;
-@@ -3976,6 +3976,7 @@ int smb2_query_dir(struct ksmbd_work *work)
- 		((struct file_directory_info *)
- 		((char *)rsp->Buffer + d_info.last_entry_offset))
- 		->NextEntryOffset = 0;
-+		d_info.data_count -= d_info.last_entry_off_align;
- 
- 		rsp->StructureSize = cpu_to_le16(9);
- 		rsp->OutputBufferOffset = cpu_to_le16(72);
-diff --git a/fs/ksmbd/vfs.h b/fs/ksmbd/vfs.h
-index b0d5b8feb4a36..432c947731779 100644
---- a/fs/ksmbd/vfs.h
-+++ b/fs/ksmbd/vfs.h
-@@ -86,6 +86,7 @@ struct ksmbd_dir_info {
- 	int		last_entry_offset;
- 	bool		hide_dot_file;
- 	int		flags;
-+	int		last_entry_off_align;
- };
- 
- struct ksmbd_readdir_data {
+ 			if (!match_pattern(d_info->name, d_info->name_len,
+@@ -327,7 +330,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
+ 			ksmbd_kstat.kstat = &kstat;
+ 			ksmbd_vfs_fill_dentry_attrs(work,
+ 						    user_ns,
+-						    dir->filp->f_path.dentry->d_parent,
++						    dentry,
+ 						    &ksmbd_kstat);
+ 			rc = fn(conn, info_level, d_info, &ksmbd_kstat);
+ 			if (rc)
 -- 
 2.34.1
 
