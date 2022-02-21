@@ -2,112 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B972CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9139C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343965AbiBUChD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 21:37:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49246 "EHLO
+        id S243851AbiBUCij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 21:38:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243851AbiBUChB (ORCPT
+        with ESMTP id S235152AbiBUCii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 21:37:01 -0500
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6DB259;
-        Sun, 20 Feb 2022 18:36:34 -0800 (PST)
-Received: by mail-io1-f51.google.com with SMTP id h16so14351509iol.11;
-        Sun, 20 Feb 2022 18:36:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=z3L0QAaP0YwGTd6VI4wxx/3lOMZUuCl0MhaQbdJh1OQ=;
-        b=GLKtyCbtxP8Kj6p6x/cJEBvNEE0RDa7W6EQApKmentYUWce4zJ+3MpU1mqs4VVDDq6
-         P2MYmdSiWXDG76LPlbZ4/iGXpxlPbQyG+0cOHnGv0w5yMtTWr/IEIaz6nN1gkRBCqePl
-         SAou+np1ZRp1iXxcVqjJRg4SOXv1fe1rbvm4X+fZFjkNo8bPGDDXZsSaQDUtCUH/Kfvz
-         jlsF2G89rLM2Q0IeONKddpDrAVMCyRZr2nzuDNhktgNMIpfF9HpqzUg97yYP1DEw7Nm6
-         yu41lXcKU3SgwgGtjRtN84+Aa8XSBc+t79iED0WrozycAwJXqE0pky6/3XCyB3hr0CZI
-         4AnQ==
-X-Gm-Message-State: AOAM533qfSwY0i9jgumYCuZvAD6PN3HdY0EI3mAPEbRuSiDjRWKEtYk5
-        Cs7rCIN87685KbLT3E2uHQ==
-X-Google-Smtp-Source: ABdhPJzC3lbA/3xbYHDC1TVY6Mc9mRZFu+uPq7kGdXhvdW9HCdoukC5Q8i8N7ZC5YawbHb6/C1rUWw==
-X-Received: by 2002:a02:c851:0:b0:30e:2296:4290 with SMTP id r17-20020a02c851000000b0030e22964290mr14295308jao.49.1645410993813;
-        Sun, 20 Feb 2022 18:36:33 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id s9sm7433901ilv.50.2022.02.20.18.36.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Feb 2022 18:36:33 -0800 (PST)
-Received: (nullmailer pid 2041539 invoked by uid 1000);
-        Mon, 21 Feb 2022 02:36:09 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Guillaume Ranquet <granquet@baylibre.com>
-Cc:     linux-kernel@vger.kernel.org, airlied@linux.ie,
-        Markus Schneider-Pargmann <msp@baylibre.com>,
-        angelogioacchino.delregno@collabora.com, tzimmermann@suse.de,
-        ck.hu@mediatek.com, mripard@kernel.org, daniel@ffwll.ch,
-        maarten.lankhorst@linux.intel.com, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, p.zabel@pengutronix.de,
-        jitao.shi@mediatek.com, linux-phy@lists.infradead.org,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        matthias.bgg@gmail.com, linux-fbdev@vger.kernel.org, deller@gmx.de,
-        chunkuang.hu@kernel.org, vkoul@kernel.org,
-        chunfeng.yun@mediatek.com, kishon@ti.com
-In-Reply-To: <20220218145437.18563-3-granquet@baylibre.com>
-References: <20220218145437.18563-1-granquet@baylibre.com> <20220218145437.18563-3-granquet@baylibre.com>
-Subject: Re: [PATCH v8 02/19] dt-bindings: mediatek,dp: Add Display Port binding
-Date:   Sun, 20 Feb 2022 20:36:09 -0600
-Message-Id: <1645410969.343097.2041538.nullmailer@robh.at.kernel.org>
+        Sun, 20 Feb 2022 21:38:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A683E1EED3;
+        Sun, 20 Feb 2022 18:38:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47B0461124;
+        Mon, 21 Feb 2022 02:38:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8081BC340E8;
+        Mon, 21 Feb 2022 02:38:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645411095;
+        bh=dR9SzToMmoFqkyh1Vj1H8HzO4u+iPA3s8xWivFtFm3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fJodiHhaUOQMMaZWp/ydZMJjun0OLrJEdbTYmfSW7Eso3aerQdP0x8gV5JgJfEXkb
+         5HdccqbBXa0zbVfshLUwE+oxauzEFLqPyi7LFld9rf3Mm43TtQlHGTXqsG3PJ35teT
+         UEZq+9XC+2/2q2bjILMT9ftoNtXKpYffD+mUhXQxK6T++c22eMFbba27B55U5nNt79
+         uGxA5TiknqeHX7ar5/93cYJcXkW2fEs5soxKjT0//ydecr6uZFoAuzBsTdnp93JCN4
+         /8rkfJbyf9zNEdBxNTay06+kkCsb8vGzoITUXy4aNJ+HiRpR0SeMume5ZVwVmhPRrR
+         9rsm/L+ivbxYQ==
+Date:   Sun, 20 Feb 2022 18:38:14 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tytso@mit.edu, linux@dominikbrodowski.net
+Subject: Re: [PATCH v2 2/9] random: get rid of secondary crngs
+Message-ID: <YhL7FoLE6w3eMjoy@sol.localdomain>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
+ <20220209011919.493762-3-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209011919.493762-3-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 15:54:20 +0100, Guillaume Ranquet wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
+On Wed, Feb 09, 2022 at 02:19:12AM +0100, Jason A. Donenfeld wrote:
+> As the comment said, this is indeed a "hack". Since it was introduced,
+> it's been a constant state machine nightmare, with lots of subtle early
+> boot issues and a wildly complex set of machinery to keep everything in
+> sync. Rather than continuing to play whack-a-mole with this approach,
+> this commit simply removes it entirely. This commit is preparation for
+> "random: use simpler fast key erasure flow on per-cpu keys" in this
+> series, which introduces a simpler (and faster) mechanism to accomplish
+> the same thing.
 > 
-> This controller is present on several mediatek hardware. Currently
-> mt8195 and mt8395 have this controller without a functional difference,
-> so only one compatible field is added.
-> 
-> The controller can have two forms, as a normal display port and as an
-> embedded display port.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 > ---
->  .../display/mediatek/mediatek,dp.yaml         | 87 +++++++++++++++++++
->  1 file changed, 87 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-> 
+>  drivers/char/random.c | 225 ++++++++++--------------------------------
+>  1 file changed, 53 insertions(+), 172 deletions(-)
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dts:20:18: fatal error: dt-bindings/power/mt8195-power.h: No such file or directory
-   20 |         #include <dt-bindings/power/mt8195-power.h>
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1398: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1594807
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+- Eric
