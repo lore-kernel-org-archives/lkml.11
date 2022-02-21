@@ -2,180 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDACFC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344272AbiBUIoE (ORCPT
+        id S1344378AbiBUIos (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:44:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33748 "EHLO
+        Mon, 21 Feb 2022 03:44:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237755AbiBUIoA (ORCPT
+        with ESMTP id S237755AbiBUIom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:44:00 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D94513D78
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:43:38 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nM4I6-0007Ir-6K; Mon, 21 Feb 2022 09:43:30 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nM4I5-00FMTH-KU; Mon, 21 Feb 2022 09:43:29 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 1/1] net: dsa: microchip: ksz9477: implement MTU configuration
-Date:   Mon, 21 Feb 2022 09:43:28 +0100
-Message-Id: <20220221084328.3661250-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 21 Feb 2022 03:44:42 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA8113D0D;
+        Mon, 21 Feb 2022 00:44:19 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K2G5R0X6Sz9shK;
+        Mon, 21 Feb 2022 16:42:35 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 21 Feb 2022 16:44:16 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <john.garry@huawei.com>,
+        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
+        <yangyicong@hisilicon.com>, <song.bao.hua@hisilicon.com>
+Subject: [PATCH v4 1/8] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
+Date:   Mon, 21 Feb 2022 16:43:00 +0800
+Message-ID: <20220221084307.33712-2-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220221084307.33712-1-yangyicong@hisilicon.com>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This chips supports two ways to configure max MTU size:
-- by setting SW_LEGAL_PACKET_DISABLE bit: if this bit is 0 allowed packed size
-  will be between 64 and bytes 1518. If this bit is 1, it will accept
-  packets up to 2000 bytes.
-- by setting SW_JUMBO_PACKET bit. If this bit is set, the chip will
-  ignore SW_LEGAL_PACKET_DISABLE value and use REG_SW_MTU__2 register to
-  configure MTU size.
+The DMA of HiSilicon PTT device can only work with identical
+mapping. So add a quirk for the device to force the domain
+passthrough.
 
-Current driver has disabled SW_JUMBO_PACKET bit and activates
-SW_LEGAL_PACKET_DISABLE. So the switch will pass all packets up to 2000 without
-any way to configure it.
-
-By providing port_change_mtu we are switch to SW_JUMBO_PACKET way and will
-be able to configure MTU up to ~9000.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- drivers/net/dsa/microchip/ksz9477.c     | 42 +++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz9477_reg.h |  4 +++
- drivers/net/dsa/microchip/ksz_common.h  |  1 +
- 3 files changed, 45 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 18ffc8ded7ee..ae5ce7e71d4c 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -11,6 +11,7 @@
- #include <linux/platform_data/microchip-ksz.h>
- #include <linux/phy.h>
- #include <linux/if_bridge.h>
-+#include <linux/if_vlan.h>
- #include <net/dsa.h>
- #include <net/switchdev.h>
- 
-@@ -182,6 +183,35 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
- 			   bits, set ? bits : 0);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 6dc6d8b6b368..6f67a2b1dd27 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+ 	}
  }
  
-+static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
++#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
++					 (pdev)->device == 0xa12e)
++
++static int arm_smmu_def_domain_type(struct device *dev)
 +{
-+	struct ksz_device *dev = ds->priv;
-+	u16 new_mtu, max_mtu = 0;
-+	int i;
++	if (dev_is_pci(dev)) {
++		struct pci_dev *pdev = to_pci_dev(dev);
 +
-+	new_mtu = mtu + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN;
-+
-+	if (dsa_is_cpu_port(ds, port))
-+		new_mtu += KSZ9477_INGRESS_TAG_LEN;
-+
-+	/* Cache the per-port MTU setting */
-+	dev->ports[port].max_mtu = new_mtu;
-+
-+	for (i = 0; i < dev->port_cnt; i++) {
-+		if (dev->ports[i].max_mtu > max_mtu)
-+			max_mtu = dev->ports[i].max_mtu;
++		if (IS_HISI_PTT_DEVICE(pdev))
++			return IOMMU_DOMAIN_IDENTITY;
 +	}
 +
-+	return regmap_update_bits(dev->regmap[1], REG_SW_MTU__2,
-+				  REG_SW_MTU_MASK, max_mtu);
++	return 0;
 +}
 +
-+static int ksz9477_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return KSZ9477_MAX_MTU - ETH_HLEN - ETH_FCS_LEN - VLAN_HLEN -
-+		KSZ9477_INGRESS_TAG_LEN;
-+}
-+
- static int ksz9477_wait_vlan_ctrl_ready(struct ksz_device *dev)
- {
- 	unsigned int val;
-@@ -1412,8 +1442,14 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	/* Do not work correctly with tail tagging. */
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_0, SW_CHECK_LENGTH, false);
- 
--	/* accept packet up to 2000bytes */
--	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_LEGAL_PACKET_DISABLE, true);
-+	/* Enable REG_SW_MTU__2 reg by setting SW_JUMBO_PACKET */
-+	ksz_cfg(dev, REG_SW_MAC_CTRL_1, SW_JUMBO_PACKET, true);
-+
-+	/* Now we can configure default MTU value */
-+	ret = regmap_update_bits(dev->regmap[1], REG_SW_MTU__2, REG_SW_MTU_MASK,
-+				 VLAN_ETH_FRAME_LEN + ETH_FCS_LEN);
-+	if (ret)
-+		return ret;
- 
- 	ksz9477_config_cpu_port(ds);
- 
-@@ -1460,6 +1496,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_mirror_add	= ksz9477_port_mirror_add,
- 	.port_mirror_del	= ksz9477_port_mirror_del,
- 	.get_stats64		= ksz9477_get_stats64,
-+	.port_change_mtu	= ksz9477_change_mtu,
-+	.port_max_mtu		= ksz9477_max_mtu,
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.sva_unbind		= arm_smmu_sva_unbind,
+ 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+ 	.page_response		= arm_smmu_page_response,
++	.def_domain_type	= arm_smmu_def_domain_type,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ 	.owner			= THIS_MODULE,
  };
- 
- static u32 ksz9477_get_port_addr(int port, int offset)
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 16939f29faa5..34c368d3676c 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -176,6 +176,7 @@
- #define REG_SW_MAC_ADDR_5		0x0307
- 
- #define REG_SW_MTU__2			0x0308
-+#define REG_SW_MTU_MASK			GENMASK(13, 0)
- 
- #define REG_SW_ISP_TPID__2		0x030A
- 
-@@ -1662,4 +1663,7 @@
- /* 148,800 frames * 67 ms / 100 */
- #define BROADCAST_STORM_VALUE		9969
- 
-+#define KSZ9477_INGRESS_TAG_LEN		2
-+#define KSZ9477_MAX_MTU			9000
-+
- #endif /* KSZ9477_REGS_H */
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index c6fa487fb006..edf4a442de57 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -41,6 +41,7 @@ struct ksz_port {
- 
- 	struct ksz_port_mib mib;
- 	phy_interface_t interface;
-+	unsigned int max_mtu;
- };
- 
- struct ksz_device {
 -- 
-2.30.2
+2.24.0
 
