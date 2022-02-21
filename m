@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2789EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E835C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346033AbiBUIzO (ORCPT
+        id S1346049AbiBUIzS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:55:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42582 "EHLO
+        Mon, 21 Feb 2022 03:55:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345642AbiBUIxX (ORCPT
+        with ESMTP id S245153AbiBUIxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:53:23 -0500
+        Mon, 21 Feb 2022 03:53:33 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDC21AD9A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EDF1DA69
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:52:56 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 138152244E;
-        Mon, 21 Feb 2022 09:52:53 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DCE782223E;
+        Mon, 21 Feb 2022 09:52:54 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645433573;
+        t=1645433575;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=h59sIJ19TU9KRoi6jqsNtCtVCMchssKrtqw3t16scK0=;
-        b=dr8RvJnx6wG855NqELkPpLq3prl7UnDi9MFcr+eQmrmdypomgVhwfRBy7mTMckt7fgq6+p
-        hfzZs/cWoPhn1rN/NVCh6Z3nMNsqswFYl/KkR1qkaPTLM7i8j+asr1M6NuCMh5xR7xdKQm
-        GmO/TSFBQOOxhXcq/8B7gDzAvmEnCtw=
+        bh=toZmYMnm+du58DgEiyl/+z7EezURQIhbZ+ekj4hpZoY=;
+        b=UIjXh6hWGf2mj76YNrJF0/rPPaBOMLzKNkNGbuFN0xduc7W0zJ3aVOGhdtRO6vPyofD1Hc
+        auLKLH1o+h4lcs3JJAHd9GXcDFp8JFPe+GOFFoRJ+7fQGrEM1eL4Cadn/T8/uJbKo3+P7O
+        1myddysAp6A7qo2Ltm50GNH0+yFvt5Y=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -40,9 +40,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 11/32] mtd: spi-nor: micron-st: unify function names
-Date:   Mon, 21 Feb 2022 09:52:15 +0100
-Message-Id: <20220221085236.1452024-12-michael@walle.cc>
+Subject: [PATCH v3 13/32] mtd: spi-nor: sst: unify function names
+Date:   Mon, 21 Feb 2022 09:52:17 +0100
+Message-Id: <20220221085236.1452024-14-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220221085236.1452024-1-michael@walle.cc>
 References: <20220221085236.1452024-1-michael@walle.cc>
@@ -62,106 +62,107 @@ There are no functional changes.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/mtd/spi-nor/micron-st.c | 34 ++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/mtd/spi-nor/sst.c | 44 +++++++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-index bb95b1aabf74..7a68f2ad3ea1 100644
---- a/drivers/mtd/spi-nor/micron-st.c
-+++ b/drivers/mtd/spi-nor/micron-st.c
-@@ -17,7 +17,7 @@
- #define SPINOR_MT_OCT_DTR	0xe7	/* Enable Octal DTR. */
- #define SPINOR_MT_EXSPI		0xff	/* Enable Extended SPI (default) */
+diff --git a/drivers/mtd/spi-nor/sst.c b/drivers/mtd/spi-nor/sst.c
+index 30183e9189b9..63bcc97bf978 100644
+--- a/drivers/mtd/spi-nor/sst.c
++++ b/drivers/mtd/spi-nor/sst.c
+@@ -13,12 +13,12 @@
  
--static int spi_nor_micron_octal_dtr_enable(struct spi_nor *nor, bool enable)
-+static int micron_st_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
- {
- 	struct spi_mem_op op;
- 	u8 *buf = nor->bouncebuf;
-@@ -102,7 +102,7 @@ static int spi_nor_micron_octal_dtr_enable(struct spi_nor *nor, bool enable)
+ #define SST26VF_CR_BPNV		BIT(3)
  
- static void mt35xu512aba_default_init(struct spi_nor *nor)
+-static int sst26vf_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int sst26vf_nor_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
--	nor->params->octal_dtr_enable = spi_nor_micron_octal_dtr_enable;
-+	nor->params->octal_dtr_enable = micron_st_nor_octal_dtr_enable;
+ 	return -EOPNOTSUPP;
  }
  
- static void mt35xu512aba_post_sfdp_fixup(struct spi_nor *nor)
-@@ -130,7 +130,7 @@ static const struct spi_nor_fixups mt35xu512aba_fixups = {
- 	.post_sfdp = mt35xu512aba_post_sfdp_fixup,
- };
- 
--static const struct flash_info micron_parts[] = {
-+static const struct flash_info micron_nor_parts[] = {
- 	{ "mt35xu512aba", INFO(0x2c5b1a, 0, 128 * 1024, 512)
- 		FLAGS(USE_FSR)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_OCTAL_READ |
-@@ -143,7 +143,7 @@ static const struct flash_info micron_parts[] = {
- 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
- };
- 
--static const struct flash_info st_parts[] = {
-+static const struct flash_info st_nor_parts[] = {
- 	{ "n25q016a",	 INFO(0x20bb15, 0, 64 * 1024,   32)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
- 	{ "n25q032",	 INFO(0x20ba16, 0, 64 * 1024,   64)
-@@ -250,15 +250,15 @@ static const struct flash_info st_parts[] = {
- };
- 
- /**
-- * st_micron_set_4byte_addr_mode() - Set 4-byte address mode for ST and Micron
-- * flashes.
-+ * micron_st_nor_set_4byte_addr_mode() - Set 4-byte address mode for ST and
-+ * Micron flashes.
-  * @nor:	pointer to 'struct spi_nor'.
-  * @enable:	true to enter the 4-byte address mode, false to exit the 4-byte
-  *		address mode.
-  *
-  * Return: 0 on success, -errno otherwise.
-  */
--static int st_micron_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
-+static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+-static int sst26vf_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int sst26vf_nor_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
  	int ret;
  
-@@ -273,28 +273,28 @@ static int st_micron_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
- 	return spi_nor_write_disable(nor);
+@@ -38,27 +38,27 @@ static int sst26vf_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	return spi_nor_global_block_unlock(nor);
  }
  
--static void micron_st_default_init(struct spi_nor *nor)
-+static void micron_st_nor_default_init(struct spi_nor *nor)
+-static int sst26vf_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
++static int sst26vf_nor_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
  {
- 	nor->flags |= SNOR_F_HAS_LOCK;
- 	nor->flags &= ~SNOR_F_HAS_16BIT_SR;
- 	nor->params->quad_enable = NULL;
--	nor->params->set_4byte_addr_mode = st_micron_set_4byte_addr_mode;
-+	nor->params->set_4byte_addr_mode = micron_st_nor_set_4byte_addr_mode;
+ 	return -EOPNOTSUPP;
  }
  
--static const struct spi_nor_fixups micron_st_fixups = {
--	.default_init = micron_st_default_init,
-+static const struct spi_nor_fixups micron_st_nor_fixups = {
-+	.default_init = micron_st_nor_default_init,
+-static const struct spi_nor_locking_ops sst26vf_locking_ops = {
+-	.lock = sst26vf_lock,
+-	.unlock = sst26vf_unlock,
+-	.is_locked = sst26vf_is_locked,
++static const struct spi_nor_locking_ops sst26vf_nor_locking_ops = {
++	.lock = sst26vf_nor_lock,
++	.unlock = sst26vf_nor_unlock,
++	.is_locked = sst26vf_nor_is_locked,
  };
  
- const struct spi_nor_manufacturer spi_nor_micron = {
- 	.name = "micron",
--	.parts = micron_parts,
--	.nparts = ARRAY_SIZE(micron_parts),
--	.fixups = &micron_st_fixups,
-+	.parts = micron_nor_parts,
-+	.nparts = ARRAY_SIZE(micron_nor_parts),
-+	.fixups = &micron_st_nor_fixups,
+-static void sst26vf_late_init(struct spi_nor *nor)
++static void sst26vf_nor_late_init(struct spi_nor *nor)
+ {
+-	nor->params->locking_ops = &sst26vf_locking_ops;
++	nor->params->locking_ops = &sst26vf_nor_locking_ops;
+ }
+ 
+-static const struct spi_nor_fixups sst26vf_fixups = {
+-	.late_init = sst26vf_late_init,
++static const struct spi_nor_fixups sst26vf_nor_fixups = {
++	.late_init = sst26vf_nor_late_init,
  };
  
- const struct spi_nor_manufacturer spi_nor_st = {
- 	.name = "st",
--	.parts = st_parts,
--	.nparts = ARRAY_SIZE(st_parts),
--	.fixups = &micron_st_fixups,
-+	.parts = st_nor_parts,
-+	.nparts = ARRAY_SIZE(st_nor_parts),
-+	.fixups = &micron_st_nor_fixups,
+-static const struct flash_info sst_parts[] = {
++static const struct flash_info sst_nor_parts[] = {
+ 	/* SST -- large erase sizes are "overlays", "sectors" are 4K */
+ 	{ "sst25vf040b", INFO(0xbf258d, 0, 64 * 1024,  8)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+@@ -114,11 +114,11 @@ static const struct flash_info sst_parts[] = {
+ 	{ "sst26vf064b", INFO(0xbf2643, 0, 64 * 1024, 128)
+ 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ)
+-		.fixups = &sst26vf_fixups },
++		.fixups = &sst26vf_nor_fixups },
+ };
+ 
+-static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+-		     size_t *retlen, const u_char *buf)
++static int sst_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
++			 size_t *retlen, const u_char *buf)
+ {
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	size_t actual = 0;
+@@ -203,19 +203,19 @@ static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	return ret;
+ }
+ 
+-static void sst_late_init(struct spi_nor *nor)
++static void sst_nor_late_init(struct spi_nor *nor)
+ {
+ 	if (nor->info->mfr_flags & SST_WRITE)
+-		nor->mtd._write = sst_write;
++		nor->mtd._write = sst_nor_write;
+ }
+ 
+-static const struct spi_nor_fixups sst_fixups = {
+-	.late_init = sst_late_init,
++static const struct spi_nor_fixups sst_nor_fixups = {
++	.late_init = sst_nor_late_init,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_sst = {
+ 	.name = "sst",
+-	.parts = sst_parts,
+-	.nparts = ARRAY_SIZE(sst_parts),
+-	.fixups = &sst_fixups,
++	.parts = sst_nor_parts,
++	.nparts = ARRAY_SIZE(sst_nor_parts),
++	.fixups = &sst_nor_fixups,
  };
 -- 
 2.30.2
