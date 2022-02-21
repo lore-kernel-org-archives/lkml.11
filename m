@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF6EC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528FAC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349228AbiBUJMO (ORCPT
+        id S1349352AbiBUJMW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33978 "EHLO
+        Mon, 21 Feb 2022 04:12:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347625AbiBUJIi (ORCPT
+        with ESMTP id S1347723AbiBUJIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:08:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9D245AF;
-        Mon, 21 Feb 2022 01:00:25 -0800 (PST)
+        Mon, 21 Feb 2022 04:08:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C394726AE4;
+        Mon, 21 Feb 2022 01:00:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD2196112C;
-        Mon, 21 Feb 2022 09:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28B8C340E9;
-        Mon, 21 Feb 2022 09:00:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F9A96112C;
+        Mon, 21 Feb 2022 09:00:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 477C9C340E9;
+        Mon, 21 Feb 2022 09:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434024;
-        bh=+K0VwmMexA2L3+pqCHBDD2Xt8G4WfkwYOqLZIN+59Dw=;
+        s=korg; t=1645434029;
+        bh=gabu0dPFIjPq8dl7f+M37wwIEpMdISwwmTxGID7I7xw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=biajW6tDtXnKwLdn3dKoLMeLc3ZA5dB2HtONnLa3qxKk3sf9gwk0ZCOjTI8R6yUsU
-         Bd9mjwxoYdo+T4gB5FYG3zaN4CxWFuSBxZAkMrtNy6FywIDCwFuwA/QFjBGNZm50sz
-         tnc6hK7f185GHy6u8wuMw49DlfrUU6BV836KiG9w=
+        b=x6eLqSg7CaLvGXRlrmlJwaxJnWqNe/JBdU4umGA+KLIN1Sl6PP/N0LbBZVsqaazz/
+         nmiw3bJIroFEvxrfkQf0z6zPZPVP97Xsz18U5KresGWCaN16Q379oX8VhYhlbpWtS+
+         jPVQJ5O8fA/wUATSPJDst51QaIvr0orB7Hrvz0rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 49/80] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_range()
-Date:   Mon, 21 Feb 2022 09:49:29 +0100
-Message-Id: <20220221084917.183135042@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 68/80] ARM: OMAP2+: adjust the location of put_device() call in omapdss_init_of
+Date:   Mon, 21 Feb 2022 09:49:48 +0100
+Message-Id: <20220221084917.812808040@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -48,62 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-commit 650204ded3703b5817bd4b6a77fa47d333c4f902 upstream.
+[ Upstream commit 34596ba380b03d181e24efd50e2f21045bde3696 ]
 
-When writing out a stereo control we discard the change notification from
-the first channel, meaning that events are only generated based on changes
-to the second channel. Ensure that we report a change if either channel
-has changed.
+This was found by coccicheck:
+./arch/arm/mach-omap2/display.c, 272, 1-7, ERROR missing put_device;
+call of_find_device_by_node on line 258, but without a corresponding
+object release within this function.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220201155629.120510-4-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Move the put_device() call before the if judgment.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-ops.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ arch/arm/mach-omap2/display.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -523,7 +523,7 @@ int snd_soc_put_volsw_range(struct snd_k
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int ret;
-+	int err, ret;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -532,9 +532,10 @@ int snd_soc_put_volsw_range(struct snd_k
- 	val_mask = mask << shift;
- 	val = val << shift;
- 
--	ret = snd_soc_component_update_bits(component, reg, val_mask, val);
--	if (ret < 0)
--		return ret;
-+	err = snd_soc_component_update_bits(component, reg, val_mask, val);
-+	if (err < 0)
-+		return err;
-+	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
- 		if (invert)
-@@ -544,8 +545,12 @@ int snd_soc_put_volsw_range(struct snd_k
- 		val_mask = mask << shift;
- 		val = val << shift;
- 
--		ret = snd_soc_component_update_bits(component, rreg, val_mask,
-+		err = snd_soc_component_update_bits(component, rreg, val_mask,
- 			val);
-+		/* Don't discard any error code or drop change flag */
-+		if (ret == 0 || err < 0) {
-+			ret = err;
-+		}
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 46012ca812f48..1bd64f6ba8cfe 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -263,9 +263,9 @@ static int __init omapdss_init_of(void)
  	}
  
- 	return ret;
+ 	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
++	put_device(&pdev->dev);
+ 	if (r) {
+ 		pr_err("Unable to populate DSS submodule devices\n");
+-		put_device(&pdev->dev);
+ 		return r;
+ 	}
+ 
+-- 
+2.34.1
+
 
 
