@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA10C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CDB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349719AbiBUJ20 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:28:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35902 "EHLO
+        id S230487AbiBUJ2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:28:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349555AbiBUJVd (ORCPT
+        with ESMTP id S1349603AbiBUJVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDDE3669F;
-        Mon, 21 Feb 2022 01:08:27 -0800 (PST)
+        Mon, 21 Feb 2022 04:21:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477A52459B;
+        Mon, 21 Feb 2022 01:08:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47CF3608C1;
-        Mon, 21 Feb 2022 09:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3187BC340EB;
-        Mon, 21 Feb 2022 09:08:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3E46097C;
+        Mon, 21 Feb 2022 09:08:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA708C340E9;
+        Mon, 21 Feb 2022 09:08:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434506;
-        bh=LbpS3Y/VfwBZOHuEtHeMd4iAvaPoeairLJWLJwAYa1A=;
+        s=korg; t=1645434512;
+        bh=Y4lticyda0JJhfUxP3JKpsyz7hPDielaAkyHNjgAZRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KU8drZIfE71SpVpN0RyZf4HL3F3vDPbN1Ix9+uXi5voXTGBbW2FskDUGKHTCX95EY
-         q6hzi1tTbTKDXfjn2eDI0t11tjRsAM+e2BaQlQ16D2Jd6x9uYEv/DEcDSjUH/INMkO
-         fcA31ygnmlit0JJNnF66juo8sFjRuVg0Z5mPYjPM=
+        b=iqKw7Hmp5McxSTGsbOqsqtoulxSmlAurPupO5Wt3vs5FAA5zs9JrY88ZAHK88T90V
+         +2vznecNpvVc7N0A3KqJLCvaTl0bRSUKdKHZPTnIR5n9ocDQCrAoXSuIoh6HgwJueV
+         zoo95AW0MsCF48LUG43SnrO89A9xrnAI2S/XaotI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 031/196] selftests: openat2: Add missing dependency in Makefile
-Date:   Mon, 21 Feb 2022 09:47:43 +0100
-Message-Id: <20220221084931.974100891@linuxfoundation.org>
+Subject: [PATCH 5.15 033/196] selftests: skip mincore.check_file_mmap when fs lacks needed support
+Date:   Mon, 21 Feb 2022 09:47:45 +0100
+Message-Id: <20220221084932.046085132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -53,42 +53,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit ea3396725aa143dd42fe388cb67e44c90d2fb719 ]
+[ Upstream commit dae1d8ac31896988e7313384c0370176a75e9b45 ]
 
-Add a dependency on header helpers.h to the main target; while at that add
-to helpers.h also a missing include for bool types.
+Report mincore.check_file_mmap as SKIP instead of FAIL if the underlying
+filesystem lacks support of O_TMPFILE or fallocate since such failures
+are not really related to mincore functionality.
 
-Cc: Aleksa Sarai <cyphar@cyphar.com>
+Cc: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/openat2/Makefile  | 2 +-
- tools/testing/selftests/openat2/helpers.h | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ .../selftests/mincore/mincore_selftest.c      | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/openat2/Makefile b/tools/testing/selftests/openat2/Makefile
-index 4b93b1417b862..843ba56d8e49e 100644
---- a/tools/testing/selftests/openat2/Makefile
-+++ b/tools/testing/selftests/openat2/Makefile
-@@ -5,4 +5,4 @@ TEST_GEN_PROGS := openat2_test resolve_test rename_attack_test
+diff --git a/tools/testing/selftests/mincore/mincore_selftest.c b/tools/testing/selftests/mincore/mincore_selftest.c
+index e54106643337b..4c88238fc8f05 100644
+--- a/tools/testing/selftests/mincore/mincore_selftest.c
++++ b/tools/testing/selftests/mincore/mincore_selftest.c
+@@ -207,15 +207,21 @@ TEST(check_file_mmap)
  
- include ../lib.mk
+ 	errno = 0;
+ 	fd = open(".", O_TMPFILE | O_RDWR, 0600);
+-	ASSERT_NE(-1, fd) {
+-		TH_LOG("Can't create temporary file: %s",
+-			strerror(errno));
++	if (fd < 0) {
++		ASSERT_EQ(errno, EOPNOTSUPP) {
++			TH_LOG("Can't create temporary file: %s",
++			       strerror(errno));
++		}
++		SKIP(goto out_free, "O_TMPFILE not supported by filesystem.");
+ 	}
+ 	errno = 0;
+ 	retval = fallocate(fd, 0, 0, FILE_SIZE);
+-	ASSERT_EQ(0, retval) {
+-		TH_LOG("Error allocating space for the temporary file: %s",
+-			strerror(errno));
++	if (retval) {
++		ASSERT_EQ(errno, EOPNOTSUPP) {
++			TH_LOG("Error allocating space for the temporary file: %s",
++			       strerror(errno));
++		}
++		SKIP(goto out_close, "fallocate not supported by filesystem.");
+ 	}
  
--$(TEST_GEN_PROGS): helpers.c
-+$(TEST_GEN_PROGS): helpers.c helpers.h
-diff --git a/tools/testing/selftests/openat2/helpers.h b/tools/testing/selftests/openat2/helpers.h
-index ad5d0ba5b6ce9..7056340b9339e 100644
---- a/tools/testing/selftests/openat2/helpers.h
-+++ b/tools/testing/selftests/openat2/helpers.h
-@@ -9,6 +9,7 @@
+ 	/*
+@@ -271,7 +277,9 @@ TEST(check_file_mmap)
+ 	}
  
- #define _GNU_SOURCE
- #include <stdint.h>
-+#include <stdbool.h>
- #include <errno.h>
- #include <linux/types.h>
- #include "../kselftest.h"
+ 	munmap(addr, FILE_SIZE);
++out_close:
+ 	close(fd);
++out_free:
+ 	free(vec);
+ }
+ 
 -- 
 2.34.1
 
