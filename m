@@ -2,147 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B55C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0711C3527E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354039AbiBUJ6G (ORCPT
+        id S1353828AbiBUJ54 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:58:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42232 "EHLO
+        Mon, 21 Feb 2022 04:57:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352387AbiBUJrY (ORCPT
+        with ESMTP id S1352570AbiBUJrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:24 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A634424A8;
-        Mon, 21 Feb 2022 01:19:38 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id t14so13649512ljh.8;
-        Mon, 21 Feb 2022 01:19:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=huPIGDsJDWnlkYGD8RjgTidc2vJbYvfd2l32RF6F7ME=;
-        b=XHq3QluY2NVKJBoPyZ5hC8E9kHQvOAPPb8ZhyHDx1zhlAkNeBSQDU9oDMYEo9kLtj1
-         9cXg34dwfdzJeRIGaVXIq3srnStQKw3QDXKQ1thq0Uc6l1XFZg/mZzpv6moP6tyl8vZ1
-         gr+nNuiwanMDAssVdkEgx9KaXjFFvMWdGLLBJSOQYy2hv1mgqQLmpbD2vThAYB6uxphS
-         gY3TtaGTMtam7ba1xHPA893XpvlEeTFewfs2YkAyUdpAH1Pp1SqlJ4GI/2fZMzRRvfX9
-         gWdHZxniM+CkrZLLtz10wy918bnMFilflVU3jK9GI8aVxImTznpEv+nO78UKn11BNPWF
-         8Szg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=huPIGDsJDWnlkYGD8RjgTidc2vJbYvfd2l32RF6F7ME=;
-        b=F9z/78idZ0Pt1vW8eJNXJFcTWpMHuhScVbHFE/pqoRAYidGdVhuAxnx8QFR+5JiGkv
-         afxYCTHPfz70mekNwJ9sT8qGAC+/+szsTs5SlApsF3gqj748vr+Clk8nlqzmCMWPlrzF
-         Io/fgrt3tG0NX2+vtRpCjhTFMHg2jZ+orSZsT9zi43PYfWIDcQRRWVUJWjTVmeRzRTWN
-         M5AjZ9NfR9XKcU4YUZTsP5q5IZ3UpNmnyhGkOLVBC4q3yB+tMd41wGrOcUtJN0OJndtA
-         Kkqk9ZlsG4bX31DzBrhnwkH/aiMk9ZqEqUtYtp/+f6Dorz40R1600OENFjHS9eiDXwlz
-         0+TA==
-X-Gm-Message-State: AOAM530CI8H2IO+7gOMIsqis2Jwl9maKzVx0dOEdkyx8EvUkVi+rnMLU
-        b5BTXVMtdlDpI8q3IBFslVk=
-X-Google-Smtp-Source: ABdhPJxx4DFd3v22H/QNGr758lj+rOXO8wtuMl5kY/nQQ9qHtifRlgmAIpdT7UoX8ouAj3ynnDz2BA==
-X-Received: by 2002:a2e:bd82:0:b0:241:130d:90b3 with SMTP id o2-20020a2ebd82000000b00241130d90b3mr13798892ljq.383.1645435176659;
-        Mon, 21 Feb 2022 01:19:36 -0800 (PST)
-Received: from [192.168.1.103] ([178.176.73.51])
-        by smtp.gmail.com with ESMTPSA id a9sm795218lfl.180.2022.02.21.01.19.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 01:19:35 -0800 (PST)
-Subject: Re: [PATCH v10 1/4] MIPS: Loongson64: dts: update the display
- controller device node
-To:     Sui Jingfeng <15330273260@189.cn>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220220145554.117854-1-15330273260@189.cn>
- <20220220145554.117854-2-15330273260@189.cn>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <08abcb14-f1f6-8be5-6309-cd16e0578c05@gmail.com>
-Date:   Mon, 21 Feb 2022 12:19:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 21 Feb 2022 04:47:35 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657C142ED4;
+        Mon, 21 Feb 2022 01:20:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C7720CE0E80;
+        Mon, 21 Feb 2022 09:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7153C340E9;
+        Mon, 21 Feb 2022 09:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645435207;
+        bh=fuV+g5ItwfrMizpj8gb/qGp+Ga0dQF92sjKhMTC425I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YTOnPh2DE5i3i4snh+A/NWgTbHbM/VKutKXYf/vPfMfNEbazTlNkl8hWGwnUKPjgO
+         GlQnUgNh2dOhNVKfhuMReUB9Klwng1tBmhk1fMsgZg7tQRT1lU1W2YPkQInAmZSPVc
+         z+ll20F4U9oq9UfA/MHdeDSKgQgMeSH7SrbTudYs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 075/227] KVM: x86: nSVM: mark vmcb01 as dirty when restoring SMM saved state
+Date:   Mon, 21 Feb 2022 09:48:14 +0100
+Message-Id: <20220221084937.368558831@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+References: <20220221084934.836145070@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220220145554.117854-2-15330273260@189.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/20/22 5:55 PM, Sui Jingfeng wrote:
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-> From: suijingfeng <suijingfeng@loongson.cn>
-> 
-> The display controller is a pci device, its PCI vendor id is 0x0014
-> its PCI device id is 0x7a06.
-> 
-> 1) In order to let the driver to know which chip the DC is contained
->    in, the compatible string of the display controller is updated
->    according to the chip's name.
-> 
-> 2) Add display controller device node for ls2k1000 SoC
-> 
-> Reported-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
-> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
-> ---
->  arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi | 8 ++++++++
->  arch/mips/boot/dts/loongson/ls7a-pch.dtsi          | 7 ++-----
->  2 files changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
-> index 768cf2abcea3..af9cda540f9e 100644
-> --- a/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
-> +++ b/arch/mips/boot/dts/loongson/loongson64-2k1000.dtsi
-> @@ -209,6 +209,14 @@ gpu@5,0 {
->  				interrupt-parent = <&liointc0>;
->  			};
->  
-> +			lsdc: display-controller@6,0 {
+commit e8efa4ff00374d2e6f47f6e4628ca3b541c001af upstream.
 
-   Shouldn't the node name just be "display", according to the section 2.2.2
-of the DT spec?
+While usually, restoring the smm state makes the KVM enter
+the nested guest thus a different vmcb (vmcb02 vs vmcb01),
+KVM should still mark it as dirty, since hardware
+can in theory cache multiple vmcbs.
 
-[...]
-> diff --git a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
-> index 2f45fce2cdc4..ec35ea9b2fe8 100644
-> --- a/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
-> +++ b/arch/mips/boot/dts/loongson/ls7a-pch.dtsi
-> @@ -160,11 +160,8 @@ gpu@6,0 {
->  				interrupt-parent = <&pic>;
->  			};
->  
-> -			dc@6,1 {
-> -				compatible = "pci0014,7a06.0",
-> -						   "pci0014,7a06",
-> -						   "pciclass030000",
-> -						   "pciclass0300";
-> +			lsdc: display-controller@6,1 {
+Failure to do so, combined with lack of setting the
+nested_run_pending (which is fixed in the next patch),
+might make KVM re-enter vmcb01, which was just exited from,
+with completely different set of guest state registers
+(SMM vs non SMM) and without proper dirty bits set,
+which results in the CPU reusing stale IDTR pointer
+which leads to a guest shutdown on any interrupt.
 
-   Same here...
+On the real hardware this usually doesn't happen,
+but when running nested, L0's KVM does check and
+honour few dirty bits, causing this issue to happen.
 
-[...]
+This patch fixes boot of hyperv and SMM enabled
+windows VM running nested on KVM.
 
-MBR, Sergey
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: stable@vger.kernel.org
+Message-Id: <20220207155447.840194-4-mlevitsk@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kvm/svm/svm.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4449,6 +4449,8 @@ static int svm_leave_smm(struct kvm_vcpu
+ 	 * Enter the nested guest now
+ 	 */
+ 
++	vmcb_mark_all_dirty(svm->vmcb01.ptr);
++
+ 	vmcb12 = map.hva;
+ 	nested_load_control_from_vmcb12(svm, &vmcb12->control);
+ 	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
+
+
