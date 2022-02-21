@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C827C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B2BC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350830AbiBUJgE (ORCPT
+        id S1350810AbiBUJf6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:36:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47556 "EHLO
+        Mon, 21 Feb 2022 04:35:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348513AbiBUJ1c (ORCPT
+        with ESMTP id S243856AbiBUJ1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8783E634A;
-        Mon, 21 Feb 2022 01:11:53 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:22 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12A2633A;
+        Mon, 21 Feb 2022 01:11:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BE260C1D;
-        Mon, 21 Feb 2022 09:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0952DC340E9;
-        Mon, 21 Feb 2022 09:11:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5A376CE0E7D;
+        Mon, 21 Feb 2022 09:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B20AC340E9;
+        Mon, 21 Feb 2022 09:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434712;
-        bh=2EEr04gVgGbLsytWBTlmHhQnd4tyf8xiRRSDPKxgK2U=;
+        s=korg; t=1645434706;
+        bh=gWrhBUVDvQ6S4mikWmV2cQBDKkGwyarz86IOQR8HysI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XMdbMN6swEgqA3GjWGypsKzGtQbgMTAIGhCOg5D1as5fFFwcf/NyxCCNU295XN8ei
-         iVhP/Ve6NS0d7hFtmGRFdSg9F9BGKCqTmImULrtGuXTkpfkx5fwfguxEhT11Za8wn5
-         ogA2fELxXf3VFovAYFZwujhiZzjlI+ib/bOaC09o=
+        b=ADDzWmrBSUeHltOwMG6NYHj6yrtcvHXyfvx14OSYB08AeobRG64pnomPPlDHNmhR8
+         QVaILV6OeFA8AA9UBaITeOGiRKG1FFhucstW/DnJ5R+hI+kcsQ5tKWJmiE09oIoXjG
+         tu4HS5dbjL3qoIewnFpVzMVoShGskedO3ASko3X8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 104/196] tipc: fix wrong publisher node address in link publications
-Date:   Mon, 21 Feb 2022 09:48:56 +0100
-Message-Id: <20220221084934.413078038@linuxfoundation.org>
+        stable@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 102/196] net: phy: mediatek: remove PHY mode check on MT7531
+Date:   Mon, 21 Feb 2022 09:48:54 +0100
+Message-Id: <20220221084934.352555481@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,39 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: DENG Qingfang <dqfext@gmail.com>
 
-commit 032062f363b4bf02b1d547f329aa5d97b6a17410 upstream.
+commit 525b108e6d95b643eccbd84fb10aa9aa101b18dd upstream.
 
-When a link comes up we add its presence to the name table to make it
-possible for users to subscribe for link up/down events. However, after
-a previous call signature change the binding is wrongly published with
-the peer node as publishing node, instead of the own node as it should
-be. This has the effect that the command 'tipc name table show' will
-list the link binding (service type 2) with node scope and a peer node
-as originator, something that obviously is impossible.
+The function mt7531_phy_mode_supported in the DSA driver set supported
+mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
+for the internal PHY, so this check breaks the PHY initialization:
 
-We correct this bug here.
+mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
 
-Fixes: 50a3499ab853 ("tipc: simplify signature of tipc_namtbl_publish()")
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Link: https://lore.kernel.org/r/20220214013852.2803940-1-jmaloy@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Remove the check to make it work again.
+
+Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
+Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Tested-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/node.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/mediatek-ge.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -413,7 +413,7 @@ static void tipc_node_write_unlock(struc
- 	tipc_uaddr(&ua, TIPC_SERVICE_RANGE, TIPC_NODE_SCOPE,
- 		   TIPC_LINK_STATE, n->addr, n->addr);
- 	sk.ref = n->link_id;
--	sk.node = n->addr;
-+	sk.node = tipc_own_addr(net);
- 	bearer_id = n->link_id & 0xffff;
- 	publ_list = &n->publ_list;
+--- a/drivers/net/phy/mediatek-ge.c
++++ b/drivers/net/phy/mediatek-ge.c
+@@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct
  
+ static int mt7531_phy_config_init(struct phy_device *phydev)
+ {
+-	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
+-		return -EINVAL;
+-
+ 	mtk_gephy_config_init(phydev);
+ 
+ 	/* PHY link down power saving enable */
 
 
