@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AE8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351766AbiBUJul (ORCPT
+        id S1352131AbiBUJvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:50:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41692 "EHLO
+        Mon, 21 Feb 2022 04:51:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351646AbiBUJqY (ORCPT
+        with ESMTP id S1351971AbiBUJqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:46:24 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DCE3FD84;
-        Mon, 21 Feb 2022 01:18:37 -0800 (PST)
+        Mon, 21 Feb 2022 04:46:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3305A26562;
+        Mon, 21 Feb 2022 01:18:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E5649CE0E92;
-        Mon, 21 Feb 2022 09:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA265C340E9;
-        Mon, 21 Feb 2022 09:18:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2C3160F4E;
+        Mon, 21 Feb 2022 09:18:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA2B7C340EB;
+        Mon, 21 Feb 2022 09:18:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435114;
-        bh=WVNauBaRJsa6s6xQmmlbQqAkkHhuRdEnpesltO1Pqoo=;
+        s=korg; t=1645435131;
+        bh=jSX6Ft0yEbQig0uJNyduPU6XZS9xYQjm4RT3TZsxxsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HgtvjMrw/tH+LShP2+qYivC+LAmH8gzxEFD73phnU3OKEM4yRVbmqzeQaIa7yBlAY
-         lJW4ht/EDeSQ1rdk0/PEH/Ed9BkWZzptaKxj4/OlLhRWhHs8CaqnDo3OOREQgKsVE7
-         zwvNAhpNDinsiE70jtFE4vPNmosQbGShi95sqJMQ=
+        b=dBCJkN7friVKFYMH7WursAxEDJVe8Q56XTXpcTaDuilK45B/FTheNBxe/Z0MAx/oY
+         TKH5wd2end1FX7ut/Pe6XDN3/H53FQYWuy8CVn2xsfJYwPuMAyZjQRLOoj4rA5T5rG
+         K1Dk9toraFVXrPseN00/9lUI4YEyi19phSYF86E8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Christian Brauner <brauner@kernel.org>,
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 050/227] vfs: make freeze_super abort when sync_filesystem returns error
-Date:   Mon, 21 Feb 2022 09:47:49 +0100
-Message-Id: <20220221084936.537859477@linuxfoundation.org>
+Subject: [PATCH 5.16 056/227] scsi: pm8001: Fix use-after-free for aborted TMF sas_task
+Date:   Mon, 21 Feb 2022 09:47:55 +0100
+Message-Id: <20220221084936.739780050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,74 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: John Garry <john.garry@huawei.com>
 
-[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
+[ Upstream commit 61f162aa4381845acbdc7f2be4dfb694d027c018 ]
 
-If we fail to synchronize the filesystem while preparing to freeze the
-fs, abort the freeze.
+Currently a use-after-free may occur if a TMF sas_task is aborted before we
+handle the IO completion in mpi_ssp_completion(). The abort occurs due to
+timeout.
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christian Brauner <brauner@kernel.org>
+When the timeout occurs, the SAS_TASK_STATE_ABORTED flag is set and the
+sas_task is freed in pm8001_exec_internal_tmf_task().
+
+However, if the I/O completion occurs later, the I/O completion still
+thinks that the sas_task is available. Fix this by clearing the ccb->task
+if the TMF times out - the I/O completion handler does nothing if this
+pointer is cleared.
+
+Link: https://lore.kernel.org/r/1643289172-165636-3-git-send-email-john.garry@huawei.com
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Acked-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/scsi/pm8001/pm8001_sas.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/fs/super.c b/fs/super.c
-index a6405d44d4ca2..d978dd031a036 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1619,11 +1619,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
- 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
- }
+diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
+index 83e73009db5cd..c0b45b8a513d7 100644
+--- a/drivers/scsi/pm8001/pm8001_sas.c
++++ b/drivers/scsi/pm8001/pm8001_sas.c
+@@ -753,8 +753,13 @@ static int pm8001_exec_internal_tmf_task(struct domain_device *dev,
+ 		res = -TMF_RESP_FUNC_FAILED;
+ 		/* Even TMF timed out, return direct. */
+ 		if (task->task_state_flags & SAS_TASK_STATE_ABORTED) {
++			struct pm8001_ccb_info *ccb = task->lldd_task;
++
+ 			pm8001_dbg(pm8001_ha, FAIL, "TMF task[%x]timeout.\n",
+ 				   tmf->tmf);
++
++			if (ccb)
++				ccb->task = NULL;
+ 			goto ex_err;
+ 		}
  
--static void sb_freeze_unlock(struct super_block *sb)
-+static void sb_freeze_unlock(struct super_block *sb, int level)
- {
--	int level;
--
--	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
-+	for (level--; level >= 0; level--)
- 		percpu_up_write(sb->s_writers.rw_sem + level);
- }
- 
-@@ -1694,7 +1692,14 @@ int freeze_super(struct super_block *sb)
- 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
- 
- 	/* All writers are done so after syncing there won't be dirty data */
--	sync_filesystem(sb);
-+	ret = sync_filesystem(sb);
-+	if (ret) {
-+		sb->s_writers.frozen = SB_UNFROZEN;
-+		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
-+		wake_up(&sb->s_writers.wait_unfrozen);
-+		deactivate_locked_super(sb);
-+		return ret;
-+	}
- 
- 	/* Now wait for internal filesystem counter */
- 	sb->s_writers.frozen = SB_FREEZE_FS;
-@@ -1706,7 +1711,7 @@ int freeze_super(struct super_block *sb)
- 			printk(KERN_ERR
- 				"VFS:Filesystem freeze failed\n");
- 			sb->s_writers.frozen = SB_UNFROZEN;
--			sb_freeze_unlock(sb);
-+			sb_freeze_unlock(sb, SB_FREEZE_FS);
- 			wake_up(&sb->s_writers.wait_unfrozen);
- 			deactivate_locked_super(sb);
- 			return ret;
-@@ -1751,7 +1756,7 @@ static int thaw_super_locked(struct super_block *sb)
- 	}
- 
- 	sb->s_writers.frozen = SB_UNFROZEN;
--	sb_freeze_unlock(sb);
-+	sb_freeze_unlock(sb, SB_FREEZE_FS);
- out:
- 	wake_up(&sb->s_writers.wait_unfrozen);
- 	deactivate_locked_super(sb);
 -- 
 2.34.1
 
