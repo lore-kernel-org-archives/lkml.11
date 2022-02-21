@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05482C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349874AbiBUJ2o (ORCPT
+        id S1349317AbiBUJ2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:28:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35874 "EHLO
+        Mon, 21 Feb 2022 04:28:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349670AbiBUJVi (ORCPT
+        with ESMTP id S1349701AbiBUJVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:21:38 -0500
+        Mon, 21 Feb 2022 04:21:39 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3329819C02;
-        Mon, 21 Feb 2022 01:08:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD37626ADB;
+        Mon, 21 Feb 2022 01:08:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A4A71CE0E86;
-        Mon, 21 Feb 2022 09:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93BB2C340E9;
-        Mon, 21 Feb 2022 09:08:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5B719CE0E92;
+        Mon, 21 Feb 2022 09:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FE7BC340F4;
+        Mon, 21 Feb 2022 09:08:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434515;
-        bh=AmJ88brCUlZqtikAlLHcWYvv3MfLZ/dBUHwKlvKvL8o=;
+        s=korg; t=1645434520;
+        bh=wpyf4EP47UnTT4MLirHHjUfl41vKf0RPd5Bd+CIhiNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ksiuyA++XEqsrSBOnwc1SX9VpqxArMEXo59mJYgjGMnCUM5V2NWBQ793JHjcG8AT8
-         wqAUnuhNBcJsPaEq/wqeAH60ISVrvCu2N+Chy1JA6rtD9FRouIeCa0qqVh6MbE2zGw
-         0Dah7bMPQFsHVynzI/TVGeRrjneLzGlFRo5ndSmI=
+        b=pPep7jusosR7HypxZd4SMHgu1dsAw8CRz+g6d3EWk8ETS0aDdqsnO62p8ItKDYEZN
+         5hZTY5k6u8EM1C2bN9WWlEG7WA3HFkIp5m7JSI+LatX8o2pqSeryv0FPgsmomaTaNC
+         YmV1wmuspGUFWqpu6Mgn7KnG7ylVvTKSW2os+4Fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 034/196] ax25: improve the incomplete fix to avoid UAF and NPD bugs
-Date:   Mon, 21 Feb 2022 09:47:46 +0100
-Message-Id: <20220221084932.074966037@linuxfoundation.org>
+Subject: [PATCH 5.15 036/196] vfs: make freeze_super abort when sync_filesystem returns error
+Date:   Mon, 21 Feb 2022 09:47:48 +0100
+Message-Id: <20220221084932.142296329@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,88 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Darrick J. Wong <djwong@kernel.org>
 
-[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
+[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
 
-The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
-AX25 device") introduce lock_sock() into ax25_kill_by_device to
-prevent NPD bug. But the concurrency NPD or UAF bug will occur,
-when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+If we fail to synchronize the filesystem while preparing to freeze the
+fs, abort the freeze.
 
-The NULL pointer dereference bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-                             |     ax25_cb_del()
-  ...                        |     ...
-                             |     ax25->sk=NULL;
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |     ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is set to null before dereference
-site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
-in advance, and uses ax25_list_lock to protect it, which can synchronize
-with ax25_cb_del() and ensure the value of sock is not null before
-dereference sites.
-
-The concurrency UAF bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-  ...                        |   ...
-                             |   sock_put(sk); //FREE
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |   ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is released before dereference
-site (1) or (2). Therefore, this patch uses sock_hold() to increase
-the refcount of sock and uses ax25_list_lock to protect it, which
-can synchronize with ax25_cb_del() in ax25_destroy_socket() and
-ensure the sock wil not be released before dereference sites.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/super.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 7473e0cc6d469..ea3431ac46a14 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -77,6 +77,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- {
- 	ax25_dev *ax25_dev;
- 	ax25_cb *s;
-+	struct sock *sk;
+diff --git a/fs/super.c b/fs/super.c
+index a1f82dfd1b39a..87379bb1f7a30 100644
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -1616,11 +1616,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
+ 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
+ }
  
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-@@ -85,13 +86,15 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			sk = s->sk;
-+			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
--			lock_sock(s->sk);
-+			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			release_sock(s->sk);
-+			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
+-static void sb_freeze_unlock(struct super_block *sb)
++static void sb_freeze_unlock(struct super_block *sb, int level)
+ {
+-	int level;
 -
-+			sock_put(sk);
- 			/* The entry could have been deleted from the
- 			 * list meanwhile and thus the next pointer is
- 			 * no longer valid.  Play it safe and restart
+-	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
++	for (level--; level >= 0; level--)
+ 		percpu_up_write(sb->s_writers.rw_sem + level);
+ }
+ 
+@@ -1691,7 +1689,14 @@ int freeze_super(struct super_block *sb)
+ 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
+ 
+ 	/* All writers are done so after syncing there won't be dirty data */
+-	sync_filesystem(sb);
++	ret = sync_filesystem(sb);
++	if (ret) {
++		sb->s_writers.frozen = SB_UNFROZEN;
++		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
++		wake_up(&sb->s_writers.wait_unfrozen);
++		deactivate_locked_super(sb);
++		return ret;
++	}
+ 
+ 	/* Now wait for internal filesystem counter */
+ 	sb->s_writers.frozen = SB_FREEZE_FS;
+@@ -1703,7 +1708,7 @@ int freeze_super(struct super_block *sb)
+ 			printk(KERN_ERR
+ 				"VFS:Filesystem freeze failed\n");
+ 			sb->s_writers.frozen = SB_UNFROZEN;
+-			sb_freeze_unlock(sb);
++			sb_freeze_unlock(sb, SB_FREEZE_FS);
+ 			wake_up(&sb->s_writers.wait_unfrozen);
+ 			deactivate_locked_super(sb);
+ 			return ret;
+@@ -1748,7 +1753,7 @@ static int thaw_super_locked(struct super_block *sb)
+ 	}
+ 
+ 	sb->s_writers.frozen = SB_UNFROZEN;
+-	sb_freeze_unlock(sb);
++	sb_freeze_unlock(sb, SB_FREEZE_FS);
+ out:
+ 	wake_up(&sb->s_writers.wait_unfrozen);
+ 	deactivate_locked_super(sb);
 -- 
 2.34.1
 
