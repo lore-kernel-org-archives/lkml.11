@@ -2,180 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A360AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44904C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381134AbiBUQlY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:41:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49758 "EHLO
+        id S236881AbiBUQmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 11:42:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381045AbiBUQkG (ORCPT
+        with ESMTP id S1381065AbiBUQmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:40:06 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B19127FD5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:39:21 -0800 (PST)
-Date:   Mon, 21 Feb 2022 16:39:17 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645461558;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 21 Feb 2022 11:42:32 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CF015A29;
+        Mon, 21 Feb 2022 08:41:57 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 32CE31F38E;
+        Mon, 21 Feb 2022 16:41:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645461716;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=JDYoFZzzEUTriDhEdPyrCKXBps/S5usFQUe+tA2i+uo=;
-        b=RrFAEqSCo3HTteCiblNftlpzEhO46oSuvL3RXLHtU1YYOOCvKWbzhgl9M08H4SyCCuaED5
-        2mySAkQj4cqqTRQCwrh/aUCkBCrXqqZ/U4odDAIp6ZdMc7Uxw37UZyAV307hSlB1xqji2w
-        lpZfHH5eeaoX9vFNG+tIgegBbKf4yZ3d/vqV8tbyDWf9bV/rw5KNLnPFg0TAXOfEDLaMCy
-        PuXK/MSNCThw3ILGhmJXQbrqsKLnLe+SxQQXCEpM1gidohp/y4GGj9Hn0cXrBDDQAVT/OK
-        C2jTWHB8BvrOIjPqj/F+5SHg96Nb0Y86qh60ak75lnt+IyTZWCsqBpObYvupsA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645461558;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        bh=63OIUUWVRi7zDz7jhlALynEfvto/B2lOfcLNN/pBnCk=;
+        b=tfoszk1TQuRmiaUhb3ZS0cKZsacOwFAKHL/bEpMzt0P1n9gpZULkRdsB07v6J2NLd53rv+
+        ryWIvlaCbtkyHfpruJ/mTctDHHm9kg2FSpB3HwlTAuNZGjFTj6jyZV2/5voCEG/C7rRA/g
+        n/l90+Cj/2zexGnczvpg5DPnP/F0vKE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645461716;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=JDYoFZzzEUTriDhEdPyrCKXBps/S5usFQUe+tA2i+uo=;
-        b=NzUmdXCwJIE2Qj6BV0iwiEP2dHL18qNyZN52JAelS7FjlHeCncVTs9wHSmkrRVi62jbJQI
-        WlPQuu/qAzA6MPBQ==
-From:   "irqchip-bot for Barry Song" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/gic-v3: Use dsb(ishst) to order
- writes with ICC_SGI1R_EL1 accesses
-Cc:     Barry Song <song.bao.hua@hisilicon.com>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220220061910.6155-1-21cnbao@gmail.com>
-References: <20220220061910.6155-1-21cnbao@gmail.com>
+        bh=63OIUUWVRi7zDz7jhlALynEfvto/B2lOfcLNN/pBnCk=;
+        b=KWca5eHSKxCbyM8qiMFPEg/Fmk5Bb4+K9SrvcuY9Rh91JavN5UZHLj3h70+aAJxPzlJT//
+        N9LBSWWUFMFfttAg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 2A065A3B83;
+        Mon, 21 Feb 2022 16:41:56 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id B8E0EDA823; Mon, 21 Feb 2022 17:38:08 +0100 (CET)
+Date:   Mon, 21 Feb 2022 17:38:08 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v2] btrfs: add fs state details to error messages.
+Message-ID: <20220221163808.GI12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-Message-ID: <164546155756.16921.7621579570018204768.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+On Fri, Feb 18, 2022 at 02:04:29PM -0500, Sweet Tea Dorminy wrote:
+> When a filesystem goes read-only due to an error, multiple errors tend
+> to be reported, some of which are knock-on failures. Logging some
+> fs_states, if any, in btrfs_handle_fs_error() and btrfs_printk()
+> helps distinguish the first error from subsequent messages which may
+> only exist due to an error state.
+> 
+> Under the new format, most initial errors will look like:
+> `BTRFS: error (device loop0) in ...`
+> while subsequent errors will begin with:
+> `error (device loop0: state E) in ...`
+> 
+> An initial transaction abort error will look like
+> `error (device loop0: state X) in ...`
+> and subsequent messages will contain
+> `(device loop0: state EX) in ...`
 
-Commit-ID:     80e4e1f472889f31a4dcaea3a4eb7a565296f1f3
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/80e4e1f472889f31a4dcaea3a4eb7a565296f1f3
-Author:        Barry Song <song.bao.hua@hisilicon.com>
-AuthorDate:    Sun, 20 Feb 2022 19:19:10 +13:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 21 Feb 2022 16:17:02 
+I think there should be also BTRFS_FS_STATE_LOG_CLEANUP_ERROR, and the
+letter maybe more hinting of the error:
 
-irqchip/gic-v3: Use dsb(ishst) to order writes with ICC_SGI1R_EL1 accesses
+E - generic error
+A - transaction abort
+L - log related errors
 
-A dsb(ishst) barrier should be enough to order previous writes with
-the system register generating the SGI, as we only need to guarantee
-the visibility of data to other CPUs in the inner shareable domain
-before we send the SGI.
+> 
+> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+> ---
+> v2:
+>   - Changed btrfs_state_to_string() for clarity
+>   - Removed superfluous whitespace change
+> 
+> v1:
+>   - https://lore.kernel.org/linux-btrfs/20220212191042.94954-1-sweettea-kernel@dorminy.me/
+> 
+>  fs/btrfs/super.c | 53 ++++++++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 45 insertions(+), 8 deletions(-)
+> 
+> diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
+> index 4d947ba32da9..42429d68950d 100644
+> --- a/fs/btrfs/super.c
+> +++ b/fs/btrfs/super.c
+> @@ -66,6 +66,37 @@ static struct file_system_type btrfs_root_fs_type;
+>  
+>  static int btrfs_remount(struct super_block *sb, int *flags, char *data);
+>  
+> +#define STATE_STRING_PREFACE ": state "
+> +#define MAX_STATE_CHARS 2
+> +
+> +static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
+> +{
+> +	unsigned int states_printed = 0;
+> +	char *curr = buf;
+> +
+> +	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
+> +	curr += sizeof(STATE_STRING_PREFACE) - 1;
+> +
+> +	/* If more states are reported, update MAX_STATE_CHARS also */
+> +	if (test_bit(BTRFS_FS_STATE_ERROR, &info->fs_state)) {
+> +		*curr++ = 'E';
+> +		states_printed++;
+> +	}
+> +
+> +	if (test_bit(BTRFS_FS_STATE_TRANS_ABORTED, &info->fs_state)) {
+> +		*curr++ = 'X';
+> +		states_printed++;
+> +	}
+> +
 
-A micro-benchmark is written to verify the performance impact on
-kunpeng920 machine with 2 sockets, each socket has 2 dies, and
-each die has 24 CPUs, so totally the system has 2 * 2 * 24 = 96
-CPUs. ~2% performance improvement can be seen by this benchmark.
+So if we have more than 2 it may make sense to create a table and not to
+opencode it like that and then use the constants (MAX_STATE_CHARS)
+everywhere. For first implementation it's probably ok to have it like
+three ifs.
 
-The code of benchmark module:
+> +	/* If no states were printed, reset the buffer */
+> +	if (!states_printed)
+> +		curr = buf;
+> +
+> +	WARN_ON_ONCE(states_printed > MAX_STATE_CHARS);
+> +
+> +	*curr++ = '\0';
+> +}
+> +
+>  /*
+>   * Generally the error codes correspond to their respective errors, but there
+>   * are a few special cases.
+> @@ -128,6 +159,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+>  {
+>  	struct super_block *sb = fs_info->sb;
+>  #ifdef CONFIG_PRINTK
+> +	char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
 
- #include <linux/module.h>
- #include <linux/timekeeping.h>
+A size defintion like that could be also predefined.
 
- volatile int data0 ____cacheline_aligned;
- volatile int data1 ____cacheline_aligned;
- volatile int data2 ____cacheline_aligned;
- volatile int data3 ____cacheline_aligned;
- volatile int data4 ____cacheline_aligned;
- volatile int data5 ____cacheline_aligned;
- volatile int data6 ____cacheline_aligned;
-
- static void ipi_latency_func(void *val)
- {
- }
-
- static int __init ipi_latency_init(void)
- {
- 	ktime_t stime, etime, delta;
- 	int cpu, i;
- 	int start = smp_processor_id();
-
- 	stime = ktime_get();
- 	for ( i = 0; i < 1000; i++)
- 		for (cpu = 0; cpu < 96; cpu++) {
- 			data0 = data1 = data2 = data3 = data4 = data5 = data6 = cpu;
- 			smp_call_function_single(cpu, ipi_latency_func, NULL, 1);
- 		}
- 	etime = ktime_get();
-
- 	delta = ktime_sub(etime, stime);
-
- 	printk("%s ipi from cpu%d to cpu0-95 delta of 1000times:%lld\n",
- 			__func__, start, delta);
-
- 	return 0;
- }
- module_init(ipi_latency_init);
-
- static void ipi_latency_exit(void)
- {
- }
- module_exit(ipi_latency_exit);
-
- MODULE_DESCRIPTION("IPI benchmark");
- MODULE_LICENSE("GPL");
-
-run the below commands 10 times on both Vanilla and the kernel with this
-patch:
- # taskset -c 0 insmod test.ko
- # rmmod test
-
-The result on vanilla:
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126757449
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126784249
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126177703
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:127022281
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126184883
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:127374585
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:125778089
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126974441
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:127357625
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:126228184
-
-The result on the kernel with this patch:
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:124467401
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123474209
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123558497
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:122993951
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:122984223
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123323609
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:124507583
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123386963
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123340664
- ipi_latency_init ipi from cpu0 to cpu0-95 delta of 1000times:123285324
-
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-[maz: tidied up commit message]
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220220061910.6155-1-21cnbao@gmail.com
----
- drivers/irqchip/irq-gic-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 5e935d9..0efe1a9 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1211,7 +1211,7 @@ static void gic_ipi_send_mask(struct irq_data *d, const struct cpumask *mask)
- 	 * Ensure that stores to Normal memory are visible to the
- 	 * other CPUs before issuing the IPI.
- 	 */
--	wmb();
-+	dsb(ishst);
- 
- 	for_each_cpu(cpu, mask) {
- 		u64 cluster_id = MPIDR_TO_SGI_CLUSTER_ID(cpu_logical_map(cpu));
+>  	const char *errstr;
+>  #endif
+>  
+> @@ -140,6 +172,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+>  
+>  #ifdef CONFIG_PRINTK
+>  	errstr = btrfs_decode_error(errno);
+> +	btrfs_state_to_string(fs_info, statestr);
+>  	if (fmt) {
+>  		struct va_format vaf;
+>  		va_list args;
+> @@ -148,12 +181,12 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+>  		vaf.fmt = fmt;
+>  		vaf.va = &args;
+>  
+> -		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s (%pV)\n",
+> -			sb->s_id, function, line, errno, errstr, &vaf);
+> +		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s (%pV)\n",
+> +			sb->s_id, statestr, function, line, errno, errstr, &vaf);
+>  		va_end(args);
+>  	} else {
+> -		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s\n",
+> -			sb->s_id, function, line, errno, errstr);
+> +		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s\n",
+> +			sb->s_id, statestr, function, line, errno, errstr);
+>  	}
+>  #endif
+>  
+> @@ -240,11 +273,15 @@ void __cold btrfs_printk(const struct btrfs_fs_info *fs_info, const char *fmt, .
+>  	vaf.va = &args;
+>  
+>  	if (__ratelimit(ratelimit)) {
+> -		if (fs_info)
+> -			printk("%sBTRFS %s (device %s): %pV\n", lvl, type,
+> -				fs_info->sb->s_id, &vaf);
+> -		else
+> +		if (fs_info) {
+> +			char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
+> +
+> +			btrfs_state_to_string(fs_info, statestr);
+> +			printk("%sBTRFS %s (device %s%s): %pV\n", lvl, type,
+> +				fs_info->sb->s_id, statestr, &vaf);
+> +		} else {
+>  			printk("%sBTRFS %s: %pV\n", lvl, type, &vaf);
+> +		}
+>  	}
+>  
+>  	va_end(args);
+> -- 
+> 2.35.1
