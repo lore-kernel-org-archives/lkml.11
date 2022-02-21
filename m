@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC67FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34199C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347031AbiBUJDS (ORCPT
+        id S1347071AbiBUJDY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:03:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60040 "EHLO
+        Mon, 21 Feb 2022 04:03:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346921AbiBUJAa (ORCPT
+        with ESMTP id S1347050AbiBUJAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:00:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2036226AF6;
-        Mon, 21 Feb 2022 00:55:37 -0800 (PST)
+        Mon, 21 Feb 2022 04:00:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009FA24BDC;
+        Mon, 21 Feb 2022 00:55:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC25AB80EAF;
-        Mon, 21 Feb 2022 08:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 052EFC340E9;
-        Mon, 21 Feb 2022 08:55:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB03E61152;
+        Mon, 21 Feb 2022 08:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE407C340E9;
+        Mon, 21 Feb 2022 08:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433735;
-        bh=wDua54V40aYcPDnGD2qM9MjIhK8Jdh3ufrb+uJTT5ro=;
+        s=korg; t=1645433718;
+        bh=HKrIBi5m5CFXzZ+6/xBVUfB/8hJp8GunVilEDIKwwTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O8uIc79NjlHL0QVbjHpWWcZT0E0GKbZejuaRMNuF2T9U9swfFACQ6w4dYiDgPB9GK
-         2A+IKkLy+YxY7upjOUYJ26HNdmSmN+s27DrOrNufdHN+BiOlNuX/2jMvzFmA2fNw7g
-         RrWeTP3gI/qCTuWVMQ6NkAyeTL2+nsti48txs/X8=
+        b=ExsgDo/DxsCzzaG0a1V3IwszrRu4XlKxrPKTCtSIJztBTuWAN6rt6qSxWk5hdm3fr
+         OfcQ/IaJoR2hl9ZY8LwuQLXmZh6gBsYW2afprr4yN80JhGWAEPzekCUIHnkdP14OlA
+         jfYJ+00GHgeM8UQ6euOIdzWrB56z6PLPUVfYlKvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 09/58] selftests/zram01.sh: Fix compression ratio calculation
-Date:   Mon, 21 Feb 2022 09:49:02 +0100
-Message-Id: <20220221084912.187796249@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 03/58] serial: parisc: GSC: fix build when IOSAPIC is not set
+Date:   Mon, 21 Feb 2022 09:48:56 +0100
+Message-Id: <20220221084912.003426541@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,84 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
+commit 6e8793674bb0d1135ca0e5c9f7e16fecbf815926 upstream.
 
-zram01 uses `free -m` to measure zram memory usage. The results are no
-sense because they are polluted by all running processes on the system.
+There is a build error when using a kernel .config file from
+'kernel test robot' for a different build problem:
 
-We Should only calculate the free memory delta for the current process.
-So use the third field of /sys/block/zram<id>/mm_stat to measure memory
-usage instead. The file is available since kernel 4.1.
+hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+(.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
 
-orig_data_size(first): uncompressed size of data stored in this disk.
-compr_data_size(second): compressed size of data stored in this disk
-mem_used_total(third): the amount of memory allocated for this disk
+when:
+  CONFIG_GSC=y
+  CONFIG_SERIO_GSCPS2=y
+  CONFIG_SERIAL_8250_GSC=y
+  CONFIG_PCI is not set
+    and hence PCI_LBA is not set.
+  IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
 
-Also remove useless zram cleanup call in zram_fill_fs and so we don't
-need to cleanup zram twice if fails.
+Make the use of iosapic_serial_irq() conditional to fix the build error.
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: linux-parisc@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Suggested-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
+ drivers/tty/serial/8250/8250_gsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index b9566a6478a9c..ac6e4ddd2604e 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -42,8 +42,6 @@ zram_algs="lzo"
+--- a/drivers/tty/serial/8250/8250_gsc.c
++++ b/drivers/tty/serial/8250/8250_gsc.c
+@@ -26,7 +26,7 @@ static int __init serial_init_chip(struc
+ 	unsigned long address;
+ 	int err;
  
- zram_fill_fs()
- {
--	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
--
- 	for i in $(seq 0 $(($dev_num - 1))); do
- 		echo "fill zram$i..."
- 		local b=0
-@@ -54,29 +52,17 @@ zram_fill_fs()
- 			b=$(($b + 1))
- 		done
- 		echo "zram$i can be filled with '$b' KB"
--	done
- 
--	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
--	local used_mem=$(($mem_free0 - $mem_free1))
-+		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
-+		local v=$((100 * 1024 * $b / $mem_used_total))
-+		if [ "$v" -lt 100 ]; then
-+			 echo "FAIL compression ratio: 0.$v:1"
-+			 ERR_CODE=-1
-+			 return
-+		fi
- 
--	local total_size=0
--	for sm in $zram_sizes; do
--		local s=$(echo $sm | sed 's/M//')
--		total_size=$(($total_size + $s))
-+		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- 	done
--
--	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
--
--	local v=$((100 * $total_size / $used_mem))
--
--	if [ "$v" -lt 100 ]; then
--		echo "FAIL compression ratio: 0.$v:1"
--		ERR_CODE=-1
--		zram_cleanup
--		return
--	fi
--
--	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- }
- 
- check_prereqs
--- 
-2.34.1
-
+-#ifdef CONFIG_64BIT
++#if defined(CONFIG_64BIT) && defined(CONFIG_IOSAPIC)
+ 	if (!dev->irq && (dev->id.sversion == 0xad))
+ 		dev->irq = iosapic_serial_irq(dev);
+ #endif
 
 
