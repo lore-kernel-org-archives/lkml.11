@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F00C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353205AbiBUKKV (ORCPT
+        id S1352780AbiBUKK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:10:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55782 "EHLO
+        Mon, 21 Feb 2022 05:10:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353428AbiBUJ50 (ORCPT
+        with ESMTP id S1353385AbiBUJ5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA5D47AC2;
-        Mon, 21 Feb 2022 01:25:38 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD384754A;
+        Mon, 21 Feb 2022 01:25:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2121560F8C;
-        Mon, 21 Feb 2022 09:25:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08AD5C340E9;
-        Mon, 21 Feb 2022 09:25:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65A86608C4;
+        Mon, 21 Feb 2022 09:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F3AC340E9;
+        Mon, 21 Feb 2022 09:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435537;
-        bh=Kj5P1zY5l6pTNOhGPDTG6um+5ioqc9DX0x+C/sMtssQ=;
+        s=korg; t=1645435531;
+        bh=BSGBtW+f1WqncAIXdg73RQDyZAwoiEeIKfbGz76Vu64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p3tKIDeNGl16zxKzqDQbOqhXtL4H0vnZQ3kaoxKdv0/qouyYou2cIe5joxVAM6cc3
-         aKk5dWyx6HEVIDE0C4Tmp0N/od9BJ3h4oiWqu5x7ZSKm0xjR77q+/nfIne1O83N9gB
-         xHHZ9T9LqpsAmV7Fh/ItRd9+jCfoaouq/QjH+P2s=
+        b=Kj73g8eQEnTGiZu+AgwrsK2s8MsF0dyb3758iVtl3qzsqNOgeFUEyI2UJY/FkNlnd
+         H3lYPBaYNmnKlsPErBPnS3UXUx4dqh4848GJW49c1hmaQObbeCMz1PKavTfs8417q1
+         sQsXvP7qK1CrrcWckKrSDWRNMaqYSdB+EnSOc2E0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.16 181/227] dmaengine: sh: rcar-dmac: Check for error num after dma_set_max_seg_size
-Date:   Mon, 21 Feb 2022 09:50:00 +0100
-Message-Id: <20220221084940.829316946@linuxfoundation.org>
+        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 197/227] KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
+Date:   Mon, 21 Feb 2022 09:50:16 +0100
+Message-Id: <20220221084941.366588014@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,37 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jim Mattson <jmattson@google.com>
 
-commit da2ad87fba0891576aadda9161b8505fde81a84d upstream.
+[ Upstream commit 710c476514313c74045c41c0571bb5178fd16e3d ]
 
-As the possible failure of the dma_set_max_seg_size(), it should be
-better to check the return value of the dma_set_max_seg_size().
+AMD's event select is 3 nybbles, with the high nybble in bits 35:32 of
+a PerfEvtSeln MSR. Don't mask off the high nybble when configuring a
+RAW perf event.
 
-Fixes: 97d49c59e219 ("dmaengine: rcar-dmac: set scatter/gather max segment size")
-Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220111011239.452837-1-jiasheng@iscas.ac.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Message-Id: <20220203014813.2130559-2-jmattson@google.com>
+Reviewed-by: David Dunn <daviddunn@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/rcar-dmac.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kvm/pmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/dma/sh/rcar-dmac.c
-+++ b/drivers/dma/sh/rcar-dmac.c
-@@ -1868,7 +1868,10 @@ static int rcar_dmac_probe(struct platfo
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 944137ed1f901..de955ca58d17c 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -217,7 +217,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	}
  
- 	dmac->dev = &pdev->dev;
- 	platform_set_drvdata(pdev, dmac);
--	dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
-+	ret = dma_set_max_seg_size(dmac->dev, RCAR_DMATCR_MASK);
-+	if (ret)
-+		return ret;
-+
- 	ret = dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
- 	if (ret)
- 		return ret;
+ 	if (type == PERF_TYPE_RAW)
+-		config = eventsel & X86_RAW_EVENT_MASK;
++		config = eventsel & AMD64_RAW_EVENT_MASK;
+ 
+ 	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
+ 		return;
+-- 
+2.34.1
+
 
 
