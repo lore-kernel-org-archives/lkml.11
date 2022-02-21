@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2023C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346568AbiBUKEH (ORCPT
+        id S1352454AbiBUKER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:04:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57112 "EHLO
+        Mon, 21 Feb 2022 05:04:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353296AbiBUJ5W (ORCPT
+        with ESMTP id S1353402AbiBUJ5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:22 -0500
+        Mon, 21 Feb 2022 04:57:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA5046B0C;
-        Mon, 21 Feb 2022 01:25:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBB247568;
+        Mon, 21 Feb 2022 01:25:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DE160F97;
-        Mon, 21 Feb 2022 09:25:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21034C340EB;
-        Mon, 21 Feb 2022 09:25:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 584CE608C4;
+        Mon, 21 Feb 2022 09:25:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C76C340E9;
+        Mon, 21 Feb 2022 09:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435517;
-        bh=7eP9GV9smWbWM1dmSH/hpT0rJMPPs4tjxlSzxYHcRbg=;
+        s=korg; t=1645435534;
+        bh=KRBk8usKmGeZ1GUK1kBqF1ohJl+84gnwg7OyWcxSc50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wHuRUGxCnnWQ0787tMaEFcXw0Ogx5ZJcb0wp5NPm8EqnfbGI/erbouVQSrtO7o6rA
-         vk3SywSAuIelWW4xxAI+v73NmyAZjs2yPFw8g8ARVlU8MdRo/LQuPWlNSgDsJH4U5q
-         iWebgKZMgK58qiRM6y/b//GJb3yUyCFcFnyJdXls=
+        b=tLa+T1On29iFiYUH//zRBcaG7triTIlw31AE699DDrV2uQHDtUgh1PxCsy/yUGmNb
+         dMHmXo8tcxa3p7fDtP8I++O+fZQQJEcn6kqiYDMXkci/mzbv5qpd8iAGC0s8nMQIhY
+         qOUEo+aFsfwZL+VvBkfYGeVC3cnFlLYpHJ99PWoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 192/227] HID: elo: fix memory leak in elo_probe
-Date:   Mon, 21 Feb 2022 09:50:11 +0100
-Message-Id: <20220221084941.199949623@linuxfoundation.org>
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 198/227] ARM: OMAP2+: hwmod: Add of_node_put() before break
+Date:   Mon, 21 Feb 2022 09:50:17 +0100
+Message-Id: <20220221084941.398493015@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,36 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit 817b8b9c5396d2b2d92311b46719aad5d3339dbe ]
+[ Upstream commit 80c469a0a03763f814715f3d12b6f3964c7423e8 ]
 
-When hid_parse() in elo_probe() fails, it forgets to call usb_put_dev to
-decrease the refcount.
+Fix following coccicheck warning:
+./arch/arm/mach-omap2/omap_hwmod.c:753:1-23: WARNING: Function
+for_each_matching_node should have of_node_put() before break
 
-Fix this by adding usb_put_dev() in the error handling code of elo_probe().
+Early exits from for_each_matching_node should decrement the
+node reference counter.
 
-Fixes: fbf42729d0e9 ("HID: elo: update the reference count of the usb device structure")
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-elo.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap2/omap_hwmod.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-elo.c b/drivers/hid/hid-elo.c
-index 8e960d7b233b3..9b42b0cdeef06 100644
---- a/drivers/hid/hid-elo.c
-+++ b/drivers/hid/hid-elo.c
-@@ -262,6 +262,7 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index ccb0e3732c0dc..31d1a21f60416 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -752,8 +752,10 @@ static int __init _init_clkctrl_providers(void)
  
- 	return 0;
- err_free:
-+	usb_put_dev(udev);
- 	kfree(priv);
+ 	for_each_matching_node(np, ti_clkctrl_match_table) {
+ 		ret = _setup_clkctrl_provider(np);
+-		if (ret)
++		if (ret) {
++			of_node_put(np);
+ 			break;
++		}
+ 	}
+ 
  	return ret;
- }
 -- 
 2.34.1
 
