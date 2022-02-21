@@ -2,76 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB58BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD9BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381266AbiBUQtI (ORCPT
+        id S1381275AbiBUQtM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:49:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35870 "EHLO
+        Mon, 21 Feb 2022 11:49:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235840AbiBUQsy (ORCPT
+        with ESMTP id S229623AbiBUQsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:48:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14949237C9;
-        Mon, 21 Feb 2022 08:48:31 -0800 (PST)
+        Mon, 21 Feb 2022 11:48:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED93237CC
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:48:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A477E61368;
-        Mon, 21 Feb 2022 16:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87773C340E9;
-        Mon, 21 Feb 2022 16:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645462110;
-        bh=5Pik22iN7iVIuLmm2Qayj9ScyA9AdJpopJLWIeVTAO8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C6A8B81250
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28549C340EC;
+        Mon, 21 Feb 2022 16:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645462108;
+        bh=BThUCu0i2KzEThjx4kOkeAs58jVnLKmkyOcT/U/ZjVo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j6/VUANCfZ3zsZMa78OVM/eXtdb+Wx7BU73JJqHVT2qCPaPdr8GVfBMnUHK4Egzxj
-         9ZR8kjzx7pM5mcb6n6n8j9lhrg1eU/0CXFGdD1pzT/KTXV1vUIu/ViKYGoJ36XDfsz
-         MLPOiBsSkPOsTYIhQsHfLc4A/ROVu11any6IKXso=
-Date:   Mon, 21 Feb 2022 15:16:08 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pavel Machek <pavel@denx.de>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/58] 4.19.231-rc1 review
-Message-ID: <YhOeqJ0XLjYVuBCe@kroah.com>
-References: <20220221084911.895146879@linuxfoundation.org>
- <20220221122340.GA15152@duo.ucw.cz>
+        b=ch6hIqKdgafNt6HMmiSruSDLFBaBsJWXFhrE1Tg7FerOk8nsFaXG7t/Ta/oT9H20g
+         U9Pmk5PelBxcDLGTaaYsbX5bfG6pozHckJIwt2sSh6rrh4K27oax4iKudK9pYxk/AZ
+         Zj2/eyOFVeeDWXwOBa5fRCpEEb97DzcxQA8E2o2YwQi/jg7Yld/pLXQXqvnDBI5jkN
+         05aylnZAaFy3iicTK9RJSbPgTWO3KxtN7e7PuGCmLMsrgOY7TSKMW61u9f3iPRi9M0
+         f6G22sCKPNlIHMFhF09gazzytZQrEWehjcR10yWrfdDACfBztUsRp1tfjr62jgsg4x
+         0kzFR4+Sr5UMA==
+Date:   Mon, 21 Feb 2022 16:48:24 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
+Subject: Re: [PATCH 09/10] ASoC: codecs: tx-macro: setup soundwire clks
+ correctly
+Message-ID: <YhPCWDmS2PV/AD1E@sirena.org.uk>
+References: <20220221131037.8809-1-srinivas.kandagatla@linaro.org>
+ <20220221131037.8809-10-srinivas.kandagatla@linaro.org>
+ <YhOx+nQ/G+HNRXbq@sirena.org.uk>
+ <d8f1db40-33ce-671c-2041-5f12608afee5@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="N8HrxkquhfNLRnQ5"
 Content-Disposition: inline
-In-Reply-To: <20220221122340.GA15152@duo.ucw.cz>
+In-Reply-To: <d8f1db40-33ce-671c-2041-5f12608afee5@linaro.org>
+X-Cookie: I smell a wumpus.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 01:23:40PM +0100, Pavel Machek wrote:
-> Hi!
-> 
-> > This is the start of the stable review cycle for the 4.19.231 release.
-> > There are 58 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> 
-> > or in the git tree and branch at:
-> > 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> > and the diffstat can be found below.
-> 
-> Do you think you could quote git hash of the respective commit here?
 
-No, as that tree is a "throw away" one which I delete instantly on my
-side once I create it and push it out.  I am only creating it so that
-people who use git for their CI can have an easy way to test it.
+--N8HrxkquhfNLRnQ5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Once I do a -rc announcement, the branch here should always work, if
-not, please report it.
+On Mon, Feb 21, 2022 at 04:11:56PM +0000, Srinivas Kandagatla wrote:
+> On 21/02/2022 15:38, Mark Brown wrote:
 
-thanks,
+> > A lot of these commit messages sound like earlier patches in the series
+> > introduced bugs which isn't going to be ideal for bisection.
 
-greg k-h
+> Yes that is true, I did think about sending this as a fix.
+
+> Adding a fix tag would not really make any functional difference as we will
+> be hitting the issue only when we enable pm runtime in codec and
+> SoundWire controller, so I did add this as part of pm runtime patches.
+
+> Without runtime pm the clocks are left always on, so it worked so far.
+
+You still need to pull this before you introduce changes that cause
+trouble, not after - it needs to be preparation for those other changes.
+
+--N8HrxkquhfNLRnQ5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmITwlcACgkQJNaLcl1U
+h9BBWAf+LiLVaYi+pxISHIxMrZP/doKcCZFWS0PzcOWi4Nb1xxw5zfEHUYdnuscg
+iPY6VOk8AVaU84YBgus5cN2YAZNT6lbbZwMCRNyGMps7vJJNLQuCQjPeekPzqGCM
+VZfsV1bTMk3tkfQlSw+sixOxX8AVtEcOFyttH+yCt6s2PB2r4MZZrGiHi7kpGJil
+Yq1NMNBdlsiFPdiWFmtlndqBEJlavMB17QG9lZjxC7mpUxT0zUPVRlevMp+0Q0/8
+9gguv76axuD1+1N029zWYYjpTJYHXPSSqC1Zg1Yu9+V31w9lGpLcnMJAcmcEtYjq
+Bbi9CcIy8mUff3ccxwI8lShQftioOw==
+=5fQu
+-----END PGP SIGNATURE-----
+
+--N8HrxkquhfNLRnQ5--
