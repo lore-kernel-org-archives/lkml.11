@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347870AbiBUJNd (ORCPT
+        id S1348018AbiBUJNg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:13:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36352 "EHLO
+        Mon, 21 Feb 2022 04:13:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347840AbiBUJI7 (ORCPT
+        with ESMTP id S1347839AbiBUJI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:08:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E983C121;
-        Mon, 21 Feb 2022 01:01:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D191B1F5;
+        Mon, 21 Feb 2022 01:01:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47BCA611D0;
-        Mon, 21 Feb 2022 09:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24555C340E9;
-        Mon, 21 Feb 2022 09:01:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA1A611F4;
+        Mon, 21 Feb 2022 09:01:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47CA0C340EB;
+        Mon, 21 Feb 2022 09:01:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434069;
-        bh=FHa1Kgt/KDt63TTXl8ZR/xZPmr5N3APcqR18hi6Jeh0=;
+        s=korg; t=1645434066;
+        bh=3iJNsLs5igWnW9tIYI/say2ztI8UpVKT9KjMYdP1aAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eclIVfU4ogweqn84ufAspcUZQMmaQF0AGEFVMtXa+Tj57xgckf6ms3Ydiuuy0SzZG
-         lSLhUF3uUrtPQ9DhTQkdriv1W2D8diuOcRrI1mVl9ylnNlriZpWShdef4JlltMQpnk
-         i0yveGiNLKNaRbO3nKHr7sQZLHBHKN2QDg4Hs58Y=
+        b=mFQpi4tOp9bU37mz3KFzovlC4nM1SKqI/y8Pu/2mB65ErewqIoBXSHQ18RkjmFQiQ
+         ncSRsEFChe6Eqs1kBqHIKcgQvXkO3jxyNVl/siWy/KcCoTSpTx0sAgS2oXl/LdVAxO
+         EdYsh3fK2udG+fbXy/qxtIivJvPgoHL6JCVJL2hc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Christian Eggers <ceggers@arri.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.4 51/80] mtd: rawnand: gpmi: dont leak PM reference in error path
-Date:   Mon, 21 Feb 2022 09:49:31 +0100
-Message-Id: <20220221084917.251541092@linuxfoundation.org>
+        stable@vger.kernel.org, Jing Leng <jleng@ambarella.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 80/80] kconfig: fix failing to generate auto.conf
+Date:   Mon, 21 Feb 2022 09:50:00 +0100
+Message-Id: <20220221084918.211979289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -50,42 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+From: Jing Leng <jleng@ambarella.com>
 
-commit 9161f365c91614e5a3f5c6dcc44c3b1b33bc59c0 upstream.
+[ Upstream commit 1b9e740a81f91ae338b29ed70455719804957b80 ]
 
-If gpmi_nfc_apply_timings() fails, the PM runtime usage counter must be
-dropped.
+When the KCONFIG_AUTOCONFIG is specified (e.g. export \
+KCONFIG_AUTOCONFIG=output/config/auto.conf), the directory of
+include/config/ will not be created, so kconfig can't create deps
+files in it and auto.conf can't be generated.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Fixes: f53d4c109a66 ("mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220125081619.6286-1-ceggers@arri.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ scripts/kconfig/confdata.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -2442,7 +2442,7 @@ static int gpmi_nfc_exec_op(struct nand_
- 		this->hw.must_apply_timings = false;
- 		ret = gpmi_nfc_apply_timings(this);
- 		if (ret)
--			return ret;
-+			goto out_pm;
- 	}
+diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+index 17298239e3633..5c2493c8e9de8 100644
+--- a/scripts/kconfig/confdata.c
++++ b/scripts/kconfig/confdata.c
+@@ -987,14 +987,19 @@ static int conf_write_dep(const char *name)
  
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
-@@ -2571,6 +2571,7 @@ unmap:
+ static int conf_touch_deps(void)
+ {
+-	const char *name;
++	const char *name, *tmp;
+ 	struct symbol *sym;
+ 	int res, i;
  
- 	this->bch = false;
+-	strcpy(depfile_path, "include/config/");
+-	depfile_prefix_len = strlen(depfile_path);
+-
+ 	name = conf_get_autoconfig_name();
++	tmp = strrchr(name, '/');
++	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
++	if (depfile_prefix_len + 1 > sizeof(depfile_path))
++		return -1;
++
++	strncpy(depfile_path, name, depfile_prefix_len);
++	depfile_path[depfile_prefix_len] = 0;
++
+ 	conf_read_simple(name, S_DEF_AUTO);
+ 	sym_calc_value(modules_sym);
  
-+out_pm:
- 	pm_runtime_mark_last_busy(this->dev);
- 	pm_runtime_put_autosuspend(this->dev);
- 
+-- 
+2.34.1
+
 
 
