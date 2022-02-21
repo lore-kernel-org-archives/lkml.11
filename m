@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 184B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C82C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348243AbiBUJSp (ORCPT
+        id S1348134AbiBUJSw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:18:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60638 "EHLO
+        Mon, 21 Feb 2022 04:18:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348828AbiBUJLo (ORCPT
+        with ESMTP id S1348842AbiBUJLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:11:44 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BB5286E5;
-        Mon, 21 Feb 2022 01:04:11 -0800 (PST)
+        Mon, 21 Feb 2022 04:11:45 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F8C286F3;
+        Mon, 21 Feb 2022 01:04:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 12D11CE0E69;
+        by sin.source.kernel.org (Postfix) with ESMTPS id C50ECCE0E86;
+        Mon, 21 Feb 2022 09:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A67F0C340E9;
         Mon, 21 Feb 2022 09:04:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8967C340E9;
-        Mon, 21 Feb 2022 09:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434248;
-        bh=L6OsGuAALfcbLkuIaR7oWybJttszzk5u6HFOVB2pyuA=;
+        s=korg; t=1645434251;
+        bh=8IUsyVO3CUV/NHmrn9iyf0MiQePqG+1lN0ZMxV/tScY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xh+22UoqiQCUmRoozKJn08hig9ey9KUqew2gmE6inIMaS8ti4GfjTLIA5a/1at/RH
-         lJ4vwQSF3IiWnbi6GX7gGgOs1nldaksCwHSEE9tbIzkWme4re2ejg+D4BrfKcD2HYd
-         cT1oMPLB/gtKZUpv63fBqKJSZs2E51cM8Bqmx2zo=
+        b=IMQx8vNcAyqO6dEGdkYG0o2lOJ238ZXCmzWgva6us1T2ykTOOZhkWTlVfE8t36RLt
+         D/u8KlIK+mu4KNXFWtaWoFBKSoW0huw2UL3vB7uD5sWEOQ7IOyIXaXbUA32G3FpxP0
+         g9+1au6YlkklOU+ZVb5vjBKds5NKfv3Q2RZmPAMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 056/121] ipv6: per-netns exclusive flowlabel checks
-Date:   Mon, 21 Feb 2022 09:49:08 +0100
-Message-Id: <20220221084923.114431995@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Kees Kook <keescook@chromium.org>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-hardening@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 065/121] libsubcmd: Fix use-after-free for realloc(..., 0)
+Date:   Mon, 21 Feb 2022 09:49:17 +0100
+Message-Id: <20220221084923.404143613@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -50,98 +54,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Kees Cook <keescook@chromium.org>
 
-commit 0b0dff5b3b98c5c7ce848151df9da0b3cdf0cc8b upstream.
+commit 52a9dab6d892763b2a8334a568bd4e2c1a6fde66 upstream.
 
-Ipv6 flowlabels historically require a reservation before use.
-Optionally in exclusive mode (e.g., user-private).
+GCC 12 correctly reports a potential use-after-free condition in the
+xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
+when size == 0:
 
-Commit 59c820b2317f ("ipv6: elide flowlabel check if no exclusive
-leases exist") introduced a fastpath that avoids this check when no
-exclusive leases exist in the system, and thus any flowlabel use
-will be granted.
+In file included from help.c:12:
+In function 'xrealloc',
+    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   56 |                 ret = realloc(ptr, size);
+      |                       ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   58 |                         ret = realloc(ptr, 1);
+      |                               ^~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
 
-That allows skipping the control operation to reserve a flowlabel
-entirely. Though with a warning if the fast path fails:
-
-  This is an optimization. Robust applications still have to revert to
-  requesting leases if the fast path fails due to an exclusive lease.
-
-Still, this is subtle. Better isolate network namespaces from each
-other. Flowlabels are per-netns. Also record per-netns whether
-exclusive leases are in use. Then behavior does not change based on
-activity in other netns.
-
-Changes
-  v2
-    - wrap in IS_ENABLED(CONFIG_IPV6) to avoid breakage if disabled
-
-Fixes: 59c820b2317f ("ipv6: elide flowlabel check if no exclusive leases exist")
-Link: https://lore.kernel.org/netdev/MWHPR2201MB1072BCCCFCE779E4094837ACD0329@MWHPR2201MB1072.namprd22.prod.outlook.com/
-Reported-by: Congyu Liu <liu3101@purdue.edu>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Tested-by: Congyu Liu <liu3101@purdue.edu>
-Link: https://lore.kernel.org/r/20220215160037.1976072-1-willemdebruijn.kernel@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 2f4ce5ec1d447beb ("perf tools: Finalize subcmd independence")
+Reported-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Signed-off-by: Kees Kook <keescook@chromium.org>
+Tested-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: linux-hardening@vger.kernel.org
+Cc: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Link: http://lore.kernel.org/lkml/20220213182443.4037039-1-keescook@chromium.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ipv6.h       |    5 ++++-
- include/net/netns/ipv6.h |    3 ++-
- net/ipv6/ip6_flowlabel.c |    4 +++-
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ tools/lib/subcmd/subcmd-util.h |   11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -390,17 +390,20 @@ static inline void txopt_put(struct ipv6
- 		kfree_rcu(opt, rcu);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label);
- 
- extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
- static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
- 						    __be32 label)
+--- a/tools/lib/subcmd/subcmd-util.h
++++ b/tools/lib/subcmd/subcmd-util.h
+@@ -50,15 +50,8 @@ static NORETURN inline void die(const ch
+ static inline void *xrealloc(void *ptr, size_t size)
  {
--	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
-+	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-+	    READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
- 		return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
- 
- 	return NULL;
+ 	void *ret = realloc(ptr, size);
+-	if (!ret && !size)
+-		ret = realloc(ptr, 1);
+-	if (!ret) {
+-		ret = realloc(ptr, size);
+-		if (!ret && !size)
+-			ret = realloc(ptr, 1);
+-		if (!ret)
+-			die("Out of memory, realloc failed");
+-	}
++	if (!ret)
++		die("Out of memory, realloc failed");
+ 	return ret;
  }
-+#endif
  
- struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
- 					 struct ip6_flowlabel *fl,
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -80,9 +80,10 @@ struct netns_ipv6 {
- 	spinlock_t		fib6_gc_lock;
- 	unsigned int		 ip6_rt_gc_expire;
- 	unsigned long		 ip6_rt_last_gc;
-+	unsigned char		flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
--	unsigned int		fib6_rules_require_fldissect;
- 	bool			fib6_has_custom_rules;
-+	unsigned int		fib6_rules_require_fldissect;
- #ifdef CONFIG_IPV6_SUBTREES
- 	unsigned int		fib6_routes_require_src;
- #endif
---- a/net/ipv6/ip6_flowlabel.c
-+++ b/net/ipv6/ip6_flowlabel.c
-@@ -450,8 +450,10 @@ fl_create(struct net *net, struct sock *
- 		err = -EINVAL;
- 		goto done;
- 	}
--	if (fl_shared_exclusive(fl) || fl->opt)
-+	if (fl_shared_exclusive(fl) || fl->opt) {
-+		WRITE_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl, 1);
- 		static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
-+	}
- 	return fl;
- 
- done:
 
 
