@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8598C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3D3C47080
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353437AbiBUKBk (ORCPT
+        id S1352103AbiBUKDW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:01:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50552 "EHLO
+        Mon, 21 Feb 2022 05:03:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352401AbiBUJxz (ORCPT
+        with ESMTP id S1352327AbiBUJza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:53:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A1F377CC;
-        Mon, 21 Feb 2022 01:23:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:55:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5016D443C8;
+        Mon, 21 Feb 2022 01:24:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6347C60B1E;
-        Mon, 21 Feb 2022 09:23:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49435C340EB;
-        Mon, 21 Feb 2022 09:23:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11456B80EBB;
+        Mon, 21 Feb 2022 09:24:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E7CC340E9;
+        Mon, 21 Feb 2022 09:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435431;
-        bh=LrdZ9NuSnqB/v6pJkg+tjtQ+DXMSkX1J7sTxDxjkw0Q=;
+        s=korg; t=1645435468;
+        bh=BG1NpXKssJw3yavqv33fIVlY8+0FkZSDOgF69ULv2oo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZsyjOxsNRkywNE3K9DeLGuJvl6sLTpHL1OdZUPUohT3/ifNaUghkcQLKbAlC3Nohz
-         bfIJgelViacYjvIp5bey7cE6FLjJo3biGYGXzjvdNqX3UfTmaCxHuWj1GouhJ0S6Lj
-         XUCQPXMCkvixjVlHJuSnWgyim9qGc6x+8zCPmsAg=
+        b=pblg/ie4bJyuQguFql30+atHBkZP4vhqeTWwcqC4l2EVmbZ+97Ddzfd883U3FJR19
+         T/1Bih3ejWXZD2QrGbRBsH/S7VQys6LiRW6HSPMYo7uJvpkWTOvXH3lMBLlCug3+2t
+         XoU6o3AoD0pkCJer4R0TdDJ0dYQi2zFuNSG50RIU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.16 162/227] NFS: Do not report writeback errors in nfs_getattr()
-Date:   Mon, 21 Feb 2022 09:49:41 +0100
-Message-Id: <20220221084940.207345936@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 147/227] cifs: fix set of group SID via NTSD xattrs
+Date:   Mon, 21 Feb 2022 09:49:26 +0100
+Message-Id: <20220221084939.723042301@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,39 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit d19e0183a88306acda07f4a01fedeeffe2a2a06b upstream.
+commit dd5a927e411836eaef44eb9b00fece615e82e242 upstream.
 
-The result of the writeback, whether it is an ENOSPC or an EIO, or
-anything else, does not inhibit the NFS client from reporting the
-correct file timestamps.
+'setcifsacl -g <SID>' silently fails to set the group SID on server.
 
-Fixes: 79566ef018f5 ("NFS: Getattr doesn't require data sync semantics")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Actually, the bug existed since commit 438471b67963 ("CIFS: Add support
+for setting owner info, dos attributes, and create time"), but this fix
+will not apply cleanly to kernel versions <= v5.10.
+
+Fixes: 3970acf7ddb9 ("SMB3: Add support for getting and setting SACLs")
+Cc: stable@vger.kernel.org # 5.11+
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/inode.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ fs/cifs/xattr.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -853,12 +853,9 @@ int nfs_getattr(struct user_namespace *m
- 	}
- 
- 	/* Flush out writes to the server in order to update c/mtime.  */
--	if ((request_mask & (STATX_CTIME|STATX_MTIME)) &&
--			S_ISREG(inode->i_mode)) {
--		err = filemap_write_and_wait(inode->i_mapping);
--		if (err)
--			goto out;
--	}
-+	if ((request_mask & (STATX_CTIME | STATX_MTIME)) &&
-+	    S_ISREG(inode->i_mode))
-+		filemap_write_and_wait(inode->i_mapping);
- 
- 	/*
- 	 * We may force a getattr if the user cares about atime.
+--- a/fs/cifs/xattr.c
++++ b/fs/cifs/xattr.c
+@@ -175,11 +175,13 @@ static int cifs_xattr_set(const struct x
+ 				switch (handler->flags) {
+ 				case XATTR_CIFS_NTSD_FULL:
+ 					aclflags = (CIFS_ACL_OWNER |
++						    CIFS_ACL_GROUP |
+ 						    CIFS_ACL_DACL |
+ 						    CIFS_ACL_SACL);
+ 					break;
+ 				case XATTR_CIFS_NTSD:
+ 					aclflags = (CIFS_ACL_OWNER |
++						    CIFS_ACL_GROUP |
+ 						    CIFS_ACL_DACL);
+ 					break;
+ 				case XATTR_CIFS_ACL:
 
 
