@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C2CC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 019F5C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348680AbiBUJQH (ORCPT
+        id S1349039AbiBUJQh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:16:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38024 "EHLO
+        Mon, 21 Feb 2022 04:16:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347917AbiBUJJv (ORCPT
+        with ESMTP id S1347941AbiBUJKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:09:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD74A1D0F7;
-        Mon, 21 Feb 2022 01:02:21 -0800 (PST)
+        Mon, 21 Feb 2022 04:10:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3630E1D317;
+        Mon, 21 Feb 2022 01:02:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A1C360FB6;
-        Mon, 21 Feb 2022 09:02:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5803EC340E9;
-        Mon, 21 Feb 2022 09:02:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEB4EB80EB5;
+        Mon, 21 Feb 2022 09:02:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1397C340E9;
+        Mon, 21 Feb 2022 09:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434140;
-        bh=ZH6TUb22N9Jtt2uKbR9l2Y8/rMT1ydmLe5n2WQEZP6s=;
+        s=korg; t=1645434149;
+        bh=T0e5nwJQ1XBpLrbjbW/hRHChfr9mGV7tWN6MZ1JrH7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1UfJ7hghkEVC0XT04n3n0wtTizzOsl7JLfQoZvQAHH422FrU3QJfIRzEdYH2qtkjd
-         k0BPDsPNGFlEJk8/xRngOYklEPt3EH9ZannTvKdYDJW8iRoyJhwjhmmu6f/4NousGD
-         fYkWPQTkrKMXYEB+kolTyKw0cRL0tsxDqCPPin5g=
+        b=lF8JlerMyG+FJJ+MgHQ2MP9Mqwy3Tz0ZD8RTIVS/ryLyaO9qxrW5hwCEEg29IwFD4
+         gz7m5b2gcFafDb1N+P2fPbhrYy5y7yrNTiaEhyYIrCgP2ur5r1HI2YHRz2sTjvOx1z
+         6UYvSeu2YAKm8sC3CMVVe43Q7XG2vkVWbiRzP4Ks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergio Costas <rastersoft@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH 5.10 009/121] HID:Add support for UGTABLET WP5540
-Date:   Mon, 21 Feb 2022 09:48:21 +0100
-Message-Id: <20220221084921.468890515@linuxfoundation.org>
+        stable@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 030/121] selftests: openat2: Skip testcases that fail with EOPNOTSUPP
+Date:   Mon, 21 Feb 2022 09:48:42 +0100
+Message-Id: <20220221084922.199643179@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -49,43 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergio Costas <rastersoft@gmail.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-commit fd5dd6acd8f823ea804f76d3af64fa1be9d5fb78 upstream.
+[ Upstream commit ac9e0a250bb155078601a5b999aab05f2a04d1ab ]
 
-This patch adds support for the UGTABLET WP5540 digitizer tablet
-devices. Without it, the pen moves the cursor, but neither the
-buttons nor the tap sensor in the tip do work.
+Skip testcases that fail since the requested valid flags combination is not
+supported by the underlying filesystem.
 
-Signed-off-by: Sergio Costas <rastersoft@gmail.com>
-Link: https://lore.kernel.org/r/63dece1d-91ca-1b1b-d90d-335be66896be@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-ids.h    |    1 +
- drivers/hid/hid-quirks.c |    1 +
- 2 files changed, 2 insertions(+)
+ tools/testing/selftests/openat2/openat2_test.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -1318,6 +1318,7 @@
- #define USB_VENDOR_ID_UGTIZER			0x2179
- #define USB_DEVICE_ID_UGTIZER_TABLET_GP0610	0x0053
- #define USB_DEVICE_ID_UGTIZER_TABLET_GT5040	0x0077
-+#define USB_DEVICE_ID_UGTIZER_TABLET_WP5540	0x0004
+diff --git a/tools/testing/selftests/openat2/openat2_test.c b/tools/testing/selftests/openat2/openat2_test.c
+index b386367c606b1..453152b58e7f0 100644
+--- a/tools/testing/selftests/openat2/openat2_test.c
++++ b/tools/testing/selftests/openat2/openat2_test.c
+@@ -244,6 +244,16 @@ void test_openat2_flags(void)
+ 		unlink(path);
  
- #define USB_VENDOR_ID_VIEWSONIC			0x0543
- #define USB_DEVICE_ID_VIEWSONIC_PD1011		0xe621
---- a/drivers/hid/hid-quirks.c
-+++ b/drivers/hid/hid-quirks.c
-@@ -187,6 +187,7 @@ static const struct hid_device_id hid_qu
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_TURBOX, USB_DEVICE_ID_TURBOX_KEYBOARD), HID_QUIRK_NOGET },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_KNA5), HID_QUIRK_MULTI_INPUT },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_UCLOGIC, USB_DEVICE_ID_UCLOGIC_TABLET_TWA60), HID_QUIRK_MULTI_INPUT },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_UGTIZER, USB_DEVICE_ID_UGTIZER_TABLET_WP5540), HID_QUIRK_MULTI_INPUT },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_MEDIA_TABLET_10_6_INCH), HID_QUIRK_MULTI_INPUT },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_MEDIA_TABLET_14_1_INCH), HID_QUIRK_MULTI_INPUT },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP, USB_DEVICE_ID_WALTOP_SIRIUS_BATTERY_FREE_TABLET), HID_QUIRK_MULTI_INPUT },
+ 		fd = sys_openat2(AT_FDCWD, path, &test->how);
++		if (fd < 0 && fd == -EOPNOTSUPP) {
++			/*
++			 * Skip the testcase if it failed because not supported
++			 * by FS. (e.g. a valid O_TMPFILE combination on NFS)
++			 */
++			ksft_test_result_skip("openat2 with %s fails with %d (%s)\n",
++					      test->name, fd, strerror(-fd));
++			goto next;
++		}
++
+ 		if (test->err >= 0)
+ 			failed = (fd < 0);
+ 		else
+@@ -288,7 +298,7 @@ void test_openat2_flags(void)
+ 		else
+ 			resultfn("openat2 with %s fails with %d (%s)\n",
+ 				 test->name, test->err, strerror(-test->err));
+-
++next:
+ 		free(fdpath);
+ 		fflush(stdout);
+ 	}
+-- 
+2.34.1
+
 
 
