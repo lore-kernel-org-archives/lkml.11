@@ -2,200 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A6D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9960C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354900AbiBUKcq (ORCPT
+        id S1354914AbiBUKdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:32:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47810 "EHLO
+        Mon, 21 Feb 2022 05:33:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354891AbiBUKcg (ORCPT
+        with ESMTP id S1354809AbiBUKc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:32:36 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66076C961
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:52:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645437179; x=1676973179;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iu+zMLF3uEJwf1pZVGzd3cv6unyU/opZuLXB5dw8lj4=;
-  b=UaqgbUCb+XmzoLaH4IeEJMt0ZRFSkevjDlM8alZgKecG2WUsf8AC5TYC
-   vOuOg6Q3EpnZT/QnXdR0bjFyruZBInTUKGB99ip+Tkpy/hHGRZMBWQF47
-   ZQ308cHWkXBow4lrGSSmohwOtAJiM4t8IyzCioFxE1w1wstQLoLjk9xtZ
-   zXMvv2hZ9OwLHtu43qfxTVEC5+CQN9lYpGPrx7FlGYeRwlDoaP4MFQG+g
-   r+zxNDE7ybVlAOpSI6ahniEQBB/50b9kbY7bAbWpWTpok5cGLSDTO2e6x
-   5AJt37NjT2XsEg4hTMYjWJs0L+ll1mc90MMi2PN1XR6YHFMp8urSxNqq5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="337908402"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="337908402"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 01:52:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="627324138"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 21 Feb 2022 01:52:11 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM5MY-0001Ts-FH; Mon, 21 Feb 2022 09:52:10 +0000
-Date:   Mon, 21 Feb 2022 17:51:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:axboe/linux-block/m1/2022-02-19 522/552]
- sound/soc/apple/mca.c:776:6: warning: no previous prototype for
- 'apple_mca_release_dma_chans'
-Message-ID: <202202211725.BAv78HTm-lkp@intel.com>
+        Mon, 21 Feb 2022 05:32:58 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9782B6D1AB;
+        Mon, 21 Feb 2022 01:53:15 -0800 (PST)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21L8bgMm007312;
+        Mon, 21 Feb 2022 09:52:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Husi8wtRKofd8szTIt2dJMfs1/XgcfBR5L2eNXWgu18=;
+ b=DGZISxB+NeF5OICy1PbldWQxrg38gZDCRSmhAGygHhgQxd1WH1IVbIvakUSTNPefzKJe
+ s6XLNE5tfu9NbJIV4Oe6o0AyBXm5cEgKv7yByNIJa8r23ptKUiwS1vOCErVDJTjkSUri
+ 0oc4zLE10fd+KdNbQnnCyGxdtqqh3eiWMFkPugJkIofkpGYLrh1KJJLyJsM1ZVDDQilh
+ 9Re7U986gj6tnTDZc3CIH3RGDbvpyP9t1DmyZrGjEP+K05D6xgT6D9NYOSIFdhC9YCaa
+ kRE0c2vwzwmyt/iCDpPYLNTIeMs1Z8a47gcVU7x4s4UlGSTxeaY/Ryzg70cEH7ikuQY8 4Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ec73b9xns-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 09:52:43 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21L95ijf022196;
+        Mon, 21 Feb 2022 09:52:43 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ec73b9xn7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 09:52:43 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21L9gt00005389;
+        Mon, 21 Feb 2022 09:52:41 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3eaqthscn9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 09:52:41 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21L9g4co51904786
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Feb 2022 09:42:04 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0A18FA4040;
+        Mon, 21 Feb 2022 09:52:39 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3B31EA4057;
+        Mon, 21 Feb 2022 09:52:34 +0000 (GMT)
+Received: from li-e8dccbcc-2adc-11b2-a85c-bc1f33b9b810.ibm.com (unknown [9.43.47.34])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 21 Feb 2022 09:52:33 +0000 (GMT)
+Subject: Re: [PATCH v2] perf test: Skip Sigtrap test for arm+aarch64
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>
+Cc:     John Garry <john.garry@huawei.com>, peterz@infradead.org,
+        mingo@redhat.com, mark.rutland@arm.com, jolsa@kernel.org,
+        namhyung@kernel.org, elver@google.com, dvyukov@google.com,
+        will@kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux@armlinux.org.uk, tmricht@linux.ibm.com, irogers@google.com
+References: <1645176813-202756-1-git-send-email-john.garry@huawei.com>
+ <20220218104611.GD56419@leoy-ThinkPad-X240s> <Yg+Xmt27POS2y2LI@kernel.org>
+From:   kajoljain <kjain@linux.ibm.com>
+Message-ID: <447ebda7-eaff-f765-d6ec-66ad0fc957a0@linux.ibm.com>
+Date:   Mon, 21 Feb 2022 15:22:32 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+In-Reply-To: <Yg+Xmt27POS2y2LI@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ibLGMgGsf-sQWJrRFeaJVvLEIjmQN1JX
+X-Proofpoint-ORIG-GUID: 928iv4aMq9dObk-QFqjwDZBoNkzfkhiu
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-21_03,2022-02-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ adultscore=0 suspectscore=0 phishscore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 clxscore=1011 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202210056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1/2022-02-19
-head:   b781e0ccdc0c9a931571d15db09d45b7258b9905
-commit: aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c [522/552] ASoC: apple-mca: Add platform driver for Apple SoCs
-config: m68k-buildonly-randconfig-r005-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211725.BAv78HTm-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1/2022-02-19
-        git checkout aa68cd40e7ed6c63500d8ea9b8946e4d8c974f9c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/dma/ sound/soc/apple/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   sound/soc/apple/mca.c: In function 'mca_configure_serdes':
-   sound/soc/apple/mca.c:294:23: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
-     294 |         serdes_conf = FIELD_PREP(SERDES_CONF_NCHANS, max(slots, 1) - 1);
-         |                       ^~~~~~~~~~
-   sound/soc/apple/mca.c: At top level:
->> sound/soc/apple/mca.c:776:6: warning: no previous prototype for 'apple_mca_release_dma_chans' [-Wmissing-prototypes]
-     776 | void apple_mca_release_dma_chans(struct mca_data *mca)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> sound/soc/apple/mca.c:791:6: warning: no previous prototype for 'apple_mca_put_clks' [-Wmissing-prototypes]
-     791 | void apple_mca_put_clks(struct mca_data *mca)
-         |      ^~~~~~~~~~~~~~~~~~
-   In file included from include/linux/device.h:15,
-                    from include/linux/platform_device.h:13,
-                    from sound/soc/apple/mca.c:9:
-   sound/soc/apple/mca.c: In function 'apple_mca_probe':
-   sound/soc/apple/mca.c:917:45: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long int' [-Wformat=]
-     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
-         |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   sound/soc/apple/mca.c:917:25: note: in expansion of macro 'dev_err'
-     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
-         |                         ^~~~~~~
-   sound/soc/apple/mca.c:917:74: note: format string is defined here
-     917 |                         dev_err(&pdev->dev, "unable to obtain clock %s: %d\n",
-         |                                                                         ~^
-         |                                                                          |
-         |                                                                          int
-         |                                                                         %ld
-   In file included from include/linux/device.h:15,
-                    from include/linux/platform_device.h:13,
-                    from sound/soc/apple/mca.c:9:
-   sound/soc/apple/mca.c:951:61: warning: format '%d' expects argument of type 'int', but argument 4 has type 'struct device_node *' [-Wformat=]
-     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
-         |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   sound/soc/apple/mca.c:951:41: note: in expansion of macro 'dev_err'
-     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
-         |                                         ^~~~~~~
-   sound/soc/apple/mca.c:951:82: note: format string is defined here
-     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
-         |                                                                                 ~^
-         |                                                                                  |
-         |                                                                                  int
-   In file included from include/linux/device.h:15,
-                    from include/linux/platform_device.h:13,
-                    from sound/soc/apple/mca.c:9:
-   sound/soc/apple/mca.c:951:61: warning: too many arguments for format [-Wformat-extra-args]
-     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
-         |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   sound/soc/apple/mca.c:951:41: note: in expansion of macro 'dev_err'
-     951 |                                         dev_err(&pdev->dev, "no %s DMA channel: %d\n",
-         |                                         ^~~~~~~
-   cc1: some warnings being treated as errors
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for NFSD_V2_ACL
-   Depends on NETWORK_FILESYSTEMS && NFSD
-   Selected by
-   - NFSD_V3_ACL && NETWORK_FILESYSTEMS
 
 
-vim +/apple_mca_release_dma_chans +776 sound/soc/apple/mca.c
+On 2/18/22 6:26 PM, Arnaldo Carvalho de Melo wrote:
+> Em Fri, Feb 18, 2022 at 06:46:11PM +0800, Leo Yan escreveu:
+>> On Fri, Feb 18, 2022 at 05:33:33PM +0800, John Garry wrote:
+>>> Skip the Sigtrap test for arm + arm64, same as was done for s390 in
+>>> commit a840974e96fd ("perf test: Test 73 Sig_trap fails on s390"). For
+>>> this, reuse BP_SIGNAL_IS_SUPPORTED - meaning that the arch can use BP to
+>>> generate signals - instead of BP_ACCOUNT_IS_SUPPORTED, which is
+>>> appropriate.
+>>>
+>>> As described by Will at [0], in the test we get stuck in a loop of handling
+>>> the HW breakpoint exception and never making progress. GDB handles this
+>>> by stepping over the faulting instruction, but with perf the kernel is
+>>> expected to handle the step (which it doesn't for arm).
+>>>
+>>> Dmitry made an attempt to get this work, also mentioned in the same thread
+>>> as [0], which was appreciated. But the best thing to do is skip the test
+>>> for now.
+>>>
+>>> [0] https://lore.kernel.org/linux-perf-users/20220118124343.GC98966@leoy-ThinkPad-X240s/T/#m13b06c39d2a5100d340f009435df6f4d8ee57b5a
+>>>
+>>> Fixes: Fixes: 5504f67944484 ("perf test sigtrap: Add basic stress test for sigtrap handling")
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>
+>> I tested this patch on my Juno board:
+>>
+>> root@Juno:# ./perf test 73
+>>  73: Sigtrap                                                         : Skip
+>>
+>> Tested-by: Leo Yan <leo.yan@linaro.org>
 
-   775	
- > 776	void apple_mca_release_dma_chans(struct mca_data *mca)
-   777	{
-   778		int i;
-   779		struct mca_route *route;
-   780	
-   781		list_for_each_entry(route, &mca->routes, list) {
-   782			for_each_pcm_streams(i) {
-   783				if (!route->chan[i])
-   784					continue;
-   785				dma_release_channel(route->chan[i]);
-   786				route->chan[i] = NULL;
-   787			}
-   788		}
-   789	}
-   790	
- > 791	void apple_mca_put_clks(struct mca_data *mca)
-   792	{
-   793		struct mca_route *route;
-   794		int i;
-   795	
-   796		list_for_each_entry(route, &mca->routes, list) {
-   797			if (!route->clk_parent)
-   798				continue;
-   799			//clk_rate_exclusive_put(route->clk_parent);
-   800			route->clk_parent = NULL;
-   801		}
-   802	
-   803		for (i = 0; i < mca->nclusters; i++) {
-   804			if (!mca->clk_parents[i])
-   805				continue;
-   806			clk_put(mca->clk_parents[i]);
-   807			mca->clk_parents[i] = NULL;
-   808		}
-   809	}
-   810	
+Sorry for late update.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Patch looks good to me. I tested it on powerpc.
+
+Tested-by: Kajol Jain<kjain@linux.ibm.com>
+
+Thanks,
+Kajol Jain
+> 
+> Thanks, applied.
+> 
+> - Arnaldo
+> 
