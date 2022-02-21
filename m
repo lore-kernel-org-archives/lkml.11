@@ -2,153 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90532C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E38C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 16:06:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379835AbiBUQEP (ORCPT
+        id S1379884AbiBUQGs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 11:04:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46692 "EHLO
+        Mon, 21 Feb 2022 11:06:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379824AbiBUQEM (ORCPT
+        with ESMTP id S237970AbiBUQGq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 11:04:12 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B826B15A3E
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:03:48 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 195so14649630pgc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 08:03:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KDDcEDbkhzVfk+TQu2VWBarB+wWAgtgnv4l9j8SAhzM=;
-        b=T8aD3JVZIuLdwLNZyJjGWUui94FnQKIBVDw041q+vcCQEvLWWSKE8exC0dSOMu2Q/h
-         lnb2TLGz/SCRcCVUA4bXGGGshyenePqnVVxnhwjynVMYYfDZ6DD4AVChA6lOgPU49Zk7
-         tlAYA5GG6MzAx4drXRF4y9gq9OOvtNyhTgPJ+aTRtz4lXOY7I+fmeEk4/FbiP6r7QKEi
-         oxBb2TNfCmZBIwrxjSIl3G/ffti1o1ka82kdwPoQkMZT0ruggi8PwsK/7im0gb3x1f+P
-         /t6kVVaTbNpIJbGvQ4jrQwJFxgJNnKpZgAR2aj32vyIlpVBzwvDVZmTu8/CF413C3Qdh
-         32kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KDDcEDbkhzVfk+TQu2VWBarB+wWAgtgnv4l9j8SAhzM=;
-        b=wK6/6Ic3lpzcXdz2wh5Ff0x1hGxx2e3N0zCvehpSHC11NzLnuARH6gkDq0o7OBkgC0
-         oQTbVT6t3BLAHaNhBEn371UOIBpbLfkDfpaf9A/45SXye3QeY8Hm4gJibxycRMqKFqRU
-         jUJFLUc5O9Uokauu5vVtvDJHa5jW5+o+xw686YLFcBc0E4VH+cg+eZjePHv3WUGJIuNa
-         oIOaGLM6LQWMAb/gqcbptm5ScZa4pQIB4o50UIzQO9+xtfxoNrXsjgcIbQ2prtiDlPoA
-         dVw5jHNvF9B6Kqohz5/zKYs1k3m1XmpqJWfC69+kUiSREBF0QBEVQCzXQU67UmD5q+eD
-         v2Xg==
-X-Gm-Message-State: AOAM5316E8mZtWJSb5kOGp5d5d/wrM5H3Kis27WKNCDiAQ6iksRgrDWS
-        mlUnK82TD/RWM6i4cmpfORqfGe0tlqq0yZ4sPjuZzg==
-X-Google-Smtp-Source: ABdhPJwTeU+cl/tUCmxZ+SlBQzxBPm34/ct8ehbDHEHNf1+KgasY+llurrqRyk+ef4RB9itQLMhlQ3/otRH2B16Db2c=
-X-Received: by 2002:a62:8f87:0:b0:4cc:3f6:ca52 with SMTP id
- n129-20020a628f87000000b004cc03f6ca52mr20608357pfd.79.1645459428172; Mon, 21
- Feb 2022 08:03:48 -0800 (PST)
+        Mon, 21 Feb 2022 11:06:46 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8371E2716C;
+        Mon, 21 Feb 2022 08:06:23 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21LEf0ic030799;
+        Mon, 21 Feb 2022 16:06:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=pdWCOxWyY8ZelYPiLVKLy5St6GKQA/W6MmoXe97S008=;
+ b=D56nkLPBh7motxT1hPFVkmdCOnw2cXhHiO4+SZpV/IAe4B03n5P/GIqYSg0SVDip7UjP
+ 1wJKokx2TtiEIbf9COQ9BtiDxNcLwTFm+YQkmE2DSJgixNvkZu6Y5Iy74ezdc+2XF1Zp
+ Xw+WDsIybrgZ9k11NAzBdBlRjQS2lnDyRewET4P+Ys2XW2ywQ3U86E4U0+y8E66w6EaU
+ RPAI8ACXRmFfAGg4X05m036FtQcYHes2hO5j31BAchD0s10AoAiYXbcKgZrMCPYwdLbF
+ xq3XH+KGQhZ46qdwCxIqP7+YHvFeX/Ab+soHd2DQTge1/48Gn7anIhLsIg2Ev2QYJGjf gw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ec0eu95r2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 16:06:22 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21LEoOPS032474;
+        Mon, 21 Feb 2022 16:06:22 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ec0eu95q8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 16:06:22 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21LG4mdb025637;
+        Mon, 21 Feb 2022 16:06:19 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3ear68u2qw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 21 Feb 2022 16:06:19 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21LG6Gfi54526246
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 21 Feb 2022 16:06:16 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0AECB52057;
+        Mon, 21 Feb 2022 16:06:16 +0000 (GMT)
+Received: from [9.171.10.246] (unknown [9.171.10.246])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 92BBC5204F;
+        Mon, 21 Feb 2022 16:06:15 +0000 (GMT)
+Message-ID: <feca1bb9-f6d6-e8b3-1688-bf1dcc91125e@linux.ibm.com>
+Date:   Mon, 21 Feb 2022 17:06:15 +0100
 MIME-Version: 1.0
-References: <yonglin.tan@outlook.com> <MEYP282MB237454C97E14056454FBBC77FD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
-In-Reply-To: <MEYP282MB237454C97E14056454FBBC77FD3A9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 21 Feb 2022 17:03:12 +0100
-Message-ID: <CAMZdPi_7KGx69s5tFumkswVXiQSdxXZjDXT5f9njRnBNz1k-VA@mail.gmail.com>
-Subject: Re: [PATCH] net: wwan: To support SAHARA port for Qualcomm WWAN module.
-To:     Yonglin Tan <yonglin.tan@outlook.com>
-Cc:     ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] KVM: s390: Clarify key argument for MEM_OP in api docs
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Viktor Mihajlovski <mihajlov@linux.ibm.com>
+References: <20220211182215.2730017-10-scgl@linux.ibm.com>
+ <20220221143657.3712481-1-scgl@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220221143657.3712481-1-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Z1yQGkVMLxeBIfGRETJLfJo4uhAflxeq
+X-Proofpoint-ORIG-GUID: 9FhapYrVAw1OURms_XsYD-f9AzFylgFO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-21_07,2022-02-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 spamscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202210095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yonglin,
-
-On Mon, 21 Feb 2022 at 13:21, Yonglin Tan <yonglin.tan@outlook.com> wrote:
->
-> The SAHARA port for Qualcomm WWAN module is used to capture
-> memory dump. But now this feature has not been supported by
-> linux kernel code. Such that no SAHARA driver matched while
-> the device entered to DUMP mode. Once the device crashed due
-> to some reasons, device will enter into DUMP mode and running
-> in SBL stage. After that, the device change EE to SBL and the
-> host will detect the EE change event and re-enumerate SAHARA
-> port.
->
-> Cc: stable@vger.kernel.org
-> Fixes: fa588eba632d ("net: Add Qcom WWAN control driver")
-> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
-> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-
-Sorry, but I've not yet offered that tag :-)
-
-The WWAN framework is a generic way to expose a WWAN device and its
-related control/data protocols, such as AT, QMI, MBIM, QCDM, etc...
-All the exposed protocols are supported by open-source user
-tools/daemons such as ModemManager, ofono, fwupd... SAHARA does not
-seem to be WWAN specific and is not something needed for controlling a
-modem, right?
-
-I know it would be easier to just add this channel to the WWAN ports,
-but we don't want to rawly expose something that could fit into an
-existing framework/subsystem, that's why I referred to the devcoredump
-framework, which 'seems' a better place for its integration. But I
-could be wrong, I don't know much about devcoredump and maybe SAHARA
-is doing much more than a firmware coredump...
-
-As a last resort, I think this kind of debug interface should go to debugfs.
-
-Regards,
-Loic
 
 
-
-
+Am 21.02.22 um 15:36 schrieb Janis Schoetterl-Glausch:
+> Clarify that the key argument represents the access key, not the whole
+> storage key.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 > ---
->  drivers/net/wwan/mhi_wwan_ctrl.c | 1 +
->  drivers/net/wwan/wwan_core.c     | 4 ++++
->  include/linux/wwan.h             | 1 +
->  3 files changed, 6 insertions(+)
->
-> diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
-> index e4d0f69..4cf420e 100644
-> --- a/drivers/net/wwan/mhi_wwan_ctrl.c
-> +++ b/drivers/net/wwan/mhi_wwan_ctrl.c
-> @@ -262,6 +262,7 @@ static const struct mhi_device_id mhi_wwan_ctrl_match_table[] = {
->         { .chan = "QMI", .driver_data = WWAN_PORT_QMI },
->         { .chan = "DIAG", .driver_data = WWAN_PORT_QCDM },
->         { .chan = "FIREHOSE", .driver_data = WWAN_PORT_FIREHOSE },
-> +       { .chan = "SAHARA", .driver_data = WWAN_PORT_SAHARA },
->         {},
->  };
->  MODULE_DEVICE_TABLE(mhi, mhi_wwan_ctrl_match_table);
-> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-> index b8c7843..2630677 100644
-> --- a/drivers/net/wwan/wwan_core.c
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -318,6 +318,10 @@ static const struct {
->                 .name = "FIREHOSE",
->                 .devsuf = "firehose",
->         },
-> +       [WWAN_PORT_SAHARA] = {
-> +               .name = "SAHARA",
-> +               .devsuf = "sahara",
-> +       },
->  };
->
->  static ssize_t type_show(struct device *dev, struct device_attribute *attr,
-> diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-> index 5ce2acf..fc8ecaf 100644
-> --- a/include/linux/wwan.h
-> +++ b/include/linux/wwan.h
-> @@ -26,6 +26,7 @@ enum wwan_port_type {
->         WWAN_PORT_QMI,
->         WWAN_PORT_QCDM,
->         WWAN_PORT_FIREHOSE,
-> +       WWAN_PORT_SAHARA,
->
->         /* Add new port types above this line */
->
-> --
-> 2.7.4
->
+>   Documentation/virt/kvm/api.rst | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index 48f23bb80d7f..622667cc87ef 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -3763,7 +3763,7 @@ KVM_S390_MEMOP_F_INJECT_EXCEPTION is set.
+>   
+>   If the KVM_S390_MEMOP_F_SKEY_PROTECTION flag is set, storage key
+>   protection is also in effect and may cause exceptions if accesses are
+> -prohibited given the access key passed in "key".
+> +prohibited given the access key designated by "key"; the valid range is 0..15.
+>   KVM_S390_MEMOP_F_SKEY_PROTECTION is available if KVM_CAP_S390_MEM_OP_EXTENSION
+>   is > 0.
+>   
+> 
+> base-commit: af33593d63a403287b8a6edd217e854a3571938b
+
+I have already queued the patches. Will add this on top as a fixup patch.
