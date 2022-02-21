@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3253AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E592C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235055AbiBUJvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:51:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42350 "EHLO
+        id S1351225AbiBUJvp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:51:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352246AbiBUJrQ (ORCPT
+        with ESMTP id S1352303AbiBUJrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:16 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2623F4162F;
-        Mon, 21 Feb 2022 01:19:14 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469213134F;
+        Mon, 21 Feb 2022 01:19:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 970BDCE0E92;
-        Mon, 21 Feb 2022 09:19:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE1BC340E9;
-        Mon, 21 Feb 2022 09:19:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6B4D608C4;
+        Mon, 21 Feb 2022 09:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD3FEC340E9;
+        Mon, 21 Feb 2022 09:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435151;
-        bh=uOGHB0PhJWRjRJyytDv6xrbR6xnITxBkeN0s7zIIQGY=;
+        s=korg; t=1645435162;
+        bh=/olF6Us9lbxAbXC7th3DTXiim40Q8iwY7LdThfGvC7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vHGwT+O2xFhPS8bv8rHRublq1r55XaTHtLFUEtkGQGc578xnMSCuPrDFIWA0HKXuL
-         Au4w3BJvSk0tdfmoxPx+yyCFHzIOQQtigAOpsaYZqFSQvUHw2UfJeJdHNvq3j+tT1N
-         6X/V4wz3+aMfCTBer8sOlXaBFkrMk50X0Otu0hQ4=
+        b=n8xBtWxNr/QnNqo38at2TvMl4zkHS7dDQbVQ2WHJRTaYIw2tCcs7JThI3Oos15w7k
+         +gvyCM4qEz7A5fOqGKOpuyRqkO3IkU9GFi74tca4AJnj5zliVbces3dY5DFIlY9eoR
+         7cocurucT524UNn092/AmFrkz6YUlIaVvUblOPR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 062/227] nvme-rdma: fix possible use-after-free in transport error_recovery work
-Date:   Mon, 21 Feb 2022 09:48:01 +0100
-Message-Id: <20220221084936.938754076@linuxfoundation.org>
+Subject: [PATCH 5.16 066/227] drm/amdgpu: fix logic inversion in check
+Date:   Mon, 21 Feb 2022 09:48:05 +0100
+Message-Id: <20220221084937.063080395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -48,36 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Christian König <christian.koenig@amd.com>
 
-[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
+[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
 
-While nvme_rdma_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+We probably never trigger this, but the logic inside the check is
+inverted.
 
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/rdma.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
-index 850f84d204d05..9c55e4be8a398 100644
---- a/drivers/nvme/host/rdma.c
-+++ b/drivers/nvme/host/rdma.c
-@@ -1200,6 +1200,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
- 			struct nvme_rdma_ctrl, err_work);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index c875f1cdd2af7..ffc3ce0004e99 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1913,7 +1913,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
+ 	unsigned i;
+ 	int r;
  
- 	nvme_stop_keep_alive(&ctrl->ctrl);
-+	flush_work(&ctrl->ctrl.async_event_work);
- 	nvme_rdma_teardown_io_queues(ctrl, false);
- 	nvme_start_queues(&ctrl->ctrl);
- 	nvme_rdma_teardown_admin_queue(ctrl, false);
+-	if (direct_submit && !ring->sched.ready) {
++	if (!direct_submit && !ring->sched.ready) {
+ 		DRM_ERROR("Trying to move memory with ring turned off.\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.34.1
 
