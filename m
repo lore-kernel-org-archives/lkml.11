@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A61C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2023C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiBUKDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:03:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55896 "EHLO
+        id S1346568AbiBUKEH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:04:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353022AbiBUJ5C (ORCPT
+        with ESMTP id S1353296AbiBUJ5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659EF45790;
-        Mon, 21 Feb 2022 01:24:54 -0800 (PST)
+        Mon, 21 Feb 2022 04:57:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA5046B0C;
+        Mon, 21 Feb 2022 01:25:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26C5BB80ECB;
-        Mon, 21 Feb 2022 09:24:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46CA3C340E9;
-        Mon, 21 Feb 2022 09:24:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DE160F97;
+        Mon, 21 Feb 2022 09:25:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21034C340EB;
+        Mon, 21 Feb 2022 09:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435491;
-        bh=n1f98Y30u1MRoTvXq5oADRdUKbZtJKh6KWD/vuLlgzY=;
+        s=korg; t=1645435517;
+        bh=7eP9GV9smWbWM1dmSH/hpT0rJMPPs4tjxlSzxYHcRbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZVACbFM/ca8sUwtvgst5CeDNdlR9xGCMD9mZ+c8xYZDUNiPe98G6ogAQeMiCM9LB
-         1M3Z8Ne/ywmKTAMU2PqCgsd+VXGnmJc/SItKGiEXdWY/jmfwzAcCGRWpCdgV9/Tgct
-         U/ulLGUO21PeoQQiJfM29fNulIcVS+2EXmdf5HKA=
+        b=wHuRUGxCnnWQ0787tMaEFcXw0Ogx5ZJcb0wp5NPm8EqnfbGI/erbouVQSrtO7o6rA
+         vk3SywSAuIelWW4xxAI+v73NmyAZjs2yPFw8g8ARVlU8MdRo/LQuPWlNSgDsJH4U5q
+         iWebgKZMgK58qiRM6y/b//GJb3yUyCFcFnyJdXls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 150/227] powerpc/603: Fix boot failure with DEBUG_PAGEALLOC and KFENCE
-Date:   Mon, 21 Feb 2022 09:49:29 +0100
-Message-Id: <20220221084939.819973632@linuxfoundation.org>
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 192/227] HID: elo: fix memory leak in elo_probe
+Date:   Mon, 21 Feb 2022 09:50:11 +0100
+Message-Id: <20220221084941.199949623@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -49,50 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-commit 9bb162fa26ed76031ed0e7dbc77ccea0bf977758 upstream.
+[ Upstream commit 817b8b9c5396d2b2d92311b46719aad5d3339dbe ]
 
-Allthough kernel text is always mapped with BATs, we still have
-inittext mapped with pages, so TLB miss handling is required
-when CONFIG_DEBUG_PAGEALLOC or CONFIG_KFENCE is set.
+When hid_parse() in elo_probe() fails, it forgets to call usb_put_dev to
+decrease the refcount.
 
-The final solution should be to set a BAT that also maps inittext
-but that BAT then needs to be cleared at end of init, and it will
-require more changes to be able to do it properly.
+Fix this by adding usb_put_dev() in the error handling code of elo_probe().
 
-As DEBUG_PAGEALLOC or KFENCE are debugging, performance is not a big
-deal so let's fix it simply for now to enable easy stable application.
-
-Fixes: 035b19a15a98 ("powerpc/32s: Always map kernel text and rodata with BATs")
-Cc: stable@vger.kernel.org # v5.11+
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/aea33b4813a26bdb9378b5f273f00bd5d4abe240.1638857364.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fbf42729d0e9 ("HID: elo: update the reference count of the usb device structure")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/head_book3s_32.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/hid-elo.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/powerpc/kernel/head_book3s_32.S
-+++ b/arch/powerpc/kernel/head_book3s_32.S
-@@ -421,14 +421,14 @@ InstructionTLBMiss:
-  */
- 	/* Get PTE (linux-style) and check access */
- 	mfspr	r3,SPRN_IMISS
--#ifdef CONFIG_MODULES
-+#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
- 	lis	r1, TASK_SIZE@h		/* check if kernel address */
- 	cmplw	0,r1,r3
- #endif
- 	mfspr	r2, SPRN_SDR1
- 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC | _PAGE_USER
- 	rlwinm	r2, r2, 28, 0xfffff000
--#ifdef CONFIG_MODULES
-+#if defined(CONFIG_MODULES) || defined(CONFIG_DEBUG_PAGEALLOC) || defined(CONFIG_KFENCE)
- 	bgt-	112f
- 	lis	r2, (swapper_pg_dir - PAGE_OFFSET)@ha	/* if kernel address, use */
- 	li	r1,_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_EXEC
+diff --git a/drivers/hid/hid-elo.c b/drivers/hid/hid-elo.c
+index 8e960d7b233b3..9b42b0cdeef06 100644
+--- a/drivers/hid/hid-elo.c
++++ b/drivers/hid/hid-elo.c
+@@ -262,6 +262,7 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ 	return 0;
+ err_free:
++	usb_put_dev(udev);
+ 	kfree(priv);
+ 	return ret;
+ }
+-- 
+2.34.1
+
 
 
