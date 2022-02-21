@@ -2,296 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75590C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF66BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343528AbiBUCRy (ORCPT
+        id S1343558AbiBUCXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 21:17:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33592 "EHLO
+        Sun, 20 Feb 2022 21:23:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240542AbiBUCRw (ORCPT
+        with ESMTP id S1343540AbiBUCXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 21:17:52 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0F04CD6A
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 18:17:29 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id j15so15863737lfe.11
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 18:17:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eb896sueNM4NHpigYPMkh5NK55eQiNdPOGg2uyxmUwE=;
-        b=FU4dSv1ZSLXJ2sgUfR7Y2KHFmTT4TqLKUqNnrjcCeboM4ZE0FkQ2lRUZ97k5t+lNrI
-         u4VNugYm+ggJk3+UNK2J4/O8xpFiH1ZUAGXUR77OHNd8WkDsKGjNE3Nys/MAr4eyLEUX
-         VRBvTuc/iMALphJberS1xU6csyYguaKJJEoymBXa9roTEAhMuT9GMge2FRoGitNdBsae
-         wGCy3HC+ODsdJ98fmtjmbOQAVg5zwnWprZoojBI+bJjIW1w9HnEavBWXWb/9Bc74aU7S
-         au4TN6VV5v0uM127oSckWfnOvSNw7vH2lW2Ml0z7auHuTr/errwS1BvaqYQtffkVtXMT
-         FqgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eb896sueNM4NHpigYPMkh5NK55eQiNdPOGg2uyxmUwE=;
-        b=S+8dbJdp6irRxKDtRWLcgkt+nwqtZGKP7N+pSy+EuGJA44lY5TdWTQ8Mi8ouEDUon+
-         621bSZ/VbzmKwkurUcyQgxGlOYVFLAV4zg20iz849kBUo7R2LaVLyGfKHR7ER++JeqHi
-         i89PvQ0Nu+uH+1x8fp0l7Fcj/sqptU32FvzCukp1O2mgPuartbCCH70LBC/HpePQjGRB
-         pnAs5MidPR7CbbBRur74I/1BTXnXrZTJoMgOlqJA0z0GEyzlwkFToF/MkEnzatMtMJkR
-         CdFtUq+UfNU/tPwmCmMJME1nWK3piWSJf5z2y1BH4EO4MHZtd333b1z1OkanE1rC7kH4
-         x4cg==
-X-Gm-Message-State: AOAM531gUJpwwLwnUCCLvGMug6kUHY6OkRY70iVecdsk5CkPTdzD9FFU
-        +1+sfRoeR9som6+S7gnCVjNymA==
-X-Google-Smtp-Source: ABdhPJzbA9aXh3dYLrH4glJrMZRMzNuqetdxDYq2qKoFNE2JfpglCmr900uihhRF09ObDGDKRwUqPA==
-X-Received: by 2002:a05:6512:3b88:b0:443:7b08:2fcb with SMTP id g8-20020a0565123b8800b004437b082fcbmr12370342lfv.621.1645409847655;
-        Sun, 20 Feb 2022 18:17:27 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id 6sm969170lfq.241.2022.02.20.18.17.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 18:17:26 -0800 (PST)
-Message-ID: <abbccac6-7637-c981-e22f-6ea057b1fa55@linaro.org>
-Date:   Mon, 21 Feb 2022 05:17:26 +0300
+        Sun, 20 Feb 2022 21:23:10 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3264A3B2A3;
+        Sun, 20 Feb 2022 18:22:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BCJu/it5Iqq6yK0STUpPgDbG/nf9R64R/z+I+u6dMw/ktA65Hs9yz8lZuJbwnT4pg7cDaumBXBDoo7VyPqM57dOGVq2ssJg8nvfBEnW8J3fiNxm0qzgKKCOu0vVSGF9gCdyOaEQqyhm4YJVeGSSVqgNo2pFM22hv7EKmCollDumj/+BARZJrHizIotvvitrhA+xP2kqLjkeyMv5RMONgNHD1gDry7CqStmBg3JVHS70nxNs01cn2Lu3ik+/wjwkNzBca8r0DrnAR5v3xV2rrEJZQ5oIgOyHNSc2qNvYnziwA6GMyTZX1+bSnP4HrWDMHw1WZ6aKyVVihQ/QXrnS4zA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bq6zmpAy6RU8n0nWYv2LMX7I87iOD25wY5cDesK2DaY=;
+ b=iBGFNZBZBhrSwP2cZ/jrxKrPFDeIZ/vCaEKHdPq9hcrY4OP6jWm+BS2LWFTFF98/m047pgwXVeMxjCDefMC/e7C5Zzn4jHiLlF6TsZANokLezqy+lwCFajT3mJZxfEevf6PdNPJUj6kPi86MgUav+/XOLNYUzA1+H5ZAzS14G1CVmqrCNOjd/dPoULWo9+60o3ZTM9i/HRZpviCoRmc37HvFn7RtJyivPbiUFTQspEzsOzdQtryR40WL/IAqmFWID6ypinntvZnZCaV03sDzbvfvIQ8G461+OXCUY/weqVgO5F90JH/hmpLdSbOhRyJn1+43sipyf04ZfstjxfTqBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bq6zmpAy6RU8n0nWYv2LMX7I87iOD25wY5cDesK2DaY=;
+ b=vn/3r6bgOZu7JtqpguVabOodPMnItTjthWbbK+BrUj3ZqCQGNi2mAAwJ04SwCEdi5skmHeAW1uRvSy4J8B2FYP3IA3dek+FHvbLWKcLMmvLq69xyrg5vTJXu8bjHw+irzR4oQBa72IDRjolF1zSH+vBwXhwKPscr9DvEspUvKSQ=
+Received: from MWHPR1401CA0010.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::20) by DM5PR1201MB0092.namprd12.prod.outlook.com
+ (2603:10b6:4:54::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Mon, 21 Feb
+ 2022 02:22:45 +0000
+Received: from CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:4b:cafe::b) by MWHPR1401CA0010.outlook.office365.com
+ (2603:10b6:301:4b::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
+ Transport; Mon, 21 Feb 2022 02:22:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT027.mail.protection.outlook.com (10.13.174.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4995.15 via Frontend Transport; Mon, 21 Feb 2022 02:22:44 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sun, 20 Feb
+ 2022 20:22:42 -0600
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+CC:     <pbonzini@redhat.com>, <seanjc@google.com>, <joro@8bytes.org>,
+        <jon.grimm@amd.com>, <wei.huang2@amd.com>, <terry.bowman@amd.com>,
+        "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>
+Subject: [RFC PATCH 01/13] KVM: SVM: Add warning when encounter invalid APIC ID
+Date:   Sun, 20 Feb 2022 20:19:10 -0600
+Message-ID: <20220221021922.733373-2-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
+References: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [REPOST PATCH v4 01/13] drm/msm/dsi: add support for dsc data
-Content-Language: en-GB
-To:     Vinod Koul <vkoul@kernel.org>, Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-References: <20220210103423.271016-1-vkoul@kernel.org>
- <20220210103423.271016-2-vkoul@kernel.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220210103423.271016-2-vkoul@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c453ca4d-aff2-452b-2fc5-08d9f4e10bb0
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB0092:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB009245407A3E06593F000A5EF33A9@DM5PR1201MB0092.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GuL3cLc81Z/1FvdEFSpAHATZyigdBNFWEGq9p4FBD30uZRhntyqHLs2wb+n0z1og6goGXEvNJ/P36OtZ6Y7tGfSXB6edI8m0g/KmcvMjEtlTWrrn/Hg5ZtwUUWiusg++Sgd6tejozEcQBQVu2TJSJVEyJH1wATUoOPV2kaJlVVSqTOwpGRhPNpTeLk1o5SyqdyJW5CaW/M3xutTyLkLnoqB+AbbL2YhIrlTXBjG9ta81pI/+bERpwf4BrwgPul9AAgPNL3iLPaiN/e4lyC8O+tqLO7lxNF+95sEYeATVMStltCBTOmbE2p1/GY+OkEALEE0XAk3gUwHJ0QcyrIBHUDBoAm8fB59QYUfXacp7cmR8CrIloCQd3SCJbBOgH2g4fIpcHCne1B6s6YUKA3qc4GjagGcU8ypHqzs7cXn2yG78N8HLAmjfyQhofzeglXSZ7PwxWLeQXoQUJY73TSZN8o4Wg3WIfYIrW0IdnWYguSbBwFCppCiFgSsDqIF5mTH3W4HDbjmUKYHoV7iT2i14+S823iM2PKe/BJzQsR/jFqssJf2Ld7mhq+tkybhnthz3ecxSSK9NtWJfww5HEyXQwzkHTEdRA38aBAPcwfo7iJ3bgGA87eccz11JOjgwEYTWtyE7ZcGiY41ELk5AVX2QTq7QxuCSY0ajZCTXHEB59Ilb8Kmj8nUtfM8Pt0i0z5PDbYy11qKV3qbT/uL99zBJ9g==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(426003)(336012)(47076005)(40460700003)(83380400001)(4744005)(44832011)(36756003)(5660300002)(2906002)(8936002)(54906003)(110136005)(8676002)(7696005)(16526019)(186003)(26005)(70206006)(70586007)(2616005)(1076003)(81166007)(356005)(316002)(508600001)(6666004)(86362001)(36860700001)(82310400004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 02:22:44.8675
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c453ca4d-aff2-452b-2fc5-08d9f4e10bb0
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/2022 13:34, Vinod Koul wrote:
-> Display Stream Compression (DSC) parameters need to be calculated. Add
-> helpers and struct msm_display_dsc_config in msm_drv for this
-> msm_display_dsc_config uses drm_dsc_config for DSC parameters.
-> 
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
-> ---
->   drivers/gpu/drm/msm/dsi/dsi_host.c | 132 +++++++++++++++++++++++++++++
->   drivers/gpu/drm/msm/msm_drv.h      |  15 ++++
->   2 files changed, 147 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> index 6b3ced4aaaf5..27553194f9fa 100644
-> --- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-> +++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-> @@ -31,6 +31,8 @@
->   
->   #define DSI_RESET_TOGGLE_DELAY_MS 20
->   
-> +static int dsi_populate_dsc_params(struct msm_display_dsc_config *dsc);
-> +
->   static int dsi_get_version(const void __iomem *base, u32 *major, u32 *minor)
->   {
->   	u32 ver;
-> @@ -157,6 +159,7 @@ struct msm_dsi_host {
->   	struct regmap *sfpb;
->   
->   	struct drm_display_mode *mode;
-> +	struct msm_display_dsc_config *dsc;
->   
->   	/* connected device info */
->   	struct device_node *device_node;
-> @@ -1718,6 +1721,135 @@ static int dsi_host_parse_lane_data(struct msm_dsi_host *msm_host,
->   	return -EINVAL;
->   }
->   
-> +static u32 dsi_dsc_rc_buf_thresh[DSC_NUM_BUF_RANGES - 1] = {
-> +	0x0e, 0x1c, 0x2a, 0x38, 0x46, 0x54, 0x62,
-> +	0x69, 0x70, 0x77, 0x79, 0x7b, 0x7d, 0x7e
-> +};
-> +
-> +/* only 8bpc, 8bpp added */
-> +static char min_qp[DSC_NUM_BUF_RANGES] = {
-> +	0, 0, 1, 1, 3, 3, 3, 3, 3, 3, 5, 5, 5, 7, 13
-> +};
-> +
-> +static char max_qp[DSC_NUM_BUF_RANGES] = {
-> +	4, 4, 5, 6, 7, 7, 7, 8, 9, 10, 11, 12, 13, 13, 15
-> +};
-> +
-> +static char bpg_offset[DSC_NUM_BUF_RANGES] = {
-> +	2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12
-> +};
-> +
-> +static int dsi_populate_dsc_params(struct msm_display_dsc_config *dsc)
-> +{
-> +	int mux_words_size;
-> +	int groups_per_line, groups_total;
-> +	int min_rate_buffer_size;
-> +	int hrd_delay;
-> +	int pre_num_extra_mux_bits, num_extra_mux_bits;
-> +	int slice_bits;
-> +	int target_bpp_x16;
-> +	int data;
-> +	int final_value, final_scale;
-> +	int i;
-> +
-> +	dsc->drm->rc_model_size = 8192;
-> +	dsc->drm->first_line_bpg_offset = 12;
-> +	dsc->drm->rc_edge_factor = 6;
-> +	dsc->drm->rc_tgt_offset_high = 3;
-> +	dsc->drm->rc_tgt_offset_low = 3;
-> +	dsc->drm->simple_422 = 0;
-> +	dsc->drm->convert_rgb = 1;
-> +	dsc->drm->vbr_enable = 0;
-> +
-> +	/* handle only bpp = bpc = 8 */
-> +	for (i = 0; i < DSC_NUM_BUF_RANGES - 1 ; i++)
-> +		dsc->drm->rc_buf_thresh[i] = dsi_dsc_rc_buf_thresh[i];
-> +
-> +	for (i = 0; i < DSC_NUM_BUF_RANGES; i++) {
-> +		dsc->drm->rc_range_params[i].range_min_qp = min_qp[i];
-> +		dsc->drm->rc_range_params[i].range_max_qp = max_qp[i];
-> +		dsc->drm->rc_range_params[i].range_bpg_offset = bpg_offset[i];
-> +	}
-> +
-> +	dsc->drm->initial_offset = 6144; /* Not bpp 12 */
-> +	if (dsc->drm->bits_per_pixel != 8)
-> +		dsc->drm->initial_offset = 2048;	/* bpp = 12 */
-> +
-> +	mux_words_size = 48;		/* bpc == 8/10 */
-> +	if (dsc->drm->bits_per_component == 12)
-> +		mux_words_size = 64;
-> +
-> +	dsc->drm->initial_xmit_delay = 512;
-> +	dsc->drm->initial_scale_value = 32;
-> +	dsc->drm->first_line_bpg_offset = 12;
-> +	dsc->drm->line_buf_depth = dsc->drm->bits_per_component + 1;
-> +
-> +	/* bpc 8 */
-> +	dsc->drm->flatness_min_qp = 3;
-> +	dsc->drm->flatness_max_qp = 12;
-> +	dsc->det_thresh_flatness = 7 + 2 * (dsc->drm->bits_per_component - 8);
-> +	dsc->drm->rc_quant_incr_limit0 = 11;
-> +	dsc->drm->rc_quant_incr_limit1 = 11;
-> +	dsc->drm->mux_word_size = DSC_MUX_WORD_SIZE_8_10_BPC;
-> +
-> +	/* FIXME: need to call drm_dsc_compute_rc_parameters() so that rest of
-> +	 * params are calculated
-> +	 */
-> +	dsc->slice_last_group_size = 3 - (dsc->drm->slice_width % 3);
-> +	groups_per_line = DIV_ROUND_UP(dsc->drm->slice_width, 3);
-> +	dsc->drm->slice_chunk_size = dsc->drm->slice_width * dsc->drm->bits_per_pixel / 8;
-> +	if ((dsc->drm->slice_width * dsc->drm->bits_per_pixel) % 8)
-> +		dsc->drm->slice_chunk_size++;
-> +
-> +	/* rbs-min */
-> +	min_rate_buffer_size =  dsc->drm->rc_model_size - dsc->drm->initial_offset +
-> +				dsc->drm->initial_xmit_delay * dsc->drm->bits_per_pixel +
-> +				groups_per_line * dsc->drm->first_line_bpg_offset;
-> +
-> +	hrd_delay = DIV_ROUND_UP(min_rate_buffer_size, dsc->drm->bits_per_pixel);
-> +
-> +	dsc->drm->initial_dec_delay = hrd_delay - dsc->drm->initial_xmit_delay;
-> +
-> +	dsc->drm->initial_scale_value = 8 * dsc->drm->rc_model_size /
-> +				       (dsc->drm->rc_model_size - dsc->drm->initial_offset);
-> +
-> +	slice_bits = 8 * dsc->drm->slice_chunk_size * dsc->drm->slice_height;
-> +
-> +	groups_total = groups_per_line * dsc->drm->slice_height;
-> +
-> +	data = dsc->drm->first_line_bpg_offset * 2048;
-> +
-> +	dsc->drm->nfl_bpg_offset = DIV_ROUND_UP(data, (dsc->drm->slice_height - 1));
-> +
-> +	pre_num_extra_mux_bits = 3 * (mux_words_size + (4 * dsc->drm->bits_per_component + 4) - 2);
-> +
-> +	num_extra_mux_bits = pre_num_extra_mux_bits - (mux_words_size -
-> +			     ((slice_bits - pre_num_extra_mux_bits) % mux_words_size));
-> +
-> +	data = 2048 * (dsc->drm->rc_model_size - dsc->drm->initial_offset + num_extra_mux_bits);
-> +	dsc->drm->slice_bpg_offset = DIV_ROUND_UP(data, groups_total);
-> +
-> +	/* bpp * 16 + 0.5 */
-> +	data = dsc->drm->bits_per_pixel * 16;
-> +	data *= 2;
-> +	data++;
-> +	data /= 2;
-> +	target_bpp_x16 = data;
-> +
-> +	data = (dsc->drm->initial_xmit_delay * target_bpp_x16) / 16;
-> +	final_value =  dsc->drm->rc_model_size - data + num_extra_mux_bits;
-> +	dsc->drm->final_offset = final_value;
-> +
-> +	final_scale = 8 * dsc->drm->rc_model_size / (dsc->drm->rc_model_size - final_value);
-> +
-> +	data = (final_scale - 9) * (dsc->drm->nfl_bpg_offset + dsc->drm->slice_bpg_offset);
-> +	dsc->drm->scale_increment_interval = (2048 * dsc->drm->final_offset) / data;
-> +
-> +	dsc->drm->scale_decrement_interval = groups_per_line / (dsc->drm->initial_scale_value - 8);
-> +
-> +	return 0;
-> +}
-> +
->   static int dsi_host_parse_dt(struct msm_dsi_host *msm_host)
->   {
->   	struct device *dev = &msm_host->pdev->dev;
-> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-> index d7574e6bd4e4..384f9bad4760 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.h
-> +++ b/drivers/gpu/drm/msm/msm_drv.h
-> @@ -30,6 +30,7 @@
->   #include <drm/drm_plane_helper.h>
->   #include <drm/drm_probe_helper.h>
->   #include <drm/drm_fb_helper.h>
-> +#include <drm/drm_dsc.h>
->   #include <drm/msm_drm.h>
->   #include <drm/drm_gem.h>
->   
-> @@ -134,6 +135,20 @@ struct msm_drm_thread {
->   	struct kthread_worker *worker;
->   };
->   
-> +/* DSC config */
-> +struct msm_display_dsc_config {
-> +	struct drm_dsc_config *drm;
-> +
-> +	u32 initial_lines;
-> +	u32 pkt_per_line;
-> +	u32 bytes_in_slice;
-> +	u32 bytes_per_pkt;
-> +	u32 eol_byte_num;
-> +	u32 pclk_per_line;
-> +	u32 slice_last_group_size;
-> +	u32 det_thresh_flatness;
+Current logic checks if avic_get_physical_id_entry() fails to
+get the entry, and return error. This could silently cause
+AVIC to fail to operate.  Therefore, add WARN_ON to help
+report this error.
 
-I have been looking throught the dsc params calculation. And it looks 
-like this struct is not necessary at all.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ arch/x86/kvm/svm/avic.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-inital_lines can be passed to dpu_encoder_dsc_pipe_cfg() / 
-hw_dsc->ops.dsc_config() directly.
-
-slice_last_group_size and det_thresh_flatness can be calculated in 
-dpu_hw_dsc_config() directly. And the rest is only used in 
-dsi_timing_setup(), where they are calculated an immediately used to set 
-the hardware. Let's probably drop it, unless there is a good reason to 
-have it?
-
-> +};
-> +
->   struct msm_drm_private {
->   
->   	struct drm_device *dev;
-
-
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index f07956f15d3b..472445aaaf42 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -447,8 +447,10 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
+ 
+ 	old = avic_get_physical_id_entry(vcpu, vcpu->vcpu_id);
+ 	new = avic_get_physical_id_entry(vcpu, id);
+-	if (!new || !old)
++	if (!new || !old) {
++		WARN_ON(1);
+ 		return 1;
++	}
+ 
+ 	/* We need to move physical_id_entry to new offset */
+ 	*new = *old;
 -- 
-With best wishes
-Dmitry
+2.25.1
+
