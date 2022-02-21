@@ -2,185 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A435C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354956AbiBUKfj (ORCPT
+        id S1355156AbiBUKfy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:35:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52266 "EHLO
+        Mon, 21 Feb 2022 05:35:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355095AbiBUKfT (ORCPT
+        with ESMTP id S1355012AbiBUKfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:35:19 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE85381BB
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:55:18 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id j9-20020a05600c190900b0037bff8a24ebso13082185wmq.4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:55:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=upbkN/V8cp2KI0ahaTu8tBZWU9b/chtGV7DC+f35CdY=;
-        b=GS//m974QckaF3Of/zXAd7JQULr/ML9YdasdWH0NaXtNDJnOHKV2SXZYVG4M19tHOq
-         hJmUX36bWgLhI8JvKY2PlIHM4uLDxh8yTN6amnE1lKQGvuGhlHdEyRpqjE6hsa+v3W2u
-         TZakdaGd2vNZObRxQactg7oTZL+8n5Q4bbi+EzGBsBCgUBzboNsdJEP9OEojl0qsSsMB
-         xcR2OnKNudh8FouXOjafeb61zW/AvHgnN6Wgs8dVb/SNBVNfj8/2daP4VqCCSQg9BzIe
-         nJtVYrKxlZZY2oieZrGD2QQL8iIslsrMKHSRiBbzcveg4r/tTZK1IDrSZgu+8Hv2hmJV
-         cfgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=upbkN/V8cp2KI0ahaTu8tBZWU9b/chtGV7DC+f35CdY=;
-        b=tM4jouorKBPU+NYO7luk9y58VkSV1/GI6zy2ravOVV8wHLRYVMxBR9GKH74JYBdqZh
-         b03lmIJdZDjt8YCHiZzHUAB1RqySr9qYKRXUv/xs2a8YgKo/iKwn47RPGiCvIha7/nk/
-         SYLzbKIAU8ZCKLNtq6yFhOSbL5kf3W/n1zQFGDMyXqOs2cGzaW55/Jkqg6ZPcIoUFht2
-         S2gzDnVCLiy7gGQIwky7UcOmnqADLcezIdNnJTmD+AUHlYK8igz8YvNr+wzivpJFh7IM
-         zM/y6HWzrTAkz82PvyPb0SaDMSrZODDdFKzriy4bOfkNotaqLjW17tTooIaFhvbF28I1
-         BXgg==
-X-Gm-Message-State: AOAM530zHvYQzne35DozolvgkeLSmtozmZyyN+8iuDlK4UYCFsio+FPh
-        Z+yFAdJCwLftefzLnHthVBCk0GlKhBk5P7XghwwYVg==
-X-Google-Smtp-Source: ABdhPJyhZ16CI2TVFHhpSM7/eyLn3311gs2ig6GHEaHjYfa4Ne4UfzHF2h4fbFKVn1hsN8j+ljYfCQ9qjGGmxjJpf14=
-X-Received: by 2002:a7b:cf16:0:b0:37b:c4c9:96c6 with SMTP id
- l22-20020a7bcf16000000b0037bc4c996c6mr17352485wmg.59.1645437316963; Mon, 21
- Feb 2022 01:55:16 -0800 (PST)
+        Mon, 21 Feb 2022 05:35:24 -0500
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CED387BD
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:55:33 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:49dc:a1b5:3fe0:3d2b])
+        by andre.telenet-ops.be with bizsmtp
+        id xlvX260083YJRAw01lvX5w; Mon, 21 Feb 2022 10:55:31 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nM5Pm-001SIC-R5
+        for linux-kernel@vger.kernel.org; Mon, 21 Feb 2022 10:55:30 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nM5Pm-005gak-7y
+        for linux-kernel@vger.kernel.org; Mon, 21 Feb 2022 10:55:30 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     linux-kernel@vger.kernel.org
+Subject: Build regressions/improvements in v5.17-rc5
+Date:   Mon, 21 Feb 2022 10:55:30 +0100
+Message-Id: <20220221095530.1355319-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220220050854.743420-1-apatel@ventanamicro.com>
- <20220220050854.743420-3-apatel@ventanamicro.com> <87czjg4kf4.wl-maz@kernel.org>
-In-Reply-To: <87czjg4kf4.wl-maz@kernel.org>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 21 Feb 2022 15:25:05 +0530
-Message-ID: <CAAhSdy2abxjz2GAF7dTbxDa32244wEJeYBCeuY2Ag84HK_FXow@mail.gmail.com>
-Subject: Re: [PATCH v3 2/6] irqchip/riscv-intc: Allow drivers to directly
- discover INTC hwnode
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 3:21 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Sun, 20 Feb 2022 05:08:50 +0000,
-> Anup Patel <apatel@ventanamicro.com> wrote:
-> >
-> > Various RISC-V drivers (such as SBI IPI, SBI Timer, SBI PMU, and
-> > KVM RISC-V) don't have associated DT node but these drivers need
-> > standard per-CPU (local) interrupts defined by the RISC-V privileged
-> > specification.
-> >
-> > We add riscv_get_intc_hwnode() in arch/riscv which allows RISC-V
-> > drivers not having DT node to discover INTC hwnode which in-turn
-> > helps these drivers to map per-CPU (local) interrupts provided
-> > by the INTC driver.
-> >
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > ---
-> >  arch/riscv/include/asm/irq.h     |  4 ++++
-> >  arch/riscv/kernel/irq.c          | 19 +++++++++++++++++++
-> >  drivers/irqchip/irq-riscv-intc.c |  7 +++++++
-> >  3 files changed, 30 insertions(+)
-> >
-> > diff --git a/arch/riscv/include/asm/irq.h b/arch/riscv/include/asm/irq.h
-> > index e4c435509983..43b9ebfbd943 100644
-> > --- a/arch/riscv/include/asm/irq.h
-> > +++ b/arch/riscv/include/asm/irq.h
-> > @@ -12,6 +12,10 @@
-> >
-> >  #include <asm-generic/irq.h>
-> >
-> > +void riscv_set_intc_hwnode_fn(struct fwnode_handle *(*fn)(void));
-> > +
-> > +struct fwnode_handle *riscv_get_intc_hwnode(void);
-> > +
-> >  extern void __init init_IRQ(void);
-> >
-> >  #endif /* _ASM_RISCV_IRQ_H */
-> > diff --git a/arch/riscv/kernel/irq.c b/arch/riscv/kernel/irq.c
-> > index 7207fa08d78f..ead92432df8c 100644
-> > --- a/arch/riscv/kernel/irq.c
-> > +++ b/arch/riscv/kernel/irq.c
-> > @@ -7,9 +7,28 @@
-> >
-> >  #include <linux/interrupt.h>
-> >  #include <linux/irqchip.h>
-> > +#include <linux/irqdomain.h>
-> > +#include <linux/module.h>
-> >  #include <linux/seq_file.h>
-> >  #include <asm/smp.h>
-> >
-> > +static struct fwnode_handle *(*__get_intc_node)(void);
-> > +
-> > +void riscv_set_intc_hwnode_fn(struct fwnode_handle *(*fn)(void))
-> > +{
-> > +     __get_intc_node = fn;
-> > +}
-> > +EXPORT_SYMBOL_GPL(riscv_set_intc_hwnode_fn);
->
-> We're talking about the root interrupt controller here. How can this
-> ever be implemented as a module?
+Below is the list of build error/warning regressions/improvements in
+v5.17-rc5[1] compared to v5.16[2].
 
-Okay, I will drop the EXPORT() from here.
+Summarized:
+  - build errors: +15/-2
+  - build warnings: +24/-25
 
->
-> > +
-> > +struct fwnode_handle *riscv_get_intc_hwnode(void)
-> > +{
-> > +     if (__get_intc_node)
-> > +             return __get_intc_node();
-> > +
-> > +     return NULL;
-> > +}
-> > +EXPORT_SYMBOL_GPL(riscv_get_intc_hwnode);
-> > +
-> >  int arch_show_interrupts(struct seq_file *p, int prec)
-> >  {
-> >       show_ipi_stats(p, prec);
-> > diff --git a/drivers/irqchip/irq-riscv-intc.c b/drivers/irqchip/irq-riscv-intc.c
-> > index b65bd8878d4f..fa24ecd01d39 100644
-> > --- a/drivers/irqchip/irq-riscv-intc.c
-> > +++ b/drivers/irqchip/irq-riscv-intc.c
-> > @@ -92,6 +92,11 @@ static const struct irq_domain_ops riscv_intc_domain_ops = {
-> >       .xlate  = irq_domain_xlate_onecell,
-> >  };
-> >
-> > +static struct fwnode_handle *riscv_intc_hwnode(void)
-> > +{
-> > +     return (intc_domain) ? intc_domain->fwnode : NULL;
-> > +}
->
-> This makes no sense. Either you have found the interrupt controller
-> and allocated the domain, or you haven't. But you don't register a
-> callback without having found it.
+JFYI, when comparing v5.17-rc5[1] to v5.17-rc4[3], the summaries are:
+  - build errors: +2/-1
+  - build warnings: +2/-1
 
-We are registering this callback after creating the INTC domain.
+Note that there may be false regressions, as some logs are incomplete.
+Still, they're build errors/warnings.
 
->
-> And you have totally ignored my previous comments about the multitude
-> of irq domains for the INTC. Either you get rid of all but one and you
-> can register a single fwnode, or you stay with what you have today,
+Happy fixing! ;-)
 
-Only the INTC DT nodes are per-CPU but we are creating only one
-INTC domain to manage per-CPU IRQs across all CPUs.
+Thanks to the linux-next team for providing the build service.
 
-Regards,
-Anup
+[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/cfb92440ee71adcc2105b0890bb01ac3cddb8507/ (all 99 configs)
+[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/df0cc57e057f18e44dac8e6c18aba47ab53202f9/ (98 out of 99 configs)
+[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/754e0b0e35608ed5206d6a67a791563c631cec07/ (all 99 configs)
 
->
-> You can't have it both ways.
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+
+*** ERRORS ***
+
+15 error regressions:
+  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declaration of function 'nmi_cpu_backtrace' [-Werror=implicit-function-declaration]:  => 171:2
+  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declaration of function 'nmi_trigger_cpumask_backtrace' [-Werror=implicit-function-declaration]:  => 226:2
+  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1639:13, 1756:13
+  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1662:29, 1674:29
+  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1767:21
+  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1726:29, 1741:29
+  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int,  long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1711:29, 1694:29
+  + /kisskb/src/arch/um/include/asm/processor-generic.h: error: called object is not a function or function pointer:  => 103:18
+  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
+  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment makes pointer from integer without a cast [-Werror=int-conversion]:  => 317:9, 324:9
+  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_map' [-Werror=implicit-function-declaration]:  => 317:11
+  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_unmap' [-Werror=implicit-function-declaration]:  => 338:15
+  + /kisskb/src/net/netfilter/xt_socket.c: error: implicit declaration of function 'nf_defrag_ipv6_disable'; did you mean 'nf_defrag_ipv4_disable'? [-Werror=implicit-function-declaration]:  => 224:3
+  + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common' defined in .text section in arch/powerpc/kernel/head_64.o:  => (.text+0x3ec)
+  + error: omap-gpmc.c: undefined reference to `of_platform_device_create':  => .text.unlikely+0x1628), .text.unlikely+0x14c4)
+
+2 error improvements:
+  - /kisskb/src/drivers/mtd/nand/raw/mpc5121_nfc.c: error: unused variable 'mtd' [-Werror=unused-variable]: 294:19 => 
+  - /kisskb/src/drivers/video/fbdev/riva/fbdev.c: error: passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type [-Werror=discarded-qualifiers]: 2095:11, 2062:11 => 
+
+
+*** WARNINGS ***
+
+24 warning regressions:
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14410): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14428): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14440): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14458): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14470): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14488): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x144a0): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x144f0): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14508): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14520): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14538): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14550): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14568): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14580): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x14598): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4790): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47a8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47c0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47d8): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x47f0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4808): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4820): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000:  => N/A
+  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x4534): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
+  + warning: unmet direct dependencies detected for OMAP_GPMC:  => N/A
+
+25 warning improvements:
+  - arch/m68k/configs/multi_defconfig: warning: symbol value 'm' invalid for MCTP: 322 => 
+  - arch/m68k/configs/sun3_defconfig: warning: symbol value 'm' invalid for MCTP: 295 => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x136d0): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x136e8): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13700): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13718): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13730): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13748): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13760): Section mismatch in reference from the variable qed_mfw_legacy_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x137b0): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x137c8): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x137e0): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x137f8): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13810): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13828): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13840): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qed/qed.o(.data+0x13858): Section mismatch in reference from the variable qed_mfw_ext_maps to the variable .init.rodata:qed_mfw_legacy_bb_100g: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4610): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4628): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4640): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4658): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4670): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x4688): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: drivers/net/ethernet/qlogic/qede/qede.o(.data+0x46a0): Section mismatch in reference from the variable qede_forced_speed_maps to the variable .init.rodata:qede_forced_speed_100000: N/A => 
+  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45e4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
