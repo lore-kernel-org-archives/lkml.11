@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B915DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87082C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345843AbiBUIx7 (ORCPT
+        id S1345861AbiBUIyF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:53:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46994 "EHLO
+        Mon, 21 Feb 2022 03:54:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345599AbiBUIxC (ORCPT
+        with ESMTP id S1345176AbiBUIxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:53:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63A417069;
-        Mon, 21 Feb 2022 00:52:39 -0800 (PST)
+        Mon, 21 Feb 2022 03:53:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF2B140E9;
+        Mon, 21 Feb 2022 00:52:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8202361133;
-        Mon, 21 Feb 2022 08:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBC2C340E9;
-        Mon, 21 Feb 2022 08:52:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01DFDB80EB1;
+        Mon, 21 Feb 2022 08:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35DEEC340E9;
+        Mon, 21 Feb 2022 08:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433558;
-        bh=lxCchzryuMtVgvfH1Q92K/i4dkv4KmcSp/CCgAaGACQ=;
+        s=korg; t=1645433561;
+        bh=PL+85GFZzWd3G9uSX02dxj6cDoZ3GyVAS76x3H2RLoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JHFdu6wg1JLU9HX3PMOXhQxwKkY0MtCQAvTd1P+J0ZyFz8uC88yqQZO6R2Q73ynaa
-         VCdJmuizK/AJDPsU9Zg9WINH3aoGykHFhFHveocR7I/UGv9v80s+MmaHltEw2hxjsT
-         VpKgBhuhbOsuOVRiaEdayketu5hFLRJOqIbtu3zA=
+        b=lql9rL20aRGAEmYqaKr1R71bv+9/gOqvAy292QXBrZ/MDbcfnqqvHoyYYemB8FX1i
+         MiIyxrBDxp+n10MmZmG2/7UcMbc9LnnU/ctRgw7BmBmV8f7zf/aIvj15uRfiTiHwdS
+         /we69GMmJB/2C+CPabn/MsFfeizrOI6wQm03IDoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.9 24/33] ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw()
-Date:   Mon, 21 Feb 2022 09:49:17 +0100
-Message-Id: <20220221084909.552259686@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 4.14 01/45] Makefile.extrawarn: Move -Wunaligned-access to W=1
+Date:   Mon, 21 Feb 2022 09:48:52 +0100
+Message-Id: <20220221084910.506090325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
-References: <20220221084908.568970525@linuxfoundation.org>
+In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
+References: <20220221084910.454824160@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,56 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 564778d7b1ea465f9487eedeece7527a033549c5 upstream.
+commit 1cf5f151d25fcca94689efd91afa0253621fb33a upstream.
 
-When writing out a stereo control we discard the change notification from
-the first channel, meaning that events are only generated based on changes
-to the second channel. Ensure that we report a change if either channel
-has changed.
+-Wunaligned-access is a new warning in clang that is default enabled for
+arm and arm64 under certain circumstances within the clang frontend (see
+LLVM commit below). On v5.17-rc2, an ARCH=arm allmodconfig build shows
+1284 total/70 unique instances of this warning (most of the instances
+are in header files), which is quite noisy.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
+To keep a normal build green through CONFIG_WERROR, only show this
+warning with W=1, which will allow automated build systems to catch new
+instances of the warning so that the total number can be driven down to
+zero eventually since catching unaligned accesses at compile time would
+be generally useful.
+
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220201155629.120510-2-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://github.com/llvm/llvm-project/commit/35737df4dcd28534bd3090157c224c19b501278a
+Link: https://github.com/ClangBuiltLinux/linux/issues/1569
+Link: https://github.com/ClangBuiltLinux/linux/issues/1576
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[nathan: Fix conflict due to lack of afe956c577b2d]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/soc/soc-ops.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -319,7 +319,7 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	unsigned int sign_bit = mc->sign_bit;
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
--	int err;
-+	int err, ret;
- 	bool type_2r = false;
- 	unsigned int val2 = 0;
- 	unsigned int val, val_mask;
-@@ -361,12 +361,18 @@ int snd_soc_put_volsw(struct snd_kcontro
- 	err = snd_soc_component_update_bits(component, reg, val_mask, val);
- 	if (err < 0)
- 		return err;
-+	ret = err;
- 
--	if (type_2r)
-+	if (type_2r) {
- 		err = snd_soc_component_update_bits(component, reg2, val_mask,
--			val2);
-+						    val2);
-+		/* Don't discard any error code or drop change flag */
-+		if (ret == 0 || err < 0) {
-+			ret = err;
-+		}
-+	}
- 
--	return err;
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(snd_soc_put_volsw);
- 
+---
+ scripts/Makefile.extrawarn |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -73,5 +73,6 @@ KBUILD_CFLAGS += $(call cc-disable-warni
+ KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
+ KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
++KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
+ endif
+ endif
 
 
