@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7058FC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51335C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351360AbiBUJhB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:37:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48082 "EHLO
+        id S243837AbiBUJiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:38:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349141AbiBUJ1f (ORCPT
+        with ESMTP id S1350047AbiBUJ3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:27:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C909913F12;
-        Mon, 21 Feb 2022 01:12:27 -0800 (PST)
+        Mon, 21 Feb 2022 04:29:05 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4D7240BE;
+        Mon, 21 Feb 2022 01:13:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6638560018;
-        Mon, 21 Feb 2022 09:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C370C340E9;
-        Mon, 21 Feb 2022 09:12:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89FC7CE0E88;
+        Mon, 21 Feb 2022 09:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C320C340E9;
+        Mon, 21 Feb 2022 09:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434746;
-        bh=lO9+SfRYxZy7LfpZ9kZoV+XdWXmb8YWDq3BsOi5WrkQ=;
+        s=korg; t=1645434778;
+        bh=E6A2kwIv4UUnoTr2Zs/vVy+OJVA/kcWOfEpF7UolTxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GInGNqsRouSkb4v2u6VrWdpcTGEqSQCBKIBReyktHbfl+ALi8P4NbzspzWo0DEhwW
-         s77tDg9ln3KgcpafrIQY3WmzVESqM0JrHHiy7fjPwktGrFigCZWQ2TXcUH+jID7/2n
-         0rrcvZv4QABtoZoQc5at7TM9jyZeYWKwr2QZcqdo=
+        b=tnAMl4drPcNIAhoAVaWo8K1LGMkMaqS1PT5iuumU1ALGudFjEEX9Eg0ew/GX3A8b7
+         CLQJuq1KsRm0i0YD2p4/wa3Uk8QDm1/bnG/UInAGCYDVFneNCL+oQef2jIDV9SqEuI
+         jiRuHG/76++JSy4fY/CGnW4uZrKEjbzL38EGgmfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Congyu Liu <liu3101@purdue.edu>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 084/196] ipv6: per-netns exclusive flowlabel checks
-Date:   Mon, 21 Feb 2022 09:48:36 +0100
-Message-Id: <20220221084933.742361302@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 128/196] ASoC: tas2770: Insert post reset delay
+Date:   Mon, 21 Feb 2022 09:49:20 +0100
+Message-Id: <20220221084935.222292473@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -50,98 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-commit 0b0dff5b3b98c5c7ce848151df9da0b3cdf0cc8b upstream.
+commit 307f31452078792aab94a729fce33200c6e42dc4 upstream.
 
-Ipv6 flowlabels historically require a reservation before use.
-Optionally in exclusive mode (e.g., user-private).
+Per TAS2770 datasheet there must be a 1 ms delay from reset to first
+command. So insert delays into the driver where appropriate.
 
-Commit 59c820b2317f ("ipv6: elide flowlabel check if no exclusive
-leases exist") introduced a fastpath that avoids this check when no
-exclusive leases exist in the system, and thus any flowlabel use
-will be granted.
-
-That allows skipping the control operation to reserve a flowlabel
-entirely. Though with a warning if the fast path fails:
-
-  This is an optimization. Robust applications still have to revert to
-  requesting leases if the fast path fails due to an exclusive lease.
-
-Still, this is subtle. Better isolate network namespaces from each
-other. Flowlabels are per-netns. Also record per-netns whether
-exclusive leases are in use. Then behavior does not change based on
-activity in other netns.
-
-Changes
-  v2
-    - wrap in IS_ENABLED(CONFIG_IPV6) to avoid breakage if disabled
-
-Fixes: 59c820b2317f ("ipv6: elide flowlabel check if no exclusive leases exist")
-Link: https://lore.kernel.org/netdev/MWHPR2201MB1072BCCCFCE779E4094837ACD0329@MWHPR2201MB1072.namprd22.prod.outlook.com/
-Reported-by: Congyu Liu <liu3101@purdue.edu>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Tested-by: Congyu Liu <liu3101@purdue.edu>
-Link: https://lore.kernel.org/r/20220215160037.1976072-1-willemdebruijn.kernel@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Link: https://lore.kernel.org/r/20220204095301.5554-1-povik+lin@cutebit.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ipv6.h       |    5 ++++-
- include/net/netns/ipv6.h |    3 ++-
- net/ipv6/ip6_flowlabel.c |    4 +++-
- 3 files changed, 9 insertions(+), 3 deletions(-)
+ sound/soc/codecs/tas2770.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -391,17 +391,20 @@ static inline void txopt_put(struct ipv6
- 		kfree_rcu(opt, rcu);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- struct ip6_flowlabel *__fl6_sock_lookup(struct sock *sk, __be32 label);
- 
- extern struct static_key_false_deferred ipv6_flowlabel_exclusive;
- static inline struct ip6_flowlabel *fl6_sock_lookup(struct sock *sk,
- 						    __be32 label)
- {
--	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key))
-+	if (static_branch_unlikely(&ipv6_flowlabel_exclusive.key) &&
-+	    READ_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl))
- 		return __fl6_sock_lookup(sk, label) ? : ERR_PTR(-ENOENT);
- 
- 	return NULL;
- }
-+#endif
- 
- struct ipv6_txoptions *fl6_merge_options(struct ipv6_txoptions *opt_space,
- 					 struct ip6_flowlabel *fl,
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -77,9 +77,10 @@ struct netns_ipv6 {
- 	spinlock_t		fib6_gc_lock;
- 	unsigned int		 ip6_rt_gc_expire;
- 	unsigned long		 ip6_rt_last_gc;
-+	unsigned char		flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
--	unsigned int		fib6_rules_require_fldissect;
- 	bool			fib6_has_custom_rules;
-+	unsigned int		fib6_rules_require_fldissect;
- #ifdef CONFIG_IPV6_SUBTREES
- 	unsigned int		fib6_routes_require_src;
- #endif
---- a/net/ipv6/ip6_flowlabel.c
-+++ b/net/ipv6/ip6_flowlabel.c
-@@ -450,8 +450,10 @@ fl_create(struct net *net, struct sock *
- 		err = -EINVAL;
- 		goto done;
+--- a/sound/soc/codecs/tas2770.c
++++ b/sound/soc/codecs/tas2770.c
+@@ -38,10 +38,12 @@ static void tas2770_reset(struct tas2770
+ 		gpiod_set_value_cansleep(tas2770->reset_gpio, 0);
+ 		msleep(20);
+ 		gpiod_set_value_cansleep(tas2770->reset_gpio, 1);
++		usleep_range(1000, 2000);
  	}
--	if (fl_shared_exclusive(fl) || fl->opt)
-+	if (fl_shared_exclusive(fl) || fl->opt) {
-+		WRITE_ONCE(sock_net(sk)->ipv6.flowlabel_has_excl, 1);
- 		static_branch_deferred_inc(&ipv6_flowlabel_exclusive);
-+	}
- 	return fl;
  
- done:
+ 	snd_soc_component_write(tas2770->component, TAS2770_SW_RST,
+ 		TAS2770_RST);
++	usleep_range(1000, 2000);
+ }
+ 
+ static int tas2770_set_bias_level(struct snd_soc_component *component,
+@@ -110,6 +112,7 @@ static int tas2770_codec_resume(struct s
+ 
+ 	if (tas2770->sdz_gpio) {
+ 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
++		usleep_range(1000, 2000);
+ 	} else {
+ 		ret = snd_soc_component_update_bits(component, TAS2770_PWR_CTRL,
+ 						    TAS2770_PWR_CTRL_MASK,
+@@ -510,8 +513,10 @@ static int tas2770_codec_probe(struct sn
+ 
+ 	tas2770->component = component;
+ 
+-	if (tas2770->sdz_gpio)
++	if (tas2770->sdz_gpio) {
+ 		gpiod_set_value_cansleep(tas2770->sdz_gpio, 1);
++		usleep_range(1000, 2000);
++	}
+ 
+ 	tas2770_reset(tas2770);
+ 
 
 
