@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE20C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237730AbiBUKE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:04:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36722 "EHLO
+        id S1344111AbiBUKFB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:05:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353519AbiBUJ5b (ORCPT
+        with ESMTP id S1353496AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:57:31 -0500
+        Mon, 21 Feb 2022 04:57:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1228FDF89;
-        Mon, 21 Feb 2022 01:26:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B190D396A4;
+        Mon, 21 Feb 2022 01:26:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A177C61016;
-        Mon, 21 Feb 2022 09:26:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E15C340E9;
-        Mon, 21 Feb 2022 09:26:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C4261018;
+        Mon, 21 Feb 2022 09:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91F1C340E9;
+        Mon, 21 Feb 2022 09:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435597;
-        bh=gTQ04QDOxJ+4r8PsB+BEiOsQwripN+5lfxt370p67Sg=;
+        s=korg; t=1645435577;
+        bh=fPzhcJUNc782pRynNz+kxubVhm6EiTsyUtZufSvYyDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0Q8o8uCGoK4yancxqRc3jeOLuOf+FRTf6Q1N9xIRHtZX11tJF9nz0hCYNjN033PO
-         dYSrnccdk4SXwBNeZ1vvHz3glRjlx0E+8Zh94u4KW4YuyOQH0xw5RPJKamLbXj1RkA
-         UYV33TuKt6zUtq6TRuYfFiSeSBdmIyV+vBtehCJ4=
+        b=v1HYqAg2mWPHlnq4JGRRASk1g0OgSAxyFTueQpf4SDa/NeRjLVZeOaw0jTtSpAgCP
+         +uCLt3BseLVV1/0Z78V3kCLNzAFDU19Uf4vwkjWYxJ4cxAHDV8dvYrgkJi6QQhVeAL
+         QnS2RYUqK1h4egK7PiTftb9/uxoC7WSAYHIJRrkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 187/227] scsi: qedi: Fix ABBA deadlock in qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp()
-Date:   Mon, 21 Feb 2022 09:50:06 +0100
-Message-Id: <20220221084941.030096409@linuxfoundation.org>
+        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 211/227] pidfd: fix test failure due to stack overflow on some arches
+Date:   Mon, 21 Feb 2022 09:50:30 +0100
+Message-Id: <20220221084941.838332896@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -52,67 +51,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Axel Rasmussen <axelrasmussen@google.com>
 
-commit f10f582d28220f50099d3f561116256267821429 upstream.
+[ Upstream commit 4cbd93c3c110447adc66cb67c08af21f939ae2d7 ]
 
-This fixes a deadlock added with commit b40f3894e39e ("scsi: qedi: Complete
-TMF works before disconnect")
+When running the pidfd_fdinfo_test on arm64, it fails for me. After some
+digging, the reason is that the child exits due to SIGBUS, because it
+overflows the 1024 byte stack we've reserved for it.
 
-Bug description from Jia-Ju Bai:
+To fix the issue, increase the stack size to 8192 bytes (this number is
+somewhat arbitrary, and was arrived at through experimentation -- I kept
+doubling until the failure no longer occurred).
 
-qedi_process_tmf_resp()
-  spin_lock(&session->back_lock); --> Line 201 (Lock A)
-  spin_lock(&qedi_conn->tmf_work_lock); --> Line 230 (Lock B)
+Also, let's make the issue easier to debug. wait_for_pid() returns an
+ambiguous value: it may return -1 in all of these cases:
 
-qedi_process_cmd_cleanup_resp()
-  spin_lock_bh(&qedi_conn->tmf_work_lock); --> Line 752 (Lock B)
-  spin_lock_bh(&conn->session->back_lock); --> Line 784 (Lock A)
+1. waitpid() itself returned -1
+2. waitpid() returned success, but we found !WIFEXITED(status).
+3. The child process exited, but it did so with a -1 exit code.
 
-When qedi_process_tmf_resp() and qedi_process_cmd_cleanup_resp() are
-concurrently executed, the deadlock can occur.
+There's no way for the caller to tell the difference. So, at least log
+which occurred, so the test runner can debug things.
 
-This patch fixes the deadlock by not holding the tmf_work_lock in
-qedi_process_cmd_cleanup_resp while holding the back_lock. The
-tmf_work_lock is only needed while we remove the tmf_work from the
-work_list.
+While debugging this, I found that we had !WIFEXITED(), because the
+child exited due to a signal. This seems like a reasonably common case,
+so also print out whether or not we have WIFSIGNALED(), and the
+associated WTERMSIG() (if any). This lets us see the SIGBUS I'm fixing
+clearly when it occurs.
 
-Link: https://lore.kernel.org/r/20220208185448.6206-1-michael.christie@oracle.com
-Fixes: b40f3894e39e ("scsi: qedi: Complete TMF works before disconnect")
-Cc: Manish Rangankar <mrangankar@marvell.com>
-Cc: Nilesh Javali <njavali@marvell.com>
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Reported-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Finally, I'm suspicious of allocating the child's stack on our stack.
+man clone(2) suggests that the correct way to do this is with mmap(),
+and in particular by setting MAP_STACK. So, switch to doing it that way
+instead.
+
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qedi/qedi_fw.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/testing/selftests/pidfd/pidfd.h         | 13 ++++++++---
+ .../selftests/pidfd/pidfd_fdinfo_test.c       | 22 +++++++++++++++----
+ 2 files changed, 28 insertions(+), 7 deletions(-)
 
---- a/drivers/scsi/qedi/qedi_fw.c
-+++ b/drivers/scsi/qedi/qedi_fw.c
-@@ -771,11 +771,10 @@ static void qedi_process_cmd_cleanup_res
- 			qedi_cmd->list_tmf_work = NULL;
- 		}
+diff --git a/tools/testing/selftests/pidfd/pidfd.h b/tools/testing/selftests/pidfd/pidfd.h
+index 01f8d3c0cf2cb..6922d6417e1cf 100644
+--- a/tools/testing/selftests/pidfd/pidfd.h
++++ b/tools/testing/selftests/pidfd/pidfd.h
+@@ -68,7 +68,7 @@
+ #define PIDFD_SKIP 3
+ #define PIDFD_XFAIL 4
+ 
+-int wait_for_pid(pid_t pid)
++static inline int wait_for_pid(pid_t pid)
+ {
+ 	int status, ret;
+ 
+@@ -78,13 +78,20 @@ int wait_for_pid(pid_t pid)
+ 		if (errno == EINTR)
+ 			goto again;
+ 
++		ksft_print_msg("waitpid returned -1, errno=%d\n", errno);
+ 		return -1;
  	}
-+	spin_unlock_bh(&qedi_conn->tmf_work_lock);
  
--	if (!found) {
--		spin_unlock_bh(&qedi_conn->tmf_work_lock);
-+	if (!found)
- 		goto check_cleanup_reqs;
--	}
+-	if (!WIFEXITED(status))
++	if (!WIFEXITED(status)) {
++		ksft_print_msg(
++		       "waitpid !WIFEXITED, WIFSIGNALED=%d, WTERMSIG=%d\n",
++		       WIFSIGNALED(status), WTERMSIG(status));
+ 		return -1;
++	}
  
- 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_SCSI_TM,
- 		  "TMF work, cqe->tid=0x%x, tmf flags=0x%x, cid=0x%x\n",
-@@ -806,7 +805,6 @@ static void qedi_process_cmd_cleanup_res
- 	qedi_cmd->state = CLEANUP_RECV;
- unlock:
- 	spin_unlock_bh(&conn->session->back_lock);
--	spin_unlock_bh(&qedi_conn->tmf_work_lock);
- 	wake_up_interruptible(&qedi_conn->wait_queue);
- 	return;
+-	return WEXITSTATUS(status);
++	ret = WEXITSTATUS(status);
++	ksft_print_msg("waitpid WEXITSTATUS=%d\n", ret);
++	return ret;
+ }
  
+ static inline int sys_pidfd_open(pid_t pid, unsigned int flags)
+diff --git a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
+index 22558524f71c3..3fd8e903118f5 100644
+--- a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
++++ b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
+@@ -12,6 +12,7 @@
+ #include <string.h>
+ #include <syscall.h>
+ #include <sys/wait.h>
++#include <sys/mman.h>
+ 
+ #include "pidfd.h"
+ #include "../kselftest.h"
+@@ -80,7 +81,10 @@ static inline int error_check(struct error *err, const char *test_name)
+ 	return err->code;
+ }
+ 
++#define CHILD_STACK_SIZE 8192
++
+ struct child {
++	char *stack;
+ 	pid_t pid;
+ 	int   fd;
+ };
+@@ -89,17 +93,22 @@ static struct child clone_newns(int (*fn)(void *), void *args,
+ 				struct error *err)
+ {
+ 	static int flags = CLONE_PIDFD | CLONE_NEWPID | CLONE_NEWNS | SIGCHLD;
+-	size_t stack_size = 1024;
+-	char *stack[1024] = { 0 };
+ 	struct child ret;
+ 
+ 	if (!(flags & CLONE_NEWUSER) && geteuid() != 0)
+ 		flags |= CLONE_NEWUSER;
+ 
++	ret.stack = mmap(NULL, CHILD_STACK_SIZE, PROT_READ | PROT_WRITE,
++			 MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
++	if (ret.stack == MAP_FAILED) {
++		error_set(err, -1, "mmap of stack failed (errno %d)", errno);
++		return ret;
++	}
++
+ #ifdef __ia64__
+-	ret.pid = __clone2(fn, stack, stack_size, flags, args, &ret.fd);
++	ret.pid = __clone2(fn, ret.stack, CHILD_STACK_SIZE, flags, args, &ret.fd);
+ #else
+-	ret.pid = clone(fn, stack + stack_size, flags, args, &ret.fd);
++	ret.pid = clone(fn, ret.stack + CHILD_STACK_SIZE, flags, args, &ret.fd);
+ #endif
+ 
+ 	if (ret.pid < 0) {
+@@ -129,6 +138,11 @@ static inline int child_join(struct child *child, struct error *err)
+ 	else if (r > 0)
+ 		error_set(err, r, "child %d reported: %d", child->pid, r);
+ 
++	if (munmap(child->stack, CHILD_STACK_SIZE)) {
++		error_set(err, -1, "munmap of child stack failed (errno %d)", errno);
++		r = -1;
++	}
++
+ 	return r;
+ }
+ 
+-- 
+2.34.1
+
 
 
