@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88A8C35276
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4954EC352A7
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354752AbiBUJ6t (ORCPT
+        id S1354913AbiBUJ7F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:58:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42352 "EHLO
+        Mon, 21 Feb 2022 04:59:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352017AbiBUJq6 (ORCPT
+        with ESMTP id S1351839AbiBUJu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:46:58 -0500
+        Mon, 21 Feb 2022 04:50:57 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDE131207;
-        Mon, 21 Feb 2022 01:18:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373E53585D;
+        Mon, 21 Feb 2022 01:22:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A801BCE0E90;
-        Mon, 21 Feb 2022 09:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 871FCC340E9;
-        Mon, 21 Feb 2022 09:18:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A9752CE0E8B;
+        Mon, 21 Feb 2022 09:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C9DC340E9;
+        Mon, 21 Feb 2022 09:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435134;
-        bh=cCeCFh09Il9xAvv0HNxIb0KqsWpXXevhDhL7xNZNzAY=;
+        s=korg; t=1645435363;
+        bh=CR4l46/IqzhLQBb9TQNJLxDYZnoC4UCPekjfutuynBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IUYqCKYmnh+2BmfQG5UbAWPoiCBlvUJX810a+WcrZWlr72w2xnaMMRI3NidAAWdF2
-         WQHKhJIELgBlq0121iTHyMNtBHopRs7B96UNLWJOOXR+Z19CbbHXhKcZFEY0hT40lO
-         WPSx1uq9Ac7IgOsge0tEWYac0ZKqqzVaU/zDCGp4=
+        b=oNisao6eBaHJFLIiFuzjxRcRrkgDjaCzq0E64uzaNxKTXkLUEBJaUfqyE7Hx2Os0O
+         46Jl9f8gyOlhC5ybHYe2b/OXfjv5D9QyEiJ/LI/3M2XcyAU+MUq0CLdu0lXdTP/d6t
+         FXh/v0F99gEsoLqPNJyMIoohFHklYLmhuCjWCgpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 057/227] scsi: pm8001: Fix use-after-free for aborted SSP/STP sas_task
-Date:   Mon, 21 Feb 2022 09:47:56 +0100
-Message-Id: <20220221084936.775956553@linuxfoundation.org>
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 137/227] ALSA: memalloc: Fix dma_need_sync() checks
+Date:   Mon, 21 Feb 2022 09:49:16 +0100
+Message-Id: <20220221084939.401058573@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -53,67 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Garry <john.garry@huawei.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit df7abcaa1246e2537ab4016077b5443bb3c09378 ]
+commit 8e1741c658996a16bd096e077dae0da2460a997f upstream.
 
-Currently a use-after-free may occur if a sas_task is aborted by the upper
-layer before we handle the I/O completion in mpi_ssp_completion() or
-mpi_sata_completion().
+dma_need_sync() checks each DMA address.  Fix the incorrect usages
+for non-contiguous and non-coherent page allocations.
+Fortunately, there are no actual call sites that need manual syncs
+yet.
 
-In this case, the following are the two steps in handling those I/O
-completions:
-
- - Call complete() to inform the upper layer handler of completion of
-   the I/O.
-
- - Release driver resources associated with the sas_task in
-   pm8001_ccb_task_free() call.
-
-When complete() is called, the upper layer may free the sas_task. As such,
-we should not touch the associated sas_task afterwards, but we do so in the
-pm8001_ccb_task_free() call.
-
-Fix by swapping the complete() and pm8001_ccb_task_free() calls ordering.
-
-Link: https://lore.kernel.org/r/1643289172-165636-4-git-send-email-john.garry@huawei.com
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a25684a95646 ("ALSA: memalloc: Support for non-contiguous page allocation")
+Fixes: 73325f60e2ed ("ALSA: memalloc: Support for non-coherent page allocation")
+Cc: <stable@vger.kernel.org>
+Reported-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Link: https://lore.kernel.org/r/20220210123344.8756-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/core/memalloc.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 885bc9e71ff64..ca4820d99dc70 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -2184,9 +2184,9 @@ mpi_ssp_completion(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 		pm8001_dbg(pm8001_ha, FAIL,
- 			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
- 			   t, status, ts->resp, ts->stat);
-+		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
- 		if (t->slow_task)
- 			complete(&t->slow_task->completion);
--		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
- 	} else {
- 		spin_unlock_irqrestore(&t->task_state_lock, flags);
- 		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
-@@ -2801,9 +2801,9 @@ mpi_sata_completion(struct pm8001_hba_info *pm8001_ha,
- 		pm8001_dbg(pm8001_ha, FAIL,
- 			   "task 0x%p done with io_status 0x%x resp 0x%x stat 0x%x but aborted by upper layer!\n",
- 			   t, status, ts->resp, ts->stat);
-+		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
- 		if (t->slow_task)
- 			complete(&t->slow_task->completion);
--		pm8001_ccb_task_free(pm8001_ha, t, ccb, tag);
- 	} else {
- 		spin_unlock_irqrestore(&t->task_state_lock, flags);
- 		spin_unlock_irqrestore(&circularQ->oq_lock,
--- 
-2.34.1
-
+--- a/sound/core/memalloc.c
++++ b/sound/core/memalloc.c
+@@ -511,7 +511,8 @@ static void *snd_dma_noncontig_alloc(str
+ 				      DEFAULT_GFP, 0);
+ 	if (!sgt)
+ 		return NULL;
+-	dmab->dev.need_sync = dma_need_sync(dmab->dev.dev, dmab->dev.dir);
++	dmab->dev.need_sync = dma_need_sync(dmab->dev.dev,
++					    sg_dma_address(sgt->sgl));
+ 	p = dma_vmap_noncontiguous(dmab->dev.dev, size, sgt);
+ 	if (p)
+ 		dmab->private_data = sgt;
+@@ -625,9 +626,13 @@ static const struct snd_malloc_ops snd_d
+  */
+ static void *snd_dma_noncoherent_alloc(struct snd_dma_buffer *dmab, size_t size)
+ {
+-	dmab->dev.need_sync = dma_need_sync(dmab->dev.dev, dmab->dev.dir);
+-	return dma_alloc_noncoherent(dmab->dev.dev, size, &dmab->addr,
+-				     dmab->dev.dir, DEFAULT_GFP);
++	void *p;
++
++	p = dma_alloc_noncoherent(dmab->dev.dev, size, &dmab->addr,
++				  dmab->dev.dir, DEFAULT_GFP);
++	if (p)
++		dmab->dev.need_sync = dma_need_sync(dmab->dev.dev, dmab->addr);
++	return p;
+ }
+ 
+ static void snd_dma_noncoherent_free(struct snd_dma_buffer *dmab)
 
 
