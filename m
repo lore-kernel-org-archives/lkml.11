@@ -2,240 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1574AC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356171AbiBULUk (ORCPT
+        id S1356203AbiBULVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:20:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47982 "EHLO
+        Mon, 21 Feb 2022 06:21:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356167AbiBULTi (ORCPT
+        with ESMTP id S1356395AbiBULVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:19:38 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD6F13CF1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:07:17 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BED141EC0528;
-        Mon, 21 Feb 2022 12:07:11 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645441632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=ziuW27yYUNc9AJAsMDe/3C2eMM0Eh56w0WceWniYUEA=;
-        b=owbHnX+e9o6E6pdr17ZxfjAdsBCRDkz5nzPfLu1IV+Q6/FgkGBzC/l1EtmSAuXb6/OqFxE
-        FeIzrfOYiwEpB++IbcvPuUyfz2c0O0q59Gve2toifYktwkm6RAQO/lDk4X6p/IXa2HR1dO
-        wAt60tBOMB0WHhDZtNTydlPIvwtONfA=
-Date:   Mon, 21 Feb 2022 12:07:15 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
-        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
-        jpoimboe@redhat.com, kirill.shutemov@linux.intel.com,
-        knsathya@kernel.org, linux-kernel@vger.kernel.org, luto@kernel.org,
-        mingo@redhat.com, pbonzini@redhat.com, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
-        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org,
-        linux-hyperv@vger.kernel.org,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCHv3.1 2/32] x86/coco: Explicitly declare type of
- confidential computing platform
-Message-ID: <YhNyY5ErqQHZ961+@zn.tnic>
-References: <YhAWcPbzgUGcJZjI@zn.tnic>
- <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
+        Mon, 21 Feb 2022 06:21:06 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958292195
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:11:51 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id z22so28580167edd.1
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:11:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mZK3sq6aCOHjPE/wikruaHnKvlqiGOa64aJPVy9I1wc=;
+        b=qV8+5WSPKScehLKtlkkkCIXQYywQ3YFx/N/gs5DkozC+Euq35Yxjydk1dU/ABDn18t
+         9Y6t+u2sNVo6gasjPHp+8r2VlqZAybV0kVF+ABBbG1qb+oOT93BH4fg7dl/mh7eQTjey
+         8ovdEUMqE4pnjXV+r89bY+vgajbp7hhnD+cAA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mZK3sq6aCOHjPE/wikruaHnKvlqiGOa64aJPVy9I1wc=;
+        b=X/vcqWtrE6pQ4ZPszSRKCAE/C0W8J0xK/yPsKlNmnnRtVkXLnmgzcol/kVfpUdL1Wy
+         6APTcnPlegpy5VOC35poAQbxEtX1z2twUFxFhRMFuO4szmURze/kWvuot4/X8+tOXbmO
+         /E1oO5GiPqA827+1hns84wyIBpxPnt6W1KcJ96LAnGUQlU+X/+8yQLQHDLRWc9gAeHFg
+         HCIwhGZAx+Wq9l7RCRvsOn1QqDbOEyIzg4Ak1Q+0chUn+dJnNps8h+CjL0xCQ5gjQds/
+         CihpBnvgrVMWhKusBP823s0MR51bUdZCeNfxGpigWz93GBQOcqDr94PXws4MzegCxjKz
+         xmfQ==
+X-Gm-Message-State: AOAM532WUF7cpj9CWwrGS0vCIszIrM4f56A9M5yxsz+KF+z8j8jsiAg9
+        eTPU7xv5KrHB7BRvorc5XCqadg==
+X-Google-Smtp-Source: ABdhPJxJzcjLPzJzGYO9f0nhLLry7CASSgSeVyxigW4CfvIOhfF9RUUR+7eq3ZIvVTYPfwQocOekqw==
+X-Received: by 2002:a05:6402:d08:b0:412:a33e:24fe with SMTP id eb8-20020a0564020d0800b00412a33e24femr21029638edb.281.1645441910177;
+        Mon, 21 Feb 2022 03:11:50 -0800 (PST)
+Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
+        by smtp.gmail.com with ESMTPSA id ay16sm2462214ejb.61.2022.02.21.03.11.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 03:11:49 -0800 (PST)
+Date:   Mon, 21 Feb 2022 12:11:47 +0100
+From:   Miklos Szeredi <miklos@szeredi.hu>
+To:     Alois Wohlschlager <alois1@gmx-topmail.de>
+Cc:     linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ovl: warn if trusted xattr creation fails
+Message-ID: <YhNzc/++SHzdMXyt@miu.piliscsaba.redhat.com>
+References: <2783448.iqOl4yHqVZ@genesis>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220219001305.22883-1-kirill.shutemov@linux.intel.com>
+In-Reply-To: <2783448.iqOl4yHqVZ@genesis>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 03:13:04AM +0300, Kirill A. Shutemov wrote:
-> Kernel derives type of confidential computing platform from sme_me_mask
-> value and hv_is_isolation_supported(). This detection process will be
-> more complicated as more platforms get added.
+On Thu, Feb 03, 2022 at 12:02:46PM +0100, Alois Wohlschlager wrote:
+> When mounting overlayfs in an unprivileged user namespace, trusted xattr
+> creation will fail. This will lead to failures in some file operations,
+> e.g. in the following situation:
 > 
-> Declare confidential computing vendor explicitly via cc_init().
+>   mkdir lower upper work merged
+>   mkdir lower/directory
+>   mount -toverlay -olowerdir=lower,upperdir=upper,workdir=work none merged
+>   rmdir merged/directory
+>   mkdir merged/directory
 > 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> ---
->  arch/x86/include/asm/coco.h        | 16 ++++++++++++++++
->  arch/x86/kernel/cc_platform.c      | 29 +++++++++++++++++------------
->  arch/x86/kernel/cpu/mshyperv.c     |  3 +++
->  arch/x86/mm/mem_encrypt_identity.c |  8 +++++---
->  4 files changed, 41 insertions(+), 15 deletions(-)
->  create mode 100644 arch/x86/include/asm/coco.h
+> The last mkdir will fail:
 > 
-> diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
-> new file mode 100644
-> index 000000000000..6e770e0dd683
-> --- /dev/null
-> +++ b/arch/x86/include/asm/coco.h
-> @@ -0,0 +1,16 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_X86_COCO_H
-> +#define _ASM_X86_COCO_H
-> +
-> +#include <asm/pgtable_types.h>
-> +
-> +enum cc_vendor {
-> +	CC_VENDOR_NONE,
-> +	CC_VENDOR_AMD,
-> +	CC_VENDOR_HYPERV,
-> +	CC_VENDOR_INTEL,
-> +};
-> +
-> +void cc_init(enum cc_vendor);
-> +
-> +#endif /* _ASM_X86_COCO_H */
-> diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-> index 6a6ffcd978f6..891d3074a16e 100644
-> --- a/arch/x86/kernel/cc_platform.c
-> +++ b/arch/x86/kernel/cc_platform.c
-> @@ -9,18 +9,15 @@
->  
->  #include <linux/export.h>
->  #include <linux/cc_platform.h>
-> -#include <linux/mem_encrypt.h>
->  
-> -#include <asm/mshyperv.h>
-> +#include <asm/coco.h>
->  #include <asm/processor.h>
->  
-> -static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
-> +static enum cc_vendor cc_vendor;
+>   mkdir: cannot create directory 'merged/directory': Input/output error
+> 
+> The cause for these failures is currently extremely non-obvious and hard
+> to debug. Hence, warn the user and suggest using the userxattr mount
+> option, if it is not already supplied and xattr creation fails during
+> the self-check.
 
-static enum cc_vendor vendor __ro_after_init;
+Thanks for the patch.
 
-> +
-> +static bool intel_cc_platform_has(enum cc_attr attr)
->  {
-> -#ifdef CONFIG_INTEL_TDX_GUEST
-> -	return false;
-> -#else
->  	return false;
-> -#endif
->  }
->  
->  /*
-> @@ -74,12 +71,20 @@ static bool hyperv_cc_platform_has(enum cc_attr attr)
->  
->  bool cc_platform_has(enum cc_attr attr)
->  {
-> -	if (sme_me_mask)
-> +	switch (cc_vendor) {
-> +	case CC_VENDOR_AMD:
->  		return amd_cc_platform_has(attr);
-> -
-> -	if (hv_is_isolation_supported())
-> +	case CC_VENDOR_INTEL:
-> +		return intel_cc_platform_has(attr);
-> +	case CC_VENDOR_HYPERV:
->  		return hyperv_cc_platform_has(attr);
-> -
-> -	return false;
-> +	default:
-> +		return false;
-> +	}
->  }
->  EXPORT_SYMBOL_GPL(cc_platform_has);
-> +
-> +__init void cc_init(enum cc_vendor vendor)
-> +{
-> +	cc_vendor = vendor;
-> +}
-> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-> index 5a99f993e639..d77cf3a31f07 100644
-> --- a/arch/x86/kernel/cpu/mshyperv.c
-> +++ b/arch/x86/kernel/cpu/mshyperv.c
-> @@ -33,6 +33,7 @@
->  #include <asm/nmi.h>
->  #include <clocksource/hyperv_timer.h>
->  #include <asm/numa.h>
-> +#include <asm/coco.h>
->  
->  /* Is Linux running as the root partition? */
->  bool hv_root_partition;
-> @@ -344,6 +345,8 @@ static void __init ms_hyperv_init_platform(void)
->  		 */
->  		swiotlb_force = SWIOTLB_FORCE;
->  #endif
-> +		if (hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE)
-> +			cc_init(CC_VENDOR_HYPERV);
+How about the following (untested) variant?
 
-Isn't that supposed to test HV_ISOLATION_TYPE_SNP instead?
+Thanks,
+Miklos
 
-I mean, I have no clue what HV_ISOLATION_TYPE_VBS is. It is not used
-anywhere in the tree either.
 
-a6c76bb08dc7 ("x86/hyperv: Load/save the Isolation Configuration leaf")
-calls it "'VBS' (software-based isolation)" - whatever that means - so
-I'm not sure that is going to need the cc-facilities.
-
-For stuff like that you need to use get_maintainers.pl and Cc them
-folks:
-
-$ git log -p -1 | ./scripts/get_maintainer.pl | grep -i hyper
-"K. Y. Srinivasan" <kys@microsoft.com> (supporter:Hyper-V/Azure CORE AND DRIVERS)
-Haiyang Zhang <haiyangz@microsoft.com> (supporter:Hyper-V/Azure CORE AND DRIVERS)
-Stephen Hemminger <sthemmin@microsoft.com> (supporter:Hyper-V/Azure CORE AND DRIVERS)
-Wei Liu <wei.liu@kernel.org> (supporter:Hyper-V/Azure CORE AND DRIVERS,commit_signer:1/4=25%)
-Dexuan Cui <decui@microsoft.com> (supporter:Hyper-V/Azure CORE AND DRIVERS)
-linux-hyperv@vger.kernel.org (open list:Hyper-V/Azure CORE AND DRIVERS)
-
-/me adds the ML to Cc.
-
->  	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
-> diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
-> index 3f0abb403340..eb7fbd85b77e 100644
-> --- a/arch/x86/mm/mem_encrypt_identity.c
-> +++ b/arch/x86/mm/mem_encrypt_identity.c
-> @@ -44,6 +44,7 @@
->  #include <asm/setup.h>
->  #include <asm/sections.h>
->  #include <asm/cmdline.h>
-> +#include <asm/coco.h>
->  
->  #include "mm_internal.h"
->  
-> @@ -565,8 +566,7 @@ void __init sme_enable(struct boot_params *bp)
->  	} else {
->  		/* SEV state cannot be controlled by a command line option */
->  		sme_me_mask = me_mask;
-> -		physical_mask &= ~sme_me_mask;
-> -		return;
-> +		goto out;
->  	}
->  
->  	/*
-> @@ -600,6 +600,8 @@ void __init sme_enable(struct boot_params *bp)
->  		sme_me_mask = 0;
->  	else
->  		sme_me_mask = active_by_default ? me_mask : 0;
-> -
-> +out:
->  	physical_mask &= ~sme_me_mask;
-> +	if (sme_me_mask)
-> +		cc_init(CC_VENDOR_AMD);
->  }
-
-I guess.
-
-Adding SEV folks to Cc too.
-
-Please use get_maintainer.pl - you should know that - you're not some
-newbie who started doing kernel work two weeks ago.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
+index 7bb0a47cb615..955aeefc3b29 100644
+--- a/fs/overlayfs/super.c
++++ b/fs/overlayfs/super.c
+@@ -1413,11 +1413,12 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
+ 	 */
+ 	err = ovl_do_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
+ 	if (err) {
++		pr_warn("failed to set xattr on upper\n");
+ 		ofs->noxattr = true;
+ 		if (ofs->config.index || ofs->config.metacopy) {
+ 			ofs->config.index = false;
+ 			ofs->config.metacopy = false;
+-			pr_warn("upper fs does not support xattr, falling back to index=off,metacopy=off.\n");
++			pr_warn("...falling back to index=off,metacopy=off.\n");
+ 		}
+ 		/*
+ 		 * xattr support is required for persistent st_ino.
+@@ -1425,8 +1426,10 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
+ 		 */
+ 		if (ofs->config.xino == OVL_XINO_AUTO) {
+ 			ofs->config.xino = OVL_XINO_OFF;
+-			pr_warn("upper fs does not support xattr, falling back to xino=off.\n");
++			pr_warn("...falling back to xino=off.\n");
+ 		}
++		if (err == -EPERM && !ofs->config.userxattr)
++			pr_info("try mounting with 'userxattr' option\n");
+ 		err = 0;
+ 	} else {
+ 		ovl_do_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
