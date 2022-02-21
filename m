@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED2BC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4EBC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353389AbiBUJ5Z (ORCPT
+        id S1353594AbiBUJ5f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:57:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41642 "EHLO
+        Mon, 21 Feb 2022 04:57:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352780AbiBUJry (ORCPT
+        with ESMTP id S1350932AbiBUJsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:54 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833143EE6;
-        Mon, 21 Feb 2022 01:20:27 -0800 (PST)
+        Mon, 21 Feb 2022 04:48:35 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3FD31903;
+        Mon, 21 Feb 2022 01:22:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7ABE8CE0E7A;
-        Mon, 21 Feb 2022 09:20:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62F43C340E9;
-        Mon, 21 Feb 2022 09:20:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C9574CE0E9F;
+        Mon, 21 Feb 2022 09:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF8D5C340EB;
+        Mon, 21 Feb 2022 09:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435224;
-        bh=el3CFeUVm30INR3zTOAQtFL7itAtHKIRWEsTcnAERWQ=;
+        s=korg; t=1645435346;
+        bh=VLLiuLRtlIOdNKwOXTrIBHRlol07DVdf54qswhdIWCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TLjISFWsjppRHtwmMFuwCOIhFwebjlPPtYC47g1Zy7+UlVHdwXCUZKjK2zyYHdVST
-         ZYZN2fmHllIFZ1LouydBTQyN3fIuXUkZCwLPecsF2e2rOK+ZXeBFEPi0xa8uoeS+XW
-         90qtzzHSeNuO2FmgnpGRt+rdh+gw2fpoLWGOD2/E=
+        b=0/JB8SDqupbHfWr1PgwXJVaAfOYLJ4CY5NghQwn6pFdBoTi9XmlenN52XvMIBRCYX
+         cTu4k4FOAgZbWXSwlu+/I5vSUyvO6hw29f/bD4gECGIVwkax6S97x8sYtbMftf85X/
+         nhhzc/7n2NF0b2cXZoAzV/c0HigjCdrhg1rJr9Z0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Subject: [PATCH 5.16 089/227] drm/cma-helper: Set VM_DONTEXPAND for mmap
-Date:   Mon, 21 Feb 2022 09:48:28 +0100
-Message-Id: <20220221084937.836469644@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 131/227] net: bridge: multicast: notify switchdev driver whenever MC processing gets disabled
+Date:   Mon, 21 Feb 2022 09:49:10 +0100
+Message-Id: <20220221084939.208173805@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -50,43 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-commit 59f39bfa6553d598cb22f694d45e89547f420d85 upstream.
+commit c832962ac972082b3a1f89775c9d4274c8cb5670 upstream.
 
-drm_gem_cma_mmap() cannot assume every implementation of dma_mmap_wc()
-will end up calling remap_pfn_range() (which happens to set the relevant
-vma flag, among others), so in order to make sure expectations around
-VM_DONTEXPAND are met, let it explicitly set the flag like most other
-GEM mmap implementations do.
+Whenever bridge driver hits the max capacity of MDBs, it disables
+the MC processing (by setting corresponding bridge option), but never
+notifies switchdev about such change (the notifiers are called only upon
+explicit setting of this option, through the registered netlink interface).
 
-This avoids repeated warnings on a small minority of systems where the
-display is behind an IOMMU, and has a simple driver which does not
-override drm_gem_cma_default_funcs. Arm hdlcd is an in-tree affected
-driver. Out-of-tree, the Apple DCP driver is affected; this fix is
-required for DCP to be mainlined.
+This could lead to situation when Software MDB processing gets disabled,
+but this event never gets offloaded to the underlying Hardware.
 
-[Alyssa: Update commit message.]
+Fix this by adding a notify message in such case.
 
-Fixes: c40069cb7bd6 ("drm: add mmap() to drm_gem_object_funcs")
-Acked-by: Daniel Vetter <daniel@ffwll.ch>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211013143654.39031-1-alyssa@rosenzweig.io
+Fixes: 147c1e9b902c ("switchdev: bridge: Offload multicast disabled")
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Link: https://lore.kernel.org/r/20220215165303.31908-1-oleksandr.mazur@plvision.eu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_gem_cma_helper.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/bridge/br_multicast.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/gpu/drm/drm_gem_cma_helper.c
-+++ b/drivers/gpu/drm/drm_gem_cma_helper.c
-@@ -518,6 +518,7 @@ int drm_gem_cma_mmap(struct drm_gem_obje
- 	 */
- 	vma->vm_pgoff -= drm_vma_node_start(&obj->vma_node);
- 	vma->vm_flags &= ~VM_PFNMAP;
-+	vma->vm_flags |= VM_DONTEXPAND;
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -82,6 +82,9 @@ static void br_multicast_find_del_pg(str
+ 				     struct net_bridge_port_group *pg);
+ static void __br_multicast_stop(struct net_bridge_mcast *brmctx);
  
- 	cma_obj = to_drm_gem_cma_obj(obj);
++static int br_mc_disabled_update(struct net_device *dev, bool value,
++				 struct netlink_ext_ack *extack);
++
+ static struct net_bridge_port_group *
+ br_sg_port_find(struct net_bridge *br,
+ 		struct net_bridge_port_group_sg_key *sg_p)
+@@ -1156,6 +1159,7 @@ struct net_bridge_mdb_entry *br_multicas
+ 		return mp;
  
+ 	if (atomic_read(&br->mdb_hash_tbl.nelems) >= br->hash_max) {
++		br_mc_disabled_update(br->dev, false, NULL);
+ 		br_opt_toggle(br, BROPT_MULTICAST_ENABLED, false);
+ 		return ERR_PTR(-E2BIG);
+ 	}
 
 
