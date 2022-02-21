@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45679C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB543C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350175AbiBUJ34 (ORCPT
+        id S1349954AbiBUJ37 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:29:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35898 "EHLO
+        Mon, 21 Feb 2022 04:29:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350143AbiBUJWJ (ORCPT
+        with ESMTP id S1348475AbiBUJUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:22:09 -0500
+        Mon, 21 Feb 2022 04:20:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FFD37A20;
-        Mon, 21 Feb 2022 01:09:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F5A340EF;
+        Mon, 21 Feb 2022 01:07:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3FEF608C4;
-        Mon, 21 Feb 2022 09:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8B6C340F3;
-        Mon, 21 Feb 2022 09:09:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27273612B1;
+        Mon, 21 Feb 2022 09:07:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C6B4C340F3;
+        Mon, 21 Feb 2022 09:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434572;
-        bh=EWsuIlTcArE+Xps1yV3xF9ljHTxz1hos6F3NJR6l/Mk=;
+        s=korg; t=1645434457;
+        bh=E7FOSdbTRTgamGUuWjaPs4cyaZmb3dvKjzdHiR8bK6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EurIU81w0ZpJua8hl9E1paG8/aEjUN6vdzMwoqeG99R1zFTvzkNSApt/3Aypuzzp8
-         NRzUDEb6dyBuTnhp5vxh5qwPPLuxA3Ftc9ujTHUKWYYxwV/FPp/UHgTFdshDLl9FBB
-         6tHn2DUbje8eJmqakP9zRbR9M+0+MePI1TWq+O24=
+        b=H0OaHbfasLcVUJubLWyhVPRDVyuTUkg/37E3g38JvRY8dLfSjGCta5RbWiMeKyTiB
+         kLesrsl7+VZzEXusO9DmOMhxJ3/XxUL1MUVhoYRhzENsGCUhJUMyrEXPhgAOq+msAD
+         E679EF8Em49FUNGTVX5UiZ3eK/oAjko0I+xp+z+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Woodhouse <dwmw@amazon.co.uk>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 055/196] KVM: x86/xen: Fix runstate updates to be atomic when preempting vCPU
-Date:   Mon, 21 Feb 2022 09:48:07 +0100
-Message-Id: <20220221084932.775744299@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 007/196] parisc: Show error if wrong 32/64-bit compiler is being used
+Date:   Mon, 21 Feb 2022 09:47:19 +0100
+Message-Id: <20220221084931.134577744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,211 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+From: Helge Deller <deller@gmx.de>
 
-commit fcb732d8f8cf6084f8480015ad41d25fb023a4dd upstream.
+commit b160628e9ebcdc85d0db9d7f423c26b3c7c179d0 upstream.
 
-There are circumstances whem kvm_xen_update_runstate_guest() should not
-sleep because it ends up being called from __schedule() when the vCPU
-is preempted:
+It happens quite often that people use the wrong compiler to build the
+kernel:
 
-[  222.830825]  kvm_xen_update_runstate_guest+0x24/0x100
-[  222.830878]  kvm_arch_vcpu_put+0x14c/0x200
-[  222.830920]  kvm_sched_out+0x30/0x40
-[  222.830960]  __schedule+0x55c/0x9f0
+make ARCH=parisc   -> builds the 32-bit kernel
+make ARCH=parisc64 -> builds the 64-bit kernel
 
-To handle this, make it use the same trick as __kvm_xen_has_interrupt(),
-of using the hva from the gfn_to_hva_cache directly. Then it can use
-pagefault_disable() around the accesses and just bail out if the page
-is absent (which is unlikely).
+This patch adds a sanity check which errors out with an instruction how
+use the correct ARCH= option.
 
-I almost switched to using a gfn_to_pfn_cache here and bailing out if
-kvm_map_gfn() fails, like kvm_steal_time_set_preempted() does — but on
-closer inspection it looks like kvm_map_gfn() will *always* fail in
-atomic context for a page in IOMEM, which means it will silently fail
-to make the update every single time for such guests, AFAICT. So I
-didn't do it that way after all. And will probably fix that one too.
-
-Cc: stable@vger.kernel.org
-Fixes: 30b5c851af79 ("KVM: x86/xen: Add support for vCPU runstate information")
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
-Message-Id: <b17a93e5ff4561e57b1238e3e7ccd0b613eb827e.camel@infradead.org>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org # v5.15+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/xen.c |   97 ++++++++++++++++++++++++++++++++++++-----------------
- 1 file changed, 67 insertions(+), 30 deletions(-)
+ arch/parisc/include/asm/bitops.h |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/kvm/xen.c
-+++ b/arch/x86/kvm/xen.c
-@@ -93,32 +93,57 @@ static void kvm_xen_update_runstate(stru
- void kvm_xen_update_runstate_guest(struct kvm_vcpu *v, int state)
- {
- 	struct kvm_vcpu_xen *vx = &v->arch.xen;
-+	struct gfn_to_hva_cache *ghc = &vx->runstate_cache;
-+	struct kvm_memslots *slots = kvm_memslots(v->kvm);
-+	bool atomic = (state == RUNSTATE_runnable);
- 	uint64_t state_entry_time;
--	unsigned int offset;
-+	int __user *user_state;
-+	uint64_t __user *user_times;
+--- a/arch/parisc/include/asm/bitops.h
++++ b/arch/parisc/include/asm/bitops.h
+@@ -12,6 +12,14 @@
+ #include <asm/barrier.h>
+ #include <linux/atomic.h>
  
- 	kvm_xen_update_runstate(v, state);
- 
- 	if (!vx->runstate_set)
- 		return;
- 
--	BUILD_BUG_ON(sizeof(struct compat_vcpu_runstate_info) != 0x2c);
-+	if (unlikely(slots->generation != ghc->generation || kvm_is_error_hva(ghc->hva)) &&
-+	    kvm_gfn_to_hva_cache_init(v->kvm, ghc, ghc->gpa, ghc->len))
-+		return;
++/* compiler build environment sanity checks: */
++#if !defined(CONFIG_64BIT) && defined(__LP64__)
++#error "Please use 'ARCH=parisc' to build the 32-bit kernel."
++#endif
++#if defined(CONFIG_64BIT) && !defined(__LP64__)
++#error "Please use 'ARCH=parisc64' to build the 64-bit kernel."
++#endif
 +
-+	/* We made sure it fits in a single page */
-+	BUG_ON(!ghc->memslot);
-+
-+	if (atomic)
-+		pagefault_disable();
- 
--	offset = offsetof(struct compat_vcpu_runstate_info, state_entry_time);
--#ifdef CONFIG_X86_64
- 	/*
--	 * The only difference is alignment of uint64_t in 32-bit.
--	 * So the first field 'state' is accessed directly using
--	 * offsetof() (where its offset happens to be zero), while the
--	 * remaining fields which are all uint64_t, start at 'offset'
--	 * which we tweak here by adding 4.
-+	 * The only difference between 32-bit and 64-bit versions of the
-+	 * runstate struct us the alignment of uint64_t in 32-bit, which
-+	 * means that the 64-bit version has an additional 4 bytes of
-+	 * padding after the first field 'state'.
-+	 *
-+	 * So we use 'int __user *user_state' to point to the state field,
-+	 * and 'uint64_t __user *user_times' for runstate_entry_time. So
-+	 * the actual array of time[] in each state starts at user_times[1].
- 	 */
-+	BUILD_BUG_ON(offsetof(struct vcpu_runstate_info, state) != 0);
-+	BUILD_BUG_ON(offsetof(struct compat_vcpu_runstate_info, state) != 0);
-+	user_state = (int __user *)ghc->hva;
-+
-+	BUILD_BUG_ON(sizeof(struct compat_vcpu_runstate_info) != 0x2c);
-+
-+	user_times = (uint64_t __user *)(ghc->hva +
-+					 offsetof(struct compat_vcpu_runstate_info,
-+						  state_entry_time));
-+#ifdef CONFIG_X86_64
- 	BUILD_BUG_ON(offsetof(struct vcpu_runstate_info, state_entry_time) !=
- 		     offsetof(struct compat_vcpu_runstate_info, state_entry_time) + 4);
- 	BUILD_BUG_ON(offsetof(struct vcpu_runstate_info, time) !=
- 		     offsetof(struct compat_vcpu_runstate_info, time) + 4);
- 
- 	if (v->kvm->arch.xen.long_mode)
--		offset = offsetof(struct vcpu_runstate_info, state_entry_time);
-+		user_times = (uint64_t __user *)(ghc->hva +
-+						 offsetof(struct vcpu_runstate_info,
-+							  state_entry_time));
- #endif
- 	/*
- 	 * First write the updated state_entry_time at the appropriate
-@@ -132,10 +157,8 @@ void kvm_xen_update_runstate_guest(struc
- 	BUILD_BUG_ON(sizeof(((struct compat_vcpu_runstate_info *)0)->state_entry_time) !=
- 		     sizeof(state_entry_time));
- 
--	if (kvm_write_guest_offset_cached(v->kvm, &v->arch.xen.runstate_cache,
--					  &state_entry_time, offset,
--					  sizeof(state_entry_time)))
--		return;
-+	if (__put_user(state_entry_time, user_times))
-+		goto out;
- 	smp_wmb();
- 
- 	/*
-@@ -149,11 +172,8 @@ void kvm_xen_update_runstate_guest(struc
- 	BUILD_BUG_ON(sizeof(((struct compat_vcpu_runstate_info *)0)->state) !=
- 		     sizeof(vx->current_runstate));
- 
--	if (kvm_write_guest_offset_cached(v->kvm, &v->arch.xen.runstate_cache,
--					  &vx->current_runstate,
--					  offsetof(struct vcpu_runstate_info, state),
--					  sizeof(vx->current_runstate)))
--		return;
-+	if (__put_user(vx->current_runstate, user_state))
-+		goto out;
- 
- 	/*
- 	 * Write the actual runstate times immediately after the
-@@ -168,24 +188,23 @@ void kvm_xen_update_runstate_guest(struc
- 	BUILD_BUG_ON(sizeof(((struct vcpu_runstate_info *)0)->time) !=
- 		     sizeof(vx->runstate_times));
- 
--	if (kvm_write_guest_offset_cached(v->kvm, &v->arch.xen.runstate_cache,
--					  &vx->runstate_times[0],
--					  offset + sizeof(u64),
--					  sizeof(vx->runstate_times)))
--		return;
--
-+	if (__copy_to_user(user_times + 1, vx->runstate_times, sizeof(vx->runstate_times)))
-+		goto out;
- 	smp_wmb();
- 
- 	/*
- 	 * Finally, clear the XEN_RUNSTATE_UPDATE bit in the guest's
- 	 * runstate_entry_time field.
- 	 */
--
- 	state_entry_time &= ~XEN_RUNSTATE_UPDATE;
--	if (kvm_write_guest_offset_cached(v->kvm, &v->arch.xen.runstate_cache,
--					  &state_entry_time, offset,
--					  sizeof(state_entry_time)))
--		return;
-+	__put_user(state_entry_time, user_times);
-+	smp_wmb();
-+
-+ out:
-+	mark_page_dirty_in_slot(v->kvm, ghc->memslot, ghc->gpa >> PAGE_SHIFT);
-+
-+	if (atomic)
-+		pagefault_enable();
- }
- 
- int __kvm_xen_has_interrupt(struct kvm_vcpu *v)
-@@ -337,6 +356,12 @@ int kvm_xen_vcpu_set_attr(struct kvm_vcp
- 			break;
- 		}
- 
-+		/* It must fit within a single page */
-+		if ((data->u.gpa & ~PAGE_MASK) + sizeof(struct vcpu_info) > PAGE_SIZE) {
-+			r = -EINVAL;
-+			break;
-+		}
-+
- 		r = kvm_gfn_to_hva_cache_init(vcpu->kvm,
- 					      &vcpu->arch.xen.vcpu_info_cache,
- 					      data->u.gpa,
-@@ -354,6 +379,12 @@ int kvm_xen_vcpu_set_attr(struct kvm_vcp
- 			break;
- 		}
- 
-+		/* It must fit within a single page */
-+		if ((data->u.gpa & ~PAGE_MASK) + sizeof(struct pvclock_vcpu_time_info) > PAGE_SIZE) {
-+			r = -EINVAL;
-+			break;
-+		}
-+
- 		r = kvm_gfn_to_hva_cache_init(vcpu->kvm,
- 					      &vcpu->arch.xen.vcpu_time_info_cache,
- 					      data->u.gpa,
-@@ -375,6 +406,12 @@ int kvm_xen_vcpu_set_attr(struct kvm_vcp
- 			break;
- 		}
- 
-+		/* It must fit within a single page */
-+		if ((data->u.gpa & ~PAGE_MASK) + sizeof(struct vcpu_runstate_info) > PAGE_SIZE) {
-+			r = -EINVAL;
-+			break;
-+		}
-+
- 		r = kvm_gfn_to_hva_cache_init(vcpu->kvm,
- 					      &vcpu->arch.xen.runstate_cache,
- 					      data->u.gpa,
+ /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
+  * on use of volatile and __*_bit() (set/clear/change):
+  *	*_bit() want use of volatile.
 
 
