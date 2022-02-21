@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344111AbiBUKFB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:05:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57108 "EHLO
+        id S245126AbiBUKFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 05:05:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353496AbiBUJ53 (ORCPT
+        with ESMTP id S1353499AbiBUJ53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:57:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B190D396A4;
-        Mon, 21 Feb 2022 01:26:18 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3411DA43;
+        Mon, 21 Feb 2022 01:26:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C4261018;
-        Mon, 21 Feb 2022 09:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91F1C340E9;
-        Mon, 21 Feb 2022 09:26:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36883B80EB9;
+        Mon, 21 Feb 2022 09:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648EFC340E9;
+        Mon, 21 Feb 2022 09:26:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435577;
-        bh=fPzhcJUNc782pRynNz+kxubVhm6EiTsyUtZufSvYyDg=;
+        s=korg; t=1645435582;
+        bh=NlYiKCzMphCEljHl8byhWKGsGFsOAvjFrsw6xUZdgSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1HYqAg2mWPHlnq4JGRRASk1g0OgSAxyFTueQpf4SDa/NeRjLVZeOaw0jTtSpAgCP
-         +uCLt3BseLVV1/0Z78V3kCLNzAFDU19Uf4vwkjWYxJ4cxAHDV8dvYrgkJi6QQhVeAL
-         QnS2RYUqK1h4egK7PiTftb9/uxoC7WSAYHIJRrkU=
+        b=DTjbeO7u7bfkFWk0p1luxbIJD5KDZl08mh2ekwIxtBJSjm6aQhokeC5n+SnS1DsUM
+         o4YMmEjVmTIejcnOtCOWWAXZiZ+CZ3avWoEdpIsfgJ2qAJeaw6B0Dg1l6Yno9A3fC0
+         x25Uj7I2mwKSCiAtKkRDv45V9ycauXnJ6Kj6djbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 211/227] pidfd: fix test failure due to stack overflow on some arches
-Date:   Mon, 21 Feb 2022 09:50:30 +0100
-Message-Id: <20220221084941.838332896@linuxfoundation.org>
+        stable@vger.kernel.org, Shakeel Butt <shakeelb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 213/227] mm: io_uring: allow oom-killer from io_uring_setup
+Date:   Mon, 21 Feb 2022 09:50:32 +0100
+Message-Id: <20220221084941.900619489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
 References: <20220221084934.836145070@linuxfoundation.org>
@@ -51,146 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Rasmussen <axelrasmussen@google.com>
+From: Shakeel Butt <shakeelb@google.com>
 
-[ Upstream commit 4cbd93c3c110447adc66cb67c08af21f939ae2d7 ]
+[ Upstream commit 0a3f1e0beacf6cc8ae5f846b0641c1df476e83d6 ]
 
-When running the pidfd_fdinfo_test on arm64, it fails for me. After some
-digging, the reason is that the child exits due to SIGBUS, because it
-overflows the 1024 byte stack we've reserved for it.
+On an overcommitted system which is running multiple workloads of
+varying priorities, it is preferred to trigger an oom-killer to kill a
+low priority workload than to let the high priority workload receiving
+ENOMEMs. On our memory overcommitted systems, we are seeing a lot of
+ENOMEMs instead of oom-kills because io_uring_setup callchain is using
+__GFP_NORETRY gfp flag which avoids the oom-killer. Let's remove it and
+allow the oom-killer to kill a lower priority job.
 
-To fix the issue, increase the stack size to 8192 bytes (this number is
-somewhat arbitrary, and was arrived at through experimentation -- I kept
-doubling until the failure no longer occurred).
-
-Also, let's make the issue easier to debug. wait_for_pid() returns an
-ambiguous value: it may return -1 in all of these cases:
-
-1. waitpid() itself returned -1
-2. waitpid() returned success, but we found !WIFEXITED(status).
-3. The child process exited, but it did so with a -1 exit code.
-
-There's no way for the caller to tell the difference. So, at least log
-which occurred, so the test runner can debug things.
-
-While debugging this, I found that we had !WIFEXITED(), because the
-child exited due to a signal. This seems like a reasonably common case,
-so also print out whether or not we have WIFSIGNALED(), and the
-associated WTERMSIG() (if any). This lets us see the SIGBUS I'm fixing
-clearly when it occurs.
-
-Finally, I'm suspicious of allocating the child's stack on our stack.
-man clone(2) suggests that the correct way to do this is with mmap(),
-and in particular by setting MAP_STACK. So, switch to doing it that way
-instead.
-
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-Acked-by: Christian Brauner <brauner@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+Link: https://lore.kernel.org/r/20220125051736.2981459-1-shakeelb@google.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/pidfd/pidfd.h         | 13 ++++++++---
- .../selftests/pidfd/pidfd_fdinfo_test.c       | 22 +++++++++++++++----
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ fs/io_uring.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/pidfd/pidfd.h b/tools/testing/selftests/pidfd/pidfd.h
-index 01f8d3c0cf2cb..6922d6417e1cf 100644
---- a/tools/testing/selftests/pidfd/pidfd.h
-+++ b/tools/testing/selftests/pidfd/pidfd.h
-@@ -68,7 +68,7 @@
- #define PIDFD_SKIP 3
- #define PIDFD_XFAIL 4
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 698db7fb62e06..a92f276f21d9c 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8872,10 +8872,9 @@ static void io_mem_free(void *ptr)
  
--int wait_for_pid(pid_t pid)
-+static inline int wait_for_pid(pid_t pid)
+ static void *io_mem_alloc(size_t size)
  {
- 	int status, ret;
+-	gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN | __GFP_COMP |
+-				__GFP_NORETRY | __GFP_ACCOUNT;
++	gfp_t gfp = GFP_KERNEL_ACCOUNT | __GFP_ZERO | __GFP_NOWARN | __GFP_COMP;
  
-@@ -78,13 +78,20 @@ int wait_for_pid(pid_t pid)
- 		if (errno == EINTR)
- 			goto again;
- 
-+		ksft_print_msg("waitpid returned -1, errno=%d\n", errno);
- 		return -1;
- 	}
- 
--	if (!WIFEXITED(status))
-+	if (!WIFEXITED(status)) {
-+		ksft_print_msg(
-+		       "waitpid !WIFEXITED, WIFSIGNALED=%d, WTERMSIG=%d\n",
-+		       WIFSIGNALED(status), WTERMSIG(status));
- 		return -1;
-+	}
- 
--	return WEXITSTATUS(status);
-+	ret = WEXITSTATUS(status);
-+	ksft_print_msg("waitpid WEXITSTATUS=%d\n", ret);
-+	return ret;
+-	return (void *) __get_free_pages(gfp_flags, get_order(size));
++	return (void *) __get_free_pages(gfp, get_order(size));
  }
  
- static inline int sys_pidfd_open(pid_t pid, unsigned int flags)
-diff --git a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-index 22558524f71c3..3fd8e903118f5 100644
---- a/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-+++ b/tools/testing/selftests/pidfd/pidfd_fdinfo_test.c
-@@ -12,6 +12,7 @@
- #include <string.h>
- #include <syscall.h>
- #include <sys/wait.h>
-+#include <sys/mman.h>
- 
- #include "pidfd.h"
- #include "../kselftest.h"
-@@ -80,7 +81,10 @@ static inline int error_check(struct error *err, const char *test_name)
- 	return err->code;
- }
- 
-+#define CHILD_STACK_SIZE 8192
-+
- struct child {
-+	char *stack;
- 	pid_t pid;
- 	int   fd;
- };
-@@ -89,17 +93,22 @@ static struct child clone_newns(int (*fn)(void *), void *args,
- 				struct error *err)
- {
- 	static int flags = CLONE_PIDFD | CLONE_NEWPID | CLONE_NEWNS | SIGCHLD;
--	size_t stack_size = 1024;
--	char *stack[1024] = { 0 };
- 	struct child ret;
- 
- 	if (!(flags & CLONE_NEWUSER) && geteuid() != 0)
- 		flags |= CLONE_NEWUSER;
- 
-+	ret.stack = mmap(NULL, CHILD_STACK_SIZE, PROT_READ | PROT_WRITE,
-+			 MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
-+	if (ret.stack == MAP_FAILED) {
-+		error_set(err, -1, "mmap of stack failed (errno %d)", errno);
-+		return ret;
-+	}
-+
- #ifdef __ia64__
--	ret.pid = __clone2(fn, stack, stack_size, flags, args, &ret.fd);
-+	ret.pid = __clone2(fn, ret.stack, CHILD_STACK_SIZE, flags, args, &ret.fd);
- #else
--	ret.pid = clone(fn, stack + stack_size, flags, args, &ret.fd);
-+	ret.pid = clone(fn, ret.stack + CHILD_STACK_SIZE, flags, args, &ret.fd);
- #endif
- 
- 	if (ret.pid < 0) {
-@@ -129,6 +138,11 @@ static inline int child_join(struct child *child, struct error *err)
- 	else if (r > 0)
- 		error_set(err, r, "child %d reported: %d", child->pid, r);
- 
-+	if (munmap(child->stack, CHILD_STACK_SIZE)) {
-+		error_set(err, -1, "munmap of child stack failed (errno %d)", errno);
-+		r = -1;
-+	}
-+
- 	return r;
- }
- 
+ static unsigned long rings_size(unsigned sq_entries, unsigned cq_entries,
 -- 
 2.34.1
 
