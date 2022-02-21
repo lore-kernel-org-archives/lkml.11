@@ -2,230 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 164CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245064AbiBULzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:55:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51040 "EHLO
+        id S1357013AbiBULzp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 06:55:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356976AbiBULzB (ORCPT
+        with ESMTP id S1356977AbiBULzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:55:01 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667DA201B6
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:54:00 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id u1so26596855wrg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:54:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=c1lGEjQZO5Ck7pZjx7sWrafG9PHsL7fLHKREbwRpPTU=;
-        b=PHob5dcx3qGf9rtPkzufLzJiQAAzeNVba1OpI9VGNOjQFA2T+4SHT2s//2viN8s5AW
-         c5pPqsCeDnvQZO6smxl+n6Kblhx21dz0HNUspX1JQ05KLKMLR6H5xyg3CKknDxsteNBN
-         6vB7pnKOVlE8I5MBA/HeV/ATktnRv2TErEnSJE51/EmzWsMJ85MTJpNh3msIeawaJJZm
-         aX8t7UQ3wsD0ST9EkXc2ASCrg2mc3b9fTz83xL0CLfQi7E1Xh9BaOwYqLdby0x/vKaBB
-         c5SC7HpcYSmpbJOCvZCSadS/kpJuD2qS++WeSuYVbpJh3OzSAHh1Uz7q6VZP975Q+QTX
-         IyRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=c1lGEjQZO5Ck7pZjx7sWrafG9PHsL7fLHKREbwRpPTU=;
-        b=kU8ADB1HLnE7NRjPs1GSw0eJKH1GWQQ+1by1OywrB6acXcmyXeNgrYa+oJWq5PUvlT
-         BW5EEzQ+Gn2iM916kDYew3JXB0lL9gcbgnmO2zESUPPxalPibJgSV2RVeF1icUs5j2Te
-         T7aS6ZR7zpRItQVv+ZO/X2wwgAD8Q7ftjNKsRRwjh945qSRp+Kmb1rNYCUq17lq3tmdb
-         i/L1VQePqN9D45JGJN2AAG9gje9P8DoL4VzMXGNi/javxqDDcz24qTj9DqkzhvGximbm
-         Xq8Z5f5pjPoYgyaeXusnKYKY7/ZFB1K4XAETmLPU/vV8EOPlmYfZoEUmRwN1mgkA+ATf
-         GI+Q==
-X-Gm-Message-State: AOAM532fzMH0XGjS7GprNyNz26b0Ws/hpSR3ED4WVmO2gJue+D/sNbZn
-        sUYQkIiuBvMF424AFxS6n9lIPw==
-X-Google-Smtp-Source: ABdhPJxMgn4HOwiP0wCV2QrDZ4jST0qN+s/LnZugswmRGPq6cmDfbz+HneX2bUyrki+Qp5xkgOO1gg==
-X-Received: by 2002:adf:ce88:0:b0:1e3:1340:52f1 with SMTP id r8-20020adfce88000000b001e3134052f1mr14725050wrn.489.1645444438984;
-        Mon, 21 Feb 2022 03:53:58 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id k4-20020a05600c0b4400b0034a0cb4332csm7324345wmr.10.2022.02.21.03.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 03:53:58 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        jglauber@cavium.com
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] crypto: cavium: zip: register algorithm only if hardware is present
-Date:   Mon, 21 Feb 2022 11:52:34 +0000
-Message-Id: <20220221115234.2544665-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 21 Feb 2022 06:55:38 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082F14092
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 03:55:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645444515; x=1676980515;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xtEvAXlznXfq+n86L7vUawxXnTP/M/7+XuTruWUM/Fk=;
+  b=HX9mP2ZMcDZu54XNGf0dCIjOo65vA/Q6+ehQe6dmHMbI6V9EP4eEGvIP
+   HXB1RUFcldlkqWQZ2E40rZV9/fv/IzXSMY865bSj/jThSi2FwvBEb8j8A
+   K+FgJRjO59mUbdZMzIXUrRZur1mHFt9h+Z04QWDrxSkCCdj8vWEDXkvX/
+   yHGM+1ahgBIIIrwwsflykZcACdH6KMoOUFWYpdVIIJeyS7epQy2RhpBCT
+   i3LQxxWikLkL6OC/HRBJXyD1iD3HLOrgW5pa37l5DfQNmNUz+VA35pM2u
+   sR2TKXkTkiX+k9t0HzwB4xL1iFt6tquhmsFlyZwGJMObp2Y9t0LJ7+G4v
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="232115671"
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="232115671"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 03:55:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
+   d="scan'208";a="507612280"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 21 Feb 2022 03:55:14 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nM7Hd-0001Yc-HZ; Mon, 21 Feb 2022 11:55:13 +0000
+Date:   Mon, 21 Feb 2022 19:54:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arnd-playground:generic-get_user-prototype 3/3]
+ include/linux/uaccess.h:546:4: warning: variable 'v' set but not used
+Message-ID: <202202211934.btUGYgRN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On my renesas salavator-X, I saw some cavium driver failing crypto
-self-tests.
-But salvator does not have such hardware.
-This is due to cavium/zip driver registering algorithms even if hardware
-is not present.
-The solution is to move algorithm registration in the probe function.
-This permits also to simplify module init/exit by using
-module_pci_driver.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git generic-get_user-prototype
+head:   23cc2497095e8c0820d042f28c507aded31674c1
+commit: 23cc2497095e8c0820d042f28c507aded31674c1 [3/3] uaccess: add new generic get_user/put_user
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220221/202202211934.btUGYgRN-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/commit/?id=23cc2497095e8c0820d042f28c507aded31674c1
+        git remote add arnd-playground https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git
+        git fetch --no-tags arnd-playground generic-get_user-prototype
+        git checkout 23cc2497095e8c0820d042f28c507aded31674c1
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/sched/task.h:11,
+                    from include/linux/sched/signal.h:9,
+                    from include/linux/rcuwait.h:6,
+                    from include/linux/irq_work.h:6,
+                    from arch/x86/include/asm/nmi.h:5,
+                    from include/linux/nmi.h:212,
+                    from arch/x86/include/asm/mshyperv.h:6,
+                    from include/clocksource/hyperv_timer.h:18,
+                    from arch/x86/include/asm/vdso/gettimeofday.h:21,
+                    from include/vdso/datapage.h:137,
+                    from arch/x86/entry/vdso/vdso32/../../../../../lib/vdso/gettimeofday.c:5,
+                    from arch/x86/entry/vdso/vdso32/../vclock_gettime.c:15,
+                    from arch/x86/entry/vdso/vdso32/vclock_gettime.c:29:
+   include/linux/uaccess.h: In function 'raw_put_user_u64':
+>> include/linux/uaccess.h:546:4: warning: variable 'v' set but not used [-Wunused-but-set-variable]
+     546 |  } v;
+         |    ^
+   In file included from arch/x86/entry/vdso/vdso32/vclock_gettime.c:29:
+   arch/x86/entry/vdso/vdso32/../vclock_gettime.c: At top level:
+   arch/x86/entry/vdso/vdso32/../vclock_gettime.c:70:5: warning: no previous prototype for '__vdso_clock_gettime64' [-Wmissing-prototypes]
+      70 | int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/v +546 include/linux/uaccess.h
+
+   538	
+   539	#ifndef CONFIG_64BIT
+   540	static __always_inline int
+   541	raw_put_user_u64(u64 __user *to, u64 val, size_t size, bool check)
+   542	{
+   543		union {
+   544			u64 v64;
+   545			u32 v32[2];
+ > 546		} v;
+   547		int err;
+   548	
+   549		if (check) {
+   550			if (!access_ok(to, size))
+   551				return -EFAULT;
+   552			might_fault();
+   553		}
+   554		if (0)
+   555			goto out;
+   556	
+   557		__uaccess_begin_nospec();
+   558	
+   559		v.v64 = val;
+   560		err = 0;
+   561	#ifdef __put_user_asm_8
+   562		__put_user_asm_8(val, to, err, out);
+   563	#else
+   564		__put_user_asm_4(v.v32[0], (u32 __user*)to, err, out);
+   565		if (!err)
+   566			__put_user_asm_4(v.v32[1], (u32 __user*)to + 1, err, out);
+   567	#endif
+   568		__uaccess_end();
+   569		return err;
+   570	out:
+   571		__uaccess_end();
+   572		return -EFAULT;
+   573	}
+   574	#define raw_put_user_word(to, val, err, out)				\
+   575		__builtin_choose_expr(sizeof(*to) == 8,				\
+   576			raw_put_user_u64, raw_put_user_word)(to, val, err, out)
+   577	#endif
+   578	
+
 ---
-
-WARNING: this is boot tested only on salvator-X to be sure that the
-cavium/zip driver no longer registers algorithms.
-I do not have any cavium hardware unfortunatly.
-
- drivers/crypto/cavium/zip/zip_main.c | 83 ++++++++++++----------------
- 1 file changed, 35 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/crypto/cavium/zip/zip_main.c b/drivers/crypto/cavium/zip/zip_main.c
-index 812b4ac9afd6..dc5b7bf7e1fd 100644
---- a/drivers/crypto/cavium/zip/zip_main.c
-+++ b/drivers/crypto/cavium/zip/zip_main.c
-@@ -55,6 +55,11 @@ static const struct pci_device_id zip_id_table[] = {
- 	{ 0, }
- };
- 
-+static void zip_debugfs_init(void);
-+static void zip_debugfs_exit(void);
-+static int zip_register_compression_device(void);
-+static void zip_unregister_compression_device(void);
-+
- void zip_reg_write(u64 val, u64 __iomem *addr)
- {
- 	writeq(val, addr);
-@@ -235,6 +240,15 @@ static int zip_init_hw(struct zip_device *zip)
- 	return 0;
- }
- 
-+static void zip_reset(struct zip_device *zip)
-+{
-+	union zip_cmd_ctl cmd_ctl;
-+
-+	cmd_ctl.u_reg64 = 0x0ull;
-+	cmd_ctl.s.reset = 1;  /* Forces ZIP cores to do reset */
-+	zip_reg_write(cmd_ctl.u_reg64, (zip->reg_base + ZIP_CMD_CTL));
-+}
-+
- static int zip_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct device *dev = &pdev->dev;
-@@ -282,8 +296,21 @@ static int zip_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		goto err_release_regions;
- 
-+	/* Register with the Kernel Crypto Interface */
-+	err = zip_register_compression_device();
-+	if (err < 0) {
-+		zip_err("ZIP: Kernel Crypto Registration failed\n");
-+		goto err_register;
-+	}
-+
-+	/* comp-decomp statistics are handled with debugfs interface */
-+	zip_debugfs_init();
-+
- 	return 0;
- 
-+err_register:
-+	zip_reset(zip);
-+
- err_release_regions:
- 	if (zip->reg_base)
- 		iounmap(zip->reg_base);
-@@ -305,16 +332,17 @@ static int zip_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- static void zip_remove(struct pci_dev *pdev)
- {
- 	struct zip_device *zip = pci_get_drvdata(pdev);
--	union zip_cmd_ctl cmd_ctl;
- 	int q = 0;
- 
- 	if (!zip)
- 		return;
- 
-+	zip_debugfs_exit();
-+
-+	zip_unregister_compression_device();
-+
- 	if (zip->reg_base) {
--		cmd_ctl.u_reg64 = 0x0ull;
--		cmd_ctl.s.reset = 1;  /* Forces ZIP cores to do reset */
--		zip_reg_write(cmd_ctl.u_reg64, (zip->reg_base + ZIP_CMD_CTL));
-+		zip_reset(zip);
- 		iounmap(zip->reg_base);
- 	}
- 
-@@ -585,7 +613,7 @@ DEFINE_SHOW_ATTRIBUTE(zip_regs);
- /* Root directory for thunderx_zip debugfs entry */
- static struct dentry *zip_debugfs_root;
- 
--static void __init zip_debugfs_init(void)
-+static void zip_debugfs_init(void)
- {
- 	if (!debugfs_initialized())
- 		return;
-@@ -604,7 +632,7 @@ static void __init zip_debugfs_init(void)
- 
- }
- 
--static void __exit zip_debugfs_exit(void)
-+static void zip_debugfs_exit(void)
- {
- 	debugfs_remove_recursive(zip_debugfs_root);
- }
-@@ -615,48 +643,7 @@ static void __exit zip_debugfs_exit(void) { }
- #endif
- /* debugfs - end */
- 
--static int __init zip_init_module(void)
--{
--	int ret;
--
--	zip_msg("%s\n", DRV_NAME);
--
--	ret = pci_register_driver(&zip_driver);
--	if (ret < 0) {
--		zip_err("ZIP: pci_register_driver() failed\n");
--		return ret;
--	}
--
--	/* Register with the Kernel Crypto Interface */
--	ret = zip_register_compression_device();
--	if (ret < 0) {
--		zip_err("ZIP: Kernel Crypto Registration failed\n");
--		goto err_pci_unregister;
--	}
--
--	/* comp-decomp statistics are handled with debugfs interface */
--	zip_debugfs_init();
--
--	return ret;
--
--err_pci_unregister:
--	pci_unregister_driver(&zip_driver);
--	return ret;
--}
--
--static void __exit zip_cleanup_module(void)
--{
--	zip_debugfs_exit();
--
--	/* Unregister from the kernel crypto interface */
--	zip_unregister_compression_device();
--
--	/* Unregister this driver for pci zip devices */
--	pci_unregister_driver(&zip_driver);
--}
--
--module_init(zip_init_module);
--module_exit(zip_cleanup_module);
-+module_pci_driver(zip_driver);
- 
- MODULE_AUTHOR("Cavium Inc");
- MODULE_DESCRIPTION("Cavium Inc ThunderX ZIP Driver");
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
