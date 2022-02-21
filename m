@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD83C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346924AbiBUJEj (ORCPT
+        id S1347147AbiBUJEn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:04:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59650 "EHLO
+        Mon, 21 Feb 2022 04:04:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347321AbiBUJBP (ORCPT
+        with ESMTP id S1347315AbiBUJBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:01:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B03527CED;
-        Mon, 21 Feb 2022 00:56:18 -0800 (PST)
+        Mon, 21 Feb 2022 04:01:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FB627CEB;
+        Mon, 21 Feb 2022 00:56:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5684F611C4;
-        Mon, 21 Feb 2022 08:55:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C7BC340F1;
-        Mon, 21 Feb 2022 08:55:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9580BB80EB7;
+        Mon, 21 Feb 2022 08:56:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 966C0C340E9;
+        Mon, 21 Feb 2022 08:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433732;
-        bh=0x8uk8ogZkTiQRkXjDuzshmOMcA8a04iiSihN0Uu/A4=;
+        s=korg; t=1645433769;
+        bh=7q0BDtyRXVNalxa0DqT6OCIOkrN0gIrOxt75iA2zV+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rxcW3ioGgITJybH7lL7q5gMRfUp+J7626eGscxHb90shURn3K+6NCb491q1zEYu5q
-         3xeIIwA3ll7JXeGgZ3tf+GjINB2QLxPXFN8Om/lTyihIytZcYniWtwPgqMkygavOx4
-         go01vmsvHdGfjioyydqe7UkyDuZk8AUrlIl2VsPk=
+        b=LaTPXrNA1rrxzixDVfsS5Eri4fK6YAtj2pwSVtRKxR7X0zMJElLbElvubJhFtKFPk
+         zB85ctvh1tb9DCzdsiBVQdiSLuzKM1tCXOgnmHRglEYtrxnfkV902hk1LB05NIRGAh
+         QcEei8Ow9dKKeOO8Ub6KSeW/mH7ZI1xTL9VAlzPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 08/58] selftests/zram: Skip max_comp_streams interface on newer kernel
-Date:   Mon, 21 Feb 2022 09:49:01 +0100
-Message-Id: <20220221084912.155685491@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Theodore Tso <tytso@mit.edu>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 4.19 36/58] ext4: check for out-of-order index extents in ext4_valid_extent_entries()
+Date:   Mon, 21 Feb 2022 09:49:29 +0100
+Message-Id: <20220221084913.044238604@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
 References: <20220221084911.895146879@linuxfoundation.org>
@@ -50,75 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
+commit 8dd27fecede55e8a4e67eef2878040ecad0f0d33 upstream.
 
-Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
-has switched to per-cpu streams. Even kernel still keep this interface for
-some reasons, but writing to max_comp_stream doesn't take any effect. So
-skip it on newer kernel ie 4.7.
+After commit 5946d089379a ("ext4: check for overlapping extents in
+ext4_valid_extent_entries()"), we can check out the overlapping extent
+entry in leaf extent blocks. But the out-of-order extent entry in index
+extent blocks could also trigger bad things if the filesystem is
+inconsistent. So this patch add a check to figure out the out-of-order
+index extents and return error.
 
-The code that comparing kernel version is from xfstests testsuite ext4/053.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
+Link: https://lore.kernel.org/r/20210908120850.4012324-2-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ fs/ext4/extents.c |   21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 9e73a4fb9b0aa..2c1d1c567f854 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -20,6 +20,9 @@ dev_mounted=-1
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -390,9 +390,12 @@ static int ext4_valid_extent_idx(struct
  
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+kernel_version=`uname -r | cut -d'.' -f1,2`
-+kernel_major=${kernel_version%.*}
-+kernel_minor=${kernel_version#*.}
- 
- trap INT
- 
-@@ -34,6 +37,20 @@ check_prereqs()
- 	fi
- }
- 
-+kernel_gte()
-+{
-+	major=${1%.*}
-+	minor=${1#*.}
-+
-+	if [ $kernel_major -gt $major ]; then
-+		return 0
-+	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
- zram_cleanup()
+ static int ext4_valid_extent_entries(struct inode *inode,
+ 				struct ext4_extent_header *eh,
+-				int depth)
++				ext4_fsblk_t *pblk, int depth)
  {
- 	echo "zram cleanup"
-@@ -95,6 +112,13 @@ zram_max_streams()
- {
- 	echo "set max_comp_streams to zram device(s)"
- 
-+	kernel_gte 4.7
-+	if [ $? -eq 0 ]; then
-+		echo "The device attribute max_comp_streams was"\
-+		               "deprecated in 4.7"
-+		return 0
-+	fi
+ 	unsigned short entries;
++	ext4_lblk_t lblock = 0;
++	ext4_lblk_t prev = 0;
 +
- 	local i=0
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
--- 
-2.34.1
-
+ 	if (eh->eh_entries == 0)
+ 		return 1;
+ 
+@@ -403,32 +406,36 @@ static int ext4_valid_extent_entries(str
+ 		struct ext4_extent *ext = EXT_FIRST_EXTENT(eh);
+ 		struct ext4_super_block *es = EXT4_SB(inode->i_sb)->s_es;
+ 		ext4_fsblk_t pblock = 0;
+-		ext4_lblk_t lblock = 0;
+-		ext4_lblk_t prev = 0;
+-		int len = 0;
+ 		while (entries) {
+ 			if (!ext4_valid_extent(inode, ext))
+ 				return 0;
+ 
+ 			/* Check for overlapping extents */
+ 			lblock = le32_to_cpu(ext->ee_block);
+-			len = ext4_ext_get_actual_len(ext);
+ 			if ((lblock <= prev) && prev) {
+ 				pblock = ext4_ext_pblock(ext);
+ 				es->s_last_error_block = cpu_to_le64(pblock);
+ 				return 0;
+ 			}
++			prev = lblock + ext4_ext_get_actual_len(ext) - 1;
+ 			ext++;
+ 			entries--;
+-			prev = lblock + len - 1;
+ 		}
+ 	} else {
+ 		struct ext4_extent_idx *ext_idx = EXT_FIRST_INDEX(eh);
+ 		while (entries) {
+ 			if (!ext4_valid_extent_idx(inode, ext_idx))
+ 				return 0;
++
++			/* Check for overlapping index extents */
++			lblock = le32_to_cpu(ext_idx->ei_block);
++			if ((lblock <= prev) && prev) {
++				*pblk = ext4_idx_pblock(ext_idx);
++				return 0;
++			}
+ 			ext_idx++;
+ 			entries--;
++			prev = lblock;
+ 		}
+ 	}
+ 	return 1;
+@@ -462,7 +469,7 @@ static int __ext4_ext_check(const char *
+ 		error_msg = "invalid eh_entries";
+ 		goto corrupted;
+ 	}
+-	if (!ext4_valid_extent_entries(inode, eh, depth)) {
++	if (!ext4_valid_extent_entries(inode, eh, &pblk, depth)) {
+ 		error_msg = "invalid extent entries";
+ 		goto corrupted;
+ 	}
 
 
