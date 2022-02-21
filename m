@@ -2,89 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0467C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 11:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355649AbiBULLb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 06:11:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39130 "EHLO
+        id S232753AbiBULMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 06:12:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355727AbiBULKV (ORCPT
+        with ESMTP id S1355758AbiBULMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 06:10:21 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87DE10BB
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:40 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id d27so26279723wrb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 02:41:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7izwyhUUirLGOcbvAKJ/ySoVgmZ6zFx6mt9CtP50ZlI=;
-        b=scTQgqOpSpwrm9rIIYQvXQ9ri48Rb9VOE6Ov48Q7Wi/2AVOQRsZGHvJyISPd8tdmJj
-         fu2dmeagLhwu8sYbPzjobQSw+amz2had4hNZE3QRNN8C2M5iQRmHs4/YPuv++ddKVz+4
-         zIZMciYnCEdvNukga9CPtvxD8thHLgRf9vFYI65ZdNWpwq+SZnq+jAf+buBU9cD20Tak
-         LzKl9Rpt9e4tksx5SXy0qRc5B3HLDHdbUllxB8P5s9caCLxqRQOczP3zDWI1b5b+f8SY
-         9yuS4KUfBQFhsiCj+65dvGqBUcAWThiDZxLGgIWwJVHfSulJ0ZQVo1/hFF1F+rBR6CkA
-         EEvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7izwyhUUirLGOcbvAKJ/ySoVgmZ6zFx6mt9CtP50ZlI=;
-        b=caCfRDf6AWfxJOVgrGt1syg5sLhIKHe3Pgz/VKtJSS+POMzkXqfjK1+456lKDFf818
-         35YnIUqJH5FzZ7D5aLe4d2BwP4ubqsbaiHy7MacoVHO2q9PKWk34pjHNAr723czIXFZK
-         W5VXcYYGq7eJA8mchPg4FgnvUXCDJppKIvIEWM9fWirtfo9bBTFfmUbV0Jcoo9Nsl+74
-         j/Fw/TyTQQWprwQaf5BhzmFyCJai755cbIr7rKWdX1U4qEVo5rfu87gD/JsNXEhp+kU3
-         Jx31Q+XZ5LxGcaHRslaCC49JgEDCvu6EPxIKDnUABzd4QLphoecWVwAhCmHHNNAQD1y/
-         D6RA==
-X-Gm-Message-State: AOAM533O2B9rAWHp7b447tkb6CVM9xuvKq9cEpDs6iOivp/qzzW2m8Tp
-        waEQjIkg1qomrwGnAOtxAHZ+WA==
-X-Google-Smtp-Source: ABdhPJw28jTxSN/JYzVLnVzXnpvJGWhK5Wo2D27AVHnLLE47KPQvJxrpG/4l2yAZrLWAw6jmzoDwhA==
-X-Received: by 2002:a5d:45c4:0:b0:1e4:a672:586b with SMTP id b4-20020a5d45c4000000b001e4a672586bmr14394858wrs.388.1645440098837;
-        Mon, 21 Feb 2022 02:41:38 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id n19-20020a05600c4f9300b0037c06fe68casm7584817wmq.44.2022.02.21.02.41.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 02:41:38 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 0/3] soundwire: qcom: add pm runtime support
-Date:   Mon, 21 Feb 2022 10:41:24 +0000
-Message-Id: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
+        Mon, 21 Feb 2022 06:12:22 -0500
+X-Greylist: delayed 244 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 02:45:55 PST
+Received: from out203-205-221-240.mail.qq.com (out203-205-221-240.mail.qq.com [203.205.221.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C2B24B;
+        Mon, 21 Feb 2022 02:45:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1645440353;
+        bh=4fADd5ckbj9wLsNGEkx/YWl2k1NstFX4D6yO2oX22N8=;
+        h=From:To:Cc:Subject:Date;
+        b=PHaq+c8CRFQrqVX1bOSiEyUc5E5SzgmuMEyyZILgJRJj3tUm3XaVHjvTOScJwOHYL
+         etsu5zHu1SgZ+rSKgDOfJczgsZSNwsgHr/9FWbVRGa37dpKGrsiii9yw3jbm+0kLtm
+         DFkqRoWjSchefQtg1j5YWKviVYN7wSk2aVD3hgWA=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
+        id 9A09E009; Mon, 21 Feb 2022 18:38:32 +0800
+X-QQ-mid: xmsmtpt1645439912ty8r1galu
+Message-ID: <tencent_AD2E09472E455F78B792E6BF114813B35206@qq.com>
+X-QQ-XMAILINFO: Mx0gLVTpyl5nsAzj444ETocQ8S8QzHpdIe2WK5gE/ckWOfMwwiPqe8ilfBIyK6
+         ObfwC/6GBi8sc4OCc/rKxo8kHDrLFR39OPI7aep7JK2Lj3eo+I1GX/hvMMNq4hhurBjTJKIFHK/H
+         WbF/gDL8p9JT5N23RdNegZchcVNYTWzf8eS2qWoVkMnsKG+ZlB87nPPh7ZbK9tJgxFTELA4LCf+H
+         0xL74nJKSyx6osOoKUKZWAL+L6d4wpRHKvQ3kHbtVbWmjDvOkJ2Zlat22wAwfAYdkfToo444yH3h
+         deSvFU5NrEmQyqcof17yIOEM1vZ7z+BZ8/rJnrqqRJiScLFK5LUPqjhazqEQxrf2amQUAj6iCSDa
+         JtHIvZo8PkoU9VnoUe+c7Z/aRV++LMv6OJGTxJwfZRtfDoI+gNmIx1iRIyk3eX5Ezqy8FqyIMzSE
+         4ZPBKp3eJ8M8jBNtWIA9uU9KCzQ/Zkpbax/DgyE0y7gB1m6OVbGRoucVLo060+SsLTUy/uexUDgG
+         BtM71IXXh9mKwXkIsT3RK0HNMom+DsArAilPfTkUPnUiRmwwDHOrDQ2VORWY0+W9Z2hh2pdXybWb
+         /vw6tTGs0TV1IIMO17Qi/QcfgRZJFDJg3bh2B+QLrsigS7Z4Fag8fxO0Mgym1ePPVOFyxqZKnsWa
+         qR2uC1AQbiDBA4/kIsUTSlIRUbys1qMFnQmslLjQMOG8328ncJdv7slSUeGpB4VMPVORbHdLYfL5
+         QhV8WZKygAu3hs1cfxeXX3FhAVEamIoHOtX6GkTKgs8D2dgkTUM0tXU8kCJd0CzQ6VVyGwcHz3w2
+         A2ASV9jox6ygtf8UmdYqANgxEryX8GxMeSwMNzdSI02uPhUXR7rHqfOz5bUZGG1MoVL7qitnRTkM
+         GdjFO0xNBd
+From:   xkernel.wang@foxmail.com
+To:     FlorianSchandinat@gmx.de
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] video: fbdev: via: check the return value of kstrdup()
+Date:   Mon, 21 Feb 2022 18:37:34 +0800
+X-OQ-MSGID: <20220221103734.3394-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds pm runtime support to Qualcomm SounWire Controller using
-SoundWire Clock Stop and Wake up using Headset events on supported instances and
-a bus reset on instances that require full reset.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
+kstrdup() is a memory allocation function which can return NULL when
+some internal memory errors happen. It is better to check the return
+value of it to catch the error in time during the setup of viafb.
 
-Tested it on SM8250 MTP and Dragon Board DB845c
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/video/fbdev/via/viafbdev.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---srini
-
-
-Srinivas Kandagatla (3):
-  soundwire: qcom: add runtime pm support
-  dt-bindings: soundwire: qcom: document optional wake irq
-  soundwire: qcom: add wake up interrupt support
-
- .../bindings/soundwire/qcom,sdw.txt           |   2 +-
- drivers/soundwire/qcom.c                      | 215 +++++++++++++++++-
- 2 files changed, 215 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/video/fbdev/via/viafbdev.c b/drivers/video/fbdev/via/viafbdev.c
+index 22deb34..2d67c92 100644
+--- a/drivers/video/fbdev/via/viafbdev.c
++++ b/drivers/video/fbdev/via/viafbdev.c
+@@ -1939,8 +1939,12 @@ static int __init viafb_setup(void)
+ 
+ 		if (!strncmp(this_opt, "viafb_mode1=", 12)) {
+ 			viafb_mode1 = kstrdup(this_opt + 12, GFP_KERNEL);
++			if (!viafb_mode1)
++				return -ENOMEM;
+ 		} else if (!strncmp(this_opt, "viafb_mode=", 11)) {
+ 			viafb_mode = kstrdup(this_opt + 11, GFP_KERNEL);
++			if (!viafb_mode)
++				return -ENOMEM;
+ 		} else if (!strncmp(this_opt, "viafb_bpp1=", 11)) {
+ 			if (kstrtouint(this_opt + 11, 0, &viafb_bpp1) < 0)
+ 				return -EINVAL;
+@@ -1969,6 +1973,8 @@ static int __init viafb_setup(void)
+ 				return -EINVAL;
+ 		} else if (!strncmp(this_opt, "viafb_active_dev=", 17)) {
+ 			viafb_active_dev = kstrdup(this_opt + 17, GFP_KERNEL);
++			if (!viafb_active_dev)
++				return -ENOMEM;
+ 		} else if (!strncmp(this_opt,
+ 			"viafb_display_hardware_layout=", 30)) {
+ 			if (kstrtoint(this_opt + 30, 0,
+@@ -1995,8 +2001,12 @@ static int __init viafb_setup(void)
+ 				return -EINVAL;
+ 		} else if (!strncmp(this_opt, "viafb_lcd_port=", 15)) {
+ 			viafb_lcd_port = kstrdup(this_opt + 15, GFP_KERNEL);
++			if (!viafb_lcd_port)
++				return -ENOMEM;
+ 		} else if (!strncmp(this_opt, "viafb_dvi_port=", 15)) {
+ 			viafb_dvi_port = kstrdup(this_opt + 15, GFP_KERNEL);
++			if (!viafb_dvi_port)
++				return -ENOMEM;
+ 		}
+ 	}
+ 	return 0;
 -- 
-2.21.0
-
