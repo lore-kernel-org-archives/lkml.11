@@ -2,90 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18358C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352392AbiBUJyV (ORCPT
+        id S1352298AbiBUJyY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:54:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42752 "EHLO
+        Mon, 21 Feb 2022 04:54:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352248AbiBUJrQ (ORCPT
+        with ESMTP id S1352300AbiBUJrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:47:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CCC41639;
-        Mon, 21 Feb 2022 01:19:14 -0800 (PST)
+        Mon, 21 Feb 2022 04:47:19 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC76C31347;
+        Mon, 21 Feb 2022 01:19:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 701FE60F4E;
-        Mon, 21 Feb 2022 09:19:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FD0C340EB;
-        Mon, 21 Feb 2022 09:19:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645435153;
-        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Q+DpLYsLywg7KMgsOHUY8euPwfPTEpRtHuGVUr+V8/3N9ANTiZZ+sDI4iKAAtJCQ
-         3leRcox1hkgqOFTbRsIRobH2fK/baSZ3mDH6m3lvAfya84iUrDrRRkLixQtbkVAhIO
-         RADhiYtLbSsQaJH8s1W8VQ+/jMCu/umIsAlMf5bs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 063/227] net: sparx5: do not refer to skb after passing it on
-Date:   Mon, 21 Feb 2022 09:48:02 +0100
-Message-Id: <20220221084936.969692755@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-References: <20220221084934.836145070@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by sin.source.kernel.org (Postfix) with ESMTPS id 102C1CE0E8B;
+        Mon, 21 Feb 2022 09:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D89AC340EB;
+        Mon, 21 Feb 2022 09:19:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645435159;
+        bh=y/fovhg2SrSjIop/da0hcjHxQGhI87uhw9/cjMwETww=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UaR6FWg439BUCjrohVcf6NonY4BanAy1Q1sRSfgYMaPO36QhYrbEQbVOm2HiYtiN4
+         duihRIgXjMhSEuUScJD/frv2fyDQNkxlQw+6cSPZ5I/maZ1L1Fom6tx2YokHxu7CBS
+         qFEpGnIfNk9lF+v/hZs8H+JFQkIhRvmgIjcCmYeWk+C72/zppUtkC8iiTW7qHd8KYP
+         QhQnu5bzHB/TTBV7RZhoVEgX2C6vXuslM18N8b2k0YUvMMXx1Xf0wwfrriV2zxvjFM
+         BSTJHRL7jH73PRkrYGdxWJhz4iGRPyIMVuVX8CLD1PA+qx4Csh/o5nwVBm4I8s+Y46
+         mHyyply0pXwPg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nM4qh-00061f-NU; Mon, 21 Feb 2022 10:19:16 +0100
+Date:   Mon, 21 Feb 2022 10:19:15 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] USB: serial: option: add support for DW5829e
+Message-ID: <YhNZE4m66Qb7jdeZ@hovoldconsulting.com>
+References: <20220214021401.6264-1-slark_xiao@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214021401.6264-1-slark_xiao@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
+On Mon, Feb 14, 2022 at 10:14:01AM +0800, Slark Xiao wrote:
+> Dell DW5829e same as DW5821e except CAT level.
+> DW5821e supports CAT16 but DW5829e supports CAT9.
+> There are 2 types product of DW5829e: normal and eSIM.
+> So we will add 2 PID for DW5829e.
+> And for each PID, it support MBIM or RMNET.
+> Let's see test evidence as below:
+> 
+> DW5829e MBIM mode:
+> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
+> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+> P:  Vendor=413c ProdID=81e6 Rev=03.18
+> S:  Manufacturer=Dell Inc.
+> S:  Product=DW5829e Snapdragon X20 LTE
+> S:  SerialNumber=0123456789ABCDEF
+> C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+> I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+> I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+> 
+> DW5829e RMNET mode:
+> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+> P:  Vendor=413c ProdID=81e6 Rev=03.18
+> S:  Manufacturer=Dell Inc.
+> S:  Product=DW5829e Snapdragon X20 LTE
+> S:  SerialNumber=0123456789ABCDEF
+> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> 
+> DW5829e-eSIM MBIM mode:
+> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  6 Spd=5000 MxCh= 0
+> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+> P:  Vendor=413c ProdID=81e4 Rev=03.18
+> S:  Manufacturer=Dell Inc.
+> S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+> S:  SerialNumber=0123456789ABCDEF
+> C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+> I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+> I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+> 
+> DW5829e-eSIM RMNET mode:
+> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+> P:  Vendor=413c ProdID=81e4 Rev=03.18
+> S:  Manufacturer=Dell Inc.
+> S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+> S:  SerialNumber=0123456789ABCDEF
+> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+> 
+> BTW, the interface 0x6 of MBIM mode is GNSS port, which not same as NMEA
+> port. So it's banned from serial option driver.
+> The remaining interfaces 0x2-0x5 are: MODEM, MODEM, NMEA, DIAG.
+> 
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> ---
+> v2: (1). sorted by PID  (2). reduce the conflict possibility between
+> QMI and serial driver.
 
-[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
+Thanks for the update. 
 
-Do not try to use any SKB fields after the packet has been passed up in the
-receive stack.
+> ---
+>  drivers/usb/serial/option.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> index 962e9943fc20..f612805222b6 100644
+> --- a/drivers/usb/serial/option.c
+> +++ b/drivers/usb/serial/option.c
+> @@ -198,6 +198,8 @@ static void option_instat_callback(struct urb *urb);
+>  
+>  #define DELL_PRODUCT_5821E			0x81d7
+>  #define DELL_PRODUCT_5821E_ESIM			0x81e0
+> +#define DELL_PRODUCT_5829E_ESIM			0x81e4
+> +#define DELL_PRODUCT_5829E			0x81e6
+>  
+>  #define KYOCERA_VENDOR_ID			0x0c88
+>  #define KYOCERA_PRODUCT_KPC650			0x17da
+> @@ -1063,6 +1065,10 @@ static const struct usb_device_id option_ids[] = {
+>  	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+>  	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
+>  	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+> +	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E),
+> +	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+> +	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM),
+> +	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I see now that the previous two entries also reserved interface 1 even
+though it's unnecessary as that interface does not have vendor class in
+any configuration.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index dc7e5ea6ec158..148d431fcde42 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
- 	eth_skb_pad(skb);
- 	skb->protocol = eth_type_trans(skb, netdev);
--	netif_rx(skb);
- 	netdev->stats.rx_bytes += skb->len;
- 	netdev->stats.rx_packets++;
-+	netif_rx(skb);
- }
- 
- static int sparx5_inject(struct sparx5 *sparx5,
--- 
-2.34.1
+I dropped the RSVD(1) from the new entries before applying.
 
+>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
+>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
+>  	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
 
-
+Johan
