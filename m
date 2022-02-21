@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF4FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9E1C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349427AbiBUJM1 (ORCPT
+        id S1349517AbiBUJMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:12:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33876 "EHLO
+        Mon, 21 Feb 2022 04:12:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347745AbiBUJIz (ORCPT
+        with ESMTP id S1347800AbiBUJIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:08:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9B624BDA;
-        Mon, 21 Feb 2022 01:00:35 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F56A24BE0;
+        Mon, 21 Feb 2022 01:00:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D72C0B80E9F;
-        Mon, 21 Feb 2022 09:00:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123AEC340E9;
-        Mon, 21 Feb 2022 09:00:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF73761132;
+        Mon, 21 Feb 2022 09:00:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36AEC340E9;
+        Mon, 21 Feb 2022 09:00:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434032;
-        bh=D+Ib7wkm+pUgHIFpFkgZMNVJA3CmXTMDtP5x7u0Q6fc=;
+        s=korg; t=1645434035;
+        bh=0x6i4OlwnfiUrwgKFWTgJ7ebyVDAj1Ju/6rNnIfShrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zT09jOLDlfvlsn29qFp8YyqeE1fQXmRV3hywzI43V3AMKmmj4Co5GiO2/9/uoJ2mo
-         ynNJby53LwYm8hhcXFwX4ftRG76pNs+iEdDb6/kgZppvUUKszLHc/9ax0q2VIca1ZM
-         QcCNNcMWLRsG18MTZTzjvXR4KTf2j0zhTCx37xt4=
+        b=KPtNI3+wF+VboUD0Y72V+UyuES9/dj46TfO4NhT/ugSIxq8yb/YPMDKAtqCVNTJW2
+         9IvvlDF0sB8CZxwWrLPKVhoPGE5/WnLgIbFsXZoC0KJqcb05LkzD5Ulf8/ZoH7Mrdc
+         FJKf+ULFHY3g2IzeNM6ShJ9qelVtAKac3y0TZmuU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Anup Patel <anup@brainfault.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 69/80] irqchip/sifive-plic: Add missing thead,c900-plic match string
-Date:   Mon, 21 Feb 2022 09:49:49 +0100
-Message-Id: <20220221084917.844882267@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Vivek Thrivikraman <vivek.thrivikraman@est.tech>
+Subject: [PATCH 5.4 70/80] netfilter: conntrack: dont refresh sctp entries in closed state
+Date:   Mon, 21 Feb 2022 09:49:50 +0100
+Message-Id: <20220221084917.876437921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
 References: <20220221084915.554151737@linuxfoundation.org>
@@ -54,47 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 1d4df649cbb4b26d19bea38ecff4b65b10a1bbca ]
+[ Upstream commit 77b337196a9d87f3d6bb9b07c0436ecafbffda1e ]
 
-The thead,c900-plic has been used in opensbi to distinguish
-PLIC [1]. Although PLICs have the same behaviors in Linux,
-they are different hardware with some custom initializing in
-firmware(opensbi).
+Vivek Thrivikraman reported:
+ An SCTP server application which is accessed continuously by client
+ application.
+ When the session disconnects the client retries to establish a connection.
+ After restart of SCTP server application the session is not established
+ because of stale conntrack entry with connection state CLOSED as below.
 
-Qute opensbi patch commit-msg by Samuel:
+ (removing this entry manually established new connection):
 
-  The T-HEAD PLIC implementation requires setting a delegation bit
-  to allow access from S-mode. Now that the T-HEAD PLIC has its own
-  compatible string, set this bit automatically from the PLIC driver,
-  instead of reaching into the PLIC's MMIO space from another driver.
+ sctp 9 CLOSED src=10.141.189.233 [..]  [ASSURED]
 
-[1]: https://github.com/riscv-software-src/opensbi/commit/78c2b19218bd62653b9fb31623a42ced45f38ea6
+Just skip timeout update of closed entries, we don't want them to
+stay around forever.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Cc: Anup Patel <anup@brainfault.org>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220130135634.1213301-3-guoren@kernel.org
+Reported-and-tested-by: Vivek Thrivikraman <vivek.thrivikraman@est.tech>
+Closes: https://bugzilla.netfilter.org/show_bug.cgi?id=1579
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-sifive-plic.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nf_conntrack_proto_sctp.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index 7cd7b140dfe97..9dad45d928bfe 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -313,3 +313,4 @@ static int __init plic_init(struct device_node *node,
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 810cca24b3990..7626f3e1c70a7 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -489,6 +489,15 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 			pr_debug("Setting vtag %x for dir %d\n",
+ 				 ih->init_tag, !dir);
+ 			ct->proto.sctp.vtag[!dir] = ih->init_tag;
++
++			/* don't renew timeout on init retransmit so
++			 * port reuse by client or NAT middlebox cannot
++			 * keep entry alive indefinitely (incl. nat info).
++			 */
++			if (new_state == SCTP_CONNTRACK_CLOSED &&
++			    old_state == SCTP_CONNTRACK_CLOSED &&
++			    nf_ct_is_confirmed(ct))
++				ignore = true;
+ 		}
  
- IRQCHIP_DECLARE(sifive_plic, "sifive,plic-1.0.0", plic_init);
- IRQCHIP_DECLARE(riscv_plic0, "riscv,plic0", plic_init); /* for legacy systems */
-+IRQCHIP_DECLARE(thead_c900_plic, "thead,c900-plic", plic_init); /* for firmware driver */
+ 		ct->proto.sctp.state = new_state;
 -- 
 2.34.1
 
