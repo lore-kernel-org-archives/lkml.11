@@ -2,160 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91117C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D36C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 02:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245302AbiBUCCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 20 Feb 2022 21:02:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51626 "EHLO
+        id S245425AbiBUCDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 20 Feb 2022 21:03:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243822AbiBUCCa (ORCPT
+        with ESMTP id S243379AbiBUCDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 20 Feb 2022 21:02:30 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF382FFD3
-        for <linux-kernel@vger.kernel.org>; Sun, 20 Feb 2022 18:02:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645408928; x=1676944928;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ANe90PhVs2NvQulYttBv9SXSMOH6MXgAMcwZn2L7kYA=;
-  b=Dc8R8DdnZdYwZE4ABa9C+CPgEqjBz8uBpdBbJCEmtl3/y+Gvc0vsT9QE
-   IICDNAfdBBpg3qQzY7Iu/XCycm+rPRYuUCTRPwMLR7Dj23aqiW2zYQ9QY
-   jbV+XaafUbhcki0q/dgp75A6fzwinVevb20UVNiWjuFNaLRoFnTLXuRjt
-   PcIYyJviB3/WpaLhqUW1V6+OMbRSF0Bgbi+UbcebO4K2OVlGPZl1G9vjy
-   D7BVQVzlM8L7hbgJ6ZZ3IsbGPrj/+N5Qsev1Iahkx47kStt1bBiuM7aKX
-   2PVyWot8ri0JU1EES0Zyl/MXEg034iFBAeb12Iptb6C/4JApX+Uq6h7Da
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238833095"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="238833095"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2022 18:02:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; 
-   d="scan'208";a="590803938"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Feb 2022 18:02:02 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nLy1Z-0001AK-OW; Mon, 21 Feb 2022 02:02:01 +0000
-Date:   Mon, 21 Feb 2022 10:01:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        tomba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, airlied@linux.ie,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        maxime@cerno.tech,
-        =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-Subject: Re: [PATCH] drm/omap: switch to drm_of_find_panel_or_bridge
-Message-ID: <202202210942.gGqf3SNb-lkp@intel.com>
-References: <20220220195212.1129437-1-jose.exposito89@gmail.com>
+        Sun, 20 Feb 2022 21:03:03 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931BC3616C;
+        Sun, 20 Feb 2022 18:02:40 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id d3so28178365qvb.5;
+        Sun, 20 Feb 2022 18:02:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=14IQKnabNvgR8OGguYfeWyTOnUwjGU/hNLskrhkJteI=;
+        b=IM4WFO1f7PBtcR378aivGGEwaqWijHGOAgpnr3H/EvLjnRBKLipbqBsExLG1HKyrUl
+         Oxw0AfzdZqg6bPYwakKZ7EDHVGARIhAJxVsC0X6omqQwQZ32NYWeYcWZJyzvhMZ39ZlD
+         fzbUBhw0gvUQJT5KyX0Z2PUXKKmURIRHUHiph5+nSe/F+ZY1lyKSyKk4kWKdWZDiLv/R
+         ofSQtnpE6zviQ7eSF/ljy55rfd/yZGWnnAOQWVcMu4L2DZwHW8nFCEjEnvCLyazhXS97
+         ZHGlDfBEAafRHt5KRduImcMq6pLo2nRBJTJctdmN90juyUBKH+1/8nc4/jS6XEPMaQ25
+         A5jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=14IQKnabNvgR8OGguYfeWyTOnUwjGU/hNLskrhkJteI=;
+        b=sDqVb+Z72rFlsvCL24euKu4Aafkky01wOjAH4QT+SMIe3fbz2/XnlAk/egTGcGRklT
+         kyYCRYmfiLiBHO4gOq0HBSCsEEsj1MgV2NrhnwZPFFfWpA9IRaCyFXoMvnksIyKN2Vzq
+         hxKNkIqKUQy3LE5zgGEKmQkvvLPY2m70hYCk0o5n6RQyKVGR0B7RFNynvBEmKkeN94jQ
+         hw5HeTNXgGTS8Gol4lAQL2Qxuht0K2an9T3RCQ7bH2dsSHk+8hT4yn+dElAmi+rWGfx5
+         r7cngoPHz+HStqgOU6D7Y6Tm9b569RILqm14nq/LgsUFg99V4FMWdfOddQLpjnBk4CY8
+         xAOw==
+X-Gm-Message-State: AOAM533p2cg8/rKWu7VfjomyWUUMuoEGa6VEKed2kaEZcvA9EATJATjt
+        B6R7aGow09zXrpL2wDcVyEhFR6I+zbo=
+X-Google-Smtp-Source: ABdhPJxo5/FT93J5O3ATvQALQR7wQMHOnuH9e4eNnHjjC8eas+70TLBGYq9eKKEIJM8lo+14Y0CWOQ==
+X-Received: by 2002:ac8:598f:0:b0:2d2:2e55:d914 with SMTP id e15-20020ac8598f000000b002d22e55d914mr16000951qte.204.1645408959766;
+        Sun, 20 Feb 2022 18:02:39 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id g24sm25917079qkk.1.2022.02.20.18.02.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Feb 2022 18:02:39 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     broonie@kernel.org
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drivers/spi: Use of_device_get_match_data()
+Date:   Mon, 21 Feb 2022 02:02:33 +0000
+Message-Id: <20220221020233.1925154-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220220195212.1129437-1-jose.exposito89@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "José,
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-Thank you for the patch! Yet something to improve:
+Use of_device_get_match_data() to simplify the code.
 
-[auto build test ERROR on drm/drm-next]
-[also build test ERROR on v5.17-rc5 next-20220217]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Jos-Exp-sito/drm-omap-switch-to-drm_of_find_panel_or_bridge/20220221-035403
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: arm-randconfig-r022-20220220 (https://download.01.org/0day-ci/archive/20220221/202202210942.gGqf3SNb-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/0day-ci/linux/commit/9a465e2c1dba123efe08cf2f4a5ae11b07be4142
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jos-Exp-sito/drm-omap-switch-to-drm_of_find_panel_or_bridge/20220221-035403
-        git checkout 9a465e2c1dba123efe08cf2f4a5ae11b07be4142
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/omapdrm/dss/output.c:25:8: error: implicit declaration of function 'drm_of_find_panel_or_bridge' [-Werror,-Wimplicit-function-declaration]
-           ret = drm_of_find_panel_or_bridge(out->dev->of_node, out->of_port, 0,
-                 ^
-   1 error generated.
-
-
-vim +/drm_of_find_panel_or_bridge +25 drivers/gpu/drm/omapdrm/dss/output.c
-
-    19	
-    20	int omapdss_device_init_output(struct omap_dss_device *out,
-    21				       struct drm_bridge *local_bridge)
-    22	{
-    23		int ret;
-    24	
-  > 25		ret = drm_of_find_panel_or_bridge(out->dev->of_node, out->of_port, 0,
-    26						  &out->panel, &out->bridge);
-    27		if (ret) {
-    28			if (ret == -ENODEV) {
-    29				dev_dbg(out->dev, "failed to find video sink\n");
-    30				return 0;
-    31			}
-    32			goto error;
-    33		}
-    34	
-    35		if (out->panel) {
-    36			struct drm_bridge *bridge;
-    37	
-    38			bridge = drm_panel_bridge_add(out->panel);
-    39			if (IS_ERR(bridge)) {
-    40				dev_err(out->dev,
-    41					"unable to create panel bridge (%ld)\n",
-    42					PTR_ERR(bridge));
-    43				ret = PTR_ERR(bridge);
-    44				goto error;
-    45			}
-    46	
-    47			out->bridge = bridge;
-    48		}
-    49	
-    50		if (local_bridge) {
-    51			if (!out->bridge) {
-    52				ret = -EPROBE_DEFER;
-    53				goto error;
-    54			}
-    55	
-    56			out->next_bridge = out->bridge;
-    57			out->bridge = local_bridge;
-    58		}
-    59	
-    60		if (!out->bridge) {
-    61			ret = -EPROBE_DEFER;
-    62			goto error;
-    63		}
-    64	
-    65		return 0;
-    66	
-    67	error:
-    68		omapdss_device_cleanup_output(out);
-    69		return ret;
-    70	}
-    71	
-
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/spi/spi-lantiq-ssc.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/drivers/spi/spi-lantiq-ssc.c b/drivers/spi/spi-lantiq-ssc.c
+index bcb52601804a..aae26f62ea87 100644
+--- a/drivers/spi/spi-lantiq-ssc.c
++++ b/drivers/spi/spi-lantiq-ssc.c
+@@ -906,17 +906,11 @@ static int lantiq_ssc_probe(struct platform_device *pdev)
+ 	struct spi_master *master;
+ 	struct lantiq_ssc_spi *spi;
+ 	const struct lantiq_ssc_hwcfg *hwcfg;
+-	const struct of_device_id *match;
+ 	u32 id, supports_dma, revision;
+ 	unsigned int num_cs;
+ 	int err;
+ 
+-	match = of_match_device(lantiq_ssc_match, dev);
+-	if (!match) {
+-		dev_err(dev, "no device match\n");
+-		return -EINVAL;
+-	}
+-	hwcfg = match->data;
++	hwcfg = of_device_get_match_data(dev);
+ 
+ 	master = spi_alloc_master(dev, sizeof(struct lantiq_ssc_spi));
+ 	if (!master)
+-- 
+2.25.1
+
