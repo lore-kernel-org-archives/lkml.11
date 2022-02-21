@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1457C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348000AbiBUJPQ (ORCPT
+        id S1348024AbiBUJPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:15:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57008 "EHLO
+        Mon, 21 Feb 2022 04:15:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347779AbiBUJJO (ORCPT
+        with ESMTP id S1347777AbiBUJJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 04:09:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC4262DA;
-        Mon, 21 Feb 2022 01:01:42 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D4E60E0;
+        Mon, 21 Feb 2022 01:01:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDCD76112C;
-        Mon, 21 Feb 2022 09:01:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC7ECC340E9;
-        Mon, 21 Feb 2022 09:01:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59EB9B80EB3;
+        Mon, 21 Feb 2022 09:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91ADFC340E9;
+        Mon, 21 Feb 2022 09:01:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434101;
-        bh=tP5CUsGrhz28rz/+xDcgKWdz9OnlZ9AuyjX1ULukau8=;
+        s=korg; t=1645434098;
+        bh=D5BeF7ORIpjrg18ZTSztcItjTnnVDILUKmtchbDAmlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=onl1/74M1LxKn/8vEbajvS6fyU+auYLvN2Rdf/3VtPZa9Nsj6Su/7nCc36qvdQ0VN
-         c5YjGpLC5wVox4O+6P1HKv09aIGduiKShi6Ct/uf4C1MvY/Zp6QiQBaMs6+7yBcy5K
-         9pzuAE9DTSGXH9DzOt2m+OEMCUHnxUo8tA/dHQ0Q=
+        b=rxU0CEFMa+A9ernkeyRCMm68r0kBAoIurTnGsFRMgzohv/pkvTVNthJb3jEyXae9z
+         DWYamrwWX+79GA/AB9RZO2dFKRDjTu7l1m8NFb0Myk3eGh0YtljBfirsgMpMO0ZG7m
+         7EqdE3tvstdMnF/o55mRnBJ6B4rQK39rk3g19TmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        John David Anglin <dave.anglin@bell.net>,
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
         Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.10 013/121] parisc: Fix data TLB miss in sba_unmap_sg
-Date:   Mon, 21 Feb 2022 09:48:25 +0100
-Message-Id: <20220221084921.590961242@linuxfoundation.org>
+Subject: [PATCH 5.10 012/121] parisc: Drop __init from map_pages declaration
+Date:   Mon, 21 Feb 2022 09:48:24 +0100
+Message-Id: <20220221084921.559838914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084921.147454846@linuxfoundation.org>
 References: <20220221084921.147454846@linuxfoundation.org>
@@ -52,84 +51,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: John David Anglin <dave.anglin@bell.net>
 
-commit b7d6f44a0fa716a82969725516dc0b16bc7cd514 upstream.
+commit 9129886b88185962538180625ca8051362b01327 upstream.
 
-Rolf Eike Beer reported the following bug:
+With huge kernel pages, we randomly eat a SPARC in map_pages(). This
+is fixed by dropping __init from the declaration.
 
-[1274934.746891] Bad Address (null pointer deref?): Code=15 (Data TLB miss fault) at addr 0000004140000018
-[1274934.746891] CPU: 3 PID: 5549 Comm: cmake Not tainted 5.15.4-gentoo-parisc64 #4
-[1274934.746891] Hardware name: 9000/785/C8000
-[1274934.746891]
-[1274934.746891]      YZrvWESTHLNXBCVMcbcbcbcbOGFRQPDI
-[1274934.746891] PSW: 00001000000001001111111000001110 Not tainted
-[1274934.746891] r00-03  000000ff0804fe0e 0000000040bc9bc0 00000000406760e4 0000004140000000
-[1274934.746891] r04-07  0000000040b693c0 0000004140000000 000000004a2b08b0 0000000000000001
-[1274934.746891] r08-11  0000000041f98810 0000000000000000 000000004a0a7000 0000000000000001
-[1274934.746891] r12-15  0000000040bddbc0 0000000040c0cbc0 0000000040bddbc0 0000000040bddbc0
-[1274934.746891] r16-19  0000000040bde3c0 0000000040bddbc0 0000000040bde3c0 0000000000000007
-[1274934.746891] r20-23  0000000000000006 000000004a368950 0000000000000000 0000000000000001
-[1274934.746891] r24-27  0000000000001fff 000000000800000e 000000004a1710f0 0000000040b693c0
-[1274934.746891] r28-31  0000000000000001 0000000041f988b0 0000000041f98840 000000004a171118
-[1274934.746891] sr00-03  00000000066e5800 0000000000000000 0000000000000000 00000000066e5800
-[1274934.746891] sr04-07  0000000000000000 0000000000000000 0000000000000000 0000000000000000
-[1274934.746891]
-[1274934.746891] IASQ: 0000000000000000 0000000000000000 IAOQ: 00000000406760e8 00000000406760ec
-[1274934.746891]  IIR: 48780030    ISR: 0000000000000000  IOR: 0000004140000018
-[1274934.746891]  CPU:        3   CR30: 00000040e3a9c000 CR31: ffffffffffffffff
-[1274934.746891]  ORIG_R28: 0000000040acdd58
-[1274934.746891]  IAOQ[0]: sba_unmap_sg+0xb0/0x118
-[1274934.746891]  IAOQ[1]: sba_unmap_sg+0xb4/0x118
-[1274934.746891]  RP(r2): sba_unmap_sg+0xac/0x118
-[1274934.746891] Backtrace:
-[1274934.746891]  [<00000000402740cc>] dma_unmap_sg_attrs+0x6c/0x70
-[1274934.746891]  [<000000004074d6bc>] scsi_dma_unmap+0x54/0x60
-[1274934.746891]  [<00000000407a3488>] mptscsih_io_done+0x150/0xd70
-[1274934.746891]  [<0000000040798600>] mpt_interrupt+0x168/0xa68
-[1274934.746891]  [<0000000040255a48>] __handle_irq_event_percpu+0xc8/0x278
-[1274934.746891]  [<0000000040255c34>] handle_irq_event_percpu+0x3c/0xd8
-[1274934.746891]  [<000000004025ecb4>] handle_percpu_irq+0xb4/0xf0
-[1274934.746891]  [<00000000402548e0>] generic_handle_irq+0x50/0x70
-[1274934.746891]  [<000000004019a254>] call_on_stack+0x18/0x24
-[1274934.746891]
-[1274934.746891] Kernel panic - not syncing: Bad Address (null pointer deref?)
+However, map_pages references the __init routine memblock_alloc_try_nid
+via memblock_alloc.  Thus, it needs to be marked with __ref.
 
-The bug is caused by overrunning the sglist and incorrectly testing
-sg_dma_len(sglist) before nents. Normally this doesn't cause a crash,
-but in this case sglist crossed a page boundary. This occurs in the
-following code:
+memblock_alloc is only called before the kernel text is set to readonly.
 
-	while (sg_dma_len(sglist) && nents--) {
+The __ref on free_initmem is no longer needed.
 
-The fix is simply to test nents first and move the decrement of nents
-into the loop.
+Comment regarding map_pages being in the init section is removed.
 
-Reported-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
 Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org
+Cc: stable@vger.kernel.org # v5.4+
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/parisc/sba_iommu.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/parisc/mm/init.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/parisc/sba_iommu.c
-+++ b/drivers/parisc/sba_iommu.c
-@@ -1047,7 +1047,7 @@ sba_unmap_sg(struct device *dev, struct
- 	spin_unlock_irqrestore(&ioc->res_lock, flags);
- #endif
+--- a/arch/parisc/mm/init.c
++++ b/arch/parisc/mm/init.c
+@@ -346,9 +346,9 @@ static void __init setup_bootmem(void)
  
--	while (sg_dma_len(sglist) && nents--) {
-+	while (nents && sg_dma_len(sglist)) {
+ static bool kernel_set_to_readonly;
  
- 		sba_unmap_page(dev, sg_dma_address(sglist), sg_dma_len(sglist),
- 				direction, 0);
-@@ -1056,6 +1056,7 @@ sba_unmap_sg(struct device *dev, struct
- 		ioc->usingle_calls--;	/* kluge since call is unmap_sg() */
- #endif
- 		++sglist;
-+		nents--;
- 	}
+-static void __init map_pages(unsigned long start_vaddr,
+-			     unsigned long start_paddr, unsigned long size,
+-			     pgprot_t pgprot, int force)
++static void __ref map_pages(unsigned long start_vaddr,
++			    unsigned long start_paddr, unsigned long size,
++			    pgprot_t pgprot, int force)
+ {
+ 	pmd_t *pmd;
+ 	pte_t *pg_table;
+@@ -458,7 +458,7 @@ void __init set_kernel_text_rw(int enabl
+ 	flush_tlb_all();
+ }
  
- 	DBG_RUN_SG("%s() DONE (nents %d)\n", __func__,  nents);
+-void __ref free_initmem(void)
++void free_initmem(void)
+ {
+ 	unsigned long init_begin = (unsigned long)__init_begin;
+ 	unsigned long init_end = (unsigned long)__init_end;
+@@ -472,7 +472,6 @@ void __ref free_initmem(void)
+ 	/* The init text pages are marked R-X.  We have to
+ 	 * flush the icache and mark them RW-
+ 	 *
+-	 * This is tricky, because map_pages is in the init section.
+ 	 * Do a dummy remap of the data section first (the data
+ 	 * section is already PAGE_KERNEL) to pull in the TLB entries
+ 	 * for map_kernel */
 
 
