@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E882BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241788AbiBUI64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:58:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58078 "EHLO
+        id S1346707AbiBUI7A (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 03:59:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346519AbiBUI6G (ORCPT
+        with ESMTP id S1346584AbiBUI57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:58:06 -0500
+        Mon, 21 Feb 2022 03:57:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BA323BC2;
-        Mon, 21 Feb 2022 00:54:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C118255B8;
+        Mon, 21 Feb 2022 00:54:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 915E6B80EAF;
-        Mon, 21 Feb 2022 08:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA3F4C340E9;
-        Mon, 21 Feb 2022 08:54:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4706B80EA5;
+        Mon, 21 Feb 2022 08:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DC0C340EB;
+        Mon, 21 Feb 2022 08:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433672;
-        bh=4SyRNcDmbv7L+gW4gizDFIZEydgi7L0lgohXenCFkxU=;
+        s=korg; t=1645433669;
+        bh=rHL55wT5u1fd4Ub6zY7bSIqS/ckbe0pehw+xqLzZBLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w7lux7nzRmPSWdrK+W7kmkclly8BOaOwu4CCelE73gzw6Cz2pncVOcjVa99Q+2Kns
-         DZiFs98iptbfmRLk8/SGPNKisBz0wHRjU/iLasaPVEECrSjgsNLix99CA/FP5ZFbsk
-         hSqmoGoYHcgJMPq9eFdeH14ABKzpsVZqsGcRglFk=
+        b=ZG8R91Zgj51BIA9HIfpdHJnFcfP6VyushctcRwWV15mosAnjzhHa3E55TfbALElD/
+         tyJ8OJzekwTs6M4XePGdrctpBBcwPqeuTkYUaYjV1h/RaI00p5edi5nwbDKJlTtvp8
+         WVEjCYaggYqEknF6PEAWPtcZSol1AVictjWmY+lg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 4.14 32/45] NFS: LOOKUP_DIRECTORY is also ok with symlinks
-Date:   Mon, 21 Feb 2022 09:49:23 +0100
-Message-Id: <20220221084911.484705085@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.14 31/45] powerpc/lib/sstep: fix ptesync build error
+Date:   Mon, 21 Feb 2022 09:49:22 +0100
+Message-Id: <20220221084911.454246782@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084910.454824160@linuxfoundation.org>
 References: <20220221084910.454824160@linuxfoundation.org>
@@ -50,43 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-commit e0caaf75d443e02e55e146fd75fe2efc8aed5540 upstream.
+commit fe663df7825811358531dc2e8a52d9eaa5e3515e upstream.
 
-Commit ac795161c936 (NFSv4: Handle case where the lookup of a directory
-fails) [1], part of Linux since 5.17-rc2, introduced a regression, where
-a symbolic link on an NFS mount to a directory on another NFS does not
-resolve(?) the first time it is accessed:
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
 
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: ac795161c936 ("NFSv4: Handle case where the lookup of a directory fails")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+  {standard input}: Assembler messages:
+  {standard input}:2088: Error: unrecognized opcode: `ptesync'
+  make[3]: *** [/builds/linux/scripts/Makefile.build:287: arch/powerpc/lib/sstep.o] Error 1
+
+Add the 'ifdef CONFIG_PPC64' around the 'ptesync' in function
+'emulate_update_regs()' to like it is in 'analyse_instr()'. Since it looks like
+it got dropped inadvertently by commit 3cdfcbfd32b9 ("powerpc: Change
+analyse_instr so it doesn't modify *regs").
+
+A key detail is that analyse_instr() will never recognise lwsync or
+ptesync on 32-bit (because of the existing ifdef), and as a result
+emulate_update_regs() should never be called with an op specifying
+either of those on 32-bit. So removing them from emulate_update_regs()
+should be a nop in terms of runtime behaviour.
+
+Fixes: 3cdfcbfd32b9 ("powerpc: Change analyse_instr so it doesn't modify *regs")
+Cc: stable@vger.kernel.org # v4.14+
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+[mpe: Add last paragraph of change log mentioning analyse_instr() details]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220211005113.1361436-1-anders.roxell@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/lib/sstep.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1610,14 +1610,14 @@ no_open:
- 	if (!res) {
- 		inode = d_inode(dentry);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode))
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)))
- 			res = ERR_PTR(-ENOTDIR);
- 		else if (inode && S_ISREG(inode->i_mode))
- 			res = ERR_PTR(-EOPENSTALE);
- 	} else if (!IS_ERR(res)) {
- 		inode = d_inode(res);
- 		if ((lookup_flags & LOOKUP_DIRECTORY) && inode &&
--		    !S_ISDIR(inode->i_mode)) {
-+		    !(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode))) {
- 			dput(res);
- 			res = ERR_PTR(-ENOTDIR);
- 		} else if (inode && S_ISREG(inode->i_mode)) {
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -2652,12 +2652,14 @@ void emulate_update_regs(struct pt_regs
+ 		case BARRIER_EIEIO:
+ 			eieio();
+ 			break;
++#ifdef CONFIG_PPC64
+ 		case BARRIER_LWSYNC:
+ 			asm volatile("lwsync" : : : "memory");
+ 			break;
+ 		case BARRIER_PTESYNC:
+ 			asm volatile("ptesync" : : : "memory");
+ 			break;
++#endif
+ 		}
+ 		break;
+ 
 
 
