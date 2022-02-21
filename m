@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350406AbiBUJeG (ORCPT
+        id S1350558AbiBUJeI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:34:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51842 "EHLO
+        Mon, 21 Feb 2022 04:34:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349854AbiBUJ0o (ORCPT
+        with ESMTP id S1350046AbiBUJ1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:26:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0398A1EC54;
-        Mon, 21 Feb 2022 01:10:52 -0800 (PST)
+        Mon, 21 Feb 2022 04:27:08 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9AF2251C;
+        Mon, 21 Feb 2022 01:11:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9D186097C;
-        Mon, 21 Feb 2022 09:10:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF74CC340E9;
-        Mon, 21 Feb 2022 09:10:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 64A0FCE0E76;
+        Mon, 21 Feb 2022 09:11:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56874C340E9;
+        Mon, 21 Feb 2022 09:11:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434651;
-        bh=su5tWGjpZ4inHUxdAgviiH1QYt3xfVvRJgHlrKb+6GE=;
+        s=korg; t=1645434684;
+        bh=8E9nmzjr+oVBPaIx2NahacyRPguKBnPNkSFQybHOK2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eqi+Cy8uEN/hQgE+z7XN01yy8gA/FA7bn6e5hffgQ/1MWL0TNyIONEZZ3yw36+mqs
-         w9JqZJ1926AcyD3Cl6tkGUSzx6c2JxVS4/WMJ/icyKnBkjI1zwh9EurUt+50pMz8PV
-         Aza1S5Zos4yWhHPGWf5ZUY1dJNA/hlnV3nqvAcsU=
+        b=C88S3M3lXAu07a/AVpVXAigcSICe+2sgDDDLumCV4mkLDtrvwJrthW1mMOAOrBs8X
+         ehyleLp5Zwmi8UkGc5eXvpEtxTmcgNRBu7/jaWm6+M6V71lhwlHsVGpUJzxbRiiWxv
+         lluBPiUTEyh2owq/9x2oKD870tXLwY5nf83rLWR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/196] drm/amdgpu: fix logic inversion in check
-Date:   Mon, 21 Feb 2022 09:48:02 +0100
-Message-Id: <20220221084932.609854983@linuxfoundation.org>
+        stable@vger.kernel.org, Jianlin Shi <jishi@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 095/196] ping: fix the dif and sdif check in ping_lookup
+Date:   Mon, 21 Feb 2022 09:48:47 +0100
+Message-Id: <20220221084934.115451407@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -52,36 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
+commit 35a79e64de29e8d57a5989aac57611c0cd29e13e upstream.
 
-We probably never trigger this, but the logic inside the check is
-inverted.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+   # sysctl -w net.ipv4.ping_group_range="0 100"
+
+There is another regression caused when matching sk_bound_dev_if
+and dif, RAW socket is using inet_iif() while PING socket lookup
+is using skb->dev->ifindex, the cmd below fails due to this:
+
+  # ip link add dummy0 type dummy
+  # ip link set dummy0 up
+  # ip addr add 192.168.111.1/24 dev dummy0
+  # ping -I dummy0 192.168.111.1 -c1
+
+The issue was also reported on:
+
+  https://github.com/iputils/iputils/issues/104
+
+But fixed in iputils in a wrong way by not binding to device when
+destination IP is on device, and it will cause some of kselftests
+to fail, as Jianlin noticed.
+
+This patch is to use inet(6)_iif and inet(6)_sdif to get dif and
+sdif for PING socket, and keep consistent with RAW socket.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ping.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 94126dc396888..8132f66177c27 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -1892,7 +1892,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
- 	unsigned i;
- 	int r;
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -172,16 +172,23 @@ static struct sock *ping_lookup(struct n
+ 	struct sock *sk = NULL;
+ 	struct inet_sock *isk;
+ 	struct hlist_nulls_node *hnode;
+-	int dif = skb->dev->ifindex;
++	int dif, sdif;
  
--	if (direct_submit && !ring->sched.ready) {
-+	if (!direct_submit && !ring->sched.ready) {
- 		DRM_ERROR("Trying to move memory with ring turned off.\n");
- 		return -EINVAL;
+ 	if (skb->protocol == htons(ETH_P_IP)) {
++		dif = inet_iif(skb);
++		sdif = inet_sdif(skb);
+ 		pr_debug("try to find: num = %d, daddr = %pI4, dif = %d\n",
+ 			 (int)ident, &ip_hdr(skb)->daddr, dif);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
++		dif = inet6_iif(skb);
++		sdif = inet6_sdif(skb);
+ 		pr_debug("try to find: num = %d, daddr = %pI6c, dif = %d\n",
+ 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
+ #endif
++	} else {
++		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
++		return NULL;
  	}
--- 
-2.34.1
-
+ 
+ 	read_lock_bh(&ping_table.lock);
+@@ -221,7 +228,7 @@ static struct sock *ping_lookup(struct n
+ 		}
+ 
+ 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
+-		    sk->sk_bound_dev_if != inet_sdif(skb))
++		    sk->sk_bound_dev_if != sdif)
+ 			continue;
+ 
+ 		sock_hold(sk);
 
 
