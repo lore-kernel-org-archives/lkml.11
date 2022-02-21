@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2899DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345194AbiBUIwU (ORCPT
+        id S1345239AbiBUIw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:52:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42098 "EHLO
+        Mon, 21 Feb 2022 03:52:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345185AbiBUIwH (ORCPT
+        with ESMTP id S1345192AbiBUIwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 03:52:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DDCBF7;
-        Mon, 21 Feb 2022 00:51:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A545C50;
+        Mon, 21 Feb 2022 00:51:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EF7961149;
-        Mon, 21 Feb 2022 08:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B9DC340E9;
-        Mon, 21 Feb 2022 08:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3543B61149;
+        Mon, 21 Feb 2022 08:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FFBDC340E9;
+        Mon, 21 Feb 2022 08:51:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645433496;
-        bh=6ySU2XfSjJwj/k4S9Pa6NAWkoioztzfVJbzQUbTBpgQ=;
+        s=korg; t=1645433499;
+        bh=edUo2WgXuC7YnIggWB9vgeWydekdTI1SrQ+ud5O32F0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxsWlCrukUxvzphrqns7TILNLg8lABUEN/AEP7gHCudHsqAngAFTUDYD1EyAwvlet
-         WErkN6/ozqdIbMvYIw/b2Sb+BjxxcxqS1T1Oo644tIJeu7u43y33In/85GnM+5JQtB
-         PV8RBQmYQr7YLdG0DUPOTo3GsEvpWPF8AzidLxhk=
+        b=IBQX7ZVW5bPvPTbGSsDgohy1hyrbF3gAHPKtCYb1M3syy4JZJS2Ac5mcqIpoxbFfW
+         2o3a4MWva+lZsbPhl4XXk01TLoAsEn/wV2E+Ih+4+1ewQ3DZm789fxNGsFHBpkOkHT
+         zSGgP824IQ5qZ5sH8tBHD90vTFQ+8pS0MniHvqyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 4.9 02/33] net: usb: ax88179_178a: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 21 Feb 2022 09:48:55 +0100
-Message-Id: <20220221084908.647395150@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 20/33] drop_monitor: fix data-race in dropmon_net_event / trace_napi_poll_hit
+Date:   Mon, 21 Feb 2022 09:49:13 +0100
+Message-Id: <20220221084909.427280806@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
 References: <20220221084908.568970525@linuxfoundation.org>
@@ -49,137 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 57bc3d3ae8c14df3ceb4e17d26ddf9eeab304581 upstream.
+commit dcd54265c8bc14bd023815e36e2d5f9d66ee1fee upstream.
 
-ax88179_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+trace_napi_poll_hit() is reading stat->dev while another thread can write
+on it from dropmon_net_event()
 
- - The metadata array (hdr_off..hdr_off+2*pkt_cnt) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
+Use READ_ONCE()/WRITE_ONCE() here, RCU rules are properly enforced already,
+we only have to take care of load/store tearing.
 
-I have tested that this can be used by a malicious USB device to send a
-bogus ICMPv6 Echo Request and receive an ICMPv6 Echo Reply in response
-that contains random kernel heap data.
-It's probably also possible to get OOB writes from this on a
-little-endian system somehow - maybe by triggering skb_cow() via IP
-options processing -, but I haven't tested that.
+BUG: KCSAN: data-race in dropmon_net_event / trace_napi_poll_hit
 
-Fixes: e2ca90c276e1 ("ax88179_178a: ASIX AX88179_178A USB 3.0/2.0 to gigabit ethernet adapter driver")
-Cc: stable@kernel.org
-Signed-off-by: Jann Horn <jannh@google.com>
+write to 0xffff88816f3ab9c0 of 8 bytes by task 20260 on cpu 1:
+ dropmon_net_event+0xb8/0x2b0 net/core/drop_monitor.c:1579
+ notifier_call_chain kernel/notifier.c:84 [inline]
+ raw_notifier_call_chain+0x53/0xb0 kernel/notifier.c:392
+ call_netdevice_notifiers_info net/core/dev.c:1919 [inline]
+ call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
+ call_netdevice_notifiers net/core/dev.c:1945 [inline]
+ unregister_netdevice_many+0x867/0xfb0 net/core/dev.c:10415
+ ip_tunnel_delete_nets+0x24a/0x280 net/ipv4/ip_tunnel.c:1123
+ vti_exit_batch_net+0x2a/0x30 net/ipv4/ip_vti.c:515
+ ops_exit_list net/core/net_namespace.c:173 [inline]
+ cleanup_net+0x4dc/0x8d0 net/core/net_namespace.c:597
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x1bf/0x1e0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+read to 0xffff88816f3ab9c0 of 8 bytes by interrupt on cpu 0:
+ trace_napi_poll_hit+0x89/0x1c0 net/core/drop_monitor.c:292
+ trace_napi_poll include/trace/events/napi.h:14 [inline]
+ __napi_poll+0x36b/0x3f0 net/core/dev.c:6366
+ napi_poll net/core/dev.c:6432 [inline]
+ net_rx_action+0x29e/0x650 net/core/dev.c:6519
+ __do_softirq+0x158/0x2de kernel/softirq.c:558
+ do_softirq+0xb1/0xf0 kernel/softirq.c:459
+ __local_bh_enable_ip+0x68/0x70 kernel/softirq.c:383
+ __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:167 [inline]
+ _raw_spin_unlock_bh+0x33/0x40 kernel/locking/spinlock.c:210
+ spin_unlock_bh include/linux/spinlock.h:394 [inline]
+ ptr_ring_consume_bh include/linux/ptr_ring.h:367 [inline]
+ wg_packet_decrypt_worker+0x73c/0x780 drivers/net/wireguard/receive.c:506
+ process_one_work+0x3f6/0x960 kernel/workqueue.c:2307
+ worker_thread+0x616/0xa70 kernel/workqueue.c:2454
+ kthread+0x1bf/0x1e0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
+
+value changed: 0xffff88815883e000 -> 0x0000000000000000
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 26435 Comm: kworker/0:1 Not tainted 5.17.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: wg-crypt-wg2 wg_packet_decrypt_worker
+
+Fixes: 4ea7e38696c7 ("dropmon: add ability to detect when hardware dropsrxpackets")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   68 +++++++++++++++++++++++------------------
- 1 file changed, 39 insertions(+), 29 deletions(-)
+ net/core/drop_monitor.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1369,59 +1369,69 @@ static int ax88179_rx_fixup(struct usbne
- 	u16 hdr_off;
- 	u32 *pkt_hdr;
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -224,13 +224,17 @@ static void trace_napi_poll_hit(void *ig
  
--	/* This check is no longer done by usbnet */
--	if (skb->len < dev->net->hard_header_len)
-+	/* At the end of the SKB, there's a header telling us how many packets
-+	 * are bundled into this buffer and where we can find an array of
-+	 * per-packet metadata (which contains elements encoded into u16).
-+	 */
-+	if (skb->len < 4)
- 		return 0;
--
- 	skb_trim(skb, skb->len - 4);
- 	memcpy(&rx_hdr, skb_tail_pointer(skb), 4);
- 	le32_to_cpus(&rx_hdr);
--
- 	pkt_cnt = (u16)rx_hdr;
- 	hdr_off = (u16)(rx_hdr >> 16);
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(new_stat, &hw_stats_list, list) {
++		struct net_device *dev;
 +
-+	if (pkt_cnt == 0)
-+		return 0;
+ 		/*
+ 		 * only add a note to our monitor buffer if:
+ 		 * 1) this is the dev we received on
+ 		 * 2) its after the last_rx delta
+ 		 * 3) our rx_dropped count has gone up
+ 		 */
+-		if ((new_stat->dev == napi->dev)  &&
++		/* Paired with WRITE_ONCE() in dropmon_net_event() */
++		dev = READ_ONCE(new_stat->dev);
++		if ((dev == napi->dev)  &&
+ 		    (time_after(jiffies, new_stat->last_rx + dm_hw_check_delta)) &&
+ 		    (napi->dev->stats.rx_dropped != new_stat->last_drop_val)) {
+ 			trace_drop_common(NULL, NULL);
+@@ -345,7 +349,10 @@ static int dropmon_net_event(struct noti
+ 		mutex_lock(&trace_state_mutex);
+ 		list_for_each_entry_safe(new_stat, tmp, &hw_stats_list, list) {
+ 			if (new_stat->dev == dev) {
+-				new_stat->dev = NULL;
 +
-+	/* Make sure that the bounds of the metadata array are inside the SKB
-+	 * (and in front of the counter at the end).
-+	 */
-+	if (pkt_cnt * 2 + hdr_off > skb->len)
-+		return 0;
- 	pkt_hdr = (u32 *)(skb->data + hdr_off);
- 
--	while (pkt_cnt--) {
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, hdr_off);
++				/* Paired with READ_ONCE() in trace_napi_poll_hit() */
++				WRITE_ONCE(new_stat->dev, NULL);
 +
-+	for (; ; pkt_cnt--, pkt_hdr++) {
- 		u16 pkt_len;
- 
- 		le32_to_cpus(pkt_hdr);
- 		pkt_len = (*pkt_hdr >> 16) & 0x1fff;
- 
--		/* Check CRC or runt packet */
--		if ((*pkt_hdr & AX_RXHDR_CRC_ERR) ||
--		    (*pkt_hdr & AX_RXHDR_DROP_ERR)) {
--			skb_pull(skb, (pkt_len + 7) & 0xFFF8);
--			pkt_hdr++;
--			continue;
--		}
--
--		if (pkt_cnt == 0) {
--			skb->len = pkt_len;
--			/* Skip IP alignment pseudo header */
--			skb_pull(skb, 2);
--			skb_set_tail_pointer(skb, skb->len);
--			skb->truesize = pkt_len + sizeof(struct sk_buff);
--			ax88179_rx_checksum(skb, pkt_hdr);
--			return 1;
--		}
-+		if (pkt_len > skb->len)
-+			return 0;
- 
--		ax_skb = skb_clone(skb, GFP_ATOMIC);
--		if (ax_skb) {
-+		/* Check CRC or runt packet */
-+		if (((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) == 0) &&
-+		    pkt_len >= 2 + ETH_HLEN) {
-+			bool last = (pkt_cnt == 0);
-+
-+			if (last) {
-+				ax_skb = skb;
-+			} else {
-+				ax_skb = skb_clone(skb, GFP_ATOMIC);
-+				if (!ax_skb)
-+					return 0;
-+			}
- 			ax_skb->len = pkt_len;
- 			/* Skip IP alignment pseudo header */
- 			skb_pull(ax_skb, 2);
- 			skb_set_tail_pointer(ax_skb, ax_skb->len);
- 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(ax_skb, pkt_hdr);
-+
-+			if (last)
-+				return 1;
-+
- 			usbnet_skb_return(dev, ax_skb);
--		} else {
--			return 0;
- 		}
- 
--		skb_pull(skb, (pkt_len + 7) & 0xFFF8);
--		pkt_hdr++;
-+		/* Trim this packet away from the SKB */
-+		if (!skb_pull(skb, (pkt_len + 7) & 0xFFF8))
-+			return 0;
- 	}
--	return 1;
- }
- 
- static struct sk_buff *
+ 				if (trace_state == TRACE_OFF) {
+ 					list_del_rcu(&new_stat->list);
+ 					kfree_rcu(new_stat, rcu);
 
 
