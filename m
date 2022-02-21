@@ -2,245 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04289C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A8BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 15:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379092AbiBUPZf (ORCPT
+        id S1379105AbiBUP0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 10:25:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43118 "EHLO
+        Mon, 21 Feb 2022 10:26:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237035AbiBUPZd (ORCPT
+        with ESMTP id S1379165AbiBUPZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 10:25:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A779F1EEC4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 07:25:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57F30B8121B
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 15:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E1BC340E9;
-        Mon, 21 Feb 2022 15:25:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="i5kFHiEZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645457104;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=n6YKeWGkKcn+pgmKzjQ7qIw4/iWtykMXlSfI/M7Xigc=;
-        b=i5kFHiEZtcgVN3Wj594UqaIXgTh/ltzrz2QqypGaSO0nBBjWbw5aorhG5BRb7GO3nSv9QY
-        3LnPeOgi+weXs2BsmnXq7nqUQJSINhDOz6n6lwINmyRKTLU4LyZftUG2qn6fMUZLaPwyzD
-        6eQ0ku3L5aesuOMYga0HxjWcnfhBsQQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 282caffc (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 21 Feb 2022 15:25:04 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     ebiggers@kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v2] random: unify early init crng load accounting
-Date:   Mon, 21 Feb 2022 16:24:56 +0100
-Message-Id: <20220221152456.2289150-1-Jason@zx2c4.com>
+        Mon, 21 Feb 2022 10:25:53 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF422183F;
+        Mon, 21 Feb 2022 07:25:30 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id v10so32885695qvk.7;
+        Mon, 21 Feb 2022 07:25:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ukjWUqaZt3+eoNsRHcVB7snMzKbwCuF6mFtYkqxmZ+w=;
+        b=AZvCNBBYZjkTIx5jboOTn+ceGrwYKyT4nZ5iSb7DyPc9U5qMp0i11bZrpz19YMU/MF
+         O6Vo9mmajkJxvslVISnbXxMDIA8GGtU79YLKgz0MnWKBPRzcEZlfOZw0vfj2SNgVknY7
+         cOXy4KCFu1NHzDzOPEtO3e6HkAnMrDG5KtKLah7q3nuU8K+ZTwqCYqcE3uCGihFE9vqX
+         8epQ8deSoVHQTZY89snDKKsTRgqCwRZf0tIeA0afsaxWxTbSPOjCUSeeDrFfbLLJuZ+P
+         QJ+oMW6DkTFTWUIhxEsmv73mjMwIjYYVITL5M40PyuhmBayqWyVv0Wl0u6cxCtXroiRe
+         OsmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ukjWUqaZt3+eoNsRHcVB7snMzKbwCuF6mFtYkqxmZ+w=;
+        b=TCmU66uAFFG95BkO+OUo8BJbygVni2JVP9YNJ/Aqhn5rY9JesWPpY8ONhrr3GT5JjN
+         uctnpSpwJKRp4fI57yGqIOpK3HPxfBWEdNkTFuQOA7i0CgsfHLbngxZrsej4O0+cp+Vj
+         AlLbT/5sSGpC/1astx/sMSWwv5B/ZaZknvbA0o1uYP88HRCtmOdtwuUCUnaXojW9ZHr7
+         u4AnAKkmq5YIxCwTpxY7xIX+6HW2KI8oqScoNL8mobYNp3naTQlYQUPMFCnnSRShK4B6
+         DLLfQCo1f5q6aI5JY7ayGVD3jUeGw0ICuHtHNcVWm7FqGRONs7CvCsL8zBMXRi8kHS1r
+         YkPw==
+X-Gm-Message-State: AOAM5325UuMr2hbox1hwvTCmhSwap0tdFqqzx+EMkd5focnE8GqEY3YM
+        FOevmQ30JAmc0BusIaysDQM=
+X-Google-Smtp-Source: ABdhPJxuO2DSy2ULLdq/c/JMRUqXKUObiKD2ugSfuXgHZEjXyyNAIK3y2vXEU7JRQ2dxAs20bGoWxg==
+X-Received: by 2002:ac8:5a4f:0:b0:2dd:e0d4:a4f1 with SMTP id o15-20020ac85a4f000000b002dde0d4a4f1mr8825807qta.478.1645457129220;
+        Mon, 21 Feb 2022 07:25:29 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t18sm30430655qta.90.2022.02.21.07.25.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 07:25:28 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <143c0449-8ce6-2179-1391-b3e3160b9846@roeck-us.net>
+Date:   Mon, 21 Feb 2022 07:25:26 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/4] hwmon: (lm90) Use hwmon_notify_event()
+Content-Language: en-US
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Matt Merhar <mattmerhar@protonmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20210618215455.19986-1-digetx@gmail.com>
+ <20210618215455.19986-3-digetx@gmail.com>
+ <9580f660-2a11-40e4-2986-f05703822d72@nvidia.com>
+ <8d0c818a-d714-d8ab-f825-073cf549b959@gmail.com>
+ <13b07bb3-90e4-a501-469c-ce64bc90bfd5@nvidia.com>
+ <4c12cab4-6265-78c0-46ce-d4014c9919fe@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <4c12cab4-6265-78c0-46ce-d4014c9919fe@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crng_fast_load() and crng_slow_load() have different semantics:
+On 2/21/22 04:59, Dmitry Osipenko wrote:
+> 21.02.2022 15:56, Jon Hunter пишет:
+>>
+>> On 21/02/2022 12:36, Dmitry Osipenko wrote:
+>>> 21.02.2022 15:01, Jon Hunter пишет:
+>>>> Hi Dmitry,
+>>>>
+>>>> On 18/06/2021 22:54, Dmitry Osipenko wrote:
+>>>>> Use hwmon_notify_event() to notify userspace and thermal core about
+>>>>> temperature changes.
+>>>>>
+>>>>> Suggested-by: Guenter Roeck <linux@roeck-us.net>
+>>>>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>>>>> ---
+>>>>>     drivers/hwmon/lm90.c | 44
+>>>>> +++++++++++++++++++++++++++++++++-----------
+>>>>>     1 file changed, 33 insertions(+), 11 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/hwmon/lm90.c b/drivers/hwmon/lm90.c
+>>>>> index 2e057fad05b4..e7b678a40b39 100644
+>>>>> --- a/drivers/hwmon/lm90.c
+>>>>> +++ b/drivers/hwmon/lm90.c
+>>>>> @@ -465,6 +465,7 @@ enum lm90_temp11_reg_index {
+>>>>>       struct lm90_data {
+>>>>>         struct i2c_client *client;
+>>>>> +    struct device *hwmon_dev;
+>>>>>         u32 channel_config[4];
+>>>>>         struct hwmon_channel_info temp_info;
+>>>>>         const struct hwmon_channel_info *info[3];
+>>>>> @@ -1731,22 +1732,41 @@ static bool lm90_is_tripped(struct i2c_client
+>>>>> *client, u16 *status)
+>>>>>           if ((st & (LM90_STATUS_LLOW | LM90_STATUS_LHIGH |
+>>>>> LM90_STATUS_LTHRM)) ||
+>>>>>             (st2 & MAX6696_STATUS2_LOT2))
+>>>>> -        dev_warn(&client->dev,
+>>>>> -             "temp%d out of range, please check!\n", 1);
+>>>>> +        dev_dbg(&client->dev,
+>>>>> +            "temp%d out of range, please check!\n", 1);
+>>>>>         if ((st & (LM90_STATUS_RLOW | LM90_STATUS_RHIGH |
+>>>>> LM90_STATUS_RTHRM)) ||
+>>>>>             (st2 & MAX6696_STATUS2_ROT2))
+>>>>> -        dev_warn(&client->dev,
+>>>>> -             "temp%d out of range, please check!\n", 2);
+>>>>> +        dev_dbg(&client->dev,
+>>>>> +            "temp%d out of range, please check!\n", 2);
+>>>>>         if (st & LM90_STATUS_ROPEN)
+>>>>> -        dev_warn(&client->dev,
+>>>>> -             "temp%d diode open, please check!\n", 2);
+>>>>> +        dev_dbg(&client->dev,
+>>>>> +            "temp%d diode open, please check!\n", 2);
+>>>>>         if (st2 & (MAX6696_STATUS2_R2LOW | MAX6696_STATUS2_R2HIGH |
+>>>>>                MAX6696_STATUS2_R2THRM | MAX6696_STATUS2_R2OT2))
+>>>>> -        dev_warn(&client->dev,
+>>>>> -             "temp%d out of range, please check!\n", 3);
+>>>>> +        dev_dbg(&client->dev,
+>>>>> +            "temp%d out of range, please check!\n", 3);
+>>>>>         if (st2 & MAX6696_STATUS2_R2OPEN)
+>>>>> -        dev_warn(&client->dev,
+>>>>> -             "temp%d diode open, please check!\n", 3);
+>>>>> +        dev_dbg(&client->dev,
+>>>>> +            "temp%d diode open, please check!\n", 3);
+>>>>> +
+>>>>> +    if (st & LM90_STATUS_LLOW)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_min, 0);
+>>>>> +    if (st & LM90_STATUS_RLOW)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_min, 1);
+>>>>> +    if (st2 & MAX6696_STATUS2_R2LOW)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_min, 2);
+>>>>> +    if (st & LM90_STATUS_LHIGH)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_max, 0);
+>>>>> +    if (st & LM90_STATUS_RHIGH)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_max, 1);
+>>>>> +    if (st2 & MAX6696_STATUS2_R2HIGH)
+>>>>> +        hwmon_notify_event(data->hwmon_dev, hwmon_temp,
+>>>>> +                   hwmon_temp_max, 2);
+>>>>
+>>>>
+>>>> We observed a random null pointer deference crash somewhere in the
+>>>> thermal core (crash log below is not very helpful) when calling
+>>>> mutex_lock(). It looks like we get an interrupt when this crash
+>>>> happens.
+>>>>
+>>>> Looking at the lm90 driver, per the above, I now see we are calling
+>>>> hwmon_notify_event() from the lm90 interrupt handler. Looking at
+>>>> hwmon_notify_event() I see that ...
+>>>>
+>>>> hwmon_notify_event()
+>>>>     --> hwmon_thermal_notify()
+>>>>       --> thermal_zone_device_update()
+>>>>         --> update_temperature()
+>>>>           --> mutex_lock()
+>>>>
+>>>> So although I don't completely understand the crash, it does seem
+>>>> that we should not be calling hwmon_notify_event() from the
+>>>> interrupt handler.
+>>>>
+>>>> BTW I have not reproduced this myself yet, so I have just been
+>>>> reviewing the code to try and understand this.
+>>>
+>>> Matt Merhar was experiencing a similar issue on T30 Ouya, but I never
+>>> managed to reproduce it on Nexus 7 and Acer A500 tablets, and couldn't
+>>> spot any problem in the code. IIRC, it was a NULL dereference of another
+>>> pointer within that code.
+>>
+>>
+>> OK. From looking at the above I don't think we can call
+>> hwmon_notify_event() from an interrupt handler because this is going to
+>> try and request a mutex. So we need to fix that.
+> 
+> The interrupt is threaded, so it can take a mutex.
 
-- crng_fast_load() xors and accounts with crng_init_cnt.
-- crng_slow_load() hashes and doesn't account.
+Exactly. The problem is elsewhere.
 
-However add_hwgenerator_randomness() can afford to hash (it's called
-from a kthread), and it should account. Additionally, ones that can
-afford to hash don't need to take a trylock but can take a normal lock.
-So, we combine these into one function, crng_pre_init_inject(), which
-allows us to control these in a uniform way. This will make it simpler
-later to simplify this all down when the time comes for that.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v1->v2:
-- cp -> input,
-- fix comment reference to old function,
-- fix brace style.
-
- drivers/char/random.c | 112 ++++++++++++++++++++++--------------------
- 1 file changed, 58 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 0541066e2e5c..93d01f918720 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -386,7 +386,7 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, because
--	 * this is what crng_{fast,slow}_load mutate during early init.
-+	 * this is what crng_pre_init_inject() mutates during early init.
- 	 */
- 	if (unlikely(!crng_ready())) {
- 		bool ready;
-@@ -437,72 +437,75 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
- }
- 
- /*
-- * This function is for crng_init == 0 only.
-- *
-- * crng_fast_load() can be called by code in the interrupt service
-- * path.  So we can't afford to dilly-dally. Returns the number of
-- * bytes processed from cp.
-+ * This function is for crng_init == 0 only. It loads entropy directly
-+ * into the crng's key, without going through the input pool. It is,
-+ * generally speaking, not very safe, but we use this only at early
-+ * boot time when it's better to have something there rather than
-+ * nothing.
-+ *
-+ * There are two paths, a slow one and a fast one. The slow one
-+ * hashes the input along with the current key. The fast one simply
-+ * xors it in, and should only be used from interrupt context.
-+ *
-+ * If account is set, then the crng_init_cnt counter is incremented.
-+ * This shouldn't be set by functions like add_device_randomness(),
-+ * where we can't trust the buffer passed to it is guaranteed to be
-+ * unpredictable (so it might not have any entropy at all).
-+ *
-+ * Returns the number of bytes processed from input, which is bounded
-+ * by CRNG_INIT_CNT_THRESH if account is true.
-  */
--static size_t crng_fast_load(const void *cp, size_t len)
-+static size_t crng_pre_init_inject(const void *input, size_t len,
-+				   bool fast, bool account)
- {
- 	static int crng_init_cnt = 0;
- 	unsigned long flags;
--	const u8 *src = (const u8 *)cp;
--	size_t ret = 0;
- 
--	if (!spin_trylock_irqsave(&base_crng.lock, flags))
--		return 0;
-+	if (fast) {
-+		if (!spin_trylock_irqsave(&base_crng.lock, flags))
-+			return 0;
-+	} else {
-+		spin_lock_irqsave(&base_crng.lock, flags);
-+	}
-+
- 	if (crng_init != 0) {
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		return 0;
- 	}
--	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
--		base_crng.key[crng_init_cnt % sizeof(base_crng.key)] ^= *src;
--		src++; crng_init_cnt++; len--; ret++;
--	}
--	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
--		++base_crng.generation;
--		crng_init = 1;
--	}
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--	if (crng_init == 1)
--		pr_notice("fast init done\n");
--	return ret;
--}
- 
--/*
-- * This function is for crng_init == 0 only.
-- *
-- * crng_slow_load() is called by add_device_randomness, which has two
-- * attributes.  (1) We can't trust the buffer passed to it is
-- * guaranteed to be unpredictable (so it might not have any entropy at
-- * all), and (2) it doesn't have the performance constraints of
-- * crng_fast_load().
-- *
-- * So, we simply hash the contents in with the current key. Finally,
-- * we do *not* advance crng_init_cnt since buffer we may get may be
-- * something like a fixed DMI table (for example), which might very
-- * well be unique to the machine, but is otherwise unvarying.
-- */
--static void crng_slow_load(const void *cp, size_t len)
--{
--	unsigned long flags;
--	struct blake2s_state hash;
-+	if (account)
-+		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 
--	blake2s_init(&hash, sizeof(base_crng.key));
-+	if (fast) {
-+		const u8 *src = input;
-+		size_t i;
- 
--	if (!spin_trylock_irqsave(&base_crng.lock, flags))
--		return;
--	if (crng_init != 0) {
--		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return;
-+		for (i = 0; i < len; ++i)
-+			base_crng.key[(crng_init_cnt + i) %
-+				      sizeof(base_crng.key)] ^= src[i];
-+	} else {
-+		struct blake2s_state hash;
-+
-+		blake2s_init(&hash, sizeof(base_crng.key));
-+		blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
-+		blake2s_update(&hash, input, len);
-+		blake2s_final(&hash, base_crng.key);
- 	}
- 
--	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--	blake2s_update(&hash, cp, len);
--	blake2s_final(&hash, base_crng.key);
-+	if (account) {
-+		crng_init_cnt += len;
-+		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-+			++base_crng.generation;
-+			crng_init = 1;
-+		}
-+	}
- 
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-+
-+	if (crng_init == 1)
-+		pr_notice("fast init done\n");
-+
-+	return len;
- }
- 
- static void _get_random_bytes(void *buf, size_t nbytes)
-@@ -1018,7 +1021,7 @@ void add_device_randomness(const void *buf, size_t size)
- 	unsigned long flags;
- 
- 	if (!crng_ready() && size)
--		crng_slow_load(buf, size);
-+		crng_pre_init_inject(buf, size, false, false);
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(buf, size);
-@@ -1135,7 +1138,7 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0)) {
--		size_t ret = crng_fast_load(buffer, count);
-+		size_t ret = crng_pre_init_inject(buffer, count, false, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
- 		buffer += ret;
-@@ -1298,7 +1301,8 @@ void add_interrupt_randomness(int irq)
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
--		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
-+		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
-+					 true, true) > 0) {
- 			atomic_set(&fast_pool->count, 0);
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
--- 
-2.35.1
-
+Guenter
