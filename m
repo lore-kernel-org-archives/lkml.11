@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0899DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350716AbiBUJjS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:39:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36802 "EHLO
+        id S237351AbiBUJj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 04:39:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350183AbiBUJbw (ORCPT
+        with ESMTP id S1350364AbiBUJcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:31:52 -0500
+        Mon, 21 Feb 2022 04:32:20 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDDD27CF1;
-        Mon, 21 Feb 2022 01:13:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BD027FF6;
+        Mon, 21 Feb 2022 01:13:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE5D2608C1;
-        Mon, 21 Feb 2022 09:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8CD7C340E9;
-        Mon, 21 Feb 2022 09:13:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11F4C60DDD;
+        Mon, 21 Feb 2022 09:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4EEC340F1;
+        Mon, 21 Feb 2022 09:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645434806;
-        bh=kPsipjtm5BFbOtdKq1wVwjsC6HImBrZUVW4TMQmoygI=;
+        s=korg; t=1645434820;
+        bh=MpEIPhkzQOZpoFUN2LKDl0Xl8eV+Srl14bKJWpvSQxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztN97UbMiiNtu0HdB+SQNdd5PGE9DQQLZPYHio+J0dBAKTI0x9qpS0udHzxVT0rNR
-         K2HkVfRl3jno/7b695XaN2ojzUG1JjdbawQAzpuKiiIVATtWBQBygEUijBfB2HHds1
-         d2Tg+gFm8RPH0y9KTM+uHGMtXpaFqxTxwCgK02AQ=
+        b=A9GPAnxlWk8dIljNTw9WmmnuYFU2iCEp0fWJmzJ4S5oCEvQhovNlJySm5qWJH/0bk
+         RH4CSGhUbVS7hPiWxP+HVdMw4OgqyEfIbp3sw26LjJakBdwgQ6fSV1vodhSMBoJtuy
+         mATKV1hjai1vBtZ1GN733iKZE+3Xf3f6d6sAvepY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ansuel Smith <ansuelsmth@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 137/196] mtd: parsers: qcom: Fix kernel panic on skipped partition
-Date:   Mon, 21 Feb 2022 09:49:29 +0100
-Message-Id: <20220221084935.502531213@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 142/196] mtd: rawnand: ingenic: Fix missing put_device in ingenic_ecc_get
+Date:   Mon, 21 Feb 2022 09:49:34 +0100
+Message-Id: <20220221084935.670823690@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 References: <20220221084930.872957717@linuxfoundation.org>
@@ -49,106 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 65d003cca335cabc0160d3cd7daa689eaa9dd3cd upstream.
+[ Upstream commit ba1b71b008e97fd747845ff3a818420b11bbe830 ]
 
-In the event of a skipped partition (case when the entry name is empty)
-the kernel panics in the cleanup function as the name entry is NULL.
-Rework the parser logic by first checking the real partition number and
-then allocate the space and set the data for the valid partitions.
+If of_find_device_by_node() succeeds, ingenic_ecc_get() doesn't have
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling.
 
-The logic was also fundamentally wrong as with a skipped partition, the
-parts number returned was incorrect by not decreasing it for the skipped
-partitions.
-
-Fixes: 803eb124e1a6 ("mtd: parsers: Add Qcom SMEM parser")
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Fixes: 15de8c6efd0e ("mtd: rawnand: ingenic: Separate top-level and SoC specific code")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220116032211.9728-1-ansuelsmth@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/linux-mtd/20211230072751.21622-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/parsers/qcomsmempart.c |   31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ drivers/mtd/nand/raw/ingenic/ingenic_ecc.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/mtd/parsers/qcomsmempart.c
-+++ b/drivers/mtd/parsers/qcomsmempart.c
-@@ -58,11 +58,11 @@ static int parse_qcomsmem_part(struct mt
- 			       const struct mtd_partition **pparts,
- 			       struct mtd_part_parser_data *data)
- {
-+	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
-+	int ret, i, j, tmpparts, numparts = 0;
- 	struct smem_flash_pentry *pentry;
- 	struct smem_flash_ptable *ptable;
--	size_t len = SMEM_FLASH_PTABLE_HDR_LEN;
- 	struct mtd_partition *parts;
--	int ret, i, numparts;
- 	char *name, *c;
+diff --git a/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c b/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
+index efe0ffe4f1abc..9054559e52dda 100644
+--- a/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
++++ b/drivers/mtd/nand/raw/ingenic/ingenic_ecc.c
+@@ -68,9 +68,14 @@ static struct ingenic_ecc *ingenic_ecc_get(struct device_node *np)
+ 	struct ingenic_ecc *ecc;
  
- 	if (IS_ENABLED(CONFIG_MTD_SPI_NOR_USE_4K_SECTORS)
-@@ -87,8 +87,8 @@ static int parse_qcomsmem_part(struct mt
- 	}
+ 	pdev = of_find_device_by_node(np);
+-	if (!pdev || !platform_get_drvdata(pdev))
++	if (!pdev)
+ 		return ERR_PTR(-EPROBE_DEFER);
  
- 	/* Ensure that # of partitions is less than the max we have allocated */
--	numparts = le32_to_cpu(ptable->numparts);
--	if (numparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
-+	tmpparts = le32_to_cpu(ptable->numparts);
-+	if (tmpparts > SMEM_FLASH_PTABLE_MAX_PARTS_V4) {
- 		pr_err("Partition numbers exceed the max limit\n");
- 		return -EINVAL;
- 	}
-@@ -116,11 +116,17 @@ static int parse_qcomsmem_part(struct mt
- 		return PTR_ERR(ptable);
- 	}
- 
-+	for (i = 0; i < tmpparts; i++) {
-+		pentry = &ptable->pentry[i];
-+		if (pentry->name[0] != '\0')
-+			numparts++;
++	if (!platform_get_drvdata(pdev)) {
++		put_device(&pdev->dev);
++		return ERR_PTR(-EPROBE_DEFER);
 +	}
 +
- 	parts = kcalloc(numparts, sizeof(*parts), GFP_KERNEL);
- 	if (!parts)
- 		return -ENOMEM;
+ 	ecc = platform_get_drvdata(pdev);
+ 	clk_prepare_enable(ecc->clk);
  
--	for (i = 0; i < numparts; i++) {
-+	for (i = 0, j = 0; i < tmpparts; i++) {
- 		pentry = &ptable->pentry[i];
- 		if (pentry->name[0] == '\0')
- 			continue;
-@@ -135,24 +141,25 @@ static int parse_qcomsmem_part(struct mt
- 		for (c = name; *c != '\0'; c++)
- 			*c = tolower(*c);
- 
--		parts[i].name = name;
--		parts[i].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
--		parts[i].mask_flags = pentry->attr;
--		parts[i].size = le32_to_cpu(pentry->length) * mtd->erasesize;
-+		parts[j].name = name;
-+		parts[j].offset = le32_to_cpu(pentry->offset) * mtd->erasesize;
-+		parts[j].mask_flags = pentry->attr;
-+		parts[j].size = le32_to_cpu(pentry->length) * mtd->erasesize;
- 		pr_debug("%d: %s offs=0x%08x size=0x%08x attr:0x%08x\n",
- 			 i, pentry->name, le32_to_cpu(pentry->offset),
- 			 le32_to_cpu(pentry->length), pentry->attr);
-+		j++;
- 	}
- 
- 	pr_debug("SMEM partition table found: ver: %d len: %d\n",
--		 le32_to_cpu(ptable->version), numparts);
-+		 le32_to_cpu(ptable->version), tmpparts);
- 	*pparts = parts;
- 
- 	return numparts;
- 
- out_free_parts:
--	while (--i >= 0)
--		kfree(parts[i].name);
-+	while (--j >= 0)
-+		kfree(parts[j].name);
- 	kfree(parts);
- 	*pparts = NULL;
- 
+-- 
+2.34.1
+
 
 
