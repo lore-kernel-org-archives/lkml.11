@@ -2,393 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 08:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344618AbiBUIxS (ORCPT
+        id S1345214AbiBUIxW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 03:53:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44228 "EHLO
+        Mon, 21 Feb 2022 03:53:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345398AbiBUIwu (ORCPT
+        with ESMTP id S1345229AbiBUIwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 03:52:50 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE21DCE;
-        Mon, 21 Feb 2022 00:52:15 -0800 (PST)
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 21 Feb
- 2022 16:52:13 +0800
-Message-ID: <0d00b84d-2e8c-3c12-d820-cf6f7142083d@amlogic.com>
-Date:   Mon, 21 Feb 2022 16:52:13 +0800
+        Mon, 21 Feb 2022 03:52:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA70B51;
+        Mon, 21 Feb 2022 00:52:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC6E76114D;
+        Mon, 21 Feb 2022 08:52:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3FAEC340E9;
+        Mon, 21 Feb 2022 08:52:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433530;
+        bh=NemhTekKI50YfXIPtZR5rXL0kvDH2915eaXdY4OLlHM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DeXWhFHoeD+RkW7N5cQFE3NfzEX2Q+4LjdV4Sahb5MHd4ySjHH170WxSTABcU7ZZw
+         Bos0GBqvsqpSTOmj97Nxxk/yWq+qF8ePt/OIRhsM250LkFDSREOSFKtl7CuOSuv+pv
+         vYXJGRHS6GSeUI1z2SZ7UB0BgT4ic3RQknC59BzQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/33] 4.9.303-rc1 review
+Date:   Mon, 21 Feb 2022 09:48:53 +0100
+Message-Id: <20220221084908.568970525@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V6 3/5] tty: serial: meson: Describes the calculation of
- the UART baud rate clock using a clock frame
-Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220118030911.12815-1-yu.tu@amlogic.com>
- <20220118030911.12815-4-yu.tu@amlogic.com>
- <1jfspi2i5s.fsf@starbuckisacylon.baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <1jfspi2i5s.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.303-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.303-rc1
+X-KernelTest-Deadline: 2022-02-23T08:49+00:00
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jerome,
-     Thank you very much for your reply. At present, the problem of 
-switching UART baud rate stuck has been solved. I'm ready to send the 
-next edition. However, I still don't understand your suggestion and need 
-to communicate with you.
+This is the start of the stable review cycle for the 4.9.303 release.
+There are 33 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-On 2022/1/21 5:40, Jerome Brunet wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> 
-> On Tue 18 Jan 2022 at 11:09, Yu Tu <yu.tu@amlogic.com> wrote:
-> 
->> Using the common Clock code to describe the UART baud rate clock
->> makes it easier for the UART driver to be compatible with the
->> baud rate requirements of the UART IP on different meson chips.
->>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   drivers/tty/serial/meson_uart.c | 195 +++++++++++++++++++++++---------
->>   1 file changed, 142 insertions(+), 53 deletions(-)
->>
->> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
->> index 7570958d010c..92fa91c825e6 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -6,6 +6,7 @@
->>    */
->>   
->>   #include <linux/clk.h>
->> +#include <linux/clk-provider.h>
->>   #include <linux/console.h>
->>   #include <linux/delay.h>
->>   #include <linux/init.h>
->> @@ -65,9 +66,7 @@
->>   #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
->>   
->>   /* AML_UART_REG5 bits */
->> -#define AML_UART_BAUD_MASK		0x7fffff
->>   #define AML_UART_BAUD_USE		BIT(23)
->> -#define AML_UART_BAUD_XTAL		BIT(24)
->>   
->>   #define AML_UART_PORT_NUM		12
->>   #define AML_UART_PORT_OFFSET		6
->> @@ -76,6 +75,11 @@
->>   #define AML_UART_POLL_USEC		5
->>   #define AML_UART_TIMEOUT_USEC		10000
->>   
->> +struct meson_uart_data {
->> +	struct clk	*baud_clk;
->> +	bool		use_xtal_clk;
->> +};
->> +
->>   static struct uart_driver meson_uart_driver;
->>   
->>   static struct uart_port *meson_ports[AML_UART_PORT_NUM];
->> @@ -293,19 +297,17 @@ static int meson_uart_startup(struct uart_port *port)
->>   
->>   static void meson_uart_change_speed(struct uart_port *port, unsigned long baud)
->>   {
->> +	struct meson_uart_data *private_data = port->private_data;
->>   	u32 val;
->>   
->>   	while (!meson_uart_tx_empty(port))
->>   		cpu_relax();
->>   
->> -	if (port->uartclk == 24000000) {
->> -		val = ((port->uartclk / 3) / baud) - 1;
->> -		val |= AML_UART_BAUD_XTAL;
->> -	} else {
->> -		val = ((port->uartclk * 10 / (baud * 4) + 5) / 10) - 1;
->> -	}
->> +	val = readl(port->membase + AML_UART_REG5);
->>   	val |= AML_UART_BAUD_USE;
->>   	writel(val, port->membase + AML_UART_REG5);
->> +
->> +	clk_set_rate(private_data->baud_clk, baud);
->>   }
->>   
->>   static void meson_uart_set_termios(struct uart_port *port,
->> @@ -395,11 +397,20 @@ static int meson_uart_verify_port(struct uart_port *port,
->>   
->>   static void meson_uart_release_port(struct uart_port *port)
->>   {
->> -	/* nothing to do */
->> +	struct meson_uart_data *private_data = port->private_data;
->> +
->> +	clk_disable_unprepare(private_data->baud_clk);
->>   }
->>   
->>   static int meson_uart_request_port(struct uart_port *port)
->>   {
->> +	struct meson_uart_data *private_data = port->private_data;
->> +	int ret;
->> +
->> +	ret = clk_prepare_enable(private_data->baud_clk);
->> +	if (ret)
->> +		return ret;
->> +
->>   	return 0;
->>   }
->>   
->> @@ -629,57 +640,105 @@ static struct uart_driver meson_uart_driver = {
->>   	.cons		= MESON_SERIAL_CONSOLE,
->>   };
->>   
->> -static inline struct clk *meson_uart_probe_clock(struct device *dev,
->> -						 const char *id)
->> -{
->> -	struct clk *clk = NULL;
->> -	int ret;
->> -
->> -	clk = devm_clk_get(dev, id);
->> -	if (IS_ERR(clk))
->> -		return clk;
->> -
->> -	ret = clk_prepare_enable(clk);
->> -	if (ret) {
->> -		dev_err(dev, "couldn't enable clk\n");
->> -		return ERR_PTR(ret);
->> -	}
->> -
->> -	devm_add_action_or_reset(dev,
->> -			(void(*)(void *))clk_disable_unprepare,
->> -			clk);
->> -
->> -	return clk;
->> -}
->> +static struct clk_div_table xtal_div_table[] = {
->> +	{0, 3},
->> +	{1, 1},
->> +	{2, 2},
->> +	{3, 2},
->> +};
->>   
->> -static int meson_uart_probe_clocks(struct platform_device *pdev,
->> -				   struct uart_port *port)
->> +static int meson_uart_probe_clocks(struct uart_port *port)
->>   {
->> -	struct clk *clk_xtal = NULL;
->> -	struct clk *clk_pclk = NULL;
->> -	struct clk *clk_baud = NULL;
->> +	struct meson_uart_data *private_data = port->private_data;
->> +	struct clk *clk_baud, *clk_xtal;
->> +	struct clk_hw *hw;
->> +	char clk_name[32];
->> +	struct clk_parent_data use_xtal_mux_parents[2] = {
->> +		{ .index = -1, },
->> +		{ .index = -1, },
->> +	};
-> 
-> You are using hw pointers later, you don't need to init the index to -1
-> I think
-> 
-I'm going to delete them in the next version.
-like: struct clk_parent_data use_xtal_mux_parents[2] = { };
->>   
->> -	clk_pclk = meson_uart_probe_clock(&pdev->dev, "pclk");
->> -	if (IS_ERR(clk_pclk))
->> -		return PTR_ERR(clk_pclk);
->> +	clk_baud = devm_clk_get(port->dev, "baud");
->> +	if (IS_ERR(clk_baud)) {
->> +		dev_err(port->dev, "Failed to get the 'baud' clock\n");
->> +		return PTR_ERR(clk_baud);
->> +	}
->>   
->> -	clk_xtal = meson_uart_probe_clock(&pdev->dev, "xtal");
->> +	clk_xtal = devm_clk_get(port->dev, "xtal");
->>   	if (IS_ERR(clk_xtal))
->> -		return PTR_ERR(clk_xtal);
->> -
->> -	clk_baud = meson_uart_probe_clock(&pdev->dev, "baud");
->> -	if (IS_ERR(clk_baud))
->> -		return PTR_ERR(clk_baud);
->> +		return dev_err_probe(port->dev, PTR_ERR(clk_xtal),
->> +				     "Failed to get the 'xtal' clock\n");
->> +
->> +	if (private_data->use_xtal_clk) {
->> +		snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->> +			 "xtal_div");
->> +		hw = devm_clk_hw_register_divider_table(port->dev,
->> +							clk_name,
->> +							__clk_get_name(clk_baud),
->> +							CLK_SET_RATE_NO_REPARENT,
->> +							port->membase + AML_UART_REG5,
->> +							26, 2,
->> +							CLK_DIVIDER_READ_ONLY,
->> +							xtal_div_table, NULL);
->> +		if (IS_ERR(hw))
->> +			return PTR_ERR(hw);
->> +
->> +		use_xtal_mux_parents[1].hw = hw;
->> +	} else {
->> +		snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->> +			 "clk81_div4");
->> +		hw = devm_clk_hw_register_fixed_factor(port->dev,
->> +						       clk_name,
->> +						       __clk_get_name(clk_baud),
->> +						       CLK_SET_RATE_NO_REPARENT,
->> +						       1, 4);
->> +		if (IS_ERR(hw))
->> +			return PTR_ERR(hw);
->> +
->> +		use_xtal_mux_parents[0].hw = hw;
->> +	}
-> 
-> The above is still wrong.
-> 
-> use_xtal_mux_parents initialize both parent to nothing
-> And you init the parent in the conditional above.
-> It is means only one path is actually set instead of both.
-> 
-> The mux always has 2 sources - Both should be set regardless of the HW version
-> You just add
-> * /4 on path 0 on legacy SoC
-> * the funky divider on path 1 on newer SoC.
-> 
-You do have a point, so I was wondering if you had any suggestions.
->>   
->> -	port->uartclk = clk_get_rate(clk_baud);
->> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->> +		 "use_xtal");
->> +	hw = __devm_clk_hw_register_mux(port->dev, NULL,
->> +					clk_name,
->> +					ARRAY_SIZE(use_xtal_mux_parents),
->> +					NULL, NULL,
->> +					use_xtal_mux_parents,
->> +					CLK_SET_RATE_PARENT,
->> +					port->membase + AML_UART_REG5,
->> +					24, 0x1,
->> +					CLK_MUX_READ_ONLY,
->> +					NULL, NULL);
->> +	if (IS_ERR(hw))
->> +		return PTR_ERR(hw);
->> +
->> +	port->uartclk = clk_hw_get_rate(hw);
->> +
->> +	snprintf(clk_name, sizeof(clk_name), "%s#%s", dev_name(port->dev),
->> +		 "baud_div");
->> +	hw = devm_clk_hw_register_divider(port->dev,
->> +					  clk_name,
->> +					  clk_hw_get_name(hw),
->> +					  CLK_SET_RATE_PARENT,
->> +					  port->membase + AML_UART_REG5,
->> +					  0, 23,
->> +					  CLK_DIVIDER_ROUND_CLOSEST,
->> +					  NULL);
->> +	if (IS_ERR(hw))
->> +		return PTR_ERR(hw);
->> +
->> +	private_data->baud_clk = hw->clk;
->>   
->>   	return 0;
->>   }
->>   
->>   static int meson_uart_probe(struct platform_device *pdev)
->>   {
->> +	struct meson_uart_data *private_data;
->>   	struct resource *res_mem;
->>   	struct uart_port *port;
->> +	struct clk *pclk;
->>   	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
->>   	int ret = 0;
->>   	int irq;
->> @@ -705,6 +764,15 @@ static int meson_uart_probe(struct platform_device *pdev)
->>   	if (!res_mem)
->>   		return -ENODEV;
->>   
->> +	pclk = devm_clk_get(&pdev->dev, "pclk");
->> +	if (IS_ERR(pclk))
->> +		return dev_err_probe(&pdev->dev, PTR_ERR(pclk),
->> +				     "Failed to get the 'pclk' clock\n");
->> +
->> +	ret = clk_prepare_enable(pclk);
->> +	if (ret)
->> +		return ret;
->> +
-> 
-> I think this is unbalanced.
-I don't understand what you mean. How should I change it? Can you tell 
-me more specifically.
-> 
->>   	irq = platform_get_irq(pdev, 0);
->>   	if (irq < 0)
->>   		return irq;
->> @@ -724,9 +792,13 @@ static int meson_uart_probe(struct platform_device *pdev)
->>   	if (IS_ERR(port->membase))
->>   		return PTR_ERR(port->membase);
->>   
->> -	ret = meson_uart_probe_clocks(pdev, port);
->> -	if (ret)
->> -		return ret;
->> +	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->> +				    GFP_KERNEL);
->> +	if (!private_data)
->> +		return -ENOMEM;
->> +
->> +	if (device_get_match_data(&pdev->dev))
->> +		private_data->use_xtal_clk = true;
->>   
->>   	port->iotype = UPIO_MEM;
->>   	port->mapbase = res_mem->start;
->> @@ -740,6 +812,11 @@ static int meson_uart_probe(struct platform_device *pdev)
->>   	port->x_char = 0;
->>   	port->ops = &meson_uart_ops;
->>   	port->fifosize = fifosize;
->> +	port->private_data = private_data;
->> +
->> +	ret = meson_uart_probe_clocks(port);
->> +	if (ret)
->> +		return ret;
->>   
->>   	meson_ports[pdev->id] = port;
->>   	platform_set_drvdata(pdev, port);
->> @@ -766,10 +843,22 @@ static int meson_uart_remove(struct platform_device *pdev)
->>   }
->>   
->>   static const struct of_device_id meson_uart_dt_match[] = {
->> -	{ .compatible = "amlogic,meson6-uart" },
->> -	{ .compatible = "amlogic,meson8-uart" },
->> -	{ .compatible = "amlogic,meson8b-uart" },
->> -	{ .compatible = "amlogic,meson-gx-uart" },
->> +	{
->> +		.compatible = "amlogic,meson6-uart",
->> +		.data = (void *)false,
->> +	},
->> +	{
->> +		.compatible = "amlogic,meson8-uart",
->> +		.data = (void *)false,
->> +	},
->> +	{
->> +		.compatible = "amlogic,meson8b-uart",
->> +		.data = (void *)false,
->> +	},
->> +	{
->> +		.compatible = "amlogic,meson-gx-uart",
->> +		.data = (void *)true,
->> +	},
->>   	{ /* sentinel */ },
->>   };
->>   MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
-> 
+Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
+Anything received after that time might be too late.
+
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.303-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
+
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.303-rc1
+
+Slark Xiao <slark_xiao@163.com>
+    net: usb: qmi_wwan: Add support for Dell DW5829e
+
+JaeSang Yoo <js.yoo.5b@gmail.com>
+    tracing: Fix tp_printk option related with tp_printk_stop_on_boot
+
+Zoltán Böszörményi <zboszor@gmail.com>
+    ata: libata-core: Disable TRIM on M88V29
+
+Trond Myklebust <trond.myklebust@hammerspace.com>
+    NFS: Do not report writeback errors in nfs_getattr()
+
+Jim Mattson <jmattson@google.com>
+    KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
+
+Rafał Miłecki <rafal@milecki.pl>
+    i2c: brcmstb: fix support for DSL and CM variants
+
+Eliav Farber <farbere@amazon.com>
+    EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
+
+Trond Myklebust <trond.myklebust@hammerspace.com>
+    NFS: LOOKUP_DIRECTORY is also ok with symlinks
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_range()
+
+Mark Brown <broonie@kernel.org>
+    ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw()
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: hda: Fix missing codec probe on Shenker Dock 15
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: hda: Fix regression on forced probe mask option
+
+Kees Cook <keescook@chromium.org>
+    libsubcmd: Fix use-after-free for realloc(..., 0)
+
+Eric Dumazet <edumazet@google.com>
+    drop_monitor: fix data-race in dropmon_net_event / trace_napi_poll_hit
+
+Johannes Berg <johannes.berg@intel.com>
+    iwlwifi: pcie: fix locking when "HW not ready"
+
+Seth Forshee <sforshee@digitalocean.com>
+    vsock: remove vsock from connected table when connect is interrupted by a signal
+
+Sunil Muthuswamy <sunilmut@microsoft.com>
+    vsock: correct removal of socket from the list
+
+Eric W. Biederman <ebiederm@xmission.com>
+    taskstats: Cleanup the use of task->exit_code
+
+Guillaume Nault <gnault@redhat.com>
+    xfrm: Don't accidentally set RTO_ONLINK in decode_session4()
+
+Nicholas Bishop <nicholasbishop@google.com>
+    drm/radeon: Fix backlight control on iMac 12,1
+
+Darrick J. Wong <djwong@kernel.org>
+    quota: make dquot_quota_sync return errors from ->sync_fs
+
+Darrick J. Wong <djwong@kernel.org>
+    vfs: make freeze_super abort when sync_filesystem returns error
+
+Duoming Zhou <duoming@zju.edu.cn>
+    ax25: improve the incomplete fix to avoid UAF and NPD bugs
+
+Yang Xu <xuyang2018.jy@fujitsu.com>
+    selftests/zram: Adapt the situation that /dev/zram0 is being used
+
+Yang Xu <xuyang2018.jy@fujitsu.com>
+    selftests/zram01.sh: Fix compression ratio calculation
+
+Yang Xu <xuyang2018.jy@fujitsu.com>
+    selftests/zram: Skip max_comp_streams interface on newer kernel
+
+Miquel Raynal <miquel.raynal@bootlin.com>
+    net: ieee802154: at86rf230: Stop leaking skb's
+
+Dāvis Mosāns <davispuh@gmail.com>
+    btrfs: send: in case of IO error log it
+
+John David Anglin <dave.anglin@bell.net>
+    parisc: Fix sglist access in ccio-dma.c
+
+John David Anglin <dave.anglin@bell.net>
+    parisc: Fix data TLB miss in sba_unmap_sg
+
+Randy Dunlap <rdunlap@infradead.org>
+    serial: parisc: GSC: fix build when IOSAPIC is not set
+
+Jann Horn <jannh@google.com>
+    net: usb: ax88179_178a: Fix out-of-bounds accesses in RX fixup
+
+Nathan Chancellor <nathan@kernel.org>
+    Makefile.extrawarn: Move -Wunaligned-access to W=1
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                        |   4 +-
+ arch/x86/kvm/pmu.c                              |   2 +-
+ drivers/ata/libata-core.c                       |   1 +
+ drivers/edac/edac_mc.c                          |   2 +-
+ drivers/gpu/drm/radeon/atombios_encoders.c      |   3 +-
+ drivers/i2c/busses/i2c-brcmstb.c                |   2 +-
+ drivers/net/ieee802154/at86rf230.c              |  13 ++-
+ drivers/net/usb/ax88179_178a.c                  |  68 +++++++-----
+ drivers/net/usb/qmi_wwan.c                      |   2 +
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c |   3 +-
+ drivers/parisc/ccio-dma.c                       |   3 +-
+ drivers/parisc/sba_iommu.c                      |   3 +-
+ drivers/tty/serial/8250/8250_gsc.c              |   2 +-
+ fs/btrfs/send.c                                 |   4 +
+ fs/nfs/dir.c                                    |   4 +-
+ fs/nfs/inode.c                                  |   7 +-
+ fs/quota/dquot.c                                |  11 +-
+ fs/super.c                                      |  19 ++--
+ kernel/trace/trace.c                            |   4 +
+ kernel/tsacct.c                                 |   7 +-
+ net/ax25/af_ax25.c                              |   9 +-
+ net/core/drop_monitor.c                         |  11 +-
+ net/ipv4/xfrm4_policy.c                         |   3 +-
+ net/vmw_vsock/af_vsock.c                        |  39 ++-----
+ scripts/Makefile.extrawarn                      |   1 +
+ sound/pci/hda/hda_intel.c                       |   5 +-
+ sound/soc/soc-ops.c                             |  29 +++--
+ tools/lib/subcmd/subcmd-util.h                  |  11 +-
+ tools/testing/selftests/zram/zram.sh            |  15 +--
+ tools/testing/selftests/zram/zram01.sh          |  33 ++----
+ tools/testing/selftests/zram/zram02.sh          |   1 -
+ tools/testing/selftests/zram/zram_lib.sh        | 134 ++++++++++++++++--------
+ 32 files changed, 250 insertions(+), 205 deletions(-)
+
+
