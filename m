@@ -2,111 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2308C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 09:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347180AbiBUJEE (ORCPT
+        id S1347197AbiBUJEJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 04:04:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58050 "EHLO
+        Mon, 21 Feb 2022 04:04:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346533AbiBUJAa (ORCPT
+        with ESMTP id S1347155AbiBUJAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 04:00:30 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1306024BD7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 00:55:35 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 17ED258022A;
-        Mon, 21 Feb 2022 03:55:13 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 21 Feb 2022 03:55:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=GMXE2sOdp9mirDDscRSA6iT0q+mcvYgiAP/MCQ
-        w0gSk=; b=OyEA6VSKzAB8kbjOXZuVGfXflhCuB1nEz8NzhYpFJmpYRiIZDfrYs7
-        RE4051i4UhZqQ3caHxhNnwcxHnnuNEsmH8XlHZSsZ76ca7kqv8LOqBbMMHxid0Uc
-        Jxg/lM2uU/ax+ONRSYy9I04N8eJDFHp4AuAW2ciyr76Igbfonk3btAEJdfzEbChK
-        3XhI2qhRbR7AlfSrSIBEH9Rl4iHAOlCgSijxf7NcgalYYOXgK4VgeUJ6Vo1LsJK9
-        Xi+EP7uzW+MVZfRhxFUJGd+JdVeAK8hnND051cFPLo+jCcg3A7y5TkL/jA70CD6x
-        VRViWQcEOpSt3KmTLTjgNN0YwcyNJigw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=GMXE2sOdp9mirDDsc
-        RSA6iT0q+mcvYgiAP/MCQw0gSk=; b=KoRxtDnWOu6I2QOzhYV04HNHVUcIksNu0
-        tHHrhtdVaNCK243mA4zcryn1ws0vFm5M7EyK27U7rjX/AahX+UoBd3Xiy1IP3uX0
-        iOFmXiAH0MG+YK91x+FylW6DuSjHl8wbAo+Bm1B91eR3qMjzus+0BvMwQuTgx5K0
-        qchyM6Ks/zCaPd40acH8bsS4C4d3wP6fcpOYNl4jMtkURbYHzW3JozSzHo4qtCnq
-        +71MotZGlGSUSK2xDcA3SJLSc/X3GmC0Ro+t3d7lq1GTqK04TkMD7eZGYzMS83QH
-        POBXU61hWihZ1zlQSOaqZFMTL+pp8h/di/hKhATusF+ODjC1+/Vhw==
-X-ME-Sender: <xms:cFMTYpbVznqmUzC-jtsHRrpOC-Z2ZjvVZPF8Zsx1VRgePzN3eqsq7A>
-    <xme:cFMTYgbRM2BAqM22XxM9h2J8qpVkFeRfmjT6tvEuuGOiOT_llYuXC94uPjnITCX-u
-    d4F9hcSVVGGW0Bao4M>
-X-ME-Received: <xmr:cFMTYr-7w2DIovNNtFqlFxgmVfzDwF24sSEbfTCey-I_W8VEN9kfAC1qcbFAkgwk_Tk2Rxg6z4irXVK4-B0XNx5kd0xQhg0xjWOdJ4k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeehgdduvddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
-    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:cFMTYnr2-wh0GFZI7A8qnNZAwaRYbGwkeGA2qhrwNPxUSUv52YS0RA>
-    <xmx:cFMTYkpSdXNXs2ts9xUEYHIEObzSkNnBCb1q0r2XbXA2F9mW3BM6qg>
-    <xmx:cFMTYtQhARpK8Yy7yQc5F0XHZ2WYjBVuWE82GeddXXyizgArjfRSSQ>
-    <xmx:cVMTYr2pQ8xzASEU977j_2k-2uaOcl8oo2odB_Qq9a6ROq0Ff791rg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Feb 2022 03:55:11 -0500 (EST)
-Date:   Mon, 21 Feb 2022 09:55:09 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/bridge: anx7625: switch to devm_drm_of_get_bridge
-Message-ID: <20220221085509.fies6j3hjsiz55rz@houat>
-References: <20220221072835.10032-1-jose.exposito89@gmail.com>
+        Mon, 21 Feb 2022 04:00:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BDC27B01;
+        Mon, 21 Feb 2022 00:55:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAA3761140;
+        Mon, 21 Feb 2022 08:55:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2158C340E9;
+        Mon, 21 Feb 2022 08:55:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645433752;
+        bh=8IUsyVO3CUV/NHmrn9iyf0MiQePqG+1lN0ZMxV/tScY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V3Gv2yAsZu2oWjP/YzMHqmxsrP3ICvri6F1GzgcTtkU7NoXWDwpFdxavtXVzjOYSJ
+         bU6KsTaTbXiNt+yWlViS5O0FRpxtotoMsOp55acgmGyDg7V/Bzff5ud8HYJ5g+HCSZ
+         EmMuUzQrcs8y9tiW4He9fwNww9GYw0XEQ6dZJFa4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Kees Kook <keescook@chromium.org>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-hardening@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 4.19 30/58] libsubcmd: Fix use-after-free for realloc(..., 0)
+Date:   Mon, 21 Feb 2022 09:49:23 +0100
+Message-Id: <20220221084912.857952812@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220221084911.895146879@linuxfoundation.org>
+References: <20220221084911.895146879@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="eczutt6qtkbsvjzt"
-Content-Disposition: inline
-In-Reply-To: <20220221072835.10032-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Kees Cook <keescook@chromium.org>
 
---eczutt6qtkbsvjzt
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 52a9dab6d892763b2a8334a568bd4e2c1a6fde66 upstream.
 
-On Mon, Feb 21, 2022 at 08:28:35AM +0100, Jos=E9 Exp=F3sito wrote:
-> The function "drm_of_find_panel_or_bridge" has been deprecated in
-> favor of "devm_drm_of_get_bridge".
->=20
-> Switch to the new function and reduce boilerplate.
->=20
-> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+GCC 12 correctly reports a potential use-after-free condition in the
+xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
+when size == 0:
 
-Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+In file included from help.c:12:
+In function 'xrealloc',
+    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   56 |                 ret = realloc(ptr, size);
+      |                       ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   58 |                         ret = realloc(ptr, 1);
+      |                               ^~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
 
-Maxime
+Fixes: 2f4ce5ec1d447beb ("perf tools: Finalize subcmd independence")
+Reported-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Signed-off-by: Kees Kook <keescook@chromium.org>
+Tested-by: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: linux-hardening@vger.kernel.org
+Cc: Valdis Klētnieks <valdis.kletnieks@vt.edu>
+Link: http://lore.kernel.org/lkml/20220213182443.4037039-1-keescook@chromium.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/lib/subcmd/subcmd-util.h |   11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
---eczutt6qtkbsvjzt
-Content-Type: application/pgp-signature; name="signature.asc"
+--- a/tools/lib/subcmd/subcmd-util.h
++++ b/tools/lib/subcmd/subcmd-util.h
+@@ -50,15 +50,8 @@ static NORETURN inline void die(const ch
+ static inline void *xrealloc(void *ptr, size_t size)
+ {
+ 	void *ret = realloc(ptr, size);
+-	if (!ret && !size)
+-		ret = realloc(ptr, 1);
+-	if (!ret) {
+-		ret = realloc(ptr, size);
+-		if (!ret && !size)
+-			ret = realloc(ptr, 1);
+-		if (!ret)
+-			die("Out of memory, realloc failed");
+-	}
++	if (!ret)
++		die("Out of memory, realloc failed");
+ 	return ret;
+ }
+ 
 
------BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYhNTbQAKCRDj7w1vZxhR
-xWSrAQCMUGagQwycqchROA9zu7E7WHhKxOpwfyKGy48CobttowEAuAOfimTfYbXE
-HWzmftcO4nNlobY2CTkFaY2vwbiLGQ0=
-=7bLY
------END PGP SIGNATURE-----
-
---eczutt6qtkbsvjzt--
