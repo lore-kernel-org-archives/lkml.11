@@ -2,127 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF49C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88127C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 21 Feb 2022 10:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354841AbiBUKb5 (ORCPT
+        id S1354858AbiBUKcA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 05:31:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44740 "EHLO
+        Mon, 21 Feb 2022 05:32:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355057AbiBUKav (ORCPT
+        with ESMTP id S1354834AbiBUKa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 05:30:51 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908FF6A04A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 01:52:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645437132; x=1676973132;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=C7P41dHaDHZTC6Y6Q9L7XgLflEr6ye2MKtW+2lEOfUI=;
-  b=FbtyvSww806OfGO7zOc6eRbBRQ9Zpi6FlxoR3LUMI6TE28E7nUi8IQ9z
-   gSCM8F9LWcauAsBiOOQHFqs1kca454YyMA/wIAHQqUdGNEuV62XpBYfbZ
-   m4CQLD1/mxy3RDvnRJtmg7+Q6fonEEJDRUIgqpG/Tn2G8P0dtzQZe+XDz
-   OIEZ1630QhWRMoUMlHVnUjm5PVTS79+A5qIrS3kyAaY3iRFYhZUO2CFVL
-   18G0uXPnXCoPI2wilkN1Ouj/gHLLyMA0AjNFIkzuNaGFceslx5IX0z2yD
-   qzMWJgLER7QSHqEM65pM0krJ5jPQtDYyuQkeafD+1M0n79QRyYp2dnzL/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="231445714"
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="231445714"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 01:52:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,385,1635231600"; 
-   d="scan'208";a="638501931"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Feb 2022 01:52:11 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nM5MY-0001Tq-ER; Mon, 21 Feb 2022 09:52:10 +0000
-Date:   Mon, 21 Feb 2022 17:51:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 400/2574] net/ipv4/nexthop.c:3686:32:
- sparse: sparse: dereference of noderef expression
-Message-ID: <202202211705.vXSB551U-lkp@intel.com>
+        Mon, 21 Feb 2022 05:30:28 -0500
+Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D263EE;
+        Mon, 21 Feb 2022 01:51:39 -0800 (PST)
+Received: from pro2.mail.ovh.net (unknown [10.108.1.79])
+        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id CC381E72481C;
+        Mon, 21 Feb 2022 10:51:09 +0100 (CET)
+Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
+ (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 21 Feb
+ 2022 10:51:08 +0100
+From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+To:     <linux-renesas-soc@vger.kernel.org>, <geert+renesas@glider.be>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
+        <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 0/5] ARM: r9a06g032: add support for the watchdogs
+Date:   Mon, 21 Feb 2022 10:50:26 +0100
+Message-ID: <20220221095032.95054-1-jjhiblot@traphandler.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [88.125.132.78]
+X-ClientProxiedBy: CAS3.emp2.local (172.16.1.3) To DAG1EX2.emp2.local
+ (172.16.2.2)
+X-Ovh-Tracer-Id: 6957217000239806939
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrkeeigddtkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkofgggfgtihesthekredtredttdenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepjedugfffleelheehveevuedtjeffgfejkedukeekudfguedtfeefuefhueevheeinecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   39e8a0edc8fae20758051dadf7846849edc18b88
-commit: 1458e29daa7f391e80f5d3f837586c6df551c740 [400/2574] headers/uninline: Uninline multi-use function: rb_link_node() and rb_link_node_rcu()
-config: x86_64-randconfig-s022-20220221 (https://download.01.org/0day-ci/archive/20220221/202202211705.vXSB551U-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=1458e29daa7f391e80f5d3f837586c6df551c740
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 1458e29daa7f391e80f5d3f837586c6df551c740
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vsyscall/ drivers/hwspinlock/ net/ipv4/
+Hi all,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This series adds support for the watchdog timers of the RZ/N1.
+The watchdog driver (rzn1-wdt.c) is derived from the driver available at
+https://github.com/renesas-rz/rzn1_linux.git with a few modifications
 
+In order to be able to reset the board when a watchdog timer expires,
+the RSTEN register must be configured. it is the responsability of the
+bootloader to set those bits (or not, depending on the chosen policy).
 
-sparse warnings: (new ones prefixed by >>)
->> net/ipv4/nexthop.c:3686:32: sparse: sparse: dereference of noderef expression
+If the watchdog reset source is not enabled, an interrupt is triggered
+when the watchdog expires. Currently this interrupt doesn't much apart
+from printing a message.
 
-vim +3686 net/ipv4/nexthop.c
+Changes v2 -> v3:
+* dts: changed compatible strings to include "renesas,r9a06g032-wdt" and
+  "renesas,rzn1-wdt".
+* driver: removed the SOC-specific "renesas,r9a06g032-wdt".
+* removed all the changes in the clock driver: the watchdog reset source
+  are not disabled anymore when the machine is halted.
+* fixed the clock rate type in the computations.
+* removed unnecessary printout and call to clk_disable_unprepare() in the
+  driver probe().
+    
+Changes v1 -> v2:
+* Modified the clock driver to not enable the watchdog reset sources.
+  On other renesas platforms, those bits are by the bootloader. The
+  watchdog reset sources are still disabled when the platform is halted
+  to prevent a watchdog reset.
+* Added a SOC-specific compatible "renesas,r9a06g032-wdt"
+* reordered the dts/i entries
+* default timeout is 60 seconds
+* reworked the probe function of the wdt driver to better error cases
+* removed the set_timeout() and use a fixed period computed in probe().
+  This removes the confusion and makes it clear that the period defined
+  by the user space in indeed handled by the watchdog core
 
-e95f2592f633a3 Ido Schimmel 2020-11-04  3667  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3668  void nexthop_bucket_set_hw_flags(struct net *net, u32 id, u16 bucket_index,
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3669  				 bool offload, bool trap)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3670  {
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3671  	struct nh_res_table *res_table;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3672  	struct nh_res_bucket *bucket;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3673  	struct nexthop *nexthop;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3674  	struct nh_group *nhg;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3675  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3676  	rcu_read_lock();
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3677  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3678  	nexthop = nexthop_find_by_id(net, id);
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3679  	if (!nexthop || !nexthop->is_group)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3680  		goto out;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3681  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3682  	nhg = rcu_dereference(nexthop->nh_grp);
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3683  	if (!nhg->resilient)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3684  		goto out;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3685  
-56ad5ba344dea9 Ido Schimmel 2021-03-11 @3686  	if (bucket_index >= nhg->res_table->num_nh_buckets)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3687  		goto out;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3688  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3689  	res_table = rcu_dereference(nhg->res_table);
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3690  	bucket = &res_table->nh_buckets[bucket_index];
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3691  	bucket->nh_flags &= ~(RTNH_F_OFFLOAD | RTNH_F_TRAP);
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3692  	if (offload)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3693  		bucket->nh_flags |= RTNH_F_OFFLOAD;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3694  	if (trap)
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3695  		bucket->nh_flags |= RTNH_F_TRAP;
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3696  
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3697  out:
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3698  	rcu_read_unlock();
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3699  }
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3700  EXPORT_SYMBOL(nexthop_bucket_set_hw_flags);
-56ad5ba344dea9 Ido Schimmel 2021-03-11  3701  
+Jean-Jacques Hiblot (4):
+  dt-bindings: clock: r9a06g032: Add the definition of the watchdog
+    clock
+  dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
+  ARM: dts: r9a06g032: Add the watchdog nodes
+  ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0 with a 60s timeout
 
-:::::: The code at line 3686 was first introduced by commit
-:::::: 56ad5ba344dea9c914331da8754f5ba7cede9941 nexthop: Allow setting "offload" and "trap" indication of nexthop buckets
+Phil Edworthy (1):
+  watchdog: Add Renesas RZ/N1 Watchdog driver
 
-:::::: TO: Ido Schimmel <idosch@nvidia.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
+ .../bindings/watchdog/renesas,wdt.yaml        |   6 +
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |   5 +
+ arch/arm/boot/dts/r9a06g032.dtsi              |  16 ++
+ drivers/watchdog/Kconfig                      |   8 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/rzn1_wdt.c                   | 206 ++++++++++++++++++
+ include/dt-bindings/clock/r9a06g032-sysctrl.h |   1 +
+ 7 files changed, 243 insertions(+)
+ create mode 100644 drivers/watchdog/rzn1_wdt.c
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+2.25.1
+
