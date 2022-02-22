@@ -2,90 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF584C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7624DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241114AbiBVDUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 22:20:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51044 "EHLO
+        id S241156AbiBVDU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 22:20:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiBVDUo (ORCPT
+        with ESMTP id S241033AbiBVDUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 22:20:44 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEB193F8;
-        Mon, 21 Feb 2022 19:20:10 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id c18so15914340ioc.6;
-        Mon, 21 Feb 2022 19:20:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=byRYyFHF1RfzOq4HLIneApDEfH4u8IiUuf/rJRXw2TE=;
-        b=TJ07BWtF6OCGG5MEaK5reraVvmo57yyHKf2yxmjI9eRrja9HJpCqAp8i3Hpil+raCc
-         8x2A/EEjne4doxfSgMAnZkRDTogvda4grCCvc4kMUFh3ZSJAXf5tlxaGbiYgGll9RWjs
-         M9A8geSWxEKq7AzJ5MSBB5g1lo/u7uEO2jiZ/AchKD8+4G4uGGZ2Ba4ea87TX7889fqS
-         5dd3GTQIKNAaCeu+4Ex7i3imcakT23x9oFmfCJjECz5weZSQvpvitrCGRimV8Xqzkro/
-         vLhCCjkMsNphSvXuSShaKqQXcYwlfTIMfIRw5Knd7qjS8MGth/H01vGOAI80nVyr23/S
-         jAkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=byRYyFHF1RfzOq4HLIneApDEfH4u8IiUuf/rJRXw2TE=;
-        b=VvZZPCPNQgsH2CR2q0p5LyAJEuC/5xqlvLOGYhWoUJRTcPAtvoZN4PHdM1sBFn2COX
-         3rl8Vq/4evDOG7f6xDSKkyxGHLlvZg9DgnYUGHwf6mE+nrss0qZO1Gjfpy28ERJDxHsP
-         zDqtWXePs/B0jBsMJxuzkVpcXS7xNmTOPzPnTO5RjuXqz0et3bQg8V69TVovPu3hgHxw
-         VBEXdJuq8gaZPZ9b2OO1kWbtg67KzafvUFq7uY/EMLTrmhXx2sBIQq3boG+fHAydUtwZ
-         puMr9KHpFrTXdU8EuZ3qCP+dTF4Upn7Mo2Z8RnZja48cEyRPDwMMi4amUzoMZmUYNtWN
-         P4Iw==
-X-Gm-Message-State: AOAM53266iDVNJXLxHubUFhlgX1oxRgdvkwcaqppitlQQ4LHYzuvlVvC
-        Hj/RImTYHcX742I7ZtdRSlAL+zPdGwSPyQ==
-X-Google-Smtp-Source: ABdhPJyN2Mwd+CudxyzholjEEEfvuTP0QZs8IL1dNYZ66tk1WVh9ViGhrbbkXImRcctbAwcKH8ykAQ==
-X-Received: by 2002:a02:bb05:0:b0:314:57b4:6af3 with SMTP id y5-20020a02bb05000000b0031457b46af3mr16831289jan.244.1645500005052;
-        Mon, 21 Feb 2022 19:20:05 -0800 (PST)
-Received: from ?IPV6:2601:284:8200:b700:fc7f:e53f:676e:280d? ([2601:284:8200:b700:fc7f:e53f:676e:280d])
-        by smtp.googlemail.com with ESMTPSA id e6sm8400023ile.49.2022.02.21.19.20.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 19:20:04 -0800 (PST)
-Message-ID: <3a81db69-2900-f750-6ac2-d2f4fc710768@gmail.com>
-Date:   Mon, 21 Feb 2022 20:20:03 -0700
+        Mon, 21 Feb 2022 22:20:46 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3538240B7;
+        Mon, 21 Feb 2022 19:20:11 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A77DF210E6;
+        Tue, 22 Feb 2022 03:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645500006; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QxH/65m79qvzBGSCwVr/N2GJs7ZD/rte4Udz5IqpfIY=;
+        b=1izYW0top9BS+iGfXZVpKBuJ+MwMK08zsbUAzadqpGOGRwgyzsXY0KDfKzHJtGimNVXYoj
+        YhuEAPMn4VxOA/kBjGsoV5UTt9YspUnvu+gax168HsZudoD00qGGBJyvTZw7EGhrd1u24P
+        ZQ+YUljewjlzwFNP28OSuOKUhNTgyTw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645500006;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QxH/65m79qvzBGSCwVr/N2GJs7ZD/rte4Udz5IqpfIY=;
+        b=aZJVVnALmXFu3ExBGTckF/YwvXjWy9CmPulvw2T47YMa7c6/yeRvxkKpZ8N0EufKCpXPz9
+        J/yg0Bxc1k1hRJBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B32713BA7;
+        Tue, 22 Feb 2022 03:19:54 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id eOF7CFpWFGISWwAAMHmgww
+        (envelope-from <neilb@suse.de>); Tue, 22 Feb 2022 03:19:54 +0000
+Subject: [PATCH 09/11] f2fs: replace congestion_wait() calls with
+ io_schedule_timeout()
+From:   NeilBrown <neilb@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>, Jan Kara <jack@suse.cz>,
+        Wu Fengguang <fengguang.wu@intel.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-nilfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 22 Feb 2022 14:17:17 +1100
+Message-ID: <164549983744.9187.6425865370954230902.stgit@noble.brown>
+In-Reply-To: <164549971112.9187.16871723439770288255.stgit@noble.brown>
+References: <164549971112.9187.16871723439770288255.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH net-next v3 1/4] skbuff: introduce kfree_skb_list_reason()
-Content-Language: en-US
-To:     Dongli Zhang <dongli.zhang@oracle.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-References: <20220221053440.7320-1-dongli.zhang@oracle.com>
- <20220221053440.7320-2-dongli.zhang@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220221053440.7320-2-dongli.zhang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/20/22 10:34 PM, Dongli Zhang wrote:
-> This is to introduce kfree_skb_list_reason() to drop a list of sk_buff with
-> a specific reason.
-> 
-> Cc: Joao Martins <joao.m.martins@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
->  include/linux/skbuff.h |  2 ++
->  net/core/skbuff.c      | 11 +++++++++--
->  2 files changed, 11 insertions(+), 2 deletions(-)
-> 
->
+As congestion is no longer tracked, congestion_wait() is effectively
+equivalent to io_schedule_timeout().
+So introduce f2fs_io_schedule_timeout() which sets TASK_UNINTERRUPTIBLE
+and call that instead.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+ fs/f2fs/compress.c |    4 +---
+ fs/f2fs/data.c     |    3 +--
+ fs/f2fs/f2fs.h     |    6 ++++++
+ fs/f2fs/segment.c  |    8 +++-----
+ fs/f2fs/super.c    |    6 ++----
+ 5 files changed, 13 insertions(+), 14 deletions(-)
+
+diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
+index d0c3aeba5945..2f95559025ad 100644
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -1505,9 +1505,7 @@ static int f2fs_write_raw_pages(struct compress_ctx *cc,
+ 				if (IS_NOQUOTA(cc->inode))
+ 					return 0;
+ 				ret = 0;
+-				cond_resched();
+-				congestion_wait(BLK_RW_ASYNC,
+-						DEFAULT_IO_TIMEOUT);
++				f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 				goto retry_write;
+ 			}
+ 			return ret;
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 8c417864c66a..d428ddfd42ee 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -3047,8 +3047,7 @@ static int f2fs_write_cache_pages(struct address_space *mapping,
+ 				} else if (ret == -EAGAIN) {
+ 					ret = 0;
+ 					if (wbc->sync_mode == WB_SYNC_ALL) {
+-						cond_resched();
+-						congestion_wait(BLK_RW_ASYNC,
++						f2fs_io_schedule_timeout(
+ 							DEFAULT_IO_TIMEOUT);
+ 						goto retry_write;
+ 					}
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 68b44015514f..467f5dbdc7d1 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4426,6 +4426,12 @@ static inline bool f2fs_block_unit_discard(struct f2fs_sb_info *sbi)
+ 	return F2FS_OPTION(sbi).discard_unit == DISCARD_UNIT_BLOCK;
+ }
+ 
++static inline void f2fs_io_schedule_timeout(long timeout)
++{
++	set_current_state(TASK_UNINTERRUPTIBLE);
++	io_schedule_timeout(timeout);
++}
++
+ #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+ #define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
+ 
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 1dabc8244083..6ff20da44ad7 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -313,8 +313,7 @@ void f2fs_drop_inmem_pages_all(struct f2fs_sb_info *sbi, bool gc_failure)
+ skip:
+ 		iput(inode);
+ 	}
+-	congestion_wait(BLK_RW_ASYNC, DEFAULT_IO_TIMEOUT);
+-	cond_resched();
++	f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 	if (gc_failure) {
+ 		if (++looped >= count)
+ 			return;
+@@ -803,8 +802,7 @@ int f2fs_flush_device_cache(struct f2fs_sb_info *sbi)
+ 		do {
+ 			ret = __submit_flush_wait(sbi, FDEV(i).bdev);
+ 			if (ret)
+-				congestion_wait(BLK_RW_ASYNC,
+-						DEFAULT_IO_TIMEOUT);
++				f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 		} while (ret && --count);
+ 
+ 		if (ret) {
+@@ -3133,7 +3131,7 @@ static unsigned int __issue_discard_cmd_range(struct f2fs_sb_info *sbi,
+ 			blk_finish_plug(&plug);
+ 			mutex_unlock(&dcc->cmd_lock);
+ 			trimmed += __wait_all_discard_cmd(sbi, NULL);
+-			congestion_wait(BLK_RW_ASYNC, DEFAULT_IO_TIMEOUT);
++			f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 			goto next;
+ 		}
+ skip:
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index baefd398ec1a..ebd32daf052c 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -2135,8 +2135,7 @@ static void f2fs_enable_checkpoint(struct f2fs_sb_info *sbi)
+ 	/* we should flush all the data to keep data consistency */
+ 	do {
+ 		sync_inodes_sb(sbi->sb);
+-		cond_resched();
+-		congestion_wait(BLK_RW_ASYNC, DEFAULT_IO_TIMEOUT);
++		f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 	} while (get_pages(sbi, F2FS_DIRTY_DATA) && retry--);
+ 
+ 	if (unlikely(retry < 0))
+@@ -2504,8 +2503,7 @@ static ssize_t f2fs_quota_write(struct super_block *sb, int type,
+ 							&page, &fsdata);
+ 		if (unlikely(err)) {
+ 			if (err == -ENOMEM) {
+-				congestion_wait(BLK_RW_ASYNC,
+-						DEFAULT_IO_TIMEOUT);
++				f2fs_io_schedule_timeout(DEFAULT_IO_TIMEOUT);
+ 				goto retry;
+ 			}
+ 			set_sbi_flag(F2FS_SB(sb), SBI_QUOTA_NEED_REPAIR);
 
 
