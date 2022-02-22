@@ -2,102 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 143EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E1D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiBVOvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:51:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
+        id S232939AbiBVOv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:51:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232927AbiBVOvK (ORCPT
+        with ESMTP id S232933AbiBVOvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:51:10 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7566FD95F1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:50:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645541445; x=1677077445;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=r+FEjdh/8iJE9St3C4f8IXq1Wl6HllBikaMYvkKr+kg=;
-  b=E9JfcuhIOEkhO7ezjwAxhwbI+i5gk3EjRA+rZo1/JiszPlaMclfrFMs9
-   qPj0eCdOK6TRV2HWpaxobEiO8GXJVEQyBQo02p6dH/UeVle/3oH/Yf49W
-   beO/Br9JzofXQW4QdO2SDSJ83vf04aaaiuzcMNbzermZIUDM3tvAInvh8
-   tB+ipDFni2TTqVR+Gp6bwQnPFD5ccPHRI6g7RY3CZpPC/+NStdf3S0/gB
-   I/mSocWio//sDHwuQy960UdEaJ79PMMf+NTCov/F/OgV5AACssbFE7hKd
-   bLHu1m/McoqXFTmxNzKTM5bdw5L/AUqnzkbpPV8lL7xrNpWd1COK1gjq3
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="249299430"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="249299430"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 06:50:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="490817402"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Feb 2022 06:50:43 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMWV0-0000K9-O3; Tue, 22 Feb 2022 14:50:42 +0000
-Date:   Tue, 22 Feb 2022 22:50:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.4
- 4036/9999] drivers/dma-buf/heaps/deferred-free-helper.c:23:19: sparse:
- sparse: symbol 'freelist_waitqueue' was not declared. Should it be static?
-Message-ID: <202202222242.FAlsGVrw-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 22 Feb 2022 09:51:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE1CAD763D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:50:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645541458;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=7WV77HW5M6CROwiJ0BSz+RTajSYIi+veJzymkdBI5Hs=;
+        b=EzynaGteJGQfEJ9xrdNZgj/vfHq+rSf7ihARZ3urCNym4I4mT8feZ8m7tFr3LBolajhKxW
+        BAlNyODygFvJG5U52WtkZ1Y2NhG4vrQLcA8YrQmmcdJtf6IAOB2rgumcQNC/j0Kk0JmBL3
+        e58aM0DAZDxrIC4FOujxWi+B+kpArc8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-656-e3If2tB2PRGbciPPG0_j3w-1; Tue, 22 Feb 2022 09:50:55 -0500
+X-MC-Unique: e3If2tB2PRGbciPPG0_j3w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B8511091DA2;
+        Tue, 22 Feb 2022 14:50:54 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F6547DE23;
+        Tue, 22 Feb 2022 14:50:31 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 07506416D862; Tue, 22 Feb 2022 11:49:40 -0300 (-03)
+Message-ID: <20220222144706.937848439@redhat.com>
+User-Agent: quilt/0.66
+Date:   Tue, 22 Feb 2022 11:47:06 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, Minchan Kim <minchan@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Juri Lelli <juril@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [patch 0/2] replace work queue synchronization with synchronize_rcu
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.4
-head:   c79b9571f583dcad873b5296417a6a8ddbbfe0dd
-commit: e3919bfeb0066ab9b5f9765e5610b95672990e64 [4036/9999] ANDROID: dma-buf: system_heap: Add deferred freeing to the system heap
-config: x86_64-randconfig-s022-20220221 (https://download.01.org/0day-ci/archive/20220222/202202222242.FAlsGVrw-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/e3919bfeb0066ab9b5f9765e5610b95672990e64
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.4
-        git checkout e3919bfeb0066ab9b5f9765e5610b95672990e64
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/dma-buf/heaps/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On systems that run FIFO:1 applications that busy loop 
+on isolated CPUs, executing tasks on such CPUs under
+lower priority is undesired (since that will either
+hang the system, or cause longer interruption to the
+FIFO task due to execution of lower priority task 
+with very small sched slices).
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/dma-buf/heaps/deferred-free-helper.c:23:19: sparse: sparse: symbol 'freelist_waitqueue' was not declared. Should it be static?
->> drivers/dma-buf/heaps/deferred-free-helper.c:24:20: sparse: sparse: symbol 'freelist_task' was not declared. Should it be static?
+Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU 
+pagevec during the migration temporarily") relies on 
+queueing work items on all online CPUs to ensure visibility
+of lru_disable_count.
 
-vim +/freelist_waitqueue +23 drivers/dma-buf/heaps/deferred-free-helper.c
+However, its possible to use synchronize_rcu which will provide the same
+guarantees:
 
-bd1639945c30298 John Stultz 2020-12-09  20  
-bd1639945c30298 John Stultz 2020-12-09  21  static LIST_HEAD(free_list);
-bd1639945c30298 John Stultz 2020-12-09  22  static size_t list_nr_pages;
-bd1639945c30298 John Stultz 2020-12-09 @23  wait_queue_head_t freelist_waitqueue;
-bd1639945c30298 John Stultz 2020-12-09 @24  struct task_struct *freelist_task;
-bd1639945c30298 John Stultz 2020-12-09  25  static DEFINE_SPINLOCK(free_list_lock);
-bd1639945c30298 John Stultz 2020-12-09  26  
+    * synchronize_rcu() waits for preemption disabled
+    * and RCU read side critical sections
+    * For the users of lru_disable_count:
+    *
+    * preempt_disable, local_irq_disable() [bh_lru_lock()]
+    * rcu_read_lock                        [lru_pvecs CONFIG_PREEMPT_RT]
+    * preempt_disable                      [lru_pvecs !CONFIG_PREEMPT_RT]
+    *
+    *
+    * so any calls of lru_cache_disabled wrapped by
+    * local_lock+rcu_read_lock or preemption disabled would be
+    * ordered by that. 
 
-:::::: The code at line 23 was first introduced by commit
-:::::: bd1639945c30298e4bea2b611d6b0cd08d3cdd98 ANDROID: dma-buf: heaps: Add deferred-free-helper library code
 
-:::::: TO: John Stultz <john.stultz@linaro.org>
-:::::: CC: John Stultz <john.stultz@linaro.org>
+Fixes:
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[ 1873.243925] INFO: task kworker/u160:0:9 blocked for more than 622 seconds.
+[ 1873.243927]       Tainted: G          I      --------- ---  5.14.0-31.rt21.31.el9.x86_64 #1
+[ 1873.243929] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[ 1873.243929] task:kworker/u160:0  state:D stack:    0 pid:    9 ppid:     2 flags:0x00004000
+[ 1873.243932] Workqueue: cpuset_migrate_mm cpuset_migrate_mm_workfn
+[ 1873.243936] Call Trace:
+[ 1873.243938]  __schedule+0x21b/0x5b0
+[ 1873.243941]  schedule+0x43/0xe0
+[ 1873.243943]  schedule_timeout+0x14d/0x190
+[ 1873.243946]  ? resched_curr+0x20/0xe0
+[ 1873.243953]  ? __prepare_to_swait+0x4b/0x70
+[ 1873.243958]  wait_for_completion+0x84/0xe0
+[ 1873.243962]  __flush_work.isra.0+0x146/0x200
+[ 1873.243966]  ? flush_workqueue_prep_pwqs+0x130/0x130
+[ 1873.243971]  __lru_add_drain_all+0x158/0x1f0
+[ 1873.243978]  do_migrate_pages+0x3d/0x2d0
+[ 1873.243985]  ? pick_next_task_fair+0x39/0x3b0
+[ 1873.243989]  ? put_prev_task_fair+0x1e/0x30
+[ 1873.243992]  ? pick_next_task+0xb30/0xbd0
+[ 1873.243995]  ? __tick_nohz_task_switch+0x1e/0x70
+[ 1873.244000]  ? raw_spin_rq_unlock+0x18/0x60
+[ 1873.244002]  ? finish_task_switch.isra.0+0xc1/0x2d0
+[ 1873.244005]  ? __switch_to+0x12f/0x510
+[ 1873.244013]  cpuset_migrate_mm_workfn+0x22/0x40
+[ 1873.244016]  process_one_work+0x1e0/0x410
+[ 1873.244019]  worker_thread+0x50/0x3b0
+[ 1873.244022]  ? process_one_work+0x410/0x410
+[ 1873.244024]  kthread+0x173/0x190
+[ 1873.244027]  ? set_kthread_struct+0x40/0x40
+[ 1873.244031]  ret_from_fork+0x1f/0x30 
+
+diffstat:
+
+ swap.c |  110 +++++++++++++++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 80 insertions(+), 30 deletions(-)
+
+
+
