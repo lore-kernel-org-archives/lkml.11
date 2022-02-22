@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D11CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC559C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiBVJPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:15:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
+        id S230088AbiBVJQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiBVJPC (ORCPT
+        with ESMTP id S229774AbiBVJQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:15:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 241B7D5F51
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:14:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645521276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MoNbjhhTiDXg2GYw+PhdfTZ6/GdGXOLZiAKfDMexz8A=;
-        b=bs7BoJ32Fd+7z6E57RFiwFnlvyRNHWNSB70c2Ai3XBOD+paIYB/GSYAZXGLoo2rOA5ulXc
-        iOCim+gUt62LIW+cbmucIn7vO44zOQOOtuDqX3B/iDUk/GB06ON6md+bW9dXLoxqdCy+PP
-        XFggcLENdkyUWksOjm0//blTo4G9fbw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-518-uLiWcP7WMAmHRnPM-YkjDw-1; Tue, 22 Feb 2022 04:14:30 -0500
-X-MC-Unique: uLiWcP7WMAmHRnPM-YkjDw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4AB2D1091DA0;
-        Tue, 22 Feb 2022 09:14:24 +0000 (UTC)
-Received: from localhost (ovpn-12-122.pek2.redhat.com [10.72.12.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 71121710C1;
-        Tue, 22 Feb 2022 09:14:19 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 17:14:16 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, cl@linux.com, 42.hyeyoo@gmail.com,
-        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-        vbabka@suse.cz, David.Laight@aculab.com, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org
-Subject: Re: [PATCH 21/22] mmc: wbsd: Use dma_alloc_noncoherent() for dma
- buffer
-Message-ID: <YhSpaGfiQV8Nmxr+@MiWiFi-R3L-srv>
-References: <20220219005221.634-1-bhe@redhat.com>
- <20220219005221.634-22-bhe@redhat.com>
- <20220219071730.GG26711@lst.de>
- <20220220084044.GC93179@MiWiFi-R3L-srv>
- <20220222084530.GA6210@lst.de>
+        Tue, 22 Feb 2022 04:16:00 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA7AE38A0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:15:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645521335; x=1677057335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tO3B7b65zgGhD/1fZ3FxKuMaLdpsJqbQ9EdeiJMWm9w=;
+  b=lI/1toMDu562lckL5We5nCHv1mPFhNwMtTMOZz5yQca+Dmq9oZxuPHok
+   DeEFFo9dZD1HovtXLw1DL+a1mKPkhTuCYLBnuBD1/2aHeM9t9leqoYRCN
+   88C8eDpJshI8fDnboltiqQ2N66CymqXcL84gqpDjb6Tnt3YMPrnfJrqXB
+   o3j9qTnjl6vr4vq+GsNV6znc/mStq4ItD+CITbsYipBO+nMYWRj5Frrsq
+   Xs+L1etE9ov1dz6BaHVmKXjd92GET6TFrj2OxcvV/jtCWoeGGAV52W+AK
+   8hmDKyRdujfrbJBqfogdDWB7/FLTt/SKVpUoOCta6OCvxxG1NFVtyQClx
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="312391822"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="312391822"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 01:15:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="490724647"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Feb 2022 01:15:32 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMRGd-00003p-Bl; Tue, 22 Feb 2022 09:15:31 +0000
+Date:   Tue, 22 Feb 2022 17:15:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     kbuild-all@lists.01.org, Vijendar.Mukunda@amd.com,
+        Alexander.Deucher@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Sunil-kumar.Dommati@amd.com,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        V sujith kumar Reddy <vsujithkumar.reddy@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] ASoC: amd: acp-legacy: Add legacy card support for
+ new machines
+Message-ID: <202202221741.TUA7mZol-lkp@intel.com>
+References: <20220222061128.719400-3-AjitKumar.Pandey@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220222084530.GA6210@lst.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20220222061128.719400-3-AjitKumar.Pandey@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/22/22 at 09:45am, Christoph Hellwig wrote:
-> On Sun, Feb 20, 2022 at 04:40:44PM +0800, Baoquan He wrote:
-> > On 02/19/22 at 08:17am, Christoph Hellwig wrote:
-> > > On Sat, Feb 19, 2022 at 08:52:20AM +0800, Baoquan He wrote:
-> > > >  	if (request_dma(dma, DRIVER_NAME))
-> > > >  		goto err;
-> > > >  
-> > > > +	dma_set_mask_and_coherent(mmc_dev(host->mmc), DMA_BIT_MASK(24));
-> > > 
-> > > This also sets the streaming mask, but the driver doesn't seem to make
-> > > use of that.  Please document it in the commit log.
-> > 
-> > Thanks for reviewing. I will change it to dma_set_mask(), and describe
-> > this change in patch log.
-> 
-> No, if you change it, it should be dma_set_coherent_mask only as it is
-> not using streaming mappings.  I suspect dma_set_mask_and_coherent is
-> the right thing if the driver ever wants to use streaming mapping,
-> it would just need to be documented in the commit message.
+Hi Ajit,
 
-It will serve dma_alloc_noncoherent() calling later, should be streaming
-mapping?
+Thank you for the patch! Yet something to improve:
 
+[auto build test ERROR on broonie-sound/for-next]
+[also build test ERROR on v5.17-rc5 next-20220217]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Ajit-Kumar-Pandey/ASoC-amd-acp-Add-new-machines-and-minor-tweaks/20220222-141552
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+config: x86_64-randconfig-r003-20220221 (https://download.01.org/0day-ci/archive/20220222/202202221741.TUA7mZol-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/ca902de964769c2e605e5b2b7b91e95d1698f5bc
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Ajit-Kumar-Pandey/ASoC-amd-acp-Add-new-machines-and-minor-tweaks/20220222-141552
+        git checkout ca902de964769c2e605e5b2b7b91e95d1698f5bc
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> sound/soc/amd/acp/acp-legacy-mach.c:50:18: error: 'EN_SPKR_GPIO_DW' undeclared here (not in a function); did you mean 'EN_SPKR_GPIO_GB'?
+      50 |  .gpio_spkr_en = EN_SPKR_GPIO_DW,
+         |                  ^~~~~~~~~~~~~~~
+         |                  EN_SPKR_GPIO_GB
+
+
+vim +50 sound/soc/amd/acp/acp-legacy-mach.c
+
+    42	
+    43	static struct acp_card_drvdata rt5682s_rt1019_data = {
+    44		.hs_cpu_id = I2S_SP,
+    45		.amp_cpu_id = I2S_SP,
+    46		.dmic_cpu_id = DMIC,
+    47		.hs_codec_id = RT5682S,
+    48		.amp_codec_id = RT1019,
+    49		.dmic_codec_id = DMIC,
+  > 50		.gpio_spkr_en = EN_SPKR_GPIO_DW,
+    51	};
+    52	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
