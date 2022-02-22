@@ -2,167 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB56C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbiBVKGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
+        id S230432AbiBVKJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:09:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiBVKGw (ORCPT
+        with ESMTP id S230417AbiBVKIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:06:52 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF31BABA4;
-        Tue, 22 Feb 2022 02:06:26 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21M9lAgf014977;
-        Tue, 22 Feb 2022 10:06:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=8/hrRoganNJs6Gjak5/KUv3Jv++H3HSoYkONtjYh9Fs=;
- b=llN0RRbtBsM5kDdbKWW1p7pwvVgXVoXb36Cl+p91bTkHEy225CYRqcFN66uMLF2AIZdW
- eMDgECGjgKzTeKXeGGfEw5ReZUpMurafHa535Xs6gYluld9u2s7eqYAFjnfu4pWokQlr
- Ohm+4+sO6j20IAkviHOqwGJzpi6cq49TDNNIdHXddjP0sh1SR/RGKk9rUfxgawD/U1zP
- XiSnC65U7ewRnpg9eTFYfJSKcPZViwXIfrckcW9v12PzfVq6zgSEvsEQ5nf0oFbIpiZC
- Afx+TsKr4J9LgxZwmvSLnJdNbaWLNePrbX4jxGhUL6+iw5BOJGqElYkechrd6klfdB54 iw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ect3cgmtd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 10:06:20 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21MA0qmE030770;
-        Tue, 22 Feb 2022 10:06:19 GMT
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam08lp2044.outbound.protection.outlook.com [104.47.74.44])
-        by aserp3030.oracle.com with ESMTP id 3eapkfn1m0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 10:06:19 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VHB2bLD71h1fAQlkgnS7snSbopLKCfGkcJ6/0MRcUTpSrcNwlqINt/0Y3ZU+6F78oSyfJQ3qunCMJwBsEPLqoDC7kpai4uZKbvkVi27AM91h3L6xm9oVr7rqXnHuXIK3msZb/BFJIKvdSxyhl0RUiZCMY6IsxvkFi1s0PwjJ1wku9WIAI3+2Qa4iD8t6FKY9/RF59Rxkdm1BSocfG4ef22/j3xKwc46ZRHrsacXu7TAQVbgyuuGsy/7Y3suVmYd3AlV21iPy0PwTcc6P8TGUWz5oxHPMYWJ7rkF6Y288Wa/HciVpHRGZZbWHPRvMIWw6tYvSH5Vx7IubCmAUxYUUSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8/hrRoganNJs6Gjak5/KUv3Jv++H3HSoYkONtjYh9Fs=;
- b=hjwN9s1MCx84o8V5p/Bs8cHITNNQHhNYHvFHe5LHkWmDbf80Z9NJPLnZkfA6NEBD0B848WC4sQaGRfSnZcVkx0a44JiT+m4GcL4ix642JIkA/67iyOU9afGI3Nl3Bmqy6nJ3fkf7kbijAnO7UVql7G9RPuMNGntcth9dY2b5jvpx+T2PAEq+5WAbjrChFuz5rqRCHForCrzmp3w8AOI6hYICEPjil9anrvW01SsLy7pwkZmoHyOmPAvTTuJywoDEpWQ48IOtyA2WP7o04TCMUXyqXJBJLV0wcJ+MePK/CM/L0E3iTRM6ratx5rJrd1XaqCCODmmUK2ZeLJ92nRY0lQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8/hrRoganNJs6Gjak5/KUv3Jv++H3HSoYkONtjYh9Fs=;
- b=gordWc3roi8ovf8Fg8/NQzpBlAze2h6Y5is7d0Jn7CKdkhMk1OKanep/hkd5qjaYynE+noXzgVvQSqF680PFfPW+8qUlkGS4KGiKH8+rmk0uk8ULOLo/otJKUC3FEKx5UtKFbnKu1jglijDy+VmXGGEvh4Y0Jfp6RgOAnoSMqfI=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BY5PR10MB4259.namprd10.prod.outlook.com
- (2603:10b6:a03:212::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Tue, 22 Feb
- 2022 10:06:15 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Tue, 22 Feb 2022
- 10:06:15 +0000
-Date:   Tue, 22 Feb 2022 13:05:56 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Anirudh Rayabharam <mail@anirudhrb.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>
-Subject: Re: [syzbot] INFO: task hung in vhost_work_dev_flush
-Message-ID: <20220222100556.GM3965@kadam>
-References: <00000000000057702a05d8532b18@google.com>
- <CAGxU2F4nGWxG0wymrDZzd8Hwhm2=8syuEB3fLMd+t7bbN7qWrQ@mail.gmail.com>
- <YhO1YL0A6OjtXmIy@anirudhrb.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhO1YL0A6OjtXmIy@anirudhrb.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0004.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::9)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Tue, 22 Feb 2022 05:08:35 -0500
+Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0789285E
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:08:06 -0800 (PST)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K2vxc1PZtzMptvX;
+        Tue, 22 Feb 2022 11:08:04 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4K2vxY1MRrzlhSMD;
+        Tue, 22 Feb 2022 11:08:00 +0100 (CET)
+Message-ID: <fe4dd907-a687-d868-a3be-c1a8efd20678@digikod.net>
+Date:   Tue, 22 Feb 2022 11:18:17 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 043e446e-c799-4986-feb8-08d9f5eaf5cc
-X-MS-TrafficTypeDiagnostic: BY5PR10MB4259:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR10MB42599E6C8BCD9807F834B1228E3B9@BY5PR10MB4259.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K/+nVKhVwPt+3mc6Pxdt/hvNZnHahiAf3NTws7pnwPsKK4ZMkP/MubwTNn1OZasp+9e7vcJQAMEJytByxPgiuaMHDMNotQot7LM6vp8zFmnrjane2u7SCLxZfh/8emqyI59IW74g8kuAotO+UVgbD6Y/hbCsyy4wlJShp3gb2gr6z6QvYinw/mCupKerI7rfe6Ow6MdJdOPn8MJXoBzVXJ9TrwRxCJDeN5tN8AFl9uGYl+XjA1/EqTHnzmQkAvbr627MoZVnEC3d4RAgME56JE4+lhyaln4V/8l7OZOKnwtkdO/uvEsNDyMrhATslQpFz4XxwevOEhRzcIMranXAGwCPIMjWL1B0yu1BO8mU2P/pBizg8QdcRnAarRzl3MIjcYPQeR/IfGyCLPCUl2VlnxuwqI53mUTIkzE21A3oQGMirD0q253XTvCatzjy2ekCVnS6NB82SHwHV19fWGkshr2wd0MYCLmwuFnHCo9pc5V0zIt/Dlcyba0M2JvsIA/idVHLx2vHhGAelTdBEDXaCfJu+E6EeDxseHNuTBCtQmynGYUsaSMVha7rGJv153hslSmHP9ZPejUIEykfC7/QA82amt61ul1vBr455J29NonU6gIZtdYPyP8JyiSEu6HjPLeFx1K/YOdxWUEBqpX4RBtg08DPeORbMyWhx+4w4S/3mlFfeTr7RPnXgVjuwR1yLnzzc6kQbpzm3NQtm9/UCgvNmJk5+PZVzCTaz4FhECLHxlAsYaRMoNK8kWeh2OSQZUMi2oBRPKARUOKCgH5puhJslE1T/xpobfmMdLp4ol49QgImeWWG6te2n2mIWAyAr/fElgRy9by69386zEr9kQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(38350700002)(38100700002)(4744005)(7416002)(44832011)(2906002)(33656002)(8936002)(5660300002)(9686003)(6512007)(6506007)(52116002)(1076003)(54906003)(316002)(6916009)(966005)(6486002)(508600001)(86362001)(33716001)(6666004)(8676002)(4326008)(26005)(186003)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tE12WDXtEnAjEg7ZcQZEC4IA5njNSLblU8+bAVvRlHfG3Q96YjrSvuxFdT/d?=
- =?us-ascii?Q?MajVB6WRod/TO1XbCsXv7yL7OWyD4vxU7pXSK7igV9sEXwzloklLn1lnm127?=
- =?us-ascii?Q?T5xMpMEkXY9KJt6RQi0hiom6PZHbLp6kJYERrHShBTvZsPehzqYf3DvLmC98?=
- =?us-ascii?Q?EfZdINz7vUMRD7ixrA0WS3EFAmO76U6c93gMGJx8s6EZgqdJADBIn4V3JuiW?=
- =?us-ascii?Q?tzNzDgqVcrhyP4sBcwXmX+sbgodY/x1XEj8931wzOLkG3VmohyfBseCpka9Z?=
- =?us-ascii?Q?V0x4/Jz6HRBoXdLdZLt+fNsabbPvwfWeZT/6BB/rWw+GK9y7ftr64SpRJrY1?=
- =?us-ascii?Q?71WQudDfOOO35beEnhJ34j3TTDK8qeRoI9/0T2bM3a9JMRI/kAYr2o1IrBtb?=
- =?us-ascii?Q?24onwdie+2uJInMx9J8Y5NF2BqjG09bfQMO1YnhGvGxoJLUqDR7AKEG67dOs?=
- =?us-ascii?Q?KdV2SiZMk4fbDTdiUDj/PbXBp+YCm2pFvfRlLKapPyMFCNSWBfaB5WCdbfwZ?=
- =?us-ascii?Q?eyvcfihuxRiGKJ2EioLGbdfpccmA8fm3nwAXFVTwehhq67luCOTIAYw/OkHL?=
- =?us-ascii?Q?N77j8r+L+4FawxPQU3gM5LTSyYJWyEEhScRYkxHuKd/tJH4voXF+p3PWsz/7?=
- =?us-ascii?Q?AZTEC0cqzYrYo+L7PpTwt4cl0rHhZ/bD2YKey1pMpNKl4BT8e6QwwOJ13JFF?=
- =?us-ascii?Q?C/Be6FU3KuEQdtZ5dyT2nO+vYKwa8PbRDNFYEz5S0AzG/o83XQK3skitUXWh?=
- =?us-ascii?Q?j74y2TzxKISm7+oNxh2OuNqABUsh07oLExdVVKYZSFrCqMBCjyjGlYMxV77r?=
- =?us-ascii?Q?fSPj6zdSYTk++vfV4aKGBKyR6IrpDhgNKOeCW6INX9iFsA4DHFttJtynqX/f?=
- =?us-ascii?Q?x30kLcxE07FnVxX+x+p4gNIkDNiSmfoikGMBQAQ9IF+tzJI0IRrb5HZ0JzWe?=
- =?us-ascii?Q?Qtn/oRdLuLSQ8SkiCvJYPngcbKl9Q4QS7f18SOiHpJe6oFWoW/cfkp97QFjn?=
- =?us-ascii?Q?sWFeU7hqSbqI25vzaAwOgeOhZRpM4x6OzXjwDug6YrLBZ0fNe+D2pm02UMN1?=
- =?us-ascii?Q?WQmcOl1lRbVbZ20O4wjo/SMx+GkxwiuB7Hut+7CU5BICu9VF8BpI4n7ofNtV?=
- =?us-ascii?Q?bEXkQLvx+9s7DZfq18yVsuZ8S/mXqY4IIhUOZ0b5DlZHecQHdvjNnV94A+pC?=
- =?us-ascii?Q?BrhXu0q/9epvGsaQiCBXyR95UaIzscv9EB2GOyx9CmvtHlQcSYfnPt0/lTJn?=
- =?us-ascii?Q?Fwbhg+pv3bi5DklGtdixYbhK175p4O00RtE1AWxsTNXAamtel1jZ00fOdNGp?=
- =?us-ascii?Q?jmn7J/xkWUD+EK+DP3a8V44mzRU+6LJ14CJMj9KJsyrL7nLeBKLNJQXkuAvz?=
- =?us-ascii?Q?r983W0nuZOK3QdP+qtnpZkYWFBafc/4PTS9CJmkkzV3kGp3aq/JBepGVo2th?=
- =?us-ascii?Q?DCRIR857xncM3w/MDKOGN/EVbFzBuYksHYJHpe+9X43aPJzHTe+75yiPSkRt?=
- =?us-ascii?Q?Cwen7RJUiK/2ezYQiJXYphUgZkCUn3qYyIRY04DxrTHYXQnBfNSPaB2HC2Ai?=
- =?us-ascii?Q?gIVHw5qxLS2QDpWppfr7qT6iv0NSyX4uuLXoLMrCxmAoFeB4jYeECsu3ZqTz?=
- =?us-ascii?Q?MjZUlVN/hYM29kSa2TCX30v/L86JA82EcNzkiENg7H7qLHrKneEj4OteOolT?=
- =?us-ascii?Q?M11p4w=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 043e446e-c799-4986-feb8-08d9f5eaf5cc
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 10:06:15.0421
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0SK1atSUoU/eqNVx+pOw6fNuQqSLBOhV2ZzOiGdKRjA9ZxGrfLu+JFk5H2wqu72jf4nxGcpFFrzvSsMKrXcJNbUvTInM5D4MyqhXkc+iNR8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4259
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10265 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202220058
-X-Proofpoint-ORIG-GUID: gsk5fkzTxHrQiUkqOgYHrsDue7DJbAwc
-X-Proofpoint-GUID: gsk5fkzTxHrQiUkqOgYHrsDue7DJbAwc
+User-Agent: 
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+References: <20220221212522.320243-7-mic@digikod.net>
+ <202202221149.qLO9DEqo-lkp@intel.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v1 06/11] landlock: Add support for file reparenting with
+ LANDLOCK_ACCESS_FS_REFER
+In-Reply-To: <202202221149.qLO9DEqo-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 09:23:04PM +0530, Anirudh Rayabharam wrote:
-> On Mon, Feb 21, 2022 at 03:12:33PM +0100, Stefano Garzarella wrote:
-> > #syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-> > f71077a4d84b
-> > 
-> > Patch sent upstream:
-> > https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com/T/#u
+This error is because clang does not behave like GCC: 
+check_access_path_dual() should be marked as __always_inline, or I 
+should change from BUILD_BUG_ON() to WARN_ON_ONCE() if needed. I'll fix 
+that in the next series.
+
+On 22/02/2022 04:16, kernel test robot wrote:
+> Hi "Mickaël,
 > 
-> I don't see how your patch fixes this issue. It looks unrelated. It is
-> surprising that syzbot is happy with it.
+> I love your patch! Yet something to improve:
 > 
-> I have sent a patch for this issue here:
-> https://lore.kernel.org/lkml/20220221072852.31820-1-mail@anirudhrb.com/
-
-I wasted so much time trying to figure out what this patch fixes.  :P
-
-(It doesn't fix anything).
-
-regards,
-dan carpenter
-
+> [auto build test ERROR on cfb92440ee71adcc2105b0890bb01ac3cddb8507]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Micka-l-Sala-n/Landlock-file-linking-and-renaming-support/20220222-051842
+> base:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
+> config: hexagon-randconfig-r002-20220221 (https://download.01.org/0day-ci/archive/20220222/202202221149.qLO9DEqo-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+> reproduce (this is a W=1 build):
+>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          # https://github.com/0day-ci/linux/commit/c68b879f54d6262963d435a18cedbc238b7faeaf
+>          git remote add linux-review https://github.com/0day-ci/linux
+>          git fetch --no-tags linux-review Micka-l-Sala-n/Landlock-file-linking-and-renaming-support/20220222-051842
+>          git checkout c68b879f54d6262963d435a18cedbc238b7faeaf
+>          # save the config file to linux build tree
+>          mkdir build_dir
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>>> security/landlock/fs.c:463:2: error: call to __compiletime_assert_228 declared with 'error' attribute: BUILD_BUG_ON failed: !layer_masks_dst_parent
+>             BUILD_BUG_ON(!layer_masks_dst_parent);
+>             ^
+>     include/linux/build_bug.h:50:2: note: expanded from macro 'BUILD_BUG_ON'
+>             BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+>             ^
+>     include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
+>     #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+>                                         ^
+>     include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
+>             _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>             ^
+>     include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
+>             __compiletime_assert(condition, msg, prefix, suffix)
+>             ^
+>     include/linux/compiler_types.h:327:4: note: expanded from macro '__compiletime_assert'
+>                             prefix ## suffix();                             \
+>                             ^
+>     <scratch space>:170:1: note: expanded from here
+>     __compiletime_assert_228
+>     ^
+>>> security/landlock/fs.c:670:2: error: call to __compiletime_assert_229 declared with 'error' attribute: BUILD_BUG_ON failed: !layer_masks_dom
+>             BUILD_BUG_ON(!layer_masks_dom);
+>             ^
+>     include/linux/build_bug.h:50:2: note: expanded from macro 'BUILD_BUG_ON'
+>             BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+>             ^
+>     include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
+>     #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+>                                         ^
+>     include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
+>             _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>             ^
+>     include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
+>             __compiletime_assert(condition, msg, prefix, suffix)
+>             ^
+>     include/linux/compiler_types.h:327:4: note: expanded from macro '__compiletime_assert'
+>                             prefix ## suffix();                             \
+>                             ^
+>     <scratch space>:174:1: note: expanded from here
+>     __compiletime_assert_229
+>     ^
+>     2 errors generated.
+> 
+> 
+> vim +/error +463 security/landlock/fs.c
+> 
+>     401	
+>     402	/**
+>     403	 * check_access_path_dual - Check a source and a destination accesses
+>     404	 *
+>     405	 * @domain: Domain to check against.
+>     406	 * @path: File hierarchy to walk through.
+>     407	 * @child_is_directory: Must be set to true if the (original) leaf is a
+>     408	 *     directory, false otherwise.
+>     409	 * @access_request_dst_parent: Accesses to check, once @layer_masks_dst_parent
+>     410	 *     is equal to @layer_masks_src_parent (if any).
+>     411	 * @layer_masks_dst_parent: Pointer to a matrix of layer masks per access
+>     412	 *     masks, identifying the layers that forbid a specific access.  Bits from
+>     413	 *     this matrix can be unset according to the @path walk.  An empty matrix
+>     414	 *     means that @domain allows all possible Landlock accesses (i.e. not only
+>     415	 *     those identified by @access_request_dst_parent).  This matrix can
+>     416	 *     initially refer to domain layer masks and, when the accesses for the
+>     417	 *     destination and source are the same, to request layer masks.
+>     418	 * @access_request_src_parent: Similar to @access_request_dst_parent but for an
+>     419	 *     initial source path request.  Only taken into account if
+>     420	 *     @layer_masks_src_parent is not NULL.
+>     421	 * @layer_masks_src_parent: Similar to @layer_masks_dst_parent but for an
+>     422	 *     initial source path walk.  This can be NULL if only dealing with a
+>     423	 *     destination access request (i.e. not a rename nor a link action).
+>     424	 * @layer_masks_child: Similar to @layer_masks_src_parent but only for the
+>     425	 *     linked or renamed inode (without hierarchy).  This is only used if
+>     426	 *     @layer_masks_src_parent is not NULL.
+>     427	 *
+>     428	 * This helper first checks that the destination has a superset of restrictions
+>     429	 * compared to the source (if any) for a common path.  It then checks that the
+>     430	 * collected accesses and the remaining ones are enough to allow the request.
+>     431	 *
+>     432	 * Returns:
+>     433	 * - 0 if the access request is granted;
+>     434	 * - -EACCES if it is denied because of access right other than
+>     435	 *   LANDLOCK_ACCESS_FS_REFER;
+>     436	 * - -EXDEV if the renaming or linking would be a privileged escalation
+>     437	 *   (according to each layered policies), or if LANDLOCK_ACCESS_FS_REFER is
+>     438	 *   not allowed by the source or the destination.
+>     439	 */
+>     440	static int check_access_path_dual(const struct landlock_ruleset *const domain,
+>     441			const struct path *const path,
+>     442			bool child_is_directory,
+>     443			const access_mask_t access_request_dst_parent,
+>     444			layer_mask_t (*const
+>     445				layer_masks_dst_parent)[LANDLOCK_NUM_ACCESS_FS],
+>     446			const access_mask_t access_request_src_parent,
+>     447			layer_mask_t (*layer_masks_src_parent)[LANDLOCK_NUM_ACCESS_FS],
+>     448			layer_mask_t (*layer_masks_child)[LANDLOCK_NUM_ACCESS_FS])
+>     449	{
+>     450		bool allowed_dst_parent = false, allowed_src_parent = false, is_dom_check;
+>     451		struct path walker_path;
+>     452		access_mask_t access_masked_dst_parent, access_masked_src_parent;
+>     453	
+>     454		if (!access_request_dst_parent && !access_request_src_parent)
+>     455			return 0;
+>     456		if (WARN_ON_ONCE(!domain || !path))
+>     457			return 0;
+>     458		if (is_nouser_or_private(path->dentry))
+>     459			return 0;
+>     460		if (WARN_ON_ONCE(domain->num_layers < 1))
+>     461			return -EACCES;
+>     462	
+>   > 463		BUILD_BUG_ON(!layer_masks_dst_parent);
+>     464		if (layer_masks_src_parent) {
+>     465			if (WARN_ON_ONCE(!layer_masks_child))
+>     466				return -EACCES;
+>     467			access_masked_dst_parent = access_masked_src_parent =
+>     468				get_handled_accesses(domain);
+>     469			is_dom_check = true;
+>     470		} else {
+>     471			if (WARN_ON_ONCE(layer_masks_child))
+>     472				return -EACCES;
+>     473			access_masked_dst_parent = access_request_dst_parent;
+>     474			access_masked_src_parent = access_request_src_parent;
+>     475			is_dom_check = false;
+>     476		}
+>     477	
+>     478		walker_path = *path;
+>     479		path_get(&walker_path);
+>     480		/*
+>     481		 * We need to walk through all the hierarchy to not miss any relevant
+>     482		 * restriction.
+>     483		 */
+>     484		while (true) {
+>     485			struct dentry *parent_dentry;
+>     486			const struct landlock_rule *rule;
+>     487	
+>     488			/*
+>     489			 * If at least all accesses allowed on the destination are
+>     490			 * already allowed on the source, respectively if there is at
+>     491			 * least as much as restrictions on the destination than on the
+>     492			 * source, then we can safely refer files from the source to
+>     493			 * the destination without risking a privilege escalation.
+>     494			 * This is crucial for standalone multilayered security
+>     495			 * policies.  Furthermore, this helps avoid policy writers to
+>     496			 * shoot themselves in the foot.
+>     497			 */
+>     498			if (is_dom_check && is_superset(child_is_directory,
+>     499						layer_masks_dst_parent,
+>     500						layer_masks_src_parent,
+>     501						layer_masks_child)) {
+>     502				allowed_dst_parent =
+>     503					scope_to_request(access_request_dst_parent,
+>     504							layer_masks_dst_parent);
+>     505				allowed_src_parent =
+>     506					scope_to_request(access_request_src_parent,
+>     507							layer_masks_src_parent);
+>     508	
+>     509				/* Stops when all accesses are granted. */
+>     510				if (allowed_dst_parent && allowed_src_parent)
+>     511					break;
+>     512	
+>     513				/*
+>     514				 * Downgrades checks from domain handled accesses to
+>     515				 * requested accesses.
+>     516				 */
+>     517				is_dom_check = false;
+>     518				access_masked_dst_parent = access_request_dst_parent;
+>     519				access_masked_src_parent = access_request_src_parent;
+>     520			}
+>     521	
+>     522			rule = find_rule(domain, walker_path.dentry);
+>     523			allowed_dst_parent = unmask_layers(rule, access_masked_dst_parent,
+>     524					layer_masks_dst_parent);
+>     525			allowed_src_parent = unmask_layers(rule, access_masked_src_parent,
+>     526					layer_masks_src_parent);
+>     527	
+>     528			/* Stops when a rule from each layer grants access. */
+>     529			if (allowed_dst_parent && allowed_src_parent)
+>     530				break;
+>     531	
+>     532	jump_up:
+>     533			if (walker_path.dentry == walker_path.mnt->mnt_root) {
+>     534				if (follow_up(&walker_path)) {
+>     535					/* Ignores hidden mount points. */
+>     536					goto jump_up;
+>     537				} else {
+>     538					/*
+>     539					 * Stops at the real root.  Denies access
+>     540					 * because not all layers have granted access.
+>     541					 */
+>     542					allowed_dst_parent = false;
+>     543					break;
+>     544				}
+>     545			}
+>     546			if (unlikely(IS_ROOT(walker_path.dentry))) {
+>     547				/*
+>     548				 * Stops at disconnected root directories.  Only allows
+>     549				 * access to internal filesystems (e.g. nsfs, which is
+>     550				 * reachable through /proc/<pid>/ns/<namespace>).
+>     551				 */
+>     552				allowed_dst_parent = !!(walker_path.mnt->mnt_flags &
+>     553						MNT_INTERNAL);
+>     554				break;
+>     555			}
+>     556			parent_dentry = dget_parent(walker_path.dentry);
+>     557			dput(walker_path.dentry);
+>     558			walker_path.dentry = parent_dentry;
+>     559		}
+>     560		path_put(&walker_path);
+>     561	
+>     562		if (allowed_dst_parent && allowed_src_parent)
+>     563			return 0;
+>     564	
+>     565		/*
+>     566		 * Unfortunately, we cannot prioritize EACCES over EXDEV for all
+>     567		 * RENAME_EXCHANGE cases because it depends on the source and
+>     568		 * destination order.  This could be changed with a new
+>     569		 * security_path_rename hook implementation.
+>     570		 */
+>     571		if (likely(is_eacces(layer_masks_dst_parent, access_request_dst_parent)
+>     572					|| is_eacces(layer_masks_src_parent,
+>     573						access_request_src_parent)))
+>     574			return -EACCES;
+>     575	
+>     576		/*
+>     577		 * Gracefully forbids reparenting if the destination directory
+>     578		 * hierarchy is not a superset of restrictions of the source directory
+>     579		 * hierarchy, or if LANDLOCK_ACCESS_FS_REFER is not allowed by the
+>     580		 * source or the destination.
+>     581		 */
+>     582		return -EXDEV;
+>     583	}
+>     584	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
