@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FEDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E54C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233747AbiBVPw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
+        id S233745AbiBVPwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233699AbiBVPwJ (ORCPT
+        with ESMTP id S233707AbiBVPwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:52:09 -0500
+        Tue, 22 Feb 2022 10:52:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63242A713;
-        Tue, 22 Feb 2022 07:51:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7618B31519;
+        Tue, 22 Feb 2022 07:51:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E63FB81B24;
-        Tue, 22 Feb 2022 15:51:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A6BC340E8;
-        Tue, 22 Feb 2022 15:51:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A2CB81B21;
+        Tue, 22 Feb 2022 15:51:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B8EAC340E8;
+        Tue, 22 Feb 2022 15:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645545099;
-        bh=kF2VSgfLpoH+QrHmU7/2uhkKeI3FJlUcWLvYj0tc3Mk=;
+        s=k20201202; t=1645545101;
+        bh=jhAZQpK2Xkwl6Uuj8dhwCmycOi92amDCrJPKvBaGcNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eSPVcTrBpdYXaBl+CLugNXcb5mWZjLr5bORfThXweaI+byGk7YJbeVFiSy2haCpX/
-         SC+Oy/ZbI4bTMugzCywxp5xa+BrL7Kg7cqqH8usKcO0ZopCcwzOJg80+UkxrCruTnm
-         CbZkHcTdv1Gz3VA/u47y2/dTXA/QF8KtqC64hgzvwbvBHTbiV8htuv6m8JGrKYpPf1
-         uFZneHle+OhodgkVm488B0TXyy5z/vr++hjehAj23cxeewTwCRsIoUVIkza49s3nIY
-         11idawyhq0hQMcSzd86ps1w42bwlNHJdOooIjXG58Y0cpaGbF/HlhztGBdNF+9isVP
-         7mT1BZQxU6QyQ==
+        b=IoIZBfB5KLbLmsyYgiWz81LP8qMF+ORSPtjBSduqUTzqTMhOdhudBvmFhgEMh7w08
+         gvY0uRXQz/GEItuc7Ej2Db2kLslKNy+aB5DoAFelMUek74n0JnQFbYBoim5MzboWNR
+         8m+EGYhUnrqEHS6qZRISW0rOHnGA2hvjDGAMur4RQ3ckrDqvot3EwiWeiukNFDUKmt
+         E/7b4Nbltzei9ChKTUmkwvbslTRvxundb3gb2z4gYLkG4Ek4mdDfrIQRHIF9zM0JMZ
+         ZJd1Qgml5JtSBgNIIjWOeb+zrddcFiGlD8/oRGwWSWNHzemt5kBfU78v7tGeO9HTGH
+         64muZZjkdd6YQ==
 Received: by pali.im (Postfix)
-        id C148CFDB; Tue, 22 Feb 2022 16:51:38 +0100 (CET)
+        id 1FDAEFDB; Tue, 22 Feb 2022 16:51:41 +0100 (CET)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -44,9 +44,9 @@ To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Russell King <rmk+kernel@armlinux.org.uk>
 Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 05/12] PCI: mvebu: Correctly configure x1/x4 mode
-Date:   Tue, 22 Feb 2022 16:50:23 +0100
-Message-Id: <20220222155030.988-6-pali@kernel.org>
+Subject: [PATCH v4 07/12] PCI: mvebu: Add support for Advanced Error Reporting registers on emulated bridge
+Date:   Tue, 22 Feb 2022 16:50:25 +0100
+Message-Id: <20220222155030.988-8-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220222155030.988-1-pali@kernel.org>
 References: <20220222155030.988-1-pali@kernel.org>
@@ -57,73 +57,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If x1/x4 mode is not set correctly then link with endpoint card is not
-established.
+AER registers start at mvebu offset 0x0100. Registers PCI_ERR_ROOT_COMMAND,
+PCI_ERR_ROOT_STATUS and PCI_ERR_ROOT_ERR_SRC are not supported on pre-XP
+hardware and returns zeros.
 
-Use DTS property 'num-lanes' to deteriminate x1/x4 mode.
+Note that AER interrupt is not supported yet as mvebu emulated bridge does
+not implement interrupts support at all yet.
+
+Also remove custom macro PCIE_HEADER_LOG_4_OFF as it is unused and
+correctly this register should be referenced via standard macros with
+offset, e.g. as: PCIE_CAP_PCIERR_OFF + PCI_ERR_HEADER_LOG + 4.
 
 Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-mvebu.c | 67 +++++++++++++++++++++++++++++-
+ 1 file changed, 66 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 357f0f41f68e..d0a75c3b78c3 100644
+index 566d8382afe6..1cf5c02499cd 100644
 --- a/drivers/pci/controller/pci-mvebu.c
 +++ b/drivers/pci/controller/pci-mvebu.c
-@@ -93,6 +93,7 @@ struct mvebu_pcie_port {
- 	void __iomem *base;
- 	u32 port;
- 	u32 lane;
-+	bool is_x4;
- 	int devfn;
- 	unsigned int mem_target;
- 	unsigned int mem_attr;
-@@ -233,13 +234,25 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
+@@ -34,7 +34,7 @@
+ #define PCIE_BAR_HI_OFF(n)	(0x0014 + ((n) << 3))
+ #define PCIE_SSDEV_ID_OFF	0x002c
+ #define PCIE_CAP_PCIEXP		0x0060
+-#define PCIE_HEADER_LOG_4_OFF	0x0128
++#define PCIE_CAP_PCIERR_OFF	0x0100
+ #define PCIE_BAR_CTRL_OFF(n)	(0x1804 + (((n) - 1) * 4))
+ #define PCIE_WIN04_CTRL_OFF(n)	(0x1820 + ((n) << 4))
+ #define PCIE_WIN04_BASE_OFF(n)	(0x1824 + ((n) << 4))
+@@ -603,6 +603,37 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 	return PCI_BRIDGE_EMUL_HANDLED;
+ }
  
- static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- {
--	u32 ctrl, cmd, dev_rev, mask;
-+	u32 ctrl, lnkcap, cmd, dev_rev, mask;
- 
- 	/* Setup PCIe controller to Root Complex mode. */
- 	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
- 	ctrl |= PCIE_CTRL_RC_MODE;
- 	mvebu_writel(port, ctrl, PCIE_CTRL_OFF);
- 
-+	/*
-+	 * Set Maximum Link Width to X1 or X4 in Root Port's PCIe Link
-+	 * Capability register. This register is defined by PCIe specification
-+	 * as read-only but this mvebu controller has it as read-write and must
-+	 * be set to number of SerDes PCIe lanes (1 or 4). If this register is
-+	 * not set correctly then link with endpoint card is not established.
-+	 */
-+	lnkcap = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
-+	lnkcap &= ~PCI_EXP_LNKCAP_MLW;
-+	lnkcap |= (port->is_x4 ? 4 : 1) << 4;
-+	mvebu_writel(port, lnkcap, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
++static pci_bridge_emul_read_status_t
++mvebu_pci_bridge_emul_ext_conf_read(struct pci_bridge_emul *bridge,
++				    int reg, u32 *value)
++{
++	struct mvebu_pcie_port *port = bridge->data;
 +
- 	/* Disable Root Bridge I/O space, memory space and bus mastering. */
- 	cmd = mvebu_readl(port, PCIE_CMD_OFF);
- 	cmd &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
-@@ -982,6 +995,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- 	struct device *dev = &pcie->pdev->dev;
- 	enum of_gpio_flags flags;
- 	int reset_gpio, ret;
-+	u32 num_lanes;
- 
- 	port->pcie = pcie;
- 
-@@ -994,6 +1008,9 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- 	if (of_property_read_u32(child, "marvell,pcie-lane", &port->lane))
- 		port->lane = 0;
- 
-+	if (!of_property_read_u32(child, "num-lanes", &num_lanes) && num_lanes == 4)
-+		port->is_x4 = true;
++	switch (reg) {
++	case 0:
++	case PCI_ERR_UNCOR_STATUS:
++	case PCI_ERR_UNCOR_MASK:
++	case PCI_ERR_UNCOR_SEVER:
++	case PCI_ERR_COR_STATUS:
++	case PCI_ERR_COR_MASK:
++	case PCI_ERR_CAP:
++	case PCI_ERR_HEADER_LOG+0:
++	case PCI_ERR_HEADER_LOG+4:
++	case PCI_ERR_HEADER_LOG+8:
++	case PCI_ERR_HEADER_LOG+12:
++	case PCI_ERR_ROOT_COMMAND:
++	case PCI_ERR_ROOT_STATUS:
++	case PCI_ERR_ROOT_ERR_SRC:
++		*value = mvebu_readl(port, PCIE_CAP_PCIERR_OFF + reg);
++		break;
 +
- 	port->name = devm_kasprintf(dev, GFP_KERNEL, "pcie%d.%d", port->port,
- 				    port->lane);
- 	if (!port->name) {
++	default:
++		return PCI_BRIDGE_EMUL_NOT_HANDLED;
++	}
++
++	return PCI_BRIDGE_EMUL_HANDLED;
++}
++
+ static void
+ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
+ 				      int reg, u32 old, u32 new, u32 mask)
+@@ -715,11 +746,45 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ 	}
+ }
+ 
++static void
++mvebu_pci_bridge_emul_ext_conf_write(struct pci_bridge_emul *bridge,
++				     int reg, u32 old, u32 new, u32 mask)
++{
++	struct mvebu_pcie_port *port = bridge->data;
++
++	switch (reg) {
++	/* These are W1C registers, so clear other bits */
++	case PCI_ERR_UNCOR_STATUS:
++	case PCI_ERR_COR_STATUS:
++	case PCI_ERR_ROOT_STATUS:
++		new &= mask;
++		fallthrough;
++
++	case PCI_ERR_UNCOR_MASK:
++	case PCI_ERR_UNCOR_SEVER:
++	case PCI_ERR_COR_MASK:
++	case PCI_ERR_CAP:
++	case PCI_ERR_HEADER_LOG+0:
++	case PCI_ERR_HEADER_LOG+4:
++	case PCI_ERR_HEADER_LOG+8:
++	case PCI_ERR_HEADER_LOG+12:
++	case PCI_ERR_ROOT_COMMAND:
++	case PCI_ERR_ROOT_ERR_SRC:
++		mvebu_writel(port, new, PCIE_CAP_PCIERR_OFF + reg);
++		break;
++
++	default:
++		break;
++	}
++}
++
+ static const struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
+ 	.read_base = mvebu_pci_bridge_emul_base_conf_read,
+ 	.write_base = mvebu_pci_bridge_emul_base_conf_write,
+ 	.read_pcie = mvebu_pci_bridge_emul_pcie_conf_read,
+ 	.write_pcie = mvebu_pci_bridge_emul_pcie_conf_write,
++	.read_ext = mvebu_pci_bridge_emul_ext_conf_read,
++	.write_ext = mvebu_pci_bridge_emul_ext_conf_write,
+ };
+ 
+ /*
 -- 
 2.20.1
 
