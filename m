@@ -2,102 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34272C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiBVIVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
+        id S229765AbiBVIVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiBVIU6 (ORCPT
+        with ESMTP id S229447AbiBVIVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:20:58 -0500
-X-Greylist: delayed 260 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 00:20:31 PST
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEAF3155C35;
-        Tue, 22 Feb 2022 00:20:30 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E5C26100004;
-        Tue, 22 Feb 2022 08:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645518026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W5Nefp6GfuNeDoo+g/v+e3/VXcVfBUoFmyuv8FL7z+4=;
-        b=OKkc8UOr8QCrah0F5Elkwb5Jme6SaZXNa0HvOfBn0RTpCv1hzn4ZH6F6HhjKiBtS2/E8YI
-        Afljgq/1rUjbZ/F6HDktUWOcYUeUieeQvSpeKWGDwQnocGrhcksTP3uKc/51o2vv9sdPuN
-        RkqSUQhC2qIafJJbZp+8pXYcV6h3lmFGKQ2VGKMyyjNDKTwRlx6mPpL8iIhgx+VQDO/WjQ
-        /KoUkGk9XLC6Gb/zdUigH/G/+dkrDK0z0BKpUbZUult4daeW/GkuG/7PQf+tZPwRh4B+uz
-        2hg3SBQlFoxtx04HUvdWhVcSVQIHFdo0NjsXKIvPEcCVmt2dnmhwQ4bQzMYLWw==
-Date:   Tue, 22 Feb 2022 09:19:02 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
-Message-ID: <20220222091902.198ce809@fixe.home>
-In-Reply-To: <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
-        <20220221162652.103834-3-clement.leger@bootlin.com>
-        <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Tue, 22 Feb 2022 03:21:35 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F72E156958;
+        Tue, 22 Feb 2022 00:21:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=02LAjupKlc7VQ91pupOnXSJiSu
+        T/Gu7GLIN2TuRJ1lCGZooLBD4E9yNAwjRcmMcDmuLY2ATPi0O114kJEXBV7E6LZgFHthpv80woLvi
+        2Vrm64QWkPoMWQj3NS/SXI/BE+jQqTEY9FqKvHel5H5mZSq3ZB+DcCV2lclnLcgX61+pgDFhpAiqR
+        zSkgH/FNp1UsHNXgomfwG1YqTLUS6qP6KnyBQR3Ijn8SoV8CWrHdxWOUlCsJApJvevPvOhCQpQ+Nx
+        heUBbsE083+912sPwu9G4vCpA6qMs8FDWqi4lx75T3+zs3GojhLQoWdUBLXtposfoVsd7Vklo+ezb
+        6lutZn6A==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMQQ1-008Uu7-KB; Tue, 22 Feb 2022 08:21:09 +0000
+Date:   Tue, 22 Feb 2022 00:21:09 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        linux-block@vger.kernel.org
+Subject: Re: [PATCH] block: clear iocb->private in blkdev_bio_end_io_async()
+Message-ID: <YhSc9Y1RNTt2yi0D@infradead.org>
+References: <20220211090136.44471-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211090136.44471-1-sgarzare@redhat.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, 21 Feb 2022 19:46:12 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+Looks good,
 
-> On Mon, Feb 21, 2022 at 05:26:44PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add fwnode_get_match_data() which is meant to be used as
-> > device_get_match_data for fwnode_operations. =20
->=20
-> ...
->=20
-> > +const void *fwnode_get_match_data(const struct fwnode_handle *fwnode,
-> > +				  const struct device *dev)
-> > +{
-> > +	const struct of_device_id *match;
-> > +
-> > +	match =3D fwnode_match_node(fwnode, dev->driver->of_match_table);
-> > +	if (!match)
-> > +		return NULL;
-> > +
-> > +	return match->data;
-> > +} =20
->=20
-> It's OF-centric API, why it has fwnode prefix? Can it leave in drivers/of=
- instead?
->=20
->=20
-
-The idea is to allow device with a software_node description to match
-with the content of the of_match_table. Without this, we would need a
-new type of match table that would probably duplicates part of the
-of_match_table to be able to match software_node against a driver.
-I did not found an other way to do it without modifying drivers
-individually to support software_nodes.
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Reviewed-by: Christoph Hellwig <hch@lst.de>
