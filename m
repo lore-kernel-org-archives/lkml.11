@@ -2,103 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB92C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiBVHsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        id S229533AbiBVHvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiBVHsE (ORCPT
+        with ESMTP id S229446AbiBVHvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:48:04 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226243968D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:47:38 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id AD318212C5;
-        Tue, 22 Feb 2022 07:47:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645516056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zqbKLfETHquQ//zH4sZBb/82594i7vrpZQI+kAgZZqo=;
-        b=Ohsx3hUek/PGfa0AeORpHGURrKbjTevTEyxTe83vBBnN5JQxIft9Z0FTgbEQHc+XOeevQl
-        APddYYsaRPnxB8nbR1jsqLlIDldZ6KEFSCbZDIexVwkp2QuNtNFjKf/w2tD559IcVYYyzU
-        mJgnGqUTkxSliFbu/F3x7eI9mocqHn8=
-Received: from suse.cz (unknown [10.100.201.86])
+        Tue, 22 Feb 2022 02:51:19 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AD2145AEE
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:50:54 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 875C5A3B9A;
-        Tue, 22 Feb 2022 07:47:36 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 08:47:36 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Zhenguo Yao <yaozhenguo1@gmail.com>,
-        Liu Yuntao <liuyuntao10@huawei.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2] hugetlb: clean up potential spectre issue warnings
-Message-ID: <YhSVGPQ6VIQfBZ9o@dhcp22.suse.cz>
-References: <20220218212946.35441-1-mike.kravetz@oracle.com>
- <YhNQf3LUZzNRD7u0@dhcp22.suse.cz>
- <26565cd7-01b0-197c-6ce9-af92f5bc8563@oracle.com>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id B10BD22175;
+        Tue, 22 Feb 2022 08:50:50 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645516251;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yGq+Oc5aD7EUYB4n828ghG01xMsEGGRgt8fg8Ih6798=;
+        b=kwuCX5ruihrC3zbgci6X0EZ4+u1LNrbfUiFoLnb9hydgfhMmwuG7kljqM2cSQqsEmjuzIQ
+        Tw8B5Unp4q5/nW0TIw+z6sibzt4vusLZwPqtJ4Y2HdV3dTHZk3VmGjWvmQhOGkj2q4tYIQ
+        nUqOP4/NSI8gT6UBPy2H2leNVEgXXc8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <26565cd7-01b0-197c-6ce9-af92f5bc8563@oracle.com>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Tue, 22 Feb 2022 08:50:50 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     =?UTF-8?Q?Potin_Lai_=28=E8=B3=B4=E6=9F=8F=E5=BB=B7=29?= 
+        <Potin.Lai@quantatw.com>
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrick Williams <patrick@stwcx.xyz>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] mtd: spi-nor: winbond: Add support for w25q01jv-iq
+In-Reply-To: <0b619d9e-4ca0-88ae-69a1-4cb07d2aeea4@quantatw.com>
+References: <20220222064227.16724-1-potin.lai@quantatw.com>
+ <aedb6f8e3d878f487aa7fef147e352b4@walle.cc>
+ <0b619d9e-4ca0-88ae-69a1-4cb07d2aeea4@quantatw.com>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <ef3d0391d22ce472e7410a77af3e938d@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 21-02-22 12:24:25, Mike Kravetz wrote:
-> On 2/21/22 00:42, Michal Hocko wrote:
-> > On Fri 18-02-22 13:29:46, Mike Kravetz wrote:
-> > [...]
-> >> @@ -4161,7 +4162,7 @@ static int __init hugepages_setup(char *s)
-> >>  			}
-> >>  			if (tmp >= nr_online_nodes)
-> >>  				goto invalid;
-> >> -			node = tmp;
-> >> +			node = array_index_nospec(tmp, nr_online_nodes);
-> >>  			p += count + 1;
-> >>  			/* Parse hugepages */
-> >>  			if (sscanf(p, "%lu%n", &tmp, &count) != 1)
-> >> @@ -6889,9 +6890,9 @@ static int __init cmdline_parse_hugetlb_cma(char *p)
-> >>  			break;
-> >>  
-> >>  		if (s[count] == ':') {
-> >> -			nid = tmp;
-> >> -			if (nid < 0 || nid >= MAX_NUMNODES)
-> >> +			if (tmp >= MAX_NUMNODES)
-> >>  				break;
-> >> +			nid = array_index_nospec(tmp, MAX_NUMNODES);
-> >>  
-> >>  			s += count + 1;
-> >>  			tmp = memparse(s, &s);
-> > 
-> > This is an early boot code, how is this supposed to be used as a side
-> > channel?
+Am 2022-02-22 08:37, schrieb Potin Lai:
+> Michael Walle 於 2022/2/22 下午 03:24 寫道:
+>> Hi,
+>> 
+>> Am 2022-02-22 07:42, schrieb Potin Lai:
+>>> Add support for winbond w25q01jv-iq chip
+>>> 
+>>> root@bletchley:~# cat
+>>> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/jedec_id
+>>> ef4021
+>>> root@bletchley:~# cat
+>>> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/manufacturer
+>>> winbond
+>>> root@bletchley:~# cat
+>>> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/partname
+>>> w25q01jv-iq
+>>> root@bletchley:~# hexdump -C
+>>> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/sfdp
+>>> 00000000 53 46 44 50 06 01 01 ff 00 06 01 10 80 00 00 ff 
+>>> |SFDP............|
+>>> 00000010 84 00 01 02 d0 00 00 ff 03 00 01 02 f0 00 00 ff 
+>>> |................|
+>>> 00000020 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
+>>> |................|
+>>> *
+>>> 00000080 e5 20 fb ff ff ff ff 3f 44 eb 08 6b 08 3b 42 bb |. 
+>>> .....?D..k.;B.|
+>>> 00000090 fe ff ff ff ff ff 00 00 ff ff 40 eb 0c 20 0f 52 
+>>> |..........@.. .R|
+>>> 000000a0 10 d8 00 00 36 02 a6 00 82 ea 14 e2 e9 63 76 33 
+>>> |....6........cv3|
+>>> 000000b0 7a 75 7a 75 f7 a2 d5 5c 19 f7 4d ff e9 70 f9 a5 
+>>> |zuzu...\..M..p..|
+>>> 000000c0 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
+>>> |................|
+>>> 000000d0 ff 0a f0 ff 21 ff dc ff |....!...|
+>>> 000000d8
+>> 
+>> Can you please provide an md5sum or sha256sum of this file?
 > 
-> I do not have an evil hacker mind, but I can not think of a way this one time
-> use of a user specified index could be an issue.  It does add noise to the
-> BUILD REGRESSION emails sent to Andrew.
+> root@bletchley:~# md5sum
+> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/sfdp
+> a7b9dbf76e99a33db99e557b6676588a 
 
-Maybe Smack can be taught to ignore __init and other early boot
-functions.
+Thanks!
 
-I do not have any strong objections to using array_index_nospec because
-it won't do any harm. Except that it makes a security measure a normal
-comodity so any future changes to array_index_nospec and its users will
-have to consult additional callers. Whether that is something we should
-deeply care about, I don't know.
+> /sys/devices/platform/ahb/1e620000.spi/spi_master/spi0/spi0.0/spi-nor/sfdp
+> 
+> Is it required in commit message, if yes, I will update it.
 
-At minimum make sure to be explicit that this can hardly be a Spectre
-gadget as it is a _one_ time early boot call. If there is a scenario
-where this could be really abused then it should be mentioned
-explicitly.
--- 
-Michal Hocko
-SUSE Labs
+Ohh, I actually missed that. These information should go as
+a comment, that is below the "---" line.
+
+-michael
