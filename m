@@ -2,171 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A8ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 06:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03235C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 06:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiBVGnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 01:43:23 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59750 "EHLO
+        id S230355AbiBVGwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 01:52:10 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiBVGnV (ORCPT
+        with ESMTP id S229867AbiBVGwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 01:43:21 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50C21110A7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 22:42:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645512176; x=1677048176;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=voJ0cCZC0eL2orT94+vc9vUjmlp6DZeqEERqkUOzhTM=;
-  b=JH/9eXc9vmKn+akL4UmUfLX3aTOepE+8SLL/ilH5S2yBHtchvxDQo8Ec
-   duO0ylqntAH6b/eta+cX0BX1foLg7vsJu38OMRBAIiF/YM2ws57slyDl3
-   mqdt8epT8SZYcZPJckIJCpmmPVQTH7fjChhnDGULI2eGp8IRegMqI07Rk
-   GoHVwRrhxXgX38St1BaHy5zQ9+pv7WIRab2OzGxxqipvWI6l1Agrxd+c+
-   I1rjJdAycf5/5PD5OfE222iqn9+CZI61/Zp3ioiaHUTJtIG1M1CDjxitN
-   Lf6khOe7TWyMTH8HrVQ8ifFl1Jogs9Ijxo+/0WHNv2b2yfzqbusGsDuI7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="276222263"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="276222263"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 22:42:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="606588599"
-Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 21 Feb 2022 22:42:55 -0800
-Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMOsw-0002Pq-Kw; Tue, 22 Feb 2022 06:42:54 +0000
-Date:   Tue, 22 Feb 2022 14:41:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 31/39] arch/x86/xen/enlighten_pv.c:627:2:
- error: use of undeclared identifier 'asm_exc_control_protection'; did you
- mean 'asm_exc_general_protection'?
-Message-ID: <202202221419.DMC8nDHf-lkp@intel.com>
+        Tue, 22 Feb 2022 01:52:08 -0500
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C23827B10;
+        Mon, 21 Feb 2022 22:51:43 -0800 (PST)
+Received: by mail-ed1-f53.google.com with SMTP id z22so34480327edd.1;
+        Mon, 21 Feb 2022 22:51:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bR8Q0QY9SX7TEWCLjuX9Gl0qDTq1gqx2gu8NIUCvNZY=;
+        b=oqiGuTD3Dl1pZGMyO1xCU/U2c0AfNgqoHtki+0Fz2rXhoyIQddoecfd46DyhrVmXpM
+         qh7ixkWDUN5AR9JntSvDcvf8UGuHrvmuyP3KxLzJ0XEwID2FwIXYqe/glRi6i83+D5kO
+         i6466vUz6vZe6JSSS3v+PfghJiRA0JuXHUqWWGiYC6HEJfVA/s5fiLLX1PE5LThlcAPO
+         +DH5xnn0CGX7FrfTN/9erfg74WxmINNoeX85mqJapwfxj+VZa2xfmXvTY0Gt32qkpoXK
+         G0sTahFvs+dXlF5lnEOvvIzQyRHfm+YBg9HXE/NV06B2VAw8q7x+zgvfMpvb9kizjnNm
+         IQ/Q==
+X-Gm-Message-State: AOAM533FDThjVnEvALDP83vr2FPhEqJ3WN31G6ngxAA5XR9GqMbxq/3T
+        1UstFFa79342DwPqJPmY0+Y=
+X-Google-Smtp-Source: ABdhPJybXoH/4IC5sxgRdrpiS40oI8K5YpOtI4ArFM9KXKTCbppArM6MONHlNQCHPNBdKQfXpU+8Ng==
+X-Received: by 2002:a05:6402:1e8b:b0:3da:58e6:9a09 with SMTP id f11-20020a0564021e8b00b003da58e69a09mr25358130edf.155.1645512701870;
+        Mon, 21 Feb 2022 22:51:41 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id x6sm9348611edv.109.2022.02.21.22.51.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 22:51:41 -0800 (PST)
+Message-ID: <e883ccb5-68ea-f802-e4fd-864672d8ad7b@kernel.org>
+Date:   Tue, 22 Feb 2022 07:51:39 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v3 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+Content-Language: en-US
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
+        p.rosenberger@kunbus.com
+References: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
+ <20220222011433.8761-2-LinoSanfilippo@gmx.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220222011433.8761-2-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   1436dce5f32d577e8cef693e09f4bb1faa0e2692
-commit: 3c80adbe1204e92a048cb149b966c2a990c89ec6 [31/39] x86/ibt,xen: Annotate away warnings
-config: x86_64-randconfig-a011-20220221 (https://download.01.org/0day-ci/archive/20220222/202202221419.DMC8nDHf-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=3c80adbe1204e92a048cb149b966c2a990c89ec6
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 3c80adbe1204e92a048cb149b966c2a990c89ec6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 22. 02. 22, 2:14, Lino Sanfilippo wrote:
+> Several drivers that support setting the RS485 configuration via userspace
+> implement one or more of the following tasks:
+> 
+> - in case of an invalid RTS configuration (both RTS after send and RTS on
+>    send set or both unset) fall back to enable RTS on send and disable RTS
+>    after send
+> 
+> - nullify the padding field of the returned serial_rs485 struct
+> 
+> - copy the configuration into the uart port struct
+> 
+> - limit RTS delays to 100 ms
+> 
+> Move these tasks into the serial core to make them generic and to provide
+> a consistent behaviour among all drivers.
+> 
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> ---
+>   drivers/tty/serial/serial_core.c | 29 +++++++++++++++++++++++++++++
+>   1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 846192a7b4bf..2b3afe038c1c 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -42,6 +42,11 @@ static struct lock_class_key port_lock_key;
+>   
+>   #define HIGH_BITS_OFFSET	((sizeof(long)-sizeof(int))*8)
+>   
+> +/*
+> + * Max time with active RTS before/after data is sent.
+> + */
+> +#define RS485_MAX_RTS_DELAY	100 /* msecs */
+> +
+>   static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
+>   					struct ktermios *old_termios);
+>   static void uart_wait_until_sent(struct tty_struct *tty, int timeout);
+> @@ -1282,8 +1287,32 @@ static int uart_set_rs485_config(struct uart_port *port,
+>   	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
+>   		return -EFAULT;
+>   
+> +	/* pick sane settings if the user hasn't */
+> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
+> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
+> +		pr_warn("invalid RTS setting, using RTS_ON_SEND instead\n");
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Can't we have a device prefix here, so that everyone knows what device 
+is affected? Without that, it's not that useful. At least port->name & 
+port->line could be printed. The uart core uses dev_* prints, but prints 
+also line as uport->dev can be NULL sometimes.
 
-All errors (new ones prefixed by >>):
+Hm, we could introduce uart_print family (to print something like what 
+is in uart_report_port).
 
->> arch/x86/xen/enlighten_pv.c:627:2: error: use of undeclared identifier 'asm_exc_control_protection'; did you mean 'asm_exc_general_protection'?
-           TRAP_ENTRY(exc_control_protection,              false ),
-           ^
-   arch/x86/xen/enlighten_pv.c:592:11: note: expanded from macro 'TRAP_ENTRY'
-           .orig           = asm_##func,                   \
-                             ^
-   <scratch space>:77:1: note: expanded from here
-   asm_exc_control_protection
-   ^
-   arch/x86/include/asm/idtentry.h:564:1: note: 'asm_exc_general_protection' declared here
-   DECLARE_IDTENTRY_ERRORCODE(X86_TRAP_GP, exc_general_protection);
-   ^
-   arch/x86/include/asm/idtentry.h:83:18: note: expanded from macro 'DECLARE_IDTENTRY_ERRORCODE'
-           asmlinkage void asm_##func(void);                               \
-                           ^
-   <scratch space>:35:1: note: expanded from here
-   asm_exc_general_protection
-   ^
->> arch/x86/xen/enlighten_pv.c:627:2: error: use of undeclared identifier 'xen_asm_exc_control_protection'; did you mean 'xen_asm_exc_general_protection'?
-           TRAP_ENTRY(exc_control_protection,              false ),
-           ^
-   arch/x86/xen/enlighten_pv.c:593:10: note: expanded from macro 'TRAP_ENTRY'
-           .xen            = xen_asm_##func,               \
-                             ^
-   <scratch space>:78:1: note: expanded from here
-   xen_asm_exc_control_protection
-   ^
-   arch/x86/include/asm/idtentry.h:564:1: note: 'xen_asm_exc_general_protection' declared here
-   DECLARE_IDTENTRY_ERRORCODE(X86_TRAP_GP, exc_general_protection);
-   ^
-   arch/x86/include/asm/idtentry.h:84:18: note: expanded from macro 'DECLARE_IDTENTRY_ERRORCODE'
-           asmlinkage void xen_asm_##func(void);                           \
-                           ^
-   <scratch space>:36:1: note: expanded from here
-   xen_asm_exc_general_protection
-   ^
-   arch/x86/xen/enlighten_pv.c:1184:34: warning: no previous prototype for function 'xen_start_kernel' [-Wmissing-prototypes]
-   asmlinkage __visible void __init xen_start_kernel(void)
-                                    ^
-   arch/x86/xen/enlighten_pv.c:1184:22: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   asmlinkage __visible void __init xen_start_kernel(void)
-                        ^
-                        static 
-   1 warning and 2 errors generated.
-
-
-vim +627 arch/x86/xen/enlighten_pv.c
-
-   590	
-   591	#define TRAP_ENTRY(func, ist_ok) {			\
-   592		.orig		= asm_##func,			\
-   593		.xen		= xen_asm_##func,		\
-   594		.ist_okay	= ist_ok }
-   595	
-   596	#define TRAP_ENTRY_REDIR(func, ist_ok) {		\
-   597		.orig		= asm_##func,			\
-   598		.xen		= xen_asm_xenpv_##func,		\
-   599		.ist_okay	= ist_ok }
-   600	
-   601	static struct trap_array_entry trap_array[] = {
-   602		TRAP_ENTRY_REDIR(exc_debug,			true  ),
-   603		TRAP_ENTRY_REDIR(exc_double_fault,		true  ),
-   604	#ifdef CONFIG_X86_MCE
-   605		TRAP_ENTRY_REDIR(exc_machine_check,		true  ),
-   606	#endif
-   607		TRAP_ENTRY_REDIR(exc_nmi,			true  ),
-   608		TRAP_ENTRY(exc_int3,				false ),
-   609		TRAP_ENTRY(exc_overflow,			false ),
-   610	#ifdef CONFIG_IA32_EMULATION
-   611		{ entry_INT80_compat,          xen_entry_INT80_compat,          false },
-   612	#endif
-   613		TRAP_ENTRY(exc_page_fault,			false ),
-   614		TRAP_ENTRY(exc_divide_error,			false ),
-   615		TRAP_ENTRY(exc_bounds,				false ),
-   616		TRAP_ENTRY(exc_invalid_op,			false ),
-   617		TRAP_ENTRY(exc_device_not_available,		false ),
-   618		TRAP_ENTRY(exc_coproc_segment_overrun,		false ),
-   619		TRAP_ENTRY(exc_invalid_tss,			false ),
-   620		TRAP_ENTRY(exc_segment_not_present,		false ),
-   621		TRAP_ENTRY(exc_stack_segment,			false ),
-   622		TRAP_ENTRY(exc_general_protection,		false ),
-   623		TRAP_ENTRY(exc_spurious_interrupt_bug,		false ),
-   624		TRAP_ENTRY(exc_coprocessor_error,		false ),
-   625		TRAP_ENTRY(exc_alignment_check,			false ),
-   626		TRAP_ENTRY(exc_simd_coprocessor_error,		false ),
- > 627		TRAP_ENTRY(exc_control_protection,		false ),
-   628	};
-   629	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+thanks,
+-- 
+js
+suse labs
