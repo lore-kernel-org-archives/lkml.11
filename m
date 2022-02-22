@@ -2,210 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C864CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbiBVN12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52516 "EHLO
+        id S232402AbiBVN16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:27:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232334AbiBVN10 (ORCPT
+        with ESMTP id S232442AbiBVN1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:27:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A130D427DB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:26:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645536416;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r0cJAIJbSE4AchjJtTEDrpwEPLk6IwUMV9ko/1GRnXQ=;
-        b=VN+tzl2GMntaabwBXqmJm91ovM7RHmfh6Q0Jv3ETeOLZPwEGu+gJCp5xxoQA+YyS4iQqaU
-        o/afMIiEotGdtWWHcSd1eCiSBV+rPU/XYLlJTsi8v3A/KbG0sJJAefppiRW5ROxGmAANlF
-        MRvvpXieplwQ8zGOek6Gf7O6qsHhxuk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-m_HRy8R7PmaTGxttwcF2jw-1; Tue, 22 Feb 2022 08:26:53 -0500
-X-MC-Unique: m_HRy8R7PmaTGxttwcF2jw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 824501006AA5;
-        Tue, 22 Feb 2022 13:26:49 +0000 (UTC)
-Received: from localhost (ovpn-12-122.pek2.redhat.com [10.72.12.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6F6451062254;
-        Tue, 22 Feb 2022 13:26:30 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 21:26:27 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Heiko Carstens <hca@linux.ibm.com>, Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, cl@linux.com, 42.hyeyoo@gmail.com,
-        penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
-        vbabka@suse.cz, David.Laight@aculab.com, david@redhat.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, steffen.klassert@secunet.com,
-        netdev@vger.kernel.org, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        linux-s390@vger.kernel.org, michael@walle.cc,
-        linux-i2c@vger.kernel.org, wsa@kernel.org,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>, x86@kernel.org
-Subject: Re: [PATCH 00/22] Don't use kmalloc() with GFP_DMA
-Message-ID: <YhTkgytf1YnQLcuB@MiWiFi-R3L-srv>
-References: <20220219005221.634-1-bhe@redhat.com>
- <YhOaTsWUKO0SWsh7@osiris>
- <20220222084422.GA6139@lst.de>
- <YhThVgoRJoZ7Voyy@MiWiFi-R3L-srv>
+        Tue, 22 Feb 2022 08:27:53 -0500
+Received: from outbound-smtp11.blacknight.com (outbound-smtp11.blacknight.com [46.22.139.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9446F8CDAF
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:27:26 -0800 (PST)
+Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
+        by outbound-smtp11.blacknight.com (Postfix) with ESMTPS id 220FF1C37F5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:27:25 +0000 (GMT)
+Received: (qmail 5624 invoked from network); 22 Feb 2022 13:27:24 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.17.223])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 22 Feb 2022 13:27:24 -0000
+Date:   Tue, 22 Feb 2022 13:27:22 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        mingo@kernel.org, song.bao.hua@hisilicon.com,
+        srikar@linux.vnet.ibm.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v5] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+Message-ID: <20220222132722.GC4423@techsingularity.net>
+References: <20220222102133.2956-1-kprateek.nayak@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <YhThVgoRJoZ7Voyy@MiWiFi-R3L-srv>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20220222102133.2956-1-kprateek.nayak@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/22/22 at 09:12pm, Baoquan He wrote:
-> On 02/22/22 at 09:44am, Christoph Hellwig wrote:
-> > On Mon, Feb 21, 2022 at 02:57:34PM +0100, Heiko Carstens wrote:
-> > > > 1) Kmalloc(GFP_DMA) in s390 platform, under arch/s390 and drivers/s390;
-> > > 
-> > > So, s390 partially requires GFP_DMA allocations for memory areas which
-> > > are required by the hardware to be below 2GB. There is not necessarily
-> > > a device associated when this is required. E.g. some legacy "diagnose"
-> > > calls require buffers to be below 2GB.
-> > > 
-> > > How should something like this be handled? I'd guess that the
-> > > dma_alloc API is not the right thing to use in such cases. Of course
-> > > we could say, let's waste memory and use full pages instead, however
-> > > I'm not sure this is a good idea.
-> > 
-> > Yeah, I don't think the DMA API is the right thing for that.  This
-> > is one of the very rare cases where a raw allocation makes sense.
-> > 
-> > That being said being able to drop kmalloc support for GFP_DMA would
-> > be really useful. How much memory would we waste if switching to the
-> > page allocator?
-> > 
-> > > s390 drivers could probably converted to dma_alloc API, even though
-> > > that would cause quite some code churn.
-> > 
-> > I think that would be a very good thing to have.
-> > 
-> > > > For this first patch series, thanks to Hyeonggon for helping
-> > > > reviewing and great suggestions on patch improving. We will work
-> > > > together to continue the next steps of work.
-> > > > 
-> > > > Any comment, thought, or suggestoin is welcome and appreciated,
-> > > > including but not limited to:
-> > > > 1) whether we should remove dma-kmalloc support in kernel();
-> > > 
-> > > The question is: what would this buy us? As stated above I'd assume
-> > > this comes with quite some code churn, so there should be a good
-> > > reason to do this.
-> > 
-> > There is two steps here.  One is to remove GFP_DMA support from
-> > kmalloc, which would help to cleanup the slab allocator(s) very nicely,
-> > as at that point it can stop to be zone aware entirely.
-> > 
-> > The long term goal is to remove ZONE_DMA entirely at least for
-> > architectures that only use the small 16MB ISA-style one.  It can
-> > then be replaced with for example a CMA area and fall into a movable
-> > zone.  I'd have to prototype this first and see how it applies to the
-> > s390 case.  It might not be worth it and maybe we should replace
-> > ZONE_DMA and ZONE_DMA32 with a ZONE_LIMITED for those use cases as
-> > the amount covered tends to not be totally out of line for what we
-> > built the zone infrastructure.
-> > 
-> > > >From this cover letter I only get that there was a problem with kdump
-> > > on x86, and this has been fixed. So why this extra effort?
-> > > 
-> > > >     3) Drop support for allocating DMA memory from slab allocator
-> > > >     (as Christoph Hellwig said) and convert them to use DMA32
-> > > >     and see what happens
-> > > 
-> > > Can you please clarify what "convert to DMA32" means? I would assume
-> > > this does _not_ mean that passing GFP_DMA32 to slab allocator would
-> > > work then?
-> > 
-> > I'm really not sure what this means.
+On Tue, Feb 22, 2022 at 03:51:33PM +0530, K Prateek Nayak wrote:
+> In the case of systems containing multiple LLCs per socket, like
+> AMD Zen systems, users want to spread bandwidth hungry applications
+> across multiple LLCs. Stream is one such representative workload where
+> the best performance is obtained by limiting one stream thread per LLC.
+> To ensure this, users are known to pin the tasks to a specify a subset
+> of the CPUs consisting of one CPU per LLC while running such bandwidth
+> hungry tasks.
 > 
-> Thanks a lot to Heiko for valuable input, it's very helpful. And thanks
-> a lot to Christoph for explaining.
+> Suppose we kickstart a multi-threaded task like stream with 8 threads
+> using taskset or numactl to run on a subset of CPUs on a 2 socket Zen3
+> server where each socket contains 128 CPUs
+> (0-63,128-191 in one socket, 64-127,192-255 in another socket)
 > 
-> I guess this "convert to DMA32" is similar to "replace ZONE_DMA and
-> ZONE_DMA32 with a ZONE_LIMITED".
+> Eg: numactl -C 0,16,32,48,64,80,96,112 ./stream8
+> 
+> Here each CPU in the list is from a different LLC and 4 of those LLCs
+> are on one socket, while the other 4 are on another socket.
+> 
+> Ideally we would prefer that each stream thread runs on a different
+> CPU from the allowed list of CPUs. However, the current heuristics in
+> find_idlest_group() do not allow this during the initial placement.
+> 
+> Suppose the first socket (0-63,128-191) is our local group from which
+> we are kickstarting the stream tasks. The first four stream threads
+> will be placed in this socket. When it comes to placing the 5th
+> thread, all the allowed CPUs are from the local group (0,16,32,48)
+> would have been taken.
+> 
+> However, the current scheduler code simply checks if the number of
+> tasks in the local group is fewer than the allowed numa-imbalance
+> threshold. This threshold was previously 25% of the NUMA domain span
+> (in this case threshold = 32) but after the v6 of Mel's patchset
+> "Adjust NUMA imbalance for multiple LLCs", got merged in sched-tip,
+> Commit: e496132ebedd ("sched/fair: Adjust the allowed NUMA imbalance
+> when SD_NUMA spans multiple LLCs") it is now equal to number of LLCs
+> in the NUMA domain, for processors with multiple LLCs.
+> (in this case threshold = 8).
+> 
+> For this example, the number of tasks will always be within threshold
+> and thus all the 8 stream threads will be woken up on the first socket
+> thereby resulting in sub-optimal performance.
+> 
+> The following sched_wakeup_new tracepoint output shows the initial
+> placement of tasks in the current tip/sched/core on the Zen3 machine:
+> 
+> stream-5045    [032] d..2.   167.914699: sched_wakeup_new: comm=stream pid=5047 prio=120 target_cpu=048
+> stream-5045    [032] d..2.   167.914746: sched_wakeup_new: comm=stream pid=5048 prio=120 target_cpu=000
+> stream-5045    [032] d..2.   167.914846: sched_wakeup_new: comm=stream pid=5049 prio=120 target_cpu=016
+> stream-5045    [032] d..2.   167.914891: sched_wakeup_new: comm=stream pid=5050 prio=120 target_cpu=032
+> stream-5045    [032] d..2.   167.914928: sched_wakeup_new: comm=stream pid=5051 prio=120 target_cpu=032
+> stream-5045    [032] d..2.   167.914976: sched_wakeup_new: comm=stream pid=5052 prio=120 target_cpu=032
+> stream-5045    [032] d..2.   167.915011: sched_wakeup_new: comm=stream pid=5053 prio=120 target_cpu=032
+> 
+> Once the first four threads are distributed among the allowed CPUs of
+> socket one, the rest of the treads start piling on these same CPUs
+> when clearly there are CPUs on the second socket that can be used.
+> 
+> Following the initial pile up on a small number of CPUs, though the
+> load-balancer eventually kicks in, it takes a while to get to {4}{4}
+> and even {4}{4} isn't stable as we observe a bunch of ping ponging
+> between {4}{4} to {5}{3} and back before a stable state is reached
+> much later (1 Stream thread per allowed CPU) and no more migration is
+> required.
+> 
+> We can detect this piling and avoid it by checking if the number of
+> allowed CPUs in the local group are fewer than the number of tasks
+> running in the local group and use this information to spread the
+> 5th task out into the next socket (after all, the goal in this
+> slowpath is to find the idlest group and the idlest CPU during the
+> initial placement!).
+> 
+> The following sched_wakeup_new tracepoint output shows the initial
+> placement of tasks after adding this fix on the Zen3 machine:
+> 
+> stream-4733    [032] d..2.   116.017980: sched_wakeup_new: comm=stream pid=4735 prio=120 target_cpu=048
+> stream-4733    [032] d..2.   116.018032: sched_wakeup_new: comm=stream pid=4736 prio=120 target_cpu=000
+> stream-4733    [032] d..2.   116.018127: sched_wakeup_new: comm=stream pid=4737 prio=120 target_cpu=064
+> stream-4733    [032] d..2.   116.018185: sched_wakeup_new: comm=stream pid=4738 prio=120 target_cpu=112
+> stream-4733    [032] d..2.   116.018235: sched_wakeup_new: comm=stream pid=4739 prio=120 target_cpu=096
+> stream-4733    [032] d..2.   116.018289: sched_wakeup_new: comm=stream pid=4740 prio=120 target_cpu=016
+> stream-4733    [032] d..2.   116.018334: sched_wakeup_new: comm=stream pid=4741 prio=120 target_cpu=080
+> 
+> We see that threads are using all of the allowed CPUs and there is
+> no pileup.
+> 
+> No output is generated for tracepoint sched_migrate_task with this
+> patch due to a perfect initial placement which removes the need
+> for balancing later on - both across NUMA boundaries and within
+> NUMA boundaries for stream.
+> 
+> Following are the results from running 8 Stream threads with and
+> without pinning on a dual socket Zen3 Machine (2 x 64C/128T):
+> 
+> Pinning is done using: numactl -C 0,16,32,48,64,80,96,112 ./stream8
+> 
+> 	           5.17.0-rc1               5.17.0-rc1                5.17.0-rc1
+>                tip sched/core           tip sched/core            tip sched/core
+>                  (no pinning)                 +pinning              + this-patch
+> 								       + pinning
+> 
+>  Copy:    97699.28 (0.00 pct)     95933.60  (-1.80 pct)    156578.91 (60.26 pct)
+> Scale:   107754.15 (0.00 pct)     91869.88 (-14.74 pct)    149783.25 (39.00 pct)
+>   Add:   126383.29 (0.00 pct)    105730.86 (-16.34 pct)    186493.09 (47.56 pct)
+> Triad:   124896.78 (0.00 pct)    106394.38 (-14.81 pct)    184733.48 (47.90 pct)
+> 
+> Pinning currently hurts the performance compared to unbound case on
+> tip/sched/core. With the addition of this patch, we are able to
+> outperform tip/sched/core by a good margin with pinning.
+> 
+> Following are the results from running 16 Stream threads with and
+> without pinning on a dual socket Skylake Machine (2 x 24C/48T):
+> 
+> Pinning is done using: numactl -C 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 ./stream16
+> 
+> 	           5.17.0-rc1               5.17.0-rc1                5.17.0-rc1
+>                tip sched/core           tip sched/core            tip sched/core
+>                  (no pinning)                 +pinning              + this-patch
+> 								       + pinning
+> 
+>  Copy:   126620.67 (0.00 pct)     141062.10 (11.40 pct)    147615.44 (16.58 pct)
+> Scale:   91313.51 (0.00 pct)      112879.61 (23.61 pct)    122591.28 (34.25 pct)
+>   Add:   102035.43 (0.00 pct)     125889.98 (23.37 pct)    138179.01 (35.42 pct)
+> Triad:   102281.91 (0.00 pct)     123743.48 (20.98 pct)    138940.41 (35.84 pct)
+> 
+> In case of Skylake machine, with single LLC per socket, we see good
+> improvement brought about by pinning which is further benefited by
+> this patch.
+> 
+> Signed-off-by: K Prateek Nayak <kprateek.nayak@amd.com>
 
-And by the way, when I searched SLAB_CACHE_DMA32 which is another zone
-aware slab flag, I got that not all people likes to abuse
-kmalloc(GFP_DMA). There are two places where 
-kmem_cache_create(SLAB_CACHE_DMA32) are called to create slab grabbing
-memory from zone DMA32. Obviously the code author really knows slab
-allocator. They use dma32 slab to get cache memory under 4G.
+Only minor nit would that the cpumask can be declared within the if
+block to limit scope but that is just being picky so
 
-drivers/firmware/google/gsmi.c : gsmi_init()
-drivers/iommu/io-pgtable-arm-v7s.c: arm_v7s_alloc_pgtable()
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
 
-> 
-> When I use 'git grep "GFP_DMA/>"' to search all places specifying GFP_DMA,
-> I noticed the main usage of kmalloc(GFP_DMA) is to get memory under a
-> memory limitation, but not for DMA buffer allocation. Below is what I got
-> for earlier kdump issue explanation. It can help explain why kmalloc(GFP_DMA)
-> is useful on ARCHes w/o ZONE_DMA32, but doesn't make sense on x86_64 which
-> has both zone DMA and DMA32. The 16M ZONE_DMA is only for very rarely used
-> legacy ISA device, but most pci devices driver supporting 32bit addressing
-> likes to abuse kmalloc(GFP_DMA) to get DMA buffer from the zone DMA.
-> That obviously is unsafe and unreasonable.
-> 
-> Like risc-V which doesn't have the burden of legacy ISA devices, it can
-> take only containing DMA32 zone way. ARM64 also adjusts to have only
-> arm64 if not on Raspberry Pi. Using kmalloc(GFP_DMA) makes them no
-> inconvenience. If finally having dma32-kmalloc, the name may need be
-> carefully considerred, it seems to be acceptable. We just need to pick
-> up those ISA device driver and handle their 24bit addressing DMA well.
-> 
-> For this patchset, I only find out places in which GPF_DMA is
-> redundant and can be removed directly, and places where
-> kmalloc(GFP_DMA)|dma_map_ pair can be replaced with dma_alloc_xxxx() API
-> and the memory wasting is not so big. I have patches converting
-> kmalloc(GFP_DMA) to alloc_pages(GFP_DMA), but not easy to replace with
-> dma_alloc_xxx(), Hyeonggon suggested not adding them to this series.
-> I will continue investigating the left places, see whether or how we can
-> convert them.
-> 
-> =============================
-> ARCH which has DMA32
->         ZONE_DMA       ZONE_DMA32
-> arm64   0~X            X~4G  (X is got from ACPI or DT. Otherwise it's 4G by default, DMA32 is empty)
-> ia64    None           0~4G
-> mips    0 or 0~16M     X~4G  (zone DMA is empty on SGI_IP22 or SGI_IP28, otherwise 16M by default like i386)
-> riscv   None           0~4G
-> x86_64  16M            16M~4G
-> 
-> 
-> =============================
-> ARCH which has no DMA32
->         ZONE_DMA
-> alpha   0~16M or empty if IOMMU enabled
-> arm     0~X (X is reported by fdt, 4G by default)
-> m68k    0~total memory
-> microblaze 0~total low memory
-> powerpc 0~2G
-> s390    0~2G
-> sparc   0~ total low memory
-> i386    0~16M
-> 
-> > 
-> > > 
-> > > btw. there are actually two kmalloc allocations which pass GFP_DMA32;
-> > > I guess this is broken(?):
-> > > 
-> > > drivers/hid/intel-ish-hid/ishtp-fw-loader.c:    dma_buf = kmalloc(payload_max_size, GFP_KERNEL | GFP_DMA32);
-> > > drivers/media/test-drivers/vivid/vivid-osd.c:   dev->video_vbase = kzalloc(dev->video_buffer_size, GFP_KERNEL | GFP_DMA32);
-> > 
-> > Yes, this is completely broken.
-> > 
-> 
+Thanks!
 
+-- 
+Mel Gorman
+SUSE Labs
