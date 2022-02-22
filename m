@@ -2,157 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B21FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E622FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbiBVN30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:29:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
+        id S232441AbiBVN3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:29:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232446AbiBVN3M (ORCPT
+        with ESMTP id S229537AbiBVN3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:29:12 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6852498596
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:46 -0800 (PST)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 44AFE3FCAF
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:28:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645536525;
-        bh=4gAKTfhEbiOa5VKlvnZrWEbzuOeUPflEFSiM68fpB+I=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=dkYI8QB+a7ihANAbPp67FEFYSsTNU7f+rC+C/bV0S9rQ4WP5qUoFjkZa4gza16jvU
-         cP0TSqxFDRjILd5ggExIYtRMR3Ql0+8HEwbIZ1ywFXs60RFnOJS02ZM4sR0QIKFWCs
-         eaxREbZn9gis9Y/dy/BS2YQm1WOfa1Rvt0mtlUp2xc9gumju1UCnYQjVEXdLhaUrps
-         d8RljRvvp068RxFSPE9gnoRvc00sjabOYqf+qhRBnYi2XoXnArV/RptJSxvv5UwyUF
-         98BKEIIjI7tXBjKm1z25FqwmTkXCkWP+v7YQUB1TAS+4ikgvkrc3se3clYy4iPeTbU
-         3RscVdDMUeM2g==
-Received: by mail-ed1-f70.google.com with SMTP id dy17-20020a05640231f100b00412897682b4so10184204edb.18
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:45 -0800 (PST)
+        Tue, 22 Feb 2022 08:29:50 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EAB996AC;
+        Tue, 22 Feb 2022 05:29:22 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id t14so19514909ljh.8;
+        Tue, 22 Feb 2022 05:29:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=VHfLSHEUp8KFCoSMOat+t/9h+kqq+wol9Ucvkw0K0Ko=;
+        b=el49x+sn8P8oo55vRYxMrzV9h6912Vs30PpYWE8XEE5Rg+Hbs6HMyLY17n57nDsZ7O
+         aoqx1c9OHaZ+Io5wS879xBafzK7c3Nf0tDkUmGyZL/zAGoHi75UCpa8k6+houBXp1q4V
+         oFKaIFEQ1XZjaAI9XSfYbL/ejqEd9A3NgguMLlye8h++oKStvlezt2WHfREbhW9tu78h
+         TOmJy3YMPDou7kHbHKL01G6PML1X6EUBiyYiH69UE2IfX89VoVAYcQg3lIcVJ2eK9Xgr
+         MRsKNi1LEy5RTLMHVHqNe/dArG8PdYs/+741BQpMPmFGCW6ZciZRDkhPEpznBW+slsoA
+         /Ong==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4gAKTfhEbiOa5VKlvnZrWEbzuOeUPflEFSiM68fpB+I=;
-        b=Cf36abxf5bEDzwlqmmICNe3Qc8w2SrQG55VKhqPcXZmPVueWsvtfzgJVEg1e4OFxEA
-         deK6Z/X/mILkaN85QFxYRh7wTUBPBkTO/jUoLLV6tA8V6dYphFl8+I8tydKOuVMbChA4
-         jpKzeDhzU/WiP7yBiu5B5TmI62mnLc7AL+iAaYaETyxnCblMeh6P9FKFRh9S8Scm92OT
-         TxfUoWh/0vejTBiD8C6lT5p6f0sv482vAgT/x7uvIhIU7RH/KmK2uMQ/OgTdlHZnkgFO
-         X2mG6kzBlHdm6hTMG9dIZIZ10Fk41fYW95bn1UsO42DmfhPQhQPY3hUN1+TDIdGiNRd9
-         DtOA==
-X-Gm-Message-State: AOAM533BU73zt05Nkk/BMV3eBS6tmKKflkrfnweLlNLfdIEP8UbbI9N+
-        3HnICP9CQ/lTz0Yh86qQ6XLWsOQsqAmiKA436OuZNm8vGhuvNqv0M2pYRDSr9bYIHlvosx7XXtb
-        6YvoInSVXk6wFKLU8IBF9xl0HMQlPmYomHiO83W3vEQ==
-X-Received: by 2002:a05:6402:50d2:b0:413:1cd8:e08e with SMTP id h18-20020a05640250d200b004131cd8e08emr4730737edb.276.1645536524858;
-        Tue, 22 Feb 2022 05:28:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyk7fFQMdh++yZYYeqYdt0QvvL2iwrOb2soDeyOFOcCMFVM9JS2wL10Ee7DBznFmZmRSj/ibA==
-X-Received: by 2002:a05:6402:50d2:b0:413:1cd8:e08e with SMTP id h18-20020a05640250d200b004131cd8e08emr4730720edb.276.1645536524647;
-        Tue, 22 Feb 2022 05:28:44 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id c5sm10029875edk.43.2022.02.22.05.28.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=VHfLSHEUp8KFCoSMOat+t/9h+kqq+wol9Ucvkw0K0Ko=;
+        b=zoEVKeKQdim4yat5jgr8gskzAaN3GhdlI2zwxu1a3Y02JeVBb9dZSEHWdhufyHsGwL
+         ADBeyUZ2aDziOXH7Z/3s1/gbqAP5Ta2lql7VKhkWSkuFaScWzc5BE8vK1EiyHCyudk1F
+         TC/edOc2xsGXbQ9TOK/9iLzITI9fpoya1Y5zCqKbBE9rgL4VSrD55+2HXl4lzaGbZNQm
+         mlRDPgS9/f6R3v2o8XvL3hDEMi3DnJSHvQLJ2K+zgV7StwtxhRyIRPcczHSdmAkqCbtV
+         53YpcVL2v+gMRA85McZI3yrITW0foROl/gD0vGacGFWlyZ9tdYsoLlI4r08p7sh8qNA6
+         SF4g==
+X-Gm-Message-State: AOAM531bdnAZugdaKMqYdbTOtc3rO8y7ysUkwltcJrk6b0PYz8nwW3z/
+        LecK6GIgIjKMBsMHJXGstDs=
+X-Google-Smtp-Source: ABdhPJxlMGmaG+tjtwWeeYytkr79toeqRMRJY7lpZtYdhn6zv6UTQAyG41KqbPEYkrroWlEL+S63rA==
+X-Received: by 2002:a2e:a270:0:b0:245:f51f:354 with SMTP id k16-20020a2ea270000000b00245f51f0354mr18263908ljm.497.1645536560909;
+        Tue, 22 Feb 2022 05:29:20 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id e22sm1703685ljb.17.2022.02.22.05.29.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 05:28:44 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Abel Vesa <abel.vesa@nxp.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        stable@vger.kernel.org
-Subject: [RFT PATCH 3/3] rpmsg: fix kfree() of const memory on setting driver_override
-Date:   Tue, 22 Feb 2022 14:27:07 +0100
-Message-Id: <20220222132707.266883-4-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220222132707.266883-1-krzysztof.kozlowski@canonical.com>
-References: <20220222132707.266883-1-krzysztof.kozlowski@canonical.com>
+        Tue, 22 Feb 2022 05:29:20 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH net-next v4 0/5] Add support for locked bridge ports (for 802.1X)
+Date:   Tue, 22 Feb 2022 14:28:13 +0100
+Message-Id: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver_override field from rpmsg_device should not be initialized
-from const memory because the core later kfree() it, for example when
-driver_override is set via sysfs.
+This series starts by adding support for SA filtering to the bridge,
+which is then allowed to be offloaded to switchdev devices. Furthermore
+an offloading implementation is supplied for the mv88e6xxx driver.
 
-Fixes: 950a7388f02b ("rpmsg: Turn name service into a stand alone driver")
-Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/rpmsg/rpmsg_internal.h | 12 ++++++++++--
- drivers/rpmsg/rpmsg_ns.c       | 13 +++++++++++--
- 2 files changed, 21 insertions(+), 4 deletions(-)
+Public Local Area Networks are often deployed such that there is a
+risk of unauthorized or unattended clients getting access to the LAN.
+To prevent such access we introduce SA filtering, such that ports
+designated as secure ports are set in locked mode, so that only
+authorized source MAC addresses are given access by adding them to
+the bridges forwarding database. Incoming packets with source MAC
+addresses that are not in the forwarding database of the bridge are
+discarded. It is then the task of user space daemons to populate the
+bridge's forwarding database with static entries of authorized entities.
 
-diff --git a/drivers/rpmsg/rpmsg_internal.h b/drivers/rpmsg/rpmsg_internal.h
-index b1245d3ed7c6..c21e73ffbf05 100644
---- a/drivers/rpmsg/rpmsg_internal.h
-+++ b/drivers/rpmsg/rpmsg_internal.h
-@@ -92,10 +92,18 @@ int rpmsg_release_channel(struct rpmsg_device *rpdev,
-  */
- static inline int rpmsg_chrdev_register_device(struct rpmsg_device *rpdev)
- {
-+	int ret;
-+
- 	strcpy(rpdev->id.name, "rpmsg_chrdev");
--	rpdev->driver_override = "rpmsg_chrdev";
-+	rpdev->driver_override = kstrdup("rpmsg_chrdev", GFP_KERNEL);
-+	if (!rpdev->driver_override)
-+		return -ENOMEM;
-+
-+	ret = rpmsg_register_device(rpdev);
-+	if (ret)
-+		kfree(rpdev->driver_override);
- 
--	return rpmsg_register_device(rpdev);
-+	return ret;
- }
- 
- #endif
-diff --git a/drivers/rpmsg/rpmsg_ns.c b/drivers/rpmsg/rpmsg_ns.c
-index 762ff1ae279f..7d0605307d23 100644
---- a/drivers/rpmsg/rpmsg_ns.c
-+++ b/drivers/rpmsg/rpmsg_ns.c
-@@ -20,12 +20,21 @@
-  */
- int rpmsg_ns_register_device(struct rpmsg_device *rpdev)
- {
-+	int ret;
-+
- 	strcpy(rpdev->id.name, "rpmsg_ns");
--	rpdev->driver_override = "rpmsg_ns";
-+	rpdev->driver_override = kstrdup("rpmsg_ns", GFP_KERNEL);
-+	if (!rpdev->driver_override)
-+		return -ENOMEM;
-+
- 	rpdev->src = RPMSG_NS_ADDR;
- 	rpdev->dst = RPMSG_NS_ADDR;
- 
--	return rpmsg_register_device(rpdev);
-+	ret = rpmsg_register_device(rpdev);
-+	if (ret)
-+		kfree(rpdev->driver_override);
-+
-+	return ret;
- }
- EXPORT_SYMBOL(rpmsg_ns_register_device);
- 
+The most common approach is to use the IEEE 802.1X protocol to take
+care of the authorization of allowed users to gain access by opening
+for the source address of the authorized host.
+
+With the current use of the bridge parameter in hostapd, there is
+a limitation in using this for IEEE 802.1X port authentication. It
+depends on hostapd attaching the port on which it has a successful
+authentication to the bridge, but that only allows for a single
+authentication per port. This patch set allows for the use of
+IEEE 802.1X port authentication in a more general network context with
+multiple 802.1X aware hosts behind a single port as depicted, which is
+a commonly used commercial use-case, as it is only the number of
+available entries in the forwarding database that limits the number of
+authenticated clients.
+
+      +--------------------------------+
+      |                                |
+      |      Bridge/Authenticator      |
+      |                                |
+      +-------------+------------------+
+       802.1X port  |
+                    |
+                    |
+             +------+-------+
+             |              |
+             |  Hub/Switch  |
+             |              |
+             +-+----------+-+
+               |          |
+            +--+--+    +--+--+
+            |     |    |     |
+    Hosts   |  a  |    |  b  |   . . .
+            |     |    |     |
+            +-----+    +-----+
+
+The 802.1X standard involves three different components, a Supplicant
+(Host), an Authenticator (Network Access Point) and an Authentication
+Server which is typically a Radius server. This patch set thus enables
+the bridge module together with an authenticator application to serve
+as an Authenticator on designated ports.
+
+
+For the bridge to become an IEEE 802.1X Authenticator, a solution using
+hostapd with the bridge driver can be found at
+https://github.com/westermo/hostapd/tree/bridge_driver .
+
+
+The relevant components work transparently in relation to if it is the
+bridge module or the offloaded switchcore case that is in use.
+
+Hans Schultz (5):
+  net: bridge: Add support for bridge port in locked mode
+  net: bridge: Add support for offloading of locked port flag
+  net: dsa: Include BR_PORT_LOCKED in the list of synced brport flags
+  net: dsa: mv88e6xxx: Add support for bridge port locked mode
+  selftests: forwarding: tests of locked port feature
+
+ drivers/net/dsa/mv88e6xxx/chip.c              |   9 +-
+ drivers/net/dsa/mv88e6xxx/port.c              |  29 +++
+ drivers/net/dsa/mv88e6xxx/port.h              |   9 +-
+ include/linux/if_bridge.h                     |   1 +
+ include/uapi/linux/if_link.h                  |   1 +
+ net/bridge/br_input.c                         |  11 +-
+ net/bridge/br_netlink.c                       |   6 +-
+ net/bridge/br_switchdev.c                     |   2 +-
+ net/dsa/port.c                                |   4 +-
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/bridge_locked_port.sh      | 180 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |   8 +
+ 12 files changed, 254 insertions(+), 7 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+
 -- 
-2.32.0
+2.30.2
 
