@@ -2,135 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF14C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8C6C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiBVJre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43492 "EHLO
+        id S230270AbiBVJsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiBVJrc (ORCPT
+        with ESMTP id S229520AbiBVJsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:47:32 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B9E8BE33;
-        Tue, 22 Feb 2022 01:47:07 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id h6so31943507wrb.9;
-        Tue, 22 Feb 2022 01:47:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=BmCM771/H8fMGA2TM9vIMuFjbF0aY9kc+ryD8RCZwDs=;
-        b=idzQPKZoLATAZxfyuZGOcDY/2sUODvMOnd/QV1CEQCDccF+PWPrqBdSJUbkutKn6uq
-         Lzp/jKHgQ6uQXsauKGJ2KAztiFzZ8Fj6mQ8lwRKK/oRT5BpMwabXVRzhKN1dxscDWNNw
-         6R7+qhb78rincI66EA87GH3lUlbKWdm/gddbv385b+2n8uXNbk0ZBRWf89UqfwMJJbAD
-         cH13YFUDCxt9gYdAvmiR5cJgEeQjPwoYsEDSHA4SdHGigQShR5b4qHOhGrR+fMVDkbFN
-         F9W1M/atDfXtUuu4X5VwAJiKOe8nd0SXdTiMZmlpuj5n9fT4Y7O7kYqlLIrLEuIyez3f
-         Y2AQ==
+        Tue, 22 Feb 2022 04:48:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 959468D6B3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:47:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645523270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1vLjaLOpjM/maPs9UeQipZMtimlrY+ZZDRN/XdiV3h8=;
+        b=Knbw3/bKaoIBuKz66UMr7+P+g17yBXbfPJHB0VLaO0Jb/EXnjnlm4BaJfID92FWX36++4m
+        v2GTrXoKUBG8kLBA/AxT4oV1ifGXRUNR4YIh/eAZCUMgwu/zoB0yslKFuutmZqBVpcMBBU
+        z+d84i3FAX/9s1zWOPglfN4aUmqGaGE=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-534-7BQ_gvgmMv-_S4pEBYXqmA-1; Tue, 22 Feb 2022 04:47:49 -0500
+X-MC-Unique: 7BQ_gvgmMv-_S4pEBYXqmA-1
+Received: by mail-qv1-f69.google.com with SMTP id dc3-20020a056214174300b004323e681becso1814135qvb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:47:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=BmCM771/H8fMGA2TM9vIMuFjbF0aY9kc+ryD8RCZwDs=;
-        b=E9qyPCB4zifrNujkwkft5jus8lrw8HA7hZTN0yX6q16+ZwpoA3QuF4pEeQkemvF0fk
-         ZNs2LZof0Yzklvfa6HGyBkEm1HF1+5m+oT101J85CpxAEqDrHh3BaSNSROOl0ee6nzgn
-         YWioVkKW+s7d+LoVlijWoEe4PXHGveQwiwkYnbEzHlqtzjiDq7C2iKkoN/XvWpnHQNJH
-         82dk9VhyjRFgII46eEwRQ/xanGXCLHYzb7YC7a/h3UmXzH5/I7XlEECmJKGwk+GJ+Oxv
-         bXMFutEyHeLs/Tp2+GBwyzwbf8+23RKBPnSAbztG9USGu3YBBvVQGhOXfRmVsC27fCZy
-         iTmQ==
-X-Gm-Message-State: AOAM532JtjfhOtvO+hmSrxPAa39oEuL4qLSYrc2P53ONOsqhhwbZ1K+N
-        vrZ08hSMSl2oB2oHGfokUyCDXmpX+FY=
-X-Google-Smtp-Source: ABdhPJxK24rkLm2wkZV8z8R7xDAF5lTZl8sNGmPovb/9HW2VOQ3JIudeOlcRuv9J+GZ49zKqu/oa4A==
-X-Received: by 2002:a5d:5888:0:b0:1ea:118f:4a82 with SMTP id n8-20020a5d5888000000b001ea118f4a82mr8365095wrf.502.1645523226065;
-        Tue, 22 Feb 2022 01:47:06 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id x17sm43745672wrv.107.2022.02.22.01.47.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1vLjaLOpjM/maPs9UeQipZMtimlrY+ZZDRN/XdiV3h8=;
+        b=drwTSiYz0WC4NHVZx0u0k4FkyIwO1/3fzYuPR24bvXuw5PYOnjNTZthVe1LHTr4DkZ
+         2M9rn3An4A80eT26ag3UOse+JExMjufiCqGBpuwhuf8tNdhnQamvT93D9RbgmiGI5oR1
+         y47loq3rS3vFe10DicdiEbhfrZT5ZSeayNvfQGxCMaw9ooF8cGoTEJsvxaypm9gX3UFz
+         LIz45bRU9N3G4jqcQ5i26PaKGrXMmlEin3zUHz0P9Ve8jDZh4ODr/cws5OOTEDzRXo8P
+         57Wec3/F2mXNJC+oZ/T6papsLTP9nsgh4s4cP9TcBkwJIMloqqTT6rsGbLV2GHCiV0gb
+         aN4g==
+X-Gm-Message-State: AOAM530K4SgG5+CrLPInXhI3TpTxbp3ERm7kMa73aaHXSLfKvAFtPPDP
+        FOSBL/n4R9LW9h5L9WaWpxrVWYcGcEVcV3DTHrGNlvbtNhkJjzn/ws7FB5DGTHPXpQV7yhtxA2Z
+        m/nFIRmMUeeF3vP7FVvdxf8Vx
+X-Received: by 2002:ac8:5f4c:0:b0:2d9:9327:1355 with SMTP id y12-20020ac85f4c000000b002d993271355mr21214798qta.518.1645523268797;
+        Tue, 22 Feb 2022 01:47:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzLRApCkpCfkLM6BoxEEMUdWN7hRcfpssUWglONmZj/+bkfEiUyPxNFxljOVxDFiUxHMmgtfQ==
+X-Received: by 2002:ac8:5f4c:0:b0:2d9:9327:1355 with SMTP id y12-20020ac85f4c000000b002d993271355mr21214790qta.518.1645523268571;
+        Tue, 22 Feb 2022 01:47:48 -0800 (PST)
+Received: from step1.redhat.com (host-95-248-229-156.retail.telecomitalia.it. [95.248.229.156])
+        by smtp.gmail.com with ESMTPSA id br35sm27922533qkb.118.2022.02.22.01.47.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 01:47:05 -0800 (PST)
-Date:   Tue, 22 Feb 2022 10:47:03 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Harsha Harsha <harshah@xilinx.com>
-Cc:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Michal Simek <michals@xilinx.com>,
-        Sarat Chand Savitala <saratcha@xilinx.com>,
-        Harsh Jain <harshj@xilinx.com>, git <git@xilinx.com>
-Subject: Re: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SHA3
- functionality
-Message-ID: <YhSxF5nDzwsY9BFS@Red>
-References: <1645125264-11033-1-git-send-email-harsha.harsha@xilinx.com>
- <1645125264-11033-3-git-send-email-harsha.harsha@xilinx.com>
- <Yg9qOrjJuttVSetN@Red>
- <SJ0PR02MB7279894629DCA2758355A9D2DE3A9@SJ0PR02MB7279.namprd02.prod.outlook.com>
+        Tue, 22 Feb 2022 01:47:47 -0800 (PST)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
+        kvm@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
+        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org
+Subject: [PATCH v2] vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
+Date:   Tue, 22 Feb 2022 10:47:42 +0100
+Message-Id: <20220222094742.16359-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <SJ0PR02MB7279894629DCA2758355A9D2DE3A9@SJ0PR02MB7279.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, Feb 21, 2022 at 12:17:02PM +0000, Harsha Harsha a écrit :
-> 
-> 
-> > -----Original Message-----
-> > From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > Sent: Friday, February 18, 2022 3:13 PM
-> > To: Harsha Harsha <harshah@xilinx.com>
-> > Cc: herbert@gondor.apana.org.au; davem@davemloft.net; linux-crypto@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
-> > kernel@lists.infradead.org; Michal Simek <michals@xilinx.com>; Sarat Chand Savitala <saratcha@xilinx.com>; Harsh Jain
-> > <harshj@xilinx.com>; git <git@xilinx.com>
-> > Subject: Re: [PATCH V2 2/4] firmware: xilinx: Add ZynqMP SHA API for SHA3 functionality
-> > 
-> > Le Fri, Feb 18, 2022 at 12:44:22AM +0530, Harsha a écrit :
-> > > This patch adds zynqmp_pm_sha_hash API in the ZynqMP firmware to compute
-> > > SHA3 hash of given data.
-> > >
-> > > Signed-off-by: Harsha <harsha.harsha@xilinx.com>
-> > > Acked-by: Michal Simek <michal.simek@xilinx.com>
-> > > ---
-> > 
-> > Hello
-> > 
-> > Your signed-off should contain your real name.
-> 
-> My complete name is Harsha which I have mentioned in the signed-off section.
+vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+ownership. It expects current->mm to be valid.
 
-I am sorry, I believed it was your pseudo. If it is your real name, no change are needed.
+vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+the user has not done close(), so when we are in do_exit(). In this
+case current->mm is invalid and we're releasing the device, so we
+should clean it anyway.
 
-> 
-> > Furthermore why did you drop copyright from previous poster ?
-> > See https://patchwork.kernel.org/project/linux-crypto/cover/1556793282-17346-1-git-send-email-kalyani.akula@xilinx.com/ for
-> > reference.
-> 
-> I did not understand the comment. Do you want me to add Kalyani's name also in the Signed of section?
-> 
-> > 
-> > Furthermore, the previous poster didnt answered my questions about parallel processing and tests.
-> 
-> Since SHA3 HW engine in ZynqMPSoC does not support parallel processing of 2 hash requests, so we have changed our approach. 
-> Now  to support parallel processing of 2 hash requests, software fallback is being used for init, update, final, export and import in the ZynqMP SHA driver.
-> For digest, the calculation of SHA3 hash is done by the hardened SHA3 accelerator in Xilinx ZynqMP SoC.
-> 
+Let's check the owner only when vhost_vsock_stop() is called
+by an ioctl.
 
-I asked for parallel processing since I didnt see any locking or way to prevent hardware to be used in the same time.
-But the final work is done by a firmware call, so my knowledge stop here.
+When invoked from release we can not fail so we don't check return
+code of vhost_vsock_stop(). We need to stop vsock even if it's not
+the owner.
 
-> Following tests have been done for the driver:
-> - Enabled kernel self tests and extra run-time crypto self tests
-> - Tested SHA hash computation for different sizes of data using userspace application
-> - Tested SHA hash computation using multiple updates of data using userspace application
-> - Tested parallel hash computation
-> - Tested using the tcrypt module
-> 
+Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+Cc: stable@vger.kernel.org
+Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+v2:
+- initialized `ret` in vhost_vsock_stop [Dan]
+- added comment about vhost_vsock_stop() calling in the code and an explanation
+  in the commit message [MST]
 
-This should be in the cover letter.
+v1: https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com
+---
+ drivers/vhost/vsock.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-Regards
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index d6ca1c7ad513..37f0b4274113 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -629,16 +629,18 @@ static int vhost_vsock_start(struct vhost_vsock *vsock)
+ 	return ret;
+ }
+ 
+-static int vhost_vsock_stop(struct vhost_vsock *vsock)
++static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
+ {
+ 	size_t i;
+-	int ret;
++	int ret = 0;
+ 
+ 	mutex_lock(&vsock->dev.mutex);
+ 
+-	ret = vhost_dev_check_owner(&vsock->dev);
+-	if (ret)
+-		goto err;
++	if (check_owner) {
++		ret = vhost_dev_check_owner(&vsock->dev);
++		if (ret)
++			goto err;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+ 		struct vhost_virtqueue *vq = &vsock->vqs[i];
+@@ -753,7 +755,12 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
+ 	 * inefficient.  Room for improvement here. */
+ 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 
+-	vhost_vsock_stop(vsock);
++	/* Don't check the owner, because we are in the release path, so we
++	 * need to stop the vsock device in any case.
++	 * vhost_vsock_stop() can not fail in this case, so we don't need to
++	 * check the return code.
++	 */
++	vhost_vsock_stop(vsock, false);
+ 	vhost_vsock_flush(vsock);
+ 	vhost_dev_stop(&vsock->dev);
+ 
+@@ -868,7 +875,7 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 		if (start)
+ 			return vhost_vsock_start(vsock);
+ 		else
+-			return vhost_vsock_stop(vsock);
++			return vhost_vsock_stop(vsock, true);
+ 	case VHOST_GET_FEATURES:
+ 		features = VHOST_VSOCK_FEATURES;
+ 		if (copy_to_user(argp, &features, sizeof(features)))
+-- 
+2.35.1
+
