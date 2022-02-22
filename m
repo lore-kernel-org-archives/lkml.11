@@ -2,83 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB159C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B87C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234499AbiBVREe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 12:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
+        id S234504AbiBVREz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:04:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiBVREc (ORCPT
+        with ESMTP id S233737AbiBVREx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 12:04:32 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC98E527D9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 09:04:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645549447; x=1677085447;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sx7ZDd4yve8/hycQpnhPyjjsrJ5wn74yFs7QKPdiHTE=;
-  b=UhDZOj5wWvyqGgg9ZAExxY7cHygqDJn1JE9n33fGMY6R8WM0183LB4AD
-   Tvb7hEH4n2nK51rryqRJllJHY2b7S3wDlz9UuRZbYL5OnUSxi5ekD/mhR
-   +7U1sMQbxNMTy/TmhWshZEPGsbzqjxdN1Mk0/Snfp1KvkKlnm2l0aHwuB
-   8yqtSbhLnTAjCO0dta/FDOdRu5K4hUIDXYHarzqAUNPkDRCjnHG3mzpXO
-   5nsOFVKD8r68bUt5DrRpMq/J+vUEv9NJosqotCZVrzqpbjXSSHRVKTgtl
-   MwtDAxNjcvau7YgHCICdm/BgTM+CflaA5LwdBhz/ujDaLLquFWThfV/TJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="314988916"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="314988916"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 09:03:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="508063290"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Feb 2022 09:03:46 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMYZm-0000Pp-6R; Tue, 22 Feb 2022 17:03:46 +0000
-Date:   Wed, 23 Feb 2022 01:03:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 39/39]
- arch/x86/crypto/chacha-x86_64.lto.o: warning: objtool:
- chacha_2block_xor_avx512vl() falls through to next function
- chacha_8block_xor_avx512vl()
-Message-ID: <202202230017.1CJQVqhv-lkp@intel.com>
+        Tue, 22 Feb 2022 12:04:53 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229745371C;
+        Tue, 22 Feb 2022 09:04:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93169CE12F5;
+        Tue, 22 Feb 2022 17:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B9CC340EF;
+        Tue, 22 Feb 2022 17:04:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645549465;
+        bh=wz+LWOXacQNPLZPyY3we+EsUmSYHwPj/L7JyjecnO68=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=MtlPcA8/6Edr3qQ+NuR+SIssCd2rMepHAN3Z9qKgfS07Vx8p9PfRCvJumzmSppjC4
+         75AI+gVoD1M/smCQeA9PdNb5ywz8xq+NxrkIJRJRW9y7MkK5SwMo5LE+h9v+QleemW
+         iZYaDHwK/SD6PWiKVffcSqpnxaRZRaoDBbUmQ+V4SF0AVDEANyQrQc86jxNN+YqDvc
+         uRvuHQ+38WpW6Rprqss4+jav+yMjbeChdT5JoAlSemXQ05ABQmLHYwZF0VFsMFdEXI
+         7a/dIIAynxX3+JBaiJY9tXypmk6S5A16FOM3s67EwkAdEe+Sfe31DGqmbJnjH/RBCi
+         4OYb4WLCIzaxA==
+Received: by mail-wm1-f50.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso1406035wmi.0;
+        Tue, 22 Feb 2022 09:04:24 -0800 (PST)
+X-Gm-Message-State: AOAM533gAk/NfuVkL0uc3N/SzOY0jfzNoyTZV7MHYFdUqI3DCxzH8bar
+        dSAOpmjy9AWBFpKGYpVK1pGdxmQkrU8EUw8mQMA=
+X-Google-Smtp-Source: ABdhPJxz+00FMFoayOcqRkTwt6HYuZcPncxkNIP080IUOV3uYtLrG6sv8G5BytWv5ZyocQkfoH2XHbeyflMgGsohlzs=
+X-Received: by 2002:a05:600c:48a:b0:380:3f3a:e08e with SMTP id
+ d10-20020a05600c048a00b003803f3ae08emr4088571wme.1.1645549463325; Tue, 22 Feb
+ 2022 09:04:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220222155345.138861-1-tsbogend@alpha.franken.de>
+In-Reply-To: <20220222155345.138861-1-tsbogend@alpha.franken.de>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 22 Feb 2022 18:04:07 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0QV7y_gFv=VHGKVWjXyYmFFZRrXj3m52d21Fyydib4NQ@mail.gmail.com>
+Message-ID: <CAK8P3a0QV7y_gFv=VHGKVWjXyYmFFZRrXj3m52d21Fyydib4NQ@mail.gmail.com>
+Subject: Re: [PATCH] MIPS: Handle address errors for accesses above CPU max
+ virtual user address
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-mips <linux-mips@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   1436dce5f32d577e8cef693e09f4bb1faa0e2692
-commit: 1436dce5f32d577e8cef693e09f4bb1faa0e2692 [39/39] x86/alternative: Use .ibt_endbr_sites to seal indirect calls
-config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220223/202202230017.1CJQVqhv-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=1436dce5f32d577e8cef693e09f4bb1faa0e2692
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 1436dce5f32d577e8cef693e09f4bb1faa0e2692
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
+On Tue, Feb 22, 2022 at 4:53 PM Thomas Bogendoerfer
+<tsbogend@alpha.franken.de> wrote:
+>
+> Address errors have always been treated as unaliged accesses and handled
+> as such. But address errors are also issued for illegal accesses like
+> user to kernel space or accesses outside of implemented spaces. This
+> change implements Linux exception handling for accesses to the illegal
+> space above the CPU implemented maximum virtual user address and the
+> MIPS 64bit architecture maximum. With this we can now use a fixed value
+> for the maximum task size on every MIPS CPU and get a more optimized
+> access_ok().
+>
+> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thank you for addressing this. Should I add this patch to my series
+ahead of "mips: use simpler access_ok()"? That way I can keep it all
+in my asm-generic tree as a series for 5.18.
 
-All warnings (new ones prefixed by >>):
+>  arch/mips/kernel/unaligned.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+>
+> diff --git a/arch/mips/kernel/unaligned.c b/arch/mips/kernel/unaligned.c
+> index df4b708c04a9..7b5aba5df02e 100644
+> --- a/arch/mips/kernel/unaligned.c
+> +++ b/arch/mips/kernel/unaligned.c
+> @@ -1480,6 +1480,23 @@ asmlinkage void do_ade(struct pt_regs *regs)
+>         prev_state = exception_enter();
+>         perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS,
+>                         1, regs, regs->cp0_badvaddr);
+> +
+> +#ifdef CONFIG_64BIT
+> +       /*
+> +        * check, if we are hitting space between CPU implemented maximum
+> +        * virtual user address and 64bit maximum virtual user address
+> +        * and do exception handling to get EFAULTs for get_user/put_user
+> +        */
+> +       if ((regs->cp0_badvaddr >= (1UL << cpu_vmbits)) &&
+> +           (regs->cp0_badvaddr < XKSSEG)) {
 
->> arch/x86/crypto/chacha-x86_64.lto.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
->> arch/x86/crypto/chacha-x86_64.lto.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+It might be clearer to use TASK_SIZE_MAX here instead of XKSSEG,
+to match the check in access_ok(). If you like, I can change that while
+applying.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+        Arnd
