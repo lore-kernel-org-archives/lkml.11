@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC84C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E5DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232120AbiBVM6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:58:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        id S232186AbiBVM6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:58:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiBVM5u (ORCPT
+        with ESMTP id S232199AbiBVM5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:57:50 -0500
+        Tue, 22 Feb 2022 07:57:52 -0500
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2C7A88A4;
-        Tue, 22 Feb 2022 04:57:05 -0800 (PST)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2zgP5wS1z67PfY;
-        Tue, 22 Feb 2022 20:56:01 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F09AC04D;
+        Tue, 22 Feb 2022 04:57:16 -0800 (PST)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2zgd1lR0z67Ljg;
+        Tue, 22 Feb 2022 20:56:13 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Tue, 22 Feb 2022 13:57:03 +0100
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Feb 2022 13:57:14 +0100
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Feb 2022 12:56:59 +0000
+ 15.1.2308.21; Tue, 22 Feb 2022 12:57:11 +0000
 From:   John Garry <john.garry@huawei.com>
 To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
         <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
@@ -36,9 +36,9 @@ CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
         <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
         <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
         John Garry <john.garry@huawei.com>
-Subject: [PATCH v3 08/18] scsi: libsas: Add sas_task.tmf
-Date:   Tue, 22 Feb 2022 20:50:49 +0800
-Message-ID: <1645534259-27068-9-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v3 11/18] scsi: libsas: Add TMF handler exec complete callback
+Date:   Tue, 22 Feb 2022 20:50:52 +0800
+Message-ID: <1645534259-27068-12-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
 References: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
@@ -52,190 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a pointer to a sas_tmf_task to the sas_task struct, as this will be
-used when the common LLDD TMF code is factored out.
-
-Also set it for the LLDDs to store per-sas_task TMF info.
+The pm8001 TMF handler has some special processing when the TMF completes,
+so add a callback and fill it in for the pm8001 driver.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Yihang Li <liyihang6@hisilicon.com>
 Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 ---
- drivers/scsi/hisi_sas/hisi_sas_main.c | 16 ++++++---------
- drivers/scsi/mvsas/mv_sas.c           | 15 ++++++--------
- drivers/scsi/pm8001/pm8001_sas.c      | 28 ++++++++++-----------------
- include/scsi/libsas.h                 |  1 +
- 4 files changed, 23 insertions(+), 37 deletions(-)
+ drivers/scsi/libsas/sas_scsi_host.c |  3 +++
+ drivers/scsi/pm8001/pm8001_init.c   |  1 +
+ drivers/scsi/pm8001/pm8001_sas.c    | 14 ++++++++++++++
+ drivers/scsi/pm8001/pm8001_sas.h    |  1 +
+ include/scsi/libsas.h               |  3 +++
+ 5 files changed, 22 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index 88e641143b82..bd40323f7053 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -463,8 +463,7 @@ void hisi_sas_task_deliver(struct hisi_hba *hisi_hba,
- 	spin_unlock(&dq->lock);
- }
+diff --git a/drivers/scsi/libsas/sas_scsi_host.c b/drivers/scsi/libsas/sas_scsi_host.c
+index af2dd95a2b28..0f599744738d 100644
+--- a/drivers/scsi/libsas/sas_scsi_host.c
++++ b/drivers/scsi/libsas/sas_scsi_host.c
+@@ -957,6 +957,9 @@ int sas_execute_tmf(struct domain_device *device, void *parameter,
  
--static int hisi_sas_task_exec(struct sas_task *task, gfp_t gfp_flags,
--			      struct sas_tmf_task *tmf)
-+static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
- {
- 	int n_elem = 0, n_elem_dif = 0, n_elem_req = 0;
- 	struct domain_device *device = task->dev;
-@@ -575,8 +574,8 @@ static int hisi_sas_task_exec(struct sas_task *task, gfp_t gfp_flags,
- 	slot->task = task;
- 	slot->port = port;
+ 		wait_for_completion(&task->slow_task->completion);
  
--	slot->tmf = tmf;
--	slot->is_internal = tmf;
-+	slot->tmf = task->tmf;
-+	slot->is_internal = task->tmf;
- 
- 	/* protect task_prep and start_delivery sequence */
- 	hisi_sas_task_deliver(hisi_hba, slot, dq, sas_dev, NULL);
-@@ -1106,11 +1105,6 @@ static void hisi_sas_dev_gone(struct domain_device *device)
- 	up(&hisi_hba->sem);
- }
- 
--static int hisi_sas_queue_command(struct sas_task *task, gfp_t gfp_flags)
--{
--	return hisi_sas_task_exec(task, gfp_flags, NULL);
--}
--
- static int hisi_sas_phy_set_linkrate(struct hisi_hba *hisi_hba, int phy_no,
- 			struct sas_phy_linkrates *r)
- {
-@@ -1264,7 +1258,9 @@ static int hisi_sas_exec_internal_tmf_task(struct domain_device *device,
- 		task->slow_task->timer.expires = jiffies + TASK_TIMEOUT;
- 		add_timer(&task->slow_task->timer);
- 
--		res = hisi_sas_task_exec(task, GFP_KERNEL, tmf);
-+		task->tmf = tmf;
++		if (i->dft->lldd_tmf_exec_complete)
++			i->dft->lldd_tmf_exec_complete(device);
 +
-+		res = hisi_sas_queue_command(task, GFP_KERNEL);
- 		if (res) {
- 			del_timer_sync(&task->slow_task->timer);
- 			dev_err(dev, "abort tmf: executing internal task failed: %d\n",
-diff --git a/drivers/scsi/mvsas/mv_sas.c b/drivers/scsi/mvsas/mv_sas.c
-index 53509996db9f..47fcd8de9ece 100644
---- a/drivers/scsi/mvsas/mv_sas.c
-+++ b/drivers/scsi/mvsas/mv_sas.c
-@@ -837,14 +837,14 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
- 	return rc;
- }
+ 		res = TMF_RESP_FUNC_FAILED;
  
--static int mvs_task_exec(struct sas_task *task, gfp_t gfp_flags,
--				struct completion *completion, int is_tmf,
--				struct sas_tmf_task *tmf)
-+int mvs_queue_command(struct sas_task *task, gfp_t gfp_flags)
- {
- 	struct mvs_info *mvi = NULL;
- 	u32 rc = 0;
- 	u32 pass = 0;
- 	unsigned long flags = 0;
-+	struct sas_tmf_task *tmf = task->tmf;
-+	int is_tmf = !!task->tmf;
- 
- 	mvi = ((struct mvs_device *)task->dev->lldd_dev)->mvi_info;
- 
-@@ -861,11 +861,6 @@ static int mvs_task_exec(struct sas_task *task, gfp_t gfp_flags,
- 	return rc;
- }
- 
--int mvs_queue_command(struct sas_task *task, gfp_t gfp_flags)
--{
--	return mvs_task_exec(task, gfp_flags, NULL, 0, NULL);
--}
--
- static void mvs_slot_free(struct mvs_info *mvi, u32 rx_desc)
- {
- 	u32 slot_idx = rx_desc & RXQ_SLOT_MASK;
-@@ -1297,7 +1292,9 @@ static int mvs_exec_internal_tmf_task(struct domain_device *dev,
- 		task->slow_task->timer.expires = jiffies + MVS_TASK_TIMEOUT*HZ;
- 		add_timer(&task->slow_task->timer);
- 
--		res = mvs_task_exec(task, GFP_KERNEL, NULL, 1, tmf);
-+		task->tmf = tmf;
-+
-+		res = mvs_queue_command(task, GFP_KERNEL);
- 
- 		if (res) {
- 			del_timer(&task->slow_task->timer);
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index a93b7f0bb358..a53e4b54154f 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -371,15 +371,14 @@ static int sas_find_local_port_id(struct domain_device *dev)
- 
- #define DEV_IS_GONE(pm8001_dev)	\
- 	((!pm8001_dev || (pm8001_dev->dev_type == SAS_PHY_UNUSED)))
-+
- /**
--  * pm8001_task_exec - queue the task(ssp, smp && ata) to the hardware.
-+  * pm8001_queue_command - register for upper layer used, all IO commands sent
-+  * to HBA are from this interface.
-   * @task: the task to be execute.
--  * @gfp_flags: gfp_flags.
--  * @is_tmf: if it is task management task.
--  * @tmf: the task management IU
-+  * @gfp_flags: gfp_flags
-   */
--static int pm8001_task_exec(struct sas_task *task,
--	gfp_t gfp_flags, int is_tmf, struct sas_tmf_task *tmf)
-+int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
- {
- 	struct domain_device *dev = task->dev;
- 	struct pm8001_hba_info *pm8001_ha;
-@@ -390,6 +389,8 @@ static int pm8001_task_exec(struct sas_task *task,
- 	u32 tag = 0xdeadbeef, rc = 0, n_elem = 0;
- 	unsigned long flags = 0;
- 	enum sas_protocol task_proto = t->task_proto;
-+	struct sas_tmf_task *tmf = task->tmf;
-+	int is_tmf = !!task->tmf;
- 
- 	if (!dev->port) {
- 		struct task_status_struct *tsm = &t->task_status;
-@@ -504,17 +505,6 @@ static int pm8001_task_exec(struct sas_task *task,
- 	return rc;
- }
- 
--/**
--  * pm8001_queue_command - register for upper layer used, all IO commands sent
--  * to HBA are from this interface.
--  * @task: the task to be execute.
--  * @gfp_flags: gfp_flags
--  */
--int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
--{
--	return pm8001_task_exec(task, gfp_flags, 0, NULL);
--}
--
- /**
-   * pm8001_ccb_task_free - free the sg for ssp and smp command, free the ccb.
-   * @pm8001_ha: our hba card information
-@@ -749,7 +739,9 @@ static int pm8001_exec_internal_tmf_task(struct domain_device *dev,
- 		task->slow_task->timer.expires = jiffies + PM8001_TASK_TIMEOUT*HZ;
- 		add_timer(&task->slow_task->timer);
- 
--		res = pm8001_task_exec(task, GFP_KERNEL, 1, tmf);
-+		task->tmf = tmf;
-+
-+		res = pm8001_queue_command(task, GFP_KERNEL);
- 
- 		if (res) {
- 			del_timer(&task->slow_task->timer);
-diff --git a/include/scsi/libsas.h b/include/scsi/libsas.h
-index 7a55853fad7b..9c181ebccfee 100644
---- a/include/scsi/libsas.h
-+++ b/include/scsi/libsas.h
-@@ -610,6 +610,7 @@ struct sas_task {
- 	void   *lldd_task;	  /* for use by LLDDs */
- 	void   *uldd_task;
- 	struct sas_task_slow *slow_task;
-+	struct sas_tmf_task *tmf;
+ 		if ((task->task_state_flags & SAS_TASK_STATE_ABORTED)) {
+diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
+index b8cf1bae4040..8eef8f4de42f 100644
+--- a/drivers/scsi/pm8001/pm8001_init.c
++++ b/drivers/scsi/pm8001/pm8001_init.c
+@@ -128,6 +128,7 @@ static struct sas_domain_function_template pm8001_transport_ops = {
+ 	.lldd_lu_reset		= pm8001_lu_reset,
+ 	.lldd_query_task	= pm8001_query_task,
+ 	.lldd_port_formed	= pm8001_port_formed,
++	.lldd_tmf_exec_complete = pm8001_setds_completion,
  };
  
- struct sas_task_slow {
+ /**
+diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
+index a53e4b54154f..69da7246ea20 100644
+--- a/drivers/scsi/pm8001/pm8001_sas.c
++++ b/drivers/scsi/pm8001/pm8001_sas.c
+@@ -1376,3 +1376,17 @@ void pm8001_port_formed(struct asd_sas_phy *sas_phy)
+ 	}
+ 	sas_port->lldd_port = port;
+ }
++
++void pm8001_setds_completion(struct domain_device *dev)
++{
++	struct pm8001_hba_info *pm8001_ha = pm8001_find_ha_by_dev(dev);
++	struct pm8001_device *pm8001_dev = dev->lldd_dev;
++	DECLARE_COMPLETION_ONSTACK(completion_setstate);
++
++	if (pm8001_ha->chip_id != chip_8001) {
++		pm8001_dev->setds_completion = &completion_setstate;
++		PM8001_CHIP_DISP->set_dev_state_req(pm8001_ha,
++			pm8001_dev, DS_OPERATIONAL);
++		wait_for_completion(&completion_setstate);
++	}
++}
+diff --git a/drivers/scsi/pm8001/pm8001_sas.h b/drivers/scsi/pm8001/pm8001_sas.h
+index 0b1086042ca6..c19c9c80206c 100644
+--- a/drivers/scsi/pm8001/pm8001_sas.h
++++ b/drivers/scsi/pm8001/pm8001_sas.h
+@@ -742,6 +742,7 @@ pm8001_ccb_task_free_done(struct pm8001_hba_info *pm8001_ha,
+ 	smp_mb(); /*in order to force CPU ordering*/
+ 	task->task_done(task);
+ }
++void pm8001_setds_completion(struct domain_device *dev);
+ 
+ #endif
+ 
+diff --git a/include/scsi/libsas.h b/include/scsi/libsas.h
+index 9c181ebccfee..dd6551e809a0 100644
+--- a/include/scsi/libsas.h
++++ b/include/scsi/libsas.h
+@@ -652,6 +652,9 @@ struct sas_domain_function_template {
+ 	int (*lldd_lu_reset)(struct domain_device *, u8 *lun);
+ 	int (*lldd_query_task)(struct sas_task *);
+ 
++	/* Special TMF callbacks */
++	void (*lldd_tmf_exec_complete)(struct domain_device *dev);
++
+ 	/* Port and Adapter management */
+ 	int (*lldd_clear_nexus_port)(struct asd_sas_port *);
+ 	int (*lldd_clear_nexus_ha)(struct sas_ha_struct *);
 -- 
 2.26.2
 
