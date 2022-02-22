@@ -2,113 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00888C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 02:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F745C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 02:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239233AbiBVC2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 21:28:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52378 "EHLO
+        id S239246AbiBVCeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 21:34:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbiBVC2X (ORCPT
+        with ESMTP id S232505AbiBVCeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 21:28:23 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888E225C6A
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:27:58 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id v186so38129779ybg.1
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:27:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+XUt1JheGNhukseTP2vJALo7ev4DNIDxPQcElkQvY4k=;
-        b=OxsBSq4ZKQ+bA1eIUbI/lUky5pPRL3zKymAU5oQddMud1CsHEKFxcKEWJailnDno8n
-         QHgaaAdO+faLkZnINmKKn7sdFGhyGcb9OeAcziC/AaLOEeSTxkiddOQ0AJPUdtbtiZPj
-         Le2mECsBPz3blTmHMan5JShlpJH/SatuPFoIQrtOZR5AxCbx6tjIx/FIl6LyGpN3Lpf/
-         BeJp2kYdYC9quN9POleUYtEAb0Dz1Ps378rDYkvavNdIjTf8Y0UhW5jak/dlzGSXV0nq
-         lHbxXqouP9GPWIAUH+wprOXn/IWu9gm101wKHH920+/IwYqnxRDy0Hby2CfFfoh2MrpP
-         aH+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+XUt1JheGNhukseTP2vJALo7ev4DNIDxPQcElkQvY4k=;
-        b=PPsg7q7WP6NyQjzsJF55zm9EfHceUBgi6bMMxh3Oxx/naX7Z5UjZUqwm2BLGiKgZvD
-         cc4mjaS3h5J1Z+AEOZ5dOsyp3mroQT15/NJkeQQ+N6U21QWJPLcUopkGqQuzS3NoPZVl
-         Lzz8qdJ3P3AT6dNz/Dkmdaplb5sN8S+3IxTh/Bj3LJUoKksNno6ve9WfQialdFEzgKE1
-         Qg+iVyWtYij19bslc8lfuxCHp36pLKgqdTDKPJj4WSeuE1fp1cdS/iKyFyj5GeVnzHVa
-         bRbd8lgwaFntusvCjyYewAqoEX16c9f4+vCfalVEJ0dlt6q/ovRO/AYlKqBYMAQjaATB
-         IqVw==
-X-Gm-Message-State: AOAM533n8jAc5X8lE+DJB26IcALQV4TGUB7InyAuCsHfuhE8C66/gRlw
-        jwkYdDx7omeU0bY7VuUURHxlI27GziNknpF/AE892A==
-X-Google-Smtp-Source: ABdhPJz9f7j8kwnQUc3IirZItDk38zJ8bQCtyP6b7n0qiePeOHuTh7iCQtOX1MZZh0KibLTz8RHbcApUyD56/oNXdUY=
-X-Received: by 2002:a25:f441:0:b0:611:4f60:aab1 with SMTP id
- p1-20020a25f441000000b006114f60aab1mr21664619ybe.598.1645496877423; Mon, 21
- Feb 2022 18:27:57 -0800 (PST)
+        Mon, 21 Feb 2022 21:34:06 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBF225C5E;
+        Mon, 21 Feb 2022 18:33:37 -0800 (PST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K2jqr6ZkYzcffw;
+        Tue, 22 Feb 2022 10:32:24 +0800 (CST)
+Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Feb 2022 10:33:35 +0800
+Received: from huawei.com (10.175.104.170) by dggpemm500003.china.huawei.com
+ (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Feb
+ 2022 10:33:35 +0800
+From:   Liang Zhang <zhangliang5@huawei.com>
+To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>
+CC:     <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
+        <wanpengli@tencent.com>, <jmattson@google.com>, <joro@8bytes.org>,
+        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhigang17@huawei.com>, <zhangliang5@huawei.com>
+Subject: [RESEND PATCH] KVM: x86/mmu: make apf token non-zero to fix bug
+Date:   Tue, 22 Feb 2022 11:12:39 +0800
+Message-ID: <20220222031239.1076682-1-zhangliang5@huawei.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
- <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
- <YhQ1KrtpEr3TgCwA@gondor.apana.org.au> <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
-In-Reply-To: <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 21 Feb 2022 18:27:46 -0800
-Message-ID: <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
-Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
- device from smaller to bigger
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.170]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500003.china.huawei.com (7.185.36.56)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 6:06 PM Ziyang Xuan (William)
-<william.xuanziyang@huawei.com> wrote:
->
-> > On Mon, Feb 21, 2022 at 07:43:18AM -0800, Eric Dumazet wrote:
-> >>
-> >> Herbert, do you recall why only a decrease was taken into consideration ?
-> >
-> > Because we shouldn't override administrative settings of the MTU
-> > on the vlan device, unless we have to because of an MTU reduction
-> > on the underlying device.
-> >
-> > Yes this is not perfect if the admin never set an MTU to start with
-> > but as we don't have a way of telling whether the admin has or has
-> > not changed the MTU setting, the safest course of action is to do
-> > nothing in that case.
-> If the admin has changed the vlan device MTU smaller than the underlying
-> device MTU firstly, then changed the underlying device MTU smaller than
-> the vlan device MTU secondly. The admin's configuration has been overridden.
-> Can we consider that the admin's configuration for the vlan device MTU has
-> been invalid and disappeared after the second change? I think so.
+In current async pagefault logic, when a page is ready, KVM relies on
+kvm_arch_can_dequeue_async_page_present() to determine whether to deliver
+a READY event to the Guest. This function test token value of struct
+kvm_vcpu_pv_apf_data, which must be reset to zero by Guest kernel when a
+READY event is finished by Guest. If value is zero meaning that a READY
+event is done, so the KVM can deliver another.
+But the kvm_arch_setup_async_pf() may produce a valid token with zero
+value, which is confused with previous mention and may lead the loss of
+this READY event.
 
-The answer is no.
+This bug may cause task blocked forever in Guest:
+ INFO: task stress:7532 blocked for more than 1254 seconds.
+       Not tainted 5.10.0 #16
+ "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ task:stress          state:D stack:    0 pid: 7532 ppid:  1409
+ flags:0x00000080
+ Call Trace:
+  __schedule+0x1e7/0x650
+  schedule+0x46/0xb0
+  kvm_async_pf_task_wait_schedule+0xad/0xe0
+  ? exit_to_user_mode_prepare+0x60/0x70
+  __kvm_handle_async_pf+0x4f/0xb0
+  ? asm_exc_page_fault+0x8/0x30
+  exc_page_fault+0x6f/0x110
+  ? asm_exc_page_fault+0x8/0x30
+  asm_exc_page_fault+0x1e/0x30
+ RIP: 0033:0x402d00
+ RSP: 002b:00007ffd31912500 EFLAGS: 00010206
+ RAX: 0000000000071000 RBX: ffffffffffffffff RCX: 00000000021a32b0
+ RDX: 000000000007d011 RSI: 000000000007d000 RDI: 00000000021262b0
+ RBP: 00000000021262b0 R08: 0000000000000003 R09: 0000000000000086
+ R10: 00000000000000eb R11: 00007fefbdf2baa0 R12: 0000000000000000
+ R13: 0000000000000002 R14: 000000000007d000 R15: 0000000000001000
 
-Herbert is saying:
+Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-ip link add link eth1 dev eth1.100 type vlan id 100
-...
-ip link set eth1.100 mtu 800
-..
-ip link set eth1 mtu 256
-ip link set eth1 mtu 1500
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 593093b52395..8e24f73bf60b 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3889,12 +3889,23 @@ static void shadow_page_table_clear_flood(struct kvm_vcpu *vcpu, gva_t addr)
+ 	walk_shadow_page_lockless_end(vcpu);
+ }
+ 
++static u32 alloc_apf_token(struct kvm_vcpu *vcpu)
++{
++	/* make sure the token value is not 0 */
++	u32 id = vcpu->arch.apf.id;
++
++	if (id << 12 == 0)
++		vcpu->arch.apf.id = 1;
++
++	return (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
++}
++
+ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 				    gfn_t gfn)
+ {
+ 	struct kvm_arch_async_pf arch;
+ 
+-	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
++	arch.token = alloc_apf_token(vcpu);
+ 	arch.gfn = gfn;
+ 	arch.direct_map = vcpu->arch.mmu->direct_map;
+ 	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
+-- 
+2.30.0
 
--> we do not want eth1.100 mtu being set back to 1500, this might
-break applications, depending on old kernel feature.
- Eventually, setting back to 800 seems ok.
-
-If you want this new feature, we need to record in eth1.100 device
-that no admin ever changed the mtu,
-as Herbert suggested.
-
-Then, it is okay to upgrade the vlan mtu (but still is a behavioral
-change that _could_ break some scripts)
-
-Thank you.
