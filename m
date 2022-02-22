@@ -2,114 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E100EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69370C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiBVHv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
+        id S229618AbiBVHwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:52:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiBVHvX (ORCPT
+        with ESMTP id S229480AbiBVHwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:51:23 -0500
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D2D145E00;
-        Mon, 21 Feb 2022 23:50:58 -0800 (PST)
-Received: by mail-vs1-xe2f.google.com with SMTP id j3so5986735vsi.7;
-        Mon, 21 Feb 2022 23:50:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uzFl6sqnppLbE/reSAw0Z5UcOZ1BcsboAOECKBIl91c=;
-        b=a5Xuu8aA+xACIZl3B7LWvPIlbuhmt8vIyo1mz/GH3brKs0JizVcUTzmv1gQTT5Iin6
-         YrdNLDg2lBUZ9srG4BI/EDO45xLd2v6rUtqD1R5Nh9Xw9DqnJ+PhEclWzGdVv40daqPU
-         RkGgdc1v3DfbQHPx8rB1EV4i7YLQGQSkPttx0meFhXJhA42rgK+XGl3CAW/LqFX4nzpo
-         g+3m9nXNPC3YKj0507M7//7Hg6mln+Y1UhYFA/7POLikvUd0mz6g5VF5plkog765RCiT
-         f3pUlGVT+hRIEoY5L2/S+HvSgl45GLQBndPIu9m7vgDyOw3FUpAuYTZFyRGKZ5kDCxc8
-         QwZg==
+        Tue, 22 Feb 2022 02:52:05 -0500
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D76317A80;
+        Mon, 21 Feb 2022 23:51:39 -0800 (PST)
+Received: by mail-ej1-f54.google.com with SMTP id p9so40210140ejd.6;
+        Mon, 21 Feb 2022 23:51:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uzFl6sqnppLbE/reSAw0Z5UcOZ1BcsboAOECKBIl91c=;
-        b=lI4byn5gyVmdCP4GXj1bQDNgR5QfhqBtGOty8VaP1chgiC0HhBIEr9g5GIXghTXoEo
-         FXnWA2B8CoTtMpLOOPgByu8j2eHN+8dcZUTqFdYLq6IEUAT6NrBWb3F7KDw+nRODY4Ay
-         FnOGtRoFahgNGScSokr6SJGAai6nAQ+BCYFekfFWMavNxc9fBEUMt5LuWRiOOOzauItK
-         2zDvw9FmWvET29CaRpUzjb4rCeczpsWhNgReQv4u1HJFd6jjYF2pluBrb6lQ/j/pXCuH
-         MBDwZYkqa9HkDRrdJMXdKDo5houMcSyF6ZCQqPu6cGYe2wnnIMbvdGLd2rz8kmlAozAi
-         Exbg==
-X-Gm-Message-State: AOAM533IUGYpPDpuR3U4wbhrl+O1pEFC9AQQUL54xbMdfTql5fgo0ogU
-        rc9iKgk9BZGA+3/uzvbTYkYNVLiTIh/XoTThstk=
-X-Google-Smtp-Source: ABdhPJzocCr94zTr+ZAkP6jgRQmORnoaN5tSWsl5OKqascjV1wkde9J5Fpxth9MD5BMsQ4o3FzhOKRbu7zx2QdnUrnA=
-X-Received: by 2002:a67:eb9a:0:b0:31b:db46:4c82 with SMTP id
- e26-20020a67eb9a000000b0031bdb464c82mr8999722vso.38.1645516257285; Mon, 21
- Feb 2022 23:50:57 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F3WbKk5vimbhrQDgdHAazTZndoEQzHfmgGw6RSG9wZM=;
+        b=3d7ryvmcu+zSWqUnELZnP057QpLnw8OEpwpZE4GFsEsnFJB53d8OgUIUlQbHMk3GHt
+         abEnxCitV3MBGPdZFfOV7n51noj4YAhWJrzB+3GUNwSvAkSHNH5NtO399ay7ZoZ1x9Cx
+         ycDLOoV2Q7KIIiwiEYtgS0wFPBTZ56lPf+bI0gQdmh/AsVqRW79QWibs/r4Ws/cYdPGG
+         kVCnMumtWsCW0xzNgr9Brv0Bt0nQ4asM+cMRMutYhDyznODXvxFvMDbpmTob2He1Nqpi
+         RbXopgyd6miDdp2TtD5YwGXPGVmWENvOMQ3YRNllRylbZ0fHxR6Zy1qJXFIqN+GmBBL8
+         H5UA==
+X-Gm-Message-State: AOAM530YkE9TIxJ8nO7zf+O4pNDAne4hl057XFhJnrElqTcwE2TudyZP
+        v8YhgxlP+mM/vkx4twMedos=
+X-Google-Smtp-Source: ABdhPJxpu/V0BvmnL6Gj9apR6o1rnAVPW2zXbVxfOJJpHy66Yspt3UgACkgnHKoxUsWvYzJMLlAP2g==
+X-Received: by 2002:a17:906:d047:b0:6c8:185c:aad with SMTP id bo7-20020a170906d04700b006c8185c0aadmr18708547ejb.341.1645516297709;
+        Mon, 21 Feb 2022 23:51:37 -0800 (PST)
+Received: from [192.168.0.122] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.googlemail.com with ESMTPSA id fx2sm5892678ejb.59.2022.02.21.23.51.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 23:51:35 -0800 (PST)
+Message-ID: <8ce8a3db-0f42-0b30-6688-01c1ea905425@kernel.org>
+Date:   Tue, 22 Feb 2022 08:51:33 +0100
 MIME-Version: 1.0
-References: <20220220144606.5695-1-jrdr.linux@gmail.com> <0a2e57ad-2973-ea01-ceda-3262cde1f5aa@gmx.com>
-In-Reply-To: <0a2e57ad-2973-ea01-ceda-3262cde1f5aa@gmx.com>
-From:   Souptick Joarder <jrdr.linux@gmail.com>
-Date:   Tue, 22 Feb 2022 13:20:45 +0530
-Message-ID: <CAFqt6zZsv+bMwbdqrcOMCZE08O_q7DGa0ejVAbokLybsSch5fw@mail.gmail.com>
-Subject: Re: [PATCH] btrfs: Initialize ret to 0 in scrub_simple_mirror()
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        dsterba@suse.com, nathan@kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for
+ Sunplus SP7021 SoC boards
+Content-Language: en-US
+To:     =?UTF-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Cc:     "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "stefan.wahren@i2se.com" <stefan.wahren@i2se.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        Rob Herring <robh@kernel.org>
+References: <cover.1645413746.git.qinjian@cqplus1.com>
+ <87cc20bb3ef747c4da89f9e60c0847532bb0a679.1645413746.git.qinjian@cqplus1.com>
+ <141c1b3e-b116-a0eb-78ad-dd9263880e9d@kernel.org>
+ <fd66d0c1f8d5410ca676dd523bcde61b@cqplus1.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <fd66d0c1f8d5410ca676dd523bcde61b@cqplus1.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 5:46 AM Qu Wenruo <quwenruo.btrfs@gmx.com> wrote:
->
->
->
-> On 2022/2/20 22:46, Souptick Joarder wrote:
-> > From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
-> >
-> > Kernel test robot reported below warning ->
-> > fs/btrfs/scrub.c:3439:2: warning: Undefined or garbage value
-> > returned to caller [clang-analyzer-core.uninitialized.UndefReturn]
-> >
-> > Initialize ret to 0.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
->
-> Although the patch is not yet merged, but I have to say, it's a false alert.
+On 22/02/2022 07:15, qinjian[覃健] wrote:
+>>> +
+>>> +properties:
+>>> +  $nodename:
+>>> +    const: '/'
+>>> +  compatible:
+>>> +    oneOf:
+>>> +      - items:
+>>> +          - const: sunplus,sp7021-achip
+>>> +
+>>
+>> You did not publish DTS so bigger picture and context are missing here.
+>> Is it a SoC compatible? A board compatible? Why only one? Against what
+>> does it validate?
+>>
+>> This binding looks incomplete.
+> 
+> Sunplus SP7021 is an ARM Cortex A7 based SoC.
+> The patch is for SP7021 SoC and SP7021 based boards.
+> Sorry, I don't understand your questions.
+> Could you explain more?
 
-Yes, I agree it is a false positive but this patch will at least keep
-kernel test robot happy :)
->
-> Firstly, the while loop will always get at least one run.
->
-> Secondly, in that loop, we either set ret to some error value and break,
-> or after at least one find_first_extent_item() and scrub_extent() call,
-> we increase cur_logical and reached the limit of the while loop and exit.
->
-> So there is no possible routine to leave @ret uninitialized and returned
-> to caller.
->
-> Thanks,
-> Qu
->
-> > ---
-> >   fs/btrfs/scrub.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
-> > index 4baa8e43d585..5ca7e5ffbc96 100644
-> > --- a/fs/btrfs/scrub.c
-> > +++ b/fs/btrfs/scrub.c
-> > @@ -3325,7 +3325,7 @@ static int scrub_simple_mirror(struct scrub_ctx *sctx,
-> >       const u32 max_length = SZ_64K;
-> >       struct btrfs_path path = {};
-> >       u64 cur_logical = logical_start;
-> > -     int ret;
-> > +     int ret = 0;
-> >
-> >       /* The range must be inside the bg */
-> >       ASSERT(logical_start >= bg->start &&
+You have there only one compatible but if I would expect at least two.
+One for SoC and one for board. Something like this:
+Documentation/devicetree/bindings/arm/rda.yaml
+but in your case enum would have only one entry.
+
+
+Best regards,
+Krzysztof
