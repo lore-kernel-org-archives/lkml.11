@@ -2,79 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 06:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 06:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiBVGUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 01:20:21 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33058 "EHLO
+        id S230264AbiBVGZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 01:25:48 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiBVGUT (ORCPT
+        with ESMTP id S230249AbiBVGZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 01:20:19 -0500
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5535590CF9
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 22:19:46 -0800 (PST)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26021:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Tue, 22 Feb 2022 14:15:00 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Tue, 22 Feb 2022 14:15:18 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2375.018; Tue, 22 Feb 2022 14:15:18 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC:     "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "sboyd@kernel.org" <sboyd@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "stefan.wahren@i2se.com" <stefan.wahren@i2se.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
-        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
-        Rob Herring <robh@kernel.org>
-Subject: RE: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for
- Sunplus SP7021 SoC boards
-Thread-Topic: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for
- Sunplus SP7021 SoC boards
-Thread-Index: AQHYJtRL7BpgMun7wkSEmTd5rYSoP6ydrKQAgAFsZ7A=
-Date:   Tue, 22 Feb 2022 06:15:18 +0000
-Message-ID: <fd66d0c1f8d5410ca676dd523bcde61b@cqplus1.com>
-References: <cover.1645413746.git.qinjian@cqplus1.com>
- <87cc20bb3ef747c4da89f9e60c0847532bb0a679.1645413746.git.qinjian@cqplus1.com>
- <141c1b3e-b116-a0eb-78ad-dd9263880e9d@kernel.org>
-In-Reply-To: <141c1b3e-b116-a0eb-78ad-dd9263880e9d@kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Tue, 22 Feb 2022 01:25:46 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF7EF41;
+        Mon, 21 Feb 2022 22:25:21 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id gf13-20020a17090ac7cd00b001bbfb9d760eso1404778pjb.2;
+        Mon, 21 Feb 2022 22:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EXIviZBFa0roKyh42LUJ3zl7p19OISm2ntSverQdUJI=;
+        b=GWMk/2qo7wq8+StKOI9p6fdIRRP8rfFC/BKhB9jWPqXp8bR71jZlkdE2UzznR6rdQr
+         rRTxKrYaJ7MLoxCGZ3rcSYyG7uX0uhOY8e3PENuO8BogHYsPqX0/8f6JnbWB1T52RJwx
+         dg3AVowgFmD0dw4hZoRmuLrRBbgJFPQmkANatWBC8vgN2uDkIKutXWjxRKBMqrGDZa74
+         kIC4SiZxpWmvWEIHk0CG9IZvMDIycXwbgSWX27JGm1e9AJU7EBWZ6DQ7jkFz1ziQnlOo
+         QpiK16tvPte2Sd0svpxy6g4DoAF/TFLRqLUqm4zTjt/JyATaMFyRnQlV28imTNsoPyXl
+         2S/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EXIviZBFa0roKyh42LUJ3zl7p19OISm2ntSverQdUJI=;
+        b=wORK75ARWOj956PK+y7UNFLEE7jrV4wHSAego1GBOsFXD/sgciL4lu0ED+qeK68p6X
+         //pfsahg0+wbmcNTATFNqIdqS9WcTVi/NAcjs7TQZ2nkHB7SAPiPlDzeAYgndcAVaXSY
+         9FFPv7KARoeMHz4TDzED4C+n3dINXiFLvHJRKIfcNi85v77fWhk0gCor3Wy9xUfrlf76
+         Nc+WPcC72khcB2pHcOOxhqnNgQD0xWequo7rNRLdtQpWUdmnRW51lvKhhToWwSosslKm
+         OupiHM4q1AEBhjc4f9LbQYS200GhQ2hcoNDd7fBTPCT48N5SmxSffltp6THsvSOiReg3
+         YvLA==
+X-Gm-Message-State: AOAM5303x2uId2hx6RPID9129kn394mAQi0lZjQwAxiouoKCbYzXiOjt
+        D0huV625Z3dyxSLQLDBR/mM=
+X-Google-Smtp-Source: ABdhPJwgJmJ7+1iUAqCpgtNcr5GpMo9SmxEMZp37UaoNOLP/zctOG14kOsrjhI5bk2SKGg293403uw==
+X-Received: by 2002:a17:902:b204:b0:14f:26a7:9f61 with SMTP id t4-20020a170902b20400b0014f26a79f61mr21997285plr.97.1645511120964;
+        Mon, 21 Feb 2022 22:25:20 -0800 (PST)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id l17sm15389954pfu.61.2022.02.21.22.25.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 22:25:20 -0800 (PST)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
+Subject: [PATCH] KVM: x86: Fix function address when kvm_x86_ops.func is NULL
+Date:   Tue, 22 Feb 2022 14:25:10 +0800
+Message-Id: <20220222062510.48592-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+ICsNCj4gPiArcHJvcGVydGllczoNCj4gPiArICAkbm9kZW5hbWU6DQo+ID4gKyAgICBjb25z
-dDogJy8nDQo+ID4gKyAgY29tcGF0aWJsZToNCj4gPiArICAgIG9uZU9mOg0KPiA+ICsgICAgICAt
-IGl0ZW1zOg0KPiA+ICsgICAgICAgICAgLSBjb25zdDogc3VucGx1cyxzcDcwMjEtYWNoaXANCj4g
-PiArDQo+IA0KPiBZb3UgZGlkIG5vdCBwdWJsaXNoIERUUyBzbyBiaWdnZXIgcGljdHVyZSBhbmQg
-Y29udGV4dCBhcmUgbWlzc2luZyBoZXJlLg0KPiBJcyBpdCBhIFNvQyBjb21wYXRpYmxlPyBBIGJv
-YXJkIGNvbXBhdGlibGU/IFdoeSBvbmx5IG9uZT8gQWdhaW5zdCB3aGF0DQo+IGRvZXMgaXQgdmFs
-aWRhdGU/DQo+IA0KPiBUaGlzIGJpbmRpbmcgbG9va3MgaW5jb21wbGV0ZS4NCg0KU3VucGx1cyBT
-UDcwMjEgaXMgYW4gQVJNIENvcnRleCBBNyBiYXNlZCBTb0MuDQpUaGUgcGF0Y2ggaXMgZm9yIFNQ
-NzAyMSBTb0MgYW5kIFNQNzAyMSBiYXNlZCBib2FyZHMuDQpTb3JyeSwgSSBkb24ndCB1bmRlcnN0
-YW5kIHlvdXIgcXVlc3Rpb25zLg0KQ291bGQgeW91IGV4cGxhaW4gbW9yZT8NCiANCg==
+From: Like Xu <likexu@tencent.com>
+
+Fix the function address for __static_call_return0() which is used by
+static_call_update() when a func in struct kvm_x86_ops is NULL.
+
+Fixes: 5be2226f417d ("KVM: x86: allow defining return-0 static calls")
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/include/asm/kvm_host.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 713e08f62385..312f5ee19514 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1548,7 +1548,7 @@ static inline void kvm_ops_static_call_update(void)
+ #define KVM_X86_OP_OPTIONAL __KVM_X86_OP
+ #define KVM_X86_OP_OPTIONAL_RET0(func) \
+ 	static_call_update(kvm_x86_##func, kvm_x86_ops.func ? : \
+-			   (void *) __static_call_return0);
++			   (void *)&__static_call_return0);
+ #include <asm/kvm-x86-ops.h>
+ #undef __KVM_X86_OP
+ }
+-- 
+2.35.0
+
