@@ -2,129 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbiBVHrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:47:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
+        id S229744AbiBVHsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiBVHrQ (ORCPT
+        with ESMTP id S229501AbiBVHsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:47:16 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E963123411
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:39:22 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id c6so39272841ybk.3
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:39:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=benyossef-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=E8NTjG7D381YlFNs2VaH0rQLmmGqTfOD1kAJuZ7gDmc=;
-        b=FwcGCud3nJo3hq/CkX+78UgoyxDnKXUY/tZva6JRBoODTnWCf4PjGpp9f1ZrEWXycN
-         oGMW0fORPA4wOwXwjbtZ1Sobuc9qCFVSJg/czvDdi++7c9UvHxIHyevfz6qp89RgCxkA
-         uhWnTsLBdcktcVU197U8Lc4YUIHISbDTO0JUCl/xs7oNwmdnTqPu/L7oFcOvPRYYZVDY
-         P1ayXACNKLck5wKdVWjwwdOgEAso/iuSTr/y3ApcioysnpFdp99Gy0czvIGaJnW1RQ2E
-         2rXd+OoE3c20swVgkUK4KUnTSTR8t7RYuOgsj80sfehGp1aQ+sPYFaiMUtQ50hwjxwyJ
-         EkxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=E8NTjG7D381YlFNs2VaH0rQLmmGqTfOD1kAJuZ7gDmc=;
-        b=k8ePwdYDZ1oKV0p4IcsB0MwdHQSzHj1ZnsFqaPFW+TjXlmoqblki0qQ17TG49nI34a
-         wqOqt0koiAN5IYxegdg9G2WOjETSASk1aQsbMxDIvJvMqCJymfRv4n+ogGa3cDdx66Z2
-         3d+N+zakbMIlIhpZKbWHqhyKQrGQNKfo946YOvaJkhRQlgKeis0M0dKIoHL/IItOJqIQ
-         J9bhXSishARu/J8xFNaDpWKo9Rr21+SHTCErsKpBV6XIj32RfEgBJdMYY6hTD5NoSCF2
-         BRQEc/7e7LI4FWyD0CikLKwEMXuLm3RVe+d69uua2DUaJjP7kOynx2rsOF0XSYb9Fe2B
-         VqJA==
-X-Gm-Message-State: AOAM533591KkMpxc3aBu8dDD4ENvPy8PRc6FY28OPf75Dzwsq1SIZ6Wz
-        6lNoAlqCSuB6qFaWHCesEMaod5Q9psG4G5yOsNzTgg==
-X-Google-Smtp-Source: ABdhPJy0CcqqxFtkEsmov5tJFXh3NziREhE26+8iSZnhGdk8iANsbBpUnBMOu2cAcVja+mbG+cb0aHJsznStAh49u4Q=
-X-Received: by 2002:a25:9d81:0:b0:622:7df3:ff6c with SMTP id
- v1-20020a259d81000000b006227df3ff6cmr21923630ybp.617.1645515561761; Mon, 21
- Feb 2022 23:39:21 -0800 (PST)
+        Tue, 22 Feb 2022 02:48:04 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226243968D
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:47:38 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id AD318212C5;
+        Tue, 22 Feb 2022 07:47:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645516056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zqbKLfETHquQ//zH4sZBb/82594i7vrpZQI+kAgZZqo=;
+        b=Ohsx3hUek/PGfa0AeORpHGURrKbjTevTEyxTe83vBBnN5JQxIft9Z0FTgbEQHc+XOeevQl
+        APddYYsaRPnxB8nbR1jsqLlIDldZ6KEFSCbZDIexVwkp2QuNtNFjKf/w2tD559IcVYYyzU
+        mJgnGqUTkxSliFbu/F3x7eI9mocqHn8=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 875C5A3B9A;
+        Tue, 22 Feb 2022 07:47:36 +0000 (UTC)
+Date:   Tue, 22 Feb 2022 08:47:36 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zhenguo Yao <yaozhenguo1@gmail.com>,
+        Liu Yuntao <liuyuntao10@huawei.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2] hugetlb: clean up potential spectre issue warnings
+Message-ID: <YhSVGPQ6VIQfBZ9o@dhcp22.suse.cz>
+References: <20220218212946.35441-1-mike.kravetz@oracle.com>
+ <YhNQf3LUZzNRD7u0@dhcp22.suse.cz>
+ <26565cd7-01b0-197c-6ce9-af92f5bc8563@oracle.com>
 MIME-Version: 1.0
-References: <YgOQBNIdf0UnSH+M@Red> <CAOtvUMeoYcVm7OQdqXd1V5iPSXW_BkVxx6TA6nF7zTLVeHe0Ww@mail.gmail.com>
- <CAOtvUMfy1fF35B2sfbOMui8n9Q4iCke9rgn5TiYMUMjd8gqHsA@mail.gmail.com>
- <YhKV55t90HWm6bhv@Red> <CAOtvUMdRU4wnRCXsC+U5XBDp+b+u8w7W7JCUKW2+ohuJz3PVhQ@mail.gmail.com>
- <YhOcEQEjIKBrbMIZ@Red>
-In-Reply-To: <YhOcEQEjIKBrbMIZ@Red>
-From:   Gilad Ben-Yossef <gilad@benyossef.com>
-Date:   Tue, 22 Feb 2022 09:39:20 +0200
-Message-ID: <CAOtvUMfN8U4+eG-TEVW4bSE6kOzuOSsJE4dOYGXYuWQKNzv7wQ@mail.gmail.com>
-Subject: Re: [BUG] crypto: ccree: driver does not handle case where cryptlen =
- authsize =0
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <26565cd7-01b0-197c-6ce9-af92f5bc8563@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 4:05 PM Corentin Labbe
-<clabbe.montjoie@gmail.com> wrote:
->
-> Le Mon, Feb 21, 2022 at 12:08:12PM +0200, Gilad Ben-Yossef a =C3=A9crit :
-> > Hi,
-> >
-> > On Sun, Feb 20, 2022 at 9:26 PM Corentin Labbe
-> > <clabbe.montjoie@gmail.com> wrote:
-> > >
-> > ...
-> > >
-> > > Hello
-> > >
-> > > While testing your patch for this problem, I saw another warning (unr=
-elated with your patch):
-> >
-> > Dear Corentin, you are a treasure trove of bug reports. I love it.
-> > Thank you! :-)
-> >
-> > > [   34.061953] ------------[ cut here ]------------
-...
-> >
-> > So, this is an interesting one.
-> > What I *think* is happening is that the drbg implementation is
-> > actually doing something naughty: it is passing the same exact memory
-> > buffer, both as source and destination to an encryption operation to
-> > the crypto skcipher API, BUT via two different scatter gather lists.
-> >
-> > I'm not sure but I believe this is not a legitimate use of the API,
-> > but before we even go into this, let's see if this little fix helps at
-> > all and this is indeed the root cause.
-> >
-> > Can you test this small change for me, please?
-> >
-> > diff --git a/crypto/drbg.c b/crypto/drbg.c
-> > index 177983b6ae38..13824fd27627 100644
-> > --- a/crypto/drbg.c
-> > +++ b/crypto/drbg.c
-> > @@ -1851,7 +1851,7 @@ static int drbg_kcapi_sym_ctr(struct drbg_state *=
-drbg,
-> >                 /* Use scratchpad for in-place operation */
-> >                 inlen =3D scratchpad_use;
-> >                 memset(drbg->outscratchpad, 0, scratchpad_use);
-> > -               sg_set_buf(sg_in, drbg->outscratchpad, scratchpad_use);
-> > +               sg_in =3D sg_out;
-> >         }
-> >
-> >         while (outlen) {
-> >
->
-> No more stacktrace !
+On Mon 21-02-22 12:24:25, Mike Kravetz wrote:
+> On 2/21/22 00:42, Michal Hocko wrote:
+> > On Fri 18-02-22 13:29:46, Mike Kravetz wrote:
+> > [...]
+> >> @@ -4161,7 +4162,7 @@ static int __init hugepages_setup(char *s)
+> >>  			}
+> >>  			if (tmp >= nr_online_nodes)
+> >>  				goto invalid;
+> >> -			node = tmp;
+> >> +			node = array_index_nospec(tmp, nr_online_nodes);
+> >>  			p += count + 1;
+> >>  			/* Parse hugepages */
+> >>  			if (sscanf(p, "%lu%n", &tmp, &count) != 1)
+> >> @@ -6889,9 +6890,9 @@ static int __init cmdline_parse_hugetlb_cma(char *p)
+> >>  			break;
+> >>  
+> >>  		if (s[count] == ':') {
+> >> -			nid = tmp;
+> >> -			if (nid < 0 || nid >= MAX_NUMNODES)
+> >> +			if (tmp >= MAX_NUMNODES)
+> >>  				break;
+> >> +			nid = array_index_nospec(tmp, MAX_NUMNODES);
+> >>  
+> >>  			s += count + 1;
+> >>  			tmp = memparse(s, &s);
+> > 
+> > This is an early boot code, how is this supposed to be used as a side
+> > channel?
+> 
+> I do not have an evil hacker mind, but I can not think of a way this one time
+> use of a user specified index could be an issue.  It does add noise to the
+> BUILD REGRESSION emails sent to Andrew.
 
-Thank you. I will send a patch later today.
+Maybe Smack can be taught to ignore __init and other early boot
+functions.
 
-Cheers,
-Gilad
+I do not have any strong objections to using array_index_nospec because
+it won't do any harm. Except that it makes a security measure a normal
+comodity so any future changes to array_index_nospec and its users will
+have to consult additional callers. Whether that is something we should
+deeply care about, I don't know.
 
---=20
-Gilad Ben-Yossef
-Chief Coffee Drinker
-
-values of =CE=B2 will give rise to dom!
+At minimum make sure to be explicit that this can hardly be a Spectre
+gadget as it is a _one_ time early boot call. If there is a scenario
+where this could be really abused then it should be mentioned
+explicitly.
+-- 
+Michal Hocko
+SUSE Labs
