@@ -2,147 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0990C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8BBC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbiBVFa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:30:58 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54478 "EHLO
+        id S229604AbiBVFax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:30:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbiBVFa3 (ORCPT
+        with ESMTP id S229573AbiBVFaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:30:29 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DCE7084E;
-        Mon, 21 Feb 2022 21:30:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645507804; x=1677043804;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=dyGCqEWolvHRVduWhviEQyQaBM1jwneMhkEEEZgRg3s=;
-  b=Q+H4CnPYpO3k1/j0tItfEbW4nOwV5EPuHE54o7wM9187M6bxH8SbB3Gw
-   BWGXoc0uibP8yorS/Rs09qbF4BGl32SW3wJhq+hYzpfgF9lJFqunlGOPq
-   n+HkMlKSYe8M47eqiHqXlCLW9YfiyTs5zzLYbB9YqvponjhgANzO1+Fp0
-   A=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Feb 2022 20:45:56 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 20:45:55 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 21 Feb 2022 20:45:55 -0800
-Received: from [10.216.54.2] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 21 Feb
- 2022 20:45:51 -0800
-Subject: Re: [PATCH V3 2/4] leds: Add pm8350c support to Qualcomm LPG driver
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, <mka@chromium.org>,
-        <swboyd@chromium.org>, <linux-leds@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        satya priya <skakit@codeaurora.org>
-References: <1635507893-25490-1-git-send-email-quic_c_skakit@quicinc.com>
- <1635507893-25490-3-git-send-email-quic_c_skakit@quicinc.com>
- <Yg7LjJFi51cmDUQr@ripper>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-Message-ID: <d6dada9f-3b81-01c4-47a6-0750dafa2864@quicinc.com>
-Date:   Tue, 22 Feb 2022 10:15:47 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 22 Feb 2022 00:30:21 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77A56C954
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:29:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645507795; x=1677043795;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xPlMY5HbW2NIpTgp8o3lSo81cO1eklitZ61WhdHyADA=;
+  b=WNYeIC0XYLHZ38DLlu3Xpz6nu+6Eg12AevcXlTt0m9LTWl/vB4A5ANvB
+   T77guXB83WJp8DXJkA+sKhwUrBLRvd8xixlC5EOLnFus0jUNAw4BQ86Qy
+   JdqJxDyxQY+h2Ep4U8ZcZbOXOiX2+Zy6J8MEljdoxLKr28ddnymQJyRZo
+   /+7Rd73iy6k63La3UhXaM1HpjRYOzaPRXCW+UzyaSwVntAUofw6rCygF+
+   B09LYtf2+OPqya3DltJLZRe+AkdmFjlz4YAnD6kRgdJMlqluttTIYhwoy
+   X7QuKvQPaQsW92i0zj+q7mC4/jyU9iAmiB2VXtTFy+DZiI7A65PcK/BrU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="249194987"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="249194987"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 21:29:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="532088045"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 21 Feb 2022 21:29:53 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMNkG-0002Mj-DX; Tue, 22 Feb 2022 05:29:52 +0000
+Date:   Tue, 22 Feb 2022 13:29:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2085/2541]
+ arch/s390/include/asm/smp.h:20:30: error: expected ';' after top level
+ declarator
+Message-ID: <202202221326.M5B48PIB-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <Yg7LjJFi51cmDUQr@ripper>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/18/2022 3:56 AM, Bjorn Andersson wrote:
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   601144c0da5edfa67a9654158370da19c67e17e2
+commit: 2ac1be4afbf13b2f3907d2ec134195629a04b13c [2085/2541] headers/deps: locking/lockdep: Split <linux/lockep.h> into <linux/lockep_types.h> and <linux/lockep_api.h>
+config: s390-randconfig-r044-20220221 (https://download.01.org/0day-ci/archive/20220222/202202221326.M5B48PIB-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=2ac1be4afbf13b2f3907d2ec134195629a04b13c
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 2ac1be4afbf13b2f3907d2ec134195629a04b13c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 prepare
 
-> On Fri 29 Oct 04:44 PDT 2021, Satya Priya wrote:
->
->> From: satya priya <skakit@codeaurora.org>
->>
->> Add pm8350c compatible and lpg_data to the driver.
->>
->> Signed-off-by: satya priya <skakit@codeaurora.org>
-> Sorry for the OCD, but I would really like for you to capitalize 's' and
-> 'p' in your name.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-I had corrected this in the v3-resend version.
-
-https://patchwork.kernel.org/project/linux-arm-msm/patch/1637917920-22041-3-git-send-email-quic_c_skakit@quicinc.com/
-
-
->
->> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
->> ---
->> Changes in V2:
->>   - Added const for lpg_channel_data[] struct.
->>
->> Changes in V3:
->>   - Correct the num_channels and add respective base addresses.
->>
->>   drivers/leds/rgb/leds-qcom-lpg.c | 13 +++++++++++++
->>   1 file changed, 13 insertions(+)
->>
->> diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
->> index 45ef4ec..ad99a9b 100644
->> --- a/drivers/leds/rgb/leds-qcom-lpg.c
->> +++ b/drivers/leds/rgb/leds-qcom-lpg.c
->> @@ -1275,9 +1275,22 @@ static const struct lpg_data pm8150l_lpg_data = {
->>   	},
->>   };
->>   
->> +static const struct lpg_data pm8350c_pwm_data = {
->> +	.pwm_9bit_mask = BIT(2),
-> As you might have seen in v12 I dropped pwm_9bit_mask.
-
-
-Yeah, I'll drop this.
-
-
->> +
-> Afaict there's a tri-channel current sink in pm8350c as well, so you
-> should have:
->
->          .triled_base = 0xef00,
->
-> And then associated .triled_mask in the relevant channels.
+   In file included from arch/s390/kernel/asm-offsets.c:11:
+   In file included from include/linux/kvm_host.h:7:
+   In file included from include/linux/hashtable_api.h:16:
+   In file included from include/linux/rculist.h:11:
+   In file included from include/linux/rcupdate.h:23:
+   In file included from include/linux/lockdep_api.h:27:
+   In file included from include/linux/smp_api.h:15:
+>> arch/s390/include/asm/smp.h:20:30: error: expected ';' after top level declarator
+   extern __vector128 __initdata boot_cpu_vector_save_area[__NUM_VXRS];
+                                ^
+                                ;
+   In file included from arch/s390/kernel/asm-offsets.c:11:
+   In file included from include/linux/kvm_host.h:7:
+   In file included from include/linux/hashtable_api.h:16:
+   In file included from include/linux/rculist.h:11:
+   In file included from include/linux/rcupdate.h:35:
+   include/linux/sched/per_task.h:48:11: fatal error: 'generated/asm-offsets.h' file not found
+   # include <generated/asm-offsets.h>
+             ^~~~~~~~~~~~~~~~~~~~~~~~~
+   2 errors generated.
+   make[2]: *** [scripts/Makefile.build:121: arch/s390/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 
-Okay, I'll add them.
+vim +20 arch/s390/include/asm/smp.h
 
+^1da177e4c3f41 include/asm-s390/smp.h      Linus Torvalds     2005-04-16  16  
+dbd70fb499952d include/asm-s390/smp.h      Heiko Carstens     2008-04-17  17  extern struct mutex smp_cpu_state_mutex;
+10ad34bc76dfbc arch/s390/include/asm/smp.h Martin Schwidefsky 2015-01-14  18  extern unsigned int smp_cpu_mt_shift;
+10ad34bc76dfbc arch/s390/include/asm/smp.h Martin Schwidefsky 2015-01-14  19  extern unsigned int smp_cpu_mtid;
+1a36a39e225d35 arch/s390/include/asm/smp.h Martin Schwidefsky 2015-10-29 @20  extern __vector128 __initdata boot_cpu_vector_save_area[__NUM_VXRS];
+a052096bdd6809 arch/s390/include/asm/smp.h Sven Schnelle      2021-08-27  21  extern cpumask_t cpu_setup_mask;
+8b646bd759086f arch/s390/include/asm/smp.h Martin Schwidefsky 2012-03-11  22  
 
-> Regards,
-> Bjorn
->
->> +	.num_channels = 4,
->> +	.channels = (const struct lpg_channel_data[]) {
->> +		{ .base = 0xe800 },
->> +		{ .base = 0xe900 },
->> +		{ .base = 0xea00 },
->> +		{ .base = 0xeb00 },
->> +	},
->> +};
->> +
->>   static const struct of_device_id lpg_of_table[] = {
->>   	{ .compatible = "qcom,pm8150b-lpg", .data = &pm8150b_lpg_data },
->>   	{ .compatible = "qcom,pm8150l-lpg", .data = &pm8150l_lpg_data },
->> +	{ .compatible = "qcom,pm8350c-pwm", .data = &pm8350c_pwm_data },
->>   	{ .compatible = "qcom,pm8916-pwm", .data = &pm8916_pwm_data },
->>   	{ .compatible = "qcom,pm8941-lpg", .data = &pm8941_lpg_data },
->>   	{ .compatible = "qcom,pm8994-lpg", .data = &pm8994_lpg_data },
->> -- 
->> 2.7.4
->>
+:::::: The code at line 20 was first introduced by commit
+:::::: 1a36a39e225d3558fb3776a3d3d7736cf1ec9f60 s390/dump: rework CPU register dump code
+
+:::::: TO: Martin Schwidefsky <schwidefsky@de.ibm.com>
+:::::: CC: Martin Schwidefsky <schwidefsky@de.ibm.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
