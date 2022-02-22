@@ -2,157 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 00:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 00:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237659AbiBVA0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 19:26:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36982 "EHLO
+        id S237783AbiBVA2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 19:28:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbiBVA0p (ORCPT
+        with ESMTP id S234020AbiBVA2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 19:26:45 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7C924F23
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:26:21 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id x16-20020a6bfe10000000b006409f03e39eso5978981ioh.7
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:26:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=2tzfhNFPXiDcKBOJhfAym7/RHASpGhVL7U/0gzTBYyI=;
-        b=FNdf2gmnKjiKcnsIaqqiFtoCLZxFQPbDuYIxkFcOu0bmmu/HMmyQhcUj7uBFUiIHfG
-         vDx4EHcMDyuuk8ZCjXRJW6RFglmQHbQ8LKknymThle9XXgWLOdl2t+iZCwQ/OdWlmqYK
-         alNXKskDmWiJGw0kzdkqxWkKPIOFvJ5qm0TRFE7OCM8nb4WiI8WLcExRfJgZfkscArd3
-         rhjm7+rs9vWcJKedriuKMHOwKlyfgY1zibXI9k7lfaEDyRZhL8oUA9IZiOtdOGN2Q1Ab
-         /hytWc+zRoNBonJNVwyOHNNNM87xw+CuGFLWqaGrLrZKANmAEDSWD7UBXr4hlXGRo7DZ
-         Itbw==
-X-Gm-Message-State: AOAM530JfkglNWk00amOOakBelOBQyDR5of8AeDosBKQr3oINw6rTapB
-        EAwfUbnBjQce0SayOPKpv2UKrlHJVbgrlkLPicj/IWnj27mr
-X-Google-Smtp-Source: ABdhPJxGzE8bVTG3MOIbzgos8UPZ1VbK4YY1RYjB43tBG+phgy/1vm6EkkAYVp5WKPQNVnWB5XCSwnl5lQaL8twNbcpXetCWcVO1
+        Mon, 21 Feb 2022 19:28:16 -0500
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2066.outbound.protection.outlook.com [40.107.21.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F42924F23
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 16:27:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FXspz0K4pmIkmjUVBlBbrDN6TBnj4PNX5pZAWkA9HL+WqdZ1QWRo+sPBkfUvVQAc7gLL0j8My6jypARWWjdlcVBFDicLrcEHLnmN0lU4gL04ZYRRSem9+VonPzYXnZJLbUqvoprxlu0e2v8mi+s1E0PHyAt9x7/1PVx9Ug+9nZOBO8RIrN4ynQTFogw5mjnBQnXxSbwDwfSYtUdNdpL09s2L9AzksDkvvc3PBoaqdlOm6dVCikgoKAjMegRVo2/ZXTUYRGfBySA+Tk4dOSz4+f8kny6KXLVh/AhZ/8Kobt6gJo86xOF8qFXaloHg6f/WUZLMTp/5b72I/Z9NbQFbbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K8JBmXEpvT42GipaoZZPRni61jzU1a81+OacjF622O0=;
+ b=W7bg9WBzZmiYvRvQiHsYDYEExsmaKmubplXJsBj+CMKFj7+tkbsv28KJIFg8OLOsRwCN06Mt1gHDqDrQfVatFasJBUyYpEDglBMhYXZ+hbmAcfrRCOmhE96I4QUe/VML3v/gY9fM4vOO6YQiaAggS88OSW++YotEfE4jKoREHRHrPU2XQQNB2fiaoPuKtulNymaLFTChfUKb0sbBAnCZtXTAGL3VSGdT0Zf6FLmuStOtHmVVyB9p4yCteUaRv2b+RHcx9axAb4ivBFidc7FWVMuCoWzgfkJnITjrKUQ5Te/w6G1EM56FERl3jx6NJ0ca5N4D2sh9K1mcv0KhRuqiuw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 193.240.239.45) smtp.rcpttodomain=gmail.com smtp.mailfrom=diasemi.com;
+ dmarc=none action=none header.from=diasemi.com; dkim=none (message not
+ signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=dialogsemiconductor.onmicrosoft.com;
+ s=selector1-dialogsemiconductor-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K8JBmXEpvT42GipaoZZPRni61jzU1a81+OacjF622O0=;
+ b=w4cFr0cCaX2AciJedbNXO4N6/1lVlaG4+nELG4ivC2VR6UlSRdpPjGLhSU3F1aJPvZwU5v4iEcTphG9KT7dLZZ+RI41J15ZK2j/ZOx7trypl7bs8Laz9nrUPT7sRDE/qz5ShwS6IR2c0NijntnZQZM1HRvY+aDlBDAdbHBrraIQ=
+Received: from OL1P279CA0010.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:12::15)
+ by AM9PR10MB4434.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:273::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
+ 2022 00:27:49 +0000
+Received: from HE1EUR02FT031.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:e10:12:cafe::86) by OL1P279CA0010.outlook.office365.com
+ (2603:10a6:e10:12::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14 via Frontend
+ Transport; Tue, 22 Feb 2022 00:27:49 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 193.240.239.45) smtp.mailfrom=diasemi.com; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=diasemi.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ diasemi.com discourages use of 193.240.239.45 as permitted sender)
+Received: from mailrelay1.diasemi.com (193.240.239.45) by
+ HE1EUR02FT031.mail.protection.outlook.com (10.152.10.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4995.20 via Frontend Transport; Tue, 22 Feb 2022 00:27:49 +0000
+Received: from nbsrvex-01v.diasemi.com (10.1.17.243) by
+ nbsrvex-01v.diasemi.com (10.1.17.243) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 22 Feb 2022 01:27:42 +0100
+Received: from slsrvapps-01.diasemi.com (10.24.28.40) by
+ nbsrvex-01v.diasemi.com (10.1.17.243) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Tue, 22 Feb 2022 01:27:42 +0100
+Received: by slsrvapps-01.diasemi.com (Postfix, from userid 23378)
+        id 26B8080007F; Tue, 22 Feb 2022 00:27:42 +0000 (UTC)
+Message-ID: <cd5732c5061ce49dcfbcebb306d12ba1664b4ea6.1645489455.git.Adam.Ward.opensource@diasemi.com>
+In-Reply-To: <cover.1645489455.git.Adam.Ward.opensource@diasemi.com>
+References: <cover.1645489455.git.Adam.Ward.opensource@diasemi.com>
+From:   Adam Ward <Adam.Ward.opensource@diasemi.com>
+Date:   Tue, 22 Feb 2022 00:27:42 +0000
+Subject: [PATCH 1/3] regulator: da9121: Fix DA914x current values
+To:     Mark Brown <broonie@kernel.org>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        <linux-kernel@vger.kernel.org>,
+        Support Opensource <support.opensource@diasemi.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d7c2:0:b0:2c2:5e29:b95f with SMTP id
- g2-20020a92d7c2000000b002c25e29b95fmr911767ilq.132.1645489580626; Mon, 21 Feb
- 2022 16:26:20 -0800 (PST)
-Date:   Mon, 21 Feb 2022 16:26:20 -0800
-In-Reply-To: <20220222001455.1737-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ef576b05d8906592@google.com>
-Subject: Re: [syzbot] kernel BUG in vhost_get_vq_desc
-From:   syzbot <syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, jasowang@redhat.com,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 626901eb-a648-40e4-0bf8-08d9f59a27ce
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4434:EE_
+X-Microsoft-Antispam-PRVS: <AM9PR10MB44349038D8063BF15BC9D960CB3B9@AM9PR10MB4434.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P4jiwWR64iYIO/7mvnvH3p+wuZmfCRvFZgtdbJyVqLkx/jRLi8a3WEPO6JgBa5rmjAP3V4l+Dtx9AdTW41DGEc0a7atWdaVjwSUeulwcqXbJYwthh8ZgvyTj9kDJD4KQt/UDt2kJ9oRM760m2M8hnTVBdVsGLSzanvXMMD9G31GTM39MDUAu64iznd6csir+A9MI3vrkPWwLCcrdQlVrqGifTSxYDZPxB9prm+qv9AOKNYiiAQ/YRHBQaSZgCF+29gWH7+bzJdT9zvqrL3suFxecSlvji6Rt3zcIfwXQ1EgWJYrqRVNk9t9spScSEai0QkvX1otQA2EXSz19bAgXuBzwzIP+MV8dFg+HTgqu+Mv+gsOQ6jHZwPJKdMawsUmbag2XhvVtoCa17ddIvMhMO7apIqLKqq8kJQIhwe2NA4mpxzOYRkQspNcJAtaQ+hBvF072LSp42uGqd6cc10Uf9MFQ5ESY59CsWBz7F3vVQdelWT8UmAMFqrJLQC0Fs4SfS/aNQdw2CDmiVvfxIgejb50MJR1OdoFBJrwV+58NlhXggwygVfW5o3hDl4oyCIdAQ6/ajgszXNrlXJtaoS1TaTAbQCYNe3agGegKPyW3MP8D60+bxqZi2FiOBOqVNBj0eCmN1QiB+xILjQ/AqmOYsBatdmk+M9xaFU9WuKpynet1BH23wui0YJDdlxOaUuqOjxaSkUtYRMCtWleGFLFXfQ==
+X-Forefront-Antispam-Report: CIP:193.240.239.45;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay1.diasemi.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8936002)(6916009)(2616005)(54906003)(107886003)(5660300002)(82310400004)(86362001)(508600001)(42186006)(4326008)(316002)(8676002)(70586007)(36756003)(36860700001)(70206006)(40460700003)(47076005)(336012)(2906002)(81166007)(4744005)(26005)(83380400001)(356005)(426003)(6266002)(186003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: diasemi.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 00:27:49.0282
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 626901eb-a648-40e4-0bf8-08d9f59a27ce
+X-MS-Exchange-CrossTenant-Id: 511e3c0e-ee96-486e-a2ec-e272ffa37b7c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=511e3c0e-ee96-486e-a2ec-e272ffa37b7c;Ip=[193.240.239.45];Helo=[mailrelay1.diasemi.com]
+X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT031.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR10MB4434
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Update DA9141/2 ranges to correct errors
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-BUG: sleeping function called from invalid context in vhost_vsock_handle_tx_kick
+Signed-off-by: Adam Ward <Adam.Ward.opensource@diasemi.com>
+---
+ drivers/regulator/da9121-regulator.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-BUG: sleeping function called from invalid context at kernel/locking/mutex.c:577
-in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 4050, name: vhost-4049
-preempt_count: 1, expected: 0
-RCU nest depth: 0, expected: 0
-2 locks held by vhost-4049/4050:
- #0: ffff88806f3e4c20 (&vq->mutex){+.+.}-{3:3}, at: vhost_vsock_handle_tx_kick+0xbf/0xa10 drivers/vhost/vsock.c:508
- #1: ffff88806ee92f20 (&ctx->wqh){....}-{2:2}, at: eventfd_signal+0x77/0x1c0 fs/eventfd.c:75
-irq event stamp: 158
-hardirqs last  enabled at (157): [<ffffffff81ad847c>] lockless_pages_from_mm mm/gup.c:2851 [inline]
-hardirqs last  enabled at (157): [<ffffffff81ad847c>] internal_get_user_pages_fast+0x17cc/0x2510 mm/gup.c:2893
-hardirqs last disabled at (158): [<ffffffff8950a9ce>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
-hardirqs last disabled at (158): [<ffffffff8950a9ce>] _raw_spin_lock_irqsave+0x4e/0x50 kernel/locking/spinlock.c:162
-softirqs last  enabled at (0): [<ffffffff8145328c>] copy_process+0x1eec/0x7300 kernel/fork.c:2109
-softirqs last disabled at (0): [<0000000000000000>] 0x0
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 1 PID: 4050 Comm: vhost-4049 Not tainted 5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __might_resched.cold+0x222/0x26b kernel/sched/core.c:9577
- __mutex_lock_common kernel/locking/mutex.c:577 [inline]
- __mutex_lock+0x9f/0x12f0 kernel/locking/mutex.c:733
- vhost_vsock_handle_tx_kick+0xbf/0xa10 drivers/vhost/vsock.c:508
- vhost_poll_wakeup+0xd5/0x130 drivers/vhost/vhost.c:174
- __wake_up_common+0x147/0x650 kernel/sched/wait.c:108
- eventfd_signal+0x129/0x1c0 fs/eventfd.c:81
- vhost_update_used_flags drivers/vhost/vhost.c:1979 [inline]
- vhost_update_used_flags+0x34c/0x3d0 drivers/vhost/vhost.c:1966
- vhost_disable_notify drivers/vhost/vhost.c:2560 [inline]
- vhost_disable_notify+0xbe/0x190 drivers/vhost/vhost.c:2552
- vhost_vsock_handle_tx_kick+0x187/0xa10 drivers/vhost/vsock.c:516
- vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-=============================
-[ BUG: Invalid wait context ]
-5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0 Tainted: G        W        
------------------------------
-vhost-4049/4050 is trying to lock:
-ffff88806f3e4c20 (&vq->mutex){+.+.}-{3:3}, at: vhost_vsock_handle_tx_kick+0xbf/0xa10 drivers/vhost/vsock.c:508
-other info that might help us debug this:
-context-{4:4}
-2 locks held by vhost-4049/4050:
- #0: ffff88806f3e4c20 (&vq->mutex){+.+.}-{3:3}, at: vhost_vsock_handle_tx_kick+0xbf/0xa10 drivers/vhost/vsock.c:508
- #1: ffff88806ee92f20 (&ctx->wqh){....}-{2:2}, at: eventfd_signal+0x77/0x1c0 fs/eventfd.c:75
-stack backtrace:
-CPU: 1 PID: 4050 Comm: vhost-4049 Tainted: G        W         5.17.0-rc4-syzkaller-00054-gf71077a4d84b-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4678 [inline]
- check_wait_context kernel/locking/lockdep.c:4739 [inline]
- __lock_acquire.cold+0xc5/0x3a9 kernel/locking/lockdep.c:4977
- lock_acquire kernel/locking/lockdep.c:5639 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
- __mutex_lock_common kernel/locking/mutex.c:600 [inline]
- __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:733
- vhost_vsock_handle_tx_kick+0xbf/0xa10 drivers/vhost/vsock.c:508
- vhost_poll_wakeup+0xd5/0x130 drivers/vhost/vhost.c:174
- __wake_up_common+0x147/0x650 kernel/sched/wait.c:108
- eventfd_signal+0x129/0x1c0 fs/eventfd.c:81
- vhost_update_used_flags drivers/vhost/vhost.c:1979 [inline]
- vhost_update_used_flags+0x34c/0x3d0 drivers/vhost/vhost.c:1966
- vhost_disable_notify drivers/vhost/vhost.c:2560 [inline]
- vhost_disable_notify+0xbe/0x190 drivers/vhost/vhost.c:2552
- vhost_vsock_handle_tx_kick+0x187/0xa10 drivers/vhost/vsock.c:516
- vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
- kthread+0x2e9/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-BUG: scheduling while atomic: vhost-4049/4050/0x00000002
-INFO: lockdep is turned off.
-Modules linked in:
-irq event stamp: 158
-hardirqs last  enabled at (157): [<ffffffff81ad847c>] lockless_pages_from_mm mm/gup.c:2851 [inline]
-hardirqs last  enabled at (157): [<ffffffff81ad847c>] internal_get_user_pages_fast+0x17cc/0x2510 mm/gup.c:2893
-hardirqs last disabled at (158): [<ffffffff8950a9ce>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
-hardirqs last disabled at (158): [<ffffffff8950a9ce>] _raw_spin_lock_irqsave+0x4e/0x50 kernel/locking/spinlock.c:162
-softirqs last  enabled at (0): [<ffffffff8145328c>] copy_process+0x1eec/0x7300 kernel/fork.c:2109
-softirqs last disabled at (0): [<0000000000000000>] 0x0
-Preemption disabled at:
-[<0000000000000000>] 0x0
-
-
-Tested on:
-
-commit:         f71077a4 Merge tag 'mmc-v5.17-rc1-2' of git://git.kern..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-console output: https://syzkaller.appspot.com/x/log.txt?x=12c557bc700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a78b064590b9f912
-dashboard link: https://syzkaller.appspot.com/bug?extid=3140b17cb44a7b174008
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1651ba96700000
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index 6f21223a488e..39d77726970c 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -87,16 +87,16 @@ static struct da9121_range da9121_3A_1phase_current = {
+ };
+ 
+ static struct da9121_range da914x_40A_4phase_current = {
+-	.val_min = 14000000,
+-	.val_max = 80000000,
+-	.val_stp =  2000000,
++	.val_min = 26000000,
++	.val_max = 78000000,
++	.val_stp =  4000000,
+ 	.reg_min = 1,
+ 	.reg_max = 14,
+ };
+ 
+ static struct da9121_range da914x_20A_2phase_current = {
+-	.val_min =  7000000,
+-	.val_max = 40000000,
++	.val_min = 13000000,
++	.val_max = 39000000,
+ 	.val_stp =  2000000,
+ 	.reg_min = 1,
+ 	.reg_max = 14,
+-- 
+2.25.1
 
