@@ -2,119 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 611A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbiBVKOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        id S230467AbiBVKTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiBVKOU (ORCPT
+        with ESMTP id S229772AbiBVKTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:14:20 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A46C13A1CC;
-        Tue, 22 Feb 2022 02:13:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 22 Feb 2022 05:19:46 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8206913EF8D;
+        Tue, 22 Feb 2022 02:19:20 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3D4DF1F39A;
+        Tue, 22 Feb 2022 10:19:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645525159; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nd6Y06WPdUzGLt9uFP0+QcSRgSpsN30ENtdTm/2OQIw=;
+        b=LNDjK6NrofKlw36GmECzp8PiOVKAzoePJ0x6/QosEUnBxBpoVoW0ZxklczKgnlkP/KKtDz
+        gYGUBLMmr5eHMxbPj0ThWOTwx/0SQ73QajYPGXnocCq+MMaGhhaYYylZ8Ybf2Lz4QlUVNc
+        wDf0rz+hKoD9yc0Rq4oScb6uh4xPLOo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645525159;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nd6Y06WPdUzGLt9uFP0+QcSRgSpsN30ENtdTm/2OQIw=;
+        b=SHwU5F/z5IEJSmkyw4ybJwcRr76y5UKKBod6Om9yawkEXXiFqdID+ThEw/axQGDCjJLtTH
+        hkAs/P5UxXleekBw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A995DCE13AA;
-        Tue, 22 Feb 2022 10:13:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D8BC340E8;
-        Tue, 22 Feb 2022 10:13:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FyK4kZ8b"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645524828;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kpDNdh5isxkhK3fXHymqHlY32XR18j5hKDN11bOdsv8=;
-        b=FyK4kZ8bGV4PEH+8Gf6cTC5RQDFt8yAOFU6Hae9J9xnblTTAd66xo/xC74DbOFAF2r9/2v
-        Z88dlW+7z9e56u4Wjm3Q2UNiD8V1aFXHFaCuUBjw+KGmhfKWCE8fGsBQ4V/+mLApIV7Aoo
-        hkXWpA3t5/rRmIeVtg7koKdXcJJo0E8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d3cb9608 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 22 Feb 2022 10:13:48 +0000 (UTC)
-Received: by mail-yb1-f173.google.com with SMTP id j12so39943948ybh.8;
-        Tue, 22 Feb 2022 02:13:47 -0800 (PST)
-X-Gm-Message-State: AOAM532+X2f37tTKzZwMi7X1/fJ+fmQcRAeOOlnM9L75nrVuhjpskoGQ
-        DL7lomPItxxnMRQFOP2elb/T6RI+somjBLQKecg=
-X-Google-Smtp-Source: ABdhPJwWpiFGMVhm1YI6hSWqRxcYa0Kq8ueTB8UmBj9lC6mB8/xFLLPBtY0rg6XsLGvngvkkWASPOukLydtudnPxKNY=
-X-Received: by 2002:a05:6902:693:b0:613:7f4f:2e63 with SMTP id
- i19-20020a056902069300b006137f4f2e63mr21470625ybt.271.1645524826098; Tue, 22
- Feb 2022 02:13:46 -0800 (PST)
+        by relay2.suse.de (Postfix) with ESMTPS id CF122A3B8A;
+        Tue, 22 Feb 2022 10:19:18 +0000 (UTC)
+Date:   Tue, 22 Feb 2022 11:19:18 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Aaron Tomlin <atomlin@redhat.com>
+cc:     mcgrof@kernel.org, cl@linux.com, pmladek@suse.com,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        live-patching@vger.kernel.org, atomlin@atomlin.com,
+        ghalat@redhat.com, allen.lkml@gmail.com, joe@perches.com,
+        christophe.leroy@csgroup.eu, msuchanek@suse.de,
+        oleksandr@natalenko.name
+Subject: Re: [PATCH v6 11/13] module: Move sysfs support into a separate
+ file
+In-Reply-To: <20220218212757.888751-1-atomlin@redhat.com>
+Message-ID: <alpine.LSU.2.21.2202221115471.15071@pobox.suse.cz>
+References: <20220218212757.888751-1-atomlin@redhat.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Received: by 2002:a05:7110:71a8:b0:167:24f9:2d40 with HTTP; Tue, 22 Feb 2022
- 02:13:45 -0800 (PST)
-In-Reply-To: <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
-References: <20220216113323.53332-1-Jason@zx2c4.com> <164543897830.26423.13654986323403498456.kvalo@kernel.org>
- <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 22 Feb 2022 11:13:45 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rOWOki8fpMC=wNr=4En8iN4DhWm8XVOquprnUUh62yqA@mail.gmail.com>
-Message-ID: <CAHmME9rOWOki8fpMC=wNr=4En8iN4DhWm8XVOquprnUUh62yqA@mail.gmail.com>
-Subject: Re: [PATCH v3] ath9k: use hw_random API instead of directly dumping
- into random.c
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Kalle Valo <kvalo@kernel.org>, miaoqing@codeaurora.org,
-        Rui Salvaterra <rsalvaterra@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/22/22, Ard Biesheuvel <ardb@kernel.org> wrote:
-> On Mon, 21 Feb 2022 at 11:57, Kalle Valo <kvalo@kernel.org> wrote:
->>
->> "Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
->>
->> > Hardware random number generators are supposed to use the hw_random
->> > framework. This commit turns ath9k's kthread-based design into a prope=
-r
->> > hw_random driver.
->> >
->> > Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> > Cc: Kalle Valo <kvalo@kernel.org>
->> > Cc: Rui Salvaterra <rsalvaterra@gmail.com>
->> > Cc: Dominik Brodowski <linux@dominikbrodowski.net>
->> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
->> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
->> > Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
->> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
->> > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
->>
->> Patch applied to ath-next branch of ath.git, thanks.
->>
->> fcd09c90c3c5 ath9k: use hw_random API instead of directly dumping into
->> random.c
->>
->
-> With this patch, it seems we end up registering the hw_rng every time
-> the link goes up, and unregister it again when the link goes down,
-> right?
->
-> Wouldn't it be better to split off this driver from the 802.11 link
-> state handling?
->
+On Fri, 18 Feb 2022, Aaron Tomlin wrote:
 
-I really have no idea how this thing works, and I tried hard to change
-as little as possible in converting it to the API. You may want to
-send some follow-up patches if you have hardware to experiment with.
-One consideration does leap out, which is that in my experience wifi
-cards use a lot less power when they're set "down", as though a decent
-amount of hardware is being switched off. I think this ath9k rng call
-might be using the ADC to gather samples of ether from somewhere. I
-imagine this gets shutdown too as part of that dame circuitry.
+> No functional change.
+> 
+> This patch migrates module sysfs support out of core code into
+> kernel/module/sysfs.c. In addition simple code refactoring to
+> make this possible.
+> 
+> Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+
+There was apparently a problem on your side when sending the series. There 
+is Reply-To field which probably should have been In-Reply-To. It also 
+applied to the following two patches.
+
+>  kernel/module/Makefile   |   1 +
+>  kernel/module/internal.h |  21 ++
+>  kernel/module/main.c     | 469 +--------------------------------------
+>  kernel/module/sysfs.c    | 436 ++++++++++++++++++++++++++++++++++++
+>  4 files changed, 461 insertions(+), 466 deletions(-)
+>  create mode 100644 kernel/module/sysfs.c
+> 
+> diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+> index f66fda0b41cc..a3cbe09ce2b2 100644
+> --- a/kernel/module/Makefile
+> +++ b/kernel/module/Makefile
+> @@ -14,4 +14,5 @@ obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
+>  obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+>  obj-$(CONFIG_KALLSYMS) += kallsyms.o
+>  obj-$(CONFIG_PROC_FS) += procfs.o
+> +obj-$(CONFIG_SYSFS) += sysfs.o
+>  endif
+> diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+> index ddb37024a0d6..74096cca742c 100644
+> --- a/kernel/module/internal.h
+> +++ b/kernel/module/internal.h
+> @@ -34,6 +34,9 @@
+>  extern struct mutex module_mutex;
+>  extern struct list_head modules;
+>  
+> +extern struct module_attribute *modinfo_attrs[];
+> +extern size_t modinfo_attrs_count;
+> +
+>  /* Provided by the linker */
+>  extern const struct kernel_symbol __start___ksymtab[];
+>  extern const struct kernel_symbol __stop___ksymtab[];
+> @@ -213,3 +216,21 @@ static inline bool sect_empty(const Elf_Shdr *sect)
+>  static inline void layout_symtab(struct module *mod, struct load_info *info) { }
+>  static inline void add_kallsyms(struct module *mod, const struct load_info *info) { }
+>  #endif /* CONFIG_KALLSYMS */
+> +
+> +#ifdef CONFIG_SYSFS
+> +int mod_sysfs_setup(struct module *mod, const struct load_info *info,
+> +		    struct kernel_param *kparam, unsigned int num_params);
+> +void mod_sysfs_teardown(struct module *mod);
+> +void init_param_lock(struct module *mod);
+> +#else /* !CONFIG_SYSFS */
+> +static inline int mod_sysfs_setup(struct module *mod,
+> +			   	  const struct load_info *info,
+> +			   	  struct kernel_param *kparam,
+> +			   	  unsigned int num_params)
+
+Whitespace is broken here.
+
+Miroslav
