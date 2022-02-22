@@ -2,127 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 23:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4247DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 23:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236346AbiBVX4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 18:56:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
+        id S236263AbiBVX5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 18:57:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236304AbiBVX4k (ORCPT
+        with ESMTP id S231174AbiBVX5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 18:56:40 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D8DDFD3;
-        Tue, 22 Feb 2022 15:56:10 -0800 (PST)
-X-UUID: ab958ac8a96444a9aaaacbb930c942c5-20220223
-X-UUID: ab958ac8a96444a9aaaacbb930c942c5-20220223
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 693625170; Wed, 23 Feb 2022 07:56:03 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 23 Feb 2022 07:56:01 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 23 Feb 2022 07:56:01 +0800
-From:   <sean.wang@mediatek.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
-CC:     <Mark-YW.Chen@mediatek.com>, <sean.wang@mediatek.com>,
-        <Soul.Huang@mediatek.com>, <YN.Chen@mediatek.com>,
-        <Leon.Yen@mediatek.com>, <Eric-SY.Chang@mediatek.com>,
-        <Deren.Wu@mediatek.com>, <km.lin@mediatek.com>,
-        <robin.chiu@mediatek.com>, <Eddie.Chen@mediatek.com>,
-        <ch.yeh@mediatek.com>, <posh.sun@mediatek.com>,
-        <ted.huang@mediatek.com>, <Eric.Liang@mediatek.com>,
-        <Stella.Chang@mediatek.com>, <Tom.Chou@mediatek.com>,
-        <steve.lee@mediatek.com>, <jsiuda@google.com>,
-        <frankgor@google.com>, <jemele@google.com>,
-        <abhishekpandit@google.com>, <michaelfsun@google.com>,
-        <mcchou@chromium.org>, <shawnku@google.com>,
-        <linux-bluetooth@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Yake Yang <yake.yang@mediatek.com>
-Subject: [PATCH 1/2] Bluetooth: btusb: Add a new PID/VID 13d3/3567 for MT7921
-Date:   Wed, 23 Feb 2022 07:55:59 +0800
-Message-ID: <dba1c05e4bfdf53e631ff134eaa9449e2ad5deef.1645573830.git.objelf@gmail.com>
-X-Mailer: git-send-email 1.7.9.5
+        Tue, 22 Feb 2022 18:57:09 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1142716F
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 15:56:41 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id b35so16827808ybi.13
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 15:56:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mllQGFC3WEKp6XzrSESCPgbl5djA3qBbKDbZz6ohprU=;
+        b=b3f8otBFJYUqBdQ5FOW9Khjl/pgCWSsFZtcnO6RW/TELNG0zf6paeKnMOXYsHc4JcO
+         WWFVwCwn9FIt8lJsazJR1HEzCfWexKUT00gLWv4j9Sw9je3WTvIBSGJFDgXd4DiyWo4U
+         F6afkvMCMwoXlSe2lriyUrildW9AQJwwJcVVU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mllQGFC3WEKp6XzrSESCPgbl5djA3qBbKDbZz6ohprU=;
+        b=v4DZlo8K11v79vw04RmOohrudXF+FYlwgrBB/3TMoqMz51U60UVmm6KwWs2PzEsI3O
+         Gla7NtT0H5h8/Cm75oE7TlRPVc8oDjAYCXQzTOnGN9QHqhlFR1nXVDfoaCvudEKDafD/
+         uSXinv28tlU9cOX48I1gfhobKcEs1JEEtTG04EE5FGanUDBIMgnCnkkgktNGyqQDTtLL
+         Ebi81ROi9egEHvHrezYb/Ycsyu7ajkkcPW7bGBzWy9trIF2PeyXNoe6i5CcpBqQpZ8JH
+         qtlfXvUKvLECd6V4JoNVCdZ0y8Ha4EfNy3uBMqDoOVRxogbt0OnlD8lku0PHvKlfqIJJ
+         uoHA==
+X-Gm-Message-State: AOAM530S0hNBNsG5PQAeRje9NjRnZqUBPIlPXPoeHoLIL02yR43PPYxB
+        3oHMa+xVytzywog521D0O5ldfVYA2LE2zGxX9p+A
+X-Google-Smtp-Source: ABdhPJxsoD0Z8T2CTk4jVbbagwhfA7izzMw0d3AiTk0jpyHcRUq6W3KAAWums7n1VjTy5jsG0KgnVmM55gDHETLRu00=
+X-Received: by 2002:a25:d294:0:b0:61d:9809:9917 with SMTP id
+ j142-20020a25d294000000b0061d98099917mr25651792ybg.289.1645574200901; Tue, 22
+ Feb 2022 15:56:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220201082227.361967-1-apatel@ventanamicro.com> <20220201082227.361967-4-apatel@ventanamicro.com>
+In-Reply-To: <20220201082227.361967-4-apatel@ventanamicro.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 22 Feb 2022 15:56:30 -0800
+Message-ID: <CAOnJCUKPw-kiYZWAECPU5z9QS600s1AUREon=WuB+gPG+rprvw@mail.gmail.com>
+Subject: Re: [PATCH 3/6] RISC-V: KVM: Implement SBI v0.3 SRST extension
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        KVM General <kvm@vger.kernel.org>,
+        kvm-riscv@lists.infradead.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yake Yang <yake.yang@mediatek.com>
+On Tue, Feb 1, 2022 at 12:23 AM Anup Patel <apatel@ventanamicro.com> wrote:
+>
+> The SBI v0.3 specification defines SRST (System Reset) extension which
+> provides a standard poweroff and reboot interface. This patch implements
+> SRST extension for the KVM Guest.
+>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/kvm/vcpu_sbi.c         |  2 ++
+>  arch/riscv/kvm/vcpu_sbi_replace.c | 44 +++++++++++++++++++++++++++++++
+>  2 files changed, 46 insertions(+)
+>
+> diff --git a/arch/riscv/kvm/vcpu_sbi.c b/arch/riscv/kvm/vcpu_sbi.c
+> index 11ae4f621f0d..a09ecb97b890 100644
+> --- a/arch/riscv/kvm/vcpu_sbi.c
+> +++ b/arch/riscv/kvm/vcpu_sbi.c
+> @@ -45,6 +45,7 @@ extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_base;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_time;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_ipi;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence;
+> +extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_hsm;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_experimental;
+>  extern const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_vendor;
+> @@ -55,6 +56,7 @@ static const struct kvm_vcpu_sbi_extension *sbi_ext[] = {
+>         &vcpu_sbi_ext_time,
+>         &vcpu_sbi_ext_ipi,
+>         &vcpu_sbi_ext_rfence,
+> +       &vcpu_sbi_ext_srst,
+>         &vcpu_sbi_ext_hsm,
+>         &vcpu_sbi_ext_experimental,
+>         &vcpu_sbi_ext_vendor,
+> diff --git a/arch/riscv/kvm/vcpu_sbi_replace.c b/arch/riscv/kvm/vcpu_sbi_replace.c
+> index 1bc0608a5bfd..0f217365c287 100644
+> --- a/arch/riscv/kvm/vcpu_sbi_replace.c
+> +++ b/arch/riscv/kvm/vcpu_sbi_replace.c
+> @@ -130,3 +130,47 @@ const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_rfence = {
+>         .extid_end = SBI_EXT_RFENCE,
+>         .handler = kvm_sbi_ext_rfence_handler,
+>  };
+> +
+> +static int kvm_sbi_ext_srst_handler(struct kvm_vcpu *vcpu,
+> +                                   struct kvm_run *run,
+> +                                   unsigned long *out_val,
+> +                                   struct kvm_cpu_trap *utrap, bool *exit)
+> +{
+> +       struct kvm_cpu_context *cp = &vcpu->arch.guest_context;
+> +       unsigned long funcid = cp->a6;
+> +       u32 reason = cp->a1;
+> +       u32 type = cp->a0;
+> +       int ret = 0;
+> +
+> +       switch (funcid) {
+> +       case SBI_EXT_SRST_RESET:
+> +               switch (type) {
+> +               case SBI_SRST_RESET_TYPE_SHUTDOWN:
+> +                       kvm_riscv_vcpu_sbi_system_reset(vcpu, run,
+> +                                               KVM_SYSTEM_EVENT_SHUTDOWN,
+> +                                               reason);
+> +                       *exit = true;
+> +                       break;
+> +               case SBI_SRST_RESET_TYPE_COLD_REBOOT:
+> +               case SBI_SRST_RESET_TYPE_WARM_REBOOT:
+> +                       kvm_riscv_vcpu_sbi_system_reset(vcpu, run,
+> +                                               KVM_SYSTEM_EVENT_RESET,
+> +                                               reason);
+> +                       *exit = true;
+> +                       break;
+> +               default:
+> +                       ret = -EOPNOTSUPP;
+> +               }
+> +               break;
+> +       default:
+> +               ret = -EOPNOTSUPP;
+> +       }
+> +
+> +       return ret;
+> +}
+> +
+> +const struct kvm_vcpu_sbi_extension vcpu_sbi_ext_srst = {
+> +       .extid_start = SBI_EXT_SRST,
+> +       .extid_end = SBI_EXT_SRST,
+> +       .handler = kvm_sbi_ext_srst_handler,
+> +};
+> --
+> 2.25.1
+>
 
-Add VID 13D3 & PID 3567 for MediaTek MT7921 USB Bluetooth chip.
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
 
-The information in /sys/kernel/debug/usb/devices about the Bluetooth
-device is listed as the below.
-
-T:  Bus=05 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  2 Spd=480  MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=13d3 ProdID=3567 Rev= 1.00
-S:  Manufacturer=MediaTek Inc.
-S:  Product=Wireless_Device
-S:  SerialNumber=000000000
-C:* #Ifs= 3 Cfg#= 1 Atr=e0 MxPwr=100mA
-A:  FirstIf#= 0 IfCount= 3 Cls=e0(wlcon) Sub=01 Prot=01
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=125us
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
-E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
-E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
-I:  If#= 2 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
-E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
-E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
-
-Co-developed-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
----
- drivers/bluetooth/btusb.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 558151f2f150..9f8c3d41d504 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -455,6 +455,9 @@ static const struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x13d3, 0x3564), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x13d3, 0x3567), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
- 	{ USB_DEVICE(0x0489, 0xe0cd), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
 -- 
-2.25.1
-
+Regards,
+Atish
