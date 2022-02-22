@@ -2,82 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D695C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiBVJOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
+        id S230114AbiBVJOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:14:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiBVJOn (ORCPT
+        with ESMTP id S230064AbiBVJOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:14:43 -0500
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE378C7FB;
-        Tue, 22 Feb 2022 01:14:19 -0800 (PST)
-Received: by mail-ej1-f47.google.com with SMTP id p14so40735648ejf.11;
-        Tue, 22 Feb 2022 01:14:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FPiFUHz8gL0RsYyZ6HOzzlInU1l+QGgn3EWierA/h04=;
-        b=gXcozFee1nVH7PzWChBXHd4yuyk2MpVK/zgcvXU1EixlnGlU1h8ZNZe1F55jkpAntW
-         E+MJFEd/k/mukeSmKxODr6w/V5bUyTvI5+1r4pgIs1V9qy5MV/RIjcl9D6F03t9/NV3+
-         j8shcv5VjBfQVH9iQsCmN55uSgaFxe9kaItdm0g1fYg4jMcgNFb5TDGvGC8w1fes6YxC
-         j841M+W2tCNHrvgupMZt7lAbrRyQqWK2Q0q5oNtGKRxEpkitVI10oaYoExhRi89PWeYj
-         qUeWf1Sx0kw9QbeQ3Bc7xgsMCSFQOMFfF42zkOUrZlFLid/QzjpmfYvCzeu/Npb2VQDW
-         3Qcg==
-X-Gm-Message-State: AOAM532VjxJqhJdKMxF4pFsY8+sSVm55asvHPkBD5c1TPOsG+hkgkW9C
-        4awXsmdTFlQDlqkbp2CPioz03KzKA6k=
-X-Google-Smtp-Source: ABdhPJzM1nPTLCViA0CLafXS4qeAXx1Pq8KlOXsF+XoQ12GLi26h0QIIyUa4btfMeNQ93r+m6RoPzQ==
-X-Received: by 2002:a17:906:3905:b0:6cf:7ef5:fee0 with SMTP id f5-20020a170906390500b006cf7ef5fee0mr18180817eje.307.1645521257554;
-        Tue, 22 Feb 2022 01:14:17 -0800 (PST)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id r3sm6123780ejd.129.2022.02.22.01.14.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 01:14:17 -0800 (PST)
-Message-ID: <d8336f83-9f31-e168-1ed7-29e97189e233@kernel.org>
-Date:   Tue, 22 Feb 2022 10:14:16 +0100
+        Tue, 22 Feb 2022 04:14:48 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65C4B2E37
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:14:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645521262; x=1677057262;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pbF6h5/JRvB69EoY6dAw7sNIOxY/mjvl2exO4UXL1x0=;
+  b=jqFkkoZ4LTY8/sXh7QYfuxO061lDYNSEjFPfPF2Ws5KGiq2rOd1m0gMO
+   s24zyxizCp5bSE8TlJYxrSGDskZlFgF8cJ97iGcIrsC0qosp1viRHrjK/
+   GAxujlxlDCha6KpjfyxaFJt++TDHCkj3kOuYTOcg9UnKWIwURD7ZNPTyl
+   Vuuk6QaWdc2rsI8z4tEFtxJFiF3v52GXlPifjMsxr5wNiLRl66BrBggUX
+   33ieMF9VgIx08L5C8kC5sV/gKlHeZrY7iB+pVhl9RzS/JYTFijiBDBQBN
+   FE/cXVChHdGE3bfZxkWoyr6Tl4zVXng9ne1Jj62amZQ87wuiSGVsesNJi
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251597897"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="251597897"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 01:14:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="636936393"
+Received: from nntpat99-84.inn.intel.com ([10.125.99.84])
+  by fmsmga002.fm.intel.com with ESMTP; 22 Feb 2022 01:14:18 -0800
+From:   Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>
+Subject: [PATCH core v2] perf data: Adding error message if perf_data__create_dir fails
+Date:   Tue, 22 Feb 2022 12:14:17 +0300
+Message-Id: <20220222091417.11020-1-alexey.v.bayduraev@linux.intel.com>
+X-Mailer: git-send-email 2.19.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 2/2] serial: 8250_lpss: Switch to pcim_iomap() instead
- of pci_ioremap_bar()
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220215134359.78169-1-andriy.shevchenko@linux.intel.com>
- <20220215134359.78169-2-andriy.shevchenko@linux.intel.com>
- <Ygy7dNqFLZF9XYiH@infradead.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <Ygy7dNqFLZF9XYiH@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16. 02. 22, 9:53, Christoph Hellwig wrote:
-> On Tue, Feb 15, 2022 at 03:43:59PM +0200, Andy Shevchenko wrote:
->> The pci_iounmap() doesn't cover all the cases where resource should
->> be unmapped. Instead of spreading it more, replace the pci_ioremap_bar()
->> with pcim_iomap() which uses managed resource approach.
-> 
-> pcim_iomap requires the use of ioreadX/iowriteX and thus runtime
-> overhead.  So in doubt please add a pcim_ioremap_bar instead of forcing
-> the legacy iomap/ioread/iowrite API onto modern drivers tht can't
-> support legacy port I/O.
+Adding proper return codes for all cases of data directory creation
+failure and adding error message output based on these codes.
 
-Hmm, the driver combines pci_ioremap_bar with pci_iounmap. pci_iounmap 
-does the right thing after all, but is that correct? And this driver is 
-not alone, this shows more:
-git grep -E 'pci_iounmap|pci_ioremap_bar' `git grep -l pci_iounmap \`git 
-grep -l pci_ioremap_bar\``
+Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+---
+ tools/perf/builtin-record.c | 4 +++-
+ tools/perf/util/data.c      | 8 ++++++--
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
+diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+index 0bc6529814b2..0b4abed555d8 100644
+--- a/tools/perf/builtin-record.c
++++ b/tools/perf/builtin-record.c
+@@ -1186,8 +1186,10 @@ static int record__mmap_evlist(struct record *rec,
+ 
+ 	if (record__threads_enabled(rec)) {
+ 		ret = perf_data__create_dir(&rec->data, evlist->core.nr_mmaps);
+-		if (ret)
++		if (ret) {
++			pr_err("Failed to create data directory: %s\n", strerror(-ret));
+ 			return ret;
++		}
+ 		for (i = 0; i < evlist->core.nr_mmaps; i++) {
+ 			if (evlist->mmap)
+ 				evlist->mmap[i].file = &rec->data.dir.files[i];
+diff --git a/tools/perf/util/data.c b/tools/perf/util/data.c
+index f5d260b1df4d..dc5d82ea1c30 100644
+--- a/tools/perf/util/data.c
++++ b/tools/perf/util/data.c
+@@ -52,12 +52,16 @@ int perf_data__create_dir(struct perf_data *data, int nr)
+ 		struct perf_data_file *file = &files[i];
+ 
+ 		ret = asprintf(&file->path, "%s/data.%d", data->path, i);
+-		if (ret < 0)
++		if (ret < 0) {
++			ret = -ENOMEM;
+ 			goto out_err;
++		}
+ 
+ 		ret = open(file->path, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
+-		if (ret < 0)
++		if (ret < 0) {
++			ret = -errno;
+ 			goto out_err;
++		}
+ 
+ 		file->fd = ret;
+ 	}
 -- 
-js
-suse labs
+2.19.0
+
