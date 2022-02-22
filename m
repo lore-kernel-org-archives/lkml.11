@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFECC35278
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1430EC4707F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbiBVFhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:37:42 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48478 "EHLO
+        id S229798AbiBVFhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:37:46 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiBVFhT (ORCPT
+        with ESMTP id S229692AbiBVFhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:37:19 -0500
+        Tue, 22 Feb 2022 00:37:21 -0500
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812F39FCE;
-        Mon, 21 Feb 2022 21:36:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220512AA3;
+        Mon, 21 Feb 2022 21:36:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645508214; x=1677044214;
+  t=1645508216; x=1677044216;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=uWSnm1hq6utkHH6m0I4spcTX9ZDwfkP1gD4Ehx9LFQE=;
-  b=ImdSiI3vAvL7pOgl9BD6aaNW8i35WhY/GgWgItu2qPwYCKe2OhXTQdd4
-   cgmsRa7SHF23khgiL/iaYzRwmpYESYSNPbaaK25acpoSwPPm7Zp7UHpZC
-   RHuwVi7k7eG5bsDkREg9Le0d12Iwl0Lw2tHkODbYDSPmkrgaIQIFZAAGe
-   s=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 21 Feb 2022 20:56:49 -0800
+  bh=KSuqgsk7Am5TFlYzCVqmx7VmRDWVSxrZmrdIFE1qxJU=;
+  b=DYkRDMsGyki7haXhrQq8BPhGFfrhqwF7z29jTYly1kvhXy4RP7s3xzve
+   ycdpUsLZdpY/HStsAHhQJLlmqH+hSf/17nPudkdT3blaXkz7llSKG93j0
+   S5PlN1it5CrqloFN7g0kBs90+CF8ikTGd7lMdCTap0m4iSswFBYYQdLRl
+   M=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 21 Feb 2022 20:56:47 -0800
 X-QCInternal: smtphost
 Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Feb 2022 20:56:47 -0800
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Feb 2022 20:56:46 -0800
 X-QCInternal: smtphost
 Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 22 Feb 2022 10:26:30 +0530
+  by ironmsg01-blr.qualcomm.com with ESMTP; 22 Feb 2022 10:26:29 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id E29BB46D6; Tue, 22 Feb 2022 10:26:29 +0530 (+0530)
+        id E076946D6; Tue, 22 Feb 2022 10:26:28 +0530 (+0530)
 From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
 To:     bjorn.andersson@linaro.org, agross@kernel.org,
         mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
@@ -42,9 +42,9 @@ To:     bjorn.andersson@linaro.org, agross@kernel.org,
 Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v4 3/5] ARM: dts: qcom: sdx65: Add support for A7 PLL clock
-Date:   Tue, 22 Feb 2022 10:26:23 +0530
-Message-Id: <1645505785-2271-4-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v4 1/5] dt-bindings: clock: Add A7 PLL binding for SDX65
+Date:   Tue, 22 Feb 2022 10:26:21 +0530
+Message-Id: <1645505785-2271-2-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com>
 References: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com>
@@ -52,33 +52,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On SDX65 there is a separate A7 PLL which is used to provide high
-frequency clock to the Cortex A7 CPU via a MUX.
+Add information for Cortex A7 PLL clock in Qualcomm
+platform SDX65.
 
 Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 ---
- arch/arm/boot/dts/qcom-sdx65.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/clock/qcom,a7pll.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index 653df15..ec80266 100644
---- a/arch/arm/boot/dts/qcom-sdx65.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -125,6 +125,14 @@
- 			      <0x17802000 0x1000>;
- 		};
+diff --git a/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml b/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
+index 8666e99..0e96f69 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,a7pll.yaml
+@@ -10,7 +10,7 @@ maintainers:
+   - Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
  
-+		a7pll: clock@17808000 {
-+			compatible = "qcom,sdx55-a7pll";
-+			reg = <0x17808000 0x1000>;
-+			clocks = <&rpmhcc RPMH_CXO_CLK>;
-+			clock-names = "bi_tcxo";
-+			#clock-cells = <0>;
-+		};
-+
- 		timer@17820000 {
- 			#address-cells = <1>;
- 			#size-cells = <1>;
+ description:
+-  The A7 PLL on the Qualcomm platforms like SDX55 is used to provide high
++  The A7 PLL on the Qualcomm platforms like SDX55, SDX65 is used to provide high
+   frequency clock to the CPU.
+ 
+ properties:
 -- 
 2.7.4
 
