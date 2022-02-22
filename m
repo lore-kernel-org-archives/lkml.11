@@ -2,129 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6615BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239506AbiBVDMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 22:12:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50468 "EHLO
+        id S239609AbiBVDMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 22:12:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239492AbiBVDM3 (ORCPT
+        with ESMTP id S239518AbiBVDMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 22:12:29 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E48F5FA4
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:12:05 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id n6so37591185qvk.13
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:12:05 -0800 (PST)
+        Mon, 21 Feb 2022 22:12:32 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7597B5FAA
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:12:07 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id h9so37663728qvm.0
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:12:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qFJMqR0Uyd2kPZ5TICCuCWl+NAqTGxv/k2Ys7IDjf1s=;
-        b=eyN6+87FrkdQPVOr02hchsIoth9vEfXRogzh61Xd1oI5aXdVT2uFWCEPPJYTrRv/Oq
-         VCXMlqOIk0eiOge3ouDVg2be5IvzO2TyduP2cS0nh9yWZttszDJZi6DFD3FF6ziAIufA
-         NygeTb8+dUkED6jzSHG85PAHSaXfRwqG1s/I7LyzCJbCtP/Aobb08J9aGGLTYB7QEmLM
-         JdIIRgC58FkZtiXfZ07Cl92oz2NQvr2rct3+QCxxbEG2JUZkZgx5EeeaLOHw6rbKBbcp
-         7ZF2OoukMgUCAkU6dyrbi04NWD/T1lz6Wt7AE3oDyjdLdd3MvkPV6Ig9D4LpPcy6s5iW
-         sIKQ==
+        bh=zkwjd5lOCa4cW4bL7/bpFQz6lcs6TRUmGFz5ovEfIkI=;
+        b=c44ekn4/IgS3rUVu5zK97aGkGy/pVUY15T9fOLA2rQRooU1G8n1E4RfFT9KviA/a9Z
+         BMaDNrEo5/d9hev7YZOvWU2YIc2gQKdhu04+tQRv7akPW4Qfmj6jmZM+OeaMIYYe171Q
+         pbzAwyM+OxVnxJm/JMWDog3eD9MOFbACk7UgoVgVpFMTGFltpq3LNc0bW/EEYNHDCnjH
+         hM2j2+uxTXg+LezEZctFxp0hpxQ+9amsQxofAhOTrqJ33VFO2wKOAb2vb5kZNWq8a6re
+         KLB4vWnO0UdIDrDumARfsMkrlPyX8NPqqupnsfMVkrnNPM6yUlguk3qPHWlE5lGne05X
+         CHEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qFJMqR0Uyd2kPZ5TICCuCWl+NAqTGxv/k2Ys7IDjf1s=;
-        b=xRF3f7Etc2vmneAsT47NvtNuZxzLWH2TW3JvS5JW6b7cjygMrKkEaZLURWl8Adxn4G
-         ScrxcwVFFrxxfkMKKWptkdY0llegdMNe+452lE7RBiJXHe7MXh+EozJFmF6cw2X2WgQa
-         4u2PWVgjMff6Y2scnmtTePD0lOF3//rmwqH4c4wQWsb+mB4Bo4Qq723d7jxyJhrv/fT7
-         lEv3fZDF801PA3xySxSOa4yqi77CjrhDg/yTTC2VJa808R5JF2SqRWhEoQUHjj5PJ7Ao
-         y79vgVX8MFitQn14JclAEImrWLLRcbOFCBhC+K+Nva2B2L22RctmIIiNnwRdvi3zwUh1
-         z3QQ==
-X-Gm-Message-State: AOAM5312sdQpq/StzdlrDbn8gVK0McGikCJwR6W4VTWKWNgJYBttJCPX
-        tQp1g5UGM5cYb02/4zkZhqlUFvg831T6Msua6/+JfQ==
-X-Google-Smtp-Source: ABdhPJzuBSQDu4totjZ87w+DOzd95iK77ndN1yjJvntgthnFEFwtdZKse38DWkEDhFKlI/9NC/pR/5/P6bLR2axIZn4=
-X-Received: by 2002:ac8:5b88:0:b0:2de:23e3:62c0 with SMTP id
- a8-20020ac85b88000000b002de23e362c0mr7377707qta.62.1645499524196; Mon, 21 Feb
- 2022 19:12:04 -0800 (PST)
+        bh=zkwjd5lOCa4cW4bL7/bpFQz6lcs6TRUmGFz5ovEfIkI=;
+        b=LYMe3bO7y5PBEj5Sse47GoiSCbHWw1yOcBkm4U7yS8vfl5GOY8jgzskEEfImK7IYzM
+         FL7bZm/lkL768v368k5gu5NCNjf5YAsDMUK1urQPIJRhNkhq2NaRUabZaWAyAugxlVCn
+         l2WC4BlVLCCbycqi8yLp3fShe1/IIoN2nc/mozcgJSeoQOXwZmYf/aG7BNGsj7llpdoB
+         ASyaMZbQKYf50UnYYiT10u/OCYPCGIa/+vdNdSP438auSYxRywDdBF7yCm+/8hNnR8bp
+         3DVoVBeSxYCLjWL082dGOl7YUQ++F9fVAwrbCsW6OI1e97CJDjmZJ0WtEBQ+SlhWdaUy
+         MPQQ==
+X-Gm-Message-State: AOAM532FDiC9AvWIcte9USTV72UaXpdaTJsaRtJnbKmVUTH2iAx/kejF
+        nA70WzVhbnB4pblrOFT8PdaEdjy2EGdeDBit7Mdoiw==
+X-Google-Smtp-Source: ABdhPJyjC+COba0GIMgHjLcHMfAyx/gfy3+7irT0YpwmwmMnNHRZfZTBV+dv/U3nym3tu8mCf25jghBTIbNbh8K66Wg=
+X-Received: by 2002:ac8:5ccf:0:b0:2dd:a371:68f4 with SMTP id
+ s15-20020ac85ccf000000b002dda37168f4mr16140333qta.370.1645499526032; Mon, 21
+ Feb 2022 19:12:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20220222012638.6650-1-konrad.dybcio@somainline.org>
-In-Reply-To: <20220222012638.6650-1-konrad.dybcio@somainline.org>
+References: <1645455086-9359-1-git-send-email-quic_vpolimer@quicinc.com> <1645455086-9359-3-git-send-email-quic_vpolimer@quicinc.com>
+In-Reply-To: <1645455086-9359-3-git-send-email-quic_vpolimer@quicinc.com>
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 22 Feb 2022 05:26:03 +0300
-Message-ID: <CAA8EJppM=3R-h0Yai4JTSfc3j-nvV_oCgK+t5Vz_8X6A_AfO=Q@mail.gmail.com>
-Subject: Re: [RFC PATCH] drm/msm/dpu1: Add a common DPU1 compatible
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kalyan Thota <quic_kalyant@quicinc.com>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Date:   Tue, 22 Feb 2022 05:30:30 +0300
+Message-ID: <CAA8EJpo8AnGhskdHPSxeN4Z1+KCKhrwprNF1x27Kr9qOG3CT8A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] drm/bridge: use atomic enable/disable for bridge callbacks
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        robdclark@gmail.com, seanpaul@chromium.org, swboyd@chromium.org,
+        dianders@chromium.org, krzysztof.kozlowski@canonical.com,
+        thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
+        daniel@ffwll.ch, quic_kalyant@quicinc.com,
+        quic_sbillaka@quicinc.com, quic_vproddut@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Tue, 22 Feb 2022 at 04:26, Konrad Dybcio
-<konrad.dybcio@somainline.org> wrote:
+On Mon, 21 Feb 2022 at 17:52, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
 >
-> There is *almost no reason* to keep separate compatibles for different
-> SoCs utilizing the DPU1 driver, as it checks the HW version at runtime.
+> Use atomic enable/disable for bridge callbacks to access certain
+> states like self-refresh.
 >
-> Introduce a common compatible, while not removing the old ones to keep
-> old DT compatibility.
+> This change avoids panel prepare/unprepare based on self-refresh
+> state.
 
-I don't quite like this idea. Specifying more or less exact
-compatibility string gives us more flexibility.
-Few recent usecases to mention:
-- qcom,mdp5 compatibility. If we had soc-specific compatibilities, we
-would be able to switch the drivers w/o changing the dts. With a
-single compatibility we would have to change the dts if we were to
-change one of the boards form mdp5 to dpu1.
-- qcom,mdss-dsi-ctrl vs qcm2290. We have to add special compat string
-to account for the different io addresses. If we were using
-soc-specific compats, it would be one from many, not one vs many
-usage.
+Please split this into two patches:
+- change to atomic_* callbacks
+- introduction of PSR support.
 
 >
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+>
+> Changes in V2:
+> - As per review suggestion by Dmitry.
 > ---
-> Bar some very very very unlikely edge cases (such as need for some random
-> quick being applied to one SoC from a family that shares DPU hw rev, but
-> not the others, there is little to no reason to keep adding compatibles
-> that don't mean anything.
+>  drivers/gpu/drm/bridge/panel.c | 102 +++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 94 insertions(+), 8 deletions(-)
 >
-> If this change is cool, then the question about what to do with
-> dt-bindings arises...
+> diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
+> index b32295a..5c7dc82 100644
+> --- a/drivers/gpu/drm/bridge/panel.c
+> +++ b/drivers/gpu/drm/bridge/panel.c
+> @@ -41,6 +41,40 @@ static int panel_bridge_connector_get_modes(struct drm_connector *connector)
+>         return drm_panel_get_modes(panel_bridge->panel, connector);
+>  }
 >
->  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index 47fe11a84a77..335018542a3a 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1348,6 +1348,9 @@ static const struct dev_pm_ops dpu_pm_ops = {
->  };
->
->  const struct of_device_id dpu_dt_match[] = {
-> +       { .compatible = "qcom,dpu1" },
+> +static struct drm_crtc *bridge_drm_get_old_connector_crtc(struct drm_encoder *encoder,
+> +                                               struct drm_atomic_state *state)
+> +{
+> +       struct drm_connector *connector;
+> +       struct drm_connector_state *conn_state;
 > +
-> +       /* Legacy compatibles for old DTs */
->         { .compatible = "qcom,sdm845-dpu", },
->         { .compatible = "qcom,sc7180-dpu", },
->         { .compatible = "qcom,sc7280-dpu", },
+> +       connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
+> +       if (!connector)
+> +               return NULL;
+> +
+> +       conn_state = drm_atomic_get_old_connector_state(state, connector);
+> +       if (!conn_state)
+> +               return NULL;
+> +
+> +       return conn_state->crtc;
+> +}
+> +
+> +static struct drm_crtc *bridge_drm_get_new_connector_crtc(struct drm_encoder *encoder,
+> +                                               struct drm_atomic_state *state)
+> +{
+> +       struct drm_connector *connector;
+> +       struct drm_connector_state *conn_state;
+> +
+> +       connector = drm_atomic_get_new_connector_for_encoder(state, encoder);
+> +       if (!connector)
+> +               return NULL;
+> +
+> +       conn_state = drm_atomic_get_new_connector_state(state, connector);
+> +       if (!conn_state)
+> +               return NULL;
+> +
+> +       return conn_state->crtc;
+> +}
+> +
+>  static const struct drm_connector_helper_funcs
+>  panel_bridge_connector_helper_funcs = {
+>         .get_modes = panel_bridge_connector_get_modes,
+> @@ -102,30 +136,82 @@ static void panel_bridge_detach(struct drm_bridge *bridge)
+>                 drm_connector_cleanup(connector);
+>  }
+>
+> -static void panel_bridge_pre_enable(struct drm_bridge *bridge)
+> +static void panel_bridge_pre_enable(struct drm_bridge *bridge,
+> +               struct drm_bridge_state *old_bridge_state)
+>  {
+>         struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+> +       struct drm_atomic_state *old_state = old_bridge_state->base.state;
+> +       struct drm_encoder *encoder = bridge->encoder;
+> +       struct drm_crtc *crtc;
+> +       struct drm_crtc_state *old_crtc_state;
+> +
+> +       crtc = bridge_drm_get_new_connector_crtc(encoder, old_state);
+> +       if (!crtc)
+> +               return;
+> +
+> +       old_crtc_state = drm_atomic_get_old_crtc_state(old_state, crtc);
+> +       if (old_crtc_state && old_crtc_state->self_refresh_active)
+> +               return;
+>
+>         drm_panel_prepare(panel_bridge->panel);
+>  }
+>
+> -static void panel_bridge_enable(struct drm_bridge *bridge)
+> +static void panel_bridge_enable(struct drm_bridge *bridge,
+> +               struct drm_bridge_state *old_bridge_state)
+>  {
+>         struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+> +       struct drm_atomic_state *old_state = old_bridge_state->base.state;
+> +       struct drm_encoder *encoder = bridge->encoder;
+> +       struct drm_crtc *crtc;
+> +       struct drm_crtc_state *old_crtc_state;
+> +
+> +       crtc = bridge_drm_get_new_connector_crtc(encoder, old_state);
+> +       if (!crtc)
+> +               return;
+> +
+> +       old_crtc_state = drm_atomic_get_old_crtc_state(old_state, crtc);
+> +       if (old_crtc_state && old_crtc_state->self_refresh_active)
+> +               return;
+>
+>         drm_panel_enable(panel_bridge->panel);
+>  }
+>
+> -static void panel_bridge_disable(struct drm_bridge *bridge)
+> +static void panel_bridge_disable(struct drm_bridge *bridge,
+> +               struct drm_bridge_state *old_bridge_state)
+>  {
+>         struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+> +       struct drm_atomic_state *old_state = old_bridge_state->base.state;
+> +       struct drm_encoder *encoder = bridge->encoder;
+> +       struct drm_crtc *crtc;
+> +       struct drm_crtc_state *new_crtc_state;
+> +
+> +       crtc = bridge_drm_get_old_connector_crtc(encoder, old_state);
+> +       if (!crtc)
+> +               return;
+> +
+> +       new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
+> +       if (new_crtc_state && new_crtc_state->self_refresh_active)
+> +               return;
+>
+>         drm_panel_disable(panel_bridge->panel);
+>  }
+>
+> -static void panel_bridge_post_disable(struct drm_bridge *bridge)
+> +static void panel_bridge_post_disable(struct drm_bridge *bridge,
+> +               struct drm_bridge_state *old_bridge_state)
+>  {
+>         struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+> +       struct drm_atomic_state *old_state = old_bridge_state->base.state;
+> +       struct drm_encoder *encoder = bridge->encoder;
+> +       struct drm_crtc *crtc;
+> +       struct drm_crtc_state *new_crtc_state;
+> +
+> +       crtc = bridge_drm_get_old_connector_crtc(encoder, old_state);
+> +       if (!crtc)
+> +               return;
+> +
+> +       new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
+> +       if (new_crtc_state && new_crtc_state->self_refresh_active)
+> +               return;
+>
+>         drm_panel_unprepare(panel_bridge->panel);
+>  }
+> @@ -141,10 +227,10 @@ static int panel_bridge_get_modes(struct drm_bridge *bridge,
+>  static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
+>         .attach = panel_bridge_attach,
+>         .detach = panel_bridge_detach,
+> -       .pre_enable = panel_bridge_pre_enable,
+> -       .enable = panel_bridge_enable,
+> -       .disable = panel_bridge_disable,
+> -       .post_disable = panel_bridge_post_disable,
+> +       .atomic_pre_enable = panel_bridge_pre_enable,
+> +       .atomic_enable = panel_bridge_enable,
+> +       .atomic_disable = panel_bridge_disable,
+> +       .atomic_post_disable = panel_bridge_post_disable,
+
+Please change callback names to reflect that we are using atomic_ interfaces.
+
+>         .get_modes = panel_bridge_get_modes,
+>         .atomic_reset = drm_atomic_helper_bridge_reset,
+>         .atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
 > --
-> 2.35.1
+> 2.7.4
 >
 
 
