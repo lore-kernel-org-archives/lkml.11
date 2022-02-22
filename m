@@ -2,123 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F96C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF8FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233768AbiBVUvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:51:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
+        id S234525AbiBVUvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:51:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiBVUvq (ORCPT
+        with ESMTP id S233936AbiBVUvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:51:46 -0500
-X-Greylist: delayed 512 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 12:51:16 PST
-Received: from mail.tintel.eu (mail.tintel.eu [51.83.127.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48E2A9A5D;
-        Tue, 22 Feb 2022 12:51:16 -0800 (PST)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id 1E8714474A4B;
-        Tue, 22 Feb 2022 21:42:38 +0100 (CET)
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
-        with ESMTP id BM6b5kB9oOfL; Tue, 22 Feb 2022 21:42:37 +0100 (CET)
-Received: from localhost (localhost [IPv6:::1])
-        by mail.tintel.eu (Postfix) with ESMTP id 8DBF242A43DF;
-        Tue, 22 Feb 2022 21:42:37 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu 8DBF242A43DF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
-        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1645562557;
-        bh=pYviirxjEDGerTDDcjS7GbGKZkzZlGlIYio/BGWknF4=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=frvh2zYWczA9n39TRhcHcFP9YQnZG56XYXkJnz/d06YV+sTTTmuyGxxycfTe8qzeW
-         0HSVMSz9RZh7kFkCfsOKupV97fDuvSNwRatmbkCBJHj4e6USTL0EQupP5vZJ617E8W
-         x378qFJLE14BkAYuY3pgoYaH9DuZ4706lWWVuSzA=
-X-Virus-Scanned: amavisd-new at mail.tintel.eu
-Received: from mail.tintel.eu ([IPv6:::1])
-        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
-        with ESMTP id AcB_YAI3-8Gp; Tue, 22 Feb 2022 21:42:37 +0100 (CET)
-Received: from taz.sof.bg.adlevio.net (unknown [IPv6:2001:67c:21bc:20::10])
-        by mail.tintel.eu (Postfix) with ESMTPS id 3B38A4474A4B;
-        Tue, 22 Feb 2022 21:42:37 +0100 (CET)
-From:   Stijn Tintel <stijn@linux-ipv6.be>
-To:     toke@redhat.com, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kpsingh@kernel.org, john.fastabend@gmail.com, yhs@fb.com,
-        songliubraving@fb.com, kafai@fb.com, andrii@kernel.org,
-        daniel@iogearbox.net, ast@kernel.org
-Subject: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
-Date:   Tue, 22 Feb 2022 22:42:36 +0200
-Message-Id: <20220222204236.2192513-1-stijn@linux-ipv6.be>
-X-Mailer: git-send-email 2.34.1
+        Tue, 22 Feb 2022 15:51:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6014EA9A5D;
+        Tue, 22 Feb 2022 12:51:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06A71B81C65;
+        Tue, 22 Feb 2022 20:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE34BC340E8;
+        Tue, 22 Feb 2022 20:51:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645563079;
+        bh=yFCTKtU4S4kZ8VG3SPDKnuEe4TM3uJOIlCjMCkPGssY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H7P1MrpmNd4yRIrwLKQqnRJhf/+Nw7ooVt64h4odrPcEbm9dIEoo7G7m/XHIUcbA/
+         mWm5n1oaEWH24ZukQHiQmeFv06NgG2XuJHfVdC3QkVFRHha0PrWsqHmrOdVPmuHlsO
+         HIaYK8KKt+B7kXPfSm0gG7H0kZzO4hbmiV35Xxgixu1LTmuW9ijHHkaxNu4cqeFkgo
+         X3ZsNxuAKB3K1BwNNV0kLFERkrfG8TYr7fx74VmwKsaSMZsWkM+2RJ3ocx7ZvyLZkJ
+         lLTu34xFakBrtBDyGB9NccLleSss8Xliz40wOrGVzMOu5P9qM6TQ9ik92k0t9Tm2NT
+         9CAKcY/qyrvSg==
+Date:   Tue, 22 Feb 2022 12:51:16 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>, "hch@lst.de" <hch@lst.de>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "colyli@suse.de" <colyli@suse.de>
+Subject: Re: [PATCHv3 10/10] x86/crypto: add pclmul acceleration for crc64
+Message-ID: <20220222205116.GB1782741@dhcp-10-100-145-180.wdc.com>
+References: <20220222163144.1782447-1-kbusch@kernel.org>
+ <20220222163144.1782447-11-kbusch@kernel.org>
+ <a7e806ed3c074534a24b74f827bcc914@AcuMS.aculab.com>
+ <20220222171405.GA1782521@dhcp-10-100-145-180.wdc.com>
+ <YhVCTzUOUHZnze4x@sol.localdomain>
 MIME-Version: 1.0
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: IP_WHITELIST
-X-Rspamd-Queue-Id: 3B38A4474A4B
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: IP_WHITELIST
-X-Spamd-Result: default: False [0.00 / 15.00];
-        TAGGED_RCPT(0.00)[];
-        ASN(0.00)[asn:200533, ipnet:2001:67c:21bc::/48, country:BG];
-        IP_WHITELIST(0.00)[2001:67c:21bc:20::10]
-X-Rspamd-Server: skulls
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhVCTzUOUHZnze4x@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
-max_entries parameter set, this parameter will be set to the number of
-possible CPUs. Due to this, the map_is_reuse_compat function will return
-false, causing the following error when trying to reuse the map:
+On Tue, Feb 22, 2022 at 12:06:39PM -0800, Eric Biggers wrote:
+> Is the license of that code compatible with the kernel's license?
 
-libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter m=
-ismatch
+It's released into "public domain", so I assume we can leverage it into
+GPL licenced code. I don't have similar past experiences with this
+scenario, so please correct me if I'm mistaken.
+ 
+> In any case, adding uncommented generated assembly isn't acceptable.  The most
+> common convention for Linux kernel crypto is to use hand-written assembly that
+> is properly commented.
+>
+> There is some precedent for using compiler intrinsics instead, e.g.
+> crypto/aegis128-neon-inner.c.  (I'm not sure why they aren't used more often.)
+>
+> There are also some files where a Perl script generates the assembly code.
+> (This is a bit ugly IMO, but it's what the author of much of OpenSSL's crypto
+> assembly code does, and it was desired to reuse that code.)
+> 
+> Anyway, those are the available options.  Checking in some uncommented generated
+> assembly isn't one of them.
 
-Fix this by checking against the number of possible CPUs if the
-max_entries parameter is not set in the map definition.
-
-Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF o=
-bjects")
-Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
----
- tools/lib/bpf/libbpf.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7f10dd501a52..b076ab728f0e 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4750,7 +4750,7 @@ static bool map_is_reuse_compat(const struct bpf_ma=
-p *map, int map_fd)
- 	struct bpf_map_info map_info =3D {};
- 	char msg[STRERR_BUFSIZE];
- 	__u32 map_info_len;
--	int err;
-+	int def_max_entries, err;
-=20
- 	map_info_len =3D sizeof(map_info);
-=20
-@@ -4763,10 +4763,15 @@ static bool map_is_reuse_compat(const struct bpf_=
-map *map, int map_fd)
- 		return false;
- 	}
-=20
-+	if (map->def.type =3D=3D BPF_MAP_TYPE_PERF_EVENT_ARRAY && !map->def.max=
-_entries)
-+		def_max_entries =3D libbpf_num_possible_cpus();
-+	else
-+		def_max_entries =3D map->def.max_entries;
-+
- 	return (map_info.type =3D=3D map->def.type &&
- 		map_info.key_size =3D=3D map->def.key_size &&
- 		map_info.value_size =3D=3D map->def.value_size &&
--		map_info.max_entries =3D=3D map->def.max_entries &&
-+		map_info.max_entries =3D=3D def_max_entries &&
- 		map_info.map_flags =3D=3D map->def.map_flags &&
- 		map_info.map_extra =3D=3D map->map_extra);
- }
---=20
-2.34.1
-
+Fair enough. I'll find help from someone to author an appropriate form
+to replace this patch.
