@@ -2,90 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CE5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C81EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 21:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235990AbiBVV15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 16:27:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43992 "EHLO
+        id S235957AbiBVV1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 16:27:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbiBVV1b (ORCPT
+        with ESMTP id S235802AbiBVV1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 16:27:31 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC807B55B;
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A04B8E187;
         Tue, 22 Feb 2022 13:27:05 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 85AAE1F43C9B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645565223;
-        bh=9taHBRKeDVk3pqAcIWviMl4FP9lPlYjt9sExErI2Two=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OI6vcjXnKEAap1oo7yLdLSKaq/zJtCvz1L565DXez7v46BufwMQtbDe4C/cTevSFm
-         n95HxUQQcgERx76OqyKtISyrunX5ZASrc5P3luaIxgwBwc7MjnTLYvElFVa0sxso+B
-         qJMPcsTyvp2pn1g7AYMD+QNzZcI63z+a+xKQtM7m78+gpkoZ9/pBXvWte9O7zOBI7o
-         k6O70T3iFLIYkkgT8AxH1z5BuoD0S+eyIqxjWTBL/AfIuQVyNa7vSP75p28B9TEyzM
-         92KxVT4xPThFwEpkASPbuB6YCRc02wFTaKJb4qb4nfNGqtwCGkKwQw2vjWrZtEUQe+
-         442F7NoxtQdQQ==
-Date:   Tue, 22 Feb 2022 16:26:58 -0500
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-Subject: Re: [PATCH v2 14/23] arm64: dts: mt8192: Add mipi_tx node
-Message-ID: <20220222212658.xuau6t3xcvu7m4uz@notapiano>
-References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
- <20220218091633.9368-15-allen-kh.cheng@mediatek.com>
+Date:   Tue, 22 Feb 2022 21:27:03 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1645565224;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L2SftizOYJm0Oa3oZMe4lwD8sUSmZAIEP8u+0K0p48o=;
+        b=QtQKhdvBssqDSxlFOd100wKw34gpXxODx6UjNLxvm0ld/3RQlyByF80RftK6E2LqC26hWq
+        kCBN32TeZUHJKYNj4PR2s1BG92kUgWIiD/d4sChbk9OsE7wp+Wn6JEmPhVwpyz0K6kHf6c
+        8hg/vP6HJ6dhqDifHIRtzivMK7lrtjAeVCWnlUdq2a++33HHosSwAVwxJSjMpgZj71r022
+        MRWoOOCxwZcJkCQPda9rYJ9dObACQT6eRCzYa6NRhfC5J88KsLUmr6s6iQFZUkOAheDaqz
+        67lmVQQboqw1Op2tFG2Q2lGWo3uOyoUz1DqlyYNjm6tA/BfuH8nv0/twxTaMUw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1645565224;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L2SftizOYJm0Oa3oZMe4lwD8sUSmZAIEP8u+0K0p48o=;
+        b=r4aZx67naC9SVbdsBBF+bA6wRYiTENbpyGoW0BXwZGU/DUm9HgLwwwhbBsRR0LzXuNtcjT
+        tkzCwH3rtycrnCAg==
+From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: core/core] fork: Redo ifdefs around task stack handling
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220217102406.3697941-2-bigeasy@linutronix.de>
+References: <20220217102406.3697941-2-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218091633.9368-15-allen-kh.cheng@mediatek.com>
+Message-ID: <164556522311.16921.16318571180509187723.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 05:16:24PM +0800, Allen-KH Cheng wrote:
-> Add mipi_tx node for mt8192 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index cfc2db501108..f5e5af949f19 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1114,6 +1114,16 @@
->  			};
->  		};
->  
-> +		mipi_tx0: mipi-dphy@11e50000 {
+The following commit has been merged into the core/core branch of tip:
 
-According to Documentation/devicetree/bindings/phy/mediatek,dsi-phy.yaml, this
-node's name should be dsi-phy, not mipi-dphy.
+Commit-ID:     be9a2277cafd318976d59c41a7f45a934ec43b26
+Gitweb:        https://git.kernel.org/tip/be9a2277cafd318976d59c41a7f45a934ec43b26
+Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+AuthorDate:    Thu, 17 Feb 2022 11:23:59 +01:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Tue, 22 Feb 2022 22:25:01 +01:00
 
-> +			compatible = "mediatek,mt8183-mipi-tx";
-> +			reg = <0 0x11e50000 0 0x1000>;
-> +			clocks = <&apmixedsys CLK_APMIXED_MIPID26M>;
-> +			clock-names = "ref_clk";
-> +			#clock-cells = <0>;
-> +			#phy-cells = <0>;
-> +			clock-output-names = "mipi_tx0_pll";
-> +		};
-> +
->  		i2c0: i2c@11f00000 {
->  			compatible = "mediatek,mt8192-i2c";
->  			reg = <0 0x11f00000 0 0x1000>,
-> -- 
-> 2.18.0
-> 
-> 
+fork: Redo ifdefs around task stack handling
+
+The use of ifdef CONFIG_VMAP_STACK is confusing in terms what is
+actually happenning and what can happen.
+
+For instance from reading free_thread_stack() it appears that in the
+CONFIG_VMAP_STACK case it may receive a non-NULL vm pointer but it may also
+be NULL in which case __free_pages() is used to free the stack.  This is
+however not the case because in the VMAP case a non-NULL pointer is always
+returned here.  Since it looks like this might happen, the compiler creates
+the correct dead code with the invocation to __free_pages() and everything
+around it. Twice.
+
+Add spaces between the ifdef and the identifer to recognize the ifdef
+level which is currently in scope.
+
+Add the current identifer as a comment behind #else and #endif.
+Move the code within free_thread_stack() and alloc_thread_stack_node()
+into the relevant ifdef blocks.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/20220217102406.3697941-2-bigeasy@linutronix.de
+
+---
+ kernel/fork.c | 74 ++++++++++++++++++++++++++------------------------
+ 1 file changed, 39 insertions(+), 35 deletions(-)
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index a024bf6..f5cc101 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -185,7 +185,7 @@ static inline void free_task_struct(struct task_struct *tsk)
+  */
+ # if THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK)
+ 
+-#ifdef CONFIG_VMAP_STACK
++#  ifdef CONFIG_VMAP_STACK
+ /*
+  * vmalloc() is a bit slow, and calling vfree() enough times will force a TLB
+  * flush.  Try to minimize the number of calls by caching stacks.
+@@ -210,11 +210,9 @@ static int free_vm_stack_cache(unsigned int cpu)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
+ {
+-#ifdef CONFIG_VMAP_STACK
+ 	void *stack;
+ 	int i;
+ 
+@@ -258,45 +256,53 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
+ 		tsk->stack = stack;
+ 	}
+ 	return stack;
+-#else
+-	struct page *page = alloc_pages_node(node, THREADINFO_GFP,
+-					     THREAD_SIZE_ORDER);
+-
+-	if (likely(page)) {
+-		tsk->stack = kasan_reset_tag(page_address(page));
+-		return tsk->stack;
+-	}
+-	return NULL;
+-#endif
+ }
+ 
+-static inline void free_thread_stack(struct task_struct *tsk)
++static void free_thread_stack(struct task_struct *tsk)
+ {
+-#ifdef CONFIG_VMAP_STACK
+ 	struct vm_struct *vm = task_stack_vm_area(tsk);
++	int i;
+ 
+-	if (vm) {
+-		int i;
++	for (i = 0; i < THREAD_SIZE / PAGE_SIZE; i++)
++		memcg_kmem_uncharge_page(vm->pages[i], 0);
+ 
+-		for (i = 0; i < THREAD_SIZE / PAGE_SIZE; i++)
+-			memcg_kmem_uncharge_page(vm->pages[i], 0);
++	for (i = 0; i < NR_CACHED_STACKS; i++) {
++		if (this_cpu_cmpxchg(cached_stacks[i], NULL,
++				     tsk->stack_vm_area) != NULL)
++			continue;
+ 
+-		for (i = 0; i < NR_CACHED_STACKS; i++) {
+-			if (this_cpu_cmpxchg(cached_stacks[i],
+-					NULL, tsk->stack_vm_area) != NULL)
+-				continue;
++		tsk->stack = NULL;
++		tsk->stack_vm_area = NULL;
++		return;
++	}
++	vfree_atomic(tsk->stack);
++	tsk->stack = NULL;
++	tsk->stack_vm_area = NULL;
++}
+ 
+-			return;
+-		}
++#  else /* !CONFIG_VMAP_STACK */
+ 
+-		vfree_atomic(tsk->stack);
+-		return;
++static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
++{
++	struct page *page = alloc_pages_node(node, THREADINFO_GFP,
++					     THREAD_SIZE_ORDER);
++
++	if (likely(page)) {
++		tsk->stack = kasan_reset_tag(page_address(page));
++		return tsk->stack;
+ 	}
+-#endif
++	return NULL;
++}
+ 
++static void free_thread_stack(struct task_struct *tsk)
++{
+ 	__free_pages(virt_to_page(tsk->stack), THREAD_SIZE_ORDER);
++	tsk->stack = NULL;
+ }
+-# else
++
++#  endif /* CONFIG_VMAP_STACK */
++# else /* !(THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK)) */
++
+ static struct kmem_cache *thread_stack_cache;
+ 
+ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
+@@ -312,6 +318,7 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
+ static void free_thread_stack(struct task_struct *tsk)
+ {
+ 	kmem_cache_free(thread_stack_cache, tsk->stack);
++	tsk->stack = NULL;
+ }
+ 
+ void thread_stack_cache_init(void)
+@@ -321,8 +328,9 @@ void thread_stack_cache_init(void)
+ 					THREAD_SIZE, NULL);
+ 	BUG_ON(thread_stack_cache == NULL);
+ }
+-# endif
+-#endif
++
++# endif /* THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK) */
++#endif /* !CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
+ 
+ /* SLAB cache for signal_struct structures (tsk->signal) */
+ static struct kmem_cache *signal_cachep;
+@@ -432,10 +440,6 @@ static void release_task_stack(struct task_struct *tsk)
+ 
+ 	account_kernel_stack(tsk, -1);
+ 	free_thread_stack(tsk);
+-	tsk->stack = NULL;
+-#ifdef CONFIG_VMAP_STACK
+-	tsk->stack_vm_area = NULL;
+-#endif
+ }
+ 
+ #ifdef CONFIG_THREAD_INFO_IN_TASK
