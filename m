@@ -2,119 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86577C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 266D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231915AbiBVM0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:26:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
+        id S231941AbiBVMba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:31:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiBVM0g (ORCPT
+        with ESMTP id S231915AbiBVMb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:26:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C255D9EB95;
-        Tue, 22 Feb 2022 04:26:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 734C7B819BA;
-        Tue, 22 Feb 2022 12:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0A3EC340E8;
-        Tue, 22 Feb 2022 12:26:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645532768;
-        bh=NM/LVf0ru3D5ozlA5ZdDWj5QZ/rpAt+B34/rzF83KBQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eBL2/UtwTThkzuSytifGS49sEJNKEGOPsaANcJ09zJjMIqjA8rZAddPUTxf9NtC1x
-         R8etYi4dylopJnX6uH0XGTCZvR/6Kc9uftm/XMZ+cx7fJgrCc1eukq6EIjLE6GT9q9
-         wd+qc6NIZHTBcL81oYlT9ZjmZBN/0AtaK58xT+B9Jf4lzuDqoKwpk34PVzEfan5tt5
-         d9gCJECNl49NGJG0enfbvKJ4BuzuTm6U4C8Oe/4icjbgg7PNvqTHsjNv/KyoSRFoq1
-         2+UffbSPQ5fB5xoTwVQnHd0EquNBzMueCkfnFePhmy7hOjasbnJZvmXapGuFsHu/aH
-         9CZe3mEoLkjOg==
-Date:   Tue, 22 Feb 2022 13:26:45 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     Eric Snowberg <eric.snowberg@oracle.com>, dhowells@redhat.com,
-        dwmw2@infradead.org, ardb@kernel.org, jmorris@namei.org,
-        serge@hallyn.com, nayna@linux.ibm.com, keescook@chromium.org,
-        torvalds@linux-foundation.org, weiyongjun1@huawei.com,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-security-module@vger.kernel.org,
-        James.Bottomley@hansenpartnership.com, pjones@redhat.com,
-        konrad.wilk@oracle.com
-Subject: Re: [PATCH v10 0/8] Enroll kernel keys thru MOK
-Message-ID: <YhTWhcIx9B/pyiwD@iki.fi>
-References: <20220126025834.255493-1-eric.snowberg@oracle.com>
- <YfFP6OHqBVNWKL2C@iki.fi>
- <YfFTf6vIpNMIrwH0@iki.fi>
- <78d2c13ad60b5f845cb841d257d1b41290f575c6.camel@linux.ibm.com>
- <YhKP12KEmyqyS8rj@iki.fi>
- <8e9e4bc3bbd831a606f264ec3f4dfcafdeebece6.camel@linux.ibm.com>
+        Tue, 22 Feb 2022 07:31:28 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D0A9A4DD;
+        Tue, 22 Feb 2022 04:31:01 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id f17so8046692wrh.7;
+        Tue, 22 Feb 2022 04:31:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ytf3B0TUzpPjLZkjeVV4ovMnqxam63CdUAj7HAoJ+og=;
+        b=S4aJFdu7ESFjce26eB1MIRYSKt9cw58AJ01xnESYdhee6eGT1jF8awIfYw7gGqhz/U
+         T1qu5WuWvfpnr6p4QMts4lJr2jL+BhPIqMvWv8bifRQWSwqy5et5w5jn9/dSKcGwVJ9E
+         82E6f10ke0KhT7OiCZS/PIEGU4E8CNuAtNOiV1vLtvd7wFDSWefFtgXb+Jkj+jkZ2XTR
+         LWolTgZZXiwOjcPwacWzFHKMh8/ZTJxlk4iLuIJQl6qPbci9J0tgzCaEhoyTpYnquA84
+         VUhffwxUXIYGSeBzxFFn3fItrDlOqnJ9c3a6ySwIN6iTXj0g9KqzMhJ8y8MoRNL6c1NM
+         26nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ytf3B0TUzpPjLZkjeVV4ovMnqxam63CdUAj7HAoJ+og=;
+        b=u65zFaKPxwUqWoUlJBfyOKOdSQ7gPDEOz/O8Bc/NHImk6K51GysPphnaB3r24galGW
+         uyGSokVSunwOPJJlHBmxwbET1HPOyJQ5PgXGo3WUDyh0y1EexphewiyqaBMUTc1ggL+K
+         4Gppa0Od/9n/rJ7hcmy12LPo5F5qOfe68fHE6ZqIVTjzfHzC/xYWzxwVIgOIGGIvJ2Wq
+         O9tlulwIaCbTHFy+Zhqvb2802jVYHRyFd8QxmN1yuRlYRG5LC08wERkh9xemW4KYFD7e
+         vovhte0WiwN9cA6Lm5OnqOrtFpiXAmGb6kP38Tup0l510chEV+jEfPet6aWdRz9dTt4G
+         zjfQ==
+X-Gm-Message-State: AOAM531ZO7VU2nHQA5Lj/EQUDPdd06HyeI8LhyunjTq+Vgac+uvduEhK
+        newa0lwzVlhrIVPLOd+1Ju0=
+X-Google-Smtp-Source: ABdhPJzWwW8IcKTuPO9AOzq1sTPEbYVE7yBhhBnybH0UlJtZEfjXBvWQHvVLF4V5f06l8XkRCmNBDA==
+X-Received: by 2002:a05:6000:1ac7:b0:1e8:b550:a596 with SMTP id i7-20020a0560001ac700b001e8b550a596mr19112977wry.584.1645533060492;
+        Tue, 22 Feb 2022 04:31:00 -0800 (PST)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id g16-20020a7bc4d0000000b0037bbe255339sm2296177wmk.15.2022.02.22.04.30.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 04:30:59 -0800 (PST)
+Date:   Tue, 22 Feb 2022 12:30:58 +0000
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/196] 5.15.25-rc1 review
+Message-ID: <YhTXgiBmJqO1uh60@debian>
+References: <20220221084930.872957717@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8e9e4bc3bbd831a606f264ec3f4dfcafdeebece6.camel@linux.ibm.com>
+In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 06:59:25AM -0500, Mimi Zohar wrote:
-> On Sun, 2022-02-20 at 20:00 +0100, Jarkko Sakkinen wrote:
-> > On Wed, Jan 26, 2022 at 05:06:09PM -0500, Mimi Zohar wrote:
-> 
-> > > > 
-> > > > Mimi brought up that we need a MAINTAINERS update for this and also
-> > > > .platform.
-> > > > 
-> > > > We have these:
-> > > > 
-> > > > - KEYS/KEYRINGS
-> > > > - CERTIFICATE HANDLING
-> > > > 
-> > > > I would put them under KEYRINGS for now and would not consider further
-> > > > subdivision for the moment.
-> > > 
-> > > IMA has dependencies on the platform_certs/ and now on the new .machine
-> > > keyring.  Just adding "F: security/integrity/platform_certs/" to the
-> > > KEYS/KEYRINGS record, ignores that dependency.  The discussion wouldn't
-> > > even be on the linux-integrity mailing list.
-> > > 
-> > > Existing requirement:
-> > > - The keys on the .platform keyring are limited to verifying the kexec
-> > > image.
-> > > 
-> > > New requirements based on Eric Snowbergs' patch set:
-> > > - When IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY is enabled,
-> > > the MOK keys will not be loaded directly onto the .machine keyring or
-> > > indirectly onto the .secondary_trusted_keys keyring.
-> > > 
-> > > - Only when a new IMA Kconfig explicitly allows the keys on the
-> > > .machine keyrings, will the CA keys stored in MOK be loaded onto the
-> > > .machine keyring.
-> > > 
-> > > Unfortunately I don't think there is any choice, but to define a new
-> > > MAINTAINERS entry.  Perhaps something along the lines of:
-> > > 
-> > > KEYS/KEYRINGS_INTEGRITY
-> > > M:     Jarkko Sakkinen <jarkko@kernel.org>
-> > > M:     Mimi Zohar <zohar@linux.ibm.com>
-> > > L:      keyrings@vger.kernel.org
-> > > L:      linux-integrity@vger.kernel.org
-> > > F:      security/integrity/platform_certs
-> > > 
-> > 
-> > This would work for me.
-> 
-> Thanks, Jarkko.  Are you planning on upstreaming this change, as you
-> previously said, or would you prefer I do it?
-> 
-> thanks,
-> 
-> Mimi
+Hi Greg,
 
-This is the problem I'm encountering:
+On Mon, Feb 21, 2022 at 09:47:12AM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.25 release.
+> There are 196 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
+> Anything received after that time might be too late.
 
-https://lore.kernel.org/keyrings/YhLNYxBTbKW62vtC@iki.fi/
+Build test:
+mips (gcc version 11.2.1 20220213): 62 configs -> no new failure
+arm (gcc version 11.2.1 20220213): 100 configs -> 1 new failure
+arm64 (gcc version 11.2.1 20220213): 3 configs -> 1 new failure
+x86_64 (gcc version 11.2.1 20220213): 4 configs -> no failure
 
-BR, Jarkko
+Both arm and arm64 failed with the error:
+drivers/tee/optee/core.c: In function 'optee_probe':
+drivers/tee/optee/core.c:726:20: error: operation on 'rc' may be undefined [-Werror=sequence-point]
+  726 |                 rc = rc = PTR_ERR(ctx);
+
+Caused by: d7151f4ed49b ("optee: use driver internal tee_context for some rpc")
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+mips: Booted on ci20 board. No regression. [3]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/794
+[2]. https://openqa.qa.codethink.co.uk/tests/800
+[3]. https://openqa.qa.codethink.co.uk/tests/802
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
