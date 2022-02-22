@@ -2,87 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E21C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05769C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233892AbiBVQHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:07:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33826 "EHLO
+        id S233608AbiBVQHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:07:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233528AbiBVQHA (ORCPT
+        with ESMTP id S233439AbiBVQHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:07:00 -0500
+        Tue, 22 Feb 2022 11:07:33 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5ECCDF49;
-        Tue, 22 Feb 2022 08:06:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35EB3F9F94
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:07:08 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A0AEC1063;
-        Tue, 22 Feb 2022 08:06:32 -0800 (PST)
-Received: from e123427-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 131B03F70D;
-        Tue, 22 Feb 2022 08:06:29 -0800 (PST)
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: (subset) [PATCH v4 00/12] PCI: mvebu: subsystem ids, AER and INTx
-Date:   Tue, 22 Feb 2022 16:06:20 +0000
-Message-Id: <164554589988.5595.5091384618177225445.b4-ty@arm.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220222155030.988-1-pali@kernel.org>
-References: <20220222155030.988-1-pali@kernel.org>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 030571063;
+        Tue, 22 Feb 2022 08:07:08 -0800 (PST)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A255C3F70D;
+        Tue, 22 Feb 2022 08:07:06 -0800 (PST)
+Date:   Tue, 22 Feb 2022 16:07:04 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        catalin.marinas@arm.com, will@kernel.org, broonie@kernel.org,
+        songmuchun@bytedance.com, qirui.001@bytedance.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64/ftrace: Make function graph use ftrace directly
+Message-ID: <YhUKKOF/ZP167ueN@lakrids>
+References: <20220222130049.81284-1-zhouchengming@bytedance.com>
+ <20220222105218.28e3d5aa@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222105218.28e3d5aa@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 16:50:18 +0100, Pali Rohár wrote:
-> This patch series extends pci-bridge-emul.c driver to emulate PCI Subsystem
-> Vendor ID capability and PCIe extended capabilities. And then implement
-> in pci-mvebu.c driver support for PCI Subsystem Vendor IDs, PCIe AER
-> registers, support for legacy INTx interrupts, configuration for X1/X4
-> mode and usage of new PCI child_ops API.
+On Tue, Feb 22, 2022 at 10:52:18AM -0500, Steven Rostedt wrote:
+> On Tue, 22 Feb 2022 21:00:49 +0800
+> Chengming Zhou <zhouchengming@bytedance.com> wrote:
 > 
-> Changes in v4:
-> * rebased on c3bd7dc553eea5a3595ca3aa0adee9bf83622a1f
+> > As we do in commit 0c0593b45c9b ("x86/ftrace: Make function graph
+> > use ftrace directly"), we don't need special hook for graph tracer,
+> > but instead we use graph_ops:func function to install return_hooker.
+> > 
+> > Since commit 3b23e4991fb6 ("arm64: implement ftrace with regs") add
+> > implementation for FTRACE_WITH_REGS on arm64, we can easily adopt
+> > the same optimization on arm64.
 > 
-> [...]
+> Note. Ideally we want it to hook with DYNAMIC_FTARCE_WITH_ARGS, and not
+> FTRACE_WITH_REGS. If arm64 is like x86_64, saving all regs at every
+> function call has a bit more overhead than saving the minimum. The
+> DYNAMIC_FTRACE_WITH_ARGS, means that the minimum is still saved, but now
+> exposes the arguments and the stack pointer, which function_graph_tracer
+> needs.
 
-I can't apply dts changes, patch 12 should go via the arm-soc tree.
+FWIW, I'd been meaning to take a look at that.
 
-Applied the others to pci/mvebu, thanks.
+On arm64 we can't really create a full pt_regs without taking an
+exception because there's a bunch of stuff in pt_regs that we can only
+snapshot at an exception boundary (e.g. PSTATE, which is what Arm calls
+the internal processor flags). I'd wanted to look at whether we could
+implement FTRACE_WITH_ARGS without FTRACE_WITH_REGS.
 
-[01/12] PCI: pci-bridge-emul: Re-arrange register tests
-        https://git.kernel.org/lpieralisi/pci/c/c453bf6f9b
-[02/12] PCI: pci-bridge-emul: Add support for PCIe extended capabilities
-        https://git.kernel.org/lpieralisi/pci/c/c0bd419732
-[03/12] PCI: pci-bridge-emul: Add support for PCI Bridge Subsystem Vendor ID capability
-        https://git.kernel.org/lpieralisi/pci/c/3767a90242
-[04/12] dt-bindings: PCI: mvebu: Add num-lanes property
-        https://git.kernel.org/lpieralisi/pci/c/26b982ca83
-[05/12] PCI: mvebu: Correctly configure x1/x4 mode
-        https://git.kernel.org/lpieralisi/pci/c/2a81dd9fd9
-[06/12] PCI: mvebu: Add support for PCI Bridge Subsystem Vendor ID on emulated bridge
-        https://git.kernel.org/lpieralisi/pci/c/e3e13c9135
-[07/12] PCI: mvebu: Add support for Advanced Error Reporting registers on emulated bridge
-        https://git.kernel.org/lpieralisi/pci/c/2b6ee04c0a
-[08/12] PCI: mvebu: Use child_ops API
-        https://git.kernel.org/lpieralisi/pci/c/c099c2a761
-[09/12] dt-bindings: PCI: mvebu: Update information about intx interrupts
-        https://git.kernel.org/lpieralisi/pci/c/0124989220
-[10/12] PCI: mvebu: Fix macro names and comments about legacy interrupts
-        https://git.kernel.org/lpieralisi/pci/c/d00ea94e62
-[11/12] PCI: mvebu: Implement support for legacy INTx interrupts
-        https://git.kernel.org/lpieralisi/pci/c/ec07526264
+For kprobes & kreprobes we snapshot the real flags at function entry
+time and give made up values at function return time, which is less
+than ideal because there'll be spurious differences in the flags across
+the two.
+
+It might be worth a chat at plumbers about how we could align this a bit
+better (e.g. with k(ret)probes having an args-only mode too).
 
 Thanks,
-Lorenzo
+Mark.
