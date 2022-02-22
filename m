@@ -2,105 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D09C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E28C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234917AbiBVTNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 14:13:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S235164AbiBVTP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 14:15:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230249AbiBVTNP (ORCPT
+        with ESMTP id S230249AbiBVTPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 14:13:15 -0500
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7352534666
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:12:49 -0800 (PST)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2d07ae0b1c0so186006947b3.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:12:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MIuf7B6ggNpBhnBC4BV4Wx/yI126tWB3veseg963gIw=;
-        b=oO4DLFIdF57cng91nz+ABsKhV3TEZMT4YH2lr4gu+QyKiHY/p9DVOaozbT73qgUo+w
-         xQ27MwmBRWjReen46DDOboOnddmO9/G+2my87QZxKBkXv4l+/ZIkzCE+YibDvGS82tr0
-         HZoBeNSLHqIdxa1Bqoclcc2rWWVKuuZ97ifQkHXI6/n3++k7W9wF8snW9tx1VykggiAd
-         hu4BJF221YTv/PUYb8MOBSrE1s9NmmfgNSMv7MEWWG2IgolZVZtOzOZbfb9F9dGBcui2
-         No4HnBw2U9LDz6tICVmKGe/4TXVP/KGT/hXXO865Xl+3ZFSgHikjXcCE37PmLXsefax7
-         bpcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MIuf7B6ggNpBhnBC4BV4Wx/yI126tWB3veseg963gIw=;
-        b=yT58B5IGi8DdWECRhP4osLE5moFlxWV6dJRT1yyv5ERuMnGxo2mYc3hqtFjL0fCdNH
-         DGHa4yoj0Af5CIrDvSuGSJweSmEID44MMYgOHoHLfzl/CqNQgttzVrkUWJuy4R8MwLPj
-         W3V24O+Pk0KT14GpRWNz5roq+ayJ/e4HNCNdDuBLFEoFODiMYMGU6+DzBROX/WIaD1zb
-         UglRFAZpLgKY6HnGlYywhOsrggI2kw4PZDN5ANFuckRZjTQ2Lx4zmsPdoKblArqdRnSO
-         N8t3Zp4S76KVhNE3fUellm9OxenImj76JvcVAA3Zg6HJCwDr0hbXvYBU1D+on8hNXUFZ
-         6ZAQ==
-X-Gm-Message-State: AOAM532LY57BhE9fFUY5870Q3kLhsMGtn3IlO/BC5wZgT3pRK0ifF3NL
-        wIAiDYv6c5XXFXM9LhodMrEHjA2A0td9IKOXSUE=
-X-Google-Smtp-Source: ABdhPJwogRs4v3RoIbi9LLn5frjoRnppXVlb2XUr+i5bRqLbpZZJ4wuR98W0v903ktfUAXqLtpj99zYOXAJ1elSwzCI=
-X-Received: by 2002:a81:184f:0:b0:2d0:e2b1:1995 with SMTP id
- 76-20020a81184f000000b002d0e2b11995mr24474079ywy.364.1645557168674; Tue, 22
- Feb 2022 11:12:48 -0800 (PST)
+        Tue, 22 Feb 2022 14:15:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35CD15C9F9;
+        Tue, 22 Feb 2022 11:15:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55097615D7;
+        Tue, 22 Feb 2022 19:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23712C340EF;
+        Tue, 22 Feb 2022 19:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645557324;
+        bh=U9jeNgWTnREJMOGMhNcgz9fVNyZ6v4l6J7nfG6DOUbE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kWXWCyLxNVANdV5eeEktWoPfKTJphflfJSUcU4jZVaHQnJS0AraA+Bh2WccNDGPND
+         Pti8QeNuH9VF2E7xzHou4j9QEiodZABeC+pcnhnsuoPclcK0Ldy1wmzGaFsdMbkLWT
+         gIYz/w3E5EcBBxUBy6ui1nhgwVxRpq4WfiyNESnOHNnsu0dTIPVY+NQvUFhlEzu/ss
+         wMrfr3tH9sJyyadZck4iJJdBRodB93wuyZd05mJUmaoZtOZiQnpa4THmg4kF4nTD80
+         fmGqUM2ffmFxPPSk3TiZlvFEFWzaIxeUwSYKjK1lJCYYntMBNODSm3spMFLl9rWQUy
+         a4FMqFCBPLjpQ==
+Date:   Tue, 22 Feb 2022 11:15:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/5] Add support for locked bridge ports
+ (for 802.1X)
+Message-ID: <20220222111523.030ab13d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
+References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-References: <20220217153842.3252424-1-trix@redhat.com> <51018469-3bab-e56d-7407-b16170b5d74c@amd.com>
- <CADnq5_OGEURo76mzc4Sb2Jar465Xt4vkSMECDi5jCMH332zUAg@mail.gmail.com>
- <CAKwvOdnYTC7mku1=eVaDLGQFHdoN3u8Afoo582OAQ+ApJmfhQQ@mail.gmail.com> <CADnq5_PniW+-8G5AhOSwuovESpfeMxL4r6P30b3F1coa_NmMEQ@mail.gmail.com>
-In-Reply-To: <CADnq5_PniW+-8G5AhOSwuovESpfeMxL4r6P30b3F1coa_NmMEQ@mail.gmail.com>
-From:   Kenny Ho <y2kenny@gmail.com>
-Date:   Tue, 22 Feb 2022 14:12:37 -0500
-Message-ID: <CAOWid-cXYze56YmUACWP4emNeGHXMFf4q5aZfFGUwVXWNFAvSg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: fix amdgpu_ras_block_late_init error handler
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        "Joshi, Mukul" <mukul.joshi@amd.com>, Tao Zhou <tao.zhou1@amd.com>,
-        llvm@lists.linux.dev, Dave Airlie <airlied@linux.ie>,
-        Tom Rix <trix@redhat.com>, xinhui pan <Xinhui.Pan@amd.com>,
-        Nirmoy Das <nirmoy.das@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Luben Tuikov <luben.tuikov@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Deucher, Alexander" <alexander.deucher@amd.com>,
-        "Chai, Thomas" <YiPeng.Chai@amd.com>,
-        John Clements <john.clements@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        Dennis Li <Dennis.Li@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 2:06 PM Alex Deucher <alexdeucher@gmail.com> wrote:
->
-> On Thu, Feb 17, 2022 at 2:04 PM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> >
-> >
-> > Alex,
-> > Has AMD been able to set up clang builds, yet?
->
-> No.  I think some individual teams do, but it's never been integrated
-> into our larger CI systems as of yet as far as I know.
+On Tue, 22 Feb 2022 14:28:13 +0100 Hans Schultz wrote:
+> This series starts by adding support for SA filtering to the bridge,
+> which is then allowed to be offloaded to switchdev devices. Furthermore
+> an offloading implementation is supplied for the mv88e6xxx driver.
+> 
+> Public Local Area Networks are often deployed such that there is a
+> risk of unauthorized or unattended clients getting access to the LAN.
+> To prevent such access we introduce SA filtering, such that ports
+> designated as secure ports are set in locked mode, so that only
+> authorized source MAC addresses are given access by adding them to
+> the bridges forwarding database. Incoming packets with source MAC
+> addresses that are not in the forwarding database of the bridge are
+> discarded. It is then the task of user space daemons to populate the
+> bridge's forwarding database with static entries of authorized entities.
+> 
+> The most common approach is to use the IEEE 802.1X protocol to take
+> care of the authorization of allowed users to gain access by opening
+> for the source address of the authorized host.
+> 
+> With the current use of the bridge parameter in hostapd, there is
+> a limitation in using this for IEEE 802.1X port authentication. It
+> depends on hostapd attaching the port on which it has a successful
+> authentication to the bridge, but that only allows for a single
+> authentication per port. This patch set allows for the use of
+> IEEE 802.1X port authentication in a more general network context with
+> multiple 802.1X aware hosts behind a single port as depicted, which is
+> a commonly used commercial use-case, as it is only the number of
+> available entries in the forwarding database that limits the number of
+> authenticated clients.
+> 
+>       +--------------------------------+
+>       |                                |
+>       |      Bridge/Authenticator      |
+>       |                                |
+>       +-------------+------------------+
+>        802.1X port  |
+>                     |
+>                     |
+>              +------+-------+
+>              |              |
+>              |  Hub/Switch  |
+>              |              |
+>              +-+----------+-+
+>                |          |
+>             +--+--+    +--+--+
+>             |     |    |     |
+>     Hosts   |  a  |    |  b  |   . . .
+>             |     |    |     |
+>             +-----+    +-----+
+> 
+> The 802.1X standard involves three different components, a Supplicant
+> (Host), an Authenticator (Network Access Point) and an Authentication
+> Server which is typically a Radius server. This patch set thus enables
+> the bridge module together with an authenticator application to serve
+> as an Authenticator on designated ports.
+> 
+> 
+> For the bridge to become an IEEE 802.1X Authenticator, a solution using
+> hostapd with the bridge driver can be found at
+> https://github.com/westermo/hostapd/tree/bridge_driver .
+> 
+> 
+> The relevant components work transparently in relation to if it is the
+> bridge module or the offloaded switchcore case that is in use.
 
-I have just added clang build to our CI last night so hopefully we
-should be catching these now.
-
-Kenny
-
->
-> Alex
->
->
-> >
-> > --
-> > Thanks,
-> > ~Nick Desaulniers
+You still haven't answer my question. Is the data plane clear text in
+the deployment you describe?
