@@ -2,113 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D98F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbiBVPuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
+        id S233634AbiBVPue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:50:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233537AbiBVPuK (ORCPT
+        with ESMTP id S230341AbiBVPuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:50:10 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C6646B16
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:49:45 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id e8so12308564ljj.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:49:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NZZm6qWe1SwIb8KcDfZKZw7LrmnA+xYk4KC1Fi2iiNE=;
-        b=jA1SbpiMI50DskuXEcULhrcfAjfibrqLpVBH3lqP1WwhyFGAF1jl4QMYw604Vx1F9q
-         mABbjxiYoPiSIukSqdDGQGVACjoj7FV/Fgv2DZLtQIPHEgdeJoLtTTfScDhQGkE7m99g
-         dr8nVAJQBVZtgAvqZo2tk9v5PNjx/2B6V3rQOKpfCfQkbixc3YqlEwWhWZulvqYBcY2W
-         7JdY752tB7ucvHNYzoQN5mxFvCGDEGvSOynjbuXjg/rpMVHKFh22UChIChVNIDTtidSE
-         doCqXCFTE4b/lM46YRaQLsIrcPPDEDaFBPVtQSIoCfXxrVL0yu5l48CYksa/mV1VbXa4
-         w5gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NZZm6qWe1SwIb8KcDfZKZw7LrmnA+xYk4KC1Fi2iiNE=;
-        b=uCtb757LqLmUCotZMvZNNtlETRoZMQf4XZZvo9QFTM5593pQu37yYaxSPEzZIneq0G
-         I0zC36ueSq9OIJfQN0jL4xMaJ1DUexOHUuAGOMFaXSpNswhPrwjkt5Y7XgXyXRNhqZWW
-         snB0Io2nmoWz0ICfd+p7AjTigmLuNopxsmcupyCvzxbmbb9I0rNPAGuZw3BfgXlT/aR+
-         UR1lfprWY4Z20AAn7ZiTJ5o/IGVXDg91ytirQEKg42Fh73JrZMJqCZ9b2m66xsinFSNa
-         UfE8zEy0N/f0mDhODQZKW86R7OCYo6o4Cznv1meXsKyHsjKeC+Stu+h71TxG062nIMf9
-         VH0A==
-X-Gm-Message-State: AOAM5336HaDhFCi8t6dGHFXGxtUGgk2aftH8n/p70hAbQrjnVscTJzYA
-        Kt+S7Bg38LHIs/6aio7WmtjvjRXt5b5thiMZ8yzkPQ==
-X-Google-Smtp-Source: ABdhPJxYfUXFM+iKqXhXbTywYwmn9Khlzeo+cKheqXmeD90PcADvNxqnaj2q13pvIyXLd8v98tx/p5QVeBa5F0jQIVc=
-X-Received: by 2002:a2e:9cc5:0:b0:239:da6e:290d with SMTP id
- g5-20020a2e9cc5000000b00239da6e290dmr18128143ljj.4.1645544983573; Tue, 22 Feb
- 2022 07:49:43 -0800 (PST)
+        Tue, 22 Feb 2022 10:50:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956FE473B8;
+        Tue, 22 Feb 2022 07:50:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E51616A0;
+        Tue, 22 Feb 2022 15:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 180DCC340E8;
+        Tue, 22 Feb 2022 15:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645545006;
+        bh=3XdVfBzyh+mWPNy+QvRp+YnXjB3vswTd41Cbift6fF4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XuSsSZNsCXciSlKrbknV9i6INNiYHpgdKzl9o8Ny9lM69hqySz6i84GupToSyXyC/
+         a/1smK2ypt0Oem7SdqQOnxQxSMU6TtrnJ0aYOPFMJc0eWlDw7adFHBbirjtChiJ0ju
+         YJfYBGR4DEg0t4STiyCfz8RB+tbzwi8w0fwc6TYS6B+OyLCryqglyeMWK+lFPHEdoI
+         FoycYI5d2lIxpXEcTSit9gDdREO9ZR/lDev3fgt2Xo6FqFpzMHMWa4YOQHtAf7kPBp
+         6Zl3XSbRatqhPUZKfoBYf09duakmwyG7ZwYQB4U0HWiV7G26oTueBX2WxuFLgdlzb3
+         pPot3j+83ZlMw==
+Message-ID: <19cd9219-73af-3444-4dd5-e3c3499b2324@kernel.org>
+Date:   Tue, 22 Feb 2022 09:50:04 -0600
 MIME-Version: 1.0
-References: <20220210224933.379149-1-yury.norov@gmail.com> <20220210224933.379149-30-yury.norov@gmail.com>
- <CAPDyKFqvYhPTenGEH=LZyJXb5rJKbyeds4rH+aRN=u6JH_eJ5A@mail.gmail.com> <CAAH8bW9X4HGNDW9xY1zA8d0O0ty7kh_zcOKBDu88FL8uWEFAkA@mail.gmail.com>
-In-Reply-To: <CAAH8bW9X4HGNDW9xY1zA8d0O0ty7kh_zcOKBDu88FL8uWEFAkA@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 22 Feb 2022 16:49:06 +0100
-Message-ID: <CAPDyKFrHo30Nak3aet1CgABH6_K6BuGq=C7O9Y3Vxk3FD8H9Fg@mail.gmail.com>
-Subject: Re: [PATCH 29/49] memstick: replace bitmap_weight with
- bitmap_weight_eq where appropriate
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <david.laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Maxim Levitsky <maximlevitsky@gmail.com>,
-        Alex Dubov <oakad@yahoo.com>, Jens Axboe <axboe@kernel.dk>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Shubhankar Kuranagatti <shubhankarvk@gmail.com>,
-        linux-mmc@vger.kernel.org,
-        Shubhankar Kuranagatti <shubhankar.vk@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] clk: socfpga: cleanup spdx tags
+Content-Language: en-US
+To:     trix@redhat.com, mturquette@baylibre.com, sboyd@kernel.org
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220217173453.3262672-1-trix@redhat.com>
+From:   Dinh Nguyen <dinguyen@kernel.org>
+In-Reply-To: <20220217173453.3262672-1-trix@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 17:55, Yury Norov <yury.norov@gmail.com> wrote:
->
-> On Thu, Feb 17, 2022 at 7:39 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> >
-> > On Fri, 11 Feb 2022 at 00:55, Yury Norov <yury.norov@gmail.com> wrote:
-> > >
-> > > msb_validate_used_block_bitmap() calls bitmap_weight() to compare the
-> > > weight of bitmap with a given number. We can do it more efficiently with
-> > > bitmap_weight_eq because conditional bitmap_weight may stop traversing the
-> > > bitmap earlier, as soon as condition is (or can't be) met.
-> > >
-> > > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> > > Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
-> > > Acked-by: Shubhankar Kuranagatti <shubhankar.vk@gmail.com>
-> >
-> > Applied for next, thanks!
->
-> Hi Ulf,
->
-> This patch depends on patch 26/49 "bitmap: add bitmap_weight_{cmp, eq,
-> gt, ge, lt, le} functions"
-> from this series. Can you  make sure you applied them together? Or I can
-> apply it later.
 
-I can't apply them, unless there is an immutable branch being shared
-between the different trees.
 
-Therefore I have dropped the patch for now.
+On 2/17/22 11:34, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> Replace tabs with spaces in SPDX tag
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>   drivers/clk/socfpga/clk-periph-s10.c | 2 +-
+>   drivers/clk/socfpga/clk-pll-s10.c    | 2 +-
+>   drivers/clk/socfpga/clk-s10.c        | 2 +-
+>   3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/clk/socfpga/clk-periph-s10.c b/drivers/clk/socfpga/clk-periph-s10.c
+> index cbabde2b476b..f5c1ca42b668 100644
+> --- a/drivers/clk/socfpga/clk-periph-s10.c
+> +++ b/drivers/clk/socfpga/clk-periph-s10.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier:	GPL-2.0
+> +// SPDX-License-Identifier: GPL-2.0
+>   /*
+>    * Copyright (C) 2017, Intel Corporation
+>    */
+> diff --git a/drivers/clk/socfpga/clk-pll-s10.c b/drivers/clk/socfpga/clk-pll-s10.c
+> index e444e4a0ee53..1d82737befd3 100644
+> --- a/drivers/clk/socfpga/clk-pll-s10.c
+> +++ b/drivers/clk/socfpga/clk-pll-s10.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier:	GPL-2.0
+> +// SPDX-License-Identifier: GPL-2.0
+>   /*
+>    * Copyright (C) 2017, Intel Corporation
+>    */
+> diff --git a/drivers/clk/socfpga/clk-s10.c b/drivers/clk/socfpga/clk-s10.c
+> index 4e508a844b3d..9b2e0275fbf7 100644
+> --- a/drivers/clk/socfpga/clk-s10.c
+> +++ b/drivers/clk/socfpga/clk-s10.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier:	GPL-2.0
+> +// SPDX-License-Identifier: GPL-2.0
+>   /*
+>    * Copyright (C) 2017, Intel Corporation
+>    */
 
-Kind regards
-Uffe
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
