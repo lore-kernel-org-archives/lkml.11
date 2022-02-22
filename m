@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9773BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiBVSAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 13:00:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
+        id S234123AbiBVSCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 13:02:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234262AbiBVSAh (ORCPT
+        with ESMTP id S231745AbiBVSCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 13:00:37 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D6417225B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:00:09 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id d17so77810wrc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:00:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=G+GM8RfUkIYQaKPhgzSaPQ7PCISARa7ZPGAAjEVpg/A=;
-        b=t4e1WDk22c+yVdoHNOHQ3dox+uqCTy2J48fujelIDG4OyOuAodvvbovrHRmSd6Y3Al
-         vcsuYiDyEIcu2MXsKV+SGUxk81isMNJQQHrg+iptHRIMDG5uguDtPUp6E8ueNfNrMPSU
-         1xb9iB4dHSklQvL3DnhZj4HYMaUOjKdeZBiHubSzUQ5dhAM8QbHAI83IUhDHwsmkbDsG
-         BdJaMHZHCPIF9r4L980MzVTEYfJAkzJMKBNSCh3YJuPqJSIcF3i0OBJFT9qt518oYE35
-         HYWHp7tqEZN54wfRs1owRQEsmtsWGu0VvuD1DyqLpQXL4SbIHormPj6/tRqFlxcNYZG/
-         hMEw==
+        Tue, 22 Feb 2022 13:02:03 -0500
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D761811165;
+        Tue, 22 Feb 2022 10:01:33 -0800 (PST)
+Received: by mail-ot1-f51.google.com with SMTP id p12-20020a05683019cc00b005af1442c9e9so6358836otp.13;
+        Tue, 22 Feb 2022 10:01:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G+GM8RfUkIYQaKPhgzSaPQ7PCISARa7ZPGAAjEVpg/A=;
-        b=xc4DqOtb/qoOrzWjZ4wwdFei5LlVOQcDNucP8jOMEkOTAJMl2nAEpyRLzPti7uce5J
-         xGs15t5R0s3DVIeuzDpRsJ6/66L8zBE5zPCNt2ApuXxOAajOzGlxoEHDRIogiZG3dSRz
-         js1g+9Bp5/VNxev95ijRvX0mEIDwaUnLBtFa1xCGdpY+xl3WlKTAo72c4BpvXM0Jfu6p
-         SvyvRcXuc7gchd2TXXiN54klYVW6+jgH5bqZvgSAq06/FSeqeLG+W53J/2/dX/WMm/Nv
-         LwtOCcqKX8h7/550H5CAdxbKbQ3DfUkP2HV3JTFSrFi7jbPXqdu45EvwrZ5ptUciG6uL
-         Dddg==
-X-Gm-Message-State: AOAM531Z5brwYntQo2bloNN1b3U5mlnMkSoCnN1AhV36IrIhHpfz+Eiw
-        iASf2PE4YCdOdDJM6nRmJyntbwgjcHNGfA==
-X-Google-Smtp-Source: ABdhPJyxcQp8MOSypKDIU2F+SGzA6D4/LpK2JVw4eBNmXwUFORbPuRLGpy7MlMiEL+p8O8gxfYNOPw==
-X-Received: by 2002:a5d:6d8f:0:b0:1dd:1ced:4050 with SMTP id l15-20020a5d6d8f000000b001dd1ced4050mr20359373wrs.549.1645552808134;
-        Tue, 22 Feb 2022 10:00:08 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id f63sm1765012wma.17.2022.02.22.10.00.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 10:00:07 -0800 (PST)
-Message-ID: <942eb442-ce48-52cb-6472-c15d048b29d7@linaro.org>
-Date:   Tue, 22 Feb 2022 18:00:06 +0000
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YuKLz06AZYr8z+0AaROHF1CH113GpD871BS09fSdbV8=;
+        b=u4FF90g3tUoZob2IXyQswSw4xhKHbZFUOcmZqiIORdCBB53oFrOSqSDSfN3s60sWR8
+         LcWUPQOYTbkKop+e665QkpThvJgPItmDxi7XZVOHgE+HalLLZ2i5GFupvAwshATjQt9x
+         aNAmJ5vVS94DeGI2gvNzSdnq++E0wW4p4/FyLkc3yT4j+9W67ntH51g1cm71tPX/GkrJ
+         qFqFNTCryC3o2PwmvxkDLtKTYdpEFDv6pBuY88RIjZPqgVUpOqoCfBG5cOzz5vY+xK75
+         1WB2fO7SMrKld+wltr1tCJDNXrBVPyYngd4mxvgra/DXNkjFgg9Lk7gIZY3WMN7aSszL
+         ef5g==
+X-Gm-Message-State: AOAM532kCBylLvn5FKsiBVbZDPn8eTxFHqvxz1kMgpPQXTnbg1SeFP7D
+        OoLc8BLyPM0H+2ui1MFMeIWpeS/jLA==
+X-Google-Smtp-Source: ABdhPJyCpi8WRkHYBg6TUjBZvXk0DpfAaYtR71zU0qpKqMyo7K65bwZg7M03m3vEHNjHT8DVDw1VvQ==
+X-Received: by 2002:a05:6830:25cc:b0:5ad:7fe:3bbd with SMTP id d12-20020a05683025cc00b005ad07fe3bbdmr8423431otu.354.1645552892877;
+        Tue, 22 Feb 2022 10:01:32 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id d18sm157517otf.50.2022.02.22.10.01.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 10:01:32 -0800 (PST)
+Received: (nullmailer pid 3314154 invoked by uid 1000);
+        Tue, 22 Feb 2022 18:01:31 -0000
+Date:   Tue, 22 Feb 2022 12:01:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: Re: [RFC RFT PATCH v2 1/2] dt-bindings: mtd: partitions: Document
+ new partition-dynamic nodes
+Message-ID: <YhUk+3P7g6bigRP3@robh.at.kernel.org>
+References: <20220220173905.14165-1-ansuelsmth@gmail.com>
+ <20220220173905.14165-2-ansuelsmth@gmail.com>
+ <1645410969.414517.2041550.nullmailer@robh.at.kernel.org>
+ <YhO2dK0eNP9fOeOZ@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 0/2] Add driver for OCOTP in Sunplus SP7021 SoC
-Content-Language: en-US
-To:     Vincent Shih <vincent.sunplus@gmail.com>,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, wells.lu@sunplus.com,
-        vincent.shih@sunplus.com
-References: <1640164346-26818-1-git-send-email-vincent.sunplus@gmail.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <1640164346-26818-1-git-send-email-vincent.sunplus@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhO2dK0eNP9fOeOZ@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 22/12/2021 09:12, Vincent Shih wrote:
-> This is a patch series for OCOTP driver for Sunplus SP7021 SoC.
+On Mon, Feb 21, 2022 at 04:57:40PM +0100, Ansuel Smith wrote:
+> On Sun, Feb 20, 2022 at 08:36:09PM -0600, Rob Herring wrote:
+> > On Sun, 20 Feb 2022 18:39:04 +0100, Ansuel Smith wrote:
+> > > Document new partition-dynamic nodes used to provide an OF node for
+> > > partition registred at runtime by parsers. This is required for nvmem
+> > > system to declare and detect nvmem-cells.
+> > > 
+> > > With these special partitions, only the label is required as the parser
+> > > will provide reg and offset of the mtd. NVMEM will use the data from the
+> > > parser and provide the NVMEM cells declared in the DTS, "connecting" the
+> > > dynamic partition with a static declaration of cells in them.
+> > > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  .../mtd/partitions/partition-dynamic.yaml     | 54 +++++++++++++++++++
+> > >  1 file changed, 54 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
+> > > 
+> > 
+> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > 
+> > yamllint warnings/errors:
+> > 
+> > dtschema/dtc warnings/errors:
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.example.dt.yaml: partitions: '#address-cells', '#size-cells', 'art' do not match any of the regexes: 'pinctrl-[0-9]+'
+> > 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/qcom,smem-part.yaml
+> > 
+> > doc reference errors (make refcheckdocs):
+> > 
+> > See https://patchwork.ozlabs.org/patch/1595230
+> > 
+> > This check can fail if there are any dependencies. The base for a patch
+> > series is generally the most recent rc1.
+> > 
+> > If you already ran 'make dt_binding_check' and didn't see the above
+> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> > date:
+> > 
+> > pip3 install dtschema --upgrade
+> > 
+> > Please check and re-submit.
+> > 
 > 
-> Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
-> many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD Card and
-> etc.) into a single chip. It is designed for industrial control.
-> 
-> Refer to:
-> https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-> https://tibbo.com/store/plus1.html
-> 
-> Vincent Shih (2):
->    nvmem: Add driver for OCOTP in Sunplus SP7021
->    dt-bindings: nvmem: Add bindings doc for Sunplus OCOTP driver
+> Considering the idea of this partition-dynamic, should these warning be
+> ignored or the smem-part should include the ref of these new partitions?
 
+We can't have warnings. 
 
-Applied thanks,
+> Or should I remove the example?
 
---srini
-> 
->   .../bindings/nvmem/sunplus,sp7021-ocotp.yaml       |  86 ++++++++
->   MAINTAINERS                                        |   6 +
->   drivers/nvmem/Kconfig                              |  12 ++
->   drivers/nvmem/Makefile                             |   2 +
->   drivers/nvmem/sunplus-ocotp.c                      | 228 +++++++++++++++++++++
->   5 files changed, 334 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/nvmem/sunplus,sp7021-ocotp.yaml
->   create mode 100644 drivers/nvmem/sunplus-ocotp.c
-> 
+Doesn't that just kick the problem to actual users?
+
+> (or should I add the example to smem-part instead of partition-dynamic)
+
+That shouldn't matter I think...
+
+Rob
