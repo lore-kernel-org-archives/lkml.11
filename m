@@ -2,114 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE0DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 04:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8084DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 04:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiBVE2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 23:28:10 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51696 "EHLO
+        id S229814AbiBVE2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 23:28:24 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiBVE2H (ORCPT
+        with ESMTP id S229736AbiBVE2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 23:28:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FC0954A1;
-        Mon, 21 Feb 2022 20:20:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 237D3B81857;
-        Tue, 22 Feb 2022 04:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B0DC340F1;
-        Tue, 22 Feb 2022 04:20:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645503604;
-        bh=Yk3t15d7qB57d1CQTA5Y98JTp4J0YhpdYKmqHnEHCVk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5UWaTWsoY9/XBZ6tnCoHWexOLqcHHZGTVN5Q4ByX9ajLkoAhTPQTZawcwSOL5YTH
-         njHEJhLK4dM7g5QsMWnXTSw5txmu7Q4rg9Fyu1i5QDFfM1mpXRnxxmVG13D7AMO1oz
-         qrhEuQucspt6hAHIwiIo8lVNIARAszcXjgE83psiNxa/hDJFQegAYhPt47gQUHvEkI
-         7iCFU9jGqJEb6f8Q+7FTsfd6b7JiRZWbd2bV3zBO2NCD0OA95KxroB/0Qy41T/NZEA
-         pTz91v0JFjygEG4nH6vjzapR+fQo3EcDeeXyq7mHLaUdEU/SOX96gYK1WsACahU/nB
-         T5xWTQHlIHWuw==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] arm64: dts: qcom: sdm845: enable dma for spi
-Date:   Tue, 22 Feb 2022 09:49:51 +0530
-Message-Id: <20220222041951.1185186-2-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220222041951.1185186-1-vkoul@kernel.org>
-References: <20220222041951.1185186-1-vkoul@kernel.org>
+        Mon, 21 Feb 2022 23:28:20 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60743DD4;
+        Mon, 21 Feb 2022 20:16:59 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id gf13-20020a17090ac7cd00b001bbfb9d760eso1145160pjb.2;
+        Mon, 21 Feb 2022 20:16:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jfpIxD+KaSxv34lCCZ7aGFYTW+mlXLrR33Q8/YJDPXU=;
+        b=LLoj9ApbW1rK97Utau+BEqp7Gw/fM4YAbkRx+VbHphRdnVH+ImQqz/mDSqer03Cz2E
+         8/W3tQ6ThiGcFlYQiArF0Wx3vy8/3RnIHu0TuSAWOPYwGHzjitnX0z/9Hc7jjLDf5Yvg
+         kWJYwqqgswjs6L8yaUjWgRLhyGja1rCDYeD5rmR4jeTz1Ad/FPGhOxoZps1VxExcCjkI
+         FuGIcCmbgE6Enzn5d0z16XLz/UIvBcWmdzG4ErqrVlV/JdrfJFgKknTQFGNJ4yF854aO
+         I9S1zwioYKGyYhm58oYgH+MICcPwEiuoFG5G3phF14nU2M0dfoOrJZnU0jIpfOZrh89t
+         sIsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jfpIxD+KaSxv34lCCZ7aGFYTW+mlXLrR33Q8/YJDPXU=;
+        b=uKDQtMh1bwAFq55Dx0eAU5b+z/FG/hsl8oWFlVxjouvMKSxPuEdMMYjOVjas4iZ7e8
+         4w9MICHKjAeSO7datGhFHPnE129a1OoHuEh2VDssOGsHHN6/btN9BJ/1DBg2OMuDKgeG
+         rHPGx53NoXEy1XSSo13SQw75KaGghs/zY4LJWJ1963oQdzWlqVQl26+enFcH48xv8uMp
+         Q1FVkA3uE9/d56IK82oV0WtKDxbOg4MOOBzHYAsZAEsysedlP3I4RLx6+b6OeSt66TWB
+         BMALlgLAQqCdKjDShsvLZ46CBvSxswEILpbXkNdoXS4Ux+uSFxYQVG52D0jONj2AbJas
+         cZxA==
+X-Gm-Message-State: AOAM5308+v6ZeFIiS+QYSfwcteOxCKJLIab5uUXfpZm3S2vrXPj+Ll+c
+        umUEc8Ym2E7eHenMpdbFCsY=
+X-Google-Smtp-Source: ABdhPJyixELDka3l4WzPf7E0NF+9RRLFI/QRCOwYue85b6HVL/dTKPIuRQiLjJTBr+Dmbm0ql+5D8g==
+X-Received: by 2002:a17:902:7b8d:b0:14b:8884:b4ad with SMTP id w13-20020a1709027b8d00b0014b8884b4admr21405863pll.120.1645503418833;
+        Mon, 21 Feb 2022 20:16:58 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id q1sm14053775pfs.112.2022.02.21.20.16.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Feb 2022 20:16:58 -0800 (PST)
+Message-ID: <c5bf7fa4-fb7a-8b20-1a78-64be2266c008@gmail.com>
+Date:   Mon, 21 Feb 2022 20:16:56 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 5.16 000/227] 5.16.11-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220221084934.836145070@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dmas property for spi@880000 and pinconf setting so that we can use
-dma for this spi device. Also, add iommu properties for qup and spi.
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts |  4 ++++
- arch/arm64/boot/dts/qcom/sdm845.dtsi       | 11 +++++++++++
- 2 files changed, 15 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 13f80a0b6faa..119b15476a71 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -425,6 +425,10 @@ &gmu {
- 	status = "okay";
- };
- 
-+&gpi_dma0 {
-+	status = "okay";
-+};
-+
- &gpu {
- 	status = "okay";
- 	zap-shader {
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index e8b50f3bf1bf..231f3020123b 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -12,6 +12,7 @@
- #include <dt-bindings/clock/qcom,lpass-sdm845.h>
- #include <dt-bindings/clock/qcom,rpmh.h>
- #include <dt-bindings/clock/qcom,videocc-sdm845.h>
-+#include <dt-bindings/dma/qcom-gpi.h>
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/interconnect/qcom,osm-l3.h>
- #include <dt-bindings/interconnect/qcom,sdm845.h>
-@@ -1194,6 +1195,9 @@ spi0: spi@880000 {
- 				interconnects = <&aggre1_noc MASTER_QUP_1 0 &config_noc SLAVE_BLSP_1 0>,
- 						<&gladiator_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_BLSP_1 0>;
- 				interconnect-names = "qup-core", "qup-config";
-+				dmas = <&gpi_dma0 0 0 QCOM_GPI_SPI>,
-+				       <&gpi_dma0 1 0 QCOM_GPI_SPI>;
-+				dma-names = "tx", "rx";
- 				status = "disabled";
- 			};
- 
-@@ -2633,6 +2637,13 @@ pinmux {
- 					       "gpio2", "gpio3";
- 					function = "qup0";
- 				};
-+
-+				config {
-+					pins = "gpio0", "gpio1",
-+					       "gpio2", "gpio3";
-+					drive-strength = <6>;
-+					bias-disable;
-+				};
- 			};
- 
- 			qup_spi1_default: qup-spi1-default {
+On 2/21/2022 12:46 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.11 release.
+> There are 227 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.11-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.34.1
-
+Florian
