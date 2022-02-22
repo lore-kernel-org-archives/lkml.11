@@ -2,157 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA813C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B27C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbiBVMpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:45:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
+        id S231983AbiBVMqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:46:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbiBVMpH (ORCPT
+        with ESMTP id S229524AbiBVMqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:45:07 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2052.outbound.protection.outlook.com [40.107.96.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889B012558D
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 04:44:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a7BFvjAMyhWma5DbuWRKgfOhMPfvPPoVR+JyEFcKluShVyw9v8lJLaIJfo6LvFNkk/XkrQbO954sSGOL8PGMRBkygnxMY1TTykLh/s+uzRAfVGu1xOAx/OIHxLE8SRgGZ0X9vVfqa0gOitSOvb9ZNP0TZWsu0rlc2l7bxHvzmHoQuxGT90vdz54XvgSuCOysDy1dH+tRicllRreKhB8jDnGNts017rWBbRlzhuYUS1NYEAYoph5cB45wFdUoAdVFG4l4EUJUVQmdg+S4lqb2I5ORFJNhpI6L1OB1JKofxRpyPJialLINi+5MFB9+rFgPCE2IM2e3kve2mW6uOm4uhQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OiNSGGyM0C1UPk4vM3/QgttQek1MahQKX1tvma+NlQw=;
- b=nt2po3iSlTcC49nL0J133vNshwq7PKt4ZVdSPyASXgJZ5Vo/irGcsR0Zh4kKddY3Hg9AMvNaAI9OKfegKBw9dCAL86Ot8cBOvGVh6yqJtHcER2NMXrjyPFjGGB6GIkr3KYaVCbJhSbt3i4ELdxY5nWC6JgUgpmZCBr4DFQxLniA4JSmzJ6JJ0563stdV67zspHhm/S22Vx+duBLLOYo9rPQdEtGYa5nJquJo0fClPjH82/py55/Y0chIAJ6LamIr2hhW+EQ8UjohJijPe5q//2mM6fXvebtc/GjK9ic3uSRsUROFIJevOtMufvOVvIrId/3ldpdZOz9POHGLAXkGfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OiNSGGyM0C1UPk4vM3/QgttQek1MahQKX1tvma+NlQw=;
- b=tH4/ssTiNmd7okdtAEharfr+/Oe9NaTlDbFu4+Yywr7o9WyZg9UxdgVblP8Y6cX60TjdPChQKTiBxIGgZ1f8CJJ4wDB/YU8TwPt4o6Lxx9liAAjPlY66oZ5dhK/KFbdoivK4hVWUllZuEC1vfvH8zzZT6QLcrmyRqnlHLTCTFSo=
-Received: from MWHPR04CA0050.namprd04.prod.outlook.com (2603:10b6:300:6c::12)
- by BN6PR1201MB0242.namprd12.prod.outlook.com (2603:10b6:405:57::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Tue, 22 Feb
- 2022 12:44:40 +0000
-Received: from CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:6c:cafe::88) by MWHPR04CA0050.outlook.office365.com
- (2603:10b6:300:6c::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21 via Frontend
- Transport; Tue, 22 Feb 2022 12:44:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT043.mail.protection.outlook.com (10.13.174.193) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 12:44:39 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Feb
- 2022 06:44:38 -0600
-Received: from chrome.amd.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 22 Feb 2022 06:44:35 -0600
-From:   Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Alexander.Deucher@amd.com>,
-        <Basavaraj.Hiregoudar@amd.com>, <Sunil-kumar.Dommati@amd.com>,
-        "Ajit Kumar Pandey" <AjitKumar.Pandey@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        "V sujith kumar Reddy" <vsujithkumar.reddy@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH  v2 3/3] ASoC: amd: acp: Add DMIC machine driver ops
-Date:   Tue, 22 Feb 2022 18:12:13 +0530
-Message-ID: <20220222124213.721224-4-AjitKumar.Pandey@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220222124213.721224-1-AjitKumar.Pandey@amd.com>
-References: <20220222124213.721224-1-AjitKumar.Pandey@amd.com>
+        Tue, 22 Feb 2022 07:46:22 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D407122F69;
+        Tue, 22 Feb 2022 04:45:57 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id m185so19907419iof.10;
+        Tue, 22 Feb 2022 04:45:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U1ifEzLtc0/IOyR4lb+9b3bafVQrz8ZMVMZkGpwnl1U=;
+        b=i76dJOhkFq8SztC0GExmH1uRM2VwnD7q2OJnYWUJU/iF0PQU+x9lrc3+EmWBIFcGvL
+         J1bhvCIwvsnv+r5jvgSqbWFNMzDQi/fkoyfBpOyJlh7Yd3OwL8RlFsTO9YPJUbt9TmPx
+         9K4jZ+1tBdveWtBI0GJ5mEstrDASH6hsW4eaNCN3RVMymoTMdyMgeh1+JVS66iPXCwKv
+         PSwkKY8DdQIgLwZ7JwzxiIRu5wv49ZvFlxl98BuUdYd7rJHfJXzRxoccaxOK0erxR0fn
+         D5StrbL3o33jb/PnhcccOqu5oxyQ/iBagDoHrFPRR9YBWaPVc40IjlzQOdYdziGOtRSM
+         d2UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U1ifEzLtc0/IOyR4lb+9b3bafVQrz8ZMVMZkGpwnl1U=;
+        b=iwYli7yqnl8OD+RMOA+ZlsUmNPerlGqhOkg/HA4cTBDPlJvLMi/9R/7MVjtWZDkEaC
+         ffsTTmnYQZIO42BP4HalnzpRmQrDs9WWXUO3XaQVLIACzWmvt4JKwmwItLfVnv70EX7h
+         b+keZTZzu3ypUsjTRbMFb1gzimTCUi9dl8g89UcUHHwj5lsX6fs1Sirt9JDhc+7vqbgR
+         BuR0p0aFojHl0oTbL6Q0TtJV7hsYEl+Z42SJwQ7pzjhiCj5wvnELY1k9gJo+vnoAMUFV
+         T101J66zda79/4aglzi7Y4k5HHoYt6LTCVBnRE0ooFT6YtCqp2XO7Nsk/wh3ybh6XZJU
+         e0jg==
+X-Gm-Message-State: AOAM533eBCdFqsZSNHtIwd0PIBvDVcOgfaaAnRY3sLz3hpVgbf3FJcC4
+        a+LrFIh3b5jdAcFFcEzTTLJzvLGRaVU9h5LuRXU=
+X-Google-Smtp-Source: ABdhPJymHE6i7ESiN393PHVS6YIBpky1wMcpujNvwpJKoPffDiP/DnwSThAkfeJCZxjFtj2rDCsPAcGB3UOwdk7NQ0g=
+X-Received: by 2002:a5e:9248:0:b0:640:70ff:4e28 with SMTP id
+ z8-20020a5e9248000000b0064070ff4e28mr17211058iop.44.1645533956554; Tue, 22
+ Feb 2022 04:45:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6d059d31-2bce-4290-6c04-08d9f6011766
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0242:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB0242DBD52B43F7AD30B64314823B9@BN6PR1201MB0242.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d0iOlSROiRzrmCs7A86uASQLj0fK+7p2CdcE12DRlWuiqmFwEESsTwWtlttE8/xeMWh12YfrYWH4KA0i/dv70LH+t3d6Rc7Nw92q2+nCIwrRguuF3p3vadJicADP9IfuqV0OFcXWVzOdSv/iiS++wHCS03wpRIcNtiS8pZXxgrVWnl8v90jhb6mxN8OJ0ybGlvE4TdnNL1hM39h/mgl5rorXg3F3QtfPShc5lmG+dSSzArjEEjpAGSuEi36STR2wFvpZ19OjFpLLlGLtRrIjbIgvx5b/ljlKTyIiOACWiALNaLrVXPV7ltGgz1oxbOokCNxni9z3Owxk2j4n+5afef7eeVQ7CYMyqWkMhaCPkc1fjxijEnqSgoEQx3LTbLMywsW8+nz1WyL3P0fZ72+/4zRxOFHT8/6j0RXL7d59ioVz1bw2Llz5o+mRs9hoSl8TizoLLceEyddGrhZDSBfDnhWDg2lOMcdQOZMldISjzOJBiU+76IWiOCpiMxahfzViJT7MvJSrO9YLXzNxX2/HgvpxrBbkxF2gKIw6BFhZM45196G+oCjLRYr1E7lWMnzVpdrqa7wF71k2OTJu7eoBroBY2ZKzzHAHvoa9YppgjtL3toUqIzm5NWgRB9wXnlpxmV8WUrtehJ+R26B9P3OeGda4oLazICLXfSEt3HEL5vK4SbGJz5g1AUhiFWYFzMPHluPGoegxvL2dlXN4oCSDxA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(8936002)(47076005)(336012)(2906002)(36756003)(426003)(5660300002)(36860700001)(508600001)(40460700003)(6666004)(7696005)(26005)(82310400004)(186003)(1076003)(2616005)(86362001)(70206006)(81166007)(356005)(70586007)(4326008)(8676002)(316002)(110136005)(54906003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 12:44:39.5749
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d059d31-2bce-4290-6c04-08d9f6011766
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0242
+References: <20220212130410.6901-1-ojeda@kernel.org> <20220212130410.6901-3-ojeda@kernel.org>
+ <YhScgnV+n7w75WH7@alley>
+In-Reply-To: <YhScgnV+n7w75WH7@alley>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 22 Feb 2022 13:45:45 +0100
+Message-ID: <CANiq72m77SNEGfxz4Ggi6Uth1-7NsDvT9D1XbCFByYHne1x6Cw@mail.gmail.com>
+Subject: Re: [PATCH v4 02/20] kallsyms: increase maximum kernel symbol length
+ to 512
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dmic ops and startup callback to add snd_pcm_hw_constraint for
-pdm related device node.
+Hi Petr,
 
-Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
----
- sound/soc/amd/acp/acp-mach-common.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+On Tue, Feb 22, 2022 at 9:19 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+> The livepatch selftest still pass. Feel free to add:
+>
+> Tested-by: Petr Mladek <pmladek@suse.com>       # livepatch
+> Acked-by: Petr Mladek <pmladek@suse.com>        # livepatch
 
-diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
-index b45442a56c40..d3034ee2ff59 100644
---- a/sound/soc/amd/acp/acp-mach-common.c
-+++ b/sound/soc/amd/acp/acp-mach-common.c
-@@ -291,6 +291,32 @@ static const struct snd_soc_ops acp_card_rt5682s_ops = {
- 	.shutdown = acp_card_shutdown,
- };
- 
-+static const unsigned int dmic_channels[] = {
-+	DUAL_CHANNEL, FOUR_CHANNEL,
-+};
-+
-+static const struct snd_pcm_hw_constraint_list dmic_constraints_channels = {
-+	.count = ARRAY_SIZE(dmic_channels),
-+	.list = dmic_channels,
-+	.mask = 0,
-+};
-+
-+static int acp_card_dmic_startup(struct snd_pcm_substream *substream)
-+{
-+	struct snd_pcm_runtime *runtime = substream->runtime;
-+
-+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
-+				   &dmic_constraints_channels);
-+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
-+				   &constraints_rates);
-+
-+	return 0;
-+}
-+
-+static const struct snd_soc_ops acp_card_dmic_ops = {
-+	.startup = acp_card_dmic_startup,
-+};
-+
- /* Declare RT1019 codec components */
- SND_SOC_DAILINK_DEF(rt1019,
- 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:00", "rt1019-aif"),
-@@ -633,6 +659,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
- 		links[i].num_cpus = ARRAY_SIZE(pdm_dmic);
- 		links[i].platforms = platform_component;
- 		links[i].num_platforms = ARRAY_SIZE(platform_component);
-+		links[i].ops = &acp_card_dmic_ops;
- 		links[i].dpcm_capture = 1;
- 	}
- 
--- 
-2.25.1
+Thanks a lot for the test, Petr! I will add the tags.
 
+Cheers,
+Miguel
