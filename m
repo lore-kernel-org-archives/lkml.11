@@ -2,108 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC96C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB757C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233801AbiBVP4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:56:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        id S233614AbiBVP5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiBVP4K (ORCPT
+        with ESMTP id S231523AbiBVP5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:56:10 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC51D5D655
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:55:44 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id u20so25721982lff.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:55:44 -0800 (PST)
+        Tue, 22 Feb 2022 10:57:31 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEEABF52
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:57:05 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id bt13so42102076ybb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:57:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oEpM0l8RPBE+aTAe3Uft8SyL6/gEsgm1pJ818FjUDds=;
-        b=dExvEXM8pER9YVnCtI5Lzn0OOPSgtm44ezIW80QG5zlCANJ/keZGvEKFlYtm+DAxA9
-         jwH3HtQpCQlNYFo1yWGKwR2lZjMIQmjpNwGQO6qOjeIvsCYgd4jtVWyGNl418vA2Ij5O
-         0NLA+dvX2SenBLgBFE16eti+PeQIIPwS3jzULs7IxP4o9hzxV/9aQtervAcCc31kJkz2
-         XQ5oGDLUk7h4IAotGVjkg9vc6XCL07KBmNqQM8ThWmoC2Ht3hdbpnN39+mLuVmwObXuA
-         gIQVCCD557qlWKn79t2yBuYNFiiOVjnOXGuRXg9MPOdFG/ALykbZNJMB9uDM3sQHCMTa
-         FrQA==
+        bh=4iDZ9H8inY+NDZ0HYQKmVnQ5HPOpNxH9x5TSVqE2tPM=;
+        b=QSq82TnQ0nQE6N8kyjOuBwFCSTCmC32PZVhG9xE5SXdbwJuXbp8Q5uVYD/zKSnlfbL
+         e+atEsS1GffladQeVh1ubCQ5owgNiqkgzMeRSr2NLa6BxM2AIARh7B7IAw5pFty4wwSd
+         nEanN79Fi42rtZnhSwUUnGbO5qXAn0Pi0870dO6q42s60xze1hlXSBQN3jaYvZhub4kO
+         M0ZZ20Yx8gF69hEqMNzge1OyOKf6pNtuokqTZ/fXZNGpH19nFH8OMdjSpH1EX+HXFG7n
+         SFPbkFBXIS5ulX+AbygzCntKyYtHZJnsWRfgWWluXmdSxC/GqdUsyih3fDwZAMTZpZbR
+         TNEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oEpM0l8RPBE+aTAe3Uft8SyL6/gEsgm1pJ818FjUDds=;
-        b=NIzyM6Q34Ec52UpuoCsIZMZJmDk3UDF/twjyWNG9qIuyDH4VJBjAm7idtYjWJ9baDL
-         I6QDtb6V9SEC43d7EnlUsYjjIT4v68Rzao7owm6Wyqs19WvPj54PrKGUE5IW4rzyrORI
-         qD/BFVwHZibVLia330r8HUDXplZzLy6PO1lG4E+FaldMBdOTv74eqVyDt4kMthx98xJB
-         PgWJ6BNW+Lbza039McvBlzijiUOuzp+MvOCPKfVXN0VlYFoxSREDK0RtVbjZnnVWS62S
-         /vh3bJihXcHCWAOhkQeEnU85y75QVvuQ5Yc2Y6jNTFSw7oLTSPl4USZJAIr2XGMT7n0Q
-         lSFw==
-X-Gm-Message-State: AOAM5327mGpwSmon5tX8Wa0fDl8y98o3Ed64n0ENJeh9XqA6lDFe6XoV
-        rTByyGzMqcBenRwk6GP6jfuUte8oz+d1n4dILDYDfg==
-X-Google-Smtp-Source: ABdhPJwPvMoG8GPN6SgbInhJ1ejmjActyS59kzL8HwsAPsdjpY6732byv4aBacE/Re92DjlW1tQcqUbybAP4xljBxTc=
-X-Received: by 2002:a05:6512:3604:b0:443:5d4b:3760 with SMTP id
- f4-20020a056512360400b004435d4b3760mr17164644lfs.358.1645545342953; Tue, 22
- Feb 2022 07:55:42 -0800 (PST)
+        bh=4iDZ9H8inY+NDZ0HYQKmVnQ5HPOpNxH9x5TSVqE2tPM=;
+        b=Kap1SMjVmIOSUReSiqo/k0fsR3WaIXGMK1+l9KXB9HcklsBbTuKvucHwO0Nua5tb2X
+         vD5cvl3+Lw2PljFrBgc/01MGNMysfXd/59GcFG4X90AtaL2L03Dc9Nnw02SY7rMpM1N2
+         X8zViRy46oXb/kHflF9grsQIZmV6BspF/KFmC85yvrkrZfoaPJqrOWuDE29H4YqDvkM5
+         oUvUuZk461g8cpLTAeRGLtDeXH8vQ9Xaq3cR69AhJHRJGlrWNSm61ZY7vJIO+ic1ko1E
+         7KdMVFNk1GMi2FqNE7FaKfeecL6pighX+MltHxafk7Q8DkwJtfkidT5hnGTKbjO8VuNk
+         cvRw==
+X-Gm-Message-State: AOAM532LCJ7sOq6FY5OeuR6EdSHdXs4CCUxVU8VqCEA59wyf6f1S7T8f
+        Pe0a5GrvlWGAhLdr3T/tdwiVWDrBG2LwvJOAWhkg3A==
+X-Google-Smtp-Source: ABdhPJzsG2l5hbH/rvKMzmec8uK19VoBN6hBM7s2DgZKr/9BsfAxIoyNXShwzMmISOUmqF/VOKKxsrcDrM5jrEgLCY8=
+X-Received: by 2002:a25:2693:0:b0:624:50a8:fee9 with SMTP id
+ m141-20020a252693000000b0062450a8fee9mr17039255ybm.348.1645545424324; Tue, 22
+ Feb 2022 07:57:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20220130210210.549877-1-daniel.lezcano@linaro.org>
- <20220130210210.549877-3-daniel.lezcano@linaro.org> <CAPDyKFqV++g63Asax8TNSEgujxJ=uM9XG2_Advu34JidYBCGtg@mail.gmail.com>
- <e44b9c4b-2ac4-4ea4-c771-bde13943af5f@linaro.org> <CAPDyKFr8Ycr2cbiD5MM9FSPc1qea+Yp9=cottcGAo7HmFR9Eaw@mail.gmail.com>
- <cfbaefa5-fc7b-bd0f-e4ed-8f046de2a7cf@linaro.org> <CAPDyKFoWq+i09Ts_+SAz9ctC2a7-cqC71buDmvb-LZFTVSH+DQ@mail.gmail.com>
- <41214f23-ddb1-f60c-5e2a-96ba161cf727@linaro.org>
-In-Reply-To: <41214f23-ddb1-f60c-5e2a-96ba161cf727@linaro.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 22 Feb 2022 16:55:06 +0100
-Message-ID: <CAPDyKFqo1vhhW994NsnWonTWW34qcSMU5xaBZyV76Njtr0ST4w@mail.gmail.com>
-Subject: Re: [PATCH v1 3/7] powercap/dtpm: Fixup kfree for virtual node
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rjw@rjwysocki.net, heiko@sntech.de, lukasz.luba@arm.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
+References: <20220222054025.3412898-1-surenb@google.com> <20220222054025.3412898-2-surenb@google.com>
+ <YhSqDvSTN7nbz4C9@dhcp22.suse.cz>
+In-Reply-To: <YhSqDvSTN7nbz4C9@dhcp22.suse.cz>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Tue, 22 Feb 2022 07:56:53 -0800
+Message-ID: <CAJuCfpHr78By6p5sMhJZ3UohKXXSeA7Dxm_q-OA4y6KYL0L_pQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mm: prevent vm_area_struct::anon_name refcount saturation
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, ccross@google.com,
+        sumit.semwal@linaro.org, dave.hansen@intel.com,
+        keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 at 14:18, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+On Tue, Feb 22, 2022 at 1:17 AM Michal Hocko <mhocko@suse.com> wrote:
 >
-> On 17/02/2022 16:45, Ulf Hansson wrote:
+> On Mon 21-02-22 21:40:24, Suren Baghdasaryan wrote:
+> > A deep process chain with many vmas could grow really high.
 >
-> [ ... ]
+> This would really benefit from some numbers. With default
+> sysctl_max_map_count (64k) and default pid_max (32k) the INT_MAX could
+> be theoretically reached but I find it impractical because not all vmas
+> can be anonymous same as all available pids can be consumed for a
+> theoretical attack (if my counting is proper).
+> On the other hand any non-default configuration with any of the values
+> increased could hit this theoretically.
+
+re: This would really benefit from some numbers
+Should I just add the details you provided above into the description?
+Would that suffice?
+
 >
-> > Does ops->release() also resets the "dtpm" pointer to NULL? If not,
-> > it's good practice that it should, right?
+> > kref
+> > refcounting interface used in anon_vma_name structure will detect
+> > a counter overflow when it reaches REFCOUNT_SATURATED value but will
+> > only generate a warning about broken refcounting.
+> > To ensure anon_vma_name refcount does not overflow, stop anon_vma_name
+> > sharing when the refcount reaches INT_MAX, which still leaves INT_MAX/2
+> > values before the counter reaches REFCOUNT_SATURATED. This should provide
+> > enough headroom for raising the refcounts temporarily.
 > >
-> > In that case, we would be calling "kfree(NULL);" the second time,
-> > which is perfectly fine.
+> > Suggested-by: Michal Hocko <mhocko@suse.com>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  include/linux/mm_inline.h | 18 ++++++++++++++----
+> >  mm/madvise.c              |  3 +--
+> >  2 files changed, 15 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
+> > index 70b619442d56..b189e2638843 100644
+> > --- a/include/linux/mm_inline.h
+> > +++ b/include/linux/mm_inline.h
+> > @@ -156,15 +156,25 @@ static inline void anon_vma_name_get(struct anon_vma_name *anon_name)
+> >
+> >  extern void anon_vma_name_put(struct anon_vma_name *anon_name);
+> >
+> > +static inline
+> > +struct anon_vma_name *anon_vma_name_reuse(struct anon_vma_name *anon_name)
+> > +{
+> > +     /* Prevent anon_name refcount saturation early on */
+> > +     if (kref_read(&anon_name->kref) < INT_MAX) {
 >
-> So you suggest to replace:
->
-> if (ops->release)
->         ops->release(dtpm);
-> else
->         kfree(dtpm);
->
-> By:
->
-> if (ops->release) {
->         ops->release(dtpm);
->         dtpm = NULL;
-> }
->
+> REFCOUNT_MAX seems to be defined by the kref framework.
 
-I don't have a strong opinion how to code this.
+Ah, indeed. I missed that. Will change to use it.
 
-What I was trying to point out was that if ->ops->release() frees the
-memory it could/should also reset the pointer to NULL.
-
-And if that is already done, the kfree below is harmless and there
-would be nothing to "fix".
-
-> kfree(dtpm);
 >
-> ?
+> Other than that looks good to me.
 
-Kind regards
-Uffe
+Thanks for the review!
+
+>
+> > +             anon_vma_name_get(anon_name);
+> > +             return anon_name;
+> > +
+> > +     }
+> > +     return anon_vma_name_alloc(anon_name->name);
+> > +}
+> > +
+> >  static inline void dup_vma_anon_name(struct vm_area_struct *orig_vma,
+> >                                    struct vm_area_struct *new_vma)
+> >  {
+> >       struct anon_vma_name *anon_name = vma_anon_name(orig_vma);
+> >
+> > -     if (anon_name) {
+> > -             anon_vma_name_get(anon_name);
+> > -             new_vma->anon_name = anon_name;
+> > -     }
+> > +     if (anon_name)
+> > +             new_vma->anon_name = anon_vma_name_reuse(anon_name);
+> >  }
+> >
+> >  static inline void free_vma_anon_name(struct vm_area_struct *vma)
+> > diff --git a/mm/madvise.c b/mm/madvise.c
+> > index f81d62d8ce9b..a395884aeecb 100644
+> > --- a/mm/madvise.c
+> > +++ b/mm/madvise.c
+> > @@ -122,8 +122,7 @@ static int replace_vma_anon_name(struct vm_area_struct *vma,
+> >       if (anon_vma_name_eq(orig_name, anon_name))
+> >               return 0;
+> >
+> > -     anon_vma_name_get(anon_name);
+> > -     vma->anon_name = anon_name;
+> > +     vma->anon_name = anon_vma_name_reuse(anon_name);
+> >       anon_vma_name_put(orig_name);
+> >
+> >       return 0;
+> > --
+> > 2.35.1.473.g83b2b277ed-goog
+>
+> --
+> Michal Hocko
+> SUSE Labs
