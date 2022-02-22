@@ -2,122 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A999C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 01:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 01:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238628AbiBVBQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 20:16:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52492 "EHLO
+        id S238373AbiBVBRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 20:17:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238294AbiBVBQ0 (ORCPT
+        with ESMTP id S230022AbiBVBRm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 20:16:26 -0500
-Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [IPv6:2001:4b7a:2000:18::166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D19225587;
-        Mon, 21 Feb 2022 17:15:53 -0800 (PST)
-Received: from localhost.localdomain (abxh33.neoplus.adsl.tpnet.pl [83.9.1.33])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id BF6EF3F5D8;
-        Tue, 22 Feb 2022 02:15:50 +0100 (CET)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] dt-bindings: clock: add SM6350 QCOM Graphics clock bindings
-Date:   Tue, 22 Feb 2022 02:15:30 +0100
-Message-Id: <20220222011534.3502-3-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220222011534.3502-1-konrad.dybcio@somainline.org>
-References: <20220222011534.3502-1-konrad.dybcio@somainline.org>
+        Mon, 21 Feb 2022 20:17:42 -0500
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B3825589;
+        Mon, 21 Feb 2022 17:17:15 -0800 (PST)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nMJnQ-0005kk-S3; Tue, 22 Feb 2022 02:16:52 +0100
+Message-ID: <45148f5f-fe79-b452-f3b2-482c5c3291c4@maciej.szmigiero.name>
+Date:   Tue, 22 Feb 2022 02:16:46 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
+References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+ <20220118132121.31388-13-chao.p.peng@linux.intel.com>
+ <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
+ <20220217134548.GA33836@chaop.bj.intel.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
+In-Reply-To: <20220217134548.GA33836@chaop.bj.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for graphics clock controller for
-Qualcomm Technology Inc's SM6350 SoCs.
+On 17.02.2022 14:45, Chao Peng wrote:
+> On Tue, Jan 25, 2022 at 09:20:39PM +0100, Maciej S. Szmigiero wrote:
+>> On 18.01.2022 14:21, Chao Peng wrote:
+>>> KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
+>>> on it by implementing kvm_arch_private_memory_supported().
+>>>
+>>> Also private memslot cannot be movable and the same file+offset can not
+>>> be mapped into different GFNs.
+>>>
+>>> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+>>> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+>>> ---
+>> (..)
+>>>    static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
+>>> -				      gfn_t start, gfn_t end)
+>>> +				      struct file *file,
+>>> +				      gfn_t start, gfn_t end,
+>>> +				      loff_t start_off, loff_t end_off)
+>>>    {
+>>>    	struct kvm_memslot_iter iter;
+>>> +	struct kvm_memory_slot *slot;
+>>> +	struct inode *inode;
+>>> +	int bkt;
+>>>    	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
+>>>    		if (iter.slot->id != id)
+>>>    			return true;
+>>>    	}
+>>> +	/* Disallow mapping the same file+offset into multiple gfns. */
+>>> +	if (file) {
+>>> +		inode = file_inode(file);
+>>> +		kvm_for_each_memslot(slot, bkt, slots) {
+>>> +			if (slot->private_file &&
+>>> +			     file_inode(slot->private_file) == inode &&
+>>> +			     !(end_off <= slot->private_offset ||
+>>> +			       start_off >= slot->private_offset
+>>> +					     + (slot->npages >> PAGE_SHIFT)))
+>>> +				return true;
+>>> +		}
+>>> +	}
+>>
+>> That's a linear scan of all memslots on each CREATE (and MOVE) operation
+>> with a fd - we just spent more than a year rewriting similar linear scans
+>> into more efficient operations in KVM.
+> 
+> In the last version I tried to solve this problem by using interval tree
+> (just like existing hva_tree), but finally we realized that in one VM we
+> can have multiple fds with overlapped offsets so that approach is
+> incorrect. See https://lkml.org/lkml/2021/12/28/480 for the discussion.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
- .../devicetree/bindings/clock/qcom,gpucc.yaml |  2 +
- include/dt-bindings/clock/qcom,gpucc-sm6350.h | 37 +++++++++++++++++++
- 2 files changed, 39 insertions(+)
- create mode 100644 include/dt-bindings/clock/qcom,gpucc-sm6350.h
+That's right, in this case a two-level structure would be necessary:
+the first level matching a file, then the second level matching that
+file ranges.
+However, if such data is going to be used just for checking possible
+overlap at memslot add or move time it is almost certainly an overkill.
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml b/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
-index 46dff46d5760..9ebcb1943b0a 100644
---- a/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,gpucc.yaml
-@@ -17,6 +17,7 @@ description: |
-     dt-bindings/clock/qcom,gpucc-sdm845.h
-     dt-bindings/clock/qcom,gpucc-sc7180.h
-     dt-bindings/clock/qcom,gpucc-sc7280.h
-+    dt-bindings/clock/qcom,gpucc-sm6350.h
-     dt-bindings/clock/qcom,gpucc-sm8150.h
-     dt-bindings/clock/qcom,gpucc-sm8250.h
- 
-@@ -27,6 +28,7 @@ properties:
-       - qcom,sc7180-gpucc
-       - qcom,sc7280-gpucc
-       - qcom,sc8180x-gpucc
-+      - qcom,sm6350-gpucc
-       - qcom,sm8150-gpucc
-       - qcom,sm8250-gpucc
- 
-diff --git a/include/dt-bindings/clock/qcom,gpucc-sm6350.h b/include/dt-bindings/clock/qcom,gpucc-sm6350.h
-new file mode 100644
-index 000000000000..68e814fc8acd
---- /dev/null
-+++ b/include/dt-bindings/clock/qcom,gpucc-sm6350.h
-@@ -0,0 +1,37 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/*
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
-+ */
-+
-+#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM6350_H
-+#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SM6350_H
-+
-+/* GPU_CC clocks */
-+#define GPU_CC_PLL0						0
-+#define GPU_CC_PLL1						1
-+#define GPU_CC_ACD_AHB_CLK					2
-+#define GPU_CC_ACD_CXO_CLK					3
-+#define GPU_CC_AHB_CLK						4
-+#define GPU_CC_CRC_AHB_CLK					5
-+#define GPU_CC_CX_GFX3D_CLK					6
-+#define GPU_CC_CX_GFX3D_SLV_CLK					7
-+#define GPU_CC_CX_GMU_CLK					8
-+#define GPU_CC_CX_SNOC_DVM_CLK					9
-+#define GPU_CC_CXO_AON_CLK					10
-+#define GPU_CC_CXO_CLK						11
-+#define GPU_CC_GMU_CLK_SRC					12
-+#define GPU_CC_GX_CXO_CLK					13
-+#define GPU_CC_GX_GFX3D_CLK					14
-+#define GPU_CC_GX_GFX3D_CLK_SRC					15
-+#define GPU_CC_GX_GMU_CLK					16
-+#define GPU_CC_GX_VSENSE_CLK					17
-+
-+/* CLK_HW */
-+#define GPU_CC_CRC_DIV						0
-+
-+/* GDSCs */
-+#define GPU_CX_GDSC						0
-+#define GPU_GX_GDSC						1
-+
-+#endif
--- 
-2.35.1
+> So linear scan is used before I can find a better way.
 
+Another option would be to simply not check for overlap at add or move
+time, declare such configuration undefined behavior under KVM API and
+make sure in MMU notifiers that nothing bad happens to the host kernel
+if it turns out somebody actually set up a VM this way (it could be
+inefficient in this case, since it's not supposed to ever happen
+unless there is a bug somewhere in the userspace part).
+
+> Chao
+
+Thanks,
+Maciej
