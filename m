@@ -2,102 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78692C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F78CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234320AbiBVQst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:48:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S234282AbiBVQtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:49:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234319AbiBVQsm (ORCPT
+        with ESMTP id S230203AbiBVQtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:48:42 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F24715F098
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:48:16 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id d3so13078173ilr.10
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:48:16 -0800 (PST)
+        Tue, 22 Feb 2022 11:49:07 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A881C164D3D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:48:40 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id e14so2117008wrc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:48:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1pkK4qJ0A4iT1fXg1hMke6gUjeb+Wr6KZoA8F11noe4=;
-        b=jXtplNS3u8J6EK17FJNkTJvli8IdeWDGP5f1vhV0YYJZwfGQMn85AweYZJ++/4911h
-         6THEu/gQ1R+nWijMkD6+VHzxm6Iu6yvq8W/r6C8HgfpHTdq0bKxYpn6A2u67VpCztwE1
-         mxAQamon7VerdSUFfZXyzEigxDJOO0i24QQXk=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=x47Zw43229IZO4IO8goHSCFdx3yNKtus0NrHOFjE1i4=;
+        b=siKTRbGEYKAGv3nSMyaeYDbvI3vy1v+gTqiMpFWShUmW5/unSndeekgRFD4gueNQ/x
+         Lxltu44Fe9I7+PPBE95MTeL1YNl8nxYyffVXdh+nQRInZnZNze+bg2fzJt0Upbvz8d0c
+         hQcqw+sWRL8j2Z4cLXKmKz4PbW86Xt8o5xNVgV1p9c2vg/efEHr+HeXp82MADzBM5v3K
+         27nnKKP5HifcQ4jNeqokIFIxc5o4ibZrP+a3WR/+hXS4A/WP0CujfdDuMJ4PIDfPCYb+
+         wxEGNVUlyzwJQbx4xQ1kOaDRVFBXv5TlkkVyJCu+ZKAhgoevb96g0A8k/own0+9pcqy3
+         Nyvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1pkK4qJ0A4iT1fXg1hMke6gUjeb+Wr6KZoA8F11noe4=;
-        b=Z+GPV0DYmJQHVYqerSEyUcJKo/4LWC4krWkDMqe+sT9oaVXxGDVeC83ouG7Eu31Vgn
-         C8E4epVqMv9AmKVioufVRq1UUB5anlJAYxfGQ0eUHxQ7c2RKPmn0DR0XtfE/4SbYZU/G
-         7aorZVxy9KHiZ4wMNjK+rDZzgNwZ6d8XSezNCHtTikLmfMOAzGtvxNkBvIw39kU7Nozn
-         26ATnBrl0gLWqYpgyIaSDexg/UpFqkT/xtDByGyF5PfqAPhgctLtuQzGowVoSl/FNLbB
-         LBrOi7hDCD7p0nRreZQAPXYbVokOHuv6IwVofjtq0NOQXJlfzvZ+8uPzJLNcQ4Am3Jx5
-         6RqA==
-X-Gm-Message-State: AOAM530JZ/5PchuXWPGiskZW8CQWXprF4Ydg2Q17FFOne/QhYNIj5LPg
-        ENBBgd8fozLWIEejdmbm8Cw0JloF8Ak1NA==
-X-Google-Smtp-Source: ABdhPJxLMrcVNUq/UgJNDU6YtiqDpIuwJ7KRtrGr+ck69lQVejkgg5tx3UGHJ64QYV74/g+BVYSibg==
-X-Received: by 2002:a05:6e02:1d86:b0:2bd:ef9f:cfa6 with SMTP id h6-20020a056e021d8600b002bdef9fcfa6mr20694464ila.314.1645548495866;
-        Tue, 22 Feb 2022 08:48:15 -0800 (PST)
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com. [209.85.166.52])
-        by smtp.gmail.com with ESMTPSA id t195sm11603227iof.47.2022.02.22.08.48.15
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 08:48:15 -0800 (PST)
-Received: by mail-io1-f52.google.com with SMTP id f14so13206480ioz.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:48:15 -0800 (PST)
-X-Received: by 2002:a05:6602:1409:b0:5e7:487:133c with SMTP id
- t9-20020a056602140900b005e70487133cmr20037198iov.196.1645548494585; Tue, 22
- Feb 2022 08:48:14 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=x47Zw43229IZO4IO8goHSCFdx3yNKtus0NrHOFjE1i4=;
+        b=JyTHF5ocdDKu/lpGKT5x3um8lmaI+BEwLKD0nkNa6yvKcYt2sv3Pn7q8+8YOsDnPNs
+         E53rN73KtdfMKOoIuzBw3M6fASjixHnxEg7pgsI/RbNX8v4OSCTeAeBTpKHDK73Ff25i
+         Ztnjvn52eb27fN8xjN2kIWzY9Ylv2DuRzZLRt3U8uo5Ts1UL9KmEuNjPbFqRHq79XExn
+         T3EU0lzdnYiTO98yWUmrz5bbFDXMyUttEs0Rmd7/y04++oD0KsjyiUXpi56dm7H4Nefo
+         AGuCeXLnXMKnYrpkYeA2Rg5VqOyQ1xW3KuJV+tyOCDWDjE4dxjjtc4zlD06l69DwQr/0
+         MKDg==
+X-Gm-Message-State: AOAM5320+sIoi6UtpP7hi0JT4P2ty7nfikmRy+HFZ0rpih2ITnbZOopl
+        fK4Hz+ekIvbsLLZZx1hfGi0BdQ==
+X-Google-Smtp-Source: ABdhPJz0izC0yXy6h3y3NtZOQtkMpe310Gmq26f4R4C4tYbJKqoTk5k23OB+G0d5icNv+gEv2Ct2PA==
+X-Received: by 2002:a5d:6911:0:b0:1ea:9cad:7cf0 with SMTP id t17-20020a5d6911000000b001ea9cad7cf0mr1915455wru.503.1645548519234;
+        Tue, 22 Feb 2022 08:48:39 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id n7sm2819274wmd.30.2022.02.22.08.48.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 08:48:38 -0800 (PST)
+Date:   Tue, 22 Feb 2022 16:48:36 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        syzbot <syzbot+9671693590ef5aad8953@syzkaller.appspotmail.com>,
+        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [syzbot] KASAN: stack-out-of-bounds Read in iov_iter_revert
+Message-ID: <YhUT5I/64oaOjfDA@google.com>
+References: <6f7d4c1d-f923-3ab1-c525-45316b973c72@gmail.com>
+ <00000000000047f3b805c962affb@google.com>
+ <YYLAYvFU+9cnu+4H@google.com>
+ <0b4a5ff8-12e5-3cc7-8971-49e576444c9a@gmail.com>
+ <dd122760-5f87-10b1-e50d-388c2631c01a@kernel.dk>
+ <YYp4rC4M/oh8fgr7@google.com>
+ <YbmiIpQKfrLClsKV@google.com>
+ <c7131961-23de-8bf4-7773-efffe9b8d294@gmail.com>
+ <YbtxPB/ceMUVK7t7@google.com>
 MIME-Version: 1.0
-References: <20220107103056.1.Ifc6ce6bb655ddb8ebbb0f340fcaaa58369bb009c@changeid>
- <CAD=FV=U0-W_H=-u-GDc5GYm8GHSix0F1dKF+3eMNixP30fhtrQ@mail.gmail.com>
-In-Reply-To: <CAD=FV=U0-W_H=-u-GDc5GYm8GHSix0F1dKF+3eMNixP30fhtrQ@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 22 Feb 2022 08:48:01 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=XjWzyQ5mQ1cPK5qg6xZhXoBkomsuAgTWJRryxMR_wVcQ@mail.gmail.com>
-Message-ID: <CAD=FV=XjWzyQ5mQ1cPK5qg6xZhXoBkomsuAgTWJRryxMR_wVcQ@mail.gmail.com>
-Subject: Re: [PATCH] nvmem: qfprom: Increase fuse blow timeout to prevent
- write fail.
-To:     Knox Chiou <knoxchiou@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Evan Green <evgreen@chromium.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YbtxPB/ceMUVK7t7@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Srinivas
+On Thu, 16 Dec 2021, Lee Jones wrote:
 
-On Fri, Jan 7, 2022 at 6:57 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Thu, Jan 6, 2022 at 6:31 PM Knox Chiou <knoxchiou@chromium.org> wrote:
-> >
-> > sc7180 blow fuses got slightly chances to hit qfprom_reg_write timeout.
-> > Current timeout is simply too low. Since blowing fuses is a
-> > very rare operation, so the risk associated with overestimating this
-> > number is low.
-> > Increase fuse blow timeout from 1ms to 10ms.
-> >
-> > Signed-off-by: Knox Chiou <knoxchiou@chromium.org>
-> > ---
-> >
-> >  drivers/nvmem/qfprom.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> Slight nit that ${SUBJECT} for patches usually doesn't end with a
-> period. Presumably if Srinivas cares he can fix it while applying.
->
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> On Wed, 15 Dec 2021, Pavel Begunkov wrote:
+> 
+> > On 12/15/21 08:06, Lee Jones wrote:
+> > > On Tue, 09 Nov 2021, Lee Jones wrote:
+> > > 
+> > > > On Mon, 08 Nov 2021, Jens Axboe wrote:
+> > > > > On 11/8/21 8:29 AM, Pavel Begunkov wrote:
+> > > > > > On 11/3/21 17:01, Lee Jones wrote:
+> > > > > > > Good afternoon Pavel,
+> > > > > > > 
+> > > > > > > > syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> > > > > > > > 
+> > > > > > > > Reported-and-tested-by: syzbot+9671693590ef5aad8953@syzkaller.appspotmail.com
+> > > > > > > > 
+> > > > > > > > Tested on:
+> > > > > > > > 
+> > > > > > > > commit:         bff2c168 io_uring: don't retry with truncated iter
+> > > > > > > > git tree:       https://github.com/isilence/linux.git truncate
+> > > > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=730106bfb5bf8ace
+> > > > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=9671693590ef5aad8953
+> > > > > > > > compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+> > > > > > > > 
+> > > > > > > > Note: testing is done by a robot and is best-effort only.
+> > > > > > > 
+> > > > > > > As you can see in the 'dashboard link' above this bug also affects
+> > > > > > > android-5-10 which is currently based on v5.10.75.
+> > > > > > > 
+> > > > > > > I see that the back-port of this patch failed in v5.10.y:
+> > > > > > > 
+> > > > > > >     https://lore.kernel.org/stable/163152589512611@kroah.com/
+> > > > > > > 
+> > > > > > > And after solving the build-error by back-porting both:
+> > > > > > > 
+> > > > > > >     2112ff5ce0c11 iov_iter: track truncated size
+> > > > > > >     89c2b3b749182 io_uring: reexpand under-reexpanded iters
+> > > > > > > 
+> > > > > > > I now see execution tripping the WARN() in iov_iter_revert():
+> > > > > > > 
+> > > > > > >     if (WARN_ON(unroll > MAX_RW_COUNT))
+> > > > > > >         return
+> > > > > > > 
+> > > > > > > Am I missing any additional patches required to fix stable/v5.10.y?
+> > > > > > 
+> > > > > > Is it the same syz test? There was a couple more patches for
+> > > > > > IORING_SETUP_IOPOLL, but strange if that's not the case.
+> > > > > > 
+> > > > > > 
+> > > > > > fwiw, Jens decided to replace it with another mechanism shortly
+> > > > > > after, so it may be a better idea to backport those. Jens,
+> > > > > > what do you think?
+> > > > > > 
+> > > > > > 
+> > > > > > commit 8fb0f47a9d7acf620d0fd97831b69da9bc5e22ed
+> > > > > > Author: Jens Axboe <axboe@kernel.dk>
+> > > > > > Date:   Fri Sep 10 11:18:36 2021 -0600
+> > > > > > 
+> > > > > >       iov_iter: add helper to save iov_iter state
+> > > > > > 
+> > > > > > commit cd65869512ab5668a5d16f789bc4da1319c435c4
+> > > > > > Author: Jens Axboe <axboe@kernel.dk>
+> > > > > > Date:   Fri Sep 10 11:19:14 2021 -0600
+> > > > > > 
+> > > > > >       io_uring: use iov_iter state save/restore helpers
+> > > > > 
+> > > > > Yes, I think backporting based on the save/restore setup is the
+> > > > > sanest way by far.
+> > > > 
+> > > > Would you be kind enough to attempt to send these patches to Stable?
+> > > > 
+> > > > When I tried to back-port them, the second one gave me trouble.  And
+> > > > without the in depth knowledge of the driver/subsystem that you guys
+> > > > have, I found it almost impossible to resolve all of the conflicts:
+> > > 
+> > > Any movement on this chaps?
+> > > 
+> > > Not sure I am able to do this back-port without your help.
+> > 
+> > Apologies, slipped from my attention, we'll backport it,
+> > and thanks for the reminder
+> 
+> Excellent.  Thanks Pavel.
 
-I noticed that this patch still isn't in linux-next. Did it get lost,
-or are you waiting for anything additional before applying?
+Has this now been back-ported to Stable?
 
-Thanks!
+If so, would you be kind enough to provide the SHA1?
 
--Doug
+Thanks.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
