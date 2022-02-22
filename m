@@ -2,117 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiBVKq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:46:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
+        id S231414AbiBVKrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiBVKq5 (ORCPT
+        with ESMTP id S231367AbiBVKrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:46:57 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16282DF08;
-        Tue, 22 Feb 2022 02:46:32 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id f11so11047542ljq.11;
-        Tue, 22 Feb 2022 02:46:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iabqwLRHm/0Z6nOkM33Y0js7aZKJwfXcVsR9drxTBpI=;
-        b=Wvvk4dYJGf5Y8/8AlZicv/dhMGLGNFdMJpU3wenpSJZw/ybyjG3nx9inX0NopTAr9b
-         hki9SqFotR4DokiJbsxi3yGsFbnL/zXxiDg/fRjfzRxiszEbWkFKpYheubiSHqOaxP34
-         rjOvLBDn9kWi79ogs4Zh8W6upcZAtRRWT4N5DEvXeccq1jr0fRCdDH4AhV3jc6YMVzYY
-         6IEqUC1xQpeJJXazlibsxRAUbsunJcLJ+Q8OZRSlkEt2s3SOTVvGTqVfVXppSIfJi21t
-         hGpypFfvt3zGUuu9KQLV5peGeZ7tki5MqV+SxDeCYQ79bdLGMFynXY4YZv5rFu2cevD6
-         iV7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iabqwLRHm/0Z6nOkM33Y0js7aZKJwfXcVsR9drxTBpI=;
-        b=cZWsUQrpeNMJ/5tY5f6YHyGGkTaVS7erzwy/JEYzin03ru86tPNOwOPBlXiPWEzusl
-         XO46VVjeDABvAfnItk1UzTkZYJxR6+tlfcCKn3itIH6CmyN6yLM51XGgkOGScwWhyfsB
-         6Z04ThtISuQ59WxM/X/zYrZROkg5+g/VHNHhN1/5CUArD4YSv7h6Wl3SGVIM3umhV2aO
-         cKdBwXATBkfInR4eT+QsE9SqE3hioj1kRM3x0Z/9dqptzWIUOr2nU+nXsmTDO79q9q8L
-         NjuylXIVok8HemGRscKxpwUHWZGkvyNuMlcif0IX9QsZFkpQDEZNWI4Lvqpvpm2N+03T
-         TF2A==
-X-Gm-Message-State: AOAM533BHA/D1cKZ1sOIF1Pwyb1qMDo8wldJNRoptG7vS6hUSvILWOd4
-        FvPkePefuIjUyeOloBLq+7I=
-X-Google-Smtp-Source: ABdhPJwZ1McSWpt8xE8JSzJ7PFSX/UI6DWDglB8xl7blNXCItqUCMFWL3e68OUp80Bgn508refVPUw==
-X-Received: by 2002:a2e:980f:0:b0:246:3fb6:816b with SMTP id a15-20020a2e980f000000b002463fb6816bmr6085199ljj.242.1645526790359;
-        Tue, 22 Feb 2022 02:46:30 -0800 (PST)
-Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.googlemail.com with ESMTPSA id w10sm1599556ljd.101.2022.02.22.02.46.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 02:46:29 -0800 (PST)
-Message-ID: <4352fda7-ecb6-4a5e-7d6c-a50537d8eaff@gmail.com>
-Date:   Tue, 22 Feb 2022 13:46:29 +0300
+        Tue, 22 Feb 2022 05:47:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67594A8EEF;
+        Tue, 22 Feb 2022 02:46:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04BFB61604;
+        Tue, 22 Feb 2022 10:46:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3726AC340E8;
+        Tue, 22 Feb 2022 10:46:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645526805;
+        bh=6HCy67i32Aa1PmtKy+in+Ktr5yO8lY2us1tc8/Y5o6A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iRa3duzz37M6i6gMqISsG9Y1Zziccn0+sM8yfyE4Q2vuAp+szKAq2G9ySTm7WBqvc
+         gb3JWk6fnfU9s1ZxoNphHRIwad0CJXsJJQ7Bw0HcG2vBH3p5UpRm4vq76xJJa2h6LM
+         dNzL0Rs5GT96MtkDFU0lrIHArnjO9HmMELPRxhakaRspsu+RqGA8Fa7evTYbKQt81a
+         C2XNRzyfzxjQ2weBAGV+aMBKEO2NA5t/cu4Wu6hKi98oOWlAz7YuUBkOnxu70bVHz4
+         DWCXiIF4bQ5cicgT5TlPMFkasa+HRD3Qg6aPzy/AcLBwAg4Xtf0xmozftFEJC3nrbi
+         t2TrrcYAUBvVA==
+Received: by pali.im (Postfix)
+        id 5C4B0FDB; Tue, 22 Feb 2022 11:46:42 +0100 (CET)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 00/12] PCI: mvebu: subsystem ids, AER and INTx
+Date:   Tue, 22 Feb 2022 11:46:13 +0100
+Message-Id: <20220222104625.28461-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
-Content-Language: en-US
-To:     Mikko Perttunen <cyndis@kapsi.fi>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
-        will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
-Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
- <20220218113952.3077606-9-mperttunen@nvidia.com>
- <b1df816b-6838-c435-1a23-5029144e4cfe@gmail.com>
- <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
- <5d1b6e82-2c9d-8388-697f-0d7305a1206f@kapsi.fi>
- <ee648994-b296-2ac4-a676-ddcac463a428@gmail.com>
- <30033f5b-3fd1-22c7-896b-af034a4041df@kapsi.fi>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <30033f5b-3fd1-22c7-896b-af034a4041df@kapsi.fi>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-22.02.2022 11:27, Mikko Perttunen пишет:
-> On 2/21/22 22:10, Dmitry Osipenko wrote:
->> 21.02.2022 14:44, Mikko Perttunen пишет:
->>> On 2/19/22 20:54, Dmitry Osipenko wrote:
->>>> 19.02.2022 21:49, Dmitry Osipenko пишет:
->>>>> 18.02.2022 14:39, Mikko Perttunen пишет:
->>>>>> +static int vic_get_streamid_offset(struct tegra_drm_client *client)
->>>>>> +{
->>>>>> +    struct vic *vic = to_vic(client);
->>>>>> +    int err;
->>>>>> +
->>>>>> +    err = vic_load_firmware(vic);
->>>>>
->>>>> You can't invoke vic_load_firmware() while RPM is suspended. Either
->>>>> replace this with RPM get/put or do something else.
->>>
->>> Why not, I'm not seeing any HW accesses in vic_load_firmware? Although
->>> it looks like it might race with the vic_load_firmware call in
->>> vic_runtime_resume which probably needs to be fixed.
->>
->> It was not clear from the function's name that h/w is untouched, I read
->> "load" as "upload" and then looked at vic_runtime_resume(). I'd rename
->> vic_load_firmware() to vic_prepare_firmware_image().
->>
->> And yes, technically lock is needed.
-> 
-> Yep, I'll consider renaming it.
+This patch series extends pci-bridge-emul.c driver to emulate PCI Subsystem
+Vendor ID capability and PCIe extended capabilities. And then implement
+in pci-mvebu.c driver support for PCI Subsystem Vendor IDs, PCIe AER
+registers, support for legacy INTx interrupts, configuration for X1/X4
+mode and usage of new PCI child_ops API.
 
-Looking at this all again, I'd suggest to change:
+Changes in v3:
+* add Marek's Reviewed-by for first two patches
+* split comments from "PCI: mvebu: Implement support for legacy INTx
+  interrupts" patch into separate patch
 
-int get_streamid_offset(client)
+Changes in v2:
+* use static structures for INTx interrupts
+* remove INTx domain after unregistering INTx handler
 
-to:
+Pali Rohár (10):
+  PCI: pci-bridge-emul: Add support for PCI Bridge Subsystem Vendor ID
+    capability
+  dt-bindings: PCI: mvebu: Add num-lanes property
+  PCI: mvebu: Correctly configure x1/x4 mode
+  PCI: mvebu: Add support for PCI Bridge Subsystem Vendor ID on emulated
+    bridge
+  PCI: mvebu: Add support for Advanced Error Reporting registers on
+    emulated bridge
+  PCI: mvebu: Use child_ops API
+  dt-bindings: PCI: mvebu: Update information about intx interrupts
+  PCI: mvebu: Fix macro names and comments about legacy interrupts
+  PCI: mvebu: Implement support for legacy INTx interrupts
+  ARM: dts: armada-385.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
 
-int get_streamid_offset(client, *offset)
+Russell King (2):
+  PCI: pci-bridge-emul: Re-arrange register tests
+  PCI: pci-bridge-emul: Add support for PCIe extended capabilities
 
-and bail out if get_streamid_offset() returns error. It's never okay to
-ignore errors.
+ .../devicetree/bindings/pci/mvebu-pci.txt     |  16 +
+ arch/arm/boot/dts/armada-385.dtsi             |  52 ++-
+ drivers/pci/controller/pci-mvebu.c            | 355 +++++++++++++++---
+ drivers/pci/pci-bridge-emul.c                 | 167 +++++---
+ drivers/pci/pci-bridge-emul.h                 |  17 +
+ 5 files changed, 497 insertions(+), 110 deletions(-)
+
+-- 
+2.20.1
+
