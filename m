@@ -2,91 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDECC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232040AbiBVMuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:50:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
+        id S232054AbiBVM4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiBVMup (ORCPT
+        with ESMTP id S231889AbiBVM4f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:50:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBFA128658;
-        Tue, 22 Feb 2022 04:50:19 -0800 (PST)
+        Tue, 22 Feb 2022 07:56:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A01F128DF7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 04:56:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BC7360F03;
-        Tue, 22 Feb 2022 12:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D9ADC340E8;
-        Tue, 22 Feb 2022 12:50:18 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="CwpfKelM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645534216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bsr7k1VX0jPTqvG4+W4WO5K2SuNDxvJ5ic2w69NqzcU=;
-        b=CwpfKelM9cNWr/wD6TF0XWKCcBZQfF394sW/b4llOZ2MYTTF4AtCXVJX+GWH/IxfCM1NP6
-        zB3h8KZxqo/g/+P/CPwvgEKrbr0247nuz5SvFvQnenPTvksG5XiVUDesl+ypUoQhzQI2kJ
-        Fqa+55CNWKvW5OWVaPA6Y/6E3iK+/H8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bca041d7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 22 Feb 2022 12:50:16 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH] random: round-robin registers as ulong, not u32
-Date:   Tue, 22 Feb 2022 13:50:08 +0100
-Message-Id: <20220222125008.42924-1-Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16BF2B81998
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2026AC340E8;
+        Tue, 22 Feb 2022 12:56:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645534567;
+        bh=oJ/w9DrjJ8UVUe7wYc1OQHhSMTw8H6h+UWV8CFaeNPM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mxayw4Pqw5XPRdaAsVWmuRsbbbCslKZoiBb8FJ2oApvIJFv2jL35xShhlroFOEs2X
+         JlyvhbEnkYlsVX1DVTiGtFmjmCtmTJQ0FN1S2fKvb09j99a+mieAjG3KL/gQvyhotn
+         UbUbnPE3id7GMKPRIZ2pkuQ08QRucvGUXiSjl1GkmigHeQWN3WewzT+QirTa7Sejdg
+         QT+NdZnzL650m9fIShnU8GmzP2rh0op5qBZEePzwT2BM1Bc5/+cBsVxLPT+4r5Oxu4
+         HJtrX21OVDYaNvGZxHj9rwx9A+7MWi0FQENZ0eS+xELs9GA+8BVMtHPaqHYRMzoKVY
+         uRe3dZbIto9uQ==
+Date:   Tue, 22 Feb 2022 18:26:03 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Swapnil Jakhade <sjakhade@cadence.com>
+Cc:     kishon@ti.com, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org, mparab@cadence.com,
+        a-govindraju@ti.com, r-ravikumar@ti.com
+Subject: Re: [PATCH 1/4] phy: cadence-torrent: Add function to get PLL to be
+ configured for DP
+Message-ID: <YhTdY+UfIEtvDBK+@matsya>
+References: <20220127142958.23465-1-sjakhade@cadence.com>
+ <20220127142958.23465-2-sjakhade@cadence.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220127142958.23465-2-sjakhade@cadence.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the interrupt handler does not have a valid cycle counter, it calls
-get_reg() to read a register from the irq stack, in round-robin.
-Currently it does this assuming that registers are 32-bit. This is
-_probably_ the case, and probably all platforms without cycle counters
-are in fact 32-bit platforms. But maybe not, and either way, it's not
-quite correct. This commit fixes that to deal with `unsigned long`
-rather than `u32`.
+On 27-01-22, 15:29, Swapnil Jakhade wrote:
+> Torrent PHY PLL0 or PLL1 is used for DP depending on the single link or
+> multilink protocol configuration for which PHY is configured. In multilink
+> configurations with other protocols, either PLL0 or PLL1 will be used
+> for DP. For single link DP, both PLLs need to be configured at POR.
+> 
+> Signed-off-by: Swapnil Jakhade <sjakhade@cadence.com>
+> ---
+>  drivers/phy/cadence/phy-cadence-torrent.c | 30 +++++++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+> 
+> diff --git a/drivers/phy/cadence/phy-cadence-torrent.c b/drivers/phy/cadence/phy-cadence-torrent.c
+> index 7c4b8050485f..0e2839a6c65d 100644
+> --- a/drivers/phy/cadence/phy-cadence-torrent.c
+> +++ b/drivers/phy/cadence/phy-cadence-torrent.c
+> @@ -38,6 +38,9 @@
+>  #define POLL_TIMEOUT_US		5000
+>  #define PLL_LOCK_TIMEOUT	100000
+>  
+> +#define DP_PLL0			BIT(0)
+> +#define DP_PLL1			BIT(1)
+> +
+>  #define TORRENT_COMMON_CDB_OFFSET	0x0
+>  
+>  #define TORRENT_TX_LANE_CDB_OFFSET(ln, block_offset, reg_offset)	\
+> @@ -323,6 +326,7 @@ struct cdns_torrent_phy {
+>  	void __iomem *base;	/* DPTX registers base */
+>  	void __iomem *sd_base; /* SD0801 registers base */
+>  	u32 max_bit_rate; /* Maximum link bit rate to use (in Mbps) */
+> +	u32 dp_pll;
+>  	struct reset_control *phy_rst;
+>  	struct reset_control *apb_rst;
+>  	struct device *dev;
+> @@ -978,6 +982,30 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
+>  	}
+>  }
+>  
+> +/* Set PLL used for DP configuration */
+> +static int cdns_torrent_dp_get_pll(struct cdns_torrent_phy *cdns_phy,
+> +				   enum cdns_torrent_phy_type phy_t2)
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+why return an error if you are going to ignore it!
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index d73a75cbe82d..a4dedeea35e9 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1261,15 +1261,15 @@ int random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-+static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
- {
--	u32 *ptr = (u32 *)regs;
-+	unsigned long *ptr = (unsigned long *)regs;
- 	unsigned int idx;
- 
- 	if (regs == NULL)
- 		return 0;
- 	idx = READ_ONCE(f->reg_idx);
--	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
-+	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
- 		idx = 0;
- 	ptr += idx++;
- 	WRITE_ONCE(f->reg_idx, idx);
+> +{
+> +	switch (phy_t2) {
+> +	case TYPE_PCIE:
+> +	case TYPE_USB:
+> +		cdns_phy->dp_pll = DP_PLL1;
+> +		break;
+> +	case TYPE_SGMII:
+> +	case TYPE_QSGMII:
+> +		cdns_phy->dp_pll = DP_PLL0;
+> +		break;
+> +	case TYPE_NONE:
+> +		cdns_phy->dp_pll = DP_PLL0 | DP_PLL1;
+> +		break;
+> +	default:
+> +		dev_err(cdns_phy->dev, "Unsupported PHY configuration\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * Enable or disable PLL for selected lanes.
+>   */
+> @@ -1640,6 +1668,8 @@ static int cdns_torrent_dp_init(struct phy *phy)
+>  		return -EINVAL;
+>  	}
+>  
+> +	cdns_torrent_dp_get_pll(cdns_phy, TYPE_NONE);
+> +
+>  	cdns_torrent_dp_common_init(cdns_phy, inst);
+>  
+>  	return cdns_torrent_dp_start(cdns_phy, inst, phy);
+> -- 
+> 2.34.1
+
 -- 
-2.35.1
-
+~Vinod
