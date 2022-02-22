@@ -2,227 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E78AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232386AbiBVNWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:22:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S232387AbiBVNXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:23:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiBVNWi (ORCPT
+        with ESMTP id S231224AbiBVNXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:22:38 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6122E0AB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:22:12 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id i5so14437153oih.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:22:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FbEG8VNWfAxsexRWaVP+3+Z7bPItdQUVdT+PMVmJerk=;
-        b=2DUgPhrNuz1pS7heHL7qiS+n14t06NuqIh9c+513mbJEMnRr0OZ4lyybjX20n8UJEp
-         a7Otk6bK+LBdmRFHp84bRyxoTSQcNmQh9Up3pSzs4Dw/BKXmxxBR65GZMecOuGndDUa6
-         T1QnzTo9IIOycIaK2usIpIIE77OYOA0b2l9g0INDbWuDDhNBwK33DKdxV6U99cAZ7d1u
-         8qaWgQZLxZ22uOAKdKlFq289oeahwbOmPITKaif7LWlbbBhfyO5+V2ZNJK5IZ/k3tyI7
-         pex0KZ7fnoG/SNzr+RnxRr/+NjXqk6EA7DJlYfwduD2LGk3hHQ3hGU//k9w/ECUS77CA
-         Prnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FbEG8VNWfAxsexRWaVP+3+Z7bPItdQUVdT+PMVmJerk=;
-        b=BnzP8PypvH/z1yUhyWXgeLszedu9rwusk/KybCn1GAKjF2EWku11b459521MRDgLbG
-         y4jKmmLBWmhXSQJsI1e4MoRUhcDR1a7dYSlv7GCi0w4gIcWFTe+qxkKGl4oR/9rKMEnp
-         hGm1USxwSNsi5xJb/FGEaAz4o6SyaSMCcpBEwCsvH/r/KUdR0ApI1oVv3DhIbYMqzj27
-         cosZfFAQvhlszwBuNqqQN7fFx43QER9JqYb0xg5USbRRxbSBZJbF6vULSYsUaNw34f9n
-         K05HEWpeun1DfawvidvaqZqoUUiwKGCaI7rLxgR4Xu4uLrau2YyicNpSBiweHSPhXUkk
-         5Jag==
-X-Gm-Message-State: AOAM530qBZJYGjaNM2T9gPWIMuVFO6P5xEenE9d15lcTdF3EqFsiKXzY
-        IHSK/fT5IF0w/9FT6WtMnk80hJgexSfrrEz1V3Q44A==
-X-Google-Smtp-Source: ABdhPJyOrHlBwgGx5qZTXhnCehHekXCBaR6rENqCa6E8lAtJ/4gDv9e9nBODLwxy3eXzpO5VbNRSxYON80doqy+Yi68=
-X-Received: by 2002:a05:6808:2128:b0:2d3:3ce1:6e12 with SMTP id
- r40-20020a056808212800b002d33ce16e12mr1891947oiw.279.1645536132034; Tue, 22
- Feb 2022 05:22:12 -0800 (PST)
+        Tue, 22 Feb 2022 08:23:48 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3A43917B;
+        Tue, 22 Feb 2022 05:23:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645536203; x=1677072203;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Klv6Ezg/JwUk3iPBnhg0wneuAyQoZW+/CZIapYQ3LO0=;
+  b=e1YoU3smcsuoQPxm+h50PTZD5sDH6p/r0drH1ni56C+D7jCUJpqoOJNS
+   xHjwfYEZBdjZnS44aed5ECdY01fJ1WbquMYNofq11RccGdQ6iaxYzxhrv
+   7Y9AaI8+FfIt2U8exL3Ua4I7elhaDqdDbPkcTy7+2M6lzl+c3fQb45Zvh
+   ztDMkwaQ/Q11QwAhKK+PafAVdZWUyMgXm6i4DBKtwqOrYg7QjwYYvn4H2
+   Z2FfNm03EatdJcYsRwhzEjMq0wHTKe53T3xkBvf9qlkv+CCJ6uCjTdxws
+   DC8EmdkQD61ivgpyZV9gtoUrF6tYgsV3C8bbdoaT1eN38vL7E23SGH+3d
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="235220015"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="235220015"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 05:23:22 -0800
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="706608456"
+Received: from muni.iind.intel.com ([10.190.201.115])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 05:23:20 -0800
+From:   Vikash Chandola <vikash.chandola@linux.intel.com>
+To:     linux@roeck-us.net, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iwona.winiarska@intel.com
+Cc:     Vikash Chandola <vikash.chandola@linux.intel.com>
+Subject: [PATCH v2] hwmon: (pmbus) Clear pmbus fault/warning bits after read
+Date:   Tue, 22 Feb 2022 13:12:53 +0000
+Message-Id: <20220222131253.2426834-1-vikash.chandola@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-3-andrew@daynix.com>
- <5ac96035-2448-2a25-5bc9-677a7eb0a271@redhat.com>
-In-Reply-To: <5ac96035-2448-2a25-5bc9-677a7eb0a271@redhat.com>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Tue, 22 Feb 2022 15:22:00 +0200
-Message-ID: <CABcq3pH-md7oTLZYTGvnhi0uhYcZifdWn_D2bAZVafT5d+YZcg@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/5] driver/net/tun: Added features for USO.
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>,
-        Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 6:39 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=86=99=
-=E9=81=93:
-> > Added support for USO4 and USO6, also added code for new ioctl TUNGETSU=
-PPORTEDOFFLOADS.
-> > For now, to "enable" USO, it's required to set both USO4 and USO6 simul=
-taneously.
-> > USO enables NETIF_F_GSO_UDP_L4.
-> >
-> > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> > ---
-> >   drivers/net/tap.c | 18 ++++++++++++++++--
-> >   drivers/net/tun.c | 15 ++++++++++++++-
-> >   2 files changed, 30 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-> > index 8e3a28ba6b28..82d742ba78b1 100644
-> > --- a/drivers/net/tap.c
-> > +++ b/drivers/net/tap.c
-> > @@ -940,6 +940,10 @@ static int set_offload(struct tap_queue *q, unsign=
-ed long arg)
-> >                       if (arg & TUN_F_TSO6)
-> >                               feature_mask |=3D NETIF_F_TSO6;
-> >               }
-> > +
-> > +             /* TODO: for now USO4 and USO6 should work simultaneously=
- */
-> > +             if (arg & (TUN_F_USO4 | TUN_F_USO6) =3D=3D (TUN_F_USO4 | =
-TUN_F_USO6))
-> > +                     features |=3D NETIF_F_GSO_UDP_L4;
->
->
-> If kernel doesn't want to split the GSO_UDP features, I wonder how much
-> value to keep separated features for TUN and virtio.
->
-> Thanks
->
+Almost all fault/warning bits in pmbus status registers remain set even
+after fault/warning condition are removed. As per pmbus specification
+these faults must be cleared by user.
+Modify hwmon behavior to clear fault/warning bit after fetching data if
+fault/warning bit was set. This allows to get fresh data in next read.
 
-It's important for Windows guests that may request USO receive only
-for IPv4 or IPv6.
-Or there is possible to implement one feature and change its
-"meanings" when "split" happens.
-I think it's a good idea to implement an interface for iUSO4/USO6 and
-do it right away.
+Signed-off-by: Vikash Chandola <vikash.chandola@linux.intel.com>
+---
+changes since v1:
+v1 patch was clearing all the faults. That would have lead faults not
+getting reported to user at all. This change clears only current fault
+and that too after reporting it at least once. This way all the faults
+will be reported to user space at least once.
 
->
-> >       }
-> >
-> >       /* tun/tap driver inverts the usage for TSO offloads, where
-> > @@ -950,7 +954,8 @@ static int set_offload(struct tap_queue *q, unsigne=
-d long arg)
-> >        * When user space turns off TSO, we turn off GSO/LRO so that
-> >        * user-space will not receive TSO frames.
-> >        */
-> > -     if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6))
-> > +     if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
-> > +         feature_mask & (TUN_F_USO4 | TUN_F_USO6) =3D=3D (TUN_F_USO4 |=
- TUN_F_USO6))
-> >               features |=3D RX_OFFLOADS;
-> >       else
-> >               features &=3D ~RX_OFFLOADS;
-> > @@ -979,6 +984,7 @@ static long tap_ioctl(struct file *file, unsigned i=
-nt cmd,
-> >       unsigned short u;
-> >       int __user *sp =3D argp;
-> >       struct sockaddr sa;
-> > +     unsigned int supported_offloads;
-> >       int s;
-> >       int ret;
-> >
-> > @@ -1074,7 +1080,8 @@ static long tap_ioctl(struct file *file, unsigned=
- int cmd,
-> >       case TUNSETOFFLOAD:
-> >               /* let the user check for future flags */
-> >               if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
-> > -                         TUN_F_TSO_ECN | TUN_F_UFO))
-> > +                         TUN_F_TSO_ECN | TUN_F_UFO |
-> > +                         TUN_F_USO4 | TUN_F_USO6))
-> >                       return -EINVAL;
-> >
-> >               rtnl_lock();
-> > @@ -1082,6 +1089,13 @@ static long tap_ioctl(struct file *file, unsigne=
-d int cmd,
-> >               rtnl_unlock();
-> >               return ret;
-> >
-> > +     case TUNGETSUPPORTEDOFFLOADS:
-> > +             supported_offloads =3D TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TS=
-O6 |
-> > +                                             TUN_F_TSO_ECN | TUN_F_UFO=
- | TUN_F_USO4 | TUN_F_USO6;
-> > +             if (copy_to_user(&arg, &supported_offloads, sizeof(suppor=
-ted_offloads)))
-> > +                     return -EFAULT;
-> > +             return 0;
-> > +
-> >       case SIOCGIFHWADDR:
-> >               rtnl_lock();
-> >               tap =3D tap_get_tap_dev(q);
-> > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > index fed85447701a..4f2105d1e6f1 100644
-> > --- a/drivers/net/tun.c
-> > +++ b/drivers/net/tun.c
-> > @@ -185,7 +185,7 @@ struct tun_struct {
-> >       struct net_device       *dev;
-> >       netdev_features_t       set_features;
-> >   #define TUN_USER_FEATURES (NETIF_F_HW_CSUM|NETIF_F_TSO_ECN|NETIF_F_TS=
-O| \
-> > -                       NETIF_F_TSO6)
-> > +                       NETIF_F_TSO6 | NETIF_F_GSO_UDP_L4)
-> >
-> >       int                     align;
-> >       int                     vnet_hdr_sz;
-> > @@ -2821,6 +2821,12 @@ static int set_offload(struct tun_struct *tun, u=
-nsigned long arg)
-> >               }
-> >
-> >               arg &=3D ~TUN_F_UFO;
-> > +
-> > +             /* TODO: for now USO4 and USO6 should work simultaneously=
- */
-> > +             if (arg & TUN_F_USO4 && arg & TUN_F_USO6) {
-> > +                     features |=3D NETIF_F_GSO_UDP_L4;
-> > +                     arg &=3D ~(TUN_F_USO4 | TUN_F_USO6);
-> > +             }
-> >       }
-> >
-> >       /* This gives the user a way to test for new features in future b=
-y
-> > @@ -2991,6 +2997,7 @@ static long __tun_chr_ioctl(struct file *file, un=
-signed int cmd,
-> >       int sndbuf;
-> >       int vnet_hdr_sz;
-> >       int le;
-> > +     unsigned int supported_offloads;
-> >       int ret;
-> >       bool do_notify =3D false;
-> >
-> > @@ -3154,6 +3161,12 @@ static long __tun_chr_ioctl(struct file *file, u=
-nsigned int cmd,
-> >       case TUNSETOFFLOAD:
-> >               ret =3D set_offload(tun, arg);
-> >               break;
-> > +     case TUNGETSUPPORTEDOFFLOADS:
-> > +             supported_offloads =3D TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TS=
-O6 |
-> > +                             TUN_F_TSO_ECN | TUN_F_UFO | TUN_F_USO4 | =
-TUN_F_USO6;
-> > +             if (copy_to_user(&arg, &supported_offloads, sizeof(suppor=
-ted_offloads)))
-> > +                     ret =3D -EFAULT;
-> > +             break;
-> >
-> >       case TUNSETTXFILTER:
-> >               /* Can be set only for TAPs */
->
+Behaviour has been verified with following PSU
+FRU Device Description : IS162F22 (ID 84)
+Product Manufacturer   : SOLUM CO., LTD.
+Product Name           : IS162F22
+Product Part Number    : G36234-015
+Product Version        : 10A
+
+ drivers/hwmon/pmbus/pmbus_core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 776ee2237be2..ac2fbee1ba9c 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -911,6 +911,11 @@ static int pmbus_get_boolean(struct i2c_client *client, struct pmbus_boolean *b,
+ 		pmbus_update_sensor_data(client, s2);
+ 
+ 	regval = status & mask;
++	if (regval) {
++		ret = pmbus_write_byte_data(client, page, reg, regval);
++		if (ret)
++			goto unlock;
++	}
+ 	if (s1 && s2) {
+ 		s64 v1, v2;
+ 
+-- 
+2.25.1
+
