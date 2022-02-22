@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7842C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbiBVNSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:18:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40584 "EHLO
+        id S232336AbiBVNSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:18:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiBVNSM (ORCPT
+        with ESMTP id S230154AbiBVNSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:18:12 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A02FBB0B0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:17:47 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id j7-20020a4ad6c7000000b0031c690e4123so8311987oot.11
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:17:47 -0800 (PST)
+        Tue, 22 Feb 2022 08:18:22 -0500
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AADBD2C9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:17:53 -0800 (PST)
+Received: by mail-oo1-xc2b.google.com with SMTP id w10-20020a4ae08a000000b0031bdf7a6d76so17386428oos.10
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:17:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=usp.br; s=usp-google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yJggk1To+XLut1ObcBuO//1+OtwNQL2IY8utthiAw+M=;
-        b=M5U+hrmDa39RJmpT6cpDMWuT1ftn8C6oDHPdv+0YjkKjP3plzi/1n7Yos1ZJvj5TWL
-         oSJ6jfHTPW6wOoEzXfnmv0O6XULQpIlFFRouo6PlM2daWq3ng4LttobHWIUFfhweB76U
-         cbnu0WB5CVQAQUu+9ZsF71wZFXSr5Tr2Q3GSMDmVZTSvqqUBxkN8maDIQdoR6mbTHnzl
-         +sXNxOLwoN5wFXpDoydePtV49H1x/bexC6s0pumgdWV1YSFBFau+iHG9qfZvXDzLh5Dp
-         R5V1tJuwXzwOTm8SeUcVi5RKzf90KB6fCi/7MmcsgKU7TGU4UFNug4thzgm77mP9WDgN
-         jpBw==
+        bh=gUjTQJmzrA7YmPv0U39+3zh4DUhMv7PoZUE1y8daTkU=;
+        b=FPkH1X3s9Z4MaxrX4uqfjr3F7a7VH/XL8sjYBD6kv6nMhEpAtU0QfomFMaSf8GNpNb
+         t8YlseyboP1Z50Mc5eIfXqwSJbkKQTQ9ZXMON7BiQCTV40wpQybAmTe494JaSNRDO+zC
+         vbuySWtEozg1GqhKsGDm9fQ6jWZhJiM7f8lLHj9CylLBenQ2MER4QfyRBDuXXRIlTfvt
+         5ryycyOYPDO6dj2uPS+Xzphui8DCkRzUX48xpDmIKU+nAvi9WGP2l70vmWQ0sQFkV6ea
+         LdMIKNtGBicAKMdkC8dcenYvWdwTribZIuLNqcKIWS1LNJGiEYXiZp0ClRVbRr+Q0sZT
+         YZIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yJggk1To+XLut1ObcBuO//1+OtwNQL2IY8utthiAw+M=;
-        b=6GtHFBpJs44cJP3s3Q1h9vTo8Hf0x76VlmRC9FjwTmHsRXwKxJI+oAkDVhg5MnDGIc
-         oGNGUSVdg+gwDRhL6taeiV7lfry+qmXzSX94lH/dp7NzSQZ7yvhfEXLfl4oyjSjIk3ja
-         tsdvcwMB+eWRyVeukIfrh4as8vMWJPIpO0V6h0tpgzxZq0sWzgw75hjHuS8n2g7S8ClA
-         Y/LMwaneZ7j1lSfqQtmL3E0/bxpmPCrCMkf0dZr3laVisEumoWYRzECMGPSlXJpcYc4r
-         /uUFIU+aMOrf1uJUsF8iq7lhC33+70RMLLLu43KEuhpxRzQYVfZ1qpot9acGsR9PDHT4
-         OJVg==
-X-Gm-Message-State: AOAM532ZhkKl3o2mW1Es9ED+KVgMmHzPCTBVlsgfALyFjz1gRyJrVpJy
-        s/JS85tyG8FR8OV1nh4sxYdKwP5Vl++FeVZ9
-X-Google-Smtp-Source: ABdhPJyEmLFkADch2Vvvvc2TiPZFt4fsErzfmYtqCPhQrfpy8eB9rJIReQvGDozdKk6LKkOtj8RqLQ==
-X-Received: by 2002:a05:6870:c898:b0:ce:c0c9:660 with SMTP id er24-20020a056870c89800b000cec0c90660mr1543821oab.178.1645535866494;
-        Tue, 22 Feb 2022 05:17:46 -0800 (PST)
+        bh=gUjTQJmzrA7YmPv0U39+3zh4DUhMv7PoZUE1y8daTkU=;
+        b=vy/Ax87e7ukcCR7AsyvHpBUld1vjMWtC6dcDj7GM0EfyEw2TbCvbIOamH2xCZZH8PM
+         uDzOTU88qUIDOtnaTQsMrHfz9odB3tBHhPu4LOtN6wyL31PWh67s/jMzaA2w6U1t/1pN
+         sgY6QXaQ9JZqxTMsq+rFWgHEu/Wp/kGiM74AbnfuSULERRgPdQKulML2RN6vgyJM7SUc
+         OW5vP95H8RZn5MSDLa8eG6aoFza95dnMUYlKkaudqhIdHwM4/7h5uwqHiLYG/rJ4QgIT
+         58FVWM2rmL0CpzbHyxr6OVEz5XCDQLMejURete++n1pJd5ENPz1/AKdi2Ff092G1QIce
+         Fv+A==
+X-Gm-Message-State: AOAM5301Pke6CR2WYIODLhaETsTCqsPuB4m7BerJl3Diz6qt7UHWgRTL
+        dw97xVWUZtVYsnRmIQ1WncRCQg==
+X-Google-Smtp-Source: ABdhPJzSWobKzGCiBglLAMfGQ3zQeN2B60sOxZj/bjK565W/h7V9hy4VhSqKHUZu46XzLWuT1K3MqQ==
+X-Received: by 2002:a05:6870:2142:b0:d2:c3fe:83c8 with SMTP id g2-20020a056870214200b000d2c3fe83c8mr1630946oae.165.1645535873120;
+        Tue, 22 Feb 2022 05:17:53 -0800 (PST)
 Received: from fedora.. ([187.36.236.204])
-        by smtp.gmail.com with ESMTPSA id c9sm6325050otd.26.2022.02.22.05.17.39
+        by smtp.gmail.com with ESMTPSA id c9sm6325050otd.26.2022.02.22.05.17.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 05:17:46 -0800 (PST)
+        Tue, 22 Feb 2022 05:17:52 -0800 (PST)
 From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
 To:     alexander.deucher@amd.com, christian.koenig@amd.com,
         Xinhui.Pan@amd.com, Hawking.Zhang@amd.com, john.clements@amd.com,
@@ -59,9 +59,9 @@ Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, magalilemes00@gmail.com,
         mwen@igalia.com, isabbasso@riseup.net,
         =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>
-Subject: [PATCH 02/10] drm/amdgpu: Remove tmp unused variable
-Date:   Tue, 22 Feb 2022 10:16:53 -0300
-Message-Id: <20220222131701.356117-3-maira.canal@usp.br>
+Subject: [PATCH 03/10] drm/amdgpu: Remove unused get_umc_v8_7_channel_index function
+Date:   Tue, 22 Feb 2022 10:16:54 -0300
+Message-Id: <20220222131701.356117-4-maira.canal@usp.br>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220222131701.356117-1-maira.canal@usp.br>
 References: <20220222131701.356117-1-maira.canal@usp.br>
@@ -72,69 +72,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable tmp is not used in the dce_v6_0_hpd_fini and
-dce_v8_0_hpd_fini functions. Therefor, the variable is removed in order to
-avoid the following Clang warnings:
+Remove get_umc_v8_7_channel_index function, which is not used
+in the codebase.
 
-drivers/gpu/drm/amd/amdgpu/dce_v6_0.c:331:6: warning: variable 'tmp' set but
-not used [-Wunused-but-set-variable]
-    u32 tmp;
-        ^
-drivers/gpu/drm/amd/amdgpu/dce_v8_0.c:325:6: warning: variable 'tmp' set but
-not used [-Wunused-but-set-variable]
-    u32 tmp;
-        ^
+This was pointed by clang with the following warning:
+
+drivers/gpu/drm/amd/amdgpu/umc_v8_7.c:50:24: warning: unused function
+'get_umc_v8_7_channel_index' [-Wunused-function]
+static inline uint32_t get_umc_v8_7_channel_index(struct amdgpu_device *adev,
+                       ^
 
 Signed-off-by: Maíra Canal <maira.canal@usp.br>
 ---
- drivers/gpu/drm/amd/amdgpu/dce_v6_0.c | 4 +---
- drivers/gpu/drm/amd/amdgpu/dce_v8_0.c | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/umc_v8_7.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c b/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
-index b90bc2adf778..2c61f0c2e709 100644
---- a/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v6_0.c
-@@ -328,7 +328,6 @@ static void dce_v6_0_hpd_fini(struct amdgpu_device *adev)
- 	struct drm_device *dev = adev_to_drm(adev);
- 	struct drm_connector *connector;
- 	struct drm_connector_list_iter iter;
--	u32 tmp;
+diff --git a/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c b/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
+index de85a998ef99..f35253e0eaa6 100644
+--- a/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
++++ b/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
+@@ -47,13 +47,6 @@ static inline uint32_t get_umc_v8_7_reg_offset(struct amdgpu_device *adev,
+ 	return adev->umc.channel_offs*ch_inst + UMC_8_INST_DIST*umc_inst;
+ }
  
- 	drm_connector_list_iter_begin(dev, &iter);
- 	drm_for_each_connector_iter(connector, &iter) {
-@@ -337,8 +336,7 @@ static void dce_v6_0_hpd_fini(struct amdgpu_device *adev)
- 		if (amdgpu_connector->hpd.hpd >= adev->mode_info.num_hpd)
- 			continue;
- 
--		tmp = RREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd]);
--		tmp &= ~DC_HPD1_CONTROL__DC_HPD1_EN_MASK;
-+		RREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd]);
- 		WREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd], 0);
- 
- 		amdgpu_irq_put(adev, &adev->hpd_irq, amdgpu_connector->hpd.hpd);
-diff --git a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-index 7c1379b02f94..c5e9c5dbd165 100644
---- a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-@@ -322,7 +322,6 @@ static void dce_v8_0_hpd_fini(struct amdgpu_device *adev)
- 	struct drm_device *dev = adev_to_drm(adev);
- 	struct drm_connector *connector;
- 	struct drm_connector_list_iter iter;
--	u32 tmp;
- 
- 	drm_connector_list_iter_begin(dev, &iter);
- 	drm_for_each_connector_iter(connector, &iter) {
-@@ -331,8 +330,7 @@ static void dce_v8_0_hpd_fini(struct amdgpu_device *adev)
- 		if (amdgpu_connector->hpd.hpd >= adev->mode_info.num_hpd)
- 			continue;
- 
--		tmp = RREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd]);
--		tmp &= ~DC_HPD1_CONTROL__DC_HPD1_EN_MASK;
-+		RREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd]);
- 		WREG32(mmDC_HPD1_CONTROL + hpd_offsets[amdgpu_connector->hpd.hpd], 0);
- 
- 		amdgpu_irq_put(adev, &adev->hpd_irq, amdgpu_connector->hpd.hpd);
+-static inline uint32_t get_umc_v8_7_channel_index(struct amdgpu_device *adev,
+-						uint32_t umc_inst,
+-						uint32_t ch_inst)
+-{
+-	return adev->umc.channel_idx_tbl[umc_inst * adev->umc.channel_inst_num + ch_inst];
+-}
+-
+ static void umc_v8_7_ecc_info_query_correctable_error_count(struct amdgpu_device *adev,
+ 						uint32_t umc_inst, uint32_t ch_inst,
+ 						unsigned long *error_count)
 -- 
 2.35.1
 
