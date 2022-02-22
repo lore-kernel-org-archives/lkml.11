@@ -2,104 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DACD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235109AbiBVSdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 13:33:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
+        id S235041AbiBVSdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 13:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiBVSdB (ORCPT
+        with ESMTP id S235013AbiBVSdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 13:33:01 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D206D1070BA
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:32:35 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id d3so19460795wrf.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:32:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9SOM2m1l2t9AVsCxObqTWKpNPnvoS4HHumlCtnLuW+M=;
-        b=sfphTkw+TIFpSiVfPCDWpMWe0C1Hsg7TxDv/6tfs6owKtzUL1mTcl48e3eStB74Lry
-         uIssrDlUyTqB/NWDuogXlOJicUGDIxOIRoOklIWCxm/G59moqOpR/KO2kpdJAvB9Dbjb
-         OpNJsrrUggRFjN3EJ9mi+XzfPV36vrKFTxix6WBQRJGaphTeLj837GYeNQ+67NZZRZ33
-         CzFcOzTK8yOoOIh8/noDccHBda9/RW/EpdSy7Lkoh7h9ohKJDcJzrlGWNx/N6TrPhC0p
-         Nyon9yBws48hbyhjumRz7VOjjcOhMGNOShwsB/3BQnJYZCi+3FsHMYCACVW+rdSr7KNB
-         1p+A==
+        Tue, 22 Feb 2022 13:33:02 -0500
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF531070B9;
+        Tue, 22 Feb 2022 10:32:35 -0800 (PST)
+Received: by mail-pl1-f177.google.com with SMTP id bd1so446346plb.13;
+        Tue, 22 Feb 2022 10:32:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9SOM2m1l2t9AVsCxObqTWKpNPnvoS4HHumlCtnLuW+M=;
-        b=oTWbervQLTLZphC3+qcoetxFd28xJFOaWeFdaK7ukL/CPEIe3kM1DDGl6bp4CPvKuL
-         LxZCKzH/El4jRrQKz02NXuHStrBt/b/PWXtdCASRJuHKmvH7aTcJT+hI5H1H1XVoCFoq
-         ad0R9lF16Z4LJsStbBmsODHm6+SxyQq9iWg81HymQMBm4SKHQnRShdsbTakWtTsRuE66
-         EXjCHQDb2rSgoEsmbFwISaYJujIrU0QG5vUWKcYA0lwNfq5xzve2LVk1UsCKL4xK/kdc
-         N/OuqxcjY/u4jgupx0BBvHusuUOPCvk6jD/WEA5gxOesOD/1pt/uvCv1ktHwRMLijXdP
-         rY+A==
-X-Gm-Message-State: AOAM530cpYfZWgSw2V6EADGxbMd+NQ2Vbr1S4d87lsyqeOmAaD9G0Gtc
-        hC7123nxvLeN6m3xNDJvWOaJFg==
-X-Google-Smtp-Source: ABdhPJzB9kZCiPNVRCRgOj5KpMPtb6jZTEiWIL2vVd2Ge5yGwr0q0OgrFnxxtDDpv23Msgbzlkcb2Q==
-X-Received: by 2002:a05:6000:3c6:b0:1e4:a380:bb53 with SMTP id b6-20020a05600003c600b001e4a380bb53mr20490779wrg.559.1645554754454;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Uk23sL6XdP5uOodAkzhoIbLjps/F/rWwEdSM/N8Negs=;
+        b=c2ZJD8zXpgJEexurTDwZEVx21db/u+YbRsvk2Wdo80zdLZlyWyU751aI+Hhq+0zuSC
+         O16UBBwJyeJhsH6xekjmaw9SHIpfHCdjyn3/XHel0FEoJ8kxA318nFLoQ1ziOYSDhQJF
+         VGSCkWWEVTmKRBBiqMeIvnJu4u1Pc7z03KvRf+ibb8Ernr5EaOcnYE5LSNbmxWvoDHVW
+         RXTQfXQuX9cp6BjzlNNBnGw2Cnhi7BlQzlKpIk9kjmMIEuXcFwUXuOOZwMWX71A1oqdf
+         xM/yaQjBgLJBoqjgyaHXRX3yZ6fy+3tiyaE4hvOdM06MVR9qoLcp44kvBzCW16GS2glC
+         aPMQ==
+X-Gm-Message-State: AOAM5320Cxe8LxRbtvqg3y6kDD3O3s2jfLMg4dCoYoxB0NdIIhM8VtpH
+        ISTiXgVRkWSf0QFPIvo2NYqg5GGSYwFN/w==
+X-Google-Smtp-Source: ABdhPJxxy+FMhUzeRzoAW4fLU4Jyu+DAtMa5g9Cau5r9xporSq/MSEwX327uKdn+yq0HKFw2aVg9Dg==
+X-Received: by 2002:a17:902:7d83:b0:14e:f2f4:743 with SMTP id a3-20020a1709027d8300b0014ef2f40743mr24328453plm.107.1645554755212;
+        Tue, 22 Feb 2022 10:32:35 -0800 (PST)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id 16sm21889656pgz.76.2022.02.22.10.32.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Tue, 22 Feb 2022 10:32:34 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id l28sm57642165wrz.90.2022.02.22.10.32.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 10:32:34 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     broonie@kernel.org
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v2 8/9] ASoC: codecs: wcd934x: fix kcontrol max values
-Date:   Tue, 22 Feb 2022 18:32:11 +0000
-Message-Id: <20220222183212.11580-9-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220222183212.11580-1-srinivas.kandagatla@linaro.org>
-References: <20220222183212.11580-1-srinivas.kandagatla@linaro.org>
+Message-ID: <beb5eea9-5294-92a3-3dda-a50be71810ec@acm.org>
+Date:   Tue, 22 Feb 2022 10:32:33 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] scsi: docs: update notes about scsi_times_out
+Content-Language: en-US
+To:     Khazhismel Kumykov <khazhy@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hannes Reinecke <hare@suse.com>
+References: <20220219001601.3534043-1-khazhy@google.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220219001601.3534043-1-khazhy@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-set "HPH Type" Kcontrol max value of WCD_MBHC_HPH_STEREO instead of UINT_MAX.
-set "HPHL/R Impedance" Kcontrols max value to INT_MAX instead of UINT_MAX as
-max field is integer type.
+On 2/18/22 16:16, Khazhismel Kumykov wrote:
+> Most importantly: eh_timed_out() is not limited by scmd->allowed,
+> and can reset timer forever.
+> 
+> Fixes: c829c394165f ("[SCSI] FC transport : Avoid device offline cases by stalling aborts until device unblocked")
+> 
+> Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
 
-Without this patch amixer for these controls will show -1 as max value to userspace.
+No blank line between a "Fixes:" tag and a "Signed-off-by:" tag please. 
+Anyway:
 
-Fixes: 9fb9b1690f0b ("ASoC: codecs: wcd934x: add mbhc support")
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- sound/soc/codecs/wcd934x.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/sound/soc/codecs/wcd934x.c b/sound/soc/codecs/wcd934x.c
-index 6c468527fec6..f2674905a4a7 100644
---- a/sound/soc/codecs/wcd934x.c
-+++ b/sound/soc/codecs/wcd934x.c
-@@ -3023,14 +3023,14 @@ static int wcd934x_hph_impedance_get(struct snd_kcontrol *kcontrol,
- 	return 0;
- }
- static const struct snd_kcontrol_new hph_type_detect_controls[] = {
--	SOC_SINGLE_EXT("HPH Type", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPH Type", 0, 0, WCD_MBHC_HPH_STEREO, 0,
- 		       wcd934x_get_hph_type, NULL),
- };
- 
- static const struct snd_kcontrol_new impedance_detect_controls[] = {
--	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHL Impedance", 0, 0, INT_MAX, 0,
- 		       wcd934x_hph_impedance_get, NULL),
--	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, UINT_MAX, 0,
-+	SOC_SINGLE_EXT("HPHR Impedance", 0, 1, INT_MAX, 0,
- 		       wcd934x_hph_impedance_get, NULL),
- };
- 
--- 
-2.21.0
-
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
