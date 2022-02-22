@@ -2,153 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1612BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234420AbiBVQ5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:57:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41374 "EHLO
+        id S234422AbiBVQ5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:57:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234407AbiBVQ5K (ORCPT
+        with ESMTP id S233144AbiBVQ5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:57:10 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C2C2DD54
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:56:43 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id iq13-20020a17090afb4d00b001bc4437df2cso21007pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:56:43 -0800 (PST)
+        Tue, 22 Feb 2022 11:57:38 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC00716BFAD
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:57:11 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d07ae11460so145910127b3.7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sXnwIqemEC4VmrxMuG0rukm8/Qgs5rtWRkI7dl2HHXQ=;
-        b=ZErSsy2XtmemzMgltOpndEBcbJNGpdqZBal2hI3LVU0c7zhqOh08YrKILnGpQln1Yi
-         mDewIy3LB3YfwcJmuhLGM5tuujgcjVA0rYKlAD5QxAlNCFz5Vvy6aIhspLvEhLQCH4S/
-         4FOgRCJzZjq5gu2cIcaP1T3CCgMb9VRFzsQ91koKkcjss3QC3zoGXfeVIuVVtNrT6j5T
-         qVzqv3//MpEGLtziUQ1XpfMuErG2bv/92c1CPiGN4f37+yelbOe/O9fDz+fDtErwInM3
-         V90ZqhXw8oZlfv+zDq5ZzaAt4zmVoc0Vh7hdN25ypjoCzttupB5Si95j+AW83P/Q5ruV
-         5raA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=knnzmuohJ2ih2y2NTiUEzUxj92qYLV4FmoYUekHSvUw=;
+        b=tazhhxtdUk3rQttzgDm+V0n+dY4v2ZnB4i8xG8ax2HZdSoHAffJo42UTzU3IHvzAqj
+         CzDDQtHudJDmOpjvt+NTOxsHiMMcd5AR1KeV4KZ04Anj9Hvg2wo5WdkKx0uhJOAuX1UG
+         DMG5h+1UR544FLvyjxNA1/VvkZavi0pxiwKfoHP3qdoBAJ8849pS8kTNoGD5QX5f9/Px
+         48yknJpXBRw8xvBSwtZigYe1MGyv8eQBBWwjuMT8BSujAmFufVqRsnYE2LCmZqywZs8i
+         wJddWj0UZSrpFMMQpEijc1j/Xch9CqJ1J2YUynBS8lvvuY7OGu4etP9u4qE8wqmUHhIw
+         yLwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=sXnwIqemEC4VmrxMuG0rukm8/Qgs5rtWRkI7dl2HHXQ=;
-        b=qzAZ60YmYAHdrPK1pYQ4Arv9ghj11766KlhvvFDa1TARCaqRrjM6XSyOfwBbMfyZlw
-         x+3vpK3n3N8FPeIsxITJI3YneHoc25FAwI7Oc9EJEka8mTMf3CZXWrTPvdZRxHpUTtJr
-         BhSmzCKeA3XtFK5TCTlip5PE92IKEi6lc/CRmPZUg50JHZrPjfRbRujj2HeNH6pZdc5W
-         VCInR5bXGETfXgYMzlPJsmSTNea0qO2INrTpvQzOBgM8IziRsfjUt+c1gFxAZAq7LNVs
-         J5ry2cK7SodWdVNSdk+2jiArf/qS2tUYseYI4pjiuWQg7ANv99P/Fcn+t8n/62UTlLJj
-         PbGg==
-X-Gm-Message-State: AOAM531cLUoWtIgy1MiY5QSzfKs5IhYmryHuqFobNxyyL43Bf48wn2C1
-        xbZJU6wcrmEaJPDTaRYthrfmow==
-X-Google-Smtp-Source: ABdhPJyZQOpQ+rB+jjtMOmnLRlG8KDNzfoPLbi3mZ7nXtXFc4nnYVev3L2+NfU2W0IUbq3CGl6yXzQ==
-X-Received: by 2002:a17:903:31c8:b0:14e:db10:5b02 with SMTP id v8-20020a17090331c800b0014edb105b02mr23699396ple.81.1645549003167;
-        Tue, 22 Feb 2022 08:56:43 -0800 (PST)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id f3sm17912532pfe.137.2022.02.22.08.56.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 08:56:42 -0800 (PST)
-Date:   Tue, 22 Feb 2022 08:56:42 -0800 (PST)
-X-Google-Original-Date: Tue, 22 Feb 2022 08:55:55 PST (-0800)
-Subject:     Re: [PATCH 00/12] Initial support for Nuclei DemoSoC w/ UX600
-In-Reply-To: <6ff70d9fbbfcde860823aa24f0ce58a0a96a1c91.camel@nucleisys.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     icenowy@nucleisys.com, robh+dt@kernel.org
-Message-ID: <mhng-624abf1a-c1e9-40aa-97a5-07a5b9676942@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=knnzmuohJ2ih2y2NTiUEzUxj92qYLV4FmoYUekHSvUw=;
+        b=Xe91ktN0nz4w2p6o9pV1v0wApCbo6UaLaeuPYe45EQbzSk64vQZvT72LAB9FO9RrmX
+         xN5Wg8mZ4aBISVHiinRGGt5aYR5PpjCCM40Zl/0+mwECR581bifkJyipKWhc2dZ4RNL6
+         kvpoz2aXJbfrXoguQ4ynICHKbbZ3xNv5kdigDG5vE82x1Qj7MawXuufXgpHG2X+jk+17
+         j+Wpnt9zwM9+0lpFs5dhtiT3W2h9ZjwbVSXUZHTnncr0RCGmQjLoeoY8ljVa6lgbciA8
+         tdSSdwDokx577mWJZ+sFc4ipEXCP56AVkN3QJZGPtE5l0QRMZP1sMIYa0TqfFfPpjHQ6
+         c9Tw==
+X-Gm-Message-State: AOAM533n76ItwTRSOBBPIpeh+7FaW4OiC4J7NMks7qREoj/z04nSlB16
+        OZMv4ni8o3w57ntUAI41J0IBjqRWNd3WoztbZg==
+X-Google-Smtp-Source: ABdhPJxsM9h50TZI3B0JLyBOhiXv0umcrv6dsBugtZNBeZtlKN8O9HTo3L2ie+qpRSFxA92HD2CPBV8kKYkIX9PJAQ==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5db7:1235:b3dd:cfcb])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:4cc1:0:b0:623:ca02:c1e5 with SMTP
+ id z184-20020a254cc1000000b00623ca02c1e5mr22952503yba.95.1645549030879; Tue,
+ 22 Feb 2022 08:57:10 -0800 (PST)
+Date:   Tue, 22 Feb 2022 08:51:05 -0800
+In-Reply-To: <20220222165212.2005066-1-kaleshsingh@google.com>
+Message-Id: <20220222165212.2005066-5-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220222165212.2005066-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v2 4/9] KVM: arm64: Add guard pages for pKVM (protected nVHE)
+ hypervisor stack
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 19 Feb 2022 06:45:43 PST (-0800), icenowy@nucleisys.com wrote:
-> 在 2022-01-27星期四的 23:16 +0800，Icenowy Zheng写道：
->> This patchset adds support for Nuclei DemoSoC (which is an evaluation
->> platform made with Nuclei CPU cores and mainly peripherals in
->> original
->> Hummingbird E203 project, running on FPGA) with UX600 CPU cores.
->>
->> Most patches are for DT bindings, the remaining ones are adding a
->> Kconfig option and some DTS/DTSI files. The last one is a workaround
->> for
->> a severe bug in currently released versions of UX600, which is found
->> in 5.17 kernel, in which Sv48 support is added to Linux.
->>
->> Two non-technical patches are in this patchset too, for MAINTAINERS
->> and .mailmap items.
->
-> Ping, could any RISC-V maintainers review these patches, especially the
-> SATP workaround one?
+Maps the stack pages in the flexible private VA range and allocates
+guard pages below the stack as unbacked VA space. The stack is aligned
+to twice its size to aid overflow detection (implemented in a subsequent
+patch in the series).
 
-Sorry, I remember having written this but I guess it got lost.  IIRC my 
-main worry here was that, at least as far as I can tell, DemoSOC is an 
-FPGA development board.  If this is actually in production somewhere 
-then it's a different story, but IIUC the general rule is not to accept 
-code for development hardware that can be updated.
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/kvm/hyp/nvhe/setup.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
-Assuming DemoSOC can be updated, I'd also argue that we should have some 
-sort of version attached to it in DT entries.  Without some versioning 
-we'll end up lost when trying to later determine what we're actually 
-running on.
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index 27af337f9fea..69df21320b09 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -105,11 +105,28 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
+ 		if (ret)
+ 			return ret;
+ 
+-		end = (void *)per_cpu_ptr(&kvm_init_params, i)->stack_hyp_va;
++		/*
++		 * Private mappings are allocated upwards from __io_map_base
++		 * so allocate the guard page first then the stack.
++		 */
++		start = (void *)pkvm_alloc_private_va_range(PAGE_SIZE, PAGE_SIZE);
++		if (IS_ERR_OR_NULL(start))
++			return PTR_ERR(start);
++
++		/*
++		 * The stack is aligned to twice its size to facilitate overflow
++		 * detection.
++		 */
++		end = (void *)per_cpu_ptr(&kvm_init_params, i)->stack_pa;
+ 		start = end - PAGE_SIZE;
+-		ret = pkvm_create_mappings(start, end, PAGE_HYP);
+-		if (ret)
+-			return ret;
++		start = (void *)__pkvm_create_private_mapping((phys_addr_t)start,
++					PAGE_SIZE, PAGE_SIZE * 2, PAGE_HYP);
++		if (IS_ERR_OR_NULL(start))
++			return PTR_ERR(start);
++		end = start + PAGE_SIZE;
++
++		/* Update stack_hyp_va to end of the stack's private VA range */
++		per_cpu_ptr(&kvm_init_params, i)->stack_hyp_va = (unsigned long) end;
+ 	}
+ 
+ 	/*
+-- 
+2.35.1.473.g83b2b277ed-goog
 
-As far as the errata goes: it looks fine to me, but I'd like to see some 
-sort of description of what the errata actually is (ie, some 
-documentation from the manufacturer).  I know that's not always 
-possible, but without some desciption of what the bug is it gets tricky 
-to mainain this sort of stuff.  For example: we've got sv57 patches 
-now, so how do I know what to do with them on this target?
-
->
->>
->> Icenowy Zheng (12):
->>   dt-bindings: vendor-prefixes: add Nuclei
->>   RISC-V: add Nuclei SoC Kconfig option
->>   dt-bindings: riscv: add compatible strings for Nuclei UX600 series
->>   dt-bindings: timer: add compatible for Nuclei UX600 CLINT-compat
->> timer
->>   dt-bindings: interrupt-controller: add compatible string for UX600
->>     PLIC
->>   dt-bindings: serial: add compatible string for Nuclei DemoSoC UART
->>   dt-bindings: spi: add compatible string for Nuclei DemoSoC SPI
->>   dt-bindings: riscv: add binding for Nuclei platform boards
->>   riscv: dts: add device tree for Nuclei DemoSoC w/ UX600 on DDR200T
->>   RISC-V: workaround Nuclei UX600 cores with broken SATP CSR
->>   MAINTAINERS: add myself as Nuclei SoCs/CPUs supporter
->>   mailmap: add Icenowy Zheng's Nuclei mail addresses
->>
->>  .mailmap                                      |  1 +
->>  .../sifive,plic-1.0.0.yaml                    |  1 +
->>  .../devicetree/bindings/riscv/cpus.yaml       |  7 ++
->>  .../devicetree/bindings/riscv/nuclei.yaml     | 27 ++++++++
->>  .../bindings/serial/sifive-serial.yaml        |  1 +
->>  .../devicetree/bindings/spi/spi-sifive.yaml   |  1 +
->>  .../bindings/timer/sifive,clint.yaml          |  1 +
->>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
->>  MAINTAINERS                                   |  7 ++
->>  arch/riscv/Kconfig.socs                       |  6 ++
->>  arch/riscv/boot/dts/Makefile                  |  1 +
->>  arch/riscv/boot/dts/nuclei/Makefile           |  2 +
->>  .../dts/nuclei/nuclei-demosoc-ddr200t.dtsi    | 41 ++++++++++++
->>  .../nuclei/nuclei-demosoc-ux600-ddr200t.dts   | 13 ++++
->>  .../boot/dts/nuclei/nuclei-demosoc-ux600.dtsi | 49 ++++++++++++++
->>  .../riscv/boot/dts/nuclei/nuclei-demosoc.dtsi | 67
->> +++++++++++++++++++
->>  arch/riscv/include/asm/vendorid_list.h        |  1 +
->>  arch/riscv/mm/init.c                          | 17 +++++
->>  18 files changed, 245 insertions(+)
->>  create mode 100644
->> Documentation/devicetree/bindings/riscv/nuclei.yaml
->>  create mode 100644 arch/riscv/boot/dts/nuclei/Makefile
->>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
->> ddr200t.dtsi
->>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-ux600-
->> ddr200t.dts
->>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc-
->> ux600.dtsi
->>  create mode 100644 arch/riscv/boot/dts/nuclei/nuclei-demosoc.dtsi
->>
