@@ -2,148 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C916C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiBVKzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        id S231534AbiBVKzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:55:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiBVKzO (ORCPT
+        with ESMTP id S231533AbiBVKzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:55:14 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12335158DA3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:54:47 -0800 (PST)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21M9PpLE004215;
-        Tue, 22 Feb 2022 11:54:15 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=eyPV2WHrs60DIefFS3PzEvweoMxStSGvtgWsUpYbsgQ=;
- b=c+16qZyVN9Tj5TaYjnG/16ROtJ1e/mpPK0NFcoCu/9/bwNnW3wxw4uF4uOmKeMk0e3Gh
- JGA7tEpo61C4wHtAs+cXJjNldTK0I07mKwOQIdBPfOCBabMRVbfEPosl21X5JUahVsce
- iQ29O2rWmvfH+3+vDti1nsVnPZpRRkH5QQyAQSuY+4UeG2TYrv6k3t2TKoxODI6Odiqm
- PmKoFN1ya63dU71s9G3tcuWDEiJZBQfVPz5zycXf75TY9Pp2frk2F46XLMZUWMpcxQo7
- UOHq6k7sytmIy+K2PB7wijEkYYmu565acr4XlItWA0xbK6QdNSN6r1FCiFowMf3TGNb9 Aw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ecq13jjsa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 11:54:15 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 67229100034;
-        Tue, 22 Feb 2022 11:54:13 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node1.st.com [10.75.127.4])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 53FB221B52E;
-        Tue, 22 Feb 2022 11:54:13 +0100 (CET)
-Received: from lmecxl0993.lme.st.com (10.75.127.45) by SFHDAG2NODE1.st.com
- (10.75.127.4) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 22 Feb
- 2022 11:54:12 +0100
-Subject: Re: [PATCH] drm/stm: Avoid using val uninitialized in
- ltdc_set_ycbcr_config()
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>
-CC:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>
-References: <20220207165304.1046867-1-nathan@kernel.org>
- <CAKwvOdkXe8CB3QGe2e6Fhz8_SLOsOpcMumoKBiAzGE_VTXCkVg@mail.gmail.com>
-From:   Philippe CORNU <philippe.cornu@foss.st.com>
-Message-ID: <430ee06d-04e7-3b8b-bf11-48a7b62eaf18@foss.st.com>
-Date:   Tue, 22 Feb 2022 11:54:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 22 Feb 2022 05:55:17 -0500
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95977158DA3;
+        Tue, 22 Feb 2022 02:54:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vCY3PKWG+UyDYeceDiVl2nmf3pfgqjVMkazFF1HRiGE=; b=fp+sOp2QXbG2fhZ5uSWJnQm0Od
+        r01zdLCfBd72Th7x54Og+EMBPIKs0Xyj5pPrny6ROjjN8iaBj8BkCw/oz6GOoTGgMT66EKRxdpqHD
+        hJVcyt55+nS3lSn7cs/GIDpxA+VVFNUeQ9Low30sxe/XaW70tIc+AK/MRL8OI0GdzOWd6Pa/Y5uyH
+        jEhHvlCQ7nFWJ/9KZorN6VPqr69Hkn5k9oq6eYRXK6S0TYPGOBAsrqgKBkzUx7vA3NE1IjNXIQF8J
+        /Bw0OtrIyZpf27R0izRIodNVmSjfeAnHLG7ry8gq0D7VTMoKsNfDtcCPlYw6qzh9/1hxpCLOT9Ir/
+        DXof/SLA==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nMSod-0000Po-2Q; Tue, 22 Feb 2022 12:54:43 +0200
+Message-ID: <b947e0b2-a78d-bacf-0d78-b5d57e821e6e@kapsi.fi>
+Date:   Tue, 22 Feb 2022 12:54:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKwvOdkXe8CB3QGe2e6Fhz8_SLOsOpcMumoKBiAzGE_VTXCkVg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE1.st.com
- (10.75.127.4)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-22_02,2022-02-21_02,2021-12-02_01
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
+Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-9-mperttunen@nvidia.com>
+ <b1df816b-6838-c435-1a23-5029144e4cfe@gmail.com>
+ <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
+ <5d1b6e82-2c9d-8388-697f-0d7305a1206f@kapsi.fi>
+ <ee648994-b296-2ac4-a676-ddcac463a428@gmail.com>
+ <30033f5b-3fd1-22c7-896b-af034a4041df@kapsi.fi>
+ <4352fda7-ecb6-4a5e-7d6c-a50537d8eaff@gmail.com>
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <4352fda7-ecb6-4a5e-7d6c-a50537d8eaff@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/7/22 8:44 PM, Nick Desaulniers wrote:
-> On Mon, Feb 7, 2022 at 8:53 AM Nathan Chancellor <nathan@kernel.org> wrote:
+On 2/22/22 12:46, Dmitry Osipenko wrote:
+> 22.02.2022 11:27, Mikko Perttunen пишет:
+>> On 2/21/22 22:10, Dmitry Osipenko wrote:
+>>> 21.02.2022 14:44, Mikko Perttunen пишет:
+>>>> On 2/19/22 20:54, Dmitry Osipenko wrote:
+>>>>> 19.02.2022 21:49, Dmitry Osipenko пишет:
+>>>>>> 18.02.2022 14:39, Mikko Perttunen пишет:
+>>>>>>> +static int vic_get_streamid_offset(struct tegra_drm_client *client)
+>>>>>>> +{
+>>>>>>> +    struct vic *vic = to_vic(client);
+>>>>>>> +    int err;
+>>>>>>> +
+>>>>>>> +    err = vic_load_firmware(vic);
+>>>>>>
+>>>>>> You can't invoke vic_load_firmware() while RPM is suspended. Either
+>>>>>> replace this with RPM get/put or do something else.
+>>>>
+>>>> Why not, I'm not seeing any HW accesses in vic_load_firmware? Although
+>>>> it looks like it might race with the vic_load_firmware call in
+>>>> vic_runtime_resume which probably needs to be fixed.
+>>>
+>>> It was not clear from the function's name that h/w is untouched, I read
+>>> "load" as "upload" and then looked at vic_runtime_resume(). I'd rename
+>>> vic_load_firmware() to vic_prepare_firmware_image().
+>>>
+>>> And yes, technically lock is needed.
 >>
->> Clang warns:
->>
->>    drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
->>            default:
->>            ^~~~~~~
->>    drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
->>            val |= LxPCR_YCEN;
->>            ^~~
->>    drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
->>            u32 val;
->>                   ^
->>                    = 0
->>    1 warning generated.
->>
->> Use a return instead of break in the default case to fix the warning.
->> Add an error message so that this return is not silent, which could hide
->> issues in the future.
->>
->> Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
->> Link: https://github.com/ClangBuiltLinux/linux/issues/1575
->> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
->> ---
->>   drivers/gpu/drm/stm/ltdc.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
->> index 5eeb32c9c9ce..447ddde1786c 100644
->> --- a/drivers/gpu/drm/stm/ltdc.c
->> +++ b/drivers/gpu/drm/stm/ltdc.c
->> @@ -624,7 +624,8 @@ static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fm
->>                  break;
->>          default:
->>                  /* RGB or not a YCbCr supported format */
->> -               break;
->> +               drm_err(plane->dev, "Unsupported pixel format: %u\n", drm_pix_fmt);
+>> Yep, I'll consider renaming it.
 > 
-> This is fine, but in the future you should add an explicit
-> #include <drm/drm_print.h>
-> to avoid implicit header dependencies (like the ones that Mingo is
-> trying to detangle) for the declaration of drm_err. `drm_vprintf`
-> needs it, too.
+> Looking at this all again, I'd suggest to change:
 > 
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> int get_streamid_offset(client)
 > 
-
-Hi Nick,
-and thank you for having pointing this.
-
-Hi Nathan,
-May I ask you please to update your patch changing drm_err(plane->dev, ) 
-with DRM_ERROR().
-
-
-Big thank you,
-
-Philippe :-)
-
-
-
->> +               return;
->>          }
->>
->>          /* Enable limited range */
->>
->> base-commit: 542898c5aa5c6a3179dffb1d1606884a63f75fed
->> --
->> 2.35.1
->>
+> to:
 > 
+> int get_streamid_offset(client, *offset)
 > 
+> and bail out if get_streamid_offset() returns error. It's never okay to
+> ignore errors.
+
+Sure, seems reasonable. We'll still need some error code to indicate 
+that context isolation isn't available for the engine and continue on in 
+that case but that's better than just ignoring all of them.
+
+Mikko
