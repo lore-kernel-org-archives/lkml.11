@@ -2,142 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67181C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234446AbiBVQ77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:59:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
+        id S234461AbiBVRAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:00:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbiBVQ75 (ORCPT
+        with ESMTP id S232427AbiBVRAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:59:57 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CE116C4D1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:59:32 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6994a6942so144242377b3.17
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:59:32 -0800 (PST)
+        Tue, 22 Feb 2022 12:00:06 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC3716C4F5;
+        Tue, 22 Feb 2022 08:59:40 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id r7so15596318iot.3;
+        Tue, 22 Feb 2022 08:59:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=kA1uHTXTZgvCDEwUv0Venj02VbjFVl5MyBDxltrhOyc=;
-        b=NP6fnietNid07WODom2crvgVApuYNwyBc+vaQeT9ELb0Wby0y027V1WoutortBDdER
-         6VKH2m5g/hhqE8jP+GV8Z52SXKndZFpGpqKGnvqTJ6saOgO9yiXq/Sl8KOE48ShXSFrf
-         Yd/GQs7iTARZWcbcAbs2DZcziHvlIf4ws8th2T86PRoxGLRCAo79SHT5a0UzBseydVww
-         c/kdTBUTDmKW4WhBmbRdCfs4Sm1ZyK65IyLMvKPqQFMBa2uiSRCXXe8ja7vMgkYdHVOd
-         FDQ7AFIgQCuxZCe7VWKGtZS0vLPpQ4mLhJFEH4IE0gr/JO65ZVTSGIb2gzhuMTjBEe1w
-         9t+A==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kUhUIIyA9GUDM8KAXwt3EGlZrHMsIuoyJtppWvJlpD8=;
+        b=CDa4MR96luDCq3/3+R1N8T0Pu1JW9iXOgvzqQpbn2Z14ilhGhdOncz7u8Dpe8sej6G
+         9ri5Lc4CH1xQfBxDfaLGxR/knU8dI9COjumA2Ekkt4tJbfqAfDLX0R10dy1xTOAV129/
+         x8WLL8ezTrhtbU7BPvTNOrR2fZOkPTvjZeyq3bF+x98VRTqC6B+i0zvS0VOKjbSeQspM
+         UODPTZRrLHrVKjOwc7Evd3ajetOcKlAjfijWUq8bfAYEatcZLVZ5ReZAWQ6uxkwFfOPI
+         2OfMKZS4h8nc/clDlpskPws0oHuNAbsIfBX/SK2ZQFFBPao8PU3yBmy2TTnzj2l1iSoy
+         y48g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=kA1uHTXTZgvCDEwUv0Venj02VbjFVl5MyBDxltrhOyc=;
-        b=eDjOWfIo2bmmatAkxeRJT9A2HVV0AO7Djm8cCgheIbzbt7TOZVPEi9XYBJm6REpUgt
-         kbrMz6/RJHDxAX6fswwzKSRv95B4Z35qH9RmNQqai9TZhxap59fs1ncu0OXFoZfOZS/o
-         dFC7RbioUBJoBACrpXTklOzcRsgT4pVEPO6kW5628WREQOZH/MBP6gtwdx1DT5nT9HPn
-         RepUzZPR7PN2AKd4AMuyW3dU7leenhgpcN4/T1Q0cM1AJQBN6GOB/Rce9141C3YDK4ts
-         S1nXg6PvGgOdZhGGCfvSPHvew4m5toCtdGttMGMq1QM5wvVwuMwWhd2EmDZwgxqiJgrI
-         i9sA==
-X-Gm-Message-State: AOAM533x02fkjgpRA55wHW0ED00fQtHyveRM1S/kmK1RHqSb6Ue0uku2
-        D8/h8lNid62yp1dve0BbwMqO5BaWOw2ADf9YTQ==
-X-Google-Smtp-Source: ABdhPJw2THd1z2iAbfih7pFjkHmBG5AlQKbmEqgBiWlGmwrM/dGUOKWBoivdDJ4o6t47SOdmT8K0alB2LRMYcbGgbA==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5db7:1235:b3dd:cfcb])
- (user=kaleshsingh job=sendgmr) by 2002:a81:138a:0:b0:2d6:b391:90cd with SMTP
- id 132-20020a81138a000000b002d6b39190cdmr23404107ywt.480.1645549171601; Tue,
- 22 Feb 2022 08:59:31 -0800 (PST)
-Date:   Tue, 22 Feb 2022 08:51:07 -0800
-In-Reply-To: <20220222165212.2005066-1-kaleshsingh@google.com>
-Message-Id: <20220222165212.2005066-7-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220222165212.2005066-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH v2 6/9] KVM: arm64: Detect and handle hypervisor stack overflows
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kUhUIIyA9GUDM8KAXwt3EGlZrHMsIuoyJtppWvJlpD8=;
+        b=IoLaZk5TzudpxyX34Ei0a3Bv+gmYW952ttK8s7pfzgPIifwJwAlQbMI57NHk7hUTDh
+         bQNa/5mE9eEWG9vN2BhGDjxq/GOKncmYRvGBow8iN7voRlX2iGes1Eqa4vc1Q2cqJ0y/
+         NdIbrASOSHx2NS6Mnkkoi0YDQ2ZxXopQoMuuxPzMfIxTF6n7fdbSfKpBnWEjFVcJrJB2
+         +Q+a37QTegoSI0NcZDA8KAqXpaS7Igzdq9tokoRTijTFXIRCrW+VWXYYfRSNtHoj3Whl
+         BnalcJYbysmhLLHrGuKE3Zx9Y9Aehfe8RdTVxFy30v9hI5UnQctGAQ29mmSvRvZe/Dkq
+         wbQA==
+X-Gm-Message-State: AOAM530X1W5WODtAnGE22ed0go82oyLdDvVphRhiG+0vyK6YvlNmNCfY
+        kKEMVhneSPO0PHh1/PhXn0IlONgP1nlielVN/h8=
+X-Google-Smtp-Source: ABdhPJyOix0MphY4qHD8XfOuBGs0S/4oSg4gAzztyQmn/MgeYmRbPXRpPA0Lye6W0eH522Agyz1bmc6W3MZDm7HoPEw=
+X-Received: by 2002:a05:6638:204d:b0:314:a290:48c with SMTP id
+ t13-20020a056638204d00b00314a290048cmr18055215jaj.264.1645549179943; Tue, 22
+ Feb 2022 08:59:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20220222095736.24898-1-ashimida@linux.alibaba.com>
+ <YhUMRoLDan7tJRiL@dev-arch.archlinux-ax161> <f44612ce-5bb1-da45-d6cb-39464898c4ff@roeck-us.net>
+In-Reply-To: <f44612ce-5bb1-da45-d6cb-39464898c4ff@roeck-us.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 22 Feb 2022 17:59:29 +0100
+Message-ID: <CANiq72nhu+CtYYNfWLYxf19OscoEEZj=TATM0SHNU8ic1iDhyQ@mail.gmail.com>
+Subject: Re: [PATCH] [PATCH] AARCH64: Add gcc Shadow Call Stack support
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Dan Li <ashimida@linux.alibaba.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Marco Elver <elver@google.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The hypervisor stacks (for both nVHE Hyp mode and nVHE protected mode)
-are aligned to twice their size (PAGE_SIZE), meaning that any valid stack
-address has PAGE_SHIFT bit as 0. This allows us to conveniently check for
-overflow in the exception entry without corrupting any GPRs. We won't
-recover from a stack overflow so panic the hypervisor.
+On Tue, Feb 22, 2022 at 5:48 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> The point here, I think, is to list the minimum gcc version.
+> It is going to be a long time until gcc 12.0 is the minimum version,
+> so I think it makes sense to list the minimum version number for
+> each compiler here.
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/kvm/hyp/nvhe/host.S   | 16 ++++++++++++++++
- arch/arm64/kvm/hyp/nvhe/switch.c |  5 +++++
- 2 files changed, 21 insertions(+)
+Yeah, please list the minimum version (ideally `>=` instead of `>`,
+with the actual version where it first appeared). It makes it easy to
+then remove things that are not needed anymore when the minimum GCC
+version is upgraded.
 
-diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
-index 3d613e721a75..78e4b612ac06 100644
---- a/arch/arm64/kvm/hyp/nvhe/host.S
-+++ b/arch/arm64/kvm/hyp/nvhe/host.S
-@@ -153,6 +153,10 @@ SYM_FUNC_END(__host_hvc)
- 
- .macro invalid_host_el2_vect
- 	.align 7
-+
-+	/* Test stack overflow without corrupting GPRs */
-+	test_sp_overflow PAGE_SHIFT, .L__hyp_sp_overflow\@
-+
- 	/* If a guest is loaded, panic out of it. */
- 	stp	x0, x1, [sp, #-16]!
- 	get_loaded_vcpu x0, x1
-@@ -165,6 +169,18 @@ SYM_FUNC_END(__host_hvc)
- 	 * been partially clobbered by __host_enter.
- 	 */
- 	b	hyp_panic
-+
-+.L__hyp_sp_overflow\@:
-+	/*
-+	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
-+	 * This corrupts the stack but is ok, since we won't be attempting
-+	 * any unwinding here.
-+	 */
-+	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
-+	mov	sp, x0
-+
-+	bl	hyp_panic_bad_stack
-+	ASM_BUG()
- .endm
- 
- .macro invalid_host_el1_vect
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index 6410d21d8695..5a2e1ab79913 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -369,6 +369,11 @@ void __noreturn hyp_panic(void)
- 	unreachable();
- }
- 
-+void __noreturn hyp_panic_bad_stack(void)
-+{
-+	hyp_panic();
-+}
-+
- asmlinkage void kvm_unexpected_el2_exception(void)
- {
- 	return __kvm_unexpected_el2_exception();
--- 
-2.35.1.473.g83b2b277ed-goog
-
+Cheers,
+Miguel
