@@ -2,174 +2,667 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD088C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0217C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233425AbiBVPWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:22:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        id S233443AbiBVPWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:22:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233420AbiBVPWC (ORCPT
+        with ESMTP id S233426AbiBVPWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:22:02 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B7585AEF3;
-        Tue, 22 Feb 2022 07:21:36 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E21CED1;
-        Tue, 22 Feb 2022 07:21:36 -0800 (PST)
-Received: from [10.57.9.152] (unknown [10.57.9.152])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A6C23F5A1;
-        Tue, 22 Feb 2022 07:21:33 -0800 (PST)
-Message-ID: <9cfe84b0-01bf-6e20-9839-5f597e7fa588@arm.com>
-Date:   Tue, 22 Feb 2022 15:21:32 +0000
+        Tue, 22 Feb 2022 10:22:10 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1115AEF3;
+        Tue, 22 Feb 2022 07:21:43 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K32vV1QdRz9sSX;
+        Tue, 22 Feb 2022 16:21:42 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wJikiS7v6eva; Tue, 22 Feb 2022 16:21:42 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32vV09jBz9sSP;
+        Tue, 22 Feb 2022 16:21:42 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EAE968B778;
+        Tue, 22 Feb 2022 16:21:41 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id teeleFAb8EY4; Tue, 22 Feb 2022 16:21:41 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9931F8B764;
+        Tue, 22 Feb 2022 16:21:41 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFLVGp1087894
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 16:21:31 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFLVMd1087893;
+        Tue, 22 Feb 2022 16:21:31 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] module: Move module's Kconfig item in kernel/module/
+Date:   Tue, 22 Feb 2022 16:21:22 +0100
+Message-Id: <4042712961d42186c449734c253511ea7076c780.1645543105.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [[PATCH v2 2/2] OPP: Add 'opp-microwatt' parsing for advanced EM
- registration
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, nm@ti.com, sboyd@kernel.org,
-        dianders@chromium.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20220222140746.12293-1-lukasz.luba@arm.com>
- <20220222140746.12293-3-lukasz.luba@arm.com> <YhT6EBzSE/7S3QqT@google.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <YhT6EBzSE/7S3QqT@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645543271; l=21712; s=20211009; h=from:subject:message-id; bh=E7/LAPa2w9iqId/Z/xj3Yl9/gSxWZ2DAzGuPW2LyZgQ=; b=0RBrwIY4Z7SZdr1RCYjPlYnCcPBte0/p+D/TJU+4K7Uqa8v8nxTJnVtxd6GuwUc5CakXswBsv52p h0Od+XR7DT8n8R99dnXMTsPYkV8UCoAW2ZS3DveOGsRsdKEcj5Kt
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthias,
+In init/Kconfig, the part dedicated to modules is quite large.
 
-On 2/22/22 14:58, Matthias Kaehlcke wrote:
-> On Tue, Feb 22, 2022 at 02:07:46PM +0000, Lukasz Luba wrote:
+Move it into a dedicated Kconfig in kernel/module/
 
-[snip]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+Was previously part of series "Miscellaneous cleanups"
 
->> +static int __maybe_unused
->> +_get_dt_power(unsigned long *mW, unsigned long *kHz, struct device *dev)
-> 
-> nit: the device is usually the first parameter. It's also the only true input
-> parameter of this function, most code puts input parameters first.
+ init/Kconfig          | 286 +-----------------------------------------
+ kernel/module/Kconfig | 286 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 287 insertions(+), 285 deletions(-)
+ create mode 100644 kernel/module/Kconfig
 
-Good point. I have internal patch set under review changing this. It's
-going to be changed and the 'dev' would be the 1st arg. I'll send this
-patch set as soon as this one gets queued into pm tree.
+diff --git a/init/Kconfig b/init/Kconfig
+index e9119bf54b1f..1c8828493385 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -2064,291 +2064,7 @@ config MODULE_SIG_FORMAT
+ 	def_bool n
+ 	select SYSTEM_DATA_VERIFICATION
+ 
+-menuconfig MODULES
+-	bool "Enable loadable module support"
+-	modules
+-	help
+-	  Kernel modules are small pieces of compiled code which can
+-	  be inserted in the running kernel, rather than being
+-	  permanently built into the kernel.  You use the "modprobe"
+-	  tool to add (and sometimes remove) them.  If you say Y here,
+-	  many parts of the kernel can be built as modules (by
+-	  answering M instead of Y where indicated): this is most
+-	  useful for infrequently used options which are not required
+-	  for booting.  For more information, see the man pages for
+-	  modprobe, lsmod, modinfo, insmod and rmmod.
+-
+-	  If you say Y here, you will need to run "make
+-	  modules_install" to put the modules under /lib/modules/
+-	  where modprobe can find them (you may need to be root to do
+-	  this).
+-
+-	  If unsure, say Y.
+-
+-if MODULES
+-
+-config MODULE_FORCE_LOAD
+-	bool "Forced module loading"
+-	default n
+-	help
+-	  Allow loading of modules without version information (ie. modprobe
+-	  --force).  Forced module loading sets the 'F' (forced) taint flag and
+-	  is usually a really bad idea.
+-
+-config MODULE_UNLOAD
+-	bool "Module unloading"
+-	help
+-	  Without this option you will not be able to unload any
+-	  modules (note that some modules may not be unloadable
+-	  anyway), which makes your kernel smaller, faster
+-	  and simpler.  If unsure, say Y.
+-
+-config MODULE_FORCE_UNLOAD
+-	bool "Forced module unloading"
+-	depends on MODULE_UNLOAD
+-	help
+-	  This option allows you to force a module to unload, even if the
+-	  kernel believes it is unsafe: the kernel will remove the module
+-	  without waiting for anyone to stop using it (using the -f option to
+-	  rmmod).  This is mainly for kernel developers and desperate users.
+-	  If unsure, say N.
+-
+-config MODVERSIONS
+-	bool "Module versioning support"
+-	help
+-	  Usually, you have to use modules compiled with your kernel.
+-	  Saying Y here makes it sometimes possible to use modules
+-	  compiled for different kernels, by adding enough information
+-	  to the modules to (hopefully) spot any changes which would
+-	  make them incompatible with the kernel you are running.  If
+-	  unsure, say N.
+-
+-config ASM_MODVERSIONS
+-	bool
+-	default HAVE_ASM_MODVERSIONS && MODVERSIONS
+-	help
+-	  This enables module versioning for exported symbols also from
+-	  assembly. This can be enabled only when the target architecture
+-	  supports it.
+-
+-config MODULE_REL_CRCS
+-	bool
+-	depends on MODVERSIONS
+-
+-config MODULE_SRCVERSION_ALL
+-	bool "Source checksum for all modules"
+-	help
+-	  Modules which contain a MODULE_VERSION get an extra "srcversion"
+-	  field inserted into their modinfo section, which contains a
+-    	  sum of the source files which made it.  This helps maintainers
+-	  see exactly which source was used to build a module (since
+-	  others sometimes change the module source without updating
+-	  the version).  With this option, such a "srcversion" field
+-	  will be created for all modules.  If unsure, say N.
+-
+-config MODULE_SIG
+-	bool "Module signature verification"
+-	select MODULE_SIG_FORMAT
+-	help
+-	  Check modules for valid signatures upon load: the signature
+-	  is simply appended to the module. For more information see
+-	  <file:Documentation/admin-guide/module-signing.rst>.
+-
+-	  Note that this option adds the OpenSSL development packages as a
+-	  kernel build dependency so that the signing tool can use its crypto
+-	  library.
+-
+-	  You should enable this option if you wish to use either
+-	  CONFIG_SECURITY_LOCKDOWN_LSM or lockdown functionality imposed via
+-	  another LSM - otherwise unsigned modules will be loadable regardless
+-	  of the lockdown policy.
+-
+-	  !!!WARNING!!!  If you enable this option, you MUST make sure that the
+-	  module DOES NOT get stripped after being signed.  This includes the
+-	  debuginfo strip done by some packagers (such as rpmbuild) and
+-	  inclusion into an initramfs that wants the module size reduced.
+-
+-config MODULE_SIG_FORCE
+-	bool "Require modules to be validly signed"
+-	depends on MODULE_SIG
+-	help
+-	  Reject unsigned modules or signed modules for which we don't have a
+-	  key.  Without this, such modules will simply taint the kernel.
+-
+-config MODULE_SIG_ALL
+-	bool "Automatically sign all modules"
+-	default y
+-	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
+-	help
+-	  Sign all modules during make modules_install. Without this option,
+-	  modules must be signed manually, using the scripts/sign-file tool.
+-
+-comment "Do not forget to sign required modules with scripts/sign-file"
+-	depends on MODULE_SIG_FORCE && !MODULE_SIG_ALL
+-
+-choice
+-	prompt "Which hash algorithm should modules be signed with?"
+-	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
+-	help
+-	  This determines which sort of hashing algorithm will be used during
+-	  signature generation.  This algorithm _must_ be built into the kernel
+-	  directly so that signature verification can take place.  It is not
+-	  possible to load a signed module containing the algorithm to check
+-	  the signature on that module.
+-
+-config MODULE_SIG_SHA1
+-	bool "Sign modules with SHA-1"
+-	select CRYPTO_SHA1
+-
+-config MODULE_SIG_SHA224
+-	bool "Sign modules with SHA-224"
+-	select CRYPTO_SHA256
+-
+-config MODULE_SIG_SHA256
+-	bool "Sign modules with SHA-256"
+-	select CRYPTO_SHA256
+-
+-config MODULE_SIG_SHA384
+-	bool "Sign modules with SHA-384"
+-	select CRYPTO_SHA512
+-
+-config MODULE_SIG_SHA512
+-	bool "Sign modules with SHA-512"
+-	select CRYPTO_SHA512
+-
+-endchoice
+-
+-config MODULE_SIG_HASH
+-	string
+-	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
+-	default "sha1" if MODULE_SIG_SHA1
+-	default "sha224" if MODULE_SIG_SHA224
+-	default "sha256" if MODULE_SIG_SHA256
+-	default "sha384" if MODULE_SIG_SHA384
+-	default "sha512" if MODULE_SIG_SHA512
+-
+-choice
+-	prompt "Module compression mode"
+-	help
+-	  This option allows you to choose the algorithm which will be used to
+-	  compress modules when 'make modules_install' is run. (or, you can
+-	  choose to not compress modules at all.)
+-
+-	  External modules will also be compressed in the same way during the
+-	  installation.
+-
+-	  For modules inside an initrd or initramfs, it's more efficient to
+-	  compress the whole initrd or initramfs instead.
+-
+-	  This is fully compatible with signed modules.
+-
+-	  Please note that the tool used to load modules needs to support the
+-	  corresponding algorithm. module-init-tools MAY support gzip, and kmod
+-	  MAY support gzip, xz and zstd.
+-
+-	  Your build system needs to provide the appropriate compression tool
+-	  to compress the modules.
+-
+-	  If in doubt, select 'None'.
+-
+-config MODULE_COMPRESS_NONE
+-	bool "None"
+-	help
+-	  Do not compress modules. The installed modules are suffixed
+-	  with .ko.
+-
+-config MODULE_COMPRESS_GZIP
+-	bool "GZIP"
+-	help
+-	  Compress modules with GZIP. The installed modules are suffixed
+-	  with .ko.gz.
+-
+-config MODULE_COMPRESS_XZ
+-	bool "XZ"
+-	help
+-	  Compress modules with XZ. The installed modules are suffixed
+-	  with .ko.xz.
+-
+-config MODULE_COMPRESS_ZSTD
+-	bool "ZSTD"
+-	help
+-	  Compress modules with ZSTD. The installed modules are suffixed
+-	  with .ko.zst.
+-
+-endchoice
+-
+-config MODULE_DECOMPRESS
+-	bool "Support in-kernel module decompression"
+-	depends on MODULE_COMPRESS_GZIP || MODULE_COMPRESS_XZ
+-	select ZLIB_INFLATE if MODULE_COMPRESS_GZIP
+-	select XZ_DEC if MODULE_COMPRESS_XZ
+-	help
+-
+-	  Support for decompressing kernel modules by the kernel itself
+-	  instead of relying on userspace to perform this task. Useful when
+-	  load pinning security policy is enabled.
+-
+-	  If unsure, say N.
+-
+-config MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS
+-	bool "Allow loading of modules with missing namespace imports"
+-	help
+-	  Symbols exported with EXPORT_SYMBOL_NS*() are considered exported in
+-	  a namespace. A module that makes use of a symbol exported with such a
+-	  namespace is required to import the namespace via MODULE_IMPORT_NS().
+-	  There is no technical reason to enforce correct namespace imports,
+-	  but it creates consistency between symbols defining namespaces and
+-	  users importing namespaces they make use of. This option relaxes this
+-	  requirement and lifts the enforcement when loading a module.
+-
+-	  If unsure, say N.
+-
+-config MODPROBE_PATH
+-	string "Path to modprobe binary"
+-	default "/sbin/modprobe"
+-	help
+-	  When kernel code requests a module, it does so by calling
+-	  the "modprobe" userspace utility. This option allows you to
+-	  set the path where that binary is found. This can be changed
+-	  at runtime via the sysctl file
+-	  /proc/sys/kernel/modprobe. Setting this to the empty string
+-	  removes the kernel's ability to request modules (but
+-	  userspace can still load modules explicitly).
+-
+-config TRIM_UNUSED_KSYMS
+-	bool "Trim unused exported kernel symbols" if EXPERT
+-	depends on !COMPILE_TEST
+-	help
+-	  The kernel and some modules make many symbols available for
+-	  other modules to use via EXPORT_SYMBOL() and variants. Depending
+-	  on the set of modules being selected in your kernel configuration,
+-	  many of those exported symbols might never be used.
+-
+-	  This option allows for unused exported symbols to be dropped from
+-	  the build. In turn, this provides the compiler more opportunities
+-	  (especially when using LTO) for optimizing the code and reducing
+-	  binary size.  This might have some security advantages as well.
+-
+-	  If unsure, or if you need to build out-of-tree modules, say N.
+-
+-config UNUSED_KSYMS_WHITELIST
+-	string "Whitelist of symbols to keep in ksymtab"
+-	depends on TRIM_UNUSED_KSYMS
+-	help
+-	  By default, all unused exported symbols will be un-exported from the
+-	  build when TRIM_UNUSED_KSYMS is selected.
+-
+-	  UNUSED_KSYMS_WHITELIST allows to whitelist symbols that must be kept
+-	  exported at all times, even in absence of in-tree users. The value to
+-	  set here is the path to a text file containing the list of symbols,
+-	  one per line. The path can be absolute, or relative to the kernel
+-	  source tree.
+-
+-endif # MODULES
+-
+-config MODULES_TREE_LOOKUP
+-	def_bool y
+-	depends on PERF_EVENTS || TRACING || CFI_CLANG
++source "kernel/module/Kconfig"
+ 
+ config INIT_ALL_POSSIBLE
+ 	bool
+diff --git a/kernel/module/Kconfig b/kernel/module/Kconfig
+new file mode 100644
+index 000000000000..9177cb38ea2e
+--- /dev/null
++++ b/kernel/module/Kconfig
+@@ -0,0 +1,286 @@
++# SPDX-License-Identifier: GPL-2.0-only
++menuconfig MODULES
++	bool "Enable loadable module support"
++	modules
++	help
++	  Kernel modules are small pieces of compiled code which can
++	  be inserted in the running kernel, rather than being
++	  permanently built into the kernel.  You use the "modprobe"
++	  tool to add (and sometimes remove) them.  If you say Y here,
++	  many parts of the kernel can be built as modules (by
++	  answering M instead of Y where indicated): this is most
++	  useful for infrequently used options which are not required
++	  for booting.  For more information, see the man pages for
++	  modprobe, lsmod, modinfo, insmod and rmmod.
++
++	  If you say Y here, you will need to run "make
++	  modules_install" to put the modules under /lib/modules/
++	  where modprobe can find them (you may need to be root to do
++	  this).
++
++	  If unsure, say Y.
++
++if MODULES
++
++config MODULE_FORCE_LOAD
++	bool "Forced module loading"
++	default n
++	help
++	  Allow loading of modules without version information (ie. modprobe
++	  --force).  Forced module loading sets the 'F' (forced) taint flag and
++	  is usually a really bad idea.
++
++config MODULE_UNLOAD
++	bool "Module unloading"
++	help
++	  Without this option you will not be able to unload any
++	  modules (note that some modules may not be unloadable
++	  anyway), which makes your kernel smaller, faster
++	  and simpler.  If unsure, say Y.
++
++config MODULE_FORCE_UNLOAD
++	bool "Forced module unloading"
++	depends on MODULE_UNLOAD
++	help
++	  This option allows you to force a module to unload, even if the
++	  kernel believes it is unsafe: the kernel will remove the module
++	  without waiting for anyone to stop using it (using the -f option to
++	  rmmod).  This is mainly for kernel developers and desperate users.
++	  If unsure, say N.
++
++config MODVERSIONS
++	bool "Module versioning support"
++	help
++	  Usually, you have to use modules compiled with your kernel.
++	  Saying Y here makes it sometimes possible to use modules
++	  compiled for different kernels, by adding enough information
++	  to the modules to (hopefully) spot any changes which would
++	  make them incompatible with the kernel you are running.  If
++	  unsure, say N.
++
++config ASM_MODVERSIONS
++	bool
++	default HAVE_ASM_MODVERSIONS && MODVERSIONS
++	help
++	  This enables module versioning for exported symbols also from
++	  assembly. This can be enabled only when the target architecture
++	  supports it.
++
++config MODULE_REL_CRCS
++	bool
++	depends on MODVERSIONS
++
++config MODULE_SRCVERSION_ALL
++	bool "Source checksum for all modules"
++	help
++	  Modules which contain a MODULE_VERSION get an extra "srcversion"
++	  field inserted into their modinfo section, which contains a
++	  sum of the source files which made it.  This helps maintainers
++	  see exactly which source was used to build a module (since
++	  others sometimes change the module source without updating
++	  the version).  With this option, such a "srcversion" field
++	  will be created for all modules.  If unsure, say N.
++
++config MODULE_SIG
++	bool "Module signature verification"
++	select MODULE_SIG_FORMAT
++	help
++	  Check modules for valid signatures upon load: the signature
++	  is simply appended to the module. For more information see
++	  <file:Documentation/admin-guide/module-signing.rst>.
++
++	  Note that this option adds the OpenSSL development packages as a
++	  kernel build dependency so that the signing tool can use its crypto
++	  library.
++
++	  You should enable this option if you wish to use either
++	  CONFIG_SECURITY_LOCKDOWN_LSM or lockdown functionality imposed via
++	  another LSM - otherwise unsigned modules will be loadable regardless
++	  of the lockdown policy.
++
++	  !!!WARNING!!!  If you enable this option, you MUST make sure that the
++	  module DOES NOT get stripped after being signed.  This includes the
++	  debuginfo strip done by some packagers (such as rpmbuild) and
++	  inclusion into an initramfs that wants the module size reduced.
++
++config MODULE_SIG_FORCE
++	bool "Require modules to be validly signed"
++	depends on MODULE_SIG
++	help
++	  Reject unsigned modules or signed modules for which we don't have a
++	  key.  Without this, such modules will simply taint the kernel.
++
++config MODULE_SIG_ALL
++	bool "Automatically sign all modules"
++	default y
++	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
++	help
++	  Sign all modules during make modules_install. Without this option,
++	  modules must be signed manually, using the scripts/sign-file tool.
++
++comment "Do not forget to sign required modules with scripts/sign-file"
++	depends on MODULE_SIG_FORCE && !MODULE_SIG_ALL
++
++choice
++	prompt "Which hash algorithm should modules be signed with?"
++	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
++	help
++	  This determines which sort of hashing algorithm will be used during
++	  signature generation.  This algorithm _must_ be built into the kernel
++	  directly so that signature verification can take place.  It is not
++	  possible to load a signed module containing the algorithm to check
++	  the signature on that module.
++
++config MODULE_SIG_SHA1
++	bool "Sign modules with SHA-1"
++	select CRYPTO_SHA1
++
++config MODULE_SIG_SHA224
++	bool "Sign modules with SHA-224"
++	select CRYPTO_SHA256
++
++config MODULE_SIG_SHA256
++	bool "Sign modules with SHA-256"
++	select CRYPTO_SHA256
++
++config MODULE_SIG_SHA384
++	bool "Sign modules with SHA-384"
++	select CRYPTO_SHA512
++
++config MODULE_SIG_SHA512
++	bool "Sign modules with SHA-512"
++	select CRYPTO_SHA512
++
++endchoice
++
++config MODULE_SIG_HASH
++	string
++	depends on MODULE_SIG || IMA_APPRAISE_MODSIG
++	default "sha1" if MODULE_SIG_SHA1
++	default "sha224" if MODULE_SIG_SHA224
++	default "sha256" if MODULE_SIG_SHA256
++	default "sha384" if MODULE_SIG_SHA384
++	default "sha512" if MODULE_SIG_SHA512
++
++choice
++	prompt "Module compression mode"
++	help
++	  This option allows you to choose the algorithm which will be used to
++	  compress modules when 'make modules_install' is run. (or, you can
++	  choose to not compress modules at all.)
++
++	  External modules will also be compressed in the same way during the
++	  installation.
++
++	  For modules inside an initrd or initramfs, it's more efficient to
++	  compress the whole initrd or initramfs instead.
++
++	  This is fully compatible with signed modules.
++
++	  Please note that the tool used to load modules needs to support the
++	  corresponding algorithm. module-init-tools MAY support gzip, and kmod
++	  MAY support gzip, xz and zstd.
++
++	  Your build system needs to provide the appropriate compression tool
++	  to compress the modules.
++
++	  If in doubt, select 'None'.
++
++config MODULE_COMPRESS_NONE
++	bool "None"
++	help
++	  Do not compress modules. The installed modules are suffixed
++	  with .ko.
++
++config MODULE_COMPRESS_GZIP
++	bool "GZIP"
++	help
++	  Compress modules with GZIP. The installed modules are suffixed
++	  with .ko.gz.
++
++config MODULE_COMPRESS_XZ
++	bool "XZ"
++	help
++	  Compress modules with XZ. The installed modules are suffixed
++	  with .ko.xz.
++
++config MODULE_COMPRESS_ZSTD
++	bool "ZSTD"
++	help
++	  Compress modules with ZSTD. The installed modules are suffixed
++	  with .ko.zst.
++
++endchoice
++
++config MODULE_DECOMPRESS
++	bool "Support in-kernel module decompression"
++	depends on MODULE_COMPRESS_GZIP || MODULE_COMPRESS_XZ
++	select ZLIB_INFLATE if MODULE_COMPRESS_GZIP
++	select XZ_DEC if MODULE_COMPRESS_XZ
++	help
++
++	  Support for decompressing kernel modules by the kernel itself
++	  instead of relying on userspace to perform this task. Useful when
++	  load pinning security policy is enabled.
++
++	  If unsure, say N.
++
++config MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS
++	bool "Allow loading of modules with missing namespace imports"
++	help
++	  Symbols exported with EXPORT_SYMBOL_NS*() are considered exported in
++	  a namespace. A module that makes use of a symbol exported with such a
++	  namespace is required to import the namespace via MODULE_IMPORT_NS().
++	  There is no technical reason to enforce correct namespace imports,
++	  but it creates consistency between symbols defining namespaces and
++	  users importing namespaces they make use of. This option relaxes this
++	  requirement and lifts the enforcement when loading a module.
++
++	  If unsure, say N.
++
++config MODPROBE_PATH
++	string "Path to modprobe binary"
++	default "/sbin/modprobe"
++	help
++	  When kernel code requests a module, it does so by calling
++	  the "modprobe" userspace utility. This option allows you to
++	  set the path where that binary is found. This can be changed
++	  at runtime via the sysctl file
++	  /proc/sys/kernel/modprobe. Setting this to the empty string
++	  removes the kernel's ability to request modules (but
++	  userspace can still load modules explicitly).
++
++config TRIM_UNUSED_KSYMS
++	bool "Trim unused exported kernel symbols" if EXPERT
++	depends on !COMPILE_TEST
++	help
++	  The kernel and some modules make many symbols available for
++	  other modules to use via EXPORT_SYMBOL() and variants. Depending
++	  on the set of modules being selected in your kernel configuration,
++	  many of those exported symbols might never be used.
++
++	  This option allows for unused exported symbols to be dropped from
++	  the build. In turn, this provides the compiler more opportunities
++	  (especially when using LTO) for optimizing the code and reducing
++	  binary size.  This might have some security advantages as well.
++
++	  If unsure, or if you need to build out-of-tree modules, say N.
++
++config UNUSED_KSYMS_WHITELIST
++	string "Whitelist of symbols to keep in ksymtab"
++	depends on TRIM_UNUSED_KSYMS
++	help
++	  By default, all unused exported symbols will be un-exported from the
++	  build when TRIM_UNUSED_KSYMS is selected.
++
++	  UNUSED_KSYMS_WHITELIST allows to whitelist symbols that must be kept
++	  exported at all times, even in absence of in-tree users. The value to
++	  set here is the path to a text file containing the list of symbols,
++	  one per line. The path can be absolute, or relative to the kernel
++	  source tree.
++
++config MODULES_TREE_LOOKUP
++	def_bool y
++	depends on PERF_EVENTS || TRACING || CFI_CLANG
++
++endif # MODULES
+-- 
+2.34.1
 
-> 
->> +{
->> +	struct dev_pm_opp *opp;
->> +	unsigned long opp_freq;
->> +	u32 opp_power;
->> +	int ret;
->> +
->> +	/* Find the right frequency and related OPP */
->> +	opp_freq = *kHz * 1000;
->> +	opp = dev_pm_opp_find_freq_ceil(dev, &opp_freq);
->> +	if (IS_ERR(opp))
->> +		return -EINVAL;
->> +
->> +	ret = of_property_read_u32(opp->np, "opp-microwatt", &opp_power);
->> +	dev_pm_opp_put(opp);
->> +	if (ret)
->> +		return -EINVAL;
->> +
->> +	*kHz = opp_freq / 1000;
->> +	*mW = opp_power / 1000;
->> +
->> +	return 0;
->> +}
->> +
->>   /*
->>    * Callback function provided to the Energy Model framework upon registration.
->>    * This computes the power estimated by @dev at @kHz if it is the frequency
->> @@ -1445,6 +1479,33 @@ static int __maybe_unused _get_power(unsigned long *mW, unsigned long *kHz,
->>   	return 0;
->>   }
->>   
->> +static int _of_find_opp_microwatt_property(struct device *dev)
-> 
-> this function doesn't retrurn the property like of_find_property() does,
-> _of_has_opp_microwatt_property() would be a be a better name IMO. I'd
-> also suggest to change the return type to bool, since callers don't
-> really care about the specific error (which with the current code is
-> -EINVAL) in all cases.
-
-Agree, I'll change the name and return type.
-
-> 
-> 
->> +{
->> +	unsigned long freq = 0;
-> 
-> Does the compiler complain when the initialization is skipped? The
-> value of the variable is never read, only it's address is passed to
-> dev_pm_opp_find_freq_ceil().
-
-It has to be 0, since under the hood the dev_pm_opp_find_freq_ceil()
-is going to find first freq which is equal or bigger than this one.
-We actually use that ptr value in the _find_freq_ceil().
-
-> 
->> +	struct dev_pm_opp *opp;
->> +	struct device_node *np;
->> +	struct property *prop;
->> +
->> +	/* We only support "operating-points-v2" */
->> +	np = dev_pm_opp_of_get_opp_desc_node(dev);
->> +	if (!np)
->> +		return -EINVAL;
->> +
->> +	of_node_put(np);
->> +
->> +	/* Check if an OPP has needed property */
-> 
-> The comment doesn't add much value IMO
-
-Well, it just stress the 'an' as in this case it's the 1st OPP,
-due to the fact freq = 0 and finding the 'ceiling' on it.
-I'll remove it.
-
-> 
->> +	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
->> +	if (IS_ERR(opp))
->> +		return -EINVAL;
->> +
->> +	prop = of_find_property(opp->np, "opp-microwatt", NULL);
->> +	dev_pm_opp_put(opp);
->> +	if (!prop)
->> +		return -EINVAL;
->> +
->> +	return 0;
->> +}
->> +
->>   /**
->>    * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
->>    * @dev		: Device for which an Energy Model has to be registered
->> @@ -1474,6 +1535,15 @@ int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
->>   		goto failed;
->>   	}
->>   
->> +	/* First, try to find more precised Energy Model in DT */
->> +	if (!_of_find_opp_microwatt_property(dev)) {
->> +		struct em_data_callback em_dt_cb = EM_DATA_CB(_get_dt_power);
->> +
->> +		ret = em_dev_register_perf_domain(dev, nr_opp, &em_dt_cb,
->> +						  cpus, true);
->> +		return ret;
-> 
-> just 'return em_dev_register_perf_domain(...);'?
-
-true
-
-Thanks for the review! I'll address these comments in v3 if Viresh
-agrees with this new approach.
-
-Regards,
-Lukasz
