@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5423C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232438AbiBVN3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        id S232473AbiBVN3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:29:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232425AbiBVN3J (ORCPT
+        with ESMTP id S232441AbiBVN3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:29:09 -0500
+        Tue, 22 Feb 2022 08:29:12 -0500
 Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0EF939EF
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:44 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5C797B96
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:46 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E25AF4004D
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:28:42 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AA13E402D7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645536522;
-        bh=syQJnDJvIk7oDut501097JANOAQimJJ8XX+nOUPJjUo=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=SpwWIDK079KsZengzmEv7Z0tWqAsfgDccqZg/evf9Aep7QIQA6kKGZJ9qo9IMKUyL
-         ceIhsXdXVYbxsIvN28bBnyZQXkvvIYOmRSYWVZEwYWHQ5ipWWv2Tjpx1ecsjQHu2mi
-         VYexBbTwFXCi0Lz07FCHf3Ad2dHa/GjqWPOfODFikl7DHKj3y4OPkOQpFNxsdg2vqE
-         98wf7OMaNV26+zIxuFIzlICNTdIK0SW1ko7zuseztlVf2l265XqAOOYM/x5nu+gtkk
-         sFjnZBZdDw9OkkF2izQCFkTRRd4RnuzfC9MS/01Mmz1GgCfP0mGxo8xqZDnBDHnp25
-         dUHc22fReuncA==
-Received: by mail-ed1-f72.google.com with SMTP id r9-20020a05640251c900b00412d54ea618so6220854edd.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:42 -0800 (PST)
+        s=20210705; t=1645536523;
+        bh=6XeuQoqUzMUksn+ZuaBzNCPcuTk2LLoHTJkT0DsbDHY=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=VKZlwWJ7g99WEIyofZ1MqRBQ33PrEKi+p/W7fixuZQiEB/2X+gc7Gr1iVWam0e3WU
+         WitLCT92mAbGqReCm8y7JpBUs6MydgHKfP42Wa0RKywCLmybZslSxnPsQnxIWqbdMS
+         Wh2bH6R/iRuOS/f46edLeQ1SwRPr4WjRlIKwSj9k+Njfw/eMmhKurQEr8LVtP2bptT
+         DTj7i+gBtR9MDPAmIgpM00OfYXO9DwszqnfySNSSG2kdlGbws+f0lfuukin297dUab
+         baGeaV8BHHyE5Kz8XyC7Nvrtq2ne0jQnhlJAYDJ12SNAj7wLVDL2deWf7FjC029JJe
+         dFlN85JCHLnvw==
+Received: by mail-ej1-f72.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso5752725ejk.17
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=syQJnDJvIk7oDut501097JANOAQimJJ8XX+nOUPJjUo=;
-        b=BrrcG8RermHVqHKhEHghmXehVOPsUxvU+eugboSIe9TNiwSRw/NbJMYhS+WUTsmcKH
-         bsPqRyb8A8F+DGtBzz9mffAunBGe4JgECFos7updwQKyScarZ/SZ9X8j7MB1Dn2Fh5ms
-         lwvnBohIriXeCCttw8ykpTvNJjhyTJiVAKomdHW9HygsLQIY5YnYBsJ2vfTamjNmSW/X
-         aPsAlkOySF5IdG2juf1gn+bDXm0Fr9ya7p3c1Ki5l+xXahsE7yryLMBBcUJJIGZkmKbX
-         JI45w3TiTff3RGwES/v6p8o9FcXQY/ptjUq+jyN4m57Pc7MlmRyddSLCdDUqXI0m8+9Q
-         o7DA==
-X-Gm-Message-State: AOAM533J8Rg7aeNtlvqN1HmrLrBW7KGjLZjad4wF+uAE/I/s2z1enJNG
-        jM45YANGxo9mbVzFakKFNmYwGiOcBBiwdcZuFNhErf5QAG1nYbpkkxAO7g7Kz6wmdZVTu5wJe01
-        cpJoTxHT9vGCcZVvEtBx31URqb0Ge8OrmcFZpp8OxCQ==
-X-Received: by 2002:a17:906:d935:b0:6cc:fcfc:c286 with SMTP id rn21-20020a170906d93500b006ccfcfcc286mr19267967ejb.423.1645536520192;
-        Tue, 22 Feb 2022 05:28:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzyrFfwlMx3wyhaWOiWMYUuCZ2Sd0V6lJlo9wHP9II92B5eFvZo3+bHsg4+GgnT5+leTtK+fA==
-X-Received: by 2002:a17:906:d935:b0:6cc:fcfc:c286 with SMTP id rn21-20020a170906d93500b006ccfcfcc286mr19267945ejb.423.1645536520030;
-        Tue, 22 Feb 2022 05:28:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6XeuQoqUzMUksn+ZuaBzNCPcuTk2LLoHTJkT0DsbDHY=;
+        b=SN34Mg2aU7bfYTB+IcTpw4wtM7OhOObKwUhFZ+N4a8MHUMNeoakDfKpnM4ZxCfQKQC
+         rmZaZr8pmKaVyKsJUbMGUB8x/OiEQcLJMBUbViD8FK0K+/psz7LuEy/ZoJQTowe7YOhM
+         VJPoBOm3DDGmB6GTJ8PfqtH+wBD9hUJamiu7A5pz2nVNAC1n2AF3YjUX4t/XhUkdsFG9
+         ad/uFTkxu9nrYz3w+kj4EtTb8DygdZIsu2KGvn/o1qPo98JgURsMUZ94d2BatlASO60r
+         BJjdSiWmB5e/xCQWmzuwOoHWVy0V+5U1iPPWsN1LiuYUT+c1ksJzTGwyOJDLVQHDSoBN
+         Ev7A==
+X-Gm-Message-State: AOAM532XthiM/fiO7qABz678Isfrce+YvYW671IAFAobtXE+u9gfXtfq
+        ad9DEFuqgNFUqFrBjXvc7NjGFz1J4OgKs/PP4hHN7jhbZg7TbJyc7J9KzlG9QHAXhE99oo9yGzZ
+        99cRQLwpeqUeE/eYutoxXphdk778VDZs5/YsNzaW+bw==
+X-Received: by 2002:a17:906:1656:b0:6cf:571c:f91d with SMTP id n22-20020a170906165600b006cf571cf91dmr19602338ejd.377.1645536523432;
+        Tue, 22 Feb 2022 05:28:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJymWh8nTis0+whBJdlEUIaYxkLfPNPRZyT/AbiwgON8MIxb/gad15tlt22GRXjxl9FycTeAJw==
+X-Received: by 2002:a17:906:1656:b0:6cf:571c:f91d with SMTP id n22-20020a170906165600b006cf571cf91dmr19602313ejd.377.1645536523213;
+        Tue, 22 Feb 2022 05:28:43 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id c5sm10029875edk.43.2022.02.22.05.28.39
+        by smtp.gmail.com with ESMTPSA id c5sm10029875edk.43.2022.02.22.05.28.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 05:28:39 -0800 (PST)
+        Tue, 22 Feb 2022 05:28:42 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Abel Vesa <abel.vesa@nxp.com>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -72,45 +73,51 @@ To:     Abel Vesa <abel.vesa@nxp.com>,
         linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [RFT PATCH 0/3] Fix kfree() of const memory on setting driver_override
-Date:   Tue, 22 Feb 2022 14:27:04 +0100
-Message-Id: <20220222132707.266883-1-krzysztof.kozlowski@canonical.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org
+Subject: [RFT PATCH 2/3] slimbus: qcom-ngd: fix kfree() of const memory on setting driver_override
+Date:   Tue, 22 Feb 2022 14:27:06 +0100
+Message-Id: <20220222132707.266883-3-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220222132707.266883-1-krzysztof.kozlowski@canonical.com>
+References: <20220222132707.266883-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The driver_override field from platform driver should not be initialized
+from const memory because the core later kfree() it, for example when
+driver_override is set via sysfs.
 
-Drivers still seem to use driver_override incorrectly. Perhaps my old
-patch makes sense now?
-https://lore.kernel.org/all/1550484960-2392-3-git-send-email-krzk@kernel.org/
+Fixes: 917809e2280b ("slimbus: ngd: Add qcom SLIMBus NGD driver")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/slimbus/qcom-ngd-ctrl.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Not tested - please review and test (e.g. by writing to dirver_override
-sysfs entry with KASAN enabled).
-
-Dependencies
-============
-Patches are independent.
-
-Best regards,
-Krzysztof
-
-Krzysztof Kozlowski (3):
-  clk: imx: scu: fix kfree() of const memory on setting driver_override
-  slimbus: qcom-ngd: fix kfree() of const memory on setting
-    driver_override
-  rpmsg: fix kfree() of const memory on setting driver_override
-
- drivers/clk/imx/clk-scu.c       |  6 +++++-
- drivers/rpmsg/rpmsg_internal.h  | 12 ++++++++++--
- drivers/rpmsg/rpmsg_ns.c        | 13 +++++++++++--
- drivers/slimbus/qcom-ngd-ctrl.c |  9 ++++++++-
- 4 files changed, 34 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
+index 7040293c2ee8..5987d8f8a8fd 100644
+--- a/drivers/slimbus/qcom-ngd-ctrl.c
++++ b/drivers/slimbus/qcom-ngd-ctrl.c
+@@ -1455,7 +1455,14 @@ static int of_qcom_slim_ngd_register(struct device *parent,
+ 		}
+ 		ngd->id = id;
+ 		ngd->pdev->dev.parent = parent;
+-		ngd->pdev->driver_override = QCOM_SLIM_NGD_DRV_NAME;
++		ngd->pdev->driver_override = kstrdup(QCOM_SLIM_NGD_DRV_NAME,
++						     GFP_KERNEL);
++		if (!ngd->pdev->driver_override) {
++			platform_device_put(ngd->pdev);
++			kfree(ngd);
++			of_node_put(node);
++			return -ENOMEM;
++		}
+ 		ngd->pdev->dev.of_node = node;
+ 		ctrl->ngd = ngd;
+ 
 -- 
 2.32.0
 
