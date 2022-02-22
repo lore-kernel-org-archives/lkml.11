@@ -2,318 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F31AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbiBVKJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:09:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
+        id S230417AbiBVKK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:10:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230417AbiBVKIf (ORCPT
+        with ESMTP id S230442AbiBVKJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:08:35 -0500
-Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0789285E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:08:06 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K2vxc1PZtzMptvX;
-        Tue, 22 Feb 2022 11:08:04 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4K2vxY1MRrzlhSMD;
-        Tue, 22 Feb 2022 11:08:00 +0100 (CET)
-Message-ID: <fe4dd907-a687-d868-a3be-c1a8efd20678@digikod.net>
-Date:   Tue, 22 Feb 2022 11:18:17 +0100
+        Tue, 22 Feb 2022 05:09:49 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FE11C935;
+        Tue, 22 Feb 2022 02:09:23 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id DAA191F442C2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645524562;
+        bh=JxbXr9ACueoKHRqZRjfnrevBI7Jf+2vW88nX1Uz2Uiw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RiFfI5jInD+h90OnlAlKkj5f+sczBcQFJNBi9knbaDNKGUg2IgKrCVVelakbbbCt8
+         XgqWi16ODlh84vZmd1BEyWnPlKEkBtvctlyI14Pp6M0M+IY0gQZqhR20Em5c8ITtPp
+         NSoDxEHm2gVh6N8X6XYVRwvkupWYTf5C6oJstHt7/c/RsI6nynCoH2pn1gE3CioSTS
+         IBLlT7Pm3/2VZcFdR8ZD00LaEIlB0j8Qn961vdiZgW0cjiWhG49eIZrvEPoKePdIF9
+         vFlzkYKkrtRMD6mZ1PyOCQqNEjAoLKAKUifrz4qQRzyBDQF/d95Dzjtn6LiKnSRS9x
+         lDfbuzkKxCRDg==
+Message-ID: <3d333da3-82cb-acdd-fba0-d555d94fbfa2@collabora.com>
+Date:   Tue, 22 Feb 2022 11:09:19 +0100
 MIME-Version: 1.0
-User-Agent: 
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH V2 2/6] spi: mediatek: add IPM single mode design support
 Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-References: <20220221212522.320243-7-mic@digikod.net>
- <202202221149.qLO9DEqo-lkp@intel.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v1 06/11] landlock: Add support for file reparenting with
- LANDLOCK_ACCESS_FS_REFER
-In-Reply-To: <202202221149.qLO9DEqo-lkp@intel.com>
+To:     Leilk Liu <leilk.liu@mediatek.com>, Mark Brown <broonie@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+References: <20220221040717.3729-1-leilk.liu@mediatek.com>
+ <20220221040717.3729-3-leilk.liu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220221040717.3729-3-leilk.liu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This error is because clang does not behave like GCC: 
-check_access_path_dual() should be marked as __always_inline, or I 
-should change from BUILD_BUG_ON() to WARN_ON_ONCE() if needed. I'll fix 
-that in the next series.
-
-On 22/02/2022 04:16, kernel test robot wrote:
-> Hi "Mickaël,
+Il 21/02/22 05:07, Leilk Liu ha scritto:
+> this patch add the support of IPM single mode design.
 > 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on cfb92440ee71adcc2105b0890bb01ac3cddb8507]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Micka-l-Sala-n/Landlock-file-linking-and-renaming-support/20220222-051842
-> base:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
-> config: hexagon-randconfig-r002-20220221 (https://download.01.org/0day-ci/archive/20220222/202202221149.qLO9DEqo-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # https://github.com/0day-ci/linux/commit/c68b879f54d6262963d435a18cedbc238b7faeaf
->          git remote add linux-review https://github.com/0day-ci/linux
->          git fetch --no-tags linux-review Micka-l-Sala-n/Landlock-file-linking-and-renaming-support/20220222-051842
->          git checkout c68b879f54d6262963d435a18cedbc238b7faeaf
->          # save the config file to linux build tree
->          mkdir build_dir
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->>> security/landlock/fs.c:463:2: error: call to __compiletime_assert_228 declared with 'error' attribute: BUILD_BUG_ON failed: !layer_masks_dst_parent
->             BUILD_BUG_ON(!layer_masks_dst_parent);
->             ^
->     include/linux/build_bug.h:50:2: note: expanded from macro 'BUILD_BUG_ON'
->             BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->             ^
->     include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
->     #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->                                         ^
->     include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
->             _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->             ^
->     include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
->             __compiletime_assert(condition, msg, prefix, suffix)
->             ^
->     include/linux/compiler_types.h:327:4: note: expanded from macro '__compiletime_assert'
->                             prefix ## suffix();                             \
->                             ^
->     <scratch space>:170:1: note: expanded from here
->     __compiletime_assert_228
->     ^
->>> security/landlock/fs.c:670:2: error: call to __compiletime_assert_229 declared with 'error' attribute: BUILD_BUG_ON failed: !layer_masks_dom
->             BUILD_BUG_ON(!layer_masks_dom);
->             ^
->     include/linux/build_bug.h:50:2: note: expanded from macro 'BUILD_BUG_ON'
->             BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
->             ^
->     include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
->     #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
->                                         ^
->     include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
->             _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->             ^
->     include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
->             __compiletime_assert(condition, msg, prefix, suffix)
->             ^
->     include/linux/compiler_types.h:327:4: note: expanded from macro '__compiletime_assert'
->                             prefix ## suffix();                             \
->                             ^
->     <scratch space>:174:1: note: expanded from here
->     __compiletime_assert_229
->     ^
->     2 errors generated.
-> 
-> 
-> vim +/error +463 security/landlock/fs.c
-> 
->     401	
->     402	/**
->     403	 * check_access_path_dual - Check a source and a destination accesses
->     404	 *
->     405	 * @domain: Domain to check against.
->     406	 * @path: File hierarchy to walk through.
->     407	 * @child_is_directory: Must be set to true if the (original) leaf is a
->     408	 *     directory, false otherwise.
->     409	 * @access_request_dst_parent: Accesses to check, once @layer_masks_dst_parent
->     410	 *     is equal to @layer_masks_src_parent (if any).
->     411	 * @layer_masks_dst_parent: Pointer to a matrix of layer masks per access
->     412	 *     masks, identifying the layers that forbid a specific access.  Bits from
->     413	 *     this matrix can be unset according to the @path walk.  An empty matrix
->     414	 *     means that @domain allows all possible Landlock accesses (i.e. not only
->     415	 *     those identified by @access_request_dst_parent).  This matrix can
->     416	 *     initially refer to domain layer masks and, when the accesses for the
->     417	 *     destination and source are the same, to request layer masks.
->     418	 * @access_request_src_parent: Similar to @access_request_dst_parent but for an
->     419	 *     initial source path request.  Only taken into account if
->     420	 *     @layer_masks_src_parent is not NULL.
->     421	 * @layer_masks_src_parent: Similar to @layer_masks_dst_parent but for an
->     422	 *     initial source path walk.  This can be NULL if only dealing with a
->     423	 *     destination access request (i.e. not a rename nor a link action).
->     424	 * @layer_masks_child: Similar to @layer_masks_src_parent but only for the
->     425	 *     linked or renamed inode (without hierarchy).  This is only used if
->     426	 *     @layer_masks_src_parent is not NULL.
->     427	 *
->     428	 * This helper first checks that the destination has a superset of restrictions
->     429	 * compared to the source (if any) for a common path.  It then checks that the
->     430	 * collected accesses and the remaining ones are enough to allow the request.
->     431	 *
->     432	 * Returns:
->     433	 * - 0 if the access request is granted;
->     434	 * - -EACCES if it is denied because of access right other than
->     435	 *   LANDLOCK_ACCESS_FS_REFER;
->     436	 * - -EXDEV if the renaming or linking would be a privileged escalation
->     437	 *   (according to each layered policies), or if LANDLOCK_ACCESS_FS_REFER is
->     438	 *   not allowed by the source or the destination.
->     439	 */
->     440	static int check_access_path_dual(const struct landlock_ruleset *const domain,
->     441			const struct path *const path,
->     442			bool child_is_directory,
->     443			const access_mask_t access_request_dst_parent,
->     444			layer_mask_t (*const
->     445				layer_masks_dst_parent)[LANDLOCK_NUM_ACCESS_FS],
->     446			const access_mask_t access_request_src_parent,
->     447			layer_mask_t (*layer_masks_src_parent)[LANDLOCK_NUM_ACCESS_FS],
->     448			layer_mask_t (*layer_masks_child)[LANDLOCK_NUM_ACCESS_FS])
->     449	{
->     450		bool allowed_dst_parent = false, allowed_src_parent = false, is_dom_check;
->     451		struct path walker_path;
->     452		access_mask_t access_masked_dst_parent, access_masked_src_parent;
->     453	
->     454		if (!access_request_dst_parent && !access_request_src_parent)
->     455			return 0;
->     456		if (WARN_ON_ONCE(!domain || !path))
->     457			return 0;
->     458		if (is_nouser_or_private(path->dentry))
->     459			return 0;
->     460		if (WARN_ON_ONCE(domain->num_layers < 1))
->     461			return -EACCES;
->     462	
->   > 463		BUILD_BUG_ON(!layer_masks_dst_parent);
->     464		if (layer_masks_src_parent) {
->     465			if (WARN_ON_ONCE(!layer_masks_child))
->     466				return -EACCES;
->     467			access_masked_dst_parent = access_masked_src_parent =
->     468				get_handled_accesses(domain);
->     469			is_dom_check = true;
->     470		} else {
->     471			if (WARN_ON_ONCE(layer_masks_child))
->     472				return -EACCES;
->     473			access_masked_dst_parent = access_request_dst_parent;
->     474			access_masked_src_parent = access_request_src_parent;
->     475			is_dom_check = false;
->     476		}
->     477	
->     478		walker_path = *path;
->     479		path_get(&walker_path);
->     480		/*
->     481		 * We need to walk through all the hierarchy to not miss any relevant
->     482		 * restriction.
->     483		 */
->     484		while (true) {
->     485			struct dentry *parent_dentry;
->     486			const struct landlock_rule *rule;
->     487	
->     488			/*
->     489			 * If at least all accesses allowed on the destination are
->     490			 * already allowed on the source, respectively if there is at
->     491			 * least as much as restrictions on the destination than on the
->     492			 * source, then we can safely refer files from the source to
->     493			 * the destination without risking a privilege escalation.
->     494			 * This is crucial for standalone multilayered security
->     495			 * policies.  Furthermore, this helps avoid policy writers to
->     496			 * shoot themselves in the foot.
->     497			 */
->     498			if (is_dom_check && is_superset(child_is_directory,
->     499						layer_masks_dst_parent,
->     500						layer_masks_src_parent,
->     501						layer_masks_child)) {
->     502				allowed_dst_parent =
->     503					scope_to_request(access_request_dst_parent,
->     504							layer_masks_dst_parent);
->     505				allowed_src_parent =
->     506					scope_to_request(access_request_src_parent,
->     507							layer_masks_src_parent);
->     508	
->     509				/* Stops when all accesses are granted. */
->     510				if (allowed_dst_parent && allowed_src_parent)
->     511					break;
->     512	
->     513				/*
->     514				 * Downgrades checks from domain handled accesses to
->     515				 * requested accesses.
->     516				 */
->     517				is_dom_check = false;
->     518				access_masked_dst_parent = access_request_dst_parent;
->     519				access_masked_src_parent = access_request_src_parent;
->     520			}
->     521	
->     522			rule = find_rule(domain, walker_path.dentry);
->     523			allowed_dst_parent = unmask_layers(rule, access_masked_dst_parent,
->     524					layer_masks_dst_parent);
->     525			allowed_src_parent = unmask_layers(rule, access_masked_src_parent,
->     526					layer_masks_src_parent);
->     527	
->     528			/* Stops when a rule from each layer grants access. */
->     529			if (allowed_dst_parent && allowed_src_parent)
->     530				break;
->     531	
->     532	jump_up:
->     533			if (walker_path.dentry == walker_path.mnt->mnt_root) {
->     534				if (follow_up(&walker_path)) {
->     535					/* Ignores hidden mount points. */
->     536					goto jump_up;
->     537				} else {
->     538					/*
->     539					 * Stops at the real root.  Denies access
->     540					 * because not all layers have granted access.
->     541					 */
->     542					allowed_dst_parent = false;
->     543					break;
->     544				}
->     545			}
->     546			if (unlikely(IS_ROOT(walker_path.dentry))) {
->     547				/*
->     548				 * Stops at disconnected root directories.  Only allows
->     549				 * access to internal filesystems (e.g. nsfs, which is
->     550				 * reachable through /proc/<pid>/ns/<namespace>).
->     551				 */
->     552				allowed_dst_parent = !!(walker_path.mnt->mnt_flags &
->     553						MNT_INTERNAL);
->     554				break;
->     555			}
->     556			parent_dentry = dget_parent(walker_path.dentry);
->     557			dput(walker_path.dentry);
->     558			walker_path.dentry = parent_dentry;
->     559		}
->     560		path_put(&walker_path);
->     561	
->     562		if (allowed_dst_parent && allowed_src_parent)
->     563			return 0;
->     564	
->     565		/*
->     566		 * Unfortunately, we cannot prioritize EACCES over EXDEV for all
->     567		 * RENAME_EXCHANGE cases because it depends on the source and
->     568		 * destination order.  This could be changed with a new
->     569		 * security_path_rename hook implementation.
->     570		 */
->     571		if (likely(is_eacces(layer_masks_dst_parent, access_request_dst_parent)
->     572					|| is_eacces(layer_masks_src_parent,
->     573						access_request_src_parent)))
->     574			return -EACCES;
->     575	
->     576		/*
->     577		 * Gracefully forbids reparenting if the destination directory
->     578		 * hierarchy is not a superset of restrictions of the source directory
->     579		 * hierarchy, or if LANDLOCK_ACCESS_FS_REFER is not allowed by the
->     580		 * source or the destination.
->     581		 */
->     582		return -EXDEV;
->     583	}
->     584	
-> 
+> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
 > ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>   drivers/spi/spi-mt65xx.c | 103 +++++++++++++++++++++++++++++++++------
+>   1 file changed, 87 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+> index bbfeb8046c17..5fa677a589a4 100644
+> --- a/drivers/spi/spi-mt65xx.c
+> +++ b/drivers/spi/spi-mt65xx.c
+> @@ -31,6 +31,7 @@
+>   #define SPI_CFG2_REG                      0x0028
+>   #define SPI_TX_SRC_REG_64                 0x002c
+>   #define SPI_RX_DST_REG_64                 0x0030
+> +#define SPI_CFG3_IPM_REG                  0x0040
+>   
+>   #define SPI_CFG0_SCK_HIGH_OFFSET          0
+>   #define SPI_CFG0_SCK_LOW_OFFSET           8
+> @@ -48,6 +49,7 @@
+>   #define SPI_CFG1_CS_IDLE_MASK             0xff
+>   #define SPI_CFG1_PACKET_LOOP_MASK         0xff00
+>   #define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
+> +#define SPI_CFG1_IPM_PACKET_LENGTH_MASK   GENMASK(31, 16)
+>   #define SPI_CFG2_SCK_HIGH_OFFSET          0
+>   #define SPI_CFG2_SCK_LOW_OFFSET           16
+>   
+> @@ -68,7 +70,13 @@
+>   #define SPI_CMD_TX_ENDIAN            BIT(15)
+>   #define SPI_CMD_FINISH_IE            BIT(16)
+>   #define SPI_CMD_PAUSE_IE             BIT(17)
+> +#define SPI_CMD_IPM_NONIDLE_MODE     BIT(19)
+> +#define SPI_CMD_IPM_SPIM_LOOP        BIT(21)
+> +#define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
+>   
+> +#define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
+> +#define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
+> +#define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
+>   #define MT8173_SPI_MAX_PAD_SEL 3
+>   
+>   #define MTK_SPI_PAUSE_INT_STATUS 0x2
+> @@ -78,6 +86,7 @@
+>   
+>   #define MTK_SPI_MAX_FIFO_SIZE 32U
+>   #define MTK_SPI_PACKET_SIZE 1024
+> +#define MTK_SPI_IPM_PACKET_SIZE SZ_64K
+>   #define MTK_SPI_32BITS_MASK  (0xffffffff)
+>   
+>   #define DMA_ADDR_EXT_BITS (36)
+> @@ -93,6 +102,9 @@ struct mtk_spi_compatible {
+>   	bool dma_ext;
+>   	/* some IC no need unprepare SPI clk */
+>   	bool no_need_unprepare;
+> +	/* IPM design improve some single mode features */
+> +	bool ipm_design;
+> +
+>   };
+>   
+>   struct mtk_spi {
+> @@ -116,6 +128,12 @@ static const struct mtk_spi_compatible mt2712_compat = {
+>   	.must_tx = true,
+>   };
+>   
+> +static const struct mtk_spi_compatible ipm_compat_single = {
+> +	.enhance_timing = true,
+> +	.dma_ext = true,
+> +	.ipm_design = true,
+> +};
+> +
+>   static const struct mtk_spi_compatible mt6765_compat = {
+>   	.need_pad_sel = true,
+>   	.must_tx = true,
+> @@ -157,6 +175,9 @@ static const struct mtk_chip_config mtk_default_chip_info = {
+>   };
+>   
+>   static const struct of_device_id mtk_spi_of_match[] = {
+> +	{ .compatible = "mediatek,ipm-spi-single",
+> +		.data = (void *)&ipm_compat_single,
+> +	},
+>   	{ .compatible = "mediatek,mt2701-spi",
+>   		.data = (void *)&mtk_common_compat,
+>   	},
+> @@ -275,12 +296,11 @@ static int mtk_spi_set_hw_cs_timing(struct spi_device *spi)
+>   	return 0;
+>   }
+>   
+> -static int mtk_spi_prepare_message(struct spi_master *master,
+> -				   struct spi_message *msg)
+> +static int mtk_spi_hw_init(struct spi_master *master,
+> +			   struct spi_device *spi)
+>   {
+>   	u16 cpha, cpol;
+>   	u32 reg_val;
+> -	struct spi_device *spi = msg->spi;
+>   	struct mtk_chip_config *chip_config = spi->controller_data;
+>   	struct mtk_spi *mdata = spi_master_get_devdata(master);
+>   
+> @@ -288,6 +308,15 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+>   	cpol = spi->mode & SPI_CPOL ? 1 : 0;
+>   
+>   	reg_val = readl(mdata->base + SPI_CMD_REG);
+> +	if (mdata->dev_comp->ipm_design) {
+> +		/* SPI transfer without idle time until packet length done */
+> +		reg_val |= SPI_CMD_IPM_NONIDLE_MODE;
+> +		if (spi->mode & SPI_LOOP)
+> +			reg_val |= SPI_CMD_IPM_SPIM_LOOP;
+> +		else
+> +			reg_val &= ~SPI_CMD_IPM_SPIM_LOOP;
+> +	}
+> +
+>   	if (cpha)
+>   		reg_val |= SPI_CMD_CPHA;
+>   	else
+> @@ -344,18 +373,33 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+>   		writel(mdata->pad_sel[spi->chip_select],
+>   		       mdata->base + SPI_PAD_SEL_REG);
+>   
+> -	/* tick delay */
+> -	reg_val = readl(mdata->base + SPI_CFG1_REG);
+> -	reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
+> -	reg_val |= ((chip_config->tick_delay & 0x7)
+> -		<< SPI_CFG1_GET_TICK_DLY_OFFSET);
+> -	writel(reg_val, mdata->base + SPI_CFG1_REG);
+
+Hello Leilk,
+
+with this change, you are excluding this code from MT2712: is that
+intentional?
+If it is, then this should reside in a different commit with a Fixes
+tag, also explaining the reason for not setting the tick delay on
+that SoC.
+
+Also, please don't remove the /* tick delay */ comment.
+
+Regards,
+Angelo
+
+> +	if (mdata->dev_comp->enhance_timing) {
+> +		if (mdata->dev_comp->ipm_design) {
+> +			reg_val = readl(mdata->base + SPI_CMD_REG);
+> +			reg_val &= ~SPI_CMD_IPM_GET_TICKDLY_MASK;
+> +			reg_val |= ((chip_config->tick_delay & 0x7)
+> +				   << SPI_CMD_IPM_GET_TICKDLY_OFFSET);
+> +			writel(reg_val, mdata->base + SPI_CMD_REG);
+> +		} else {
+> +			reg_val = readl(mdata->base + SPI_CFG1_REG);
+> +			reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
+> +			reg_val |= ((chip_config->tick_delay & 0x7)
+> +				<< SPI_CFG1_GET_TICK_DLY_OFFSET);
+> +			writel(reg_val, mdata->base + SPI_CFG1_REG);
+> +		}
+> +	}
+>   
+>   	/* set hw cs timing */
+>   	mtk_spi_set_hw_cs_timing(spi);
+>   	return 0;
+>   }
+
