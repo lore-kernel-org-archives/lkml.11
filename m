@@ -2,211 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91EEDC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D199C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbiBVKW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:22:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S230281AbiBVKYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:24:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230493AbiBVKWo (ORCPT
+        with ESMTP id S229648AbiBVKYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:22:44 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAB37F6C4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:22:18 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id e140so39959709ybh.9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:22:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dOk3MW6B/NyVVBJL50jLGrFy/0FgLQ9TRGwL8yA7LU0=;
-        b=METOVduD6uHu6BMO8sk2i7SCoqfdilltqQcI7QxNKXlT7nqp4bSWO4o4yWe2A8PVHx
-         5iwwLgQDEOwTTP+CtKGZFQ34KaivpDdltSjDrteiibj9qw0nclmsWrTGu8BwayBySB69
-         3yuLiV5rihRBCGZtr4WCpZRcG5y7W6xbj4cobUXtDfQhOqtw5RJudj7aXVaw/ti7lhw/
-         ZsA4xhpIshbjKooh1jejWzJ86ZCAbTh9mxePPnkS0eGmDyOQuuf+iIqXQMM9i6zCBHaf
-         5VdhpOGo3UdAqhZ2CDEgFvNLccUWuOzu5ajT+maNEgvQbTWbObZKCvOFqVJu4ZK1woH/
-         8ZeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dOk3MW6B/NyVVBJL50jLGrFy/0FgLQ9TRGwL8yA7LU0=;
-        b=gTgo4wWle1OVp27ls3du0aMntWaOfj1aff2wz5li9Z65lBUga+Tgc8XWOcqKXkyYC7
-         GvBFFq0VD/Uc+TLCyhXMJ6lCgj9Xs9BFwu9EIMF5tk10QPrd94gSi2yxnQ2KenDmC038
-         2FXSWOugODJW6vCegcEi0FtPkKShCmgfE0djUKnhObIFotkfCN81PkMuiFzw1qIluT34
-         PPgJePUWLO8F2lojVzKgjEI6naAYOVPtFvGbG0Mhoal07gDAhfCbhYUtFfYm7M6aFeIo
-         gJQxafxxiJsfIU6B3+UxzrRC0cjkwD0t/G5X5USTLyitTfAyH0+X3bhmSZ++lTlMBBuZ
-         tmEw==
-X-Gm-Message-State: AOAM532LrKEiWpvVjp1sAwTcc56sNPCPrQldveJrAd/0hnw3c+QGUnYg
-        SdrYQUNXv2Tje4ewAPXFJUOYdpgRbiu1u3vNL6VvJ3CaJiVvsQ==
-X-Google-Smtp-Source: ABdhPJzB7JI4/P47Q8uNd79mHnTr8BDnzB/ag9zVlrbSgxcpRkHYnHuDfRT0i2gmdQt6hG94EeaHHU3WUbM8H36y9KM=
-X-Received: by 2002:a25:8c83:0:b0:621:8697:c27c with SMTP id
- m3-20020a258c83000000b006218697c27cmr22072849ybl.483.1645525337731; Tue, 22
- Feb 2022 02:22:17 -0800 (PST)
+        Tue, 22 Feb 2022 05:24:07 -0500
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46F283013;
+        Tue, 22 Feb 2022 02:23:42 -0800 (PST)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nMSKW-0005am-Cx; Tue, 22 Feb 2022 10:23:36 +0000
+Message-ID: <48e917d1-c012-29bc-d3be-b9ccb876a074@codethink.co.uk>
+Date:   Tue, 22 Feb 2022 10:23:35 +0000
 MIME-Version: 1.0
-References: <20220221084908.568970525@linuxfoundation.org>
-In-Reply-To: <20220221084908.568970525@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 22 Feb 2022 15:52:06 +0530
-Message-ID: <CA+G9fYvSYEAdLODkuQi-F97pLZkJEiB-V7AqZHgMeYs1-gGbXw@mail.gmail.com>
-Subject: Re: [PATCH 4.9 00/33] 4.9.303-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [[PATCHv3]] PCI: fu740: Force gen1 for initial device probe
+Content-Language: en-GB
+To:     paul.walmsley@sifive.com, greentime.hu@sifive.com
+Cc:     lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20220221203803.1333012-1-ben.dooks@codethink.co.uk>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <20220221203803.1333012-1-ben.dooks@codethink.co.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Feb 2022 at 14:22, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On 21/02/2022 20:38, Ben Dooks wrote:
+> The fu740 PCIe core does not probe any devices on the SiFive Unmatched
+> board without this fix from U-Boot (or having U-Boot explicitly start
+> the PCIe via either boot-script or user command).
+> 
+> The fix claims to set the link-speed to gen1 to get the probe
+> to work. As this is a copy from U-Boot, the code is assumed to be
+> correct and does fix the issue on the Unmatched. The code is at:
+> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c#L271
+> 
+> The code has been this way since the driver was commited in:
+> https://source.denx.de/u-boot/u-boot/-/commit/416395c772018c6bf52aad36aca163115001793f
 >
-> This is the start of the stable review cycle for the 4.9.303 release.
-> There are 33 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.9.303-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.9.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Apologies everyone, messed up sending v3 so re-sent as v4.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-## Build
-* kernel: 4.4.302
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.4.y
-* git commit: a09b2d8f61ea0e9ae735c400399b97966a9418d6
-* git describe: v4.4.302
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.4.y/build/v4.4.3=
-02
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
 
-## Test Regressions (compared to v4.4.299-114-g37c6a274092f)
-No test regressions found.
-
-## Metric Regressions (compared to v4.4.299-114-g37c6a274092f)
-No metric regressions found.
-
-## Test Fixes (compared to v4.4.299-114-g37c6a274092f)
-No test fixes found.
-
-## Metric Fixes (compared to v4.4.299-114-g37c6a274092f)
-No metric fixes found.
-
-## Test result summary
-total: 56789, pass: 45632, fail: 280, skip: 9521, xfail: 1356
-
-## Build Summary
-* arm: 129 total, 129 passed, 0 failed
-* arm64: 31 total, 31 passed, 0 failed
-* i386: 18 total, 18 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 22 total, 22 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 30 total, 24 passed, 6 failed
-
-## Test suites summary
-* fwts
-* kselftest-android
-* kselftest-bpf
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* ssuite
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
+https://www.codethink.co.uk/privacy.html
