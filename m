@@ -2,122 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FADC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3266C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234169AbiBVRBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 12:01:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
+        id S234464AbiBVRBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiBVRBS (ORCPT
+        with ESMTP id S231931AbiBVRBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 12:01:18 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E8E16E7CB;
-        Tue, 22 Feb 2022 09:00:51 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 797D65803B7;
-        Tue, 22 Feb 2022 12:00:50 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 22 Feb 2022 12:00:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=HtCItNyhGVUgQ9zYx
-        8y8HwkSSNP7qG6erjhX3gp1Vas=; b=GtZc3a+Qfwr7g0xbB/r/BXPgspmACWS5G
-        0OGqRVvN6z11OqHVovHGRWCIY+6qwMtxF85hTXbUfkCrF+fnjHoeZnPCv0XXOJla
-        0JkgBu9WCWEnKJottlEKs/Q4JTZdyLmnRmhTbDr+/rVr0IPN2yxgwBw/wMgTVpG8
-        C9DoX4S/LL3KjKX65DZDCRznCURUQokspAfI6u2Fi3Fx8wU6QTNyq8N5GoT7nieO
-        Yhhv/C7ifwD/9umjdWpzeNwMitCll2oBCOj6sJ8t/mdGGx5OHFJ+xV/TdaC/1R0N
-        6AUjtVDxl/Y72YPEjJVL0il7EKgeRDlxX1hKjl3laKNHeOagby5aA==
-X-ME-Sender: <xms:wRYVYiV488PJ8dsyWXC2-qZX4Ec6K41Dsf4gR_5L-9d82sciAItPsQ>
-    <xme:wRYVYumBrUxVr8yJp28gXjHjH6idO1Ji3PhD6ODs9V4bVAf8CwKGf-myJP2AHBedc
-    jQyhpQuubrzuUs>
-X-ME-Received: <xmr:wRYVYmb-w1BGYM1gutgPONq5dR0QQG6p26CwXhoUD4DKQDnERE5vPOkh4d_7pU4ztW3VGAKMjf_r8oAuyqgkzbGcag0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdelfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:whYVYpVh7rh-btnjQECit2ixdjjH1xEQgpb0OQe732sLUJXzafy88w>
-    <xmx:whYVYskuy1ClagUaAi7TsEOtjRvTRcRyXCCXBfOPZhK_9PsMx-ELbw>
-    <xmx:whYVYucdvuL-RBwSfTBPxtNiwaIxsdnMxtpGFdKjt1-cJflnmCUyjw>
-    <xmx:whYVYqpPNokjYGIilBHrkHosAHqdWOFV-0p14_H7TjNh5i0VZ3gNjw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Feb 2022 12:00:48 -0500 (EST)
-Date:   Tue, 22 Feb 2022 19:00:46 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v4 5/5] selftests: forwarding: tests of locked
- port feature
-Message-ID: <YhUWvhkhRVY+/Osd@shredder>
-References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
- <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
+        Tue, 22 Feb 2022 12:01:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B3B16E7DC;
+        Tue, 22 Feb 2022 09:01:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 131F6611EF;
+        Tue, 22 Feb 2022 17:01:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6580C340F3;
+        Tue, 22 Feb 2022 17:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645549267;
+        bh=39aGM7NlOoLZpgmNi6MB1SzF9U7sSJm7tFXEV8C9jgk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PpeSxOdgieBpb2HuJ2xeqElm5eBKelijp+KKuEHrsZVQf2uVih8WkryyO5VjnHslG
+         xhG1Ipx94wrXOt3k5GiH+oaL0ai0Cna2OdVMpphGkNqNdWOaZeMxcfRgIiIkbXJywM
+         oBjAO3qVoJMEqj8h5XU6/LVZjYyvQV0NI/p4Kqv+4eJaeb/ZYI/+0vPVAhICqC6DQg
+         kOlyjy6cELoOpT54nyXNx29QZMFk6U3y9JYG9ZBv5Wrzbp6m6OY6WwDiLaUd7a1yOr
+         iPtvNslEfFykVS0lHm0JT5Vp9sK52Xf+GwJDvQaADFJPn9AUKLgmevv+v/hU6QKMFC
+         vtoGfRQLae27w==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     corbet@lwn.net, linux-mm@kvack.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
+Subject: [PATCH 1/3] Docs/vm/damon: Call low level monitoring primitives the operations
+Date:   Tue, 22 Feb 2022 17:00:58 +0000
+Message-Id: <20220222170100.17068-2-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220222170100.17068-1-sj@kernel.org>
+References: <20220222170100.17068-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 02:28:18PM +0100, Hans Schultz wrote:
-> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> new file mode 100755
-> index 000000000000..a8800e531d07
-> --- /dev/null
-> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> @@ -0,0 +1,180 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-> +NUM_NETIFS=4
-> +CHECK_TC="no"
-> +source lib.sh
-> +
-> +h1_create()
-> +{
-> +	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
-> +	vrf_create "vrf-vlan-h1"
-> +	ip link set dev vrf-vlan-h1 up
-> +	vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24 ::ffff:c633:6401/64
+DAMON code calls the low level monitoring primitives implementations the
+monitoring operations.  The documentation would have no problem at still
+calling those primitives implementation because there is no real
+difference in the concepts, but making it more consistent with the code
+would make it better.  This commit therefore convert sentences in the
+doc specifically pointing the implementations of the primitives to call
+it monitoring operations.
 
-Hi,
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ Documentation/vm/damon/design.rst | 24 ++++++++++++------------
+ Documentation/vm/damon/faq.rst    |  2 +-
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
-Why did you change it from 2001:db8:3::1/64 to ::ffff:c633:6401/64? It
-was actually OK the first time...
+diff --git a/Documentation/vm/damon/design.rst b/Documentation/vm/damon/design.rst
+index 210f0f50efd8..c406983aeb31 100644
+--- a/Documentation/vm/damon/design.rst
++++ b/Documentation/vm/damon/design.rst
+@@ -13,12 +13,13 @@ primitives that dependent on and optimized for the target address space.  On
+ the other hand, the accuracy and overhead tradeoff mechanism, which is the core
+ of DAMON, is in the pure logic space.  DAMON separates the two parts in
+ different layers and defines its interface to allow various low level
+-primitives implementations configurable with the core logic.
++primitives implementations configurable with the core logic.  We call the low
++level primitives implementations monitoring operations.
+ 
+ Due to this separated design and the configurable interface, users can extend
+-DAMON for any address space by configuring the core logics with appropriate low
+-level primitive implementations.  If appropriate one is not provided, users can
+-implement the primitives on their own.
++DAMON for any address space by configuring the core logics with appropriate
++monitoring operations.  If appropriate one is not provided, users can implement
++the operations on their own.
+ 
+ For example, physical memory, virtual memory, swap space, those for specific
+ processes, NUMA nodes, files, and backing memory devices would be supportable.
+@@ -26,25 +27,24 @@ Also, if some architectures or devices support special optimized access check
+ primitives, those will be easily configurable.
+ 
+ 
+-Reference Implementations of Address Space Specific Primitives
+-==============================================================
++Reference Implementations of Address Space Specific Monitoring Operations
++=========================================================================
+ 
+-The low level primitives for the fundamental access monitoring are defined in
+-two parts:
++The monitoring operations are defined in two parts:
+ 
+ 1. Identification of the monitoring target address range for the address space.
+ 2. Access check of specific address range in the target space.
+ 
+-DAMON currently provides the implementations of the primitives for the physical
++DAMON currently provides the implementations of the operations for the physical
+ and virtual address spaces. Below two subsections describe how those work.
+ 
+ 
+ VMA-based Target Address Range Construction
+ -------------------------------------------
+ 
+-This is only for the virtual address space primitives implementation.  That for
+-the physical address space simply asks users to manually set the monitoring
+-target address ranges.
++This is only for the virtual address space monitoring operations
++implementation.  That for the physical address space simply asks users to
++manually set the monitoring target address ranges.
+ 
+ Only small parts in the super-huge virtual address space of the processes are
+ mapped to the physical memory and accessed.  Thus, tracking the unmapped
+diff --git a/Documentation/vm/damon/faq.rst b/Documentation/vm/damon/faq.rst
+index 11aea40eb328..dde7e2414ee6 100644
+--- a/Documentation/vm/damon/faq.rst
++++ b/Documentation/vm/damon/faq.rst
+@@ -31,7 +31,7 @@ Does DAMON support virtual memory only?
+ =======================================
+ 
+ No.  The core of the DAMON is address space independent.  The address space
+-specific low level primitive parts including monitoring target regions
++specific monitoring operations including monitoring target regions
+ constructions and actual access checks can be implemented and configured on the
+ DAMON core by the users.  In this way, DAMON users can monitor any address
+ space with any access check technique.
+-- 
+2.17.1
 
-Anyway, looking at locked_port_vlan() I see that you are only testing
-IPv4 so you can just drop this address:
-
-vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24
-
-Same for $h2
-
-LGTM otherwise. Feel free to add my tag to the next version
-
-
-> +}
