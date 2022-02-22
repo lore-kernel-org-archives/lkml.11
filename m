@@ -2,221 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C25C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4329CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232006AbiBVMnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:43:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
+        id S232022AbiBVMn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbiBVMnS (ORCPT
+        with ESMTP id S230466AbiBVMny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:43:18 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1599E125CB0;
-        Tue, 22 Feb 2022 04:42:45 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id C38581F39D;
-        Tue, 22 Feb 2022 12:42:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645533763; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=0rPgnpg+5gQ/8b52Q6pAhqccBeucqyapDk4V0HZ7WlE=;
-        b=PX1WeeyFJawzM1aA4txXUhQ1CEmCwrnwEeVvXxZQLMPWrKyDSc1M7wbxNJq76uHh58fDZt
-        Ijq3tblqE4/v3fMWiMB2wTMic6xohLuTDapLUu3gG26cHzVv+0wj4BywHyfDQThHQ0CsFY
-        BtuM6mDgSzTO/m5Memy3eHOXk30p+vA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645533763;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=0rPgnpg+5gQ/8b52Q6pAhqccBeucqyapDk4V0HZ7WlE=;
-        b=rBQrYLLWLXVGSzXgo+Ab4OLAQkZEUbDNbH5chqPWgz2bFTabVMyPRsii896UYl70HjEMmu
-        9jCVhQBw8+atbcAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9EE3B13C1E;
-        Tue, 22 Feb 2022 12:42:43 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id TeIsJkPaFGIeRwAAMHmgww
-        (envelope-from <ppavlu@suse.cz>); Tue, 22 Feb 2022 12:42:43 +0000
-From:   Petr Pavlu <ppavlu@suse.cz>
-To:     martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Petr Pavlu <petr.pavlu@suse.com>
-Subject: [PATCH] target/iscsi: Fix detection of excess number of login exchanges
-Date:   Tue, 22 Feb 2022 13:42:17 +0100
-Message-Id: <20220222124217.21715-1-ppavlu@suse.cz>
-X-Mailer: git-send-email 2.26.2
+        Tue, 22 Feb 2022 07:43:54 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A6C122F77;
+        Tue, 22 Feb 2022 04:43:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645533808; x=1677069808;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=V3OvJzcIYv9Xc/I5EnGnnaoV/n9suE3zy47qd9uxvdY=;
+  b=dq30ReBFRk1oDtE+KjAUesMwl76N53alJ8Yej0XpdSre37Nu8FDwMIpG
+   SUm/M2LqcxaqivsYBaWbbxkHb6QYMdRq1kAG8dUOzKTDg3pufM7du/kK4
+   mSJ/8pFngeTRVcDWl5Al6NTGxsncXCkROdkkNY2TGhpNOqOCccCebOGMW
+   9WzNYGBiU+WF3ERypsLDoe6cCsBNIlqlnGovz3IxbMMS9T4xnxoBU2kOb
+   TQ5fVJSsgm6pD97XOUsh2bGM5C8OdL2MhgmBS5x2r5Mw/AsEIoamMgkX8
+   S0GbLeHWzIWuGOoTCiq1vIC6t1Jy4YkvCgYigqdM/jGfBTVJI8UshsjgO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251625687"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="251625687"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 04:43:28 -0800
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="547725699"
+Received: from torta-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.49.14])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 04:43:24 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vandita Kulkarni <vandita.kulkarni@intel.com>,
+        Manasi Navare <manasi.d.navare@intel.com>
+Subject: Re: [PATCH] drm/i915: make a handful of read-only arrays static const
+In-Reply-To: <20220222120323.86480-1-colin.i.king@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220222120323.86480-1-colin.i.king@gmail.com>
+Date:   Tue, 22 Feb 2022 14:43:22 +0200
+Message-ID: <87tucr6phx.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Pavlu <petr.pavlu@suse.com>
+On Tue, 22 Feb 2022, Colin Ian King <colin.i.king@gmail.com> wrote:
+> Don't populate the read-only arrays on the stack but instead make
+> them static const. Also makes the object code a little smaller.
+> Reformat the statements to clear up checkpatch warning.
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/gpu/drm/i915/display/intel_vdsc.c | 16 ++++++++++++----
+>  1 file changed, 12 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/i915/display/intel_vdsc.c b/drivers/gpu/drm/i915/display/intel_vdsc.c
+> index 3faea903b9ae..d49f66237ec3 100644
+> --- a/drivers/gpu/drm/i915/display/intel_vdsc.c
+> +++ b/drivers/gpu/drm/i915/display/intel_vdsc.c
+> @@ -378,10 +378,18 @@ calculate_rc_params(struct rc_parameters *rc,
+>  {
+>  	int bpc = vdsc_cfg->bits_per_component;
+>  	int bpp = vdsc_cfg->bits_per_pixel >> 4;
+> -	int ofs_und6[] = { 0, -2, -2, -4, -6, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12 };
+> -	int ofs_und8[] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12 };
+> -	int ofs_und12[] = { 2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12 };
+> -	int ofs_und15[] = { 10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -10, -12, -12, -12 };
+> +	static const int ofs_und6[] = {
+> +		0, -2, -2, -4, -6, -6, -8, -8, -8, -10, -10, -12, -12, -12, -12
+> +	};
+> +	static const int ofs_und8[] = {
+> +		2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12
+> +	};
+> +	static const int ofs_und12[] = {
+> +		2, 0, 0, -2, -4, -6, -8, -8, -8, -10, -10, -10, -12, -12, -12
+> +	};
 
-Function iscsi_target_do_login() attempts to cancel a connection when
-a number of login exchanges reaches MAX_LOGIN_PDUS (7). This is done by
-having a local counter and incrementing+checking it as the function
-processes requests in a loop. A problem is that since the login rework in
-back in 2013, the function always processes only a single request and the
-loop is terminated at the end of the first iteration. This means the
-counter reaches only value 1 and any excess number of login requests is
-never rejected.
+Hmm, I wonder why the same values are duplicated in ofs_und8 and
+ofs_und12. Cc: Vandita, Manasi.
 
-Fix the problem by introducing iscsi_login.negotiation_exchanges counter
-and update the logic to count exchanges per each login phase as described
-in RFC 7143:
-> 6.2. Text Mode Negotiation:
-> [...]
-> In the Login Phase (see Section 6.3), every stage is a separate
-> negotiation. [...]
-> [...]
-> An iSCSI initiator or target MAY terminate a negotiation that does
-> not terminate within an implementation-specific reasonable time or
-> number of exchanges but SHOULD allow at least six (6) exchanges.
+Regardless, the patch is sane.
 
-Fixes: d381a8010a05 ("iscsi-target: Add login negotiation multi-plexing support")
-Signed-off-by: Petr Pavlu <petr.pavlu@suse.com>
----
- drivers/target/iscsi/iscsi_target_nego.c | 92 ++++++++++++------------
- include/target/iscsi/iscsi_target_core.h |  1 +
- 2 files changed, 47 insertions(+), 46 deletions(-)
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
 
-diff --git a/drivers/target/iscsi/iscsi_target_nego.c b/drivers/target/iscsi/iscsi_target_nego.c
-index c0ed6f8e5c5b..a5077ea09f6c 100644
---- a/drivers/target/iscsi/iscsi_target_nego.c
-+++ b/drivers/target/iscsi/iscsi_target_nego.c
-@@ -970,65 +970,65 @@ static int iscsi_target_handle_csg_one(struct iscsi_conn *conn, struct iscsi_log
- 
- static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *login)
- {
--	int pdu_count = 0;
- 	struct iscsi_login_req *login_req;
- 	struct iscsi_login_rsp *login_rsp;
- 
- 	login_req = (struct iscsi_login_req *) login->req;
- 	login_rsp = (struct iscsi_login_rsp *) login->rsp;
- 
--	while (1) {
--		if (++pdu_count > MAX_LOGIN_PDUS) {
--			pr_err("MAX_LOGIN_PDUS count reached.\n");
--			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
--					ISCSI_LOGIN_STATUS_TARGET_ERROR);
-+	switch (ISCSI_LOGIN_CURRENT_STAGE(login_req->flags)) {
-+	case 0:
-+		login_rsp->flags &= ~ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK;
-+		if (iscsi_target_handle_csg_zero(conn, login) < 0)
- 			return -1;
--		}
--
--		switch (ISCSI_LOGIN_CURRENT_STAGE(login_req->flags)) {
--		case 0:
--			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK;
--			if (iscsi_target_handle_csg_zero(conn, login) < 0)
--				return -1;
--			break;
--		case 1:
--			login_rsp->flags |= ISCSI_FLAG_LOGIN_CURRENT_STAGE1;
--			if (iscsi_target_handle_csg_one(conn, login) < 0)
-+		break;
-+	case 1:
-+		login_rsp->flags |= ISCSI_FLAG_LOGIN_CURRENT_STAGE1;
-+		if (iscsi_target_handle_csg_one(conn, login) < 0)
-+			return -1;
-+		if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
-+			/*
-+			 * Check to make sure the TCP connection has not dropped
-+			 * asynchronously while session reinstatement was
-+			 * occurring in this kthread context, before
-+			 * transitioning to full feature phase operation.
-+			 */
-+			if (iscsi_target_sk_check_close(conn))
- 				return -1;
--			if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
--				/*
--				 * Check to make sure the TCP connection has not
--				 * dropped asynchronously while session reinstatement
--				 * was occuring in this kthread context, before
--				 * transitioning to full feature phase operation.
--				 */
--				if (iscsi_target_sk_check_close(conn))
--					return -1;
- 
--				login->tsih = conn->sess->tsih;
--				login->login_complete = 1;
--				iscsi_target_restore_sock_callbacks(conn);
--				if (iscsi_target_do_tx_login_io(conn,
--						login) < 0)
--					return -1;
--				return 1;
--			}
--			break;
--		default:
--			pr_err("Illegal CSG: %d received from"
--				" Initiator, protocol error.\n",
--				ISCSI_LOGIN_CURRENT_STAGE(login_req->flags));
--			break;
-+			login->tsih = conn->sess->tsih;
-+			login->login_complete = 1;
-+			iscsi_target_restore_sock_callbacks(conn);
-+			if (iscsi_target_do_tx_login_io(conn, login) < 0)
-+				return -1;
-+			return 1;
- 		}
-+		break;
-+	default:
-+		pr_err("Illegal CSG: %d received from Initiator,"
-+			" protocol error.\n",
-+			ISCSI_LOGIN_CURRENT_STAGE(login_req->flags));
-+		break;
-+	}
- 
--		if (iscsi_target_do_tx_login_io(conn, login) < 0)
-+	if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT)
-+		login->negotiation_exchanges = 0;
-+	else {
-+		login->negotiation_exchanges++;
-+		if (login->negotiation_exchanges >= MAX_LOGIN_PDUS) {
-+			pr_err("MAX_LOGIN_PDUS count reached.\n");
-+			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-+					ISCSI_LOGIN_STATUS_TARGET_ERROR);
- 			return -1;
--
--		if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
--			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_TRANSIT;
--			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_NEXT_STAGE_MASK;
- 		}
--		break;
-+	}
-+
-+	if (iscsi_target_do_tx_login_io(conn, login) < 0)
-+		return -1;
-+
-+	if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
-+		login_rsp->flags &= ~ISCSI_FLAG_LOGIN_TRANSIT;
-+		login_rsp->flags &= ~ISCSI_FLAG_LOGIN_NEXT_STAGE_MASK;
- 	}
- 
- 	return 0;
-diff --git a/include/target/iscsi/iscsi_target_core.h b/include/target/iscsi/iscsi_target_core.h
-index 1eccb2ac7d02..b6a5e1cf3f77 100644
---- a/include/target/iscsi/iscsi_target_core.h
-+++ b/include/target/iscsi/iscsi_target_core.h
-@@ -705,6 +705,7 @@ struct iscsi_login {
- 	u32 rsp_length;
- 	u16 cid;
- 	u16 tsih;
-+	u8 negotiation_exchanges;
- 	char req[ISCSI_HDR_LEN];
- 	char rsp[ISCSI_HDR_LEN];
- 	char *req_buf;
+> +	static const int ofs_und15[] = {
+> +		10, 8, 6, 4, 2, 0, -2, -4, -6, -8, -10, -10, -12, -12, -12
+> +	};
+>  	int qp_bpc_modifier = (bpc - 8) * 2;
+>  	u32 res, buf_i, bpp_i;
+
 -- 
-2.35.1
-
+Jani Nikula, Intel Open Source Graphics Center
