@@ -2,200 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B677C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbiBVUqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:46:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        id S235527AbiBVUrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:47:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiBVUqr (ORCPT
+        with ESMTP id S235506AbiBVUq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:46:47 -0500
-Received: from box.fidei.email (box.fidei.email [IPv6:2605:2700:0:2:a800:ff:feba:dc44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EEEA2F09;
-        Tue, 22 Feb 2022 12:46:19 -0800 (PST)
-Received: from authenticated-user (box.fidei.email [71.19.144.250])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by box.fidei.email (Postfix) with ESMTPSA id 1FD08805FB;
-        Tue, 22 Feb 2022 15:46:18 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
-        t=1645562779; bh=exGi9sfLEpUdeDCaCpnxyACq8VLY6wHANq4eBPZRm2A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=g6rkG2WZYpJJqbTRLCoVPwDStFmTw+ZWy6aHR0WCwHtvTRrFsBKGuxamTQSE0tLOn
-         Nq64Snr129PRK/TJBuiumQZqS6sx+AQePU5MpoeR4uq/ViTwn7v8q1vDezOTjtczTo
-         ZZqUOczwoy8oBEtebeQig5XhMFRapZ4Sj/dtK/iXHorQbFQWp/MPnWMM3rc3jFok5+
-         ZzIuiSGmgMcVo2m9o45ZvvcHv9IL0THRCq8LmnhceZ4ZUa29eSCHbW3QbQX1050/D5
-         f0ymfS77sRmAgw+QaQReo9Hx+zRv8KbDxXu6xwc6l1JGE3FitepTt1n3P+QjgqVEQf
-         KOdeAHmrtjrug==
-From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Cc:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Subject: [PATCH v3] btrfs: add fs state details to error messages.
-Date:   Tue, 22 Feb 2022 15:42:28 -0500
-Message-Id: <8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me>
+        Tue, 22 Feb 2022 15:46:59 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A688B624E;
+        Tue, 22 Feb 2022 12:46:33 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21MIfjDV020712;
+        Tue, 22 Feb 2022 20:46:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=pp1; bh=35C+yewWMlC4Z/cwVL3/lfNPO1iEc5w3khMa9qU8uI4=;
+ b=VtWV6tvXFV3yMSn9zzgM+KNV5ZbhiLCXsvJHqb3rJs7/qnrO3Z/g2Xv9t3pcpygC4xPJ
+ 3QX3dolWMI3/3OhmEWOsZ9wW3MO7US2J74ek6uzwaSFG+4vhDschkm8JMSQo83sq+ETL
+ MU5KdCSrTCLfSFgJLr8oahAd8uM46z0kfrJUrD6prmpsjowe8RXYS3U2AIKYrAjwqc+V
+ t7+wAAhuECRXHMFcllpaeVM2xEg7dGa2x6S1ca2UKaqRBku6TWIt0qGwdzRi5f99iJdk
+ iPZ43OKtSSUIeWsgVQzPt2wtE0hbP9JszIn3vdppAZSEKMdA1QXt9Y/eig11ICFBCE6H 0A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed5b5tt3p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 20:46:14 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21MKe6Bw001643;
+        Tue, 22 Feb 2022 20:46:13 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed5b5tt23-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 20:46:13 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21MKblDa023459;
+        Tue, 22 Feb 2022 20:46:09 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06fra.de.ibm.com with ESMTP id 3eaqtjmey0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 20:46:08 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21MKk63o53281278
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 22 Feb 2022 20:46:06 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 48B6142047;
+        Tue, 22 Feb 2022 20:46:06 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3BC7B42041;
+        Tue, 22 Feb 2022 20:46:04 +0000 (GMT)
+Received: from localhost (unknown [9.43.75.136])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 22 Feb 2022 20:46:03 +0000 (GMT)
+Date:   Wed, 23 Feb 2022 02:16:00 +0530
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        linux-ext4@vger.kernel.org,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Subject: Re: [BUG] NEVER dereference pointers from the tracing ring buffer!
+Message-ID: <20220222204600.mgtt3ihtvlptjh2l@riteshh-domain>
+References: <20220221160916.333e6491@rorschach.local.home>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221160916.333e6491@rorschach.local.home>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: rFtQjqEPrjDweGJ9f8F5O8wXU2OqoHVh
+X-Proofpoint-ORIG-GUID: PL_mEdTkCSj-YOv9mJxir30XBSKhSpTR
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-22_07,2022-02-21_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 impostorscore=0 malwarescore=0 clxscore=1011 adultscore=0
+ suspectscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202220126
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a filesystem goes read-only due to an error, multiple errors tend
-to be reported, some of which are knock-on failures. Logging fs_states,
-in btrfs_handle_fs_error() and btrfs_printk() helps distinguish the
-first error from subsequent messages which may only exist due to an
-error state.
+On 22/02/21 04:09PM, Steven Rostedt wrote:
+> While working on libtraceevent, it stumbled over a "->" in the print
+> formats that wasn't parsing properly. Well, the reason it does not
+> handle this particular case is because it is A MAJOR BUG IN THE KERNEL!
+>
+> DO NOT DEREFERENCE ANYTHING FROM THE RING BUFFER.
+>
+> Sorry, for yelling, but I really want to stress this is not something
+> to do. The ring buffer is referenced seconds, minutes, hours, days,
+> months after the data has been loaded. This is the same as using
+> something after it is freed. Just don't do it.
+>
+> The culprit is:
+>
+>   ext4_fc_stats
+>
+> Introduced by: aa75f4d3daaeb ("ext4: main fast-commit commit path")
+>
+> That has in its print fmt in include/trace/events/ext4.h:
+>
+>
+>             TP_printk("dev %d:%d fc ineligible reasons:\n"
+>                       "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
+>                       "num_commits:%ld, ineligible: %ld, numblks: %ld",
+>                       MAJOR(__entry->dev), MINOR(__entry->dev),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+>                       FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+>                       __entry->sbi->s_fc_stats.fc_num_commits,
+>                       __entry->sbi->s_fc_stats.fc_ineligible_commits,
+>                       __entry->sbi->s_fc_stats.fc_numblks)
+>
+> That __entry->sbi can be LONG GONE by the time it is read. You have no
+> idea what it is pointing to. And even if it is still around, there's no
+> way that any of those numbers are accurate from the time the event
+> triggered. Might as well just expose them by some other interface.
 
-Under the new format, most initial errors will look like:
-`BTRFS: error (device loop0) in ...`
-while subsequent errors will begin with:
-`error (device loop0: state E) in ...`
+Thanks Steven for spotting this and providing details of the problem.
+I have submitted a patch to fix this problem at [1].
+But I am facing a small challenge w.r.t __array field type w.r.t perf record
+which I have explained in the cover letter.
+Would it be possible for you to take a look at it [2] and also at the patch [1].
 
-An initial transaction abort error will look like
-`error (device loop0: state A) in ...`
-and subsequent messages will contain
-`(device loop0: state EA) in ...`
+Thanks a lot for your help!!
 
-Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
----
-v3:
-  - Reworked btrfs_state_to_string to use an array mapping all states
-    to various error chars, or nothing, explicitly. Added error logging
-    for more states, as requested.
-  - Consolidated buffer length definition
+[1]: https://lore.kernel.org/all/9a8c359270a6330ed384ea0a75441e367ecde924.1645558375.git.riteshh@linux.ibm.com/
+[2]: https://lore.kernel.org/all/cover.1645558375.git.riteshh@linux.ibm.com/
 
-v2: 
-  - Changed btrfs_state_to_string() for clarity
-  - Removed superfluous whitespace change
-  - https://lore.kernel.org/linux-btrfs/084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me/
 
-v1:
-  - https://lore.kernel.org/linux-btrfs/20220212191042.94954-1-sweettea-kernel@dorminy.me/
+-ritesh
 
- fs/btrfs/ctree.h |  2 ++
- fs/btrfs/super.c | 62 +++++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 56 insertions(+), 8 deletions(-)
-
-diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-index 8992e0096163..3db337cd015a 100644
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -148,6 +148,8 @@ enum {
- 
- 	/* Indicates there was an error cleaning up a log tree. */
- 	BTRFS_FS_STATE_LOG_CLEANUP_ERROR,
-+
-+	BTRFS_FS_STATE_COUNT,
- };
- 
- #define BTRFS_BACKREF_REV_MAX		256
-diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
-index 4d947ba32da9..3fab9e46e80c 100644
---- a/fs/btrfs/super.c
-+++ b/fs/btrfs/super.c
-@@ -66,6 +66,46 @@ static struct file_system_type btrfs_root_fs_type;
- 
- static int btrfs_remount(struct super_block *sb, int *flags, char *data);
- 
-+#define STATE_STRING_PREFACE ": state "
-+#define STATE_STRING_BUF_LEN \
-+	(sizeof(STATE_STRING_PREFACE) + BTRFS_FS_STATE_COUNT)
-+
-+/* Characters to print to indicate error conditions. RO is not an error. */
-+static const char * const fs_state_strings[] = {
-+	[BTRFS_FS_STATE_ERROR]			= "E",
-+	[BTRFS_FS_STATE_REMOUNTING]		= "M",
-+	[BTRFS_FS_STATE_RO]			= NULL,
-+	[BTRFS_FS_STATE_TRANS_ABORTED]		= "A",
-+	[BTRFS_FS_STATE_DEV_REPLACING]		= "P",
-+	[BTRFS_FS_STATE_DUMMY_FS_INFO]		= NULL,
-+	[BTRFS_FS_STATE_NO_CSUMS]		= NULL,
-+	[BTRFS_FS_STATE_LOG_CLEANUP_ERROR]	= "L",
-+};
-+
-+static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
-+{
-+	unsigned int bit;
-+	unsigned int states_printed = 0;
-+	char *curr = buf;
-+
-+	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
-+	curr += sizeof(STATE_STRING_PREFACE) - 1;
-+
-+	for_each_set_bit(bit, &info->fs_state, sizeof(info->fs_state)) {
-+		WARN_ON_ONCE(bit >= BTRFS_FS_STATE_COUNT);
-+		if ((bit < BTRFS_FS_STATE_COUNT) && (fs_state_strings[bit] != NULL)) {
-+			*curr++ = fs_state_strings[bit][0];
-+			states_printed++;
-+		}
-+	}
-+
-+	/* If no states were printed, reset the buffer */
-+	if (!states_printed)
-+		curr = buf;
-+
-+	*curr++ = '\0';
-+}
-+
- /*
-  * Generally the error codes correspond to their respective errors, but there
-  * are a few special cases.
-@@ -128,6 +168,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
- {
- 	struct super_block *sb = fs_info->sb;
- #ifdef CONFIG_PRINTK
-+	char statestr[STATE_STRING_BUF_LEN];
- 	const char *errstr;
- #endif
- 
-@@ -140,6 +181,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
- 
- #ifdef CONFIG_PRINTK
- 	errstr = btrfs_decode_error(errno);
-+	btrfs_state_to_string(fs_info, statestr);
- 	if (fmt) {
- 		struct va_format vaf;
- 		va_list args;
-@@ -148,12 +190,12 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
- 		vaf.fmt = fmt;
- 		vaf.va = &args;
- 
--		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s (%pV)\n",
--			sb->s_id, function, line, errno, errstr, &vaf);
-+		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s (%pV)\n",
-+			sb->s_id, statestr, function, line, errno, errstr, &vaf);
- 		va_end(args);
- 	} else {
--		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s\n",
--			sb->s_id, function, line, errno, errstr);
-+		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s\n",
-+			sb->s_id, statestr, function, line, errno, errstr);
- 	}
- #endif
- 
-@@ -240,11 +282,15 @@ void __cold btrfs_printk(const struct btrfs_fs_info *fs_info, const char *fmt, .
- 	vaf.va = &args;
- 
- 	if (__ratelimit(ratelimit)) {
--		if (fs_info)
--			printk("%sBTRFS %s (device %s): %pV\n", lvl, type,
--				fs_info->sb->s_id, &vaf);
--		else
-+		if (fs_info) {
-+			char statestr[STATE_STRING_BUF_LEN];
-+
-+			btrfs_state_to_string(fs_info, statestr);
-+			printk("%sBTRFS %s (device %s%s): %pV\n", lvl, type,
-+				fs_info->sb->s_id, statestr, &vaf);
-+		} else {
- 			printk("%sBTRFS %s: %pV\n", lvl, type, &vaf);
-+		}
- 	}
- 
- 	va_end(args);
--- 
-2.35.1
-
+>
+> This event must be modified or removed from the current release and all
+> stable kernels that have it.
+>
+> In the mean time, I need to update my event verifier to detect this and
+> fail to register the event if it has such cases.
+>
+> -- Steve
