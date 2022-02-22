@@ -2,110 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B45AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 653DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiBVIei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
+        id S229868AbiBVIfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:35:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiBVIee (ORCPT
+        with ESMTP id S229674AbiBVIff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:34:34 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831DC11861D;
-        Tue, 22 Feb 2022 00:34:09 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id i11so33367244eda.9;
-        Tue, 22 Feb 2022 00:34:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hYbx+gdquJpIZCDFWgwiF4xRFSxpas93/Jikv460mKM=;
-        b=Pt/XAPq6qzHk+wKbePJHCOC9i+hjBUaBhB1iekoGU6gFncZFOWKHeiKjGXch3J9p36
-         p9Y8y+ZiFByNt3pUIH7JXfYlGYvAOrxbI3Icbj93/pJwSt/di9u6eXlmGq0c60RtstHQ
-         dZfgcZNZO3VqPecaVqmM11Yq2KXhSr0yfEmfh0JZ/grsnt3mTqEx0gBKD+GaKj3i6MSa
-         hG7K+/IYfzKDIc3yNsiCbPs/sEEgNWq7GpTa9VWYoUZbwIWYA7TNVjIEGe3rR8FSnacH
-         0mtU9Sckpy0lAgIK5hINEvV7LjkiWNDaBvspOmdS2SliQ6E49SUskUytRLkX3CBCcULc
-         IYuA==
+        Tue, 22 Feb 2022 03:35:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A521C158EA9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 00:35:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645518909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=E30WgXgAZRS6lQUJeUsCZdCeBdcikCP7h9EfQ36uBTo=;
+        b=UJMzrzulJM+sJcwYbHJ7oHygzi6LHm2GPOWWkp8P9E2wBv6YBEGMbFbr4cFubqKiuUOdZZ
+        WWWs+4WvIobdLTQMQJuNtl2SRcTfep1422bJql3B1s/ySvb5xOwvpW+rBa7xovpQ9VBf7s
+        z8uJNIENFv1/EpH+NQ5+6BREwyFPGyA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-280-M3tk53M-O7qor1BsREbWMg-1; Tue, 22 Feb 2022 03:35:08 -0500
+X-MC-Unique: M3tk53M-O7qor1BsREbWMg-1
+Received: by mail-wr1-f69.google.com with SMTP id g11-20020adfa48b000000b001e57dfb3c38so8583809wrb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 00:35:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hYbx+gdquJpIZCDFWgwiF4xRFSxpas93/Jikv460mKM=;
-        b=bJbTwWXxRrozY6kjZfgy4WRjSs2QoC7CSGVRbTc92GwSLd9BJviNNYs+jZc5MdZEu+
-         739UD+hQu8aGct4uVqkgcIOw5tHZqj88tLuP4mCwgbYkHRSeqge2AtAG3ItgqSlAzsbO
-         csgnqCZ+BL+udLRk+rhCCjTy4WqSh3kfB3IyktfSJ+uVxCvyahxDYTPSrmzdVlsoiMbW
-         62nXlaAN/MmLVFCSUOtjHOiJ+rYpcqzJssk9VBJ2uh+wlzAFMFMfdfHwbxf25p/L9GbV
-         RVetCJ08SlAckvibnhDM4l+/+N/RvnSYrACFvPlv22MKc1fqtHGOO6Kz2DagUASLDWIn
-         reBQ==
-X-Gm-Message-State: AOAM531Bd9QWNlGC1ivp13iM715ps3WS7XVf8S17cohp5wgf191bOaIp
-        5ttErYIcaNO4I2TvM0hHD5fyK8Ls52GmD9CtEiE=
-X-Google-Smtp-Source: ABdhPJw7nQb/of5N3dJaJiBbGCi6mzlWkLmNzq2AC+PT3ndg7W30Pm7djZfunvkjFDWOlbuegqsmLwRygCkvaSCh4Uw=
-X-Received: by 2002:a05:6402:2553:b0:412:8684:bd34 with SMTP id
- l19-20020a056402255300b004128684bd34mr25590743edb.436.1645518848047; Tue, 22
- Feb 2022 00:34:08 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=E30WgXgAZRS6lQUJeUsCZdCeBdcikCP7h9EfQ36uBTo=;
+        b=lyio5TnXYjT8nI5aHJM+FHT7dpugsq+qC/jczkI/T3Rrb3hnHqcEIjxEJPM6/cp42X
+         KUUp0E/0iyHstxZ8IVUdghv9/XpKUsVbQKPHQhRc4xVHq6YSISO7F9Suy7CwfJoEjbxD
+         QSINlbjyDYxs5Kf0LIjBvdZg0PuhctVwvKr7wfbXdX8n6ntX5RR+a9ObIXtwmORr3w82
+         WX9td00XGIRbF8ZDPlNb6W+ueAD4eNg5BJwcdrylTf3SIXIQBL6plet5Yyb7oXUXDyar
+         anyS1x64q/o49Y42aQ3gOaZHbR1L/yzgho6YtyuNzmrsQ5sNS5JZZv+7CZ7Y/aFdZ8GE
+         b97w==
+X-Gm-Message-State: AOAM533dcoqlzBRt/K4t1WvsMkJX3dQCpfcoL4cclpPPn90kNV6jQHwm
+        z4ala8lQ/p8WlJjtgzaSpeKlZaASr/M1NtafRZU48lS+vMmvLgqe8ScYT345dt2U8YwCpL83Gvf
+        i0Vz+WoXgXRRArtUct+r5EUHV
+X-Received: by 2002:a05:6000:1081:b0:1e3:16d0:1c47 with SMTP id y1-20020a056000108100b001e316d01c47mr18921369wrw.19.1645518906780;
+        Tue, 22 Feb 2022 00:35:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzTFqlbUoKjOmzD6tEVN0k7Dy726wJbHNF/nP2PKCvE89SzHXdNF5wf7IME2kP/sJ798r1zNg==
+X-Received: by 2002:a05:6000:1081:b0:1e3:16d0:1c47 with SMTP id y1-20020a056000108100b001e316d01c47mr18921343wrw.19.1645518906513;
+        Tue, 22 Feb 2022 00:35:06 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id v5sm32603727wrr.7.2022.02.22.00.35.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 00:35:05 -0800 (PST)
+Message-ID: <53d4b30e-2563-c13b-eadc-8372ae965fcb@redhat.com>
+Date:   Tue, 22 Feb 2022 09:35:04 +0100
 MIME-Version: 1.0
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-3-clement.leger@bootlin.com> <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
- <20220222091902.198ce809@fixe.home>
-In-Reply-To: <20220222091902.198ce809@fixe.home>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 22 Feb 2022 09:33:32 +0100
-Message-ID: <CAHp75VdwfhGKOiGhJ1JsiG+R2ZdHa3N4hz6tyy5BmyFLripV5A@mail.gmail.com>
-Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4] KVM: Move VM's worker kthreads back to the original
+ cgroup before exiting.
+Content-Language: en-US
+To:     Vipin Sharma <vipinsh@google.com>, seanjc@google.com
+Cc:     mkoutny@suse.com, tj@kernel.org, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, dmatlack@google.com, jiangshanlai@gmail.com,
+        kvm@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220222054848.563321-1-vipinsh@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220222054848.563321-1-vipinsh@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 9:24 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@boot=
-lin.com> wrote:
-> Le Mon, 21 Feb 2022 19:46:12 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
-> > On Mon, Feb 21, 2022 at 05:26:44PM +0100, Cl=C3=A9ment L=C3=A9ger wrote=
-:
+On 2/22/22 06:48, Vipin Sharma wrote:
+> VM worker kthreads can linger in the VM process's cgroup for sometime
+> after KVM terminates the VM process.
+> 
+> KVM terminates the worker kthreads by calling kthread_stop() which waits
+> on the 'exited' completion, triggered by exit_mm(), via mm_release(), in
+> do_exit() during the kthread's exit.  However, these kthreads are
+> removed from the cgroup using the cgroup_exit() which happens after the
+> exit_mm(). Therefore, A VM process can terminate in between the
+> exit_mm() and cgroup_exit() calls, leaving only worker kthreads in the
+> cgroup.
+> 
+> Moving worker kthreads back to the original cgroup (kthreadd_task's
+> cgroup) makes sure that the cgroup is empty as soon as the main VM
+> process is terminated.
+> 
+> Signed-off-by: Vipin Sharma <vipinsh@google.com>
+> Suggested-by: Sean Christopherson <seanjc@google.com>
+> ---
 
-...
+Queued, thanks.
 
-> > It's OF-centric API, why it has fwnode prefix? Can it leave in drivers/=
-of instead?
->
-> The idea is to allow device with a software_node description to match
-> with the content of the of_match_table. Without this, we would need a
-> new type of match table that would probably duplicates part of the
-> of_match_table to be able to match software_node against a driver.
-> I did not found an other way to do it without modifying drivers
-> individually to support software_nodes.
+Paolo
 
-software nodes should not be used as a replacement of the real
-firmware nodes. The idea behind is to fill the gaps in the cases when
-firmware doesn't provide enough information to the OS. I think Heikki
-can confirm or correct me.
+> Thanks Sean, for the example on how to use the real_parent outside of the RCU
+> critical region. I wrote your name in Suggested-by, I hope you are fine with
+> it and this is the right tag/way to give you the credit.
+> 
+> v4:
+> - Read task's real_parent in the RCU critical section.
+> - Don't log error message from the cgroup_attach_task_all() API.
+> 
+> v3: https://lore.kernel.org/lkml/20220217061616.3303271-1-vipinsh@google.com/
+> - Use 'current->real_parent' (kthreadd_task) in the
+>    cgroup_attach_task_all() call.
+> - Revert cgroup APIs changes in v2. Now, patch does not touch cgroup
+>    APIs.
+> - Update commit and comment message
+> 
+> v2: https://lore.kernel.org/lkml/20211222225350.1912249-1-vipinsh@google.com/
+> - Use kthreadd_task in the cgroup API to avoid build issue.
+> 
+> v1: https://lore.kernel.org/lkml/20211214050708.4040200-1-vipinsh@google.com/
+> 
+>   virt/kvm/kvm_main.c | 22 +++++++++++++++++++++-
+>   1 file changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 83c57bcc6eb6..cdf1fa3c60ae 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -5810,6 +5810,7 @@ static int kvm_vm_worker_thread(void *context)
+>   	 * we have to locally copy anything that is needed beyond initialization
+>   	 */
+>   	struct kvm_vm_worker_thread_context *init_context = context;
+> +	struct task_struct *parent;
+>   	struct kvm *kvm = init_context->kvm;
+>   	kvm_vm_thread_fn_t thread_fn = init_context->thread_fn;
+>   	uintptr_t data = init_context->data;
+> @@ -5836,7 +5837,7 @@ static int kvm_vm_worker_thread(void *context)
+>   	init_context = NULL;
+>   
+>   	if (err)
+> -		return err;
+> +		goto out;
+>   
+>   	/* Wait to be woken up by the spawner before proceeding. */
+>   	kthread_parkme();
+> @@ -5844,6 +5845,25 @@ static int kvm_vm_worker_thread(void *context)
+>   	if (!kthread_should_stop())
+>   		err = thread_fn(kvm, data);
+>   
+> +out:
+> +	/*
+> +	 * Move kthread back to its original cgroup to prevent it lingering in
+> +	 * the cgroup of the VM process, after the latter finishes its
+> +	 * execution.
+> +	 *
+> +	 * kthread_stop() waits on the 'exited' completion condition which is
+> +	 * set in exit_mm(), via mm_release(), in do_exit(). However, the
+> +	 * kthread is removed from the cgroup in the cgroup_exit() which is
+> +	 * called after the exit_mm(). This causes the kthread_stop() to return
+> +	 * before the kthread actually quits the cgroup.
+> +	 */
+> +	rcu_read_lock();
+> +	parent = rcu_dereference(current->real_parent);
+> +	get_task_struct(parent);
+> +	rcu_read_unlock();
+> +	cgroup_attach_task_all(parent, current);
+> +	put_task_struct(parent);
+> +
+>   	return err;
+>   }
+>   
+> 
+> base-commit: 1bbc60d0c7e5728aced352e528ef936ebe2344c0
 
-If you want to use the device on an ACPI based platform, you need to
-describe it in ACPI as much as possible. The rest we may discuss.
-
---=20
-With Best Regards,
-Andy Shevchenko
