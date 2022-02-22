@@ -2,96 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E281C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F86CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231972AbiBVMjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:39:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        id S232002AbiBVMnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiBVMjH (ORCPT
+        with ESMTP id S231993AbiBVMm4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:39:07 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F6A10C531
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 04:38:39 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D4BDE3FCAC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:38:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645533517;
-        bh=tCoZe2yzRkWx7YBNb8KVNP+e9eczVEpZUbOGuRodh+c=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=E1cyq17LN9Gbq6HFbjl0wlrrZ9GSSuV/g8M6d/YVuyFCKEhfS6oIxkqJN1kC2Dprh
-         IWzirtTidad3oZnB8EtGIR3E+FDBQGlC1zvq++jTfDpZyDyXyy1dHFd/UKtqA6BH5j
-         J9vGSWRMojzrRMw0t5g+xn0EGF/aumJDG13d4wYe0xLheVSv05isf8Rp+AcQkNynWH
-         K4y7J0GdmyMKMg22ELXjOM/WUXL7YFlpoVPiczVq9jTOD4of5mwqu9hi4rn+wytFk/
-         63EiCxe7nBHc3qcZX/Yg/iewFpIvx69bXw9yMVYd8hBNFk4Z7lqrdy05LtsJeb2qep
-         rHUF7uWpjWlIA==
-Received: by mail-ej1-f70.google.com with SMTP id kw5-20020a170907770500b006ba314a753eso5685485ejc.21
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 04:38:37 -0800 (PST)
+        Tue, 22 Feb 2022 07:42:56 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9FC122216;
+        Tue, 22 Feb 2022 04:42:31 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id u18so36620008edt.6;
+        Tue, 22 Feb 2022 04:42:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sZOLEDaGh1SF5st8EQEk8EIqOeyAcu0epbvUe7EMQfA=;
+        b=CtrlfUHtFIlffb9GrntCIKuLT7AfygnrZ9E5h3v2+48NWGW4ICXVWoOLZQHj1qffo9
+         NqmIXx3Mx/vKWRVk128yFnu44Mvpou1nrNMGLgffaVKOKS0Jr/eT89S2vyjmMzq27vzl
+         /AUi1eYf8/8DperuLUE9ujZRdAqXWsNpLztjUcdVebtEZj1PWaMIgtBuZPBrlpSDn+XI
+         /AJUQN2/hDlYrF/BJT+VUIqW8wHeOQxF02Xn572Dui+NodPgR4hlH2aiGwwo08lwcB2X
+         ANlHFqZ6FNXzoXYiZZsNuZgQwSywEwkdh4kuEVfKVO2QgaoNop+eYCIbArP3vod/QkhT
+         2W3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tCoZe2yzRkWx7YBNb8KVNP+e9eczVEpZUbOGuRodh+c=;
-        b=tURnebzIDR1g08r/IHrntVrzsgFVP+nFtem8Sxw0rQod2gFxDaV88Vr/lDVDIszTcv
-         cwH1vMCEpgYG/QyXXP90h28R2sjQAWHj3yeklSEty8y9BWk/RxDrwx++OHKYIvypQiUh
-         DFLtX3Yo28/AttjEyLIwnSE3rxDPmcMT7gd9/sonMBiRydDsGIH/18rNdOgrwiJEAGAJ
-         8gPgXcoVKVYUbsONHHp16ZPxJljXDo6cKxKX1XikPrBiUZFDPpp8FNhJ0DCG72p3XOcq
-         J6KBWoYqeTTaABKnP7DytY4T7IFVZPuNcbwTic+6beep5A/FejQMHrJ+VH+BaF5h4wdW
-         Rw5A==
-X-Gm-Message-State: AOAM533jFeXxU49YmXaDi1YbxcKPjRrVP73UwHwHPxkoYbvjZ1eZnbTp
-        FLrZ+vD92gUiXNDqRBu22UNS0vY6DQvQpLpzTrqHtiBsVg3L+xFx6HnnKXFMsjhwUAzDE1+Ft8b
-        toh1fwN0U3nffp9xDDpeSBDPcw3kgacqRYg8a76x7Lg==
-X-Received: by 2002:a50:f159:0:b0:411:29b9:1323 with SMTP id z25-20020a50f159000000b0041129b91323mr25718217edl.258.1645533517381;
-        Tue, 22 Feb 2022 04:38:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxZVSJL6nHxnMssJcXHLs+QBrBhBgOHNGm9aPdXJN3nivIczMccX7Nia80GPAGsF7xhGVVojg==
-X-Received: by 2002:a50:f159:0:b0:411:29b9:1323 with SMTP id z25-20020a50f159000000b0041129b91323mr25718207edl.258.1645533517239;
-        Tue, 22 Feb 2022 04:38:37 -0800 (PST)
-Received: from [192.168.0.124] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id s11sm6401498edt.10.2022.02.22.04.38.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 04:38:36 -0800 (PST)
-Message-ID: <83aa53cb-e444-9397-96d2-eaeb92db6492@canonical.com>
-Date:   Tue, 22 Feb 2022 13:38:36 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sZOLEDaGh1SF5st8EQEk8EIqOeyAcu0epbvUe7EMQfA=;
+        b=eL3k29rCvoA4ymi+bQSEtcCJk1vgwozQmNtPBrBfjjk9XhiQa6NIzLvDFkZe/n6jb6
+         CNhuhckUzdyI6l1AGXZb0VUDmapGmZiQJNwdsSxFYvbOvOdfspdMIuoOQGuixo0WEaWe
+         zu1LFVfTNbPM2/DBU/nGmq0NcAq1gOnL8j0DvnviWi9+jDlGiP3pxiEOfMdOccE+OenJ
+         5EclWcDsvwhcOyI/EN4TsmhwmxuuDOR99rG6Xncx4jcyJHQ0YVp1hNcsBywnarqY4qM4
+         8zVrSEkXUSR7BXxvfnlkLMd5RA5EqPYco+VBc3F6t6RWwBrgKHRx2yKJtqxzrmgsB4cl
+         jU3w==
+X-Gm-Message-State: AOAM531Uh7bKbuMoJYCi9jpxIXMK4NigE3cuKGwh3WwDeSKOgQ6bHH/r
+        bJSgH8K4fVuwOxjGfM+sPiU=
+X-Google-Smtp-Source: ABdhPJxlzd38Mt5rRXYGTndmCY97WTXfiKT01qrwU2HkDalGwQg9uM1GFn1icvDOOboroyLwMZt0Zw==
+X-Received: by 2002:a50:9b12:0:b0:410:b926:d2d3 with SMTP id o18-20020a509b12000000b00410b926d2d3mr26282285edi.331.1645533749972;
+        Tue, 22 Feb 2022 04:42:29 -0800 (PST)
+Received: from krava ([83.240.63.118])
+        by smtp.gmail.com with ESMTPSA id bn15sm6301853ejb.93.2022.02.22.04.42.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 04:42:29 -0800 (PST)
+Date:   Tue, 22 Feb 2022 13:42:26 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH 0/8] bpf: Add fprobe link
+Message-ID: <YhTaMi9BN7p5FPGX@krava>
+References: <YfvvfLlM1FOTgvDm@krava>
+ <20220204094619.2784e00c0b7359356458ca57@kernel.org>
+ <CAADnVQJYY0Xm6M9O02E5rOkdQPX39NOOS4tM2jpwRLQvP-qDBg@mail.gmail.com>
+ <20220204110704.7c6eaf43ff9c8f5fe9bf3179@kernel.org>
+ <CAADnVQJfq_10H0V+u0w0rzyZ9uy7vq=T-3BMDANjEN8A3-prsQ@mail.gmail.com>
+ <20220203211954.67c20cd3@gandalf.local.home>
+ <CAADnVQKjNJjZDs+ZV7vcusEkKuDq+sWhSD3M5GtvNeZMx3Fcmg@mail.gmail.com>
+ <20220204125942.a4bda408f536c2e3248955e1@kernel.org>
+ <Yguo4v7c+3A0oW/h@krava>
+ <CAEf4BzYO_B51TPgUnDXUPUsK55RSczwcnhuLz9DMbfO5JCj=Cw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ASoC: samsung: i2s: check the return value of kstrdup()
-Content-Language: en-US
-To:     xkernel.wang@foxmail.com, tiwai@suse.com, perex@perex.cz
-Cc:     s.nawrocki@samsung.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <tencent_5F9F4223DC44A9ECBF02649AF934F786E305@qq.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <tencent_5F9F4223DC44A9ECBF02649AF934F786E305@qq.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYO_B51TPgUnDXUPUsK55RSczwcnhuLz9DMbfO5JCj=Cw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/2022 12:53, xkernel.wang@foxmail.com wrote:
-> From: Xiaoke Wang <xkernel.wang@foxmail.com>
-> 
-> kstrdup() is a memory allocation function which can return NULL when
-> some internal memory errors happen. It is better to check the return
-> value of it to catch the error in time.
-> 
-> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-> ---
->  sound/soc/samsung/i2s.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+On Wed, Feb 16, 2022 at 10:27:19AM -0800, Andrii Nakryiko wrote:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+SNIP
 
+> >
+> > hi,
+> > tying to kick things further ;-) I was thinking about bpf side of this
+> > and we could use following interface:
+> >
+> >   enum bpf_attach_type {
+> >     ...
+> >     BPF_TRACE_KPROBE_MULTI
+> >   };
+> >
+> >   enum bpf_link_type {
+> >     ...
+> >     BPF_LINK_TYPE_KPROBE_MULTI
+> >   };
+> >
+> >   union bpf_attr {
+> >
+> >     struct {
+> >       ...
+> >       struct {
+> >         __aligned_u64   syms;
+> >         __aligned_u64   addrs;
+> >         __aligned_u64   cookies;
+> >         __u32           cnt;
+> >         __u32           flags;
+> >       } kprobe_multi;
+> >     } link_create;
+> >   }
+> >
+> > because from bpf user POV it's new link for attaching multiple kprobes
+> > and I agree new 'fprobe' type name in here brings more confusion, using
+> > kprobe_multi is straightforward
+> >
+> > thoguhts?
+> 
+> I think this makes sense. We do need new type of link to store ip ->
+> cookie mapping anyways.
+> 
+> Is there any chance to support this fast multi-attach for uprobe? If
+> yes, we might want to reuse the same link for both (so should we name
+> it more generically? on the other hand BPF program type for uprobe is
+> BPF_PROG_TYPE_KPROBE anyway, so keeping it as "kprobe" also would be
+> consistent with what we have today).
+> 
+> But yeah, the main question is whether there is something preventing
+> us from supporting multi-attach uprobe as well? It would be really
+> great for USDT use case.
 
-Best regards,
-Krzysztof
+I need to check with uprobes, my understanding ends at perf/trace
+code calling uprobe_register ;-)
+
+maybe I should first try if uprobes suffer the same performance issue
+
+I'll send another version with above interface, because there's
+tons of other fixes, and by the time for next version we might
+have answer for the interface change
+
+jirka
