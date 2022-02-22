@@ -2,128 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7AFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbiBVIUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
+        id S229763AbiBVIVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:21:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiBVIU3 (ORCPT
+        with ESMTP id S229452AbiBVIU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:20:29 -0500
-X-Greylist: delayed 444 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 00:20:03 PST
-Received: from mail.avm.de (mail.avm.de [IPv6:2001:bf0:244:244::120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941CE154D35;
-        Tue, 22 Feb 2022 00:20:03 -0800 (PST)
-Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [212.42.244.71])
-        by mail.avm.de (Postfix) with ESMTPS;
-        Tue, 22 Feb 2022 09:12:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
-        t=1645517554; bh=KEa0HEq9elkheo1S0XRmlXqPLxqZBVn71+sq+tx/6i8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DGmzZT9iqagkTOPUypiFfi15ZqAp9bYEBZij8jLMfhmg6tiiCU0BwZUCKQcki5DJN
-         2iB6113ZsYrFj4in4EBwsS+xGQGdVInTbEsWMkh60rIhnDEUCLCLpG7S0bZ1/DJrd5
-         If32mPKQGoK17+Q8sQ5AKIFVX2VBqH1s8NJUW05Y=
-Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
-        by mail-auth.avm.de (Postfix) with ESMTPSA id 99984804A2;
-        Tue, 22 Feb 2022 09:12:34 +0100 (CET)
-Date:   Tue, 22 Feb 2022 09:12:33 +0100
-From:   Nicolas Schier <n.schier@avm.de>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] certs: simplify empty certs creation in
- certs/Makefile
-Message-ID: <YhSa8bOW7sOd1cp0@buildd.core.avm.de>
-References: <20220218044634.169520-1-masahiroy@kernel.org>
- <20220218044634.169520-2-masahiroy@kernel.org>
+        Tue, 22 Feb 2022 03:20:58 -0500
+X-Greylist: delayed 260 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 00:20:31 PST
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEAF3155C35;
+        Tue, 22 Feb 2022 00:20:30 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E5C26100004;
+        Tue, 22 Feb 2022 08:20:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645518026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W5Nefp6GfuNeDoo+g/v+e3/VXcVfBUoFmyuv8FL7z+4=;
+        b=OKkc8UOr8QCrah0F5Elkwb5Jme6SaZXNa0HvOfBn0RTpCv1hzn4ZH6F6HhjKiBtS2/E8YI
+        Afljgq/1rUjbZ/F6HDktUWOcYUeUieeQvSpeKWGDwQnocGrhcksTP3uKc/51o2vv9sdPuN
+        RkqSUQhC2qIafJJbZp+8pXYcV6h3lmFGKQ2VGKMyyjNDKTwRlx6mPpL8iIhgx+VQDO/WjQ
+        /KoUkGk9XLC6Gb/zdUigH/G/+dkrDK0z0BKpUbZUult4daeW/GkuG/7PQf+tZPwRh4B+uz
+        2hg3SBQlFoxtx04HUvdWhVcSVQIHFdo0NjsXKIvPEcCVmt2dnmhwQ4bQzMYLWw==
+Date:   Tue, 22 Feb 2022 09:19:02 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
+Message-ID: <20220222091902.198ce809@fixe.home>
+In-Reply-To: <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <20220221162652.103834-3-clement.leger@bootlin.com>
+        <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220218044634.169520-2-masahiroy@kernel.org>
-X-purgate-ID: 149429::1645517554-00000620-B1D4181E/0/0
-X-purgate-type: clean
-X-purgate-size: 2668
-X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
-X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
-X-purgate: clean
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 01:46:34PM +0900, Masahiro Yamada wrote:
-> To create an empty cert file, we need to pass "" to the extract-cert
-> tool, which is common for all the three call-sites of cmd_exract_certs.
+Le Mon, 21 Feb 2022 19:46:12 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-Missing a 't' in 'cmd_exract_certs'.
+> On Mon, Feb 21, 2022 at 05:26:44PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Add fwnode_get_match_data() which is meant to be used as
+> > device_get_match_data for fwnode_operations. =20
+>=20
+> ...
+>=20
+> > +const void *fwnode_get_match_data(const struct fwnode_handle *fwnode,
+> > +				  const struct device *dev)
+> > +{
+> > +	const struct of_device_id *match;
+> > +
+> > +	match =3D fwnode_match_node(fwnode, dev->driver->of_match_table);
+> > +	if (!match)
+> > +		return NULL;
+> > +
+> > +	return match->data;
+> > +} =20
+>=20
+> It's OF-centric API, why it has fwnode prefix? Can it leave in drivers/of=
+ instead?
+>=20
+>=20
 
-Reviewed-by: Nicolas Schier <n.schier@avm.de>
+The idea is to allow device with a software_node description to match
+with the content of the of_match_table. Without this, we would need a
+new type of match table that would probably duplicates part of the
+of_match_table to be able to match software_node against a driver.
+I did not found an other way to do it without modifying drivers
+individually to support software_nodes.
 
-> 
-> Factor out the logic into extract-cert-in.
-> 
-> One exceptional case is PKCS#11 case, where we override extract-cert-in
-> with the URI.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
->  certs/Makefile | 21 +++++++++++----------
->  1 file changed, 11 insertions(+), 10 deletions(-)
-> 
-> diff --git a/certs/Makefile b/certs/Makefile
-> index 68c1d7b9a388..d8443cfb1c40 100644
-> --- a/certs/Makefile
-> +++ b/certs/Makefile
-> @@ -13,12 +13,13 @@ obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
->  endif
->  
->  quiet_cmd_extract_certs  = CERT    $@
-> -      cmd_extract_certs  = $(obj)/extract-cert $(2) $@
-> +      cmd_extract_certs  = $(obj)/extract-cert $(extract-cert-in) $@
-> +extract-cert-in = $(or $(filter-out $(obj)/extract-cert, $(real-prereqs)),"")
->  
->  $(obj)/system_certificates.o: $(obj)/x509_certificate_list
->  
->  $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert FORCE
-> -	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_TRUSTED_KEYS),$<,""))
-> +	$(call if_changed,extract_certs)
->  
->  targets += x509_certificate_list
->  
-> @@ -52,22 +53,22 @@ $(obj)/x509.genkey:
->  
->  endif # CONFIG_MODULE_SIG_KEY
->  
-> -# If CONFIG_MODULE_SIG_KEY isn't a PKCS#11 URI, depend on it
-> -ifneq ($(filter-out pkcs11:%, $(CONFIG_MODULE_SIG_KEY)),)
-> -X509_DEP := $(CONFIG_MODULE_SIG_KEY)
-> -endif
-> -
->  $(obj)/system_certificates.o: $(obj)/signing_key.x509
->  
-> -$(obj)/signing_key.x509: $(X509_DEP) $(obj)/extract-cert FORCE
-> -	$(call if_changed,extract_certs,$(if $(CONFIG_MODULE_SIG_KEY),$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)),""))
-> +PKCS11_URI := $(filter pkcs11:%, $(CONFIG_MODULE_SIG_KEY))
-> +ifdef PKCS11_URI
-> +$(obj)/signing_key.x509: extract-cert-in := $(PKCS11_URI)
-> +endif
-> +
-> +$(obj)/signing_key.x509: $(filter-out $(PKCS11_URI),$(CONFIG_MODULE_SIG_KEY)) $(obj)/extract-cert FORCE
-> +	$(call if_changed,extract_certs)
->  
->  targets += signing_key.x509
->  
->  $(obj)/revocation_certificates.o: $(obj)/x509_revocation_list
->  
->  $(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cert FORCE
-> -	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_REVOCATION_KEYS),$<,""))
-> +	$(call if_changed,extract_certs)
->  
->  targets += x509_revocation_list
->  
-> -- 
-> 2.32.0
-> 
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
