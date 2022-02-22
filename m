@@ -2,129 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiBVJs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
+        id S230321AbiBVJuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:50:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiBVJs4 (ORCPT
+        with ESMTP id S230344AbiBVJuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:48:56 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E938CDBD;
-        Tue, 22 Feb 2022 01:48:29 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0D04C24000E;
-        Tue, 22 Feb 2022 09:48:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645523308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EFAaqhIoJajTkLT+95fOlAru+/AxTHVWX3q/uD+uNdU=;
-        b=eAg3o386bJa6y9cGCHbx42R8Tm9kdj+SIwPdnXDvQTrUGO3IzullL5zCABe+VbXtKnDp6B
-        IrZ1MycmBt6u13sM0hJIAEi7XNZLihmD5SK9SuRjtT8NmGD3eRVUG1pLJWcbb0PIQUHlVO
-        M5tiXKtegLhr4tiXoUSopSd0EczlGZ+2L0fe+IUyNEAbqN1hy4tHgkEu40wVFrcdVlR8/s
-        ut9iB78G/W6kLYj3Xn1LOeYWI6WjMVb+SVIG16TN03qHYTM9VEExmrNC68wuf/gvM/nEEK
-        dB2blcd5oXMwfoX/59MJ86WrOy8GPGGR39UcgbH2hdb4zEhhJIiy74iQltOH5g==
-Date:   Tue, 22 Feb 2022 10:47:05 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
-Message-ID: <20220222104705.54a73165@fixe.home>
-In-Reply-To: <CAHp75VfduXwRvxkNg=At5jaN-tcP3=utiukEDL35PEv_grK4Pw@mail.gmail.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
-        <20220221162652.103834-3-clement.leger@bootlin.com>
-        <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
-        <20220222091902.198ce809@fixe.home>
-        <CAHp75VdwfhGKOiGhJ1JsiG+R2ZdHa3N4hz6tyy5BmyFLripV5A@mail.gmail.com>
-        <20220222094623.1f7166c3@fixe.home>
-        <CAHp75VfduXwRvxkNg=At5jaN-tcP3=utiukEDL35PEv_grK4Pw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Tue, 22 Feb 2022 04:50:00 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475B5119419;
+        Tue, 22 Feb 2022 01:49:34 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d66f95f1d1so166882247b3.0;
+        Tue, 22 Feb 2022 01:49:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I+1ybMhNBxeJhewJGPotloa4lDDMgSvpF+wqTddYHZM=;
+        b=FGj1/Fsy03td8VFZ0StvJLn5LyXeBDYJmtHceMh7Xh1TPTUdKJIMjmcfYkM3l05s8M
+         Hwyy9sWDVtLb1nO75pimabsv8yf4Op+LZrmAyRJ/0xj68Cy/iv/YcIpt9dBKhEmYQTTF
+         9Na7AyztQPF9GNEMAhsmmqYmGLcPj9uTGHvrUXVxo3tJlJsIp3vgbEtf1uhjXVHYFEHG
+         56GN3VSvvRiXHpcSM2u044Q7BN118kSZNxaib8A5zLBwNubq05KJgTFY4HjX/89FxQc8
+         ZHy+uQOtMDzUAoYNXpvrTyBQtKxM2U44RvJIlQun0yQ/MIZgQNG0KBDO9qp3WEbOpsPz
+         yFZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I+1ybMhNBxeJhewJGPotloa4lDDMgSvpF+wqTddYHZM=;
+        b=CrtPOIcktO2KAEuQkODTMUMDODJBwr75we1fD80wx0pCmfURgPnoI3TZd5QjruuArj
+         nPH9GUB5zuAm67EQPHrMWUT6M1ArV5WxP51gS5/WUTmCFvEvBXiX01BURnQb53vNGFwq
+         bJ4O28RW+dqL0mTNeLP7JTFdMgK/y7doJDN+ClGlWp+N1sAT/3i/O+fXKKUDjDwTwZaP
+         NFe+NsvnyWTQaCNgWQyzO2vW8B1AACxfOsb3WpDP82Vpsdd69EWS4yv8xaTLj92k6efD
+         gDOTdX6xsknOCuwnxD9EYGaVJwMPEarhpDFSVsj3WG7hI04v068uBXlWnL3mAqpaG7zt
+         4goQ==
+X-Gm-Message-State: AOAM532+iZFuSPogorYXkOMpZ39iy6ecjWt80f6PQHNFRbLK8tZ6RDYq
+        p7a7OqjLlt+ZAn8rigg2FHbacIrIQ7V3V0fjhKo=
+X-Google-Smtp-Source: ABdhPJxAPHayjDTcrE2Q32HSf/efRSQMSrMjyxlIKw91qY1WplFcblk7uJXq7RGfhsaoWnxwVIGf8c12RxmMx15271k=
+X-Received: by 2002:a81:5f8a:0:b0:2d0:ccb1:9c9c with SMTP id
+ t132-20020a815f8a000000b002d0ccb19c9cmr23818472ywb.265.1645523372069; Tue, 22
+ Feb 2022 01:49:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220221222450.5393-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdVb38_nhxVqUdtedyP0wMWmgkC-4K+OgbY0bOO8Hw4w4Q@mail.gmail.com>
+ <OS0PR01MB59226DF1128AE3BBAEA2E96E863B9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAMuHMdXzz1szS=6aY7RKRo1YAGqQ_AjmkXk6x4CryRtoSADfcw@mail.gmail.com>
+In-Reply-To: <CAMuHMdXzz1szS=6aY7RKRo1YAGqQ_AjmkXk6x4CryRtoSADfcw@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 22 Feb 2022 09:49:06 +0000
+Message-ID: <CA+V-a8ucX_G04wU-pvUtQ7HxDdgp0sguU=x663xvXaE1RaZ8+A@mail.gmail.com>
+Subject: Re: [PATCH] soc: renesas: Kconfig: Explicitly select PM and
+ PM_GENERIC_DOMAINS configs
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 22 Feb 2022 10:24:13 +0100,
-Andy Shevchenko <andy.shevchenko@gmail.com> a =C3=A9crit :
-
-> > > If you want to use the device on an ACPI based platform, you need to
-> > > describe it in ACPI as much as possible. The rest we may discuss. =20
+On Tue, Feb 22, 2022 at 8:31 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Biju,
+>
+> On Tue, Feb 22, 2022 at 9:30 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > Subject: Re: [PATCH] soc: renesas: Kconfig: Explicitly select PM and
+> > > PM_GENERIC_DOMAINS configs
+> > >
+> > > On Mon, Feb 21, 2022 at 11:25 PM Lad Prabhakar <prabhakar.mahadev-
+> > > lad.rj@bp.renesas.com> wrote:
+> > > > Explicitly select PM and PM_GENERIC_DOMAINS configs for ARCH_R9A07G044
+> > > > and ARCH_R9A07G045 configs. PM and PM_GENERIC_DOMAINS configs are
 > >
-> > Agreed but the PCIe card might also be plugged in a system using a
-> > device-tree description (ARM for instance). I should I do that without
-> > duplicating the description both in DT and ACPI ? =20
->=20
-> Why is it (duplication) a problem?
-> Each platform has its own kind of description, so one needs to provide
-> it in the format the platform accepts.
->=20
+> > Typo ARCH_R9A07G054 configs
+>
+> Thanks, will fix while applying.
+>
+Thanks Biju & Geert.
 
-The problem that I see is not only duplication but also that the PCIe
-card won't work out of the box and will need a specific SSDT overlays
-each time it is used. According to your document about SSDT overlays,
-there is no way to load this from the driver. This means that the user
-will have to compile a platform specific .aml file to match its
-platform configuration. If the user wants to change the PCIe port, than
-I guess it will have to load another .aml file. I do not think a user
-expect to do so when plugging a PCIe card.
-
-Moreover, the APCI documentation [1] says the following:
-
-"PCI devices, which are below the host bridge, generally do not need to
-be described via ACPI. The OS can discover them via the standard PCI
-enumeration mechanism, using config accesses to discover and identify
-devices and read and size their BARs. However, ACPI may describe PCI
-devices if it provides power management or hotplug functionality for
-them or if the device has INTx interrupts connected by platform
-interrupt controllers and a _PRT is needed to describe those
-connections."
-
-The device I want to use (a PCIe switch) does not fall into these
-categories so there should be no need to describe it using ACPI.
-Regarding the use of software nodes, the documentation also says that:
-
-"The software nodes can be used to complement fwnodes representing real
-firmware nodes when they are incomplete, for example missing device
-properties, *and to supply the primary fwnode when the firmware lacks
-hardware description for a device completely.*"
-
-I think my device falls into this last category but I might be wrong. I
-understand that using software_node is probably not the best idea to do
-so but I did not found any other convenient way to do it and SSDT
-overlays do not really seems to be ideal. I would be glad if you
-could provide me with an example of such usage to check if it's really
-usable.
-
-Thanks,
-
-[1] https://www.kernel.org/doc/html/latest/PCI/acpi-info.html
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Cheers,
+Prabhakar
