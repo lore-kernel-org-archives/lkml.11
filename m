@@ -2,78 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A343C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbiBVUhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
+        id S234534AbiBVUjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:39:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235720AbiBVUgh (ORCPT
+        with ESMTP id S230431AbiBVUjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:36:37 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9F1405CA
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:35:54 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id i11so38086505eda.9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:35:54 -0800 (PST)
+        Tue, 22 Feb 2022 15:39:10 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC1041F96
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:38:43 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id i5so15946348oih.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:38:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w7z+2gBVssBTwkTFXRrU+BRzNhXOykt+QfnboI/H0jI=;
-        b=Nx4Ebu1Qa73CdYd5vi87qARsrD0v/VpwZMXfHgesrmKuCWb9W3U4528JazIOYaiVyn
-         2VEovr0WBDKVp51vKrn7Ug0ljNa2PdcWMBEjHzr0Bgteigjs0cPTG+1hkwiEs62z4bhT
-         WT3SopWeJZIBLHGxHSdnc7r+h9BKJQXkQGi7UDb8yL8iXx5FHgeu/4iZvrEHEeLS748B
-         f60tjNlc9XgrCs5J6wQPEGZJJcqNXWledRb22U7avPjyWU/VVq/haVwxY81sNfYRcNPD
-         x4aBo04jpJ0PINIfmFeRgGXlJ7pfe1f+T7WYiYAAlOqwBskKIJX/mMQV5VvQUPuqoAkE
-         Lc/A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GwSJOm72enzvSwn5fw2V4YLB10CbBfcudem7m2XE/IA=;
+        b=m0D+eDfHYGEca0kD7CvrIAlkU4h0Aa8prF8+7q6lENdAX9AWiX2Fw15TWzOcVd/Rvo
+         Aux9cN2VQ+1eJ3L0ZODSI2UsVNzXV1bkYOaqnzR5mFnYkduRZWvvTTRHoYkH8m8pDe2/
+         LSHmPzC4wvwLAL72AdnzV1CKROT83e1SCXVSI9fDiC9NPv68+L7tbhLt67F2Ko28JeX0
+         ZnMuT8jIY5wErkjGdnCe/lr2Lf4G9xYkAxEjO4AdRXrLvYfxXujIxlt1sggjriENqj14
+         mzgGVQwEAiWlyKtoCfwH0O0cCAqFTR/rRCHi7WCdEPPwfy9I67iWb602ShPAf3TjHHBu
+         wZqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w7z+2gBVssBTwkTFXRrU+BRzNhXOykt+QfnboI/H0jI=;
-        b=09v8n6EdXYrNEXylBXigAWY2VRGu1am6T03uBT7+MGV0A2E4FgbB/WT79MoJhgSO3i
-         PC3SxfXVqffkRJ43SC7p6AxM5UAUAGy3Qu4vyd0/Uc3VOOhJkNVUMnObSBvyVs3prBfQ
-         HlXZrngAYPNdXY44IGNfvtFSs6R2xYkXmoRA0Csz6Q3BJ8OZ7P/tryX7dj4XW+S9yO1v
-         A9tH3bCZ08QRP1KeVEfQY9kblq73sv89msNuRW/2p+eQlxWQ0I79ejR26k+9YIXbECYz
-         oI+WIsDD2AxZJTi7DRQmrGNlZjX3kqXhehoYW09TpdsENH8667+hYLeE7sqRzZJOZXso
-         smgw==
-X-Gm-Message-State: AOAM532cI53SX6HSZJMJKYY0mfyQZKeY9acqDJ7ZfTP59wCoH/CXD1+h
-        kHzu+INA0rwkbe02/HtxLUe7okQMjW1qwnrMoHyO6vglj/c=
-X-Google-Smtp-Source: ABdhPJxlv7Aw10zN8xQzuLGYlYSw80uywRepza8MNhd5IsDpmmj58AVIlRbtUyHYQmY8fGDgmgQIrA0TXC+15SlWS5g=
-X-Received: by 2002:a05:6402:5113:b0:413:963:4eae with SMTP id
- m19-20020a056402511300b0041309634eaemr10761037edd.197.1645562152589; Tue, 22
- Feb 2022 12:35:52 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GwSJOm72enzvSwn5fw2V4YLB10CbBfcudem7m2XE/IA=;
+        b=TwYWxr613scVagyt7m/kAkLrV/0ubjyswNaM9gge9UG5SuPHN69GWONpbWwvlPHFuM
+         pEyrHspDYjAcSwyC9CqpfsHHymQC7LeyFll4Pf3OaCet/g0gOAZNdeT8qm1mKinSyD6K
+         Whum1YwnR4h9BPUsRdPDRRk0fRpM/guqa3cyxxpy3bCgicDcpzffkDRVy+AyvwhTsstF
+         2cHu3y61L0nJAvr0WF5kWM4nRJJ4Lab9b6iXBIqaPLFl+fxtFDfpiQZ2feBue0hFZ8SV
+         Iu4bFwQ+La9+M7qHKRimxUa+N5JdlNF8k+pcgo5LAK0hBVPqn7ne+KW9h4WAoSxCT++z
+         +wog==
+X-Gm-Message-State: AOAM530J+1+VBer2aHGX3lk50yrXF9+B01UvHo+UgnnR1b/g0OVeVVSP
+        rv224HWcWOpw9O5pDb9/ZI1cqg==
+X-Google-Smtp-Source: ABdhPJwgvHVqdHtcvzeXV27U5qMSVDq5IhInVn7Kh4O8+gXrXN1zcMZvgi142CXfexOkJ6+fxzxrig==
+X-Received: by 2002:aca:44c6:0:b0:2d4:f519:e7c4 with SMTP id r189-20020aca44c6000000b002d4f519e7c4mr2912829oia.282.1645562322695;
+        Tue, 22 Feb 2022 12:38:42 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id j8sm7904869otu.40.2022.02.22.12.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 12:38:42 -0800 (PST)
+Date:   Tue, 22 Feb 2022 12:40:42 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Nishanth Menon <nm@ti.com>
+Cc:     Rahul T R <r-ravikumar@ti.com>, catalin.marinas@arm.com,
+        will@kernel.org, shawnguo@kernel.org, krzk@kernel.org,
+        geert+renesas@glider.be, marcel.ziswiler@toradex.com,
+        biju.das.jz@bp.renesas.com, vkoul@kernel.org,
+        enric.balletbo@collabora.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, tomi.valkeinen@ideasonboard.com,
+        laurent.pinchart@ideasonboard.com
+Subject: Re: [PATCH] arm64: defconfig: Enable configs for DisplayPort on J721e
+Message-ID: <YhVKSpMOKWzZy9a2@ripper>
+References: <20220222180703.30401-1-r-ravikumar@ti.com>
+ <20220222193930.sbc5xlsofhg3amgk@overrun>
 MIME-Version: 1.0
-References: <20220219170301.545432-1-robdclark@gmail.com>
-In-Reply-To: <20220219170301.545432-1-robdclark@gmail.com>
-From:   Chia-I Wu <olvaffe@gmail.com>
-Date:   Tue, 22 Feb 2022 12:35:41 -0800
-Message-ID: <CAPaKu7Q3CAcoyEgvo1KZnJCx6-EO+CPcARCtzwE9Ddbb_OZA_Q@mail.gmail.com>
-Subject: Re: [PATCH] drm/virtio: Remove restriction of non-zero blob_flags
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222193930.sbc5xlsofhg3amgk@overrun>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 9:02 AM Rob Clark <robdclark@gmail.com> wrote:
->
-> From: Rob Clark <robdclark@chromium.org>
->
-> With native userspace drivers in guest, a lot of GEM objects need to be
-> neither shared nor mappable.  And in fact making everything mappable
-> and/or sharable results in unreasonably high fd usage in host VMM.
->
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
+On Tue 22 Feb 11:39 PST 2022, Nishanth Menon wrote:
+
+> On 23:37-20220222, Rahul T R wrote:
+> > Enable DRM and PHY configs required for supporting
+> > DisplayPort on J721e
+> > 
+> > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > ---
+> >  arch/arm64/configs/defconfig | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> > index 9f23d7ec1232..b0cb894a392e 100644
+> > --- a/arch/arm64/configs/defconfig
+> > +++ b/arch/arm64/configs/defconfig
+> > @@ -702,6 +702,9 @@ CONFIG_DRM_EXYNOS_DSI=y
+> >  CONFIG_DRM_EXYNOS_HDMI=y
+> >  CONFIG_DRM_EXYNOS_MIC=y
+> >  CONFIG_DRM_ROCKCHIP=m
+> > +CONFIG_DRM_TIDSS=m
+> > +CONFIG_DRM_DISPLAY_CONNECTOR=m
+> > +CONFIG_DRM_CDNS_MHDP8546=m
+> 
+> Please use savedefconfig to place the changes in the correct location
+> 
+
+Just to clarify the request, use "make savedefconfig" to generate a
+defconfig, then based on that put _only_ the relevant changes in the
+commit.
+
+> Also indicate changes if any in vmlinux in commit message.
+> 
+
+Nishanth, what are you asking for here? Just a mentioning if this has
+any impact to vmlinux (or is isolated to the modules selected), or are
+you asking for anything specific?
+
+Regards,
+Bjorn
+
+> A bootlog indicating functionality in diffstat is also additional good
+> thing to do.
+> 
+> >  CONFIG_ROCKCHIP_ANALOGIX_DP=y
+> >  CONFIG_ROCKCHIP_CDN_DP=y
+> >  CONFIG_ROCKCHIP_DW_HDMI=y
+> > @@ -1175,6 +1178,8 @@ CONFIG_PHY_SAMSUNG_UFS=y
+> >  CONFIG_PHY_UNIPHIER_USB2=y
+> >  CONFIG_PHY_UNIPHIER_USB3=y
+> >  CONFIG_PHY_TEGRA_XUSB=y
+> > +CONFIG_PHY_J721E_WIZ=m
+> > +CONFIG_PHY_CADENCE_TORRENT=m
+> >  CONFIG_ARM_SMMU_V3_PMU=m
+> >  CONFIG_FSL_IMX8_DDR_PMU=m
+> >  CONFIG_QCOM_L2_PMU=y
+> > -- 
+> > 2.17.1
+> > 
+> 
+> -- 
+> Regards,
+> Nishanth Menon
+> Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
