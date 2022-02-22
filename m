@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E08C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiBVJ6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:58:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        id S230314AbiBVJ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbiBVJ6k (ORCPT
+        with ESMTP id S229613AbiBVJ7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:58:40 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EACCD2259;
-        Tue, 22 Feb 2022 01:58:15 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4564C1F399;
-        Tue, 22 Feb 2022 09:58:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645523894; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y5GiOCWyeRNu4Zx3wuj0p1rRKzfkl//8M11MTJzWbPg=;
-        b=04SsNXRuqTQ59cl74SWmtJZRgch/xzB3XgDzOibkkOQm6joOonjthNxieEOWcl+PvMnBya
-        vY17fywk0ZWPMGfy/LE/0aDLzBPJzn1RnRPgDw6i5exW7ZWlvQoRPPLF6oiowYuP8KFjzp
-        xnMml9FUs+j2HmVhgi4DD804ERfYogw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645523894;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y5GiOCWyeRNu4Zx3wuj0p1rRKzfkl//8M11MTJzWbPg=;
-        b=P2gGhuZ/H+IDwA+9ZlGybz3E+8W0g2+ia41BqcPMh/kxhmLnvi2Zr7UOrB0x9WvP2QnviA
-        Tw0iW7zdCTPosZCA==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E01D2A3B81;
-        Tue, 22 Feb 2022 09:58:13 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 10:58:13 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Aaron Tomlin <atomlin@redhat.com>
-cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        "Lameter, Christoph" <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        Aaron Tomlin <atomlin@atomlin.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Allen <allen.lkml@gmail.com>, Joe Perches <joe@perches.com>,
-        Michal Suchanek <msuchanek@suse.de>, oleksandr@natalenko.name
-Subject: Re: [PATCH v6 09/13] module: Move kallsyms support into a separate
- file
-In-Reply-To: <CANfR36iGqX93rvv1M6AwGdR=C-Ev314iKCMpEzHOO0-LXAzJig@mail.gmail.com>
-Message-ID: <alpine.LSU.2.21.2202221055470.15071@pobox.suse.cz>
-References: <20220218212511.887059-1-atomlin@redhat.com> <20220218212511.887059-10-atomlin@redhat.com> <98cff67e-d2ca-705b-7c83-bd3f41df98d9@csgroup.eu> <0ea89614-9bab-99f5-47a8-2a2996c38966@csgroup.eu>
- <CANfR36iGqX93rvv1M6AwGdR=C-Ev314iKCMpEzHOO0-LXAzJig@mail.gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Tue, 22 Feb 2022 04:59:54 -0500
+X-Greylist: delayed 174 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 01:59:28 PST
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9513D21FD
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:59:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645523606;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=dWKZOFQ+HIvrBNvfir4obwb7uVDZZb0beIIECXtlDkQ=;
+    b=exfJhR7jvCtg4CEw/NPhwh4CrS/VHlNeZhrary/CFZIVX0kpWMYhA10vK6naSw4iMY
+    nYyBeUC8Afyiu/qE7odMcG7NAQIFB9J41nU7dVAbQVLO3QmiY9cqp8faFxXIuGMFbzYw
+    KziTMkmXEwB0XAmjIkyE1GVV2nH4Qns92uFRI3zyIg3TuW0nw4D9ww1mn7FyJAorGnHE
+    yhJOqiyDQWnA+5Ll8RxVVFOQynKJ4EfD8iKLZPtJud/ZaaItB2dsBwDSW1j7BsbqkEv2
+    vRPmVu+o5PWG/mzREGV0C/+iZQ7OS3P/V0Qs4GgJCXRDBdkQbYoJK/vPtVecD9MMkLpF
+    EA5A==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/87J2o0="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp05-05.back.ox.d0m.de
+    by smtp-ox.front (RZmta 47.40.0 AUTH)
+    with ESMTPSA id 6c30c7y1M9rQ2KB
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Tue, 22 Feb 2022 10:53:26 +0100 (CET)
+Date:   Tue, 22 Feb 2022 10:53:26 +0100 (CET)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        Pavel Machek <pavel@denx.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Message-ID: <1103141484.974980.1645523606875@webmail.strato.com>
+In-Reply-To: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH] can: rcar_canfd: Register the CAN device when fully
+ ready
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev38
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Feb 2022, Aaron Tomlin wrote:
 
-> On Mon 2022-02-21 09:35 +0100, Christophe Leroy wrote:
-> > Fixup:
-> >
-> > diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-> > index 6c8f1f390cf5..2ee8d2e67068 100644
-> > --- a/kernel/module/kallsyms.c
-> > +++ b/kernel/module/kallsyms.c
-> > @@ -171,8 +171,7 @@ void add_kallsyms(struct module *mod, const struct
-> > load_info *info)
-> >      Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
-> >
-> >      /* Set up to point into init section. */
-> > -    mod->kallsyms = (struct mod_kallsyms __rcu *)mod->init_layout.base +
-> > -        info->mod_kallsyms_init_off;
-> > +    mod->kallsyms = (void __rcu *)mod->init_layout.base +
-> > info->mod_kallsyms_init_off;
-> >
-> >      /* The following is safe since this pointer cannot change */
-> >      rcu_dereference_sched(mod->kallsyms)->symtab = (void *)symsec->sh_addr;
+> On 02/21/2022 11:59 PM Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 > 
-> Agreed.
+>  
+> Register the CAN device only when all the necessary initialization
+> is completed. This patch makes sure all the data structures and locks are
+> initialized before registering the CAN device.
+> 
+> Reported-by: Pavel Machek <pavel@denx.de>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/can/rcar/rcar_canfd.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+> index 3ad3a6f6a1dd..8c378b20b2aa 100644
+> --- a/drivers/net/can/rcar/rcar_canfd.c
+> +++ b/drivers/net/can/rcar/rcar_canfd.c
+> @@ -1783,15 +1783,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+>  
+>  	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
+>  		       RCANFD_NAPI_WEIGHT);
+> +	spin_lock_init(&priv->tx_lock);
+> +	devm_can_led_init(ndev);
+> +	gpriv->ch[priv->channel] = priv;
+>  	err = register_candev(ndev);
+>  	if (err) {
+>  		dev_err(&pdev->dev,
+>  			"register_candev() failed, error %d\n", err);
+>  		goto fail_candev;
+>  	}
+> -	spin_lock_init(&priv->tx_lock);
+> -	devm_can_led_init(ndev);
+> -	gpriv->ch[priv->channel] = priv;
+>  	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
+>  	return 0;
+>  
+> -- 
+> 2.17.1
 
-Could you split all of this to a follow-up patch, please? So that 9/13 is 
-really only about moving the code.
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
 
-Btw, the sparse warnings "dereference of noderef expression" appeared 
-after 5/13 of the series which moved latched RB-tree support, so it does 
-not belong here anyway.
-
-Miroslav
+CU
+Uli
