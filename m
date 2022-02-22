@@ -2,139 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CA9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbiBVK4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47590 "EHLO
+        id S231562AbiBVK4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbiBVK4K (ORCPT
+        with ESMTP id S231499AbiBVK4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:56:10 -0500
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3EC158EA5;
-        Tue, 22 Feb 2022 02:55:45 -0800 (PST)
-Received: by mail-wr1-f45.google.com with SMTP id s13so3807402wrb.6;
-        Tue, 22 Feb 2022 02:55:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y7HxMsThMoOBPkyDBh3eSq5/erLCvzApa8FVrrE65u8=;
-        b=v8eCPY5DK4RY+nIF8PJnkB9QIDMmROtPHSKLkrLic8dluD72FEYE0KfPJKGvlJCBck
-         547zQUVc6iF71l61BsAP1KxKjBJ8s976h68X7p8AuQnM7T3p7VbkvSFTbru03y+4gHvv
-         n12JMykqciFHJPN82tV/dVMfmoOHlpWaII2qj4yUnOxDvFnFN7xGrBFrVMIOvFbA74bl
-         X62s1buDVLpR5PA6PGbtbBd2Lfudf/2Ww6ToZVqxwp2ORWdCuhWovYdOIKxJ/GNQg/wG
-         e1QV+GQuaaRgzo5iMA+V/VZkdNtZY95leTbeLTsRdbG71R/uM4TtmRHC7RzhymEQP8IX
-         41aQ==
-X-Gm-Message-State: AOAM5338gZfq9ybJC9E/se3WOm4UXoQfXu9VfTUd1Z7GDldr9emmIDDQ
-        Fh3o9YlCCY5yTHcQaNiqHIk=
-X-Google-Smtp-Source: ABdhPJySef3HI9qExb8u5Jn6vqX6dL9kxqWyKmxkP7xqh3IGa/Q5u4Nn16bHmsqgIZwLOk9orkAGBg==
-X-Received: by 2002:a05:6000:257:b0:1e3:3a1b:d4ca with SMTP id m23-20020a056000025700b001e33a1bd4camr19155649wrz.112.1645527343828;
-        Tue, 22 Feb 2022 02:55:43 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id m12-20020a7bce0c000000b0037bed2a6fbfsm2011391wmc.37.2022.02.22.02.55.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 02:55:43 -0800 (PST)
-Date:   Tue, 22 Feb 2022 10:55:41 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, brijesh.singh@amd.com,
-        michael.roth@amd.com, jroedel@suse.de, Tianyu.Lan@microsoft.com,
-        thomas.lendacky@amd.com, michael.h.kelley@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC FATCH] x86/Hyper-V: Add SEV negotiate protocol support in
- Isolation VM.
-Message-ID: <20220222105541.izv4psjychjx5ooq@liuwe-devbox-debian-v2>
-References: <20220207160928.111718-1-ltykernel@gmail.com>
+        Tue, 22 Feb 2022 05:56:15 -0500
+X-Greylist: delayed 427 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 02:55:50 PST
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D3C15DB1E;
+        Tue, 22 Feb 2022 02:55:50 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 097C65C0194;
+        Tue, 22 Feb 2022 05:48:43 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 22 Feb 2022 05:48:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=DTcsRQMhHEsT227VK
+        XKHQyOwB4dIKR9vzR6umqoiTuA=; b=K8S59BhMrGaVw44sfUv7enmQYQ1OVuGmQ
+        lpQdCdIjz71gjc8sElBsakHzdjkF/fWn3d2LPUPcfAoivcwe+LV83yvizXy8vaL1
+        XfMNOT3uVokxiK0Dva1CKvI7FSrewINC6IUECvQlEIoHu9w78/f2s1fKyDF0INbC
+        HsSLcrmRrIJT5/+vRozrUSm9SO5w8lMCyFGd2ChhAXZh3hkFf0pXORVGYOZr7yVd
+        GeRS8M7Rk4riPYq9RsXhn/5WS8f2iwWDDgYwCpcC03bJO/hvHEar5Wn/qy+5Rshm
+        Z+nH9mO4qHq+ZgELZ0kT+6wttK1YoXw3Oispb/yo3+GGM8PXWifbQ==
+X-ME-Sender: <xms:ir8UYjuEXGwrbqKlY20yqYFrw4YF0iLQqOk0_PB3zXdNqaovd-AkCw>
+    <xme:ir8UYkdri5qEk2tUvb28L1LpdoqlMw3Iqe9DKG7bBlGIM6lMNdVAiaDTeCQO5UXoQ
+    tVSU7hQzf_V2A>
+X-ME-Received: <xmr:ir8UYmzPkn5aAbAi0LxhaIFC81fGs94iCGgv4Jo0uTDOx3FWBmZLEPbC2OdDIXU-pg-OrVu8cb-VucyP2GDx_yLlaJrXSNGQ0w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgddulecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrrhgvkhcu
+    ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
+    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepheevvdeu
+    veehkeehhfevgffggfevudegteeugfeliedvhefgueeiuefgteetieffnecuffhomhgrih
+    hnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
+    gsrdgtohhm
+X-ME-Proxy: <xmx:ir8UYiPFUO_QAu-DIAtp-DLZkzErUXDnPkxfPLfVkL7M4yyF2MW6Gg>
+    <xmx:ir8UYj8mCcn8tt4pgKNdOjsz4w8sY_tRUU12rDq9Sf9EyA_QQo8JWg>
+    <xmx:ir8UYiV_PDaowG3PCoghYbuma6I3uze38hhFB1zjhmt03mAkH0A-xA>
+    <xmx:i78UYkNV0oJsrIv2nwuuYBiVrEqvXd97V9QI6DwUM69aJGRhHIPadg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 22 Feb 2022 05:48:41 -0500 (EST)
+Date:   Tue, 22 Feb 2022 11:48:38 +0100
+From:   Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+To:     Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "moderated list:XEN NETWORK BACKEND DRIVER" 
+        <xen-devel@lists.xenproject.org>,
+        "open list:XEN NETWORK BACKEND DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] Revert "xen-netback: Check for hotplug-status
+ existence before watching"
+Message-ID: <YhS/hvHQO335elw7@mail-itl>
+References: <20220222001817.2264967-1-marmarek@invisiblethingslab.com>
+ <20220222001817.2264967-2-marmarek@invisiblethingslab.com>
+ <YhSfYyh3xU4HZKek@Air-de-Roger>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0J0yTdf+LQeqmBEg"
 Content-Disposition: inline
-In-Reply-To: <20220207160928.111718-1-ltykernel@gmail.com>
+In-Reply-To: <YhSfYyh3xU4HZKek@Air-de-Roger>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 11:09:28AM -0500, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> 
-> Hyper-V Isolation VM code uses sev_es_ghcb_hv_call() to read/write MSR
-> via ghcb page. The SEV-ES guest should call the sev_es_negotiate_protocol()
-> to negotiate the GHCB protocol version before establishing the GHCB. Call
-> sev_es_negotiate_protocol() in the hyperv_init_ghcb().
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> This patch based on the "Add AMD Secure Nested Paging (SEV-SNP) Guest Support"
-> patchset. https://lore.kernel.org/lkml/20220128171804.569796-1-brijesh.singh@amd.com/
-> 
->  arch/x86/hyperv/hv_init.c    | 6 ++++++
->  arch/x86/include/asm/sev.h   | 2 ++
->  arch/x86/kernel/sev-shared.c | 2 +-
->  arch/x86/kernel/sev.c        | 4 ++--
->  4 files changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-> index 24f4a06ac46a..a22303fccf02 100644
-> --- a/arch/x86/hyperv/hv_init.c
-> +++ b/arch/x86/hyperv/hv_init.c
-> @@ -28,6 +28,7 @@
->  #include <linux/syscore_ops.h>
->  #include <clocksource/hyperv_timer.h>
->  #include <linux/highmem.h>
-> +#include <asm/sev.h>
->  
->  int hyperv_init_cpuhp;
->  u64 hv_current_partition_id = ~0ull;
-> @@ -69,6 +70,11 @@ static int hyperv_init_ghcb(void)
->  	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
->  	*ghcb_base = ghcb_va;
->  
-> +	sev_es_negotiate_protocol();
 
-The return value should be checked, right?
+--0J0yTdf+LQeqmBEg
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 22 Feb 2022 11:48:38 +0100
+From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
+To: Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
+	Paul Durrant <paul@xen.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	"moderated list:XEN NETWORK BACKEND DRIVER" <xen-devel@lists.xenproject.org>,
+	"open list:XEN NETWORK BACKEND DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/2] Revert "xen-netback: Check for hotplug-status
+ existence before watching"
 
-There is no logical connection between this function call and the wrmsrl
-below. Is there new information available after calling
-sev_es_negotiate_protocol?
+On Tue, Feb 22, 2022 at 09:31:31AM +0100, Roger Pau Monn=C3=A9 wrote:
+> On Tue, Feb 22, 2022 at 01:18:17AM +0100, Marek Marczykowski-G=C3=B3recki=
+ wrote:
+> > This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
+> >=20
+> > The reasoning in the commit was wrong - the code expected to setup the
+> > watch even if 'hotplug-status' didn't exist. In fact, it relied on the
+> > watch being fired the first time - to check if maybe 'hotplug-status' is
+> > already set to 'connected'. Not registering a watch for non-existing
+> > path (which is the case if hotplug script hasn't been executed yet),
+> > made the backend not waiting for the hotplug script to execute. This in
+> > turns, made the netfront think the interface is fully operational, while
+> > in fact it was not (the vif interface on xen-netback side might not be
+> > configured yet).
+> >=20
+> > This was a workaround for 'hotplug-status' erroneously being removed.
+> > But since that is reverted now, the workaround is not necessary either.
+> >=20
+> > More discussion at
+> > https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@=
+ipxe.org/T/#u
+> >=20
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblething=
+slab.com>
+> > ---
+> > I believe this is the same issue as discussed at
+> > https://lore.kernel.org/xen-devel/20220113111946.GA4133739@dingwall.me.=
+uk/
+>=20
+> Right - I believe we need to leave that workaround in place in libxl
+> in order to deal with bogus Linux netbacks?
 
-> +
-> +	/* Write ghcb page back after negotiating protocol. */
-> +	wrmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
-> +	VMGEXIT();
->  	return 0;
->  }
->  
-[...]
-> diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-> index 3568b3303314..46c53c4885ee 100644
-> --- a/arch/x86/kernel/sev.c
-> +++ b/arch/x86/kernel/sev.c
-> @@ -167,12 +167,12 @@ void noinstr __sev_es_ist_exit(void)
->  	this_cpu_write(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC], *(unsigned long *)ist);
->  }
->  
-> -static inline u64 sev_es_rd_ghcb_msr(void)
-> +inline u64 sev_es_rd_ghcb_msr(void)
->  {
->  	return __rdmsr(MSR_AMD64_SEV_ES_GHCB);
->  }
->  
-> -static __always_inline void sev_es_wr_ghcb_msr(u64 val)
-> +__always_inline void sev_es_wr_ghcb_msr(u64 val)
+I'm afraid so, yes.
 
-Why are these needed? They are not used anywhere in this patch.
+--=20
+Best Regards,
+Marek Marczykowski-G=C3=B3recki
+Invisible Things Lab
 
-Thanks,
-Wei.
+--0J0yTdf+LQeqmBEg
+Content-Type: application/pgp-signature; name="signature.asc"
 
->  {
->  	u32 low, high;
->  
-> -- 
-> 2.25.1
-> 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmIUv4YACgkQ24/THMrX
+1yyKoggAg6fLt83xdWaCGP1TaH51wysnBj1sxuSzFeh7BUVHdyWYYlfTAQ+Ytghr
+N4uCqUyXqTpheDM7BE/9pXSiuHH1WqmClAef7SF9MweHT0zvDkL0J7McMSqLBeG4
+Qj67yHz4/C1yAhN3dAdP8933l4nmzvzOGNdG77D3P1IvU+41xtyoZPVfH5DDNscG
+yfYwoeI/oYRNtvd1H7+UD3ANkwEjnmFIVGRtFcb7G+NH+d9vGQFbODww95oCbWWA
+PfKL7gBFGNDuNnIABFCoI/RsF523zRSSeBesdAImUM+531IRapB9J9FYp4E6M3RA
+Bt5hPaIrX6OFgur2u9aShGvIdH+FYQ==
+=0A40
+-----END PGP SIGNATURE-----
+
+--0J0yTdf+LQeqmBEg--
