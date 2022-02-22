@@ -2,115 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C7FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232183AbiBVNJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:09:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S232208AbiBVNJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiBVNJo (ORCPT
+        with ESMTP id S232171AbiBVNJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:09:44 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2072.outbound.protection.outlook.com [40.107.212.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9872151D37;
-        Tue, 22 Feb 2022 05:09:17 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=in7e2hBlQnwHx9qZVHRwdC90HWlCM2YeT+fc+Lo+YyiM6s/C23NAJ8CJWQ90l8TDJ8/4XcNisTTrHOKXDEE6YoqKHljQtUACW1dHw+7q3UfHegBFMaHbtmYhigtHwoMkj3JnGAchTkPnY4JWla5N371+I4lyXx5LYVU9keB9lMxo/ybRbdmt6FWLWXtGPA2hazDMC/jyfu5vL7YxtaEUQ9w0yVVbFFisI2VCGTeDi2dvqnXFMStgN5yRs67VKkXeMCjR/dhB+83SVPo76q6zuqy92bS3ZGVhvwhc5nbRLXxAxObh1HBpUMpDdAGh0jaMuYT06aMK4+RBjj0tN5Fwhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V/Z3fEjKOKMW0QkQ3btV11c3rlHNFDZO5/ZL6qw9eNU=;
- b=Xe5qTxECUkCBRbKaBkSY6qKjKVG47DohMWrCX+5/TXo/mChDbHuW9JzSEnMrlMVBTNtZUUctGlpUgoFby0wggbW84/lrovPA/d25HVjFmEf+XFebi205pMnHYFqqtJYFEci2m3MfrCWI0bRt46RCkf48arb/m7W6lXl3sNAdBrdSv+jAdCF+0dcmvJGBrrtmIYz3hwhFo6tC/gJ6u2ID3YaZkT1MDmA+fdhvIep4e8gx1pryCDF3eTk1Jl/yR6b+gTQ7WSxAks3VWBvpl9BZnlpNsZaOdM6W6p1uCnHFaY73t8havUnSxgehg+OmcyGLX9Nyj9z59/Qokn+E6rm42A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V/Z3fEjKOKMW0QkQ3btV11c3rlHNFDZO5/ZL6qw9eNU=;
- b=kOI3V2gmzeS7RuKmTWwEaAFh7Me52d3r/mcHWMGJt/HqE8DRMSOfkIxxlMzlcdZPRgjrbNwFegQ2Gm40eIxQlp9Id6gQLy/EgYy9l0aXA7uz/jXgZC4otn4mP3a2eFsG8VBgN28ZA/fKXRFeEUvShUZL8FAVRl1+99lPWZMbzbU=
-Received: from DS7PR03CA0127.namprd03.prod.outlook.com (2603:10b6:5:3b4::12)
- by SA1PR02MB8350.namprd02.prod.outlook.com (2603:10b6:806:1e5::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Tue, 22 Feb
- 2022 13:09:14 +0000
-Received: from DM3NAM02FT006.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:3b4:cafe::7c) by DS7PR03CA0127.outlook.office365.com
- (2603:10b6:5:3b4::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
- Transport; Tue, 22 Feb 2022 13:09:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT006.mail.protection.outlook.com (10.13.4.251) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4995.19 via Frontend Transport; Tue, 22 Feb 2022 13:09:14 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 22 Feb 2022 05:09:08 -0800
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 22 Feb 2022 05:09:08 -0800
-Envelope-to: git@xilinx.com,
- linux-clk@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Received: from [10.140.6.59] (port=35690 helo=xhdshubhraj40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <shubhrajyoti.datta@xilinx.com>)
-        id 1nMUuh-000Eql-3Q; Tue, 22 Feb 2022 05:09:07 -0800
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-To:     <linux-clk@vger.kernel.org>
-CC:     <git@xilinx.com>, <michal.simek@xilinx.com>,
-        <linux-kernel@vger.kernel.org>,
-        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Subject: [PATCH 0/2] clk: zynq: trivial fixes
-Date:   Tue, 22 Feb 2022 18:39:01 +0530
-Message-ID: <20220222130903.17235-1-shubhrajyoti.datta@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 22 Feb 2022 08:09:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9515151D2A
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:09:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645535356;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lO8XBozw0uXAeD4oDYbspjbQu7Kq7/HL8LvVdp6G95o=;
+        b=eHWTQ7ZCrpZX/G9hPxEM8IivjkttEsapun87v6GPz6r7kCKKPoKB3etrGOWWdQA+47Ssfa
+        CiymL4eXHKZPt08pnU493RMWL+0iABduD4ojlW8VfTaIKxI9qN1kqJ638IzL2dc2YF6FUe
+        4rD/dkrefE2F3HkQhQzj4SAJlQ9UurQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-302-IpJowqZSNOKxI2-oHbqkDw-1; Tue, 22 Feb 2022 08:09:15 -0500
+X-MC-Unique: IpJowqZSNOKxI2-oHbqkDw-1
+Received: by mail-wr1-f72.google.com with SMTP id c16-20020adfa310000000b001ed9cd8f4c7so213305wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:09:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lO8XBozw0uXAeD4oDYbspjbQu7Kq7/HL8LvVdp6G95o=;
+        b=xAbTVihB08YAV69jBd/cx0kAKtZr4DISE5e3AvteL5eO/yOPafmKr0fcao5Ajy+Bce
+         qmeZNmEywdqkLezaCMpPKE0Wa8MSJ/WdimUKnTuWWFF7aXhQAVADmNNVpL+O1Xj1lcpj
+         fT/S67X9a2/PU26PHOGanSptGfz/lhLDsXrDB3Gig/1YB8GiHMhPAt93rSbuZEktfdod
+         2B3JLCDKprVPHVIVyOu6TCOgI8AMGVY/s1z45+l6cnMqQt5zhtELzZrVNm88OKdSRpP3
+         dQZMfG63zpmnoQbEbrIQ5sUrM2/iJf7sL51EBcnPpsvZaHgDpI4t65/icG3VPDAL0PP9
+         U/wQ==
+X-Gm-Message-State: AOAM530YmTF+1/1DrN92AGyVTCiorhIyizbyYIaCeltiF9ITlDJg+bxp
+        4irfCYhUVLpVlgYjcDvkGBlxW2CjEQ+Q86RuXkJd6Wf8hz01hm7zIH8tC3ebTS4zvJ3fjzAWdi6
+        CNk1nAzXTSIXRKJXRyIYgu8M=
+X-Received: by 2002:a05:6000:1542:b0:1ea:7bbb:7b43 with SMTP id 2-20020a056000154200b001ea7bbb7b43mr4167343wry.366.1645535354295;
+        Tue, 22 Feb 2022 05:09:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwabjlyxZL5p8WPLjjK4yfS4s/ouZUimAmTG652fwmqB7gO8MuzevMSOgpMrEPV+g5hLfyU+w==
+X-Received: by 2002:a05:6000:1542:b0:1ea:7bbb:7b43 with SMTP id 2-20020a056000154200b001ea7bbb7b43mr4167328wry.366.1645535354058;
+        Tue, 22 Feb 2022 05:09:14 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0037bdfa1665asm2785405wmj.18.2022.02.22.05.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 05:09:13 -0800 (PST)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org, christophe.leroy@csgroup.eu
+Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
+        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name
+Subject: [PATCH v7 01/13] module: Move all into module/
+Date:   Tue, 22 Feb 2022 13:08:59 +0000
+Message-Id: <20220222130911.1348513-2-atomlin@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220222130911.1348513-1-atomlin@redhat.com>
+References: <20220222130911.1348513-1-atomlin@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 79786b65-9d0c-4a92-6462-08d9f604867c
-X-MS-TrafficTypeDiagnostic: SA1PR02MB8350:EE_
-X-Microsoft-Antispam-PRVS: <SA1PR02MB83508586CB0928CF5E597CD1AA3B9@SA1PR02MB8350.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4ATcseBI5epKMnSO87i7wnq8b7jC/ymjV9icbcs7/IDs0y54XL2wSu9Ze4NuTon+wsB6ZJwDlKeAZrzQhpX7sdVntHAdXPqYfeaqtKcVg9+53RLSxDMr4j/sXYgpBLhNv3kFISHAgVgkMB/BsCvqDqa7bWGxgqHg+t8EHhXY0HBOtCM1wQzF3DqxspsqLITXuYIE6CPv6yT27J4T2YUDSfZApxM52a6Q82m4a1b/JSoGE+6NPui8GQeXWSfHSIiVKHBBZalmhlBb5NVmbWEOrsALVvJpF9IGDfdC0ooGfufu5dLD04GGCSRtnoMksqGg0BBp5XM6rbruKFSlCdqUvcTgXYX/xQaTwvlJ0+28QfSieNER1Q8iQHUj6SWkEOq/GSZuLgNE/9X8q4MdVQn4ofIQXekUQEf/XVRL2ocO9n4NlkKQt/ue2tcaF7YozfHWFVwgP59pno0qCwarLKWDLXY5E76V7LbVh/OOG+3k1EipWDhOQJ/Wq8qRoMzNdmztDyYiUSC9E8yCacuDwkEXOet92Q2QbQMfWwRC4wEWsFe8yEMHgBUBJtCLveBzYzN8k+hdvhmaEaa7MPbMpj650fPmnASHPAqtv44dvvK8caUiVGJp/p3cy3IdXQCEs6CMTlwEn/n72ykleYlCA0tOQcY8Rn1JilzLMb6eISMIhKY=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(36860700001)(316002)(356005)(36756003)(6916009)(83380400001)(7636003)(107886003)(47076005)(450100002)(8676002)(54906003)(70206006)(70586007)(4326008)(26005)(508600001)(82310400004)(5660300002)(44832011)(186003)(9786002)(1076003)(426003)(558084003)(2616005)(336012)(8936002)(6666004)(7696005)(2906002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 13:09:14.5299
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79786b65-9d0c-4a92-6462-08d9f604867c
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT006.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB8350
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trivial patches.
-No functional change inteded.
+No functional changes.
 
-Shubhrajyoti Datta (2):
-  clk: zynq: trivial warning fix
-  clk: zynq: Update the parameters to zynq_clk_register_periph_clk
+This patch moves all module related code into a separate directory,
+modifies each file name and creates a new Makefile. Note: this effort
+is in preparation to refactor core module code.
 
- drivers/clk/zynq/clkc.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ MAINTAINERS                                         |  2 +-
+ kernel/Makefile                                     |  5 +----
+ kernel/module/Makefile                              | 12 ++++++++++++
+ kernel/{module_decompress.c => module/decompress.c} |  2 +-
+ kernel/{module-internal.h => module/internal.h}     |  0
+ kernel/{module.c => module/main.c}                  |  2 +-
+ kernel/{module_signing.c => module/signing.c}       |  2 +-
+ 7 files changed, 17 insertions(+), 8 deletions(-)
+ create mode 100644 kernel/module/Makefile
+ rename kernel/{module_decompress.c => module/decompress.c} (99%)
+ rename kernel/{module-internal.h => module/internal.h} (100%)
+ rename kernel/{module.c => module/main.c} (99%)
+ rename kernel/{module_signing.c => module/signing.c} (97%)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index bd86ed9fbc79..463bdb829db4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13012,7 +13012,7 @@ L:	linux-kernel@vger.kernel.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
+ F:	include/linux/module.h
+-F:	kernel/module.c
++F:	kernel/module/
+ 
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 56f4ee97f328..717075b65deb 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -29,7 +29,6 @@ KCOV_INSTRUMENT_softirq.o := n
+ KCSAN_SANITIZE_softirq.o = n
+ # These are called from save_stack_trace() on slub debug path,
+ # and produce insane amounts of uninteresting coverage.
+-KCOV_INSTRUMENT_module.o := n
+ KCOV_INSTRUMENT_extable.o := n
+ KCOV_INSTRUMENT_stacktrace.o := n
+ # Don't self-instrument.
+@@ -53,6 +52,7 @@ obj-y += rcu/
+ obj-y += livepatch/
+ obj-y += dma/
+ obj-y += entry/
++obj-$(CONFIG_MODULES) += module/
+ 
+ obj-$(CONFIG_KCMP) += kcmp.o
+ obj-$(CONFIG_FREEZER) += freezer.o
+@@ -66,9 +66,6 @@ ifneq ($(CONFIG_SMP),y)
+ obj-y += up.o
+ endif
+ obj-$(CONFIG_UID16) += uid16.o
+-obj-$(CONFIG_MODULES) += module.o
+-obj-$(CONFIG_MODULE_DECOMPRESS) += module_decompress.o
+-obj-$(CONFIG_MODULE_SIG) += module_signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) += module_signature.o
+ obj-$(CONFIG_KALLSYMS) += kallsyms.o
+ obj-$(CONFIG_BSD_PROCESS_ACCT) += acct.o
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+new file mode 100644
+index 000000000000..cdd5c61b8c7f
+--- /dev/null
++++ b/kernel/module/Makefile
+@@ -0,0 +1,12 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for linux kernel module support
++#
++
++# These are called from save_stack_trace() on slub debug path,
++# and produce insane amounts of uninteresting coverage.
++KCOV_INSTRUMENT_module.o := n
++
++obj-y += main.o
++obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
++obj-$(CONFIG_MODULE_SIG) += signing.o
+diff --git a/kernel/module_decompress.c b/kernel/module/decompress.c
+similarity index 99%
+rename from kernel/module_decompress.c
+rename to kernel/module/decompress.c
+index ffef98a20320..d14d6443225a 100644
+--- a/kernel/module_decompress.c
++++ b/kernel/module/decompress.c
+@@ -12,7 +12,7 @@
+ #include <linux/sysfs.h>
+ #include <linux/vmalloc.h>
+ 
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ static int module_extend_max_pages(struct load_info *info, unsigned int extent)
+ {
+diff --git a/kernel/module-internal.h b/kernel/module/internal.h
+similarity index 100%
+rename from kernel/module-internal.h
+rename to kernel/module/internal.h
+diff --git a/kernel/module.c b/kernel/module/main.c
+similarity index 99%
+rename from kernel/module.c
+rename to kernel/module/main.c
+index 46a5c2ed1928..34a2b0cf3c3e 100644
+--- a/kernel/module.c
++++ b/kernel/module/main.c
+@@ -58,7 +58,7 @@
+ #include <linux/dynamic_debug.h>
+ #include <linux/audit.h>
+ #include <uapi/linux/module.h>
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+diff --git a/kernel/module_signing.c b/kernel/module/signing.c
+similarity index 97%
+rename from kernel/module_signing.c
+rename to kernel/module/signing.c
+index 8723ae70ea1f..8aeb6d2ee94b 100644
+--- a/kernel/module_signing.c
++++ b/kernel/module/signing.c
+@@ -12,7 +12,7 @@
+ #include <linux/string.h>
+ #include <linux/verification.h>
+ #include <crypto/public_key.h>
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ /*
+  * Verify the signature on a module.
 -- 
-2.17.1
+2.34.1
 
