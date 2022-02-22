@@ -2,98 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07806C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD41C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233340AbiBVPSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:18:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
+        id S233337AbiBVPSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:18:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233354AbiBVPRi (ORCPT
+        with ESMTP id S233385AbiBVPRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:17:38 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E376CA88BA
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:17:04 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id ay3so7037052plb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:17:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lcRYoN5Uf3rBH9v/7qdYElQaWmfVzREsyATDiT2CRiQ=;
-        b=WOnf61l0rum3il1zfoKqAJBV8UpvfqPLdVI2HNdp0/fkGZhP8BLuhXuHloYSx87D7i
-         vD/oiHYQhINsdy7aNuzrOQxnCtcwwQ7RNIkZoGImk22FmjdmEJzRpUmpP8WPfKfhnNCg
-         eNQsX7Ji9mOqEjLE3cxiValuU2L6vFsahcS9hlQ6Lh5rOKChD33zVFMX56mT2yhVuiGj
-         MgDfp3Pma4sl5hKjucCbSHn7WKfAwyMzAzn21cZ9xkRnFZUir5Fkht+vjpT4TCiQG+2t
-         ASN4hutVwU80e0OPrN21Y3fcUhw+NPPnQWFWqhN2oDGb22n/a7YkI5CHvry2Visg4w2y
-         DSyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lcRYoN5Uf3rBH9v/7qdYElQaWmfVzREsyATDiT2CRiQ=;
-        b=MgUBOYlOEz1OQGrmWP4qkOY9eUGZ+Nn3nEMvYUhmMYsxnMggYZ1hTwP4E4dDzADCDi
-         KEsFFaIGbcvv4bauBbJMd22k+08RAdNQTUyv6XU+RD0qV3RBU6pG7SgY1gyI91Te5Kpt
-         YaIvnMtDHsptCSeare4pAY685PHgwKPYieMkAJDxTD+6N0zvrD4DQ8YYm9NvYaxDIHSM
-         30d9uSSerKK0e4b6Fe6vyOm6kjtasG0fkD0jHc5Pg0GaChR0u7E67EqlyLbw2crv5doI
-         lwjE+bWLWCZUpLuyjkyGcnAca/X4TStJLcN3rm1zyfzb+knMzAr2tUgxq3mopfga7Ysk
-         n7Xw==
-X-Gm-Message-State: AOAM530JwqcDSbtQ9GiydwF3onC4yGYpv1Nt3stmdkZt+RtDy7HPKvIP
-        /yUl2Oe9lvpdFQQerwchuSG8vIZqy1/URg==
-X-Google-Smtp-Source: ABdhPJxOKcTBsgn4bM4lfQ6m0TCJ8CTWmoDGUwk8YW+5S3eaRB5CkZRKDnw3qqsiCVaVhGIcU8Bkrg==
-X-Received: by 2002:a17:90a:8d85:b0:1b8:a215:e3e4 with SMTP id d5-20020a17090a8d8500b001b8a215e3e4mr4520719pjo.175.1645543023501;
-        Tue, 22 Feb 2022 07:17:03 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id u9-20020a17090a450900b001b9b5ca299esm2962733pjg.54.2022.02.22.07.17.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 07:17:02 -0800 (PST)
-Date:   Tue, 22 Feb 2022 15:16:59 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peng Hao <flyingpenghao@gmail.com>
-Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
+        Tue, 22 Feb 2022 10:17:43 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2D9AB441;
+        Tue, 22 Feb 2022 07:17:12 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K32nz2ndJz9sSm;
+        Tue, 22 Feb 2022 16:16:55 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id PM-0u1yQtH0S; Tue, 22 Feb 2022 16:16:55 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32nw5l2mz9sSp;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id AECC28B781;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 7lpda_ch5qPb; Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 46B3A8B779;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFGgTk1087714
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 16:16:42 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFGgHL1087713;
+        Tue, 22 Feb 2022 16:16:42 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM:VMX:Remove scratch 'cpu' variable that shadows an
- identical scratch var
-Message-ID: <YhT+a4I0ytA7eVE5@google.com>
-References: <20220222103954.70062-1-flyingpeng@tencent.com>
+Subject: [PATCH v3 2/4] module: Move module_enable_x() and frob_text() in strict_rwx.c
+Date:   Tue, 22 Feb 2022 16:16:32 +0100
+Message-Id: <1545ae8fcef61d5741fa684ad5816b5dd3a418bc.1645542893.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645542893.git.christophe.leroy@csgroup.eu>
+References: <cover.1645542893.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222103954.70062-1-flyingpeng@tencent.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542984; l=7341; s=20211009; h=from:subject:message-id; bh=wUj6D7B9/Eu7E72Eq1hFg4hRDQ2fPolBrGntvtG6lQ8=; b=m5HdxFJ/6ow8rVHuIfLOcphQXdP0/4qb4nVoGhYnd9NRR4ADsBFVhL97xmkVrk4pFYYFL4b4SkKT zsWk5w/2CFIPzcVPgjJ8FJlmZauZ3dNcpMWfzYPRSazSck5J1wb6
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Needs a space between "KVM:" and "VMX:".  No need to resend, Paolo can fixup when
-applying.
+Move module_enable_x() together with module_enable_nx() and
+module_enable_ro().
 
-On Tue, Feb 22, 2022, Peng Hao wrote:
->  From: Peng Hao <flyingpeng@tencent.com> 
-> 
->  Remove a redundant 'cpu' declaration from inside an if-statement that
->  that shadows an identical declaration at function scope.  Both variables
->  are used as scratch variables in for_each_*_cpu() loops, thus there's no
->  harm in sharing a variable.
-> 
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index ba66c171d951..6101c2980a9c 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -7931,7 +7931,6 @@ static int __init vmx_init(void)
->  	    ms_hyperv.hints & HV_X64_ENLIGHTENED_VMCS_RECOMMENDED &&
->  	    (ms_hyperv.nested_features & HV_X64_ENLIGHTENED_VMCS_VERSION) >=
->  	    KVM_EVMCS_VERSION) {
-> -		int cpu;
->  
->  		/* Check that we have assist pages on all online CPUs */
->  		for_each_online_cpu(cpu) {
-> -- 
-> 2.27.0
-> 
+Those three functions are going together, they are all used
+to set up the correct page flags on the different sections.
+
+As module_enable_x() is used independently of
+CONFIG_STRICT_MODULE_RWX, build strict_rwx.c all the time and
+use IS_ENABLED(CONFIG_STRICT_MODULE_RWX) when relevant.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ kernel/module/Makefile     |  3 +--
+ kernel/module/internal.h   | 15 +-----------
+ kernel/module/main.c       | 37 -----------------------------
+ kernel/module/strict_rwx.c | 48 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 50 insertions(+), 53 deletions(-)
+
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+index a46e6361017f..a94f7b8b2740 100644
+--- a/kernel/module/Makefile
++++ b/kernel/module/Makefile
+@@ -7,12 +7,11 @@
+ # and produce insane amounts of uninteresting coverage.
+ KCOV_INSTRUMENT_module.o := n
+ 
+-obj-y += main.o
++obj-y += main.o strict_rwx.o
+ obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
+ obj-$(CONFIG_MODULE_SIG) += signing.o
+ obj-$(CONFIG_LIVEPATCH) += livepatch.o
+ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
+-obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
+ obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
+ obj-$(CONFIG_KALLSYMS) += kallsyms.o
+ obj-$(CONFIG_PROC_FS) += procfs.o
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 7178b7c09cdd..276e3f49a4ae 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -182,25 +182,12 @@ static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *
+ }
+ #endif /* CONFIG_MODULES_TREE_LOOKUP */
+ 
+-void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
+-								     int num_pages));
+-
+-#ifdef CONFIG_STRICT_MODULE_RWX
+ void module_enable_ro(const struct module *mod, bool after_init);
+ void module_enable_nx(const struct module *mod);
++void module_enable_x(const struct module *mod);
+ int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+ 				char *secstrings, struct module *mod);
+ 
+-#else /* !CONFIG_STRICT_MODULE_RWX */
+-static inline void module_enable_nx(const struct module *mod) { }
+-static inline void module_enable_ro(const struct module *mod, bool after_init) {}
+-static inline int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+-				       char *secstrings, struct module *mod)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_STRICT_MODULE_RWX */
+-
+ #ifdef CONFIG_MODULE_SIG
+ int module_sig_check(struct load_info *info, int flags);
+ #else /* !CONFIG_MODULE_SIG */
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index be3b31ba6e16..47addf849ef7 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1142,43 +1142,6 @@ resolve_symbol_wait(struct module *mod,
+ 	return ksym;
+ }
+ 
+-/*
+- * LKM RO/NX protection: protect module's text/ro-data
+- * from modification and any data from execution.
+- *
+- * General layout of module is:
+- *          [text] [read-only-data] [ro-after-init] [writable data]
+- * text_size -----^                ^               ^               ^
+- * ro_size ------------------------|               |               |
+- * ro_after_init_size -----------------------------|               |
+- * size -----------------------------------------------------------|
+- *
+- * These values are always page-aligned (as is base)
+- */
+-
+-/*
+- * Since some arches are moving towards PAGE_KERNEL module allocations instead
+- * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of the
+- * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless of
+- * whether we are strict.
+- */
+-void frob_text(const struct module_layout *layout,
+-	       int (*set_memory)(unsigned long start, int num_pages))
+-{
+-	set_memory((unsigned long)layout->base,
+-		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
+-}
+-
+-static void module_enable_x(const struct module *mod)
+-{
+-	if (!PAGE_ALIGNED(mod->core_layout.base) ||
+-	    !PAGE_ALIGNED(mod->init_layout.base))
+-		return;
+-
+-	frob_text(&mod->core_layout, set_memory_x);
+-	frob_text(&mod->init_layout, set_memory_x);
+-}
+-
+ void __weak module_memfree(void *module_region)
+ {
+ 	/*
+diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
+index 1a6b9573260b..6b99be9e88e1 100644
+--- a/kernel/module/strict_rwx.c
++++ b/kernel/module/strict_rwx.c
+@@ -11,6 +11,34 @@
+ #include <linux/set_memory.h>
+ #include "internal.h"
+ 
++/*
++ * LKM RO/NX protection: protect module's text/ro-data
++ * from modification and any data from execution.
++ *
++ * General layout of module is:
++ *          [text] [read-only-data] [ro-after-init] [writable data]
++ * text_size -----^                ^               ^               ^
++ * ro_size ------------------------|               |               |
++ * ro_after_init_size -----------------------------|               |
++ * size -----------------------------------------------------------|
++ *
++ * These values are always page-aligned (as is base) when
++ * CONFIG_STRICT_MODULE_RWX is set.
++ */
++
++/*
++ * Since some arches are moving towards PAGE_KERNEL module allocations instead
++ * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() independent of
++ * CONFIG_STRICT_MODULE_RWX because they are needed regardless of whether we
++ * are strict.
++ */
++static void frob_text(const struct module_layout *layout,
++		      int (*set_memory)(unsigned long start, int num_pages))
++{
++	set_memory((unsigned long)layout->base,
++		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
++}
++
+ static void frob_rodata(const struct module_layout *layout,
+ 		 int (*set_memory)(unsigned long start, int num_pages))
+ {
+@@ -41,10 +69,24 @@ static void frob_writable_data(const struct module_layout *layout,
+ 		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
+ }
+ 
++void module_enable_x(const struct module *mod)
++{
++	if (!PAGE_ALIGNED(mod->core_layout.base) ||
++	    !PAGE_ALIGNED(mod->init_layout.base))
++		return;
++
++	frob_text(&mod->core_layout, set_memory_x);
++	frob_text(&mod->init_layout, set_memory_x);
++}
++
+ void module_enable_ro(const struct module *mod, bool after_init)
+ {
++	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
++		return;
++#ifdef CONFIG_STRICT_MODULE_RWX
+ 	if (!rodata_enabled)
+ 		return;
++#endif
+ 
+ 	set_vm_flush_reset_perms(mod->core_layout.base);
+ 	set_vm_flush_reset_perms(mod->init_layout.base);
+@@ -60,6 +102,9 @@ void module_enable_ro(const struct module *mod, bool after_init)
+ 
+ void module_enable_nx(const struct module *mod)
+ {
++	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
++		return;
++
+ 	frob_rodata(&mod->data_layout, set_memory_nx);
+ 	frob_ro_after_init(&mod->data_layout, set_memory_nx);
+ 	frob_writable_data(&mod->data_layout, set_memory_nx);
+@@ -73,6 +118,9 @@ int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
+ 	const unsigned long shf_wx = SHF_WRITE | SHF_EXECINSTR;
+ 	int i;
+ 
++	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
++		return 0;
++
+ 	for (i = 0; i < hdr->e_shnum; i++) {
+ 		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
+ 			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
+-- 
+2.34.1
+
