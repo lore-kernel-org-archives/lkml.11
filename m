@@ -2,103 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B572C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF67C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233911AbiBVQJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
+        id S233670AbiBVQK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:10:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233912AbiBVQI5 (ORCPT
+        with ESMTP id S231174AbiBVQKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:08:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA39D165C07
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:08:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645546108;
+        Tue, 22 Feb 2022 11:10:55 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3113B165C10;
+        Tue, 22 Feb 2022 08:10:30 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B66521EC0529;
+        Tue, 22 Feb 2022 17:10:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645546224;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ayZQO14IuVvLb4KFAu15b92K05gesQyRdVPfr8lUqdY=;
-        b=MWhD7hl05/eINDT3h9XfiwjwYkHnbd7z8CYR9xvh5RN+O5jyMq+P2tBqWh/24EdZeV4X62
-        IFFtY8sGKy2R8q8OpQhz7huSFDini/JdH95HBGnpeZNZ+LUQm5e4EXs+JcYq3O64bd3dAG
-        VURwAEqNZZN4L/XOIJMO0dH8FT264T4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-517-MG6RiG2uMxy0URq4p3XVmw-1; Tue, 22 Feb 2022 11:08:25 -0500
-X-MC-Unique: MG6RiG2uMxy0URq4p3XVmw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0987A188E3C2;
-        Tue, 22 Feb 2022 16:08:24 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3DD4282765;
-        Tue, 22 Feb 2022 16:08:00 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id D5215416D862; Tue, 22 Feb 2022 12:51:51 -0300 (-03)
-Date:   Tue, 22 Feb 2022 12:51:51 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Minchan Kim <minchan@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juril@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [patch 1/2] mm: protect local lock sections with rcu_read_lock
- (on RT)
-Message-ID: <YhUGl2F6gZxaNA7v@fuller.cnet>
-References: <20220222144706.937848439@redhat.com>
- <20220222144907.023121407@redhat.com>
- <5f96c7e306546af4604cfaddb895a089811cb99b.camel@redhat.com>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=paBaplTKC9zVh2D5mX/2U4Kqmpe5+qxfcuoi6G6m2rs=;
+        b=pmo4S/oegw3h1fqSOZ652r7innZImkVbw5Z3ot7pOtGLtXv2Kz/uQG3M3/ymUQOO/A3rkO
+        X/9KlpjgQYYjdRRzA76OQU6jrdeP3xWrzrDuCERFp/BSaX9GoDlYofTKisprPZD/F28FPw
+        oyiKlpQ6X2ZTypJNHMM/C22AQQ1mwo4=
+Date:   Tue, 22 Feb 2022 17:10:27 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Carlos Bilbao <carlos.bilbao@amd.com>
+Cc:     tony.luck@intel.com, yazen.ghannam@amd.com,
+        Smita.KoralahalliChannabasappa@amd.com,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org
+Subject: Re: [PATCH] x86/mce: Simplify CPU vendor checks for AMD/Hygon and
+ Intel/Zhaoxin
+Message-ID: <YhUK87H4PQ22rpLw@zn.tnic>
+References: <20220222155857.276286-1-carlos.bilbao@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5f96c7e306546af4604cfaddb895a089811cb99b.camel@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20220222155857.276286-1-carlos.bilbao@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 04:21:26PM +0100, Nicolas Saenz Julienne wrote:
-> On Tue, 2022-02-22 at 11:47 -0300, Marcelo Tosatti wrote:
-> > For the per-CPU LRU page vectors, augment the local lock protected
-> > code sections with rcu_read_lock.
-> > 
-> > This makes it possible to replace the queueing of work items on all 
-> > CPUs by synchronize_rcu (which is necessary to run FIFO:1 applications
-> > uninterrupted on isolated CPUs).
-> 
-> I don't think this is needed. In RT local_locks use a spinlock. See
-> kernel/locking/spinlock_rt.c:
-> 
-> "The RT [spinlock] substitutions explicitly disable migration and take
-> rcu_read_lock() across the lock held section."
+On Tue, Feb 22, 2022 at 09:58:58AM -0600, Carlos Bilbao wrote:
+> In a number of places across the MCE subsystem we check if we are running
+> an x86 processor from AMD/Hygon or Intel/Zhaoxin vendors. Simplify these
+> checks with two mce_flags updated at CPU MCE initialization.
 
-Nice! Then the migrate_disable from __local_lock and friends seems unnecessary as
-well
+... and what's the point of this silliness?
 
-#define __local_lock(__lock)                                    \
-        do {                                                    \
-                migrate_disable();                              \
-                spin_lock(this_cpu_ptr((__lock)));              \
-        } while (0)
+Btw, you don't have to send it to my *two* email addresses - one is
+enough. :)
 
-Since:
+-- 
+Regards/Gruss,
+    Boris.
 
-static __always_inline void __rt_spin_lock(spinlock_t *lock)
-{
-        rtlock_might_resched();
-        rtlock_lock(&lock->lock); 
-        rcu_read_lock();
-        migrate_disable();
-}
-
-Will resend -v2.
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
