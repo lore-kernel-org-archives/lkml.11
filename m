@@ -2,91 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbiBVLfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 06:35:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
+        id S231723AbiBVLkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 06:40:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiBVLfm (ORCPT
+        with ESMTP id S230138AbiBVLkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 06:35:42 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1E8134DD6;
-        Tue, 22 Feb 2022 03:35:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645529707; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=fEKzDU/Q0F4Nbi0WEddMnznIQ/x78KwUd7Iv6DEQiAOk5Yvq47N4tQxTodcqtK6/uQIU39aemRUjQb02Sr9BlfQ4fVCy2afYkqhuCcvLx9ZRhLOvtcdJzku0NUXwk/rQFXinM52aDucspEisr1yZ8NwOM1oFF0GR29fLWb3VkEc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645529707; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=eNoJ9GB2trVuiIwO/BLfBx6vYt1aPBHxeGABKqFQJOw=; 
-        b=btamNQPR7JdQszRjlmu2KPwQ22C5/WTTy4AqP6hREy0VG2RG1fh1CaxUvefIoj7Oj4QSR6UsndxIVTZugm2IWAFOE1tm9M3qThl2e0LkXgXovmzMTZpAD4PGDCJuZt/CRFI3DELnjZJoFoA1DRl/RxT72dELDOOZpUH1qyMvY08=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645529707;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
-        bh=eNoJ9GB2trVuiIwO/BLfBx6vYt1aPBHxeGABKqFQJOw=;
-        b=tcmIPl/l32BxhmynD9ft66kRR2Z0CsZvazzodXNINc5w7RHCQAT6EltYeIen3eUS
-        WIwgqap8QoQGR8kYlFk/+7f3jd0kdxShzrz+/iOGrbxTSN6mg+aaeeqp3z5wS//4eYN
-        XstOPzEQPorBRUlTVvqqaowg/jXdvhcx75x0NbzI=
-Received: from anirudhrb.com (49.207.218.248 [49.207.218.248]) by mx.zohomail.com
-        with SMTPS id 1645529703723645.9746206531503; Tue, 22 Feb 2022 03:35:03 -0800 (PST)
-Date:   Tue, 22 Feb 2022 17:04:51 +0530
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        syzbot <syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>
-Subject: Re: [syzbot] INFO: task hung in vhost_work_dev_flush
-Message-ID: <YhTKW1auC8nXuQpn@anirudhrb.com>
-References: <00000000000057702a05d8532b18@google.com>
- <CAGxU2F4nGWxG0wymrDZzd8Hwhm2=8syuEB3fLMd+t7bbN7qWrQ@mail.gmail.com>
- <YhO1YL0A6OjtXmIy@anirudhrb.com>
- <20220222100556.GM3965@kadam>
+        Tue, 22 Feb 2022 06:40:02 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6037136ED8;
+        Tue, 22 Feb 2022 03:39:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645529974; x=1677065974;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=wXHTBZ92PZCysruxwhPT9aZU/PmkGIz0L/maxcsvFX8=;
+  b=SAub0H04ZN7g+mZ/EHofGuO3BFo/gfsZ2plSy0VNVIMuGbnG/3zYWPpj
+   p3iS4CF9x78HLc/nnDYOKYIMVYFaw6SZdner9/RquedTDfuEH19rPnrDh
+   VA3dMWmSTfw34ouzyX1bojXaFpnwXLF70uKijgE0nj1rnu8NiuQme7DeI
+   /winZuWCcdzyq+3DEOor/kwRU1mVkbwjl8+in/6lwhmAbVZnQ15yiG5tu
+   N4JlQ3iROt/wQsuxFYSHyjuKogv1nIKuYpoaPrn7DCC/7y6ShJ/+rbt6h
+   E8tVLBOxK50RzbwBwd3roJ3jeWR5Em00hGbBNIrZ0x1kWdG5NJkHkJa8h
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="149554549"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Feb 2022 04:39:33 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 22 Feb 2022 04:39:33 -0700
+Received: from hari-laptop.amer.actel.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 22 Feb 2022 04:39:28 -0700
+From:   Hari Prasath <Hari.PrasathGE@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@armlinux.org.uk>
+CC:     <Hari.PrasathGE@microchip.com>
+Subject: [PATCH] 1/3] ARM: dts: at91: sama7g5: Restrict ns_sram
+Date:   Tue, 22 Feb 2022 17:09:22 +0530
+Message-ID: <20220222113924.25799-1-Hari.PrasathGE@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222100556.GM3965@kadam>
-X-ZohoMailClient: External
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 01:05:56PM +0300, Dan Carpenter wrote:
-> On Mon, Feb 21, 2022 at 09:23:04PM +0530, Anirudh Rayabharam wrote:
-> > On Mon, Feb 21, 2022 at 03:12:33PM +0100, Stefano Garzarella wrote:
-> > > #syz test: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-> > > f71077a4d84b
-> > > 
-> > > Patch sent upstream:
-> > > https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarzare@redhat.com/T/#u
-> > 
-> > I don't see how your patch fixes this issue. It looks unrelated. It is
-> > surprising that syzbot is happy with it.
-> > 
-> > I have sent a patch for this issue here:
-> > https://lore.kernel.org/lkml/20220221072852.31820-1-mail@anirudhrb.com/
-> 
-> I wasted so much time trying to figure out what this patch fixes.  :P
+Limit the size of SRAM available for the rest of kernel via genalloc API's to
+13k. The rest of the SRAM is used by CAN controllers and hence this restriction.
 
-Sorry! The new patch is here:
-https://lore.kernel.org/lkml/20220221195303.13560-1-mail@anirudhrb.com/T/#u
+Signed-off-by: Hari Prasath <Hari.PrasathGE@microchip.com>
+---
+ arch/arm/boot/dts/sama7g5.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks!
+diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
+index eddcfbf4d223..6c7012f74b10 100644
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -65,7 +65,7 @@
+ 		compatible = "mmio-sram";
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+-		reg = <0x100000 0x20000>;
++		reg = <0x100000 0x3400>;
+ 		ranges;
+ 	};
+ 
+-- 
+2.17.1
 
-	- Anirudh.
-
-> 
-> (It doesn't fix anything).
-> 
-> regards,
-> dan carpenter
-> 
