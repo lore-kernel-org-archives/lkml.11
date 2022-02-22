@@ -2,103 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43462C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbiBVNAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:00:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        id S231548AbiBVNB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232176AbiBVM5w (ORCPT
+        with ESMTP id S229590AbiBVNBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:57:52 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFEEAB45B;
-        Tue, 22 Feb 2022 04:57:12 -0800 (PST)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2zbG4J3Yz67KmH;
-        Tue, 22 Feb 2022 20:52:26 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Feb 2022 13:57:11 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Feb 2022 12:57:07 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
-        <chenxiang66@hisilicon.com>, <damien.lemoal@opensource.wdc.com>,
-        <hch@lst.de>
-CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
-        <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v3 10/18] scsi: libsas: Add sas_execute_ssp_tmf()
-Date:   Tue, 22 Feb 2022 20:50:51 +0800
-Message-ID: <1645534259-27068-11-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
-References: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
+        Tue, 22 Feb 2022 08:01:24 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E422AA2FC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:00:59 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id 195so16952978pgc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:00:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nUt0EmZnAjWhiw3ria3c4mQpo/dgjgtowmwpyAc1Cbo=;
+        b=IP8F2yfh8d9HOTDVcoFaajwYozjX6JSyXP3lHDNGD3uvbAQVChed6Pz/o8d3z4BNRs
+         MQK37Phm7nbNzeUZ+cXLmxGBsiQ72zVhnyAWEqSe2D2o9aVHg9eUXvIykPldJaOHOmfd
+         CjE2cQMjYIqPRckAM3+o+BGDt25/XhJsKE4CnwE6adTKuZoU/GiMBSde94S1m+bSN7Qf
+         CZtgSdF5JIC7t6i4xns3a4pzTam5nUyPhwg/QGgzpx/CLBrm07+bT06ZHdz4Hc+YpLWa
+         KuXk8qhaTBWulKv1AHGOjWNnadxF/sUbuP9lebmDv2CkFBjxUDQVNeCiohTE2WhHnVa6
+         zflQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nUt0EmZnAjWhiw3ria3c4mQpo/dgjgtowmwpyAc1Cbo=;
+        b=Rk3uQkJC1JBacOKztp26KQo53DLSk636895O/Wd9d2E9OHCuc6uqLzesbLsLTFy1sg
+         /+16CSM0hrnvy7H4eziIPr5oTUj4Iy09KgJngRDLxABXJLiJJ6y7qeECSEHAZanVnApp
+         72ydqzNYz034h6z9F6oouCNGXN5bqPeBmpWgcp1u1dCFRYYlXRWcL01ysyloLIhktHUw
+         IgJlv4lx2wocI9M1L7/qhpBuTydeOF9mibxSsla4lEw8/i6/5oghx/EYuld8EuN1X+XW
+         /boNhy08drqy5tR/+EERRjG9hgFTvAXCaqqk+O9HkFHsoQBw6CrfhsDBU8zZMrf76EyT
+         ghnQ==
+X-Gm-Message-State: AOAM532jCx2t5OCYZEmnC38BNlrvTCxYlk8oqkxGsC+Knot9ImNprzK9
+        v+r4m1xfxk1OUyK8dg6G851NZg==
+X-Google-Smtp-Source: ABdhPJzCf/hDKsVXtxWWr8kywPLuoA+ON50H4nU4G+0ivdzrlLu+RLrQDET6/Rcu1f60yUg8oVBCpQ==
+X-Received: by 2002:aa7:9f5b:0:b0:4cc:964c:99dd with SMTP id h27-20020aa79f5b000000b004cc964c99ddmr24960894pfr.42.1645534858709;
+        Tue, 22 Feb 2022 05:00:58 -0800 (PST)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.236])
+        by smtp.gmail.com with ESMTPSA id j15sm18125567pfj.102.2022.02.22.05.00.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 05:00:58 -0800 (PST)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     rostedt@goodmis.org, mingo@redhat.com, catalin.marinas@arm.com,
+        will@kernel.org, mark.rutland@arm.com, broonie@kernel.org
+Cc:     songmuchun@bytedance.com, qirui.001@bytedance.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH] arm64/ftrace: Make function graph use ftrace directly
+Date:   Tue, 22 Feb 2022 21:00:49 +0800
+Message-Id: <20220222130049.81284-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a function to issue an SSP TMF.
+As we do in commit 0c0593b45c9b ("x86/ftrace: Make function graph
+use ftrace directly"), we don't need special hook for graph tracer,
+but instead we use graph_ops:func function to install return_hooker.
 
-Add a temp prototype to keep make W=1 happy.
+Since commit 3b23e4991fb6 ("arm64: implement ftrace with regs") add
+implementation for FTRACE_WITH_REGS on arm64, we can easily adopt
+the same optimization on arm64.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
- drivers/scsi/libsas/sas_scsi_host.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/arm64/include/asm/ftrace.h  |  7 +++++++
+ arch/arm64/kernel/entry-ftrace.S |  6 ------
+ arch/arm64/kernel/ftrace.c       | 21 +++++++++++++++++++++
+ 3 files changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/scsi/libsas/sas_scsi_host.c b/drivers/scsi/libsas/sas_scsi_host.c
-index d04002180be3..af2dd95a2b28 100644
---- a/drivers/scsi/libsas/sas_scsi_host.c
-+++ b/drivers/scsi/libsas/sas_scsi_host.c
-@@ -937,6 +937,9 @@ int sas_execute_tmf(struct domain_device *device, void *parameter,
- 		task->dev = device;
- 		task->task_proto = device->tproto;
+diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
+index 1494cfa8639b..dbc45a4157fa 100644
+--- a/arch/arm64/include/asm/ftrace.h
++++ b/arch/arm64/include/asm/ftrace.h
+@@ -80,8 +80,15 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
  
-+		if (!dev_is_sata(device))
-+			memcpy(&task->ssp_task, parameter, para_len);
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+ struct dyn_ftrace;
++struct ftrace_ops;
++struct ftrace_regs;
 +
- 		task->task_done = sas_task_internal_done;
- 		task->tmf = tmf;
+ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
+ #define ftrace_init_nop ftrace_init_nop
++
++void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
++		       struct ftrace_ops *op, struct ftrace_regs *fregs);
++#define ftrace_graph_func ftrace_graph_func
+ #endif
  
-@@ -1022,6 +1025,21 @@ int sas_execute_tmf(struct domain_device *device, void *parameter,
- 	return res;
+ #define ftrace_return_address(n) return_address(n)
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+index e535480a4069..eb4a69b1f84d 100644
+--- a/arch/arm64/kernel/entry-ftrace.S
++++ b/arch/arm64/kernel/entry-ftrace.S
+@@ -97,12 +97,6 @@ SYM_CODE_START(ftrace_common)
+ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
+ 	bl	ftrace_stub
+ 
+-#ifdef CONFIG_FUNCTION_GRAPH_TRACER
+-SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
+-	nop				// If enabled, this will be replaced
+-					// "b ftrace_graph_caller"
+-#endif
+-
+ /*
+  * At the callsite x0-x8 and x19-x30 were live. Any C code will have preserved
+  * x19-x29 per the AAPCS, and we created frame records upon entry, so we need
+diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+index 4506c4a90ac1..1b5da231b1de 100644
+--- a/arch/arm64/kernel/ftrace.c
++++ b/arch/arm64/kernel/ftrace.c
+@@ -268,6 +268,26 @@ void prepare_ftrace_return(unsigned long self_addr, unsigned long *parent,
  }
  
-+int sas_execute_ssp_tmf(struct domain_device *device, u8 *lun,
-+			struct sas_tmf_task *tmf);
-+int sas_execute_ssp_tmf(struct domain_device *device, u8 *lun,
-+			struct sas_tmf_task *tmf)
+ #ifdef CONFIG_DYNAMIC_FTRACE
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
++int ftrace_enable_ftrace_graph_caller(void)
 +{
-+	struct sas_ssp_task ssp_task;
-+
-+	if (!(device->tproto & SAS_PROTOCOL_SSP))
-+		return TMF_RESP_FUNC_ESUPP;
-+
-+	memcpy(ssp_task.LUN, lun, 8);
-+
-+	return sas_execute_tmf(device, &ssp_task, sizeof(ssp_task), -1, tmf);
++	return 0;
 +}
 +
++int ftrace_disable_ftrace_graph_caller(void)
++{
++	return 0;
++}
++
++void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
++		       struct ftrace_ops *op, struct ftrace_regs *fregs)
++{
++	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
++	unsigned long *parent = (unsigned long *)&procedure_link_pointer(regs);
++
++	prepare_ftrace_return(ip, parent, frame_pointer(regs));
++}
++#else
  /*
-  * Tell an upper layer that it needs to initiate an abort for a given task.
-  * This should only ever be called by an LLDD.
+  * Turn on/off the call to ftrace_graph_caller() in ftrace_caller()
+  * depending on @enable.
+@@ -297,5 +317,6 @@ int ftrace_disable_ftrace_graph_caller(void)
+ {
+ 	return ftrace_modify_graph_caller(false);
+ }
++#endif /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
+ #endif /* CONFIG_DYNAMIC_FTRACE */
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
 -- 
-2.26.2
+2.20.1
 
