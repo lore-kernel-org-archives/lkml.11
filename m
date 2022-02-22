@@ -2,93 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA62BC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE62C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234156AbiBVQdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:33:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
+        id S234169AbiBVQdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:33:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234062AbiBVQcr (ORCPT
+        with ESMTP id S232774AbiBVQcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:32:47 -0500
+        Tue, 22 Feb 2022 11:32:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94FC6E8E7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41527A1472;
         Tue, 22 Feb 2022 08:32:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4EF260AFD;
-        Tue, 22 Feb 2022 16:32:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13904C340E8;
-        Tue, 22 Feb 2022 16:32:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D16F760AE7;
+        Tue, 22 Feb 2022 16:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B647C340FA;
+        Tue, 22 Feb 2022 16:32:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645547541;
-        bh=X1NkggDZMaHHEK/ibc1MqFK+Ef81w3jOaBfki258e5Q=;
+        s=k20201202; t=1645547540;
+        bh=uWKvcbndHUbVrYNRcixdhR5Elks38X+3GOL0tdfRPzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JhhNpdV7ASN4Ad65L5LNmqytTZGEPdaHaHxNKInh1dr7E308XT5lfFLnNa1vmD2vf
-         p6MClteatvt73MlM72iHdchLE/yUvn4OuDWLaWe/RYWQ6v8JGIRoUyhPW81dBUiJ/M
-         xDdFpTFbL2XsFFx3PhmiMtQ+3DIsrPmVkSks0EQwHNwEgxXwFYe+epUmHntGiw0SSj
-         YYs4hhFskTk94R2alrrs0g5dMKkQY2ZYiMhmwxqjnqD3E/gDo2NfR9kJSMT/WzkRnd
-         tIe+xw+sawsuf9sZBvnpEIHSYTTEDX72ZxF/dqGAH45qSnuCeRbT9pDyfc8tZR7YoA
-         FChsc8vh+WsWQ==
-Received: by pali.im (Postfix)
-        id BEEC5FDB; Tue, 22 Feb 2022 17:32:20 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        b=ieNUGNnXSHNKaVr1+0n5C4OGbzjh8+RApiiRpmD9IWGLKqlKo+faMq77/wn0IOHzO
+         7tE/CuRKrnSlvV55q79nm9CRk3ecj1ECY/9MemIUOWBYdUmJUDThKQqAJWrwYdPVeU
+         PI/urv8P3Hn+TztOQI1jTDMABmI2GddCcVHOw4vEUQd52J9jcysYlGBPKIGrHpxm2T
+         SBpEX9aPVfCj08okWmiN9/18ISSV3zwTw3b4DBX/SH3ac6ppOKWXv+SDbDWCoGKMXg
+         +89YtCMB/o6uVD72f6yIRvb/XGP4UXdOlteEiCLXzixHiDTkOhSExbS2w9wfm/vS04
+         VGYH3orrCxn6A==
+From:   Keith Busch <kbusch@kernel.org>
+To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] ARM: dts: turris-omnia: Set PCIe slot-power-limit-milliwatt properties
-Date:   Tue, 22 Feb 2022 17:31:58 +0100
-Message-Id: <20220222163158.1666-7-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220222163158.1666-1-pali@kernel.org>
-References: <20220222163158.1666-1-pali@kernel.org>
+Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
+        colyli@suse.de, Keith Busch <kbusch@kernel.org>,
+        Hannes Reinecke <hare@suse.de>
+Subject: [PATCHv3 01/10] block: support pi with extended metadata
+Date:   Tue, 22 Feb 2022 08:31:35 -0800
+Message-Id: <20220222163144.1782447-2-kbusch@kernel.org>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20220222163144.1782447-1-kbusch@kernel.org>
+References: <20220222163144.1782447-1-kbusch@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All 3 miniPCIe slots in Turris Omnia are designed for 10 W.
+The nvme spec allows protection information formats with metadata
+extending beyond the pi field. Use the actual size of the metadata field
+for incrementing the buffer.
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
 ---
- arch/arm/boot/dts/armada-385-turris-omnia.dts | 3 +++
- 1 file changed, 3 insertions(+)
+ block/bio-integrity.c         | 1 +
+ block/t10-pi.c                | 4 ++--
+ include/linux/blk-integrity.h | 1 +
+ 3 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-385-turris-omnia.dts b/arch/arm/boot/dts/armada-385-turris-omnia.dts
-index 5bd6a66d2c2b..f240018148f6 100644
---- a/arch/arm/boot/dts/armada-385-turris-omnia.dts
-+++ b/arch/arm/boot/dts/armada-385-turris-omnia.dts
-@@ -71,16 +71,19 @@
- 			pcie@1,0 {
- 				/* Port 0, Lane 0 */
- 				status = "okay";
-+				slot-power-limit-milliwatt = <10000>;
- 			};
+diff --git a/block/bio-integrity.c b/block/bio-integrity.c
+index 6996e7bd66e9..32929c89ba8a 100644
+--- a/block/bio-integrity.c
++++ b/block/bio-integrity.c
+@@ -165,6 +165,7 @@ static blk_status_t bio_integrity_process(struct bio *bio,
  
- 			pcie@2,0 {
- 				/* Port 1, Lane 0 */
- 				status = "okay";
-+				slot-power-limit-milliwatt = <10000>;
- 			};
+ 	iter.disk_name = bio->bi_bdev->bd_disk->disk_name;
+ 	iter.interval = 1 << bi->interval_exp;
++	iter.tuple_size = bi->tuple_size;
+ 	iter.seed = proc_iter->bi_sector;
+ 	iter.prot_buf = bvec_virt(bip->bip_vec);
  
- 			pcie@3,0 {
- 				/* Port 2, Lane 0 */
- 				status = "okay";
-+				slot-power-limit-milliwatt = <10000>;
- 			};
- 		};
- 	};
+diff --git a/block/t10-pi.c b/block/t10-pi.c
+index 25a52a2a09a8..758a76518854 100644
+--- a/block/t10-pi.c
++++ b/block/t10-pi.c
+@@ -44,7 +44,7 @@ static blk_status_t t10_pi_generate(struct blk_integrity_iter *iter,
+ 			pi->ref_tag = 0;
+ 
+ 		iter->data_buf += iter->interval;
+-		iter->prot_buf += sizeof(struct t10_pi_tuple);
++		iter->prot_buf += iter->tuple_size;
+ 		iter->seed++;
+ 	}
+ 
+@@ -93,7 +93,7 @@ static blk_status_t t10_pi_verify(struct blk_integrity_iter *iter,
+ 
+ next:
+ 		iter->data_buf += iter->interval;
+-		iter->prot_buf += sizeof(struct t10_pi_tuple);
++		iter->prot_buf += iter->tuple_size;
+ 		iter->seed++;
+ 	}
+ 
+diff --git a/include/linux/blk-integrity.h b/include/linux/blk-integrity.h
+index 8a038ea0717e..378b2459efe2 100644
+--- a/include/linux/blk-integrity.h
++++ b/include/linux/blk-integrity.h
+@@ -19,6 +19,7 @@ struct blk_integrity_iter {
+ 	sector_t		seed;
+ 	unsigned int		data_size;
+ 	unsigned short		interval;
++	unsigned char		tuple_size;
+ 	const char		*disk_name;
+ };
+ 
 -- 
-2.20.1
+2.25.4
 
