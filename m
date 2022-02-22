@@ -2,203 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 04:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiBVEeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 23:34:02 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51974 "EHLO
+        id S229486AbiBVFTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:19:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiBVEdx (ORCPT
+        with ESMTP id S229477AbiBVFT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 23:33:53 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D983BC00;
-        Mon, 21 Feb 2022 20:33:22 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21M2B0F0012279;
-        Tue, 22 Feb 2022 04:32:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=oon+9iKmY53J+jVqaNklL/CmO7vKHfDKq6CXeWIHs1Y=;
- b=ptqlNOSfop/ppZQjrWU0ItdAK8F3qn99bx7VN6tDZQPjGjvPuKDJ55eLpSlnRz6rWcUJ
- 5qs/sxz8v9aBhjk/HZ1C7Yj4EBIDe1Fxfu6hinxnt0hV0QY0u+6SGeisxj2pNkDVZio4
- DUZr40h7IOJYgamgoM/6DciWZnaxTmXzedI2mcocS7XMYX+7XVVjQWmJ2cTGZPSluFCU
- 9efVYaKhvs4xgMTsxRbo/972UIBCdKiqd+ms4XwPasUeAQH3iYBkh/fb/cJ8uKkNrJpU
- wthqwxUxmQZjAU3R9gOUCs0QetZxc7SM6KAJpB5I0VGhvOgZfaB04CBtM4XfXTuPXETJ xw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ear5t5wec-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 04:32:00 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21M4UcPn161125;
-        Tue, 22 Feb 2022 04:31:59 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2049.outbound.protection.outlook.com [104.47.57.49])
-        by userp3020.oracle.com with ESMTP id 3eat0m8e6e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 04:31:59 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fPOMBI2uSsSMU0G/grArN48kok8t6synDA6j+HSCo4Hj4lG7coJcpQcDlD0kBtR5kkZFXQgzeNLVY88zBDkGboPJ+fX+W7Du1RBoCQZUEBPZcCD/Cz/bB5MdeHQ5JsfzkQ6+u4I/ybLvgXUAKo/JnZFU26Xvwfi0u/bYKpO6FWXOYoxVhBizMYIoip56aUGjvYLknK1G8Sf0y7OoCuUuHTUACLmZn4Gcr9LhfJSZRMeTmCwqJQH9tx6wWrhX700fOZvGzPP/cV4TnC9gIDHO7qoLU7T2hlpOYqy3CZUSIHN6b/QZKf+nnf4nehmzAKg5nUiVKABfFb9z29n16/aXOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oon+9iKmY53J+jVqaNklL/CmO7vKHfDKq6CXeWIHs1Y=;
- b=jgk5h2OB5+cpVxe54Cl7cX8iDVOKkPT6iXf5yICftS0LyHc7zD/OgAsRLXivR45sWXawcrGnBAAeDZ1aleLubuiCU/Umaf78m0cvkjOl4ykG2GsMo4AX9Ky4L0TKcMIrLBaPQshx1WNJcvQk9PJ6Tuamdwl4pQkBUJEVonSzZmqDe9uOYfDFpHsErSFyJLKVF/9UuhxHXQ8ygubpC7ZEy/xfFWZ0Vx3z82utEogcdwQxhMyHKtgrYRlmOdItnQK+u2OlA3wzC+fAFN2hsFfvWqjl+yyW8nlN9/EpZBATN/UEYBkxSEPTMIFTxpiVoNvkFdWUwQBGDJmMkX9raJZn4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oon+9iKmY53J+jVqaNklL/CmO7vKHfDKq6CXeWIHs1Y=;
- b=dPlQ9NrpLIhrnfzQr0NeLbLsAFHaKXhdYgAckKM1LnGKYMqliBzl6Tw9JUJcEouDUFbawJAQQwmR1L+vTFjb63d87aR/nXvi5CdgTXL42Yg3MEJTPwVt73nm45UR7yBN0Y4YgTDu4U/FPgNgJAbdHb2CH4Qmyqra5bc2QfYOWcc=
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com (2603:10b6:a02:a9::20)
- by SJ0PR10MB4541.namprd10.prod.outlook.com (2603:10b6:a03:2db::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
- 2022 04:31:57 +0000
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::a0d5:610d:bcf:9b47]) by BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::a0d5:610d:bcf:9b47%4]) with mapi id 15.20.4995.027; Tue, 22 Feb 2022
- 04:31:57 +0000
-Subject: Re: [PATCH net-next v3 2/4] net: tap: track dropped skb via
- kfree_skb_reason()
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, imagedong@tencent.com,
-        joao.m.martins@oracle.com, joe.jin@oracle.com, edumazet@google.com
-References: <20220221053440.7320-1-dongli.zhang@oracle.com>
- <20220221053440.7320-3-dongli.zhang@oracle.com>
- <cac945fa-ec67-4bbf-8893-323adf0836d8@gmail.com>
-From:   Dongli Zhang <dongli.zhang@oracle.com>
-Message-ID: <235632dd-ca7c-0a08-3313-1c9603807d93@oracle.com>
-Date:   Mon, 21 Feb 2022 20:31:48 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-In-Reply-To: <cac945fa-ec67-4bbf-8893-323adf0836d8@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN7PR04CA0197.namprd04.prod.outlook.com
- (2603:10b6:806:126::22) To BYAPR10MB2663.namprd10.prod.outlook.com
- (2603:10b6:a02:a9::20)
+        Tue, 22 Feb 2022 00:19:29 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A3BEEA71
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:18:57 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id x6-20020a92d306000000b002bdff65a8e1so9658563ila.3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:18:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OoHalkeGw+3WmTkM0UYjuhTqCHPPQ1/v7C2mH0CvZos=;
+        b=D6s8Gbq5LWY8Ogzcpj6KUVx/xjkGMNgITPdPC0xM0Zcvnjk6M3hTxzyyHnR4ghtAjB
+         NX+19d+nfTmBbcWDsOCYIJHpOK96FbAL8CR+D4TqDL8p93E25yzWo54sUhnNoGE9b65v
+         t7oxmCOngFNkDnpPlaycodSkV9WhEJgRZPfMGt6Kgsb2P6cXxDFshts3k05EVj3SKMNz
+         oV3srWW5stLPYlKY374Ctex2Z4gHOKJErXCJGo/vnK1b4P1vjdGxHsJ1DTi7EmPobhGT
+         v2ZRtNv75VEF4L+t3Ez5Ag8DnDsYesAn/hitl08JSJm5LoT/z6rkpJf1p3og2nZg8coN
+         YGhg==
+X-Gm-Message-State: AOAM530S4bFpcwHdndmb8UatMuNtFAQfWwlE1hQ3B0TU8oJ5gzsk3O3o
+        fM74GHrVY00QJM6nfQ7eVUAIpcx2gt+Ab5xL+KrOpPUQDW0J
+X-Google-Smtp-Source: ABdhPJxB6U+s6r8NY7+MQc5zQbVVzpQtlYSlCHJsryRsTsSmJJmcaYKCqrltGE8PXjkn4+2VI3SbYSUdnZu4deIhKMzfsUw5TKdt
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2903c857-be17-4db3-f023-08d9f5bc42b0
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB4541:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB45419D3A8B98C5D6EFA20342F03B9@SJ0PR10MB4541.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Cudh6uPbHFYMhVGPVM6HcafWOaQJaTNScsy8MOWISXDeqsJDSpP+uwSTExH/iHlMZksEfFXeLavHosmgD/xt93a4FJinTA7OlCJ6ykaXeh8v6MxHT6/kq/zgIo0y7cYcUMHh5hTU8kvnEK4M6HOhieQr+OqH49r+BhHFJclxOF0OisMXyfGLL/aYukUnRSi3MoJ6S682qXyTrd91dBtaFXhLQVD+rJzvTCivZkQASxgKMfuutp3UuO+kUQOq49TVoUpDuinz1ttNIhENGLEVZSDNMLpT4safEgEGo3TG9J7qEciuKHap+pWTRoykD73mqK50bhPZF7BNtJ5U7jp5/tnZQh0nHlxTF38qL5pHN/A1HWywj8QG5wh+Et7Ngn3rpOdBVlsTfHkZAtor+uSquBacjjOqygerxS+HB77BJ6kypGUt1+d/pQ2xsxRyukhB7Irs82OHeA+YIFB+UgxA4pg4GxFQXzaiU5tbWahT5xu5zmhIs+yxQeZF/oBzBorrpbKyh2MMbM0s8VDyYKvbkLSbyPo9Jn1wn4eOGlOLz1rbnbpW2aE17aEocRQ26z4FTPRd/vTx4fpoNA4fkUF7jbv5ilrkE6GKxKGdV7wiv+EeU1FDXYSPZJsVYi9O2sZEHr8jlU0JbV/1bQK7YL+gFlm2YNZdp1Zxy6F4ud08ElNrhqUMpqZf1UNcSINg7b6EJnfDl2xGkB+JBwFtIbkF8sXcyRTZ9ZJLdnwjID9/Nvo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2663.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(38100700002)(7416002)(44832011)(83380400001)(36756003)(5660300002)(2906002)(31686004)(8936002)(6506007)(53546011)(6486002)(66476007)(186003)(2616005)(66556008)(66946007)(6512007)(508600001)(6666004)(31696002)(86362001)(316002)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aWlvOFFSOXVrWGhEcXJpaFFRWk9GYmpGL1RTWXV5MWl6UFc4Qk0rMFV4Q2o4?=
- =?utf-8?B?UEVUdlZlL3JEeE5jVlRZekM5TUNWb09SMmwyeUtMMklxSGxEVVc5RkMrMnNl?=
- =?utf-8?B?eEVsd3hPTXFwdE5KQVZpem5KQUZSajZIYk9wd3JqRnFSbFdnaUNxSE9RVjhL?=
- =?utf-8?B?eVNhZDZEVFJpMlNwMFNiNmNWYkxQZytuMjRrUGwvNldJVHp2MFlEdzdRTGJS?=
- =?utf-8?B?LzEwQXJoRjkvdFJBcUs0bUNxY3A4MFgycEgxMEZkRDdIY3R0bSt1bCt5VC82?=
- =?utf-8?B?Ny9DVXoxbFdUdW1jdFZmNGFnT0dyc2lvQTVxTnpPV2FzTXlXanVZT3VqNTJ5?=
- =?utf-8?B?bkRoNU1xOWRpZ1ZsZ0lXa0J5cnptQThjL21OQWlqbzhhbUVaMzg5WlQwaUJX?=
- =?utf-8?B?amwwWEJya3NzeWs0NG1qOXg1akVuYUl1REh0MFdaZkZHVTN6c2hibG14WldN?=
- =?utf-8?B?cmFCUml4ckJTTmdzUHBoWVJ6YjY1NkVVWnI3bjd0ZW1pMm9ibC9RM2RiRmta?=
- =?utf-8?B?VjM2NHNTZnllcWE2WWxMOXBOSnFENTBHSzRHYTlkM3Ezam9PY3BNdU9PMDZC?=
- =?utf-8?B?b29hb29BSlpieExjOGl0MkJRblpDWGgvTFUyelNMdE9zWlJUS3VQeUhFRGJR?=
- =?utf-8?B?VXhVSWxUTzlmQU1jb0NSSFVrOVM1QWNQeWF5L2VIZWttdWRCc3ZHaU16QnJy?=
- =?utf-8?B?bUxxVEVxZmNycVRIZXRIUHIrZEQ5UTNZaHFzUzFHcTIweEdqL2IxNlI2N2RZ?=
- =?utf-8?B?R1I1cmNmNlQ3Z3daTzZvcThhQ2xLVmR0emRYdm9iZTdvSTBYcm14K2t4U0k4?=
- =?utf-8?B?cUgvWTZ6bE1rektDQmVZK3AwV3FuTzFzOEMrU2Z6R3daMzFSOE1xaXB1QWhY?=
- =?utf-8?B?dTFnaXgvY21OVngySFgwOFJ4bWR6SmxDNTZ2VHNzWjVRb280UXBXVm4wdE1D?=
- =?utf-8?B?NjVGeTl2QkpLSk5xa2dCUVMrT050RmcwZVdSNklhZVg1NnVGVGsxbnhVaEVi?=
- =?utf-8?B?c1BReWNJTzE2UEU0bXdsbW9pdlA2RTRUZUpmZm9jOWs2cmthV3pKS1VmMzdJ?=
- =?utf-8?B?WFZHVGlVWElvckl5TXlNcnJFZWxMTVhjR1U3UlRKMU9PbVhwVVpQcnlGbnM3?=
- =?utf-8?B?V3Y3aXJBOERxVDN6a2paaW1tSHV6SXcweTV0cUVkVU91c3pOdHljbGRnc0ta?=
- =?utf-8?B?T3dObHlCZDJlS0V6QTBmRW1SZWptM0RiWUY3QnNQWjQ2NEtvNnZtOWFjNURB?=
- =?utf-8?B?L3VEdFovSVJOZ3FjQ08wcE1UWmxrclBUSVVBK1N4VHBOWXFaVjNxY2ZncmF4?=
- =?utf-8?B?OW14Tk8zSUZVTzJsV2FQM09CcVduczZMclFGN0xhS0FqVW1sc1lJd3JYYTU2?=
- =?utf-8?B?QXZNSXplNThqMEFTNFdWdG1LdjhyRG9odnN0eG0yY2N3bFN3ald3T1pWRHBR?=
- =?utf-8?B?VGlWdEFSR0hiSmtMMU9naWJTQjZ0ZUFLT2dZQjdQVVBFUml2V1BVVkNKeUZF?=
- =?utf-8?B?MGRSbjB4eUtBSzllSThxSm9tT1NzVXg3UFkwcEtlRDU5TkRvWVlwNW1TTU4x?=
- =?utf-8?B?ZGhpVW93VzY1K2ZNYXZaS2xFUkhQZm5EMzdlQ3R0YXJaRnd1SloyTEE4dVJN?=
- =?utf-8?B?L3JJSEhvWk9wbmIzWTJaZjVJbWsyNnpySDE4UU8yeHhUdWZ1SXhRYythYmF0?=
- =?utf-8?B?TnUwMXRDRDZJRUtWYVduMFFmcGM5RHF5NS9Ub1E5bE93Ui93NVM2S1VLeXZZ?=
- =?utf-8?B?MTNDSG9vTFpuU3pTSzc0Yk9uRlFqOTRtbElValF6VDRmUjdGeUZ6OXRQT1pi?=
- =?utf-8?B?WFpuUHpIcEU5RGhNTFlXb3B5UXRTYTFoU2JaYndiZStUWVd1cUEvdHhiS0Mr?=
- =?utf-8?B?RDl2aXE5YXBFekU3YjZlb2l4OXZwRno4R0h5dTRPT251bjNxb3M5elRuT1Ex?=
- =?utf-8?B?MjFXS0U1aDVrZjgwUTczZ1paY3dFaW56dFgyR3NsZlRoVVlKZDBlREdOcjBw?=
- =?utf-8?B?NStTYjJlYllmWmMzcUZuQUYweDlMQkZBMWdxS3RZUUx2YmZheS9WbWZiNWlv?=
- =?utf-8?B?Nnh1TEJoRXBxMThEZUkzZUtPNjBvWm8zNUZTYjlPS1g3Z0gra25iNDI5N2pt?=
- =?utf-8?B?M3VRekVTYmlTeHFtc1o1dGRQRHdKcGtJd0dVd0ZFM2ZsQ1dVVG02REUxT1Fk?=
- =?utf-8?Q?HOl6shfuw1KHmZi4/KhfdwNRJmiSWvvp4fGpygBGNh85?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2903c857-be17-4db3-f023-08d9f5bc42b0
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2663.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 04:31:57.8371
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KE6W9RJcg4Bh/XNfMnMwVf7KYUdlGTVhQr0PWKBo+dkJxr0oJH4CAdZI3kBPwRZWkXj2tG1i0SAvcWGVju/vyQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4541
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10265 signatures=677614
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 spamscore=0
- mlxscore=0 adultscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202220026
-X-Proofpoint-GUID: AkqMjV-qDgSzmCjG2_Oq3dnkfET-U0tR
-X-Proofpoint-ORIG-GUID: AkqMjV-qDgSzmCjG2_Oq3dnkfET-U0tR
+X-Received: by 2002:a5d:85d2:0:b0:5ed:a17c:a25c with SMTP id
+ e18-20020a5d85d2000000b005eda17ca25cmr18265498ios.85.1645507097811; Mon, 21
+ Feb 2022 21:18:17 -0800 (PST)
+Date:   Mon, 21 Feb 2022 21:18:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000a5eae05d8947adb@google.com>
+Subject: [syzbot] WARNING in handle_exception_nmi (2)
+From:   syzbot <syzbot+4688c50a9c8e68e7aaa1@syzkaller.appspotmail.com>
+To:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, seanjc@google.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+Hello,
 
-On 2/21/22 7:24 PM, David Ahern wrote:
-> On 2/20/22 10:34 PM, Dongli Zhang wrote:
->> The TAP can be used as vhost-net backend. E.g., the tap_handle_frame() is
->> the interface to forward the skb from TAP to vhost-net/virtio-net.
->>
->> However, there are many "goto drop" in the TAP driver. Therefore, the
->> kfree_skb_reason() is involved at each "goto drop" to help userspace
->> ftrace/ebpf to track the reason for the loss of packets.
->>
->> The below reasons are introduced:
->>
->> - SKB_DROP_REASON_SKB_CSUM
->> - SKB_DROP_REASON_SKB_COPY_DATA
->> - SKB_DROP_REASON_SKB_GSO_SEG
->> - SKB_DROP_REASON_DEV_HDR
->> - SKB_DROP_REASON_FULL_RING
->>
->> Cc: Joao Martins <joao.m.martins@oracle.com>
->> Cc: Joe Jin <joe.jin@oracle.com>
->> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
->> ---
->> Changed since v1:
->>   - revise the reason name
->> Changed since v2:
->>   - declare drop_reason as type "enum skb_drop_reason"
->>   - handle the drop in skb_list_walk_safe() case
->>
->>  drivers/net/tap.c          | 35 +++++++++++++++++++++++++----------
->>  include/linux/skbuff.h     |  9 +++++++++
->>  include/trace/events/skb.h |  5 +++++
->>  3 files changed, 39 insertions(+), 10 deletions(-)
->>
-> 
-> couple of places where the new reason should be in reverse xmas order;
-> logic wise:
-> 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
-> 
+syzbot found the following issue on:
 
-I will re-order the reasons in the same patch and re-send with your Reviewed-by
-in the next version.
+HEAD commit:    80d47f5de5e3 mm: don't try to NUMA-migrate COW pages that ..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12a7324c700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6a069ed94a1ed1d
+dashboard link: https://syzkaller.appspot.com/bug?extid=4688c50a9c8e68e7aaa1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Thank you very much!
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Dongli Zhang
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4688c50a9c8e68e7aaa1@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 7975 at arch/x86/kvm/vmx/vmx.c:4906 handle_exception_nmi+0xfdc/0x1190 arch/x86/kvm/vmx/vmx.c:4906
+Modules linked in:
+CPU: 0 PID: 7975 Comm: syz-executor.0 Not tainted 5.17.0-rc4-syzkaller-00055-g80d47f5de5e3 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:handle_exception_nmi+0xfdc/0x1190 arch/x86/kvm/vmx/vmx.c:4906
+Code: 0f 84 c8 f3 ff ff e8 03 a8 56 00 48 89 ef c7 85 a4 0d 00 00 00 00 00 00 e8 51 1a ec ff 41 89 c4 e9 af f3 ff ff e8 e4 a7 56 00 <0f> 0b e9 69 f6 ff ff e8 d8 a7 56 00 be f5 ff ff ff bf 01 00 00 00
+RSP: 0018:ffffc9000615fad8 EFLAGS: 00010216
+RAX: 000000000001e2fd RBX: 0000000000000000 RCX: ffffc90002b71000
+RDX: 0000000000040000 RSI: ffffffff81216b3c RDI: 0000000000000003
+RBP: ffff888025308040 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff812161a4 R11: 0000000000000000 R12: fffffffffffffc4d
+R13: ffff888025308288 R14: 0000000000000000 R15: 0000000080000300
+FS:  00007f47cabb1700(0000) GS:ffff88802cd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000111c960 CR3: 000000001bb69000 CR4: 0000000000152ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __vmx_handle_exit arch/x86/kvm/vmx/vmx.c:6179 [inline]
+ vmx_handle_exit+0x498/0x1950 arch/x86/kvm/vmx/vmx.c:6196
+ vcpu_enter_guest+0x29dd/0x4450 arch/x86/kvm/x86.c:10163
+ vcpu_run arch/x86/kvm/x86.c:10245 [inline]
+ kvm_arch_vcpu_ioctl_run+0x521/0x21a0 arch/x86/kvm/x86.c:10451
+ kvm_vcpu_ioctl+0x570/0xf30 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3908
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f47cc23c059
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f47cabb1168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f47cc34ef60 RCX: 00007f47cc23c059
+RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000005
+RBP: 00007f47cc29608d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd6f43c1df R14: 00007f47cabb1300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
