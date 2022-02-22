@@ -2,183 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8398C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67181C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234444AbiBVQ7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52430 "EHLO
+        id S234446AbiBVQ77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:59:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234436AbiBVQ71 (ORCPT
+        with ESMTP id S233343AbiBVQ75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:59:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A99D16C4D1;
-        Tue, 22 Feb 2022 08:59:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E65096117D;
-        Tue, 22 Feb 2022 16:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C92DC340F1;
-        Tue, 22 Feb 2022 16:59:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645549141;
-        bh=mcVbNA4RiJ6SesKl5tKDIPRvmxcaUwbH9SGtI9DHx2A=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=mlC2ADN585kEmAHpiwY+yeVr1D5KH7GlEtOp7uX8ZY0EuBj91LKIPWUTvSRYxI5V1
-         UGYqp3pfbW8hp3gJ0XSRUYJoIsnzAl0Ogu3eFPkFwzBnMxruaRTnOY3cs6w+MBI0op
-         PFEKVeBqSMqhu+ETgleHpFT+kvkcAnDpgimpCr5pr5Qc9w8kmkm9ktp4mrL+LRz2c3
-         aRZvEucigtS9FeQUvqV6hDToh1OClD/Shvs/zX1TNBOE5OoqJUIReTBcifmNt36Q4d
-         1VUCTxvmok8FNV10x+dD+cBLfA4tkZoQmRZK9UICCT/aTkGEw4Fst2pOgh8n8W16Fy
-         Vn3OU69omUNVA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E61465C031F; Tue, 22 Feb 2022 08:59:00 -0800 (PST)
-Date:   Tue, 22 Feb 2022 08:59:00 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc:     josh@joshtriplett.org, rostedt@goodmis.org,
-        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
-        joel@joelfernandes.org, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org, urezki@gmail.com,
-        frederic@kernel.org, boqun.feng@gmail.com
-Subject: Re: [PATCH] srcu: Ensure snp nodes tree is fully initialized before
- traversal
-Message-ID: <20220222165900.GI4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220222060901.24531-1-quic_neeraju@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222060901.24531-1-quic_neeraju@quicinc.com>
+        Tue, 22 Feb 2022 11:59:57 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CE116C4D1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:59:32 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6994a6942so144242377b3.17
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:59:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=kA1uHTXTZgvCDEwUv0Venj02VbjFVl5MyBDxltrhOyc=;
+        b=NP6fnietNid07WODom2crvgVApuYNwyBc+vaQeT9ELb0Wby0y027V1WoutortBDdER
+         6VKH2m5g/hhqE8jP+GV8Z52SXKndZFpGpqKGnvqTJ6saOgO9yiXq/Sl8KOE48ShXSFrf
+         Yd/GQs7iTARZWcbcAbs2DZcziHvlIf4ws8th2T86PRoxGLRCAo79SHT5a0UzBseydVww
+         c/kdTBUTDmKW4WhBmbRdCfs4Sm1ZyK65IyLMvKPqQFMBa2uiSRCXXe8ja7vMgkYdHVOd
+         FDQ7AFIgQCuxZCe7VWKGtZS0vLPpQ4mLhJFEH4IE0gr/JO65ZVTSGIb2gzhuMTjBEe1w
+         9t+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=kA1uHTXTZgvCDEwUv0Venj02VbjFVl5MyBDxltrhOyc=;
+        b=eDjOWfIo2bmmatAkxeRJT9A2HVV0AO7Djm8cCgheIbzbt7TOZVPEi9XYBJm6REpUgt
+         kbrMz6/RJHDxAX6fswwzKSRv95B4Z35qH9RmNQqai9TZhxap59fs1ncu0OXFoZfOZS/o
+         dFC7RbioUBJoBACrpXTklOzcRsgT4pVEPO6kW5628WREQOZH/MBP6gtwdx1DT5nT9HPn
+         RepUzZPR7PN2AKd4AMuyW3dU7leenhgpcN4/T1Q0cM1AJQBN6GOB/Rce9141C3YDK4ts
+         S1nXg6PvGgOdZhGGCfvSPHvew4m5toCtdGttMGMq1QM5wvVwuMwWhd2EmDZwgxqiJgrI
+         i9sA==
+X-Gm-Message-State: AOAM533x02fkjgpRA55wHW0ED00fQtHyveRM1S/kmK1RHqSb6Ue0uku2
+        D8/h8lNid62yp1dve0BbwMqO5BaWOw2ADf9YTQ==
+X-Google-Smtp-Source: ABdhPJw2THd1z2iAbfih7pFjkHmBG5AlQKbmEqgBiWlGmwrM/dGUOKWBoivdDJ4o6t47SOdmT8K0alB2LRMYcbGgbA==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5db7:1235:b3dd:cfcb])
+ (user=kaleshsingh job=sendgmr) by 2002:a81:138a:0:b0:2d6:b391:90cd with SMTP
+ id 132-20020a81138a000000b002d6b39190cdmr23404107ywt.480.1645549171601; Tue,
+ 22 Feb 2022 08:59:31 -0800 (PST)
+Date:   Tue, 22 Feb 2022 08:51:07 -0800
+In-Reply-To: <20220222165212.2005066-1-kaleshsingh@google.com>
+Message-Id: <20220222165212.2005066-7-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220222165212.2005066-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v2 6/9] KVM: arm64: Detect and handle hypervisor stack overflows
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 11:39:01AM +0530, Neeraj Upadhyay wrote:
-> For configurations where snp node tree is not initialized at
-> init time (SRCU_SIZING_IS_INIT() is false), srcu_funnel_gp_start()
-> and srcu_funnel_exp_start() can potential traverse and observe
-> the snp nodes' transient (uninitialized) states. This can potentially
-> happen, when init_srcu_struct_nodes() initialization of sdp->mynode
-> races with srcu_funnel_gp_start() and srcu_funnel_exp_start()
-> 
-> Consider the case below where srcu_funnel_gp_start() observes
-> sdp->mynode to be not NULL and uses an uninitialized sdp->grpmask
-> 
->           P1                                  P2
-> 
-> init_srcu_struct_nodes()           void srcu_funnel_gp_start(...)
-> {
-> for_each_possible_cpu(cpu) {
->   ...
->   sdp->mynode = &snp_first[...];
->   for (snp = sdp->mynode;...)       struct srcu_node *snp_leaf =
->                                        smp_load_acquire(&sdp->mynode)
->     ...                             if (snp_leaf) {
->                                       for (snp = snp_leaf; ...)
->                                         ...
-> 					if (snp == snp_leaf)
->                                          snp->srcu_data_have_cbs[idx] |=
->                                            sdp->grpmask;
->     sdp->grpmask =
->       1 << (cpu - sdp->mynode->grplo);
->   }
-> }
-> 
-> Similarly, init_srcu_struct_nodes() and srcu_funnel_exp_start() can
-> race, where srcu_funnel_exp_start() could observe state of snp lock
-> before spin_lock_init().
-> 
->           P1                                      P2
-> 
-> init_srcu_struct_nodes()               void srcu_funnel_exp_start(...)
-> {
->   srcu_for_each_node_breadth_first(ssp, snp) {      for (; ...) {
->                                                       spin_lock_...(snp, )
-> 	spin_lock_init(&ACCESS_PRIVATE(snp, lock));
->     ...
->   }
->   for_each_possible_cpu(cpu) {
->     ...
->     sdp->mynode = &snp_first[...];
-> 
-> To avoid these issues, ensure that snp node tree initialization is
-> complete i.e. after SRCU_SIZE_WAIT_BARRIER srcu_size_state is reached,
-> before traversing the tree. Given that srcu_funnel_gp_start() and
-> srcu_funnel_exp_start() are called within SRCU read side critical
-> sections, this check is safe, in the sense that all callbacks are
-> enqueued on CPU0 srcu_cblist until SRCU_SIZE_WAIT_CALL is entered,
-> and these read side critical sections (containing srcu_funnel_gp_start()
-> and srcu_funnel_exp_start()) need to complete, before SRCU_SIZE_WAIT_CALL
-> is reached.
-> 
-> Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+The hypervisor stacks (for both nVHE Hyp mode and nVHE protected mode)
+are aligned to twice their size (PAGE_SIZE), meaning that any valid stack
+address has PAGE_SHIFT bit as 0. This allows us to conveniently check for
+overflow in the exception entry without corrupting any GPRs. We won't
+recover from a stack overflow so panic the hypervisor.
 
-Good catch, and a hard one to hit!  Thank you for chasing this down!!!
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/kvm/hyp/nvhe/host.S   | 16 ++++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/switch.c |  5 +++++
+ 2 files changed, 21 insertions(+)
 
-I have queued this for testing and review.  I am beginning to suspect
-that the SRCU branch might not be ready for mainline, so I will also redo
-the merge to pull it in separately.  This allows deferring the decision
-on whether it goes into the upcoming merge window or the next one.
+diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
+index 3d613e721a75..78e4b612ac06 100644
+--- a/arch/arm64/kvm/hyp/nvhe/host.S
++++ b/arch/arm64/kvm/hyp/nvhe/host.S
+@@ -153,6 +153,10 @@ SYM_FUNC_END(__host_hvc)
+ 
+ .macro invalid_host_el2_vect
+ 	.align 7
++
++	/* Test stack overflow without corrupting GPRs */
++	test_sp_overflow PAGE_SHIFT, .L__hyp_sp_overflow\@
++
+ 	/* If a guest is loaded, panic out of it. */
+ 	stp	x0, x1, [sp, #-16]!
+ 	get_loaded_vcpu x0, x1
+@@ -165,6 +169,18 @@ SYM_FUNC_END(__host_hvc)
+ 	 * been partially clobbered by __host_enter.
+ 	 */
+ 	b	hyp_panic
++
++.L__hyp_sp_overflow\@:
++	/*
++	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
++	 * This corrupts the stack but is ok, since we won't be attempting
++	 * any unwinding here.
++	 */
++	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
++	mov	sp, x0
++
++	bl	hyp_panic_bad_stack
++	ASM_BUG()
+ .endm
+ 
+ .macro invalid_host_el1_vect
+diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
+index 6410d21d8695..5a2e1ab79913 100644
+--- a/arch/arm64/kvm/hyp/nvhe/switch.c
++++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+@@ -369,6 +369,11 @@ void __noreturn hyp_panic(void)
+ 	unreachable();
+ }
+ 
++void __noreturn hyp_panic_bad_stack(void)
++{
++	hyp_panic();
++}
++
+ asmlinkage void kvm_unexpected_el2_exception(void)
+ {
+ 	return __kvm_unexpected_el2_exception();
+-- 
+2.35.1.473.g83b2b277ed-goog
 
-After all, although the size of the srcu_struct can be annoying, random
-bugs can be even more annoying.
-
-							Thanx, Paul
-
-> ---
->  kernel/rcu/srcutree.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> index e3cb84649b2a..c6ba40370c2c 100644
-> --- a/kernel/rcu/srcutree.c
-> +++ b/kernel/rcu/srcutree.c
-> @@ -818,9 +818,15 @@ static void srcu_funnel_gp_start(struct srcu_struct *ssp, struct srcu_data *sdp,
->  	int idx = rcu_seq_ctr(s) % ARRAY_SIZE(sdp->mynode->srcu_have_cbs);
->  	unsigned long sgsne;
->  	struct srcu_node *snp;
-> -	struct srcu_node *snp_leaf = smp_load_acquire(&sdp->mynode);
-> +	struct srcu_node *snp_leaf;
->  	unsigned long snp_seq;
->  
-> +	/* Ensure that snp node tree is fully initialized before traversing it */
-> +	if (smp_load_acquire(&ssp->srcu_size_state) < SRCU_SIZE_WAIT_BARRIER)
-> +		snp_leaf = NULL;
-> +	else
-> +		snp_leaf = sdp->mynode;
-> +
->  	if (snp_leaf)
->  		/* Each pass through the loop does one level of the srcu_node tree. */
->  		for (snp = snp_leaf; snp != NULL; snp = snp->srcu_parent) {
-> @@ -1008,6 +1014,7 @@ static unsigned long srcu_gp_start_if_needed(struct srcu_struct *ssp,
->  	bool needgp = false;
->  	unsigned long s;
->  	struct srcu_data *sdp;
-> +	struct srcu_node *sdp_mynode;
->  
->  	check_init_srcu_struct(ssp);
->  	idx = srcu_read_lock(ssp);
-> @@ -1031,10 +1038,17 @@ static unsigned long srcu_gp_start_if_needed(struct srcu_struct *ssp,
->  		needexp = true;
->  	}
->  	spin_unlock_irqrestore_rcu_node(sdp, flags);
-> +
-> +	/* Ensure that snp node tree is fully initialized before traversing it */
-> +	if (smp_load_acquire(&ssp->srcu_size_state) < SRCU_SIZE_WAIT_BARRIER)
-> +		sdp_mynode = NULL;
-> +	else
-> +		sdp_mynode = sdp->mynode;
-> +
->  	if (needgp)
->  		srcu_funnel_gp_start(ssp, sdp, s, do_norm);
->  	else if (needexp)
-> -		srcu_funnel_exp_start(ssp, smp_load_acquire(&sdp->mynode), s);
-> +		srcu_funnel_exp_start(ssp, sdp_mynode, s);
->  	srcu_read_unlock(ssp, idx);
->  	return s;
->  }
-> -- 
-> 2.17.1
-> 
