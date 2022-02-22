@@ -2,176 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D608C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8875EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233675AbiBVPsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        id S233466AbiBVPuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:50:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233714AbiBVPr4 (ORCPT
+        with ESMTP id S232248AbiBVPuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:47:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AD844506B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:47:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645544848;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L1nWB2ndNveDr5qjG/ERQTuXI64n7dwV4B5yib+Iqec=;
-        b=Xc1gXkkmtqQMC78Oqz/vHA01OeoU8cuCB1NOKD9f0zyd34vs391hvBDkv20KamHmG5Qr99
-        P7cTMEoY6DOBeJI8sG121bqf3mUIuu6hm0bgjhtfnbhprO6KQjIkf51+nwh3Y2v291Ph8U
-        oWBiGbVlZJ3dJGyP802sOxS1VjEcABY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-290-MWbYDG-RNLSwfD2FyOa9OA-1; Tue, 22 Feb 2022 10:47:25 -0500
-X-MC-Unique: MWbYDG-RNLSwfD2FyOa9OA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C97E5FC81;
-        Tue, 22 Feb 2022 15:47:23 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.183])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E00951086486;
-        Tue, 22 Feb 2022 15:47:21 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast hypercall
-Date:   Tue, 22 Feb 2022 16:46:42 +0100
-Message-Id: <20220222154642.684285-5-vkuznets@redhat.com>
-In-Reply-To: <20220222154642.684285-1-vkuznets@redhat.com>
-References: <20220222154642.684285-1-vkuznets@redhat.com>
+        Tue, 22 Feb 2022 10:50:01 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9980046B16;
+        Tue, 22 Feb 2022 07:49:35 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 607211042;
+        Tue, 22 Feb 2022 07:49:35 -0800 (PST)
+Received: from [10.57.39.208] (unknown [10.57.39.208])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 878FF3F70D;
+        Tue, 22 Feb 2022 07:49:32 -0800 (PST)
+Message-ID: <8f563870-3410-221d-4464-5c54a0018b55@arm.com>
+Date:   Tue, 22 Feb 2022 15:49:30 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/2] perf: cs-etm: Fix corrupt inject files when only last
+ branch option is enabled
+Content-Language: en-US
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>
+Cc:     linux-perf-users@vger.kernel.org, mathieu.poirier@linaro.org,
+        coresight@lists.linaro.org, Mike Leach <mike.leach@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220210200620.1227232-1-james.clark@arm.com>
+ <20220210200620.1227232-2-james.clark@arm.com>
+ <20220211160516.GD475776@leoy-ThinkPad-X240s> <YgvBpvYzAMCGSECj@kernel.org>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <YgvBpvYzAMCGSECj@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It has been proven on practice that at least Windows Server 2019 tries
-using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
-and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
-hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
-information is missing in TLFS as of 6.0b. Currently, KVM returns an error
-(HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
 
-Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
-all its parameters fit into RDX:R8 and this is handled by KVM correctly.
 
-Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/hyperv.c | 52 ++++++++++++++++++++++++++++---------------
- 1 file changed, 34 insertions(+), 18 deletions(-)
+On 15/02/2022 15:07, Arnaldo Carvalho de Melo wrote:
+> Em Sat, Feb 12, 2022 at 12:05:16AM +0800, Leo Yan escreveu:
+>> On Thu, Feb 10, 2022 at 08:06:20PM +0000, James Clark wrote:
+>>> Perf inject with Coresight data generates files that cannot be opened
+>>> when only the last branch option is specified:
+>>>
+>>>   perf inject -i perf.data --itrace=l -o inject.data
+>>>   perf script -i inject.data
+>>>   0x33faa8 [0x8]: failed to process type: 9 [Bad address]
+>>>
+>>> This is because cs_etm__synth_instruction_sample() is called even when
+>>> the sample type for instructions hasn't been setup. Last branch records
+>>> are attached to instruction samples so it doesn't make sense to generate
+>>> them when --itrace=i isn't specified anyway.
+>>>
+>>> This change disables all calls of cs_etm__synth_instruction_sample()
+>>> unless --itrace=i is specified, resulting in a file with no samples if
+>>> only --itrace=l is provided, rather than a bad file.
+>>>
+>>> Signed-off-by: James Clark <james.clark@arm.com>
+>>
+>> Reviewed-by: Leo Yan <leo.yan@linaro.org>
+> 
+> Thanks, applied.
+> 
+> - Arnaldo
+> 
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 6dda93bf98ae..3060057bdfd4 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1890,6 +1890,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	int sparse_banks_len;
- 	u32 vector;
- 	bool all_cpus;
-+	int i;
- 
- 	if (hc->code == HVCALL_SEND_IPI) {
- 		if (!hc->fast) {
-@@ -1910,9 +1911,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 
- 		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
- 	} else {
--		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
--					    sizeof(send_ipi_ex))))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
-+						    sizeof(send_ipi_ex))))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			send_ipi_ex.vector = (u32)hc->ingpa;
-+			send_ipi_ex.vp_set.format = hc->outgpa;
-+			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
-+		}
- 
- 		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
- 					 send_ipi_ex.vp_set.format,
-@@ -1920,8 +1927,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 
- 		vector = send_ipi_ex.vector;
- 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
--		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
--			sizeof(sparse_banks[0]);
-+		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
- 
- 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
- 
-@@ -1931,12 +1937,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 		if (!sparse_banks_len)
- 			goto ret_success;
- 
--		if (kvm_read_guest(kvm,
--				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
--							vp_set.bank_contents),
--				   sparse_banks,
--				   sparse_banks_len))
--			return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		if (!hc->fast) {
-+			if (kvm_read_guest(kvm,
-+					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
-+								vp_set.bank_contents),
-+					   sparse_banks,
-+					   sparse_banks_len * sizeof(sparse_banks[0])))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+		} else {
-+			/*
-+			 * The lower half of XMM0 is already consumed, each XMM holds
-+			 * two sparse banks.
-+			 */
-+			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
-+				return HV_STATUS_INVALID_HYPERCALL_INPUT;
-+			for (i = 0; i < sparse_banks_len; i++) {
-+				if (i % 2)
-+					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
-+				else
-+					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
-+			}
-+		}
- 	}
- 
- check_and_send_ipi:
-@@ -2098,6 +2119,7 @@ static bool is_xmm_fast_hypercall(struct kvm_hv_hcall *hc)
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
- 	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
-+	case HVCALL_SEND_IPI_EX:
- 		return true;
- 	}
- 
-@@ -2265,14 +2287,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
- 		ret = kvm_hv_flush_tlb(vcpu, &hc);
- 		break;
- 	case HVCALL_SEND_IPI:
--		if (unlikely(hc.rep)) {
--			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
--			break;
--		}
--		ret = kvm_hv_send_ipi(vcpu, &hc);
--		break;
- 	case HVCALL_SEND_IPI_EX:
--		if (unlikely(hc.fast || hc.rep)) {
-+		if (unlikely(hc.rep)) {
- 			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
- 			break;
- 		}
--- 
-2.35.1
+Thanks Leo and Arnaldo!
 
+>  
+>>> ---
+>>>  tools/perf/util/cs-etm.c | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
+>>> index 796a065a500e..8b95fb3c4d7b 100644
+>>> --- a/tools/perf/util/cs-etm.c
+>>> +++ b/tools/perf/util/cs-etm.c
+>>> @@ -1553,6 +1553,7 @@ static int cs_etm__flush(struct cs_etm_queue *etmq,
+>>>  		goto swap_packet;
+>>>  
+>>>  	if (etmq->etm->synth_opts.last_branch &&
+>>> +	    etmq->etm->synth_opts.instructions &&
+>>>  	    tidq->prev_packet->sample_type == CS_ETM_RANGE) {
+>>>  		u64 addr;
+>>>  
+>>> @@ -1610,6 +1611,7 @@ static int cs_etm__end_block(struct cs_etm_queue *etmq,
+>>>  	 * the trace.
+>>>  	 */
+>>>  	if (etmq->etm->synth_opts.last_branch &&
+>>> +	    etmq->etm->synth_opts.instructions &&
+>>>  	    tidq->prev_packet->sample_type == CS_ETM_RANGE) {
+>>>  		u64 addr;
+>>>  
+>>> -- 
+>>> 2.28.0
+>>>
+> 
