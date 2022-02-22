@@ -2,108 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9543CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234892AbiBVSJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 13:09:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53856 "EHLO
+        id S234896AbiBVSKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 13:10:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234883AbiBVSJF (ORCPT
+        with ESMTP id S231979AbiBVSKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 13:09:05 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD634172263
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:08:38 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id w4so2192495ilj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:08:38 -0800 (PST)
+        Tue, 22 Feb 2022 13:10:02 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CAA1728B6;
+        Tue, 22 Feb 2022 10:09:36 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id cm8so29329804edb.3;
+        Tue, 22 Feb 2022 10:09:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3MFpylEeTI6XidlITe8mkhmRrO1Ymt6z5H1OOXcy0qU=;
-        b=E5GkLf4qEy+uKhfmwS9E+yY1OvOjM1XyV9x8NZY2UhTf9bgOMa0QvRvedtcLDR+t3t
-         V4aWKPJ9Cq4nD7p1Gbp5uPVOkxIjJFOvVBwZyCv8MzT/QpVDlPSFBn8+NhETz8XE2rxy
-         wYtZrVu/zkVfJUCaBJu6Gtklzoo1hdnzyRh7+hznLDVwsaj+Ul11+1dmSImsuBVKNbPS
-         K0Zu5f+gkNZJqOwFHwt3YY60+QymuMa8qPIXYAYRV64/ZvoWztNDDTMuyiMNt59UNKGC
-         zgQH/49PZmFlZEXWRwmwewEQTwIUiHq3rsoZ7XWhs/a5jJn5uyZXXqrA/CK4NFJY15Uu
-         2Vlg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jtom/U0GwO0Hs63autw48kBu/fshzoa9XBs0OWnJ3L8=;
+        b=OmYZ3HIjMD0dUoDhZY8dEMSo1j1yZnkExjcPHkZ0rlsui50L7fmPpJiEQNHCSpO1Ca
+         NIkndOKdSBdG0fKvi8kldlrSvZ3ypyBmsmgvayCDF3YHFD6r1/8OFUvqPJslcET4Y2zy
+         v6wsyrKhvFI+w8pEjsWjPaTemJPPjC2cQ+kDpz5DuLpxZGazp2l/5rDqOHEate7vXTcf
+         0msZttDSXExAsHHr3jSidYG/FZo78mU/WyvA0T91Vhz4PcGzIuhx3vBGHQiPUdwjJxXZ
+         i+4YoSl7W7CZXwStAk+YsQi6sn+xNKkoarGVScgKUPV47W6fucJNd/jzSPOh4SuxspoB
+         3AKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3MFpylEeTI6XidlITe8mkhmRrO1Ymt6z5H1OOXcy0qU=;
-        b=5xNr0UPkJAUgeJQcfXkaDr9fJk03EuRq3A1xEqy4bjkE/YPrtJV0o8Xsy9llSQCYi4
-         k4j4vJfJiuLgN5wlkrstbbJ8gQYamFSnaKow3EPU/GmD1RJAaEFARSnVYWh4nb8uqSPl
-         2P+vqsRmiNaFwXuReSRQ83NRPCiMfHVVzrO2MXNb/qIrsBLJx6M/4OSybMyJ+l2BOmwJ
-         6bXpn7U0eR4Q4q2eXK2eeJFpbeq6S3y/MWwPEsJHtp4fQvAabqyAVhWdHpCAKKmvMI7S
-         rQdZDWjemMFrCU1+QXhftNv7wqAJzdq/JGTwM9OakDOj4pfqGyOlGubCuAz60HFCPoPk
-         mTLg==
-X-Gm-Message-State: AOAM531xt7ForTQtWlo5sidOqsOnBCwW4AcSXS1WtOkh4Rab76jatk3v
-        PaFfvziyGD9XcvGbJyy4gZxtPN4uEaA/qZe4MKs=
-X-Google-Smtp-Source: ABdhPJwHc7J+f7tj6fV7sYNacLBeV6cwmCJjs7Rt2xuMtzr0WDHDAbVMmhP5P27yvx+DPuvIVYaPzUBJ4R4RgCjJBxI=
-X-Received: by 2002:a05:6e02:190c:b0:2c2:6851:bce3 with SMTP id
- w12-20020a056e02190c00b002c26851bce3mr2988283ilu.28.1645553318268; Tue, 22
- Feb 2022 10:08:38 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jtom/U0GwO0Hs63autw48kBu/fshzoa9XBs0OWnJ3L8=;
+        b=7xsx4Ybo5Rn8y1uQlCoxcjfcp9YAM4GtXZbJMKnePiVe3g0nqV4AsDZUsWdbSk5KBz
+         NvHkli/tyckDyl8U4z5WLC6S4moFB/dls7fZHxL1BEBh04PqLXJ5zu2ZTc+rp4lhuoxr
+         e96JPC21vr16OGid06/Wwkcn5QMybLfWlCogdZsr6EgWiiM3beiIlr144oTldxPJDXAf
+         55sqIYXhQKJJjaOBPsIaX5WSWZelGTk3ZlP2vINoz/agnYJhH+hdu9oiLTHX5J4N5uFp
+         L1+lIVylAZooL+inx6ZqCt/LAvmpITCFRa6eseEHtOyNaKzj61nN93eGRf0DQKwmQRoi
+         ae9Q==
+X-Gm-Message-State: AOAM533juXp2V2utSfKUhAnhfbFaBXJQwjrmceXM/KRjrIT1YIS9as04
+        lPtmqfpQAe+K0uRTZayuDNo=
+X-Google-Smtp-Source: ABdhPJzUnAJ/pRNXmC3AHLVojZVz9boRrWUlnT60fBM9wkx7MJFyGhNiP4CJCeIAuPdIWUlXPdmLvw==
+X-Received: by 2002:aa7:dd1a:0:b0:410:9bb4:cba4 with SMTP id i26-20020aa7dd1a000000b004109bb4cba4mr27208582edv.364.1645553374474;
+        Tue, 22 Feb 2022 10:09:34 -0800 (PST)
+Received: from Ansuel-xps.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id ew6sm6393886ejc.217.2022.02.22.10.09.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 10:09:34 -0800 (PST)
+Date:   Tue, 22 Feb 2022 19:09:32 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: Re: [RFC RFT PATCH v2 1/2] dt-bindings: mtd: partitions: Document
+ new partition-dynamic nodes
+Message-ID: <YhUm3LDb9Bp+Pn9a@Ansuel-xps.localdomain>
+References: <20220220173905.14165-1-ansuelsmth@gmail.com>
+ <20220220173905.14165-2-ansuelsmth@gmail.com>
+ <1645410969.414517.2041550.nullmailer@robh.at.kernel.org>
+ <YhO2dK0eNP9fOeOZ@Ansuel-xps.localdomain>
+ <YhUk+3P7g6bigRP3@robh.at.kernel.org>
 MIME-Version: 1.0
-References: <2d44632c4067be35491b58b147a4d1329fdfcf16.1645549750.git.andreyknvl@google.com>
- <CANpmjNOnr=B_o83BJ6b1S6FKWe+p2vR58H8CHtGPNPnu6-cQZg@mail.gmail.com>
-In-Reply-To: <CANpmjNOnr=B_o83BJ6b1S6FKWe+p2vR58H8CHtGPNPnu6-cQZg@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Tue, 22 Feb 2022 19:08:27 +0100
-Message-ID: <CA+fCnZf2jE1N8j9iQRtOnQsTP=2CQOGYqREbzypPQa-=UXjhDA@mail.gmail.com>
-Subject: Re: [PATCH mm] another fix for "kasan: improve vmalloc tests"
-To:     Marco Elver <elver@google.com>
-Cc:     andrey.konovalov@linux.dev,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhUk+3P7g6bigRP3@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 6:50 PM Marco Elver <elver@google.com> wrote:
->
-> On Tue, 22 Feb 2022 at 18:10, <andrey.konovalov@linux.dev> wrote:
-> >
-> > From: Andrey Konovalov <andreyknvl@google.com>
-> >
-> > set_memory_rw/ro() are not exported to be used in modules and thus
-> > cannot be used in KUnit-compatible KASAN tests.
-> >
-> > Drop the checks that rely on these functions.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-> > ---
-> >  lib/test_kasan.c | 6 ------
-> >  1 file changed, 6 deletions(-)
-> >
-> > diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-> > index ef99d81fe8b3..448194bbc41d 100644
-> > --- a/lib/test_kasan.c
-> > +++ b/lib/test_kasan.c
-> > @@ -1083,12 +1083,6 @@ static void vmalloc_helpers_tags(struct kunit *test)
-> >         KUNIT_ASSERT_TRUE(test, is_vmalloc_addr(ptr));
-> >         KUNIT_ASSERT_NOT_ERR_OR_NULL(test, vmalloc_to_page(ptr));
-> >
-> > -       /* Make sure vmalloc'ed memory permissions can be changed. */
-> > -       rv = set_memory_ro((unsigned long)ptr, 1);
-> > -       KUNIT_ASSERT_GE(test, rv, 0);
-> > -       rv = set_memory_rw((unsigned long)ptr, 1);
-> > -       KUNIT_ASSERT_GE(test, rv, 0);
->
-> You can still test it by checking 'ifdef MODULE'. You could add a
-> separate test which is skipped if MODULE is defined. Does that work?
+On Tue, Feb 22, 2022 at 12:01:31PM -0600, Rob Herring wrote:
+> On Mon, Feb 21, 2022 at 04:57:40PM +0100, Ansuel Smith wrote:
+> > On Sun, Feb 20, 2022 at 08:36:09PM -0600, Rob Herring wrote:
+> > > On Sun, 20 Feb 2022 18:39:04 +0100, Ansuel Smith wrote:
+> > > > Document new partition-dynamic nodes used to provide an OF node for
+> > > > partition registred at runtime by parsers. This is required for nvmem
+> > > > system to declare and detect nvmem-cells.
+> > > > 
+> > > > With these special partitions, only the label is required as the parser
+> > > > will provide reg and offset of the mtd. NVMEM will use the data from the
+> > > > parser and provide the NVMEM cells declared in the DTS, "connecting" the
+> > > > dynamic partition with a static declaration of cells in them.
+> > > > 
+> > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > ---
+> > > >  .../mtd/partitions/partition-dynamic.yaml     | 54 +++++++++++++++++++
+> > > >  1 file changed, 54 insertions(+)
+> > > >  create mode 100644 Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.yaml
+> > > > 
+> > > 
+> > > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > > 
+> > > yamllint warnings/errors:
+> > > 
+> > > dtschema/dtc warnings/errors:
+> > > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/partition-dynamic.example.dt.yaml: partitions: '#address-cells', '#size-cells', 'art' do not match any of the regexes: 'pinctrl-[0-9]+'
+> > > 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/qcom,smem-part.yaml
+> > > 
+> > > doc reference errors (make refcheckdocs):
+> > > 
+> > > See https://patchwork.ozlabs.org/patch/1595230
+> > > 
+> > > This check can fail if there are any dependencies. The base for a patch
+> > > series is generally the most recent rc1.
+> > > 
+> > > If you already ran 'make dt_binding_check' and didn't see the above
+> > > error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> > > date:
+> > > 
+> > > pip3 install dtschema --upgrade
+> > > 
+> > > Please check and re-submit.
+> > > 
+> > 
+> > Considering the idea of this partition-dynamic, should these warning be
+> > ignored or the smem-part should include the ref of these new partitions?
+> 
+> We can't have warnings. 
+> 
+> > Or should I remove the example?
+> 
+> Doesn't that just kick the problem to actual users?
+> 
+> > (or should I add the example to smem-part instead of partition-dynamic)
+> 
+> That shouldn't matter I think...
+> 
+> Rob
 
-Yes, putting it under ifdef will work. I thought that having a
-discrepancy between built-in and module tests is weird, but I see the
-kprobes tests doing this, so maybe it's not such a bad idea. Will do
-in v2.
+I mean the problem here is that smem-part doesn't accept partition
+subnode... Think I should add a ref there... In theory I should be able
+to keep the example... 
+
+-- 
+	Ansuel
