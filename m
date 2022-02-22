@@ -2,251 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32035C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234605AbiBVRoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 12:44:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54278 "EHLO
+        id S234477AbiBVRut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:50:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbiBVRoB (ORCPT
+        with ESMTP id S233160AbiBVRup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 12:44:01 -0500
-Received: from smtp-8fa9.mail.infomaniak.ch (smtp-8fa9.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fa9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACD1169200
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 09:43:34 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K36375WxtzMqBYM;
-        Tue, 22 Feb 2022 18:43:31 +0100 (CET)
-Received: from localhost (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4K363613G9zlhSML;
-        Tue, 22 Feb 2022 18:43:29 +0100 (CET)
-From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
-To:     James Morris <jmorris@namei.org>,
-        John Johansen <john.johansen@canonical.com>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
-        Brendan Jackman <jackmanb@chromium.org>,
-        Florent Revest <revest@chromium.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Moore <paul@paul-moore.com>, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
-Subject: [RFC PATCH v1] LSM: Remove double path_rename hook calls for RENAME_EXCHANGE
-Date:   Tue, 22 Feb 2022 18:53:32 +0100
-Message-Id: <20220222175332.384545-1-mic@digikod.net>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Tue, 22 Feb 2022 12:50:45 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2041.outbound.protection.outlook.com [40.107.20.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5648B15FCBF;
+        Tue, 22 Feb 2022 09:50:19 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W+hFlI0Eg70iJW8T8vMziIz9ZFDNZgDl3rAAUpIybltoHqkckNf48vWUcr3hHpl1HDv6fnjvrmlTBHt5I3KxI8M/u+u7oSyyunKSceQTNntvk7GtY+xCb1Uz7j1hAzvnYPb7WFB9pw39T0oGGigiv52L/UOe669XS+Q0YG4GeF2coeun39Q7DDhMOfVVrt2u0Pnc98qH5Ew7i9rgDTBYozxz3PMgSNjlIp71R3vnB706srVvEttJ3WTe7aA40v2PftDqR2kiQTZQQ2EOoAlKXz8S+wnzxKvdbRp43uk3mr9NpLdHbooAefQ1E9QJuz+ZUOH1WfjXmEiW3+yLmE/YKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mnJWxjD6QlsPRLzUzk/FWJSgCWgArQNDv9ALFcw/Dzc=;
+ b=jMUXJcDs1SppMUg/yWz8LxkqKHBIaFzMWzcJKT+JuCk3gWSCIAD22xJ2NahTJbM3UEAxFyHUPyi+Ov44lUXpkw68nJtL6TqZqzFuxeKPMq9JfAMUAndeAu4Tl7JLK8UZocS+mwKMYL5duNGvlFKWd67hQRHWC9siCji/y97lh57wIfjLi4S9420pPGeYq+MogvMEvIp4X4xucYkhXkBZsD0uwmMHpL4PKsMkUjC5GckVS1AXxfV1AZBo0oPb2xzyP3tb58G2PZxQU+63Thq9BeEfKHAn07KQ6bIBmQG98gUaFWxI8cDlxgfHdddL5hbADdyIPGc6NvNFnPL2ma0BUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wolfvision.net; dmarc=pass action=none
+ header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mnJWxjD6QlsPRLzUzk/FWJSgCWgArQNDv9ALFcw/Dzc=;
+ b=S/wB3gD/9WntG3oPp5MAucqWa5GmhmL2TOBjB2xvrYxuaETmpfhcGKyM4FFfcRimc/FdDQgNxC+9lMx4q8CvfcFGnOgj/wxHFuwCvw4cMuD6+4hnK+fE1vGL+jlhGoexCe67fbe22XxE6MkQOm0W5rdSTqdr1SKFq3hMQdJMiOE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=wolfvision.net;
+Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com (2603:10a6:3:e1::23)
+ by DU0PR08MB7485.eurprd08.prod.outlook.com (2603:10a6:10:355::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
+ 2022 17:50:15 +0000
+Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com
+ ([fe80::f9ee:a333:b115:5049]) by HE1PR0802MB2426.eurprd08.prod.outlook.com
+ ([fe80::f9ee:a333:b115:5049%4]) with mapi id 15.20.4995.027; Tue, 22 Feb 2022
+ 17:50:14 +0000
+From:   Michael Riesch <michael.riesch@wolfvision.net>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Liang Chen <cl@rock-chips.com>, frank-w@public-files.de
+Subject: [PATCH 1/2] arm64: dts: rockchip: enable work led on rk3568-evb1
+Date:   Tue, 22 Feb 2022 18:50:03 +0100
+Message-Id: <20220222175004.1308990-1-michael.riesch@wolfvision.net>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ZR0P278CA0108.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:23::23) To HE1PR0802MB2426.eurprd08.prod.outlook.com
+ (2603:10a6:3:e1::23)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0d87d415-1fb5-4f01-25ef-08d9f62bc7b3
+X-MS-TrafficTypeDiagnostic: DU0PR08MB7485:EE_
+X-Microsoft-Antispam-PRVS: <DU0PR08MB748525993F4DF76FD88FD76AF23B9@DU0PR08MB7485.eurprd08.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7blQFLvLxTwQOZthcMVbBK8nNj/vINr9uRsDxUR7hNQgJOgSlwB1x4X8/edD0MkvvLXi6s8j+eyUAR31s2I4DOmPd5xmOQpmj55PFakuvqO3neUh2TDvMFthAWqV/N20klezz9f600QKkMI0U+i5oecmTj5agt7cZlautsU8nzJ2g8qMxrI6dajb6qVrP8NFI9H1SgY+DHOVFXJylsORJXysCYXb9TVs2TO7BO9n5RCjJqX8OzvH0HTfwFia7ypjn1XQS+2QAiFe0BRvPqd5cMs600yWQvDm4o5mIV+Pnbru0Bfg0Ua00fryYsSYJQv+94suXbaSL3Dy5tpu97OPDKcWxcjyct3AghQQsTdW0TZDTNATlphYeMOQswFoXiIW0OOsuDXtgvDxsmDsSWlexJJ8Ry2O181cbXsYgBSbQRUXP5keQCIzScnkAcA+I/FW/yUlV4I9U/B+bhDCmX31G8TJQffhn/LwL/IGGYuhXpdfcT5kWJvQ2fpyLJn3uPKL0T91FmRVoZM74ZA+sqMaig5HCuYPjMQSzFViewKCcXGRbHpWNsLhmkZ+kweEA9ssh1SugCAJoYYO0JFw/8dAwISjGUi8ORZq4Fsgt65djdqzALojRgOWSkNB+95wSOHNApZVsSCMrXaEa+WpMN0Khg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(39830400003)(376002)(396003)(366004)(136003)(186003)(8676002)(4326008)(54906003)(6506007)(2906002)(2616005)(316002)(38100700002)(5660300002)(6512007)(66476007)(1076003)(66556008)(66946007)(44832011)(6486002)(6666004)(8936002)(36756003)(508600001)(52116002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FlFlFoZqABBrBmvhMdZpQS9ykdrV2/jRjFszQcWjTStLxb4NSCh5vUOUYZwQ?=
+ =?us-ascii?Q?dGhqxjqO6g6zH4MYXkqx1T98U++YKPA8UUM4seA2xOwoOi+RU/eJlxEDi/Rp?=
+ =?us-ascii?Q?dYKog5HVYNr8OkqBOQKohRMjzXEjKMU4+PfyI9xKqWRIJ5khg9nZQp0vUZqa?=
+ =?us-ascii?Q?z1RWccssvBobdd8ksNH6CrIzRgLBMIZ6Q21ZfnjSm9o1zMJF81S1+ZN+JsNc?=
+ =?us-ascii?Q?lGSkR9wXL2KuHk6pv8iOXUb2Rm/ou3Tmefz+qP5aoaVmGw3bWnlpRoUMCkX6?=
+ =?us-ascii?Q?YtNSWlNvhmp0FfarMZTm5qCxntujuQif7whX6tYaCA0hadc0hk/WrS7YRskv?=
+ =?us-ascii?Q?Dj1QlG++Db3PEvkUyl8pF/ZZdpELLn4r3HaLJaMZFGf1dgMQ6V65P6zgU6LF?=
+ =?us-ascii?Q?EQA/oJWPPXajy/gXDCi5pHX7ECxeCvYuKMN9CJ0FBPdkS3iDMOwvVrLroDvS?=
+ =?us-ascii?Q?D8BgLzKAIvzzskCIFPFu57DMrM1fMTSE6Lzd1JJ5ZgcbDMMa0wi16pdksmJS?=
+ =?us-ascii?Q?PUbtJAB4JHI/v+whbJ99iem1sBoEBO/GoO37dryou0iDnEvRY7Ox7DbVf/4Y?=
+ =?us-ascii?Q?rBC2zqX7IC8s2gKuzX/GpmdGphf3R7W7cA6XPvTb6m7qXuV42Ni4ZFN1NGrH?=
+ =?us-ascii?Q?mDQvF+1La5jU3OfB2dtUIY/WziK9fyhjxDve4FIiq8FhV4IwnzeR0yQaclGt?=
+ =?us-ascii?Q?1BlmB6q4y/dosC74eniG0IZ1em0IeiGFYpQnpaehLY51LuKBq2uIDGK8AcwI?=
+ =?us-ascii?Q?cuXKaRPWLy0oUExrS4Ov9rhVmrxecwiHvFCMSDZeRWDMffZ02KyFx5MjxPek?=
+ =?us-ascii?Q?YW/MqbxS7tCpccFHdHkTHBFRkL/mZ4cgtRuV3bLn54hDC9zqx04IhemsPX2j?=
+ =?us-ascii?Q?AuZOE/TgNLKSqN21FbFwyvpg/KADSWvhnOqbO2yhpYHgY2nOfEEVoV+AmscZ?=
+ =?us-ascii?Q?mMNoEUtRh6DkqC4LtSqwIAV8d1BKaSqBULXa8XvKrp4rJE0GRASkzJpB76Bg?=
+ =?us-ascii?Q?mb2dRZaJXd0CIea1B6HvLf+uOcbGmaV130Mc8Tb4li9dWHt7L8ccBp4BgG1l?=
+ =?us-ascii?Q?SLT6oxlxumqo07kuTI0IrpQCNbOboQf4E+bgMNNuWVA7FE2bZq/XC21fWy3k?=
+ =?us-ascii?Q?6OY3o3vvUWwsZ7arxd5QWwFBYX2DdB+nZBvcas4Ik4zN6MitFsWdOClZmxh2?=
+ =?us-ascii?Q?amshE1vzMVe6GqqPy65xJmo/EhsPddexRfxoia9iooB1gP0yRktqPmz1/RER?=
+ =?us-ascii?Q?JRSJ9DSlJESnGXkWvtcmEvbMA+bSr5ejT3jHHc9KOUayA1x9ZxM1yMCYcb5J?=
+ =?us-ascii?Q?JURPBBl22Y/L505tiZxh6u6O4USE3EzIUStS6hmer04qi9ljr+DRLxGMNKKh?=
+ =?us-ascii?Q?fLqLHZNb9CWjRXP8zIem6cPADFvV2w1wRR91OIUhjnlBTuSbcIUDOtCHuMs8?=
+ =?us-ascii?Q?ogZa9fl3HTq7BClAJXTV+bKQiyu0AtYAonAyp3IQyA+lDClAMkFQN6VQavc8?=
+ =?us-ascii?Q?S97aHO4agfMHz+0vxo3sql2UsI0BFNro3Io2bAGUTi4VI2nBFS0f5gQ62zb8?=
+ =?us-ascii?Q?dgJpr/Ly65rmFV2yk/VPsiSBLJPjKnxk3AKhf2oiaOQD78hpLzZnEdjW5BUo?=
+ =?us-ascii?Q?NJv9vvsZJvH0y6SpZQHhLXkirRPW1tLC/DPARiT0zFnV1h7wPSi82ULwGvGj?=
+ =?us-ascii?Q?2e8iK/kd+U5UfYVvNWHfzcigAEcdACEmXoGhIVC5KdIebQHb88wRfX79uxIP?=
+ =?us-ascii?Q?9FXpk23ttQ=3D=3D?=
+X-OriginatorOrg: wolfvision.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d87d415-1fb5-4f01-25ef-08d9f62bc7b3
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR0802MB2426.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 17:50:14.7037
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fIWU3aPRduKqEtFwcT///rcavWFu0KmLoA1x6xe8R/5lwUhQ0h0+XBg/g9olHirOIkTkj1yK31u/NPNi8wMJ4atwEjIqZcrh7DR6xpFKQUU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR08MB7485
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mickaël Salaün <mic@linux.microsoft.com>
+Enable the blue work LED on the Rockchip RK3568 EVB1.
 
-In order to be able to identify a file exchange with renameat2(2) and
-RENAME_EXCHANGE, which will be useful for Landlock [1], propagate the
-rename flags to LSMs.  This may also improve performance because of the
-switch from two set of LSM hook calls to only one, and because LSMs
-using this hook may optimize the double check (e.g. only one lock,
-reduce the number of path walks).
-
-AppArmor, Landlock and Tomoyo are updated to leverage this change.  This
-should not change the current behavior (same check order), except
-(different level of) speed boosts.
-
-[1] https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
-
-Cc: James Morris <jmorris@namei.org>
-Cc: John Johansen <john.johansen@canonical.com>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: Serge E. Hallyn <serge@hallyn.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
+Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
 ---
- include/linux/lsm_hook_defs.h |  2 +-
- include/linux/lsm_hooks.h     |  1 +
- security/apparmor/lsm.c       | 30 +++++++++++++++++++++++++-----
- security/landlock/fs.c        | 12 ++++++++++--
- security/security.c           |  9 +--------
- security/tomoyo/tomoyo.c      | 11 ++++++++++-
- 6 files changed, 48 insertions(+), 17 deletions(-)
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts      | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 819ec92dc2a8..d8b49c9c3a8a 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -100,7 +100,7 @@ LSM_HOOK(int, 0, path_link, struct dentry *old_dentry,
- 	 const struct path *new_dir, struct dentry *new_dentry)
- LSM_HOOK(int, 0, path_rename, const struct path *old_dir,
- 	 struct dentry *old_dentry, const struct path *new_dir,
--	 struct dentry *new_dentry)
-+	 struct dentry *new_dentry, unsigned int flags)
- LSM_HOOK(int, 0, path_chmod, const struct path *path, umode_t mode)
- LSM_HOOK(int, 0, path_chown, const struct path *path, kuid_t uid, kgid_t gid)
- LSM_HOOK(int, 0, path_chroot, const struct path *path)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 3bf5c658bc44..32cd2a7fe9fc 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -358,6 +358,7 @@
-  *	@old_dentry contains the dentry structure of the old link.
-  *	@new_dir contains the path structure for parent of the new link.
-  *	@new_dentry contains the dentry structure of the new link.
-+ *	@flags may contain rename options such as RENAME_EXCHANGE.
-  *	Return 0 if permission is granted.
-  * @path_chmod:
-  *	Check for permission to change a mode of the file @path. The new
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index 4f0eecb67dde..900bc540656a 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -354,13 +354,16 @@ static int apparmor_path_link(struct dentry *old_dentry, const struct path *new_
- }
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+index 39c495ff0157..aaf7b4bed24b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+@@ -33,6 +33,18 @@ dc_12v: dc-12v {
+ 		regulator-max-microvolt = <12000000>;
+ 	};
  
- static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_dentry,
--				const struct path *new_dir, struct dentry *new_dentry)
-+				const struct path *new_dir, struct dentry *new_dentry,
-+				const unsigned int flags)
- {
- 	struct aa_label *label;
- 	int error = 0;
- 
- 	if (!path_mediated_fs(old_dentry))
- 		return 0;
-+	if ((flags & RENAME_EXCHANGE) && !path_mediated_fs(new_dentry))
-+		return 0;
- 
- 	label = begin_current_label_crit_section();
- 	if (!unconfined(label)) {
-@@ -374,10 +377,27 @@ static int apparmor_path_rename(const struct path *old_dir, struct dentry *old_d
- 			d_backing_inode(old_dentry)->i_mode
++	leds {
++		compatible = "gpio-leds";
++
++		led_work: led-work {
++			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
++			label = "led_work";
++			linux,default-trigger = "heartbeat";
++			pinctrl-names = "default";
++			pinctrl-0 = <&led_work_en>;
++		};
++	};
++
+ 	vcc3v3_sys: vcc3v3-sys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_sys";
+@@ -404,6 +416,12 @@ vcc3v3_lcd1_n_en: vcc3v3_lcd1_n_en {
  		};
+ 	};
  
--		error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
--				     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
--				     AA_MAY_SETATTR | AA_MAY_DELETE,
--				     &cond);
-+		if (flags & RENAME_EXCHANGE) {
-+			struct path_cond cond_exchange = {
-+				i_uid_into_mnt(mnt_userns, d_backing_inode(new_dentry)),
-+				d_backing_inode(new_dentry)->i_mode
-+			};
++	leds {
++		led_work_en: led_work_en {
++			rockchip,pins = <0 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
 +
-+			error = aa_path_perm(OP_RENAME_SRC, label, &new_path, 0,
-+					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
-+					     AA_MAY_SETATTR | AA_MAY_DELETE,
-+					     &cond_exchange);
-+			if (!error)
-+				error = aa_path_perm(OP_RENAME_DEST, label, &old_path,
-+						     0, MAY_WRITE | AA_MAY_SETATTR |
-+						     AA_MAY_CREATE, &cond_exchange);
-+		}
-+
-+		if (!error)
-+			error = aa_path_perm(OP_RENAME_SRC, label, &old_path, 0,
-+					     MAY_READ | AA_MAY_GETATTR | MAY_WRITE |
-+					     AA_MAY_SETATTR | AA_MAY_DELETE,
-+					     &cond);
- 		if (!error)
- 			error = aa_path_perm(OP_RENAME_DEST, label, &new_path,
- 					     0, MAY_WRITE | AA_MAY_SETATTR |
-diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-index 97b8e421f617..7e57fca6e814 100644
---- a/security/landlock/fs.c
-+++ b/security/landlock/fs.c
-@@ -574,10 +574,12 @@ static inline u32 maybe_remove(const struct dentry *const dentry)
- static int hook_path_rename(const struct path *const old_dir,
- 		struct dentry *const old_dentry,
- 		const struct path *const new_dir,
--		struct dentry *const new_dentry)
-+		struct dentry *const new_dentry,
-+		const unsigned int flags)
- {
- 	const struct landlock_ruleset *const dom =
- 		landlock_get_current_domain();
-+	u32 exchange_access = 0;
- 
- 	if (!dom)
- 		return 0;
-@@ -585,11 +587,17 @@ static int hook_path_rename(const struct path *const old_dir,
- 	if (old_dir->dentry != new_dir->dentry)
- 		/* Gracefully forbids reparenting. */
- 		return -EXDEV;
-+	if (flags & RENAME_EXCHANGE) {
-+		if (unlikely(d_is_negative(new_dentry)))
-+			return -ENOENT;
-+		exchange_access =
-+			get_mode_access(d_backing_inode(new_dentry)->i_mode);
-+	}
- 	if (unlikely(d_is_negative(old_dentry)))
- 		return -ENOENT;
- 	/* RENAME_EXCHANGE is handled because directories are the same. */
- 	return check_access_path(dom, old_dir, maybe_remove(old_dentry) |
--			maybe_remove(new_dentry) |
-+			maybe_remove(new_dentry) | exchange_access |
- 			get_mode_access(d_backing_inode(old_dentry)->i_mode));
- }
- 
-diff --git a/security/security.c b/security/security.c
-index 22261d79f333..8634da4cfd46 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -1184,15 +1184,8 @@ int security_path_rename(const struct path *old_dir, struct dentry *old_dentry,
- 		     (d_is_positive(new_dentry) && IS_PRIVATE(d_backing_inode(new_dentry)))))
- 		return 0;
- 
--	if (flags & RENAME_EXCHANGE) {
--		int err = call_int_hook(path_rename, 0, new_dir, new_dentry,
--					old_dir, old_dentry);
--		if (err)
--			return err;
--	}
--
- 	return call_int_hook(path_rename, 0, old_dir, old_dentry, new_dir,
--				new_dentry);
-+				new_dentry, flags);
- }
- EXPORT_SYMBOL(security_path_rename);
- 
-diff --git a/security/tomoyo/tomoyo.c b/security/tomoyo/tomoyo.c
-index b6a31901f289..71e82d855ebf 100644
---- a/security/tomoyo/tomoyo.c
-+++ b/security/tomoyo/tomoyo.c
-@@ -264,17 +264,26 @@ static int tomoyo_path_link(struct dentry *old_dentry, const struct path *new_di
-  * @old_dentry: Pointer to "struct dentry".
-  * @new_parent: Pointer to "struct path".
-  * @new_dentry: Pointer to "struct dentry".
-+ * @flags: Rename options.
-  *
-  * Returns 0 on success, negative value otherwise.
-  */
- static int tomoyo_path_rename(const struct path *old_parent,
- 			      struct dentry *old_dentry,
- 			      const struct path *new_parent,
--			      struct dentry *new_dentry)
-+			      struct dentry *new_dentry,
-+			      const unsigned int flags)
- {
- 	struct path path1 = { .mnt = old_parent->mnt, .dentry = old_dentry };
- 	struct path path2 = { .mnt = new_parent->mnt, .dentry = new_dentry };
- 
-+	if (flags & RENAME_EXCHANGE) {
-+		const int err = tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path2,
-+				&path1);
-+
-+		if (err)
-+			return err;
-+	}
- 	return tomoyo_path2_perm(TOMOYO_TYPE_RENAME, &path1, &path2);
- }
- 
-
-base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
+ 	pmic {
+ 		pmic_int: pmic_int {
+ 			rockchip,pins =
 -- 
-2.35.1
+2.30.2
 
