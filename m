@@ -2,235 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C81EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 21:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 21:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235957AbiBVV1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 16:27:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        id S235511AbiBVV2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 16:28:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235802AbiBVV1b (ORCPT
+        with ESMTP id S235832AbiBVV1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 16:27:31 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A04B8E187;
-        Tue, 22 Feb 2022 13:27:05 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:27:03 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1645565224;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L2SftizOYJm0Oa3oZMe4lwD8sUSmZAIEP8u+0K0p48o=;
-        b=QtQKhdvBssqDSxlFOd100wKw34gpXxODx6UjNLxvm0ld/3RQlyByF80RftK6E2LqC26hWq
-        kCBN32TeZUHJKYNj4PR2s1BG92kUgWIiD/d4sChbk9OsE7wp+Wn6JEmPhVwpyz0K6kHf6c
-        8hg/vP6HJ6dhqDifHIRtzivMK7lrtjAeVCWnlUdq2a++33HHosSwAVwxJSjMpgZj71r022
-        MRWoOOCxwZcJkCQPda9rYJ9dObACQT6eRCzYa6NRhfC5J88KsLUmr6s6iQFZUkOAheDaqz
-        67lmVQQboqw1Op2tFG2Q2lGWo3uOyoUz1DqlyYNjm6tA/BfuH8nv0/twxTaMUw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1645565224;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L2SftizOYJm0Oa3oZMe4lwD8sUSmZAIEP8u+0K0p48o=;
-        b=r4aZx67naC9SVbdsBBF+bA6wRYiTENbpyGoW0BXwZGU/DUm9HgLwwwhbBsRR0LzXuNtcjT
-        tkzCwH3rtycrnCAg==
-From:   "tip-bot2 for Sebastian Andrzej Siewior" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: core/core] fork: Redo ifdefs around task stack handling
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220217102406.3697941-2-bigeasy@linutronix.de>
-References: <20220217102406.3697941-2-bigeasy@linutronix.de>
+        Tue, 22 Feb 2022 16:27:41 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519208E196
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:27:11 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21MLQgJt094027;
+        Tue, 22 Feb 2022 15:26:42 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1645565202;
+        bh=4IgUtNPOVL10Vp/1imi/uYZI63freW9H4+vX2DPlXSY=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=LAiCT48cWfLm7s/Qi781s8RcKxLPuwos03bIGtQxAOiGatxkEHNkQX9tlLsVaLlA/
+         +gMHbBht/OQ26yNsOaS3bNUeKIhwKyvFWQNTKLjT3EO8okdbAqUrLiDGa0NBFFfy77
+         t4uiayVOEan2qDs1T2LWQHz9oP/9jPlcoq9qXJnQ=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21MLQgUv093354
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Feb 2022 15:26:42 -0600
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
+ Feb 2022 15:26:42 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 22 Feb 2022 15:26:42 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21MLQgU8074960;
+        Tue, 22 Feb 2022 15:26:42 -0600
+Date:   Tue, 22 Feb 2022 15:26:42 -0600
+From:   Nishanth Menon <nm@ti.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Rahul T R <r-ravikumar@ti.com>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <shawnguo@kernel.org>, <krzk@kernel.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <biju.das.jz@bp.renesas.com>, <vkoul@kernel.org>,
+        <enric.balletbo@collabora.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] arm64: defconfig: Enable configs for DisplayPort on J721e
+Message-ID: <20220222212642.vwtw7xiz7cck63ea@zombie>
+References: <20220222180703.30401-1-r-ravikumar@ti.com>
+ <20220222193930.sbc5xlsofhg3amgk@overrun>
+ <YhVKSpMOKWzZy9a2@ripper>
 MIME-Version: 1.0
-Message-ID: <164556522311.16921.16318571180509187723.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YhVKSpMOKWzZy9a2@ripper>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the core/core branch of tip:
+On 12:40-20220222, Bjorn Andersson wrote:
+> On Tue 22 Feb 11:39 PST 2022, Nishanth Menon wrote:
+> 
+> > On 23:37-20220222, Rahul T R wrote:
+> > > Enable DRM and PHY configs required for supporting
+> > > DisplayPort on J721e
+> > > 
+> > > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > > ---
+> > >  arch/arm64/configs/defconfig | 5 +++++
+> > >  1 file changed, 5 insertions(+)
+> > > 
+> > > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> > > index 9f23d7ec1232..b0cb894a392e 100644
+> > > --- a/arch/arm64/configs/defconfig
+> > > +++ b/arch/arm64/configs/defconfig
+> > > @@ -702,6 +702,9 @@ CONFIG_DRM_EXYNOS_DSI=y
+> > >  CONFIG_DRM_EXYNOS_HDMI=y
+> > >  CONFIG_DRM_EXYNOS_MIC=y
+> > >  CONFIG_DRM_ROCKCHIP=m
+> > > +CONFIG_DRM_TIDSS=m
+> > > +CONFIG_DRM_DISPLAY_CONNECTOR=m
+> > > +CONFIG_DRM_CDNS_MHDP8546=m
+> > 
+> > Please use savedefconfig to place the changes in the correct location
+> > 
+> 
+> Just to clarify the request, use "make savedefconfig" to generate a
+> defconfig, then based on that put _only_ the relevant changes in the
+> commit.
 
-Commit-ID:     be9a2277cafd318976d59c41a7f45a934ec43b26
-Gitweb:        https://git.kernel.org/tip/be9a2277cafd318976d59c41a7f45a934ec43b26
-Author:        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-AuthorDate:    Thu, 17 Feb 2022 11:23:59 +01:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Tue, 22 Feb 2022 22:25:01 +01:00
+Yup, thanks for clarifying.
+> 
+> > Also indicate changes if any in vmlinux in commit message.
+> > 
+> 
+> Nishanth, what are you asking for here? Just a mentioning if this has
+> any impact to vmlinux (or is isolated to the modules selected), or are
+> you asking for anything specific?
 
-fork: Redo ifdefs around task stack handling
+In this case, just ensure to state that vmlinux size has'nt
+changed, in case where we see a =y, we should indicate via
+./scripts/bloat-o-meter change that is introduced and if yes, we
+should explain why this is fundamental to system boot.
 
-The use of ifdef CONFIG_VMAP_STACK is confusing in terms what is
-actually happenning and what can happen.
+Why is this necessary? This is to prevent product specific
+configurations (such as early display banner, chime etc) from creeping
+and increasing vmlinux size which has an impact for all ARM SoCs.
 
-For instance from reading free_thread_stack() it appears that in the
-CONFIG_VMAP_STACK case it may receive a non-NULL vm pointer but it may also
-be NULL in which case __free_pages() is used to free the stack.  This is
-however not the case because in the VMAP case a non-NULL pointer is always
-returned here.  Since it looks like this might happen, the compiler creates
-the correct dead code with the invocation to __free_pages() and everything
-around it. Twice.
 
-Add spaces between the ifdef and the identifer to recognize the ifdef
-level which is currently in scope.
+[...]
 
-Add the current identifer as a comment behind #else and #endif.
-Move the code within free_thread_stack() and alloc_thread_stack_node()
-into the relevant ifdef blocks.
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/20220217102406.3697941-2-bigeasy@linutronix.de
-
----
- kernel/fork.c | 74 ++++++++++++++++++++++++++------------------------
- 1 file changed, 39 insertions(+), 35 deletions(-)
-
-diff --git a/kernel/fork.c b/kernel/fork.c
-index a024bf6..f5cc101 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -185,7 +185,7 @@ static inline void free_task_struct(struct task_struct *tsk)
-  */
- # if THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK)
- 
--#ifdef CONFIG_VMAP_STACK
-+#  ifdef CONFIG_VMAP_STACK
- /*
-  * vmalloc() is a bit slow, and calling vfree() enough times will force a TLB
-  * flush.  Try to minimize the number of calls by caching stacks.
-@@ -210,11 +210,9 @@ static int free_vm_stack_cache(unsigned int cpu)
- 
- 	return 0;
- }
--#endif
- 
- static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
- {
--#ifdef CONFIG_VMAP_STACK
- 	void *stack;
- 	int i;
- 
-@@ -258,45 +256,53 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
- 		tsk->stack = stack;
- 	}
- 	return stack;
--#else
--	struct page *page = alloc_pages_node(node, THREADINFO_GFP,
--					     THREAD_SIZE_ORDER);
--
--	if (likely(page)) {
--		tsk->stack = kasan_reset_tag(page_address(page));
--		return tsk->stack;
--	}
--	return NULL;
--#endif
- }
- 
--static inline void free_thread_stack(struct task_struct *tsk)
-+static void free_thread_stack(struct task_struct *tsk)
- {
--#ifdef CONFIG_VMAP_STACK
- 	struct vm_struct *vm = task_stack_vm_area(tsk);
-+	int i;
- 
--	if (vm) {
--		int i;
-+	for (i = 0; i < THREAD_SIZE / PAGE_SIZE; i++)
-+		memcg_kmem_uncharge_page(vm->pages[i], 0);
- 
--		for (i = 0; i < THREAD_SIZE / PAGE_SIZE; i++)
--			memcg_kmem_uncharge_page(vm->pages[i], 0);
-+	for (i = 0; i < NR_CACHED_STACKS; i++) {
-+		if (this_cpu_cmpxchg(cached_stacks[i], NULL,
-+				     tsk->stack_vm_area) != NULL)
-+			continue;
- 
--		for (i = 0; i < NR_CACHED_STACKS; i++) {
--			if (this_cpu_cmpxchg(cached_stacks[i],
--					NULL, tsk->stack_vm_area) != NULL)
--				continue;
-+		tsk->stack = NULL;
-+		tsk->stack_vm_area = NULL;
-+		return;
-+	}
-+	vfree_atomic(tsk->stack);
-+	tsk->stack = NULL;
-+	tsk->stack_vm_area = NULL;
-+}
- 
--			return;
--		}
-+#  else /* !CONFIG_VMAP_STACK */
- 
--		vfree_atomic(tsk->stack);
--		return;
-+static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
-+{
-+	struct page *page = alloc_pages_node(node, THREADINFO_GFP,
-+					     THREAD_SIZE_ORDER);
-+
-+	if (likely(page)) {
-+		tsk->stack = kasan_reset_tag(page_address(page));
-+		return tsk->stack;
- 	}
--#endif
-+	return NULL;
-+}
- 
-+static void free_thread_stack(struct task_struct *tsk)
-+{
- 	__free_pages(virt_to_page(tsk->stack), THREAD_SIZE_ORDER);
-+	tsk->stack = NULL;
- }
--# else
-+
-+#  endif /* CONFIG_VMAP_STACK */
-+# else /* !(THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK)) */
-+
- static struct kmem_cache *thread_stack_cache;
- 
- static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
-@@ -312,6 +318,7 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk,
- static void free_thread_stack(struct task_struct *tsk)
- {
- 	kmem_cache_free(thread_stack_cache, tsk->stack);
-+	tsk->stack = NULL;
- }
- 
- void thread_stack_cache_init(void)
-@@ -321,8 +328,9 @@ void thread_stack_cache_init(void)
- 					THREAD_SIZE, NULL);
- 	BUG_ON(thread_stack_cache == NULL);
- }
--# endif
--#endif
-+
-+# endif /* THREAD_SIZE >= PAGE_SIZE || defined(CONFIG_VMAP_STACK) */
-+#endif /* !CONFIG_ARCH_THREAD_STACK_ALLOCATOR */
- 
- /* SLAB cache for signal_struct structures (tsk->signal) */
- static struct kmem_cache *signal_cachep;
-@@ -432,10 +440,6 @@ static void release_task_stack(struct task_struct *tsk)
- 
- 	account_kernel_stack(tsk, -1);
- 	free_thread_stack(tsk);
--	tsk->stack = NULL;
--#ifdef CONFIG_VMAP_STACK
--	tsk->stack_vm_area = NULL;
--#endif
- }
- 
- #ifdef CONFIG_THREAD_INFO_IN_TASK
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
