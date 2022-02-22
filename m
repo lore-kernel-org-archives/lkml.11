@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B422C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC840C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbiBVPNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35196 "EHLO
+        id S233235AbiBVPNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:13:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233297AbiBVPND (ORCPT
+        with ESMTP id S230003AbiBVPNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:13:03 -0500
+        Tue, 22 Feb 2022 10:13:06 -0500
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A9811E3C2;
-        Tue, 22 Feb 2022 07:12:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A677B11E3C2;
+        Tue, 22 Feb 2022 07:12:40 -0800 (PST)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K32hx1BRKz9sT3;
-        Tue, 22 Feb 2022 16:12:33 +0100 (CET)
+        by localhost (Postfix) with ESMTP id 4K32hz07bzz9sT4;
+        Tue, 22 Feb 2022 16:12:35 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id d66VtZ_MbLCi; Tue, 22 Feb 2022 16:12:33 +0100 (CET)
+        with ESMTP id ehh-J2Jq36Vg; Tue, 22 Feb 2022 16:12:34 +0100 (CET)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32hw4ggXz9sSh;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32hw5N7Mz9sSm;
         Tue, 22 Feb 2022 16:12:32 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8ECE08B778;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A6B9B8B764;
         Tue, 22 Feb 2022 16:12:32 +0100 (CET)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id Fq2mAXwmCwwX; Tue, 22 Feb 2022 16:12:32 +0100 (CET)
+        with ESMTP id 5C5N_sOOBsfq; Tue, 22 Feb 2022 16:12:32 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 12D188B764;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1A3298B77A;
         Tue, 22 Feb 2022 16:12:32 +0100 (CET)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFCOd51087468
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFCOB71087476
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
         Tue, 22 Feb 2022 16:12:24 +0100
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFCOxc1087467;
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFCOlg1087475;
         Tue, 22 Feb 2022 16:12:24 +0100
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] module: Rename debug_align() as strict_align()
-Date:   Tue, 22 Feb 2022 16:12:19 +0100
-Message-Id: <d12505e70e60806d9e8ffa4e163715bcc33795e9.1645542447.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v2 5/5] module: Rename debug_align() as strict_align()
+Date:   Tue, 22 Feb 2022 16:12:21 +0100
+Message-Id: <d12505e70e60806d9e8ffa4e163715bcc33795e9.1645542272.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645542447.git.christophe.leroy@csgroup.eu>
-References: <cover.1645542447.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <cover.1645542272.git.christophe.leroy@csgroup.eu>
+References: <cover.1645542272.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542740; l=4185; s=20211009; h=from:subject:message-id; bh=AfRsGzNxNFEa6HyPLYyjXjVOnKsSzM6QrsC7nBlW+n4=; b=PP5qq39n0VAZWrXJB8gVF9utpXNi+OepaiDVZfzSvAJhD2Ybl7Le8+13IA1z6OH8GevRdtnEmHU9 2nR4H4KEAqOYZZRsAldrqd3dH10UowwLoWHix64RYkvAZ3XlTWWe
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542740; l=4185; s=20211009; h=from:subject:message-id; bh=AfRsGzNxNFEa6HyPLYyjXjVOnKsSzM6QrsC7nBlW+n4=; b=L1CWJXem0KIumVRwLvvREnQOMxe17ZEZqC1E4VM6MXH9YjrUmcjYGgqumYYIwNDrx9hxZ1dMXPB/ 51ZCXn7qCvdWnJZcomYYLWqdPt8OkzFBg7oRYjAIwOcVRCozMcIz
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
