@@ -2,169 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB757C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B76C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiBVP5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:57:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
+        id S233514AbiBVP6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:58:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiBVP5b (ORCPT
+        with ESMTP id S231295AbiBVP6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:57:31 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEEABF52
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:57:05 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id bt13so42102076ybb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:57:05 -0800 (PST)
+        Tue, 22 Feb 2022 10:58:51 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74575A41A3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:58:26 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id y15-20020a4a650f000000b0031c19e9fe9dso15212324ooc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:58:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4iDZ9H8inY+NDZ0HYQKmVnQ5HPOpNxH9x5TSVqE2tPM=;
-        b=QSq82TnQ0nQE6N8kyjOuBwFCSTCmC32PZVhG9xE5SXdbwJuXbp8Q5uVYD/zKSnlfbL
-         e+atEsS1GffladQeVh1ubCQ5owgNiqkgzMeRSr2NLa6BxM2AIARh7B7IAw5pFty4wwSd
-         nEanN79Fi42rtZnhSwUUnGbO5qXAn0Pi0870dO6q42s60xze1hlXSBQN3jaYvZhub4kO
-         M0ZZ20Yx8gF69hEqMNzge1OyOKf6pNtuokqTZ/fXZNGpH19nFH8OMdjSpH1EX+HXFG7n
-         SFPbkFBXIS5ulX+AbygzCntKyYtHZJnsWRfgWWluXmdSxC/GqdUsyih3fDwZAMTZpZbR
-         TNEA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B8JvjaTjY5x6FwC5XX0Xd9tUnU5yJOAD3HFMx9LpIc4=;
+        b=pmLvMCn79H7B2eRv3+Kd/CI2tWqZXsbSZHvVjq3KluzTud013tfjdnH0aDZFn/YcAU
+         TnS3i/6WWYrSGhGvpEsfQI3DJ90i0K56rWIkz8AkZm904ee9V3Nt+axQI2Za5RRaMP7q
+         1FQ+Fw5RGYL3zMs/NUCVYpEI+ZQCgWQ9YTfrCfWCvXKgquypYM69fRUyn1B15Vpv1iKO
+         ooFAjtG0eO478wsXEg/22/CS3OkhD2MKBSwJZAddVgszf56RgC4voWAc1KiXUlzSB6L0
+         5kVziciEi2tQdeDQw8epnt3ORdgCqjpAjVUcqIGeMm+vzYMHfojt9Uhj/ZoOiexBNuAo
+         ZA/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4iDZ9H8inY+NDZ0HYQKmVnQ5HPOpNxH9x5TSVqE2tPM=;
-        b=Kap1SMjVmIOSUReSiqo/k0fsR3WaIXGMK1+l9KXB9HcklsBbTuKvucHwO0Nua5tb2X
-         vD5cvl3+Lw2PljFrBgc/01MGNMysfXd/59GcFG4X90AtaL2L03Dc9Nnw02SY7rMpM1N2
-         X8zViRy46oXb/kHflF9grsQIZmV6BspF/KFmC85yvrkrZfoaPJqrOWuDE29H4YqDvkM5
-         oUvUuZk461g8cpLTAeRGLtDeXH8vQ9Xaq3cR69AhJHRJGlrWNSm61ZY7vJIO+ic1ko1E
-         7KdMVFNk1GMi2FqNE7FaKfeecL6pighX+MltHxafk7Q8DkwJtfkidT5hnGTKbjO8VuNk
-         cvRw==
-X-Gm-Message-State: AOAM532LCJ7sOq6FY5OeuR6EdSHdXs4CCUxVU8VqCEA59wyf6f1S7T8f
-        Pe0a5GrvlWGAhLdr3T/tdwiVWDrBG2LwvJOAWhkg3A==
-X-Google-Smtp-Source: ABdhPJzsG2l5hbH/rvKMzmec8uK19VoBN6hBM7s2DgZKr/9BsfAxIoyNXShwzMmISOUmqF/VOKKxsrcDrM5jrEgLCY8=
-X-Received: by 2002:a25:2693:0:b0:624:50a8:fee9 with SMTP id
- m141-20020a252693000000b0062450a8fee9mr17039255ybm.348.1645545424324; Tue, 22
- Feb 2022 07:57:04 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B8JvjaTjY5x6FwC5XX0Xd9tUnU5yJOAD3HFMx9LpIc4=;
+        b=sSCn/Ok6f23uAEYkMEglxARadPGQL7ha4KG93DHZNLis/XS2LOXnOvFc+lZjrjhLKx
+         Xglz+48S1ho8HExMlqA1TSQOq8tl4ACRmBq9tfSlEt5HvCeFADKq16t6XHWyGv31y/2E
+         EiOccasD/r/+iApsrcFa0DrwRGnGW7WbsYm3zRP0sm44flThqJg4nVO9t7+/dyR9ffGq
+         cqRvDiwBvHGV1eyru5hD3D3P3IsPmS7NiEOSvgm5ikSPFsfUCk/GnSPViJGt/qAjGz/6
+         2PBnGW362IySrr0aAMPcUIibtzvnwuYO8+VcKYRH+XdUb/I8fGkfO1S4UM1SP8uNqJ16
+         vz/g==
+X-Gm-Message-State: AOAM533jxz7KBu/tz4vibs+1Kt5myNRXpOooDio7qm1MzeBG0xxWt30C
+        c6jmKHf6MouNOWNKL4XCFjoX9Q==
+X-Google-Smtp-Source: ABdhPJyJZnjfzwYKwwBjFXFsbKZkFdI/kcs9GDvW6zW0kYCxeBlnlEvCaOPBKOhD3Z6BuldBL/JXPA==
+X-Received: by 2002:a4a:d415:0:b0:31c:3fc0:74ce with SMTP id n21-20020a4ad415000000b0031c3fc074cemr4375349oos.47.1645545505563;
+        Tue, 22 Feb 2022 07:58:25 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id o22sm7499468otp.21.2022.02.22.07.58.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 07:58:25 -0800 (PST)
+Date:   Tue, 22 Feb 2022 08:00:26 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH V4 1/4] dt-bindings: leds: Add pm8350c pmic support
+Message-ID: <YhUImreyfDf9xMmq@ripper>
+References: <1645509309-16142-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1645509309-16142-2-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-References: <20220222054025.3412898-1-surenb@google.com> <20220222054025.3412898-2-surenb@google.com>
- <YhSqDvSTN7nbz4C9@dhcp22.suse.cz>
-In-Reply-To: <YhSqDvSTN7nbz4C9@dhcp22.suse.cz>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Tue, 22 Feb 2022 07:56:53 -0800
-Message-ID: <CAJuCfpHr78By6p5sMhJZ3UohKXXSeA7Dxm_q-OA4y6KYL0L_pQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm: prevent vm_area_struct::anon_name refcount saturation
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     akpm@linux-foundation.org, ccross@google.com,
-        sumit.semwal@linaro.org, dave.hansen@intel.com,
-        keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1645509309-16142-2-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 1:17 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Mon 21-02-22 21:40:24, Suren Baghdasaryan wrote:
-> > A deep process chain with many vmas could grow really high.
->
-> This would really benefit from some numbers. With default
-> sysctl_max_map_count (64k) and default pid_max (32k) the INT_MAX could
-> be theoretically reached but I find it impractical because not all vmas
-> can be anonymous same as all available pids can be consumed for a
-> theoretical attack (if my counting is proper).
-> On the other hand any non-default configuration with any of the values
-> increased could hit this theoretically.
+On Mon 21 Feb 21:55 PST 2022, Satya Priya wrote:
 
-re: This would really benefit from some numbers
-Should I just add the details you provided above into the description?
-Would that suffice?
+> Add pm8350c pmic pwm support.
+> 
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> Acked-by: Rob Herring <robh@kernel.org>
 
->
-> > kref
-> > refcounting interface used in anon_vma_name structure will detect
-> > a counter overflow when it reaches REFCOUNT_SATURATED value but will
-> > only generate a warning about broken refcounting.
-> > To ensure anon_vma_name refcount does not overflow, stop anon_vma_name
-> > sharing when the refcount reaches INT_MAX, which still leaves INT_MAX/2
-> > values before the counter reaches REFCOUNT_SATURATED. This should provide
-> > enough headroom for raising the refcounts temporarily.
-> >
-> > Suggested-by: Michal Hocko <mhocko@suse.com>
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > ---
-> >  include/linux/mm_inline.h | 18 ++++++++++++++----
-> >  mm/madvise.c              |  3 +--
-> >  2 files changed, 15 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
-> > index 70b619442d56..b189e2638843 100644
-> > --- a/include/linux/mm_inline.h
-> > +++ b/include/linux/mm_inline.h
-> > @@ -156,15 +156,25 @@ static inline void anon_vma_name_get(struct anon_vma_name *anon_name)
-> >
-> >  extern void anon_vma_name_put(struct anon_vma_name *anon_name);
-> >
-> > +static inline
-> > +struct anon_vma_name *anon_vma_name_reuse(struct anon_vma_name *anon_name)
-> > +{
-> > +     /* Prevent anon_name refcount saturation early on */
-> > +     if (kref_read(&anon_name->kref) < INT_MAX) {
->
-> REFCOUNT_MAX seems to be defined by the kref framework.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Ah, indeed. I missed that. Will change to use it.
-
->
-> Other than that looks good to me.
-
-Thanks for the review!
-
->
-> > +             anon_vma_name_get(anon_name);
-> > +             return anon_name;
-> > +
-> > +     }
-> > +     return anon_vma_name_alloc(anon_name->name);
-> > +}
-> > +
-> >  static inline void dup_vma_anon_name(struct vm_area_struct *orig_vma,
-> >                                    struct vm_area_struct *new_vma)
-> >  {
-> >       struct anon_vma_name *anon_name = vma_anon_name(orig_vma);
-> >
-> > -     if (anon_name) {
-> > -             anon_vma_name_get(anon_name);
-> > -             new_vma->anon_name = anon_name;
-> > -     }
-> > +     if (anon_name)
-> > +             new_vma->anon_name = anon_vma_name_reuse(anon_name);
-> >  }
-> >
-> >  static inline void free_vma_anon_name(struct vm_area_struct *vma)
-> > diff --git a/mm/madvise.c b/mm/madvise.c
-> > index f81d62d8ce9b..a395884aeecb 100644
-> > --- a/mm/madvise.c
-> > +++ b/mm/madvise.c
-> > @@ -122,8 +122,7 @@ static int replace_vma_anon_name(struct vm_area_struct *vma,
-> >       if (anon_vma_name_eq(orig_name, anon_name))
-> >               return 0;
-> >
-> > -     anon_vma_name_get(anon_name);
-> > -     vma->anon_name = anon_name;
-> > +     vma->anon_name = anon_vma_name_reuse(anon_name);
-> >       anon_vma_name_put(orig_name);
-> >
-> >       return 0;
-> > --
-> > 2.35.1.473.g83b2b277ed-goog
->
-> --
-> Michal Hocko
-> SUSE Labs
+> ---
+> Changes in V2:
+>  - No changes.
+> 
+> Changes in V3:
+>  - No changes.
+> 
+> Changes in V4:
+>  - No changes.
+> 
+>  Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> index 336bd8e..409a4c7 100644
+> --- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> +++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> @@ -19,6 +19,7 @@ properties:
+>      enum:
+>        - qcom,pm8150b-lpg
+>        - qcom,pm8150l-lpg
+> +      - qcom,pm8350c-pwm
+>        - qcom,pm8916-pwm
+>        - qcom,pm8941-lpg
+>        - qcom,pm8994-lpg
+> -- 
+> 2.7.4
+> 
