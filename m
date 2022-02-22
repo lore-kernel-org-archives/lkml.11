@@ -2,172 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC092C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A343C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbiBVUgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:36:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
+        id S233231AbiBVUhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:37:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235676AbiBVUgM (ORCPT
+        with ESMTP id S235720AbiBVUgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:36:12 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969CF13EF83;
-        Tue, 22 Feb 2022 12:35:27 -0800 (PST)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21MIsEEF009864;
-        Tue, 22 Feb 2022 20:35:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-transfer-encoding
- : mime-version; s=pp1; bh=6S2/ICHcurzNb4XpSPpzhB4nMsXUVhuEApaMsiklLwg=;
- b=Ba5AfzMrENTKH199pimQpUbEQ+odhmx5ClZnxZ0Aw/k2BKUDFPH0Z5aSZFUOBboNPyn9
- L0G7h3amtDnwOgJgbLph+fokt+5xiIv41YJ2lDRHJlFEcWpbA4eSiyLL9UljG8rY/kVs
- C+dtgASwt/iQ8WFwlqweK3qoleB+0SB9zV2xIQCsXyH94xebXwzTX87LX6jxIIOoeLxn
- tLHHFcQrX3O/WOBwU7j/QVHf/7SPuqdazaw1pgDnjrlcqzyqeZGk/sYsTZPJPH/qKLSc
- JFr4h09gVhrcKeirASTqm6rK04WxUKCPAiVarzkVmSr9bCnFgdTbVhckUWaFfXcivGbh yg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed34ueff0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:35:20 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21MKD8AP000954;
-        Tue, 22 Feb 2022 20:35:19 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed34uefe1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:35:19 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21MKJS0S020862;
-        Tue, 22 Feb 2022 20:35:17 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3eaqtj5r7w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:35:17 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21MKZF3l18022732
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 20:35:15 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 19E8042049;
-        Tue, 22 Feb 2022 20:35:15 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0A67E42041;
-        Tue, 22 Feb 2022 20:35:13 +0000 (GMT)
-Received: from localhost (unknown [9.43.75.136])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 22 Feb 2022 20:35:12 +0000 (GMT)
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     linux-ext4@vger.kernel.org
-Cc:     Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ritesh Harjani <riteshh@linux.ibm.com>
-Subject: [RFC 8/9] ext4: Convert ext4_fc_track_dentry type events to use event class
-Date:   Wed, 23 Feb 2022 02:04:16 +0530
-Message-Id: <bf55f9a22a67f8619ffe5f1af47bebb43f5ed372.1645558375.git.riteshh@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1645558375.git.riteshh@linux.ibm.com>
-References: <cover.1645558375.git.riteshh@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 11eIfY_tWYhlaICOqrbcQzL4RDqSmwSI
-X-Proofpoint-ORIG-GUID: POeS3dzRkHhuddIRZuHklOHLnjt_Wr_-
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 22 Feb 2022 15:36:37 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9F1405CA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:35:54 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id i11so38086505eda.9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:35:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w7z+2gBVssBTwkTFXRrU+BRzNhXOykt+QfnboI/H0jI=;
+        b=Nx4Ebu1Qa73CdYd5vi87qARsrD0v/VpwZMXfHgesrmKuCWb9W3U4528JazIOYaiVyn
+         2VEovr0WBDKVp51vKrn7Ug0ljNa2PdcWMBEjHzr0Bgteigjs0cPTG+1hkwiEs62z4bhT
+         WT3SopWeJZIBLHGxHSdnc7r+h9BKJQXkQGi7UDb8yL8iXx5FHgeu/4iZvrEHEeLS748B
+         f60tjNlc9XgrCs5J6wQPEGZJJcqNXWledRb22U7avPjyWU/VVq/haVwxY81sNfYRcNPD
+         x4aBo04jpJ0PINIfmFeRgGXlJ7pfe1f+T7WYiYAAlOqwBskKIJX/mMQV5VvQUPuqoAkE
+         Lc/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w7z+2gBVssBTwkTFXRrU+BRzNhXOykt+QfnboI/H0jI=;
+        b=09v8n6EdXYrNEXylBXigAWY2VRGu1am6T03uBT7+MGV0A2E4FgbB/WT79MoJhgSO3i
+         PC3SxfXVqffkRJ43SC7p6AxM5UAUAGy3Qu4vyd0/Uc3VOOhJkNVUMnObSBvyVs3prBfQ
+         HlXZrngAYPNdXY44IGNfvtFSs6R2xYkXmoRA0Csz6Q3BJ8OZ7P/tryX7dj4XW+S9yO1v
+         A9tH3bCZ08QRP1KeVEfQY9kblq73sv89msNuRW/2p+eQlxWQ0I79ejR26k+9YIXbECYz
+         oI+WIsDD2AxZJTi7DRQmrGNlZjX3kqXhehoYW09TpdsENH8667+hYLeE7sqRzZJOZXso
+         smgw==
+X-Gm-Message-State: AOAM532cI53SX6HSZJMJKYY0mfyQZKeY9acqDJ7ZfTP59wCoH/CXD1+h
+        kHzu+INA0rwkbe02/HtxLUe7okQMjW1qwnrMoHyO6vglj/c=
+X-Google-Smtp-Source: ABdhPJxlv7Aw10zN8xQzuLGYlYSw80uywRepza8MNhd5IsDpmmj58AVIlRbtUyHYQmY8fGDgmgQIrA0TXC+15SlWS5g=
+X-Received: by 2002:a05:6402:5113:b0:413:963:4eae with SMTP id
+ m19-20020a056402511300b0041309634eaemr10761037edd.197.1645562152589; Tue, 22
+ Feb 2022 12:35:52 -0800 (PST)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-22_07,2022-02-21_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
- clxscore=1015 malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=954 phishscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202220126
+References: <20220219170301.545432-1-robdclark@gmail.com>
+In-Reply-To: <20220219170301.545432-1-robdclark@gmail.com>
+From:   Chia-I Wu <olvaffe@gmail.com>
+Date:   Tue, 22 Feb 2022 12:35:41 -0800
+Message-ID: <CAPaKu7Q3CAcoyEgvo1KZnJCx6-EO+CPcARCtzwE9Ddbb_OZA_Q@mail.gmail.com>
+Subject: Re: [PATCH] drm/virtio: Remove restriction of non-zero blob_flags
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-One should use DECLARE_EVENT_CLASS for similar event types instead of
-defining TRACE_EVENT for each event type. This is helpful in reducing
-the text section footprint for e.g. [1]
-
-[1]: https://lwn.net/Articles/381064/
-
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
----
- include/trace/events/ext4.h | 57 +++++++++++++++++++++----------------
- 1 file changed, 32 insertions(+), 25 deletions(-)
-
-diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
-index 233dbffa5ceb..33a059d845d6 100644
---- a/include/trace/events/ext4.h
-+++ b/include/trace/events/ext4.h
-@@ -2783,33 +2783,40 @@ TRACE_EVENT(ext4_fc_stats,
- 		  __entry->fc_numblks)
- );
- 
--#define DEFINE_TRACE_DENTRY_EVENT(__type)				\
--	TRACE_EVENT(ext4_fc_track_##__type,				\
--	    TP_PROTO(struct inode *inode, struct dentry *dentry, int ret), \
--									\
--	    TP_ARGS(inode, dentry, ret),				\
--									\
--	    TP_STRUCT__entry(						\
--		    __field(dev_t, dev)					\
--		    __field(int, ino)					\
--		    __field(int, error)					\
--		    ),							\
--									\
--	    TP_fast_assign(						\
--		    __entry->dev = inode->i_sb->s_dev;			\
--		    __entry->ino = inode->i_ino;			\
--		    __entry->error = ret;				\
--		    ),							\
--									\
--	    TP_printk("dev %d:%d, inode %d, error %d, fc_%s",		\
--		      MAJOR(__entry->dev), MINOR(__entry->dev),		\
--		      __entry->ino, __entry->error,			\
--		      #__type)						\
-+DECLARE_EVENT_CLASS(ext4_fc_track_dentry,
-+
-+	TP_PROTO(struct inode *inode, struct dentry *dentry, int ret),
-+
-+	TP_ARGS(inode, dentry, ret),
-+
-+	TP_STRUCT__entry(
-+		__field(dev_t, dev)
-+		__field(int, ino)
-+		__field(int, error)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->dev = inode->i_sb->s_dev;
-+		__entry->ino = inode->i_ino;
-+		__entry->error = ret;
-+	),
-+
-+	TP_printk("dev %d,%d, inode %d, error %d",
-+		  MAJOR(__entry->dev), MINOR(__entry->dev),
-+		  __entry->ino, __entry->error
- 	)
-+);
-+
-+#define DEFINE_EVENT_CLASS_TYPE(__type)					\
-+DEFINE_EVENT(ext4_fc_track_dentry, ext4_fc_track_##__type,		\
-+	TP_PROTO(struct inode *inode, struct dentry *dentry, int ret),	\
-+	TP_ARGS(inode, dentry, ret)					\
-+)
-+
- 
--DEFINE_TRACE_DENTRY_EVENT(create);
--DEFINE_TRACE_DENTRY_EVENT(link);
--DEFINE_TRACE_DENTRY_EVENT(unlink);
-+DEFINE_EVENT_CLASS_TYPE(create);
-+DEFINE_EVENT_CLASS_TYPE(link);
-+DEFINE_EVENT_CLASS_TYPE(unlink);
- 
- TRACE_EVENT(ext4_fc_track_inode,
- 	    TP_PROTO(struct inode *inode, int ret),
--- 
-2.31.1
-
+On Sat, Feb 19, 2022 at 9:02 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> With native userspace drivers in guest, a lot of GEM objects need to be
+> neither shared nor mappable.  And in fact making everything mappable
+> and/or sharable results in unreasonably high fd usage in host VMM.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
