@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C51C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B46C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232596AbiBVPA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:00:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48306 "EHLO
+        id S233157AbiBVPBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:01:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbiBVPA3 (ORCPT
+        with ESMTP id S233088AbiBVPAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:00:29 -0500
+        Tue, 22 Feb 2022 10:00:39 -0500
 Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F225910E05B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:59:52 -0800 (PST)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A7D10E542
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:59:55 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D464540314
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 14:59:51 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CB4093FCAB
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 14:59:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645541991;
-        bh=1P7qQVIntzoTj3/oLgMEwV7rKt1l7cL2m41gmrqktTo=;
+        s=20210705; t=1645541994;
+        bh=Yp6ZDVV8RuEvdp6hHMI16oZzyQVBXO+fcxhml4rBHaw=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=bU6JK5adMWxlJBra+LF0Ror6FdImeaukVNNCrbw3yE8hwL6RUZK2oBpGpbE2I4J0G
-         T1n1jVbzQQD+SMc/12x4kD/z7afsVR27irY4K4IKMH08Sa9bFwWMisBQ2tr8D8RgUf
-         b/MA7aVxpbG2YcjZ1M/MO9FhOJLgQxuJv1MeKx6U6Sa0b5CVpzjs/A4jbxT3PFZijN
-         +I2jlBtUmZy9dmaDmymZtGEbLT9YiPktsa/aQsYOBeSCBVrdpV2eHN92EHRisEd0eN
-         rtQvAzzV0oXWPhv8tOSiIOtNBM0jcCo/J3i0/276sR0g6lUAZGuzbbYBGciyBz3M9d
-         jooZCxqpRkBIA==
-Received: by mail-ej1-f72.google.com with SMTP id ky6-20020a170907778600b0068e4bd99fd1so5879516ejc.15
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:59:51 -0800 (PST)
+        b=o5MumoPmVx9eifQXg9bgd4trY37BCmk2Et/4nt4biXGfl2vYeiQ920u+3O9POqs5q
+         DwcG5mCi0gD/1S29WAb7ygn0Rfdzyp+3b3Qe9U+qxPU3DKBFhF5wp0wE4/yvYNq6nM
+         jA4VGbbQuuA/WI0s+RZukm/csCoGcq7sBgVLSFKAov7zDtsEvNl7rm6NZkAh36xbrQ
+         aRcTYFlg5OGXI7J6UisaI1Rl6+acHPzWdc/wzm0BxUq2fwKmiJDx6vwUMn5xO8oGTu
+         ufWq9LvHigi8aShOoWIQ0Tz33ios0LwetV/zcz87klEGYg+fHoGdnHsyvp+Q0cNLYx
+         VPC+4etmU9RJg==
+Received: by mail-ej1-f70.google.com with SMTP id sa22-20020a1709076d1600b006ce78cacb85so5897326ejc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:59:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1P7qQVIntzoTj3/oLgMEwV7rKt1l7cL2m41gmrqktTo=;
-        b=KjXH0PMcNMEJFp24gqKWMBNunwPqipce4oZz8QLa7IwZp42d928zx+vuHZr3YnS74v
-         Gvb0TlS91lVW1frUZKXeBwiqmjdhahTOBmtn9pvPkIiDt09YyipfKRVBdcOoGKQJowyx
-         5EuJsac3UYAgYuANNM3hR82tBuAYt8xGKbjCUfa+KSQXiRXLxISLDc8zRKA1F4Qgz/6Z
-         6e78rvtUXf+dhexRCp11tGLbShxsImuSif9XptPv9NQ0ad62Aomi8PyJCSpGFTbTONVO
-         VurgAwrXWxTe8Vj8Eo5LudtPKWQu0mXqEB00ISp5ulNO513pQDasqHTxAhmV6L0BURuP
-         qMIA==
-X-Gm-Message-State: AOAM531FRONPrdACawNmHOB02l0n3eZngW/Yt6wEDlvxlAgTCu+NGdaZ
-        cVLVFWPd6xfi1gwM99V35EIy4vOdy7Xn+3XkT9OFlpxExRIBMtE1cZuxYhNXZkwoRW0U1P1xmTO
-        AGUuQoOEKBMzuxkZgIeMch7/5b+1tCtkTlFfFr3c9Wg==
-X-Received: by 2002:a50:e04e:0:b0:410:d961:523a with SMTP id g14-20020a50e04e000000b00410d961523amr27317301edl.223.1645541991397;
-        Tue, 22 Feb 2022 06:59:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyUtYJeXKFR/3UPBCev0P+VF4C8MI1ryF08nvFtYgouje4ha2q2QFFwRqFjiPr36iU06TskIg==
-X-Received: by 2002:a50:e04e:0:b0:410:d961:523a with SMTP id g14-20020a50e04e000000b00410d961523amr27317282edl.223.1645541991213;
-        Tue, 22 Feb 2022 06:59:51 -0800 (PST)
+        bh=Yp6ZDVV8RuEvdp6hHMI16oZzyQVBXO+fcxhml4rBHaw=;
+        b=7Dl1djB9JXTTpNEotmVGMhi8ZrFoQU+eRL0NNBZFfmpwq2cxrqpXJPtx6o5R9mgh55
+         CJ2kcscN1In6n0HanJ0G5mPYDEVtVTWEtdBFJ4kJiW0Hz5/Ro7vNDeE/WCLNYl41CbXi
+         V+lMTXuvHGVdPkJBrQ2GnUjiiOzHH983LNGsH6Po2TMJFChjLwkmCRB+D/PoBbmu6m6P
+         6IQO1uBg11Mmvmkd+IAHCXnhYxzzImoDZy7Welv0xV5yetTJUBXN8RokUIOV272Hk9te
+         1q6GHZAnIOXjD4J60bMmZxFaSRs2XcJ9Ejfj7eu4PAwdngeQIh1t1gpX6wVY/iISbrIK
+         RPMQ==
+X-Gm-Message-State: AOAM5326F5HhmnBCUsfekZb/HwHjcYzMZHOXeFLGh45mvyUU1y9dGkm4
+        Cuo/MpkGTpa/JnHnudFpeSN+rVfS883r+l4FvrbQUC4Ir9lX9quusm7/Y/PPl2Ra9mBINl2koDN
+        ob15aCC1aCQQKnlfs6KEeZn8RyyHmtAeAQoa6OpJ+Fg==
+X-Received: by 2002:a17:906:8299:b0:6cf:3847:284b with SMTP id h25-20020a170906829900b006cf3847284bmr19368282ejx.682.1645541994354;
+        Tue, 22 Feb 2022 06:59:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx+ToxX03cNeq8vGzKfuUoRQ0zvi1K010zfig8ivZ8cYm8EVedSW9bVloWqWHnEbvwuSlDU2A==
+X-Received: by 2002:a17:906:8299:b0:6cf:3847:284b with SMTP id h25-20020a170906829900b006cf3847284bmr19368246ejx.682.1645541994125;
+        Tue, 22 Feb 2022 06:59:54 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id m2sm2467960ejb.20.2022.02.22.06.59.49
+        by smtp.gmail.com with ESMTPSA id m2sm2467960ejb.20.2022.02.22.06.59.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 06:59:50 -0800 (PST)
+        Tue, 22 Feb 2022 06:59:53 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Alim Akhtar <alim.akhtar@samsung.com>,
         Avri Altman <avri.altman@wdc.com>,
@@ -77,9 +77,9 @@ To:     Alim Akhtar <alim.akhtar@samsung.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 07/15] dt-bindings: ufs: mediatek,ufs: convert to dtschema
-Date:   Tue, 22 Feb 2022 15:58:46 +0100
-Message-Id: <20220222145854.358646-8-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
+Date:   Tue, 22 Feb 2022 15:58:48 +0100
+Message-Id: <20220222145854.358646-10-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
 References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
@@ -89,141 +89,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Mediatek Universal Flash Storage (UFS) Controller to DT
-schema format.
+The 'freq-table-hz' is not correct in DT schema, because '-hz' suffix
+defines uint32 type, not an array.  Therefore deprecate 'freq-table-hz'
+and use 'freq-table' instead.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../devicetree/bindings/ufs/mediatek,ufs.yaml | 67 +++++++++++++++++++
- .../devicetree/bindings/ufs/ufs-mediatek.txt  | 45 -------------
- 2 files changed, 67 insertions(+), 45 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/ufs/mediatek,ufs.yaml
- delete mode 100644 Documentation/devicetree/bindings/ufs/ufs-mediatek.txt
+ drivers/scsi/ufs/ufshcd-pltfrm.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/ufs/mediatek,ufs.yaml b/Documentation/devicetree/bindings/ufs/mediatek,ufs.yaml
-new file mode 100644
-index 000000000000..1cf530b5c57d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ufs/mediatek,ufs.yaml
-@@ -0,0 +1,67 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ufs/mediatek,ufs.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek Universal Flash Storage (UFS) Controller
-+
-+maintainers:
-+  - Stanley Chu <stanley.chu@mediatek.com>
-+
-+allOf:
-+  - $ref: ufs-common.yaml
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt8183-ufshci
-+      - mediatek,mt8192-ufshci
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: ufs
-+
-+  phys:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+  vcc-supply: true
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - phys
-+  - reg
-+  - vcc-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        ufs@ff3c0000 {
-+            compatible = "mediatek,mt8183-ufshci";
-+            reg = <0 0x11270000 0 0x2300>;
-+            interrupts = <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>;
-+            phys = <&ufsphy>;
-+
-+            clocks = <&infracfg_ao CLK_INFRA_UFS>;
-+            clock-names = "ufs";
-+            freq-table = <0 0>;
-+
-+            vcc-supply = <&mt_pmic_vemc_ldo_reg>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/ufs/ufs-mediatek.txt b/Documentation/devicetree/bindings/ufs/ufs-mediatek.txt
-deleted file mode 100644
-index 63a953b672d2..000000000000
---- a/Documentation/devicetree/bindings/ufs/ufs-mediatek.txt
-+++ /dev/null
-@@ -1,45 +0,0 @@
--* Mediatek Universal Flash Storage (UFS) Host Controller
--
--UFS nodes are defined to describe on-chip UFS hardware macro.
--Each UFS Host Controller should have its own node.
--
--To bind UFS PHY with UFS host controller, the controller node should
--contain a phandle reference to UFS M-PHY node.
--
--Required properties for UFS nodes:
--- compatible         : Compatible list, contains the following controller:
--                       "mediatek,mt8183-ufshci" for MediaTek UFS host controller
--                       present on MT8183 chipsets.
--                       "mediatek,mt8192-ufshci" for MediaTek UFS host controller
--                       present on MT8192 chipsets.
--- reg                : Address and length of the UFS register set.
--- phys               : phandle to m-phy.
--- clocks             : List of phandle and clock specifier pairs.
--- clock-names        : List of clock input name strings sorted in the same
--                       order as the clocks property. "ufs" is mandatory.
--                       "ufs": ufshci core control clock.
--- freq-table-hz      : Array of <min max> operating frequencies stored in the same
--                       order as the clocks property. If this property is not
--                       defined or a value in the array is "0" then it is assumed
--                       that the frequency is set by the parent clock or a
--                       fixed rate clock source.
--- vcc-supply         : phandle to VCC supply regulator node.
--
--Example:
--
--	ufsphy: phy@11fa0000 {
--		...
--	};
--
--	ufshci@11270000 {
--		compatible = "mediatek,mt8183-ufshci";
--		reg = <0 0x11270000 0 0x2300>;
--		interrupts = <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>;
--		phys = <&ufsphy>;
--
--		clocks = <&infracfg_ao INFRACFG_AO_UFS_CG>;
--		clock-names = "ufs";
--		freq-table-hz = <0 0>;
--
--		vcc-supply = <&mt_pmic_vemc_ldo_reg>;
--	};
+diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
+index 87975d1a21c8..2b192477d158 100644
+--- a/drivers/scsi/ufs/ufshcd-pltfrm.c
++++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
+@@ -47,8 +47,9 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 	if (cnt <= 0)
+ 		goto out;
+ 
+-	if (!of_get_property(np, "freq-table-hz", &len)) {
+-		dev_info(dev, "freq-table-hz property not specified\n");
++	if (!of_get_property(np, "freq-table", &len) ||
++	    !of_get_property(np, "freq-table-hz", &len)) {
++		dev_info(dev, "freq-table property not specified\n");
+ 		goto out;
+ 	}
+ 
+@@ -57,7 +58,7 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 
+ 	sz = len / sizeof(*clkfreq);
+ 	if (sz != 2 * cnt) {
+-		dev_err(dev, "%s len mismatch\n", "freq-table-hz");
++		dev_err(dev, "%s len mismatch\n", "freq-table");
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+@@ -69,12 +70,16 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 		goto out;
+ 	}
+ 
+-	ret = of_property_read_u32_array(np, "freq-table-hz",
++	ret = of_property_read_u32_array(np, "freq-table",
+ 			clkfreq, sz);
+ 	if (ret && (ret != -EINVAL)) {
+-		dev_err(dev, "%s: error reading array %d\n",
+-				"freq-table-hz", ret);
+-		return ret;
++		ret = of_property_read_u32_array(np, "freq-table-hz",
++						 clkfreq, sz);
++		if (ret && (ret != -EINVAL)) {
++			dev_err(dev, "%s: error reading array %d\n",
++				"freq-table", ret);
++			return ret;
++		}
+ 	}
+ 
+ 	for (i = 0; i < sz; i += 2) {
+@@ -99,7 +104,7 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 
+ 		if (!strcmp(name, "ref_clk"))
+ 			clki->keep_link_active = true;
+-		dev_dbg(dev, "%s: min %u max %u name %s\n", "freq-table-hz",
++		dev_dbg(dev, "%s: min %u max %u name %s\n", "freq-table",
+ 				clki->min_freq, clki->max_freq, clki->name);
+ 		list_add_tail(&clki->list, &hba->clk_list_head);
+ 	}
 -- 
 2.32.0
 
