@@ -2,147 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE596C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbiBVOGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:06:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        id S232705AbiBVOGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:06:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232583AbiBVOGQ (ORCPT
+        with ESMTP id S232708AbiBVOG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:06:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D249015F611;
-        Tue, 22 Feb 2022 06:05:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D977B819EF;
-        Tue, 22 Feb 2022 14:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A5D3C340F4;
-        Tue, 22 Feb 2022 14:05:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645538737;
-        bh=vJs7TKpZfBZPGDl1BKHYpsmyKvfPddQ5Air5Dpbj5ic=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=os7XBZsdl6dQEnOPHsGkRpA0uxoKELLhPqVKvS2H/21G1VdRg5HNmoOl20pnnrRP+
-         yskZoDU042NPrzp9rHS7GeAC0O+sBerqekpMCpTJzvTok01r8Hf3I80cBpc6Rl3MXB
-         MCNo4YuMjHpWI94wJDQmgtiChHNFwqS3VqZtG7EwN9woU/hNZNkg9PzyNvJlJJLrdg
-         O/PMYaSGrtI4qBvjdkC455CuP3dlxlSRUmT/8wtXkxP5OKnW+Z1heANmbv8GlSsSkK
-         +3py+CSJJ2poYDWTFk8KzORxDRA/JCPdVVsXxXTIUsVVeKZfDoETWslS3A6JmR3Q3a
-         HpEPVsER5hPwA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.10 2/2] KVM: x86: nSVM: deal with L1 hypervisor that intercepts interrupts but lets L2 control them
-Date:   Tue, 22 Feb 2022 09:05:32 -0500
-Message-Id: <20220222140532.211620-2-sashal@kernel.org>
+        Tue, 22 Feb 2022 09:06:26 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8ED15F630
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:05:42 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K31Cm50BMz9sSK;
+        Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pQe4Nwa6JW_l; Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K31Cm4HVCz9sSG;
+        Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 83C588B778;
+        Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id dfKKNeyMRAAb; Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 56E648B764;
+        Tue, 22 Feb 2022 15:05:40 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21ME5WUk1085144
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 15:05:32 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21ME5U491085143;
+        Tue, 22 Feb 2022 15:05:30 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc: Remove remaining stab codes
+Date:   Tue, 22 Feb 2022 15:05:30 +0100
+Message-Id: <d8b33342d7454f6ca4f368f5206896558dfa06f4.1645538722.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220222140532.211620-1-sashal@kernel.org>
-References: <20220222140532.211620-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645538729; l=790; s=20211009; h=from:subject:message-id; bh=FwvgNvm0imPRq6IfGzlyBogWeJqgKYW43VV3hftz2h0=; b=MRPARWAomFIMqE/iqctBUKRDVCsWcseycsKuW6EO+O4/tAS2wW2wJsa2kZzHS46FtCGxRqeFFMzT u56doPUeASmdcSdtbQ1rRF8XUbDpgfuvBrmNqRWlUHQdd772i353
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+Following commit 12318163737c ("powerpc/32: Remove remaining .stabs
+annotations"), stabs code are not used anymore.
 
-[ Upstream commit 2b0ecccb55310a4b8ad5d59c703cf8c821be6260 ]
+Remove them.
 
-Fix a corner case in which the L1 hypervisor intercepts
-interrupts (INTERCEPT_INTR) and either doesn't set
-virtual interrupt masking (V_INTR_MASKING) or enters a
-nested guest with EFLAGS.IF disabled prior to the entry.
-
-In this case, despite the fact that L1 intercepts the interrupts,
-KVM still needs to set up an interrupt window to wait before
-injecting the INTR vmexit.
-
-Currently the KVM instead enters an endless loop of 'req_immediate_exit'.
-
-Exactly the same issue also happens for SMIs and NMI.
-Fix this as well.
-
-Note that on VMX, this case is impossible as there is only
-'vmexit on external interrupts' execution control which either set,
-in which case both host and guest's EFLAGS.IF
-are ignored, or not set, in which case no VMexits are delivered.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220207155447.840194-8-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/x86/kvm/svm/svm.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ arch/powerpc/include/asm/ppc_asm.h | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index d515c8e68314c..ec9586a30a50c 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3237,11 +3237,13 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
+diff --git a/arch/powerpc/include/asm/ppc_asm.h b/arch/powerpc/include/asm/ppc_asm.h
+index d9c6f12e6d3e..ee52667d76e2 100644
+--- a/arch/powerpc/include/asm/ppc_asm.h
++++ b/arch/powerpc/include/asm/ppc_asm.h
+@@ -693,12 +693,6 @@ END_FTR_SECTION_NESTED(CPU_FTR_CELL_TB_BUG, CPU_FTR_CELL_TB_BUG, 96)
+ #define	evr30	30
+ #define	evr31	31
  
-+	if (svm_nmi_blocked(vcpu))
-+		return 0;
-+
- 	/* An NMI must not be injected into L2 if it's supposed to VM-Exit.  */
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_nmi(svm))
- 		return -EBUSY;
+-/* some stab codes */
+-#define N_FUN	36
+-#define N_RSYM	64
+-#define N_SLINE	68
+-#define N_SO	100
 -
--	return !svm_nmi_blocked(vcpu);
-+	return 1;
- }
+ #define RFSCV	.long 0x4c0000a4
  
- static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
-@@ -3293,9 +3295,13 @@ bool svm_interrupt_blocked(struct kvm_vcpu *vcpu)
- static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-+
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
- 
-+	if (svm_interrupt_blocked(vcpu))
-+		return 0;
-+
- 	/*
- 	 * An IRQ must not be injected into L2 if it's supposed to VM-Exit,
- 	 * e.g. if the IRQ arrived asynchronously after checking nested events.
-@@ -3303,7 +3309,7 @@ static int svm_interrupt_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_intr(svm))
- 		return -EBUSY;
- 
--	return !svm_interrupt_blocked(vcpu);
-+	return 1;
- }
- 
- static void enable_irq_window(struct kvm_vcpu *vcpu)
-@@ -4023,11 +4029,14 @@ static int svm_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 	if (svm->nested.nested_run_pending)
- 		return -EBUSY;
- 
-+	if (svm_smi_blocked(vcpu))
-+		return 0;
-+
- 	/* An SMI must not be injected into L2 if it's supposed to VM-Exit.  */
- 	if (for_injection && is_guest_mode(vcpu) && nested_exit_on_smi(svm))
- 		return -EBUSY;
- 
--	return !svm_smi_blocked(vcpu);
-+	return 1;
- }
- 
- static int svm_pre_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ /*
 -- 
 2.34.1
 
