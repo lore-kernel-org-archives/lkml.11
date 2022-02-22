@@ -2,175 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7392EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A36CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234301AbiBVQe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S234147AbiBVQeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:34:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234143AbiBVQdZ (ORCPT
+        with ESMTP id S234065AbiBVQcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:33:25 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66586168081;
-        Tue, 22 Feb 2022 08:32:53 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21MGWgCg113680;
-        Tue, 22 Feb 2022 10:32:42 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645547562;
-        bh=uT3ljGHIm3JJKY0Th4dQtIOQOfRzJInJBjtYqVIS510=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=kuXxt48I76w2X93OZAR8BxQEZvXdabOswOGNN0GwbgJIDXkWZPmetjItU+c6bINgN
-         pIXx3BPNv3cg1cyOzjuDtZIqzA30LQAoH6PA129FhGzLHi63ezd7fP/T5v5tvh7lRN
-         WSzQ4zzD9kjxuDDVXdvsBaf17uv0f9DOMzh87/Tc=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21MGWgXP130127
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Feb 2022 10:32:42 -0600
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
- Feb 2022 10:32:41 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 22 Feb 2022 10:32:41 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21MGWeiR118296;
-        Tue, 22 Feb 2022 10:32:41 -0600
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <nm@ti.com>
-CC:     <vigneshr@ti.com>, <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>
-Subject: [PATCH 2/2] arm64: dts: ti: k3-j721e-common-proc-board: add DP to j7 evm
-Date:   Tue, 22 Feb 2022 22:02:30 +0530
-Message-ID: <20220222163230.1566-3-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220222163230.1566-1-r-ravikumar@ti.com>
-References: <20220222163230.1566-1-r-ravikumar@ti.com>
+        Tue, 22 Feb 2022 11:32:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B96DBB091;
+        Tue, 22 Feb 2022 08:32:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E90A360AC8;
+        Tue, 22 Feb 2022 16:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F382EC340EB;
+        Tue, 22 Feb 2022 16:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645547540;
+        bh=8/bdC9IksqEvPqTzZhPSiT319NiwbJYyn6PKo0ZgPJ0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uYkxD0gbGh/IEja4Sz1GZLSbOoiKicNK6plE4O0wpzcKRLjV894SQOPmN8jQn4v6f
+         cgi+r/Zh2VOygyZPVj5WvBfsYYd/fHO8qQskCUNq37ADEqu6IXavTPenSqvHM3kKk3
+         9YsX4iS+CJOlYPrqDfNwD5T4gg6RrhF/BsVC36DK0LtQn34w7Lcd+BuH6e8S7HvkWj
+         oSjMx77titZx+lgFwXO0uUfIUfWRqyFb501QVz0xgHnEasrhwvPZkxlOkRAfi6z2I4
+         1a5f6z4qpl4ej6oL1PyH/mYr5aOWJh+Pq94sXNPslZWJmHzIgHFEz0Tvg+Ec6Je+Sm
+         34VhHjoqqrSww==
+Received: by pali.im (Postfix)
+        id ABB3FFDB; Tue, 22 Feb 2022 17:32:19 +0100 (CET)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 5/6] PCI: mvebu: Add support for sending Set_Slot_Power_Limit message
+Date:   Tue, 22 Feb 2022 17:31:57 +0100
+Message-Id: <20220222163158.1666-6-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220222163158.1666-1-pali@kernel.org>
+References: <20220222163158.1666-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
+This PCIe message is sent automatically by mvebu HW when link changes
+status from down to up.
 
-Add the endpoint nodes to describe connection from
-DSS => MHDP => DisplayPort connector.
-Also add the required pinmux nodes for hotplug.
+Slot power limit is read from DT property 'slot-power-limit-milliwatt' and
+set to mvebu HW. When this DT property is not specified then driver treat
+it as "Slot Capabilities register has not yet been initialized".
 
-Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- .../dts/ti/k3-j721e-common-proc-board.dts     | 66 +++++++++++++++++--
- 1 file changed, 62 insertions(+), 4 deletions(-)
+ drivers/pci/controller/pci-mvebu.c | 85 ++++++++++++++++++++++++++++--
+ 1 file changed, 80 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index 2d7596911b27..fe20c193f299 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -148,6 +148,28 @@
- 		pinctrl-0 = <&main_mcan2_gpio_pins_default>;
- 		standby-gpios = <&main_gpio0 127 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	dp_pwr_3v3: fixedregulator-dp-prw {
-+		compatible = "regulator-fixed";
-+		regulator-name = "dp-pwr";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&exp4 0 0>;	/* P0 - DP0_PWR_SW_EN */
-+		enable-active-high;
-+	};
-+
-+	dp0: connector {
-+		compatible = "dp-connector";
-+		label = "DP0";
-+		type = "full-size";
-+		dp-pwr-supply = <&dp_pwr_3v3>;
-+
-+		port {
-+			dp_connector_in: endpoint {
-+				remote-endpoint = <&dp0_out>;
-+			};
-+		};
-+	};
- };
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index a75d2b9196f9..c786feec4d17 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -66,6 +66,12 @@
+ #define  PCIE_STAT_BUS                  0xff00
+ #define  PCIE_STAT_DEV                  0x1f0000
+ #define  PCIE_STAT_LINK_DOWN		BIT(0)
++#define PCIE_SSPL_OFF		0x1a0c
++#define  PCIE_SSPL_VALUE_SHIFT		0
++#define  PCIE_SSPL_VALUE_MASK		GENMASK(7, 0)
++#define  PCIE_SSPL_SCALE_SHIFT		8
++#define  PCIE_SSPL_SCALE_MASK		GENMASK(9, 8)
++#define  PCIE_SSPL_ENABLE		BIT(16)
+ #define PCIE_RC_RTSTA		0x1a14
+ #define PCIE_DEBUG_CTRL         0x1a60
+ #define  PCIE_DEBUG_SOFT_RESET		BIT(20)
+@@ -111,6 +117,8 @@ struct mvebu_pcie_port {
+ 	struct mvebu_pcie_window iowin;
+ 	u32 saved_pcie_stat;
+ 	struct resource regs;
++	u8 slot_power_limit_value;
++	u8 slot_power_limit_scale;
+ 	struct irq_domain *intx_irq_domain;
+ 	raw_spinlock_t irq_lock;
+ 	int intx_irq;
+@@ -239,7 +247,7 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
  
- &main_pmx0 {
-@@ -190,6 +212,12 @@
- 		>;
- 	};
+ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
+ {
+-	u32 ctrl, lnkcap, cmd, dev_rev, unmask;
++	u32 ctrl, lnkcap, cmd, dev_rev, unmask, sspl;
  
-+	dp0_pins_default: dp0-pins-default {
-+		pinctrl-single,pins = <
-+			J721E_IOPAD(0x1c4, PIN_INPUT, 5) /* SPI0_CS1.DP0_HPD */
-+		>;
-+	};
-+
- 	main_i2c1_exp4_pins_default: main-i2c1-exp4-pins-default {
- 		pinctrl-single,pins = <
- 			J721E_IOPAD(0x230, PIN_INPUT, 7) /* (U2) ECAP0_IN_APWM_OUT.GPIO1_11 */
-@@ -660,6 +688,40 @@
- 				 <&k3_clks 152 18>;	/* PLL23_HSDIV0 */
- };
+ 	/* Setup PCIe controller to Root Complex mode. */
+ 	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
+@@ -292,6 +300,20 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
+ 	/* Point PCIe unit MBUS decode windows to DRAM space. */
+ 	mvebu_pcie_setup_wins(port);
  
-+&dss_ports {
-+	port@0 {
-+		reg = <0>;
++	/*
++	 * Program Root Complex to automatically sends Set Slot Power Limit
++	 * PCIe Message when changing status from Dl-Down to Dl-Up and valid
++	 * slot power limit was specified.
++	 */
++	sspl = mvebu_readl(port, PCIE_SSPL_OFF);
++	sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
++	if (port->slot_power_limit_value && port->slot_power_limit_scale) {
++		sspl |= port->slot_power_limit_value << PCIE_SSPL_VALUE_SHIFT;
++		sspl |= port->slot_power_limit_scale << PCIE_SSPL_SCALE_SHIFT;
++		sspl |= PCIE_SSPL_ENABLE;
++	}
++	mvebu_writel(port, sspl, PCIE_SSPL_OFF);
 +
-+		dpi0_out: endpoint {
-+			remote-endpoint = <&dp0_in>;
-+		};
-+	};
-+};
-+
-+&mhdp {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&dp0_pins_default>;
-+};
-+
-+&dp0_ports {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	port@0 {
-+		reg = <0>;
-+		dp0_in: endpoint {
-+			remote-endpoint = <&dpi0_out>;
-+		};
-+	};
-+
-+	port@4 {
-+		reg = <4>;
-+		dp0_out: endpoint {
-+			remote-endpoint = <&dp_connector_in>;
-+		};
-+	};
-+};
-+
- &mcasp0 {
- 	status = "disabled";
- };
-@@ -845,10 +907,6 @@
- 	status = "disabled";
- };
+ 	/* Mask all interrupt sources. */
+ 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
  
--&dss {
--	status = "disabled";
--};
--
- &icssg0_mdio {
- 	status = "disabled";
- };
+@@ -628,9 +650,16 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 			  (PCI_EXP_LNKSTA_DLLLA << 16) : 0);
+ 		break;
+ 
+-	case PCI_EXP_SLTCTL:
+-		*value = PCI_EXP_SLTSTA_PDS << 16;
++	case PCI_EXP_SLTCTL: {
++		u16 slotsta = le16_to_cpu(bridge->pcie_conf.slotsta);
++		u32 val = 0;
++		if (!(mvebu_readl(port, PCIE_SSPL_OFF) & PCIE_SSPL_ENABLE))
++			val |= PCI_EXP_SLTCTL_ASPL_DISABLE;
++		/* PCI_EXP_SLTCTL is 32-bit and contains also slot status bits */
++		val |= slotsta << 16;
++		*value = val;
+ 		break;
++	}
+ 
+ 	case PCI_EXP_RTSTA:
+ 		*value = mvebu_readl(port, PCIE_RC_RTSTA);
+@@ -774,6 +803,19 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL);
+ 		break;
+ 
++	case PCI_EXP_SLTCTL:
++		if ((mask & PCI_EXP_SLTCTL_ASPL_DISABLE) &&
++		    port->slot_power_limit_value &&
++		    port->slot_power_limit_scale) {
++			u32 sspl = mvebu_readl(port, PCIE_SSPL_OFF);
++			if (new & PCI_EXP_SLTCTL_ASPL_DISABLE)
++				sspl &= ~PCIE_SSPL_ENABLE;
++			else
++				sspl |= PCIE_SSPL_ENABLE;
++			mvebu_writel(port, sspl, PCIE_SSPL_OFF);
++		}
++		break;
++
+ 	case PCI_EXP_RTSTA:
+ 		/*
+ 		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
+@@ -868,8 +910,26 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
+ 	/*
+ 	 * Older mvebu hardware provides PCIe Capability structure only in
+ 	 * version 1. New hardware provides it in version 2.
++	 * Enable slot support which is emulated.
+ 	 */
+-	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
++	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver | PCI_EXP_FLAGS_SLOT);
++
++	/*
++	 * Set Presence Detect State bit permanently as there is no support for
++	 * unplugging PCIe card from the slot. Assume that PCIe card is always
++	 * connected in slot.
++	 *
++	 * Set physical slot number to port+1 as mvebu ports are indexed from
++	 * zero and zero value is reserved for ports within the same silicon
++	 * as Root Port which is not mvebu case.
++	 *
++	 * Also set correct slot power limit.
++	 */
++	bridge->pcie_conf.slotcap = cpu_to_le32(
++		(port->slot_power_limit_value << PCI_EXP_SLTCAP_SPLV_SHIFT) |
++		(port->slot_power_limit_scale << PCI_EXP_SLTCAP_SPLS_SHIFT) |
++		((port->port+1) << PCI_EXP_SLTCAP_PSN_SHIFT));
++	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
+ 
+ 	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
+ 	bridge->subsystem_id = ssdev_id >> 16;
+@@ -1191,6 +1251,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
+ {
+ 	struct device *dev = &pcie->pdev->dev;
+ 	enum of_gpio_flags flags;
++	u32 slot_power_limit;
+ 	int reset_gpio, ret;
+ 	u32 num_lanes;
+ 
+@@ -1291,6 +1352,15 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
+ 		port->reset_gpio = gpio_to_desc(reset_gpio);
+ 	}
+ 
++	slot_power_limit = of_pci_get_slot_power_limit(child,
++				&port->slot_power_limit_value,
++				&port->slot_power_limit_scale);
++	if (slot_power_limit)
++		dev_info(dev, "%s: Slot power limit %u.%uW\n",
++			 port->name,
++			 slot_power_limit / 1000,
++			 (slot_power_limit / 100) % 10);
++
+ 	port->clk = of_clk_get_by_name(child, NULL);
+ 	if (IS_ERR(port->clk)) {
+ 		dev_err(dev, "%s: cannot get clock\n", port->name);
+@@ -1587,7 +1657,7 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+ {
+ 	struct mvebu_pcie *pcie = platform_get_drvdata(pdev);
+ 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+-	u32 cmd;
++	u32 cmd, sspl;
+ 	int i;
+ 
+ 	/* Remove PCI bus with all devices. */
+@@ -1624,6 +1694,11 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+ 		/* Free config space for emulated root bridge. */
+ 		pci_bridge_emul_cleanup(&port->bridge);
+ 
++		/* Disable sending Set Slot Power Limit PCIe Message. */
++		sspl = mvebu_readl(port, PCIE_SSPL_OFF);
++		sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
++		mvebu_writel(port, sspl, PCIE_SSPL_OFF);
++
+ 		/* Disable and clear BARs and windows. */
+ 		mvebu_pcie_disable_wins(port);
+ 
 -- 
-2.17.1
+2.20.1
 
