@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2442C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC62C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiBVJxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:53:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S230209AbiBVJyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:54:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiBVJxu (ORCPT
+        with ESMTP id S229659AbiBVJx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:53:50 -0500
+        Tue, 22 Feb 2022 04:53:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213D7D10BD;
-        Tue, 22 Feb 2022 01:53:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02FFD10B8;
+        Tue, 22 Feb 2022 01:53:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E262B8196F;
-        Tue, 22 Feb 2022 09:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA03CC340E8;
-        Tue, 22 Feb 2022 09:53:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A6F8B81977;
+        Tue, 22 Feb 2022 09:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B258C340E8;
+        Tue, 22 Feb 2022 09:53:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645523602;
-        bh=OnZcoGRyx5ne7WbzoVcMoT8X+32SVf+MsXCe4fPWrwQ=;
+        s=k20201202; t=1645523612;
+        bh=T8Wutlu7mV5B3Pw57PVCDrO+l8i4LnewrOyADEDxSaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:From;
-        b=pYMdQVZ9bNBt2ie3VUyBv7oBFvHnVklEhjKZXF4Jx07Bx/qPsv7YnMYcenlzPNgKc
-         ZQcKFWUgx4UuXsk06/ziK6VJaAhxWMKIMjiVyUBsDyFMcqRVnCeOudlvcMI74onZ3G
-         TPF2RxqCbEwMxpm2u+T0qwKHqfmLAGMbrRsf5HYm/m2la12+7B8gt93wnDi9khYr7y
-         lFoD6q0lWt2iNzzbtQc/nIGESuGEZd71nn954NREz7Rn7Qvrmt7/j3qqYqMSEx601w
-         MGKKsrJD3YqacsqlaldYJObBGpQyPndMR8B5/g8wXzIAqWgXfENfurX+5m5h7NUmyL
-         sqT/Myl/gtkZg==
+        b=mRv6omeV8naZHtnpCUkhTWsGNgpIqfA3TjW0E3YplZIVa0KAA6UGvNFFZrMPqj9Ap
+         ARleDEaNRR0Bj6NGAMm8c8DnW0qjjp0MAU8hT7Bo5VDACT4TSQjY7yRRsDQDy4OW20
+         WL1nnyH729xq+5feCqoMVcz3b8j363aoXNQtQt5Ph5iwlfUy7BciwqjQzRB6QkmoKk
+         VZUgIu1Y86yc91OQI/+fkYs1bH8OdNbHHTSTIYzgj+QSNSUPBVX5SbDcBSfKNL0non
+         rP3OJEx7pUP8auNEINUcOHGC4FDoY6wXF+FdnzkyhlKzI6zhd0RgIWg7qlenLaXiZq
+         pmxGOrlW3WZ2Q==
 From:   SeongJae Park <sj@kernel.org>
 To:     Jonghyeon Kim <tome01@ajou.ac.kr>
 Cc:     akpm@linux-foundation.org, Jonathan.Cameron@Huawei.com,
@@ -41,107 +41,98 @@ Cc:     akpm@linux-foundation.org, Jonathan.Cameron@Huawei.com,
         rientjes@google.com, shakeelb@google.com, shuah@kernel.org,
         linux-damon@amazon.com, linux-mm@kvack.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 1/3] mm/damon: Rebase damos watermarks for NUMA systems
-Date:   Tue, 22 Feb 2022 09:53:17 +0000
-Message-Id: <20220222095317.7911-1-sj@kernel.org>
+Subject: Re: [RFC PATCH v1 2/3] mm/damon/core: Add damon_start_one()
+Date:   Tue, 22 Feb 2022 09:53:28 +0000
+Message-Id: <20220222095328.7962-1-sj@kernel.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220218102611.31895-2-tome01@ajou.ac.kr>
+In-Reply-To: <20220218102611.31895-3-tome01@ajou.ac.kr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello Jonghyeon,
 
-On Fri, 18 Feb 2022 19:26:09 +0900 Jonghyeon Kim <tome01@ajou.ac.kr> wrote:
+On Fri, 18 Feb 2022 19:26:10 +0900 Jonghyeon Kim <tome01@ajou.ac.kr> wrote:
 
-> For NUMA systems, there is a need to allow damos to select watermark
-> options for monitoring each NUMA node or whole system free memory. Even
-> if we do not use NUMA, since the default NUMA node number is 0, we can
-> monitor the whole system memory without any configuration.
+> damon_start() function is designed to start multiple damon monitoring
+> contexts. But, sometimes we need to start monitoring one context.
+> Although __damon_start() could be considered to start for one monitoring
+> context, it seems reasonable to adopt a new function that does not need
+> to handle 'damon_lock' from the caller.
+> 
+> Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
+> ---
+>  include/linux/damon.h |  1 +
+>  mm/damon/core.c       | 25 +++++++++++++++++++++++++
+>  2 files changed, 26 insertions(+)
+> 
+> diff --git a/include/linux/damon.h b/include/linux/damon.h
+> index c0adf1566603..069577477662 100644
+> --- a/include/linux/damon.h
+> +++ b/include/linux/damon.h
+> @@ -511,6 +511,7 @@ int damon_register_ops(struct damon_operations *ops);
+>  int damon_select_ops(struct damon_ctx *ctx, enum damon_ops_id id);
+>  
+>  int damon_start(struct damon_ctx **ctxs, int nr_ctxs);
+> +int damon_start_one(struct damon_ctx *ctx);
+>  int damon_stop(struct damon_ctx **ctxs, int nr_ctxs);
+>  
+>  #endif	/* CONFIG_DAMON */
+> diff --git a/mm/damon/core.c b/mm/damon/core.c
+> index 290c9c0535ee..e43f138a3489 100644
+> --- a/mm/damon/core.c
+> +++ b/mm/damon/core.c
+> @@ -466,6 +466,31 @@ int damon_start(struct damon_ctx **ctxs, int nr_ctxs)
+>  	return err;
+>  }
+>  
+> +/**
+> + * damon_start_one() - Starts the monitorings for one context.
+> + * @ctx:	monitoring context
+> + *
+> + * This function starts one monitoring thread for only one monitoring context
+> + * handling damon_lock.
+> + *
+> + * Return: 0 on success, negative error code otherwise.
+> + */
+> +int damon_start_one(struct damon_ctx *ctx)
+> +{
+> +	int err = 0;
+> +
+> +	mutex_lock(&damon_lock);
+> +	err = __damon_start(ctx);
+> +	if (err) {
+> +		mutex_unlock(&damon_lock);
+> +		return err;
+> +	}
+> +	nr_running_ctxs++;
+> +	mutex_unlock(&damon_lock);
+> +
+> +	return err;
+> +}
+> +
 
-Some users using NUMA machines but don't do NUMA-specific memory allocations
-and therefore assume memory free rate in each NUMA node will be similar might
-want to monitor only global free memory ratio, to limit number of kdamonds for
-reducing CPU overhead.  In the case, this patch would make them monitor only
-the first node.
+IMHO, this looks like an unnecessary duplication of code.  Unless this is
+needed for a real usecase, this change might unnecessarily make the code only a
+little bit more complicated.  And to my understanding of the next patch, this
+is not really needed for this patchset.  I will left comments on the patch.  If
+I'm missing something, please clarify why this is really needed.
 
-How about leaving DAMOS_WMARK_FREE_MEM_RATE to work as is, and adding a new
-metric type, say, DAMOS_WMARK_NODE_FREE_MEM_RATE?
+Furthermore, damon_start() starts a set of DAMON contexts in exclusive manner,
+to ensure there will be no interference.  This patch breaks the assumption.
+That is, contexts that started with damon_start() could be interfered by other
+contexts that started with damon_start_one().  I have a plan to make
+damon_start() also work for non-exclusive contexts group[1], though.
+
+[1] https://lore.kernel.org/linux-mm/20220217161938.8874-3-sj@kernel.org/
 
 
 Thanks,
 SJ
 
-> 
-> Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
-> ---
->  include/linux/damon.h |  2 ++
->  mm/damon/core.c       | 14 ++++++++------
->  2 files changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/damon.h b/include/linux/damon.h
-> index 49c4a11ecf20..c0adf1566603 100644
-> --- a/include/linux/damon.h
-> +++ b/include/linux/damon.h
-> @@ -170,6 +170,7 @@ enum damos_wmark_metric {
->   * @high:	High watermark.
->   * @mid:	Middle watermark.
->   * @low:	Low watermark.
-> + * @node:	NUMA node for the watermarks.
->   *
->   * If &metric is &DAMOS_WMARK_NONE, the scheme is always active.  Being active
->   * means DAMON does monitoring and applying the action of the scheme to
-> @@ -186,6 +187,7 @@ struct damos_watermarks {
->  	unsigned long high;
->  	unsigned long mid;
->  	unsigned long low;
-> +	int node;
->  
->  /* private: */
->  	bool activated;
-> diff --git a/mm/damon/core.c b/mm/damon/core.c
-> index 82e0a4620c4f..290c9c0535ee 100644
-> --- a/mm/damon/core.c
-> +++ b/mm/damon/core.c
-> @@ -179,6 +179,7 @@ struct damos *damon_new_scheme(
->  	scheme->wmarks.high = wmarks->high;
->  	scheme->wmarks.mid = wmarks->mid;
->  	scheme->wmarks.low = wmarks->low;
-> +	scheme->wmarks.node = wmarks->node;
->  	scheme->wmarks.activated = true;
->  
->  	return scheme;
-> @@ -951,14 +952,15 @@ static bool kdamond_need_stop(struct damon_ctx *ctx)
->  	return true;
->  }
->  
-> -static unsigned long damos_wmark_metric_value(enum damos_wmark_metric metric)
-> +static unsigned long damos_wmark_metric_value(struct damos_watermarks wmarks)
->  {
-> -	struct sysinfo i;
-> +	unsigned long nr_total, nr_free;
->  
-> -	switch (metric) {
-> +	switch (wmarks.metric) {
->  	case DAMOS_WMARK_FREE_MEM_RATE:
-> -		si_meminfo(&i);
-> -		return i.freeram * 1000 / i.totalram;
-> +		nr_total = node_present_pages(wmarks.node);
-> +		nr_free = sum_zone_node_page_state(wmarks.node, NR_FREE_PAGES);
-> +		return nr_free * 1000 / nr_total;
->  	default:
->  		break;
->  	}
-> @@ -976,7 +978,7 @@ static unsigned long damos_wmark_wait_us(struct damos *scheme)
->  	if (scheme->wmarks.metric == DAMOS_WMARK_NONE)
->  		return 0;
->  
-> -	metric = damos_wmark_metric_value(scheme->wmarks.metric);
-> +	metric = damos_wmark_metric_value(scheme->wmarks);
->  	/* higher than high watermark or lower than low watermark */
->  	if (metric > scheme->wmarks.high || scheme->wmarks.low > metric) {
->  		if (scheme->wmarks.activated)
+>  /*
+>   * __damon_stop() - Stops monitoring of given context.
+>   * @ctx:	monitoring context
 > -- 
 > 2.17.1
-> 
 > 
