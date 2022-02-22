@@ -2,131 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9645DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbiBVQdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:33:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S234201AbiBVQdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234085AbiBVQcs (ORCPT
+        with ESMTP id S234098AbiBVQcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:32:48 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FA6113AF4;
-        Tue, 22 Feb 2022 08:32:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CB23ACE17B2;
-        Tue, 22 Feb 2022 16:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9012BC340F5;
-        Tue, 22 Feb 2022 16:32:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645547539;
-        bh=GJp5srIWu1c79tiofwNLlNLZx6fG9DBOwi7z0tds3LI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XdA8/bxNpbpVX6QJl+I/qhRyqv6XOhDuEMTsHWEumj7DeyznddJGH/53kesCj5+K1
-         l5bFGUXHsk9D7Ls0v6wkM/b/469AUrJmpD0FSDRE81CyfTqi0meX209dvMYqTwOcs4
-         kjZ/AbLbmfWj9n5fycJOWsrBlFqcgyB7rCKVn+/vx85iqnmkgOgIp2D8j/QBLKKxep
-         7csetHDCTeThLrtJbfN725lc3epyEvIvq99XhPv3jZMD9eQanGBsQ421geAa1YHv+i
-         jCyRK9FT6zBfcitT1n09gHoSmbfIDOqAozALpu63mZ05b7lOnC4ru5R4fTiJUlbsPY
-         uWWoyp/8P36Hg==
-From:   Keith Busch <kbusch@kernel.org>
-To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
-        colyli@suse.de, Keith Busch <kbusch@kernel.org>
-Subject: [PATCHv3 00/10] 64-bit data integrity field support
-Date:   Tue, 22 Feb 2022 08:31:34 -0800
-Message-Id: <20220222163144.1782447-1-kbusch@kernel.org>
-X-Mailer: git-send-email 2.25.4
+        Tue, 22 Feb 2022 11:32:50 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83B09E579
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:32:24 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id p15so15116342oip.3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:32:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aSdxbzUUBFyhsvNwdRhnX3Mec7pbpC71E8zAtuMoNSw=;
+        b=FX0sGlOaHKUnWtxEV6HYKy2nafu8fuljFBoACNBVftni/Q58eaCkncHFWGp2OrD2C7
+         SDoNGW9popiT9/vht4gT9Bxb0ur4WAPXseAppf5T46OFdmKkpfESNAT2bFZ+FzWYushi
+         Cup7BrHE+eOWFUq/y8CwoD8aORSMiasZHczGydJhs4/qlq28l/+PL4RDeNpi5SdA1B1a
+         miu/LbAaMWwhsdqEjVqbhMwrBCOrNaekbAFCk4vLbL4s+ZJPCOzs7oJY3kFtjqdxJcZW
+         nLEUXyj5/0RGoBn154D9dFV2Q6lYXTDe1FTVOHRUAFFHjJGRrUVuMGLmBPzIPz3aTUlZ
+         d34A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aSdxbzUUBFyhsvNwdRhnX3Mec7pbpC71E8zAtuMoNSw=;
+        b=ko3SbAEXiBYPrT3QquhBPXnAnzS/1AT3lW3zbtrGfH+PSU5POB29Num5qN+08hAepj
+         RA6e5JA9UVxnipzFjW0G0bNB0qeGHabXRQFNtP4o5b1EJEwJNgSaKPi7515/WoBzKoe8
+         jdDLQGxGGgvXwpwo+jxIbRfbjbXRz6d9zAKShtSd/4dVKlQWCCatQhxZ7TdxbxVrfibb
+         g9UDQ1K8B2kduxJYrL/8KzVvjZRtPJJUxpfmIOiAG0AD238WNj1jytVa24p0fHqTh2Ef
+         YKZW22an/tj009GjYLrOfSCdXTl9eCV3zA8jawUIDEyki9/IofCljRLZoch0o1t5VK6i
+         AWBA==
+X-Gm-Message-State: AOAM532Htm+HdAaEdpVqriGd3Mc0u39qnvq6m1i+p85nzqMsp1DJm1Zs
+        tPUU/l0vzq7O7D5ssQ/x8VkZ+Q5UgB/GZHOC3Q0=
+X-Google-Smtp-Source: ABdhPJy6A7uqVEJVD4y7y1YfQGjjopexCYY0c40a6Xh4XUKujc3FuLvcm8mgvXFwCBo2/1BU/wrLj1y1uaQOcVZOi00=
+X-Received: by 2002:aca:ab4c:0:b0:2d4:7c7d:606e with SMTP id
+ u73-20020acaab4c000000b002d47c7d606emr2374308oie.132.1645547544141; Tue, 22
+ Feb 2022 08:32:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220222131701.356117-1-maira.canal@usp.br> <20220222131701.356117-6-maira.canal@usp.br>
+In-Reply-To: <20220222131701.356117-6-maira.canal@usp.br>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 22 Feb 2022 11:32:13 -0500
+Message-ID: <CADnq5_MaeAaKemJyNyAkzsVrnUv9G4zqQrd4PbCj3vJaTpxVoA@mail.gmail.com>
+Subject: Re: [PATCH 05/10] drm/amd/display: Remove unused dcn316_smu_set_voltage_via_phyclk
+ function
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>
+Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        John Clements <john.clements@amd.com>,
+        Tao Zhou <tao.zhou1@amd.com>,
+        "Chai, Thomas" <YiPeng.Chai@amd.com>,
+        "Tuikov, Luben" <luben.tuikov@amd.com>,
+        "Stanley.Yang" <Stanley.Yang@amd.com>,
+        Dennis Li <Dennis.Li@amd.com>,
+        "Joshi, Mukul" <mukul.joshi@amd.com>,
+        "Wentland, Harry" <harry.wentland@amd.com>,
+        "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
+        Anthony Koo <Anthony.Koo@amd.com>,
+        Magali Lemes <magalilemes00@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, mwen@igalia.com,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Isabella Basso <isabbasso@riseup.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVM Express protocol added enhancements to the data integrity field
-formats beyond the T10 defined protection information. A detailed
-description of the new formats can be found in the NVMe's NVM Command
-Set Specification, section 5.2, available at:
+Applied.  Thanks!
 
-  https://nvmexpress.org/wp-content/uploads/NVM-Command-Set-Specification-1.0b-2021.12.18-Ratified.pdf
+Alex
 
-This series implements one possible new format: the CRC64 guard with
-48-bit reference tags. This does not add support for the variable
-"storage tag" field, or any potential hardware acceleration.
-
-Changes since v2:
-
-  Introduced lower_48_bits() (Bart)
-
-  Added "64" suffix to crc names to distinguish from other crc
-  calculations (Martin)
-
-  Added module support to crypto library, and have the integrity
-  generate/verify use that instead of directly calling the generic table
-  lookup implementation. This is modeled after the t10 implementation.
-
-  Added an x86 pclmul accelerated crc64 calculation
-
-  Added speed tests to the test module so that the generic and library
-  function could be compared.
-
-  Bug fix in nvme to select the correct integrity profile.
-
-  Added reviews
-
-Note, I am not particularly well versed with x86 assembly, so I'm reasonably
-sure that the pcl implementation could be improved. It currently is
-about 20x faster than the generic implementation, but I believe it could
-be over 30x faster if done more efficiently.
-
-Keith Busch (10):
-  block: support pi with extended metadata
-  nvme: allow integrity on extended metadata formats
-  asm-generic: introduce be48 unaligned accessors
-  linux/kernel: introduce lower_48_bits macro
-  lib: add rocksoft model crc64
-  crypto: add rocksoft 64b crc guard tag framework
-  lib: add crc64 tests
-  block: add pi for nvme enhanced integrity
-  nvme: add support for enhanced metadata
-  x86/crypto: add pclmul acceleration for crc64
-
- arch/x86/crypto/Makefile                  |   3 +
- arch/x86/crypto/crc64-rocksoft-pcl-asm.S  | 215 ++++++++++++++++++++++
- arch/x86/crypto/crc64-rocksoft-pcl_glue.c | 117 ++++++++++++
- block/Kconfig                             |   1 +
- block/bio-integrity.c                     |   1 +
- block/t10-pi.c                            | 198 +++++++++++++++++++-
- crypto/Kconfig                            |  20 ++
- crypto/Makefile                           |   1 +
- crypto/crc64_rocksoft_generic.c           | 104 +++++++++++
- drivers/nvme/host/core.c                  | 175 ++++++++++++++----
- drivers/nvme/host/nvme.h                  |   4 +-
- include/asm-generic/unaligned.h           |  26 +++
- include/linux/blk-integrity.h             |   1 +
- include/linux/crc64.h                     |   7 +
- include/linux/kernel.h                    |   6 +
- include/linux/nvme.h                      |  53 +++++-
- include/linux/t10-pi.h                    |  20 ++
- lib/Kconfig                               |   9 +
- lib/Kconfig.debug                         |   4 +
- lib/Makefile                              |   2 +
- lib/crc64-rocksoft.c                      | 129 +++++++++++++
- lib/crc64.c                               |  26 +++
- lib/gen_crc64table.c                      |  51 +++--
- lib/test_crc64.c                          | 133 +++++++++++++
- 24 files changed, 1252 insertions(+), 54 deletions(-)
- create mode 100644 arch/x86/crypto/crc64-rocksoft-pcl-asm.S
- create mode 100644 arch/x86/crypto/crc64-rocksoft-pcl_glue.c
- create mode 100644 crypto/crc64_rocksoft_generic.c
- create mode 100644 lib/crc64-rocksoft.c
- create mode 100644 lib/test_crc64.c
-
--- 
-2.25.4
-
+On Tue, Feb 22, 2022 at 8:18 AM Ma=C3=ADra Canal <maira.canal@usp.br> wrote=
+:
+>
+> Remove dcn316_smu_set_voltage_via_phyclk function, which is not used in t=
+he
+> codebase.
+>
+> This was pointed by clang with the following warning:
+>
+> drivers/gpu/drm/amd/amdgpu/../display/dc/clk_mgr/dcn316/dcn316_smu.c:171:=
+5:
+> warning: no previous prototype for function
+> 'dcn316_smu_set_voltage_via_phyclk' [-Wmissing-prototypes]
+> int dcn316_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, i=
+nt
+> requested_phyclk_khz)
+>     ^
+>
+> Signed-off-by: Ma=C3=ADra Canal <maira.canal@usp.br>
+> ---
+>  .../amd/display/dc/clk_mgr/dcn316/dcn316_smu.c   | 16 ----------------
+>  1 file changed, 16 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c b=
+/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
+> index b7f9e1b34c11..fd6497fd2dc5 100644
+> --- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
+> +++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
+> @@ -168,22 +168,6 @@ int dcn316_smu_set_dispclk(struct clk_mgr_internal *=
+clk_mgr, int requested_dispc
+>         return actual_dispclk_set_mhz * 1000;
+>  }
+>
+> -int dcn316_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, =
+int requested_phyclk_khz)
+> -{
+> -       int actual_phypclk_set_mhz =3D -1;
+> -
+> -       if (!clk_mgr->smu_present && requested_phyclk_khz)
+> -               return requested_phyclk_khz;
+> -
+> -       /*  Unit of SMU msg parameter is Mhz */
+> -       actual_phypclk_set_mhz =3D dcn316_smu_send_msg_with_param(
+> -                       clk_mgr,
+> -                       VBIOSSMC_MSG_SetPhyclkVoltageByFreq,
+> -                       khz_to_mhz_ceil(requested_phyclk_khz));
+> -
+> -       return actual_phypclk_set_mhz * 1000;
+> -}
+> -
+>  int dcn316_smu_set_hard_min_dcfclk(struct clk_mgr_internal *clk_mgr, int=
+ requested_dcfclk_khz)
+>  {
+>         int actual_dcfclk_set_mhz =3D -1;
+> --
+> 2.35.1
+>
