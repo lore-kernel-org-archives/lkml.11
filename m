@@ -2,118 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25062C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbiBVN2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:28:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S232418AbiBVN27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:28:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbiBVN2p (ORCPT
+        with ESMTP id S232408AbiBVN26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:28:45 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9185791AC3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:19 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id ACA621EC02DD;
-        Tue, 22 Feb 2022 14:28:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645536493;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=juKznDx9eV+56JG3xixJfXKzB0BohPu6r4RuDHT3slo=;
-        b=R1/FKGa4Bxdr3BQjU5gD1x4h5fn6Gk/K6FX3Bjd48e/PeULkwkwZjiodegpTljabnTu2HU
-        MdmvB+5jkcC3qZGlzMqVR+17BgxHCsOdPCIk5RBxHFvzEUYUfN0m+GXuAbQVa7tvVIoCwB
-        z6CzJuG7Rk9c40lZOFMHrF7FjNHDEiw=
-Date:   Tue, 22 Feb 2022 14:28:17 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
-        mingo@redhat.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv3 02/32] x86/coco: Add API to handle encryption mask
-Message-ID: <YhTk8ZoBtxkHkJHI@zn.tnic>
-References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
- <20220218161718.67148-3-kirill.shutemov@linux.intel.com>
- <66fcd7e7-deb6-f27e-9fc6-33293ce04f16@intel.com>
- <20220218213300.2bs4t3admhozonaq@black.fi.intel.com>
- <7ebd6ba1-85a4-6fee-c897-22ed108ac8b7@intel.com>
- <YhPst1DdG3T5hsnM@zn.tnic>
- <20220221222149.jpuwlinaihq6fjwy@black.fi.intel.com>
- <YhQYgBYOBtdPD65X@zn.tnic>
- <20220221231831.dukkbvjdc5e3mu7c@black.fi.intel.com>
+        Tue, 22 Feb 2022 08:28:58 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB85939C3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:32 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id y15-20020a4a650f000000b0031c19e9fe9dso14513249ooc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:28:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fzMBwP75WQQgoD+zNIkqsOij+cNlqusgTrcCGxZOev8=;
+        b=1Zped++JnCEHwnYfX2O6NeRvtPl1uSLkpHL/XdtZ2BtbYPwwJKLZTLbyJROHatwydz
+         X8mW2vKD0i+rNC4HrUcTvcYsWWw6efa5jJoeQakp3pssD3FSctKo035W5jiN1G6qy4TM
+         khdg5QrtZju4yBQ6bIbP+/WIg5KLXZQNrbGr4pqTtwezw9lo/eWBWlQFblWgkObZ5iTE
+         bDe40ygooFQ63R4MdfpeTOXMbNg3vxFFCCfROjlOepX7FuOVVOxE6c+RlLEcqbJ3KfD2
+         dJXdAgvdvPM6SASeFThANPgHEhovlCXfhK4Ajh1nebgYhhM/CFwAXem8WB9YK/43yZZT
+         8qUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fzMBwP75WQQgoD+zNIkqsOij+cNlqusgTrcCGxZOev8=;
+        b=seWsGEHiTkEP5kofmuVptLadFBDS1P48P6E8ezsSExG56XTYJns5sUDZKQ3u+Jt116
+         m17bmEAMWaTMcx8/kM6wuZUOEOXj0DJD6oHFyIGzeEDvPLKe1uwezt2byRaupWV0Tidj
+         MxT7EAMTXHHWP5jaEQ/zs0k0A0PHa5pJcNP9xr+Z34HpRBdODJgpKlJX+tOZ8mc/NUmK
+         T06G6GXStb8QJviPWh0VZHsE0zdjrnSS26OGKNPDH1HWElWfZjpGlKZm8fQ37yBMaswx
+         ibfMxaoy65uH09qAtq34ipo+xfsWluqLk3hym3nBKrpytOvZEs5T7zsGnQCccjdrkzwv
+         h52g==
+X-Gm-Message-State: AOAM5316hiMJx5xXimHOtgR2KqfQxS1g3u+2VFgviNQBlQ8VfmvJcUzU
+        MJJ3MuhZS2iQyV2h0HQMgsrYlkkiVYDRC1fDWdy31A==
+X-Google-Smtp-Source: ABdhPJzpBI0jL+29WueaOH07hF9lKt7ALfVIVHQ0laYJag6jVfXaNSqDIdsneAL5jOnrzJurx1xvKLrTy82D8UIjqTA=
+X-Received: by 2002:a05:6870:aa85:b0:d2:e462:7371 with SMTP id
+ gr5-20020a056870aa8500b000d2e4627371mr1550136oab.29.1645536512289; Tue, 22
+ Feb 2022 05:28:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220221231831.dukkbvjdc5e3mu7c@black.fi.intel.com>
+References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-2-andrew@daynix.com>
+ <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com>
+In-Reply-To: <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com>
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Tue, 22 Feb 2022 15:28:21 +0200
+Message-ID: <CABcq3pH7HnH_-nCHcX7eet_ouqocQEptp6A9GCbs3=9guArhPA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yuri Benditovich <yuri.benditovich@daynix.com>,
+        Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 02:18:31AM +0300, Kirill A. Shutemov wrote:
-> On Mon, Feb 21, 2022 at 11:56:00PM +0100, Borislav Petkov wrote:
-> > On Tue, Feb 22, 2022 at 01:21:49AM +0300, Kirill A. Shutemov wrote:
-> > > Well, it actually going to be
-> > > 
-> > >  	cpa.mask_set = enc ? cc_mkenc(__pgprot(0)) : cc_mkdec(__pgprot(0));
-> > >  	cpa.mask_clr = enc ? cc_mkdec(__pgprot(0)) : cc_mkenc(__pgprot(0));
-> > > 
-> > > as '0' is not a valid pgprot_t.
-> > > 
-> > > Still wonna go this path?
-> > 
-> > Why "still"? What's wrong with that?
-> 
-> IMO, it makes these statement substantially uglier.
+Hi all,
 
-As opposed to what you had:
+On Wed, Feb 9, 2022 at 6:26 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=86=99=
+=E9=81=93:
+> > Added TUNGETSUPPORTEDOFFLOADS that should allow
+> > to get bits of supported offloads.
+>
+>
+> So we don't use dedicated ioctls in the past, instead, we just probing
+> by checking the return value of TUNSETOFFLOADS.
+>
+> E.g qemu has the following codes:
+>
+> int tap_probe_has_ufo(int fd)
+> {
+>      unsigned offload;
+>
+>      offload =3D TUN_F_CSUM | TUN_F_UFO;
+>
+>      if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
+>          return 0;
+>
+>      return 1;
+> }
+>
+> Any reason we can't keep using that?
+>
+> Thanks
+>
 
-+	cpa.mask_set = __pgprot(cc_get_mask(enc));
-+	cpa.mask_clr = __pgprot(cc_get_mask(!enc));
+Well, even in this example. To check the ufo feature, we trying to set it.
+What if we don't need to "enable" UFO and/or do not change its state?
+I think it's a good idea to have the ability to get supported offloads
+without changing device behavior.
 
-?
-
-Sorry, but cc_get_mask() - first, the name is very misleading - and then
-a function argument saying what mask to return is more confusing.
-
-The fact that each vendor chose alternating representations of what an
-encrypted page means needs to be abstracted away - the API should not
-ask the user of the function what mask she wants. Your functions need
-to return an encrypted mask or a decripted mask, not "hey, what kind of
-mask do you want".
-
-If you want to make it even simpler, you can hide the pgprot creation
-inside the function even - I'm looking at how pgprot_nx() is defined:
-
-	cpa.mask_set = enc ? pgprot_enc(0) : pgprot_dec(0);
-	cpa.mask_clr = enc ? pgprot_dec(0) : pgprot_enc(0);
-
-Or, if you think this is still not readable enough, you carve it out
-into a separate function:
-
-	cpa_set_masks(struct cpa_data *cpa, bool enc);
-
-and go to town there, do comments, do pgprot conversion per-hand,
-whatever.
-
-*BUT* it all depends on what your full requirements for those functions
-are for how these masks are going to be used throughout the tree. So I'm
-guessing a usage analysis will give you the proper design.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+>
+> > Added 2 additional offlloads for USO(IPv4 & IPv6).
+> > Separate offloads are required for Windows VM guests,
+> > g.e. Windows may set USO rx only for IPv4.
+> >
+> > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> > ---
+> >   include/uapi/linux/if_tun.h | 3 +++
+> >   1 file changed, 3 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
+> > index 454ae31b93c7..07680fae6e18 100644
+> > --- a/include/uapi/linux/if_tun.h
+> > +++ b/include/uapi/linux/if_tun.h
+> > @@ -61,6 +61,7 @@
+> >   #define TUNSETFILTEREBPF _IOR('T', 225, int)
+> >   #define TUNSETCARRIER _IOW('T', 226, int)
+> >   #define TUNGETDEVNETNS _IO('T', 227)
+> > +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
+> >
+> >   /* TUNSETIFF ifr flags */
+> >   #define IFF_TUN             0x0001
+> > @@ -88,6 +89,8 @@
+> >   #define TUN_F_TSO6  0x04    /* I can handle TSO for IPv6 packets */
+> >   #define TUN_F_TSO_ECN       0x08    /* I can handle TSO with ECN bits=
+. */
+> >   #define TUN_F_UFO   0x10    /* I can handle UFO packets */
+> > +#define TUN_F_USO4   0x20    /* I can handle USO for IPv4 packets */
+> > +#define TUN_F_USO6   0x40    /* I can handle USO for IPv6 packets */
+> >
+> >   /* Protocol info prepended to the packets (when IFF_NO_PI is not set)=
+ */
+> >   #define TUN_PKT_STRIP       0x0001
+>
