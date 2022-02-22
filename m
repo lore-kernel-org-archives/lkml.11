@@ -2,266 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD41C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233337AbiBVPSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41726 "EHLO
+        id S233358AbiBVPSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233385AbiBVPRn (ORCPT
+        with ESMTP id S232357AbiBVPSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:17:43 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2D9AB441;
-        Tue, 22 Feb 2022 07:17:12 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K32nz2ndJz9sSm;
-        Tue, 22 Feb 2022 16:16:55 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id PM-0u1yQtH0S; Tue, 22 Feb 2022 16:16:55 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32nw5l2mz9sSp;
-        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id AECC28B781;
-        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 7lpda_ch5qPb; Tue, 22 Feb 2022 16:16:52 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 46B3A8B779;
-        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFGgTk1087714
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 16:16:42 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFGgHL1087713;
-        Tue, 22 Feb 2022 16:16:42 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/4] module: Move module_enable_x() and frob_text() in strict_rwx.c
-Date:   Tue, 22 Feb 2022 16:16:32 +0100
-Message-Id: <1545ae8fcef61d5741fa684ad5816b5dd3a418bc.1645542893.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645542893.git.christophe.leroy@csgroup.eu>
-References: <cover.1645542893.git.christophe.leroy@csgroup.eu>
+        Tue, 22 Feb 2022 10:18:41 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E81149B86;
+        Tue, 22 Feb 2022 07:18:13 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F2B0C60010;
+        Tue, 22 Feb 2022 15:18:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645543091;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sUKjasZW1jCb/3Z0/TiPJo6cUX+jFii8PUJTFIJ++ec=;
+        b=Cym6tuLgJkn0JINb6E0P3BCm5JYJO5LcLnW+87X5TlDByLTSsQrOya1GLhsi3ErKO2e/JR
+        SL/+16MGtqhjBdecsOzndAcOxz8HS7wbpX957VuwnLtSxw+BIP60R9VkO08nGyiBOz1AFS
+        9u3Z0DkjapXMLphV9k/Pbq82411V/84MqVMBWRNh8CqSRWnecTpPu1thW6TSW3Bxp6W12p
+        dx89ZCTS9IXKpdfdxrgbifOA6udZMZmfIUYXb35eXea9TBxbyL1VbUN7yzPYGzjBMVWW0S
+        Nqqyamnh+OsGqlKUA0Eh6wYiWsl3yHZCE2ACWyImcd521AYUazzgxeAtEypSjQ==
+Date:   Tue, 22 Feb 2022 16:16:50 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 02/10] property: add fwnode_get_match_data()
+Message-ID: <20220222161650.1b75825b@fixe.home>
+In-Reply-To: <YhS5BnvofimMReDE@kroah.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <20220221162652.103834-3-clement.leger@bootlin.com>
+        <YhPP5GWt7XEv5xx8@smile.fi.intel.com>
+        <20220222091902.198ce809@fixe.home>
+        <CAHp75VdwfhGKOiGhJ1JsiG+R2ZdHa3N4hz6tyy5BmyFLripV5A@mail.gmail.com>
+        <20220222094623.1f7166c3@fixe.home>
+        <CAHp75VfduXwRvxkNg=At5jaN-tcP3=utiukEDL35PEv_grK4Pw@mail.gmail.com>
+        <20220222104705.54a73165@fixe.home>
+        <YhS5BnvofimMReDE@kroah.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542984; l=7341; s=20211009; h=from:subject:message-id; bh=wUj6D7B9/Eu7E72Eq1hFg4hRDQ2fPolBrGntvtG6lQ8=; b=m5HdxFJ/6ow8rVHuIfLOcphQXdP0/4qb4nVoGhYnd9NRR4ADsBFVhL97xmkVrk4pFYYFL4b4SkKT zsWk5w/2CFIPzcVPgjJ8FJlmZauZ3dNcpMWfzYPRSazSck5J1wb6
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move module_enable_x() together with module_enable_nx() and
-module_enable_ro().
+Le Tue, 22 Feb 2022 11:20:54 +0100,
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> a =C3=A9crit :
 
-Those three functions are going together, they are all used
-to set up the correct page flags on the different sections.
+> >=20
+> > The problem that I see is not only duplication but also that the PCIe
+> > card won't work out of the box and will need a specific SSDT overlays
+> > each time it is used. According to your document about SSDT overlays,
+> > there is no way to load this from the driver. This means that the user
+> > will have to compile a platform specific .aml file to match its
+> > platform configuration. If the user wants to change the PCIe port, than
+> > I guess it will have to load another .aml file. I do not think a user
+> > expect to do so when plugging a PCIe card.
+> >=20
+> > Moreover, the APCI documentation [1] says the following:
+> >=20
+> > "PCI devices, which are below the host bridge, generally do not need to
+> > be described via ACPI. The OS can discover them via the standard PCI
+> > enumeration mechanism, using config accesses to discover and identify
+> > devices and read and size their BARs. However, ACPI may describe PCI
+> > devices if it provides power management or hotplug functionality for
+> > them or if the device has INTx interrupts connected by platform
+> > interrupt controllers and a _PRT is needed to describe those
+> > connections."
+> >=20
+> > The device I want to use (a PCIe switch) does not fall into these
+> > categories so there should be no need to describe it using ACPI. =20
+>=20
+> There should not be any need to describe it in any way, the device
+> should provide all of the needed information.  PCIe devices do not need
+> a DT entry, as that does not make sense.
+>=20
+> thanks,
+>=20
+> greg k-h
 
-As module_enable_x() is used independently of
-CONFIG_STRICT_MODULE_RWX, build strict_rwx.c all the time and
-use IS_ENABLED(CONFIG_STRICT_MODULE_RWX) when relevant.
+In my opinion, yes, there should be no need for an "external"
+description. Loading any kind of description (either with ACPI or DT)
+defeat the purpose of the PCI since the card won't be able to be
+plug-and-play anymore on multiple platform.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/module/Makefile     |  3 +--
- kernel/module/internal.h   | 15 +-----------
- kernel/module/main.c       | 37 -----------------------------
- kernel/module/strict_rwx.c | 48 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 50 insertions(+), 53 deletions(-)
+The driver however should be self-contained and contain its own
+"description" of the hardware, no matter the platform on which the card
+is plugged. The PCIe card is independent of the platform, I do not
+think describing it with a platform specific description language is
+maintainable nor user acceptable for the user.
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index a46e6361017f..a94f7b8b2740 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -7,12 +7,11 @@
- # and produce insane amounts of uninteresting coverage.
- KCOV_INSTRUMENT_module.o := n
- 
--obj-y += main.o
-+obj-y += main.o strict_rwx.o
- obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
- obj-$(CONFIG_MODULE_SIG) += signing.o
- obj-$(CONFIG_LIVEPATCH) += livepatch.o
- obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
--obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
- obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
- obj-$(CONFIG_KALLSYMS) += kallsyms.o
- obj-$(CONFIG_PROC_FS) += procfs.o
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 7178b7c09cdd..276e3f49a4ae 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -182,25 +182,12 @@ static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *
- }
- #endif /* CONFIG_MODULES_TREE_LOOKUP */
- 
--void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
--								     int num_pages));
--
--#ifdef CONFIG_STRICT_MODULE_RWX
- void module_enable_ro(const struct module *mod, bool after_init);
- void module_enable_nx(const struct module *mod);
-+void module_enable_x(const struct module *mod);
- int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 				char *secstrings, struct module *mod);
- 
--#else /* !CONFIG_STRICT_MODULE_RWX */
--static inline void module_enable_nx(const struct module *mod) { }
--static inline void module_enable_ro(const struct module *mod, bool after_init) {}
--static inline int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	return 0;
--}
--#endif /* CONFIG_STRICT_MODULE_RWX */
--
- #ifdef CONFIG_MODULE_SIG
- int module_sig_check(struct load_info *info, int flags);
- #else /* !CONFIG_MODULE_SIG */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index be3b31ba6e16..47addf849ef7 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -1142,43 +1142,6 @@ resolve_symbol_wait(struct module *mod,
- 	return ksym;
- }
- 
--/*
-- * LKM RO/NX protection: protect module's text/ro-data
-- * from modification and any data from execution.
-- *
-- * General layout of module is:
-- *          [text] [read-only-data] [ro-after-init] [writable data]
-- * text_size -----^                ^               ^               ^
-- * ro_size ------------------------|               |               |
-- * ro_after_init_size -----------------------------|               |
-- * size -----------------------------------------------------------|
-- *
-- * These values are always page-aligned (as is base)
-- */
--
--/*
-- * Since some arches are moving towards PAGE_KERNEL module allocations instead
-- * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of the
-- * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless of
-- * whether we are strict.
-- */
--void frob_text(const struct module_layout *layout,
--	       int (*set_memory)(unsigned long start, int num_pages))
--{
--	set_memory((unsigned long)layout->base,
--		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
--}
--
--static void module_enable_x(const struct module *mod)
--{
--	if (!PAGE_ALIGNED(mod->core_layout.base) ||
--	    !PAGE_ALIGNED(mod->init_layout.base))
--		return;
--
--	frob_text(&mod->core_layout, set_memory_x);
--	frob_text(&mod->init_layout, set_memory_x);
--}
--
- void __weak module_memfree(void *module_region)
- {
- 	/*
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-index 1a6b9573260b..6b99be9e88e1 100644
---- a/kernel/module/strict_rwx.c
-+++ b/kernel/module/strict_rwx.c
-@@ -11,6 +11,34 @@
- #include <linux/set_memory.h>
- #include "internal.h"
- 
-+/*
-+ * LKM RO/NX protection: protect module's text/ro-data
-+ * from modification and any data from execution.
-+ *
-+ * General layout of module is:
-+ *          [text] [read-only-data] [ro-after-init] [writable data]
-+ * text_size -----^                ^               ^               ^
-+ * ro_size ------------------------|               |               |
-+ * ro_after_init_size -----------------------------|               |
-+ * size -----------------------------------------------------------|
-+ *
-+ * These values are always page-aligned (as is base) when
-+ * CONFIG_STRICT_MODULE_RWX is set.
-+ */
-+
-+/*
-+ * Since some arches are moving towards PAGE_KERNEL module allocations instead
-+ * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() independent of
-+ * CONFIG_STRICT_MODULE_RWX because they are needed regardless of whether we
-+ * are strict.
-+ */
-+static void frob_text(const struct module_layout *layout,
-+		      int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	set_memory((unsigned long)layout->base,
-+		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
-+}
-+
- static void frob_rodata(const struct module_layout *layout,
- 		 int (*set_memory)(unsigned long start, int num_pages))
- {
-@@ -41,10 +69,24 @@ static void frob_writable_data(const struct module_layout *layout,
- 		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
- }
- 
-+void module_enable_x(const struct module *mod)
-+{
-+	if (!PAGE_ALIGNED(mod->core_layout.base) ||
-+	    !PAGE_ALIGNED(mod->init_layout.base))
-+		return;
-+
-+	frob_text(&mod->core_layout, set_memory_x);
-+	frob_text(&mod->init_layout, set_memory_x);
-+}
-+
- void module_enable_ro(const struct module *mod, bool after_init)
- {
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return;
-+#ifdef CONFIG_STRICT_MODULE_RWX
- 	if (!rodata_enabled)
- 		return;
-+#endif
- 
- 	set_vm_flush_reset_perms(mod->core_layout.base);
- 	set_vm_flush_reset_perms(mod->init_layout.base);
-@@ -60,6 +102,9 @@ void module_enable_ro(const struct module *mod, bool after_init)
- 
- void module_enable_nx(const struct module *mod)
- {
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return;
-+
- 	frob_rodata(&mod->data_layout, set_memory_nx);
- 	frob_ro_after_init(&mod->data_layout, set_memory_nx);
- 	frob_writable_data(&mod->data_layout, set_memory_nx);
-@@ -73,6 +118,9 @@ int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 	const unsigned long shf_wx = SHF_WRITE | SHF_EXECINSTR;
- 	int i;
- 
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return 0;
-+
- 	for (i = 0; i < hdr->e_shnum; i++) {
- 		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
- 			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
--- 
-2.34.1
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
