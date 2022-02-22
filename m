@@ -2,155 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDB3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233920AbiBVQL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        id S233925AbiBVQMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:12:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233675AbiBVQLv (ORCPT
+        with ESMTP id S233921AbiBVQMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:11:51 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95FA165C1B;
-        Tue, 22 Feb 2022 08:11:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645546285; x=1677082285;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xAztCkgXwGQAWMHLroJTEMZem0nISYqo7RPlzIO8arA=;
-  b=JDQ8h5wrel3bviDk+pDa3f9QDFus6Mszbb1NQyZLLcneMSFhHtoUquAt
-   meXarquXCkYQ+6zzwv7tJQy3BruyvSVSl2MroTtPYMvkaul95xjeFUh1c
-   95IR6H6pxPKwdMKevRbNo4HRpFAmcBWP1aYTupa1655ZGCYXtoUpo+bOi
-   mIe9KpmijYiQu4ddrZrvi9eJXfXLMczCsut1JXiVKxKPwvg7D9OFSFzEV
-   m2GJLeDpC2k+gbdly5pAulA7CSbCpYimCsRN0B29Q8UWu1sNbbof4tBY1
-   ch7YvT3n4/7tECAY/Tk4I4NP+sXnO16mUe8VGrc+fvkViOLvE6fZBc3f4
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="250567132"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="250567132"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 08:11:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="776352766"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Feb 2022 08:11:16 -0800
-Received: from [10.209.63.44] (kliang2-MOBL.ccr.corp.intel.com [10.209.63.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Tue, 22 Feb 2022 11:12:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8698D125CB0;
+        Tue, 22 Feb 2022 08:11:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id B81F8580BDB;
-        Tue, 22 Feb 2022 08:11:14 -0800 (PST)
-Message-ID: <d38b0f9e-e9b9-e6d2-7da5-7169dedbc404@linux.intel.com>
-Date:   Tue, 22 Feb 2022 11:11:13 -0500
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36379B81B5B;
+        Tue, 22 Feb 2022 16:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3C8EC340E8;
+        Tue, 22 Feb 2022 16:11:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645546306;
+        bh=tPHcG2vdwAjVfMszEDtyGTUBaKWeavojfMTme0Rscn0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kQ3Xz8WjUlhH9p01XoZLlCwUI55NY9NHNCqbu3P08LPqNsjkwVFYIngPrRsOxVSbT
+         axJ3j1jiC0CzyIKHFXr4c0pdGR7C02LiDYOc9ibdhdkduhjINAuC1XIMcUCKr6WgDD
+         lkzXFYkfhh4s26mG/6UOVF2OQ689nb+pjhZyqvYSvk/5KKAUgI7wOLcgPR/YpYUDwm
+         xh6vALYshMH62HIK/q8uMvvm5j/5FlGnLNq3x+G+i+kxUDh97n8tRsv/Dmnmodx1Y2
+         xit9VtH9DJPW9cHsbxaKx0vLNh/oqYKB91Hwn4X7jnbwA1INQdUJVn94jChpQv/qs2
+         0qspFaRoN5hgA==
+Received: by pali.im (Postfix)
+        id 5B817FDB; Tue, 22 Feb 2022 17:11:43 +0100 (CET)
+Date:   Tue, 22 Feb 2022 17:11:43 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: (subset) [PATCH v4 00/12] PCI: mvebu: subsystem ids, AER and INTx
+Message-ID: <20220222161143.6ryghgtfmhnmhpmz@pali>
+References: <20220222155030.988-1-pali@kernel.org>
+ <164554589988.5595.5091384618177225445.b4-ty@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] perf/x86/intel/uncore: Make uncore_discovery clean for 64
- bit addresses
-Content-Language: en-US
-To:     Steve Wahl <steve.wahl@hpe.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Liang, Kan" <kan.liang@intel.com>
-References: <20220218175418.421268-1-steve.wahl@hpe.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220218175418.421268-1-steve.wahl@hpe.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <164554589988.5595.5091384618177225445.b4-ty@arm.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/18/2022 12:54 PM, Steve Wahl wrote:
-> Support 64-bit BAR size for discovery, and do not truncate return from
-> generic_uncore_mmio_box_ctl() to 32 bits.
+On Tuesday 22 February 2022 16:06:20 Lorenzo Pieralisi wrote:
+> On Tue, 22 Feb 2022 16:50:18 +0100, Pali Rohár wrote:
+> > This patch series extends pci-bridge-emul.c driver to emulate PCI Subsystem
+> > Vendor ID capability and PCIe extended capabilities. And then implement
+> > in pci-mvebu.c driver support for PCI Subsystem Vendor IDs, PCIe AER
+> > registers, support for legacy INTx interrupts, configuration for X1/X4
+> > mode and usage of new PCI child_ops API.
+> > 
+> > Changes in v4:
+> > * rebased on c3bd7dc553eea5a3595ca3aa0adee9bf83622a1f
+> > 
+> > [...]
 > 
-> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+> I can't apply dts changes, patch 12 should go via the arm-soc tree.
 
-Thanks for the patch.
+Gregory already wrote about this dts change:
+https://lore.kernel.org/linux-pci/87tud1jwpr.fsf@BL-laptop/
+"So the easier is to let merge it through the PCI subsystem with the
+other patches from this series."
 
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Are there any issues with applying this dts change via pci tree?
 
-
-Thanks,
-Kan
-> ---
->   arch/x86/events/intel/uncore_discovery.c | 16 +++++++++++-----
->   arch/x86/events/intel/uncore_discovery.h |  2 --
->   2 files changed, 11 insertions(+), 7 deletions(-)
+> Applied the others to pci/mvebu, thanks.
 > 
-> diff --git a/arch/x86/events/intel/uncore_discovery.c b/arch/x86/events/intel/uncore_discovery.c
-> index 3049c646fa20..141a540e7403 100644
-> --- a/arch/x86/events/intel/uncore_discovery.c
-> +++ b/arch/x86/events/intel/uncore_discovery.c
-> @@ -210,15 +210,21 @@ static int parse_discovery_table(struct pci_dev *dev, int die,
->   	void __iomem *io_addr;
->   	resource_size_t addr;
->   	unsigned long size;
-> -	u32 val;
-> +	u32 val, val2;
->   	int i;
->   
->   	pci_read_config_dword(dev, bar_offset, &val);
->   
-> -	if (val & UNCORE_DISCOVERY_MASK)
-> +	if (val & ~PCI_BASE_ADDRESS_MEM_MASK & ~PCI_BASE_ADDRESS_MEM_TYPE_64)
->   		return -EINVAL;
->   
-> -	addr = (resource_size_t)(val & ~UNCORE_DISCOVERY_MASK);
-> +	addr = (resource_size_t)(val & PCI_BASE_ADDRESS_MEM_MASK);
-> +#ifdef CONFIG_PHYS_ADDR_T_64BIT
-> +	if ((val & PCI_BASE_ADDRESS_MEM_TYPE_MASK) == PCI_BASE_ADDRESS_MEM_TYPE_64) {
-> +		pci_read_config_dword(dev, bar_offset + 4, &val2);
-> +		addr |= ((resource_size_t)val2) << 32;
-> +	}
-> +#endif
->   	size = UNCORE_DISCOVERY_GLOBAL_MAP_SIZE;
->   	io_addr = ioremap(addr, size);
->   	if (!io_addr)
-> @@ -444,7 +450,7 @@ static struct intel_uncore_ops generic_uncore_pci_ops = {
->   
->   #define UNCORE_GENERIC_MMIO_SIZE		0x4000
->   
-> -static unsigned int generic_uncore_mmio_box_ctl(struct intel_uncore_box *box)
-> +static u64 generic_uncore_mmio_box_ctl(struct intel_uncore_box *box)
->   {
->   	struct intel_uncore_type *type = box->pmu->type;
->   
-> @@ -456,7 +462,7 @@ static unsigned int generic_uncore_mmio_box_ctl(struct intel_uncore_box *box)
->   
->   void intel_generic_uncore_mmio_init_box(struct intel_uncore_box *box)
->   {
-> -	unsigned int box_ctl = generic_uncore_mmio_box_ctl(box);
-> +	u64 box_ctl = generic_uncore_mmio_box_ctl(box);
->   	struct intel_uncore_type *type = box->pmu->type;
->   	resource_size_t addr;
->   
-> diff --git a/arch/x86/events/intel/uncore_discovery.h b/arch/x86/events/intel/uncore_discovery.h
-> index 6d735611c281..22d40e7afbf1 100644
-> --- a/arch/x86/events/intel/uncore_discovery.h
-> +++ b/arch/x86/events/intel/uncore_discovery.h
-> @@ -18,8 +18,6 @@
->   #define UNCORE_DISCOVERY_BIR_BASE		0x10
->   /* Discovery table BAR step */
->   #define UNCORE_DISCOVERY_BIR_STEP		0x4
-> -/* Mask of the discovery table offset */
-> -#define UNCORE_DISCOVERY_MASK			0xf
->   /* Global discovery table size */
->   #define UNCORE_DISCOVERY_GLOBAL_MAP_SIZE	0x20
->   
+> [01/12] PCI: pci-bridge-emul: Re-arrange register tests
+>         https://git.kernel.org/lpieralisi/pci/c/c453bf6f9b
+> [02/12] PCI: pci-bridge-emul: Add support for PCIe extended capabilities
+>         https://git.kernel.org/lpieralisi/pci/c/c0bd419732
+> [03/12] PCI: pci-bridge-emul: Add support for PCI Bridge Subsystem Vendor ID capability
+>         https://git.kernel.org/lpieralisi/pci/c/3767a90242
+> [04/12] dt-bindings: PCI: mvebu: Add num-lanes property
+>         https://git.kernel.org/lpieralisi/pci/c/26b982ca83
+> [05/12] PCI: mvebu: Correctly configure x1/x4 mode
+>         https://git.kernel.org/lpieralisi/pci/c/2a81dd9fd9
+> [06/12] PCI: mvebu: Add support for PCI Bridge Subsystem Vendor ID on emulated bridge
+>         https://git.kernel.org/lpieralisi/pci/c/e3e13c9135
+> [07/12] PCI: mvebu: Add support for Advanced Error Reporting registers on emulated bridge
+>         https://git.kernel.org/lpieralisi/pci/c/2b6ee04c0a
+> [08/12] PCI: mvebu: Use child_ops API
+>         https://git.kernel.org/lpieralisi/pci/c/c099c2a761
+> [09/12] dt-bindings: PCI: mvebu: Update information about intx interrupts
+>         https://git.kernel.org/lpieralisi/pci/c/0124989220
+> [10/12] PCI: mvebu: Fix macro names and comments about legacy interrupts
+>         https://git.kernel.org/lpieralisi/pci/c/d00ea94e62
+> [11/12] PCI: mvebu: Implement support for legacy INTx interrupts
+>         https://git.kernel.org/lpieralisi/pci/c/ec07526264
+> 
+> Thanks,
+> Lorenzo
