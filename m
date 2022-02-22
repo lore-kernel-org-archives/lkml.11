@@ -2,96 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00461C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232736AbiBVOJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:09:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
+        id S232742AbiBVOJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:09:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232712AbiBVOJU (ORCPT
+        with ESMTP id S232720AbiBVOJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:09:20 -0500
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE4215F377
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:08:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Gft2vksxvg2p7hlkEZC2wTxmWAXTizdIoqfd+83pKUA=; b=CkILlN47FdZ0e1Eg5VfGrMMbyY
-        M9kCxxlSC5GNSBy/hdl1vhI6vtZGxpwaC5eCSiu2rIZ0DEesCAZlsZ4QKbQPU93q3s466Ak0JVyO3
-        icK1Vjbr8gHCpE6SVWJkymogGsQnoAY76tdHQ4XeIJ8c9lShy/3ZQLdV3brtYbOKUOD4RjT39NzYL
-        qB0vK8Hds/5cgA10EXUmSdJQXGWBlJipPTqMcK10VXWgJmezbxUFSD9ox6Uj9VM7MNllTXFJQRTRm
-        iSXL65nDF+s6QNkhfNQD602+pTMK10nyZnquU5y69c4721yAvwujRLT+x5DlI0igPtbPX9HM3lYK9
-        z0LLNdHg==;
-Received: from [189.79.213.38] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nMVqJ-000A22-5x; Tue, 22 Feb 2022 15:08:40 +0100
-Message-ID: <7702bdc2-78ce-00f5-d5a4-c06527c3ae72@igalia.com>
-Date:   Tue, 22 Feb 2022 11:08:22 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH V6] panic: Move panic_print before kmsg dumpers
-Content-Language: en-US
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>, bhe@redhat.com,
-        pmladek@suse.com
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        anton@enomsg.org, ccross@android.com, dyoung@redhat.com,
-        feng.tang@intel.com, john.ogness@linutronix.de,
-        keescook@chromium.org, kernel@gpiccoli.net,
-        kexec@lists.infradead.org, rostedt@goodmis.org,
-        tony.luck@intel.com, vgoyal@redhat.com
-References: <20220214141308.841525-1-gpiccoli@igalia.com>
- <YhRAOQbH15E7y9s8@google.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YhRAOQbH15E7y9s8@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Tue, 22 Feb 2022 09:09:22 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1CA515F620;
+        Tue, 22 Feb 2022 06:08:56 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8075A139F;
+        Tue, 22 Feb 2022 06:08:56 -0800 (PST)
+Received: from e123648.arm.com (unknown [10.57.9.152])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4A4D23F5A1;
+        Tue, 22 Feb 2022 06:08:54 -0800 (PST)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        viresh.kumar@linaro.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, nm@ti.com, sboyd@kernel.org,
+        mka@chromium.org, dianders@chromium.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: [[PATCH v2 2/2] OPP: Add 'opp-microwatt' parsing for advanced EM registration
+Date:   Tue, 22 Feb 2022 14:07:46 +0000
+Message-Id: <20220222140746.12293-3-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220222140746.12293-1-lukasz.luba@arm.com>
+References: <20220222140746.12293-1-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/02/2022 22:45, Sergey Senozhatsky wrote:
-> [...]
-> Yeah, if Petr is fine with that then I'm OK. But at the same time,
-> we have `panic_print' which is a bit mask of what panic_print_sys_info()
-> should do. And now we also have a boolean `console_flush` flag that tells
-> panic_print_sys_info() to ignore some (one as of now) bits of `panic_print'.
-> 
-> So _maybe_ panic_print_sys_info() can just accept panic_print as
-> its parameter and then we can do something like this (as an example)
-> 
-> 	panic_print_sys_info(panic_print & ~PANIC_PRINT_ALL_PRINTK_MSG);
-> 
-> 
->>  	if (panic_print & PANIC_PRINT_ALL_CPU_BT)
->>  		trigger_all_cpu_backtrace();
->> @@ -286,6 +289,8 @@ void panic(const char *fmt, ...)
->>  	 */
->>  	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
-> 
-> [..]
-> 
->> +	panic_print_sys_info(false);
-> 
-> Merely because `panic_print_sys_info(false);` doesn't tell much to a reader.
-> Like what is print sys info false?
-> 
-> Or did you already discuss this?
+The Energy Model (EM) can be created based on DT entry:
+'dynamic-power-coefficient'. It's a 'simple' EM which is limited to the
+dynamic power. It has to fit into the math formula which requires also
+information about voltage. Some of the platforms don't expose voltage
+information, thus it's not possible to use EM registration using DT.
 
-Hi Sergey, thanks for your feedback. So, personally I prefer having the
-flag - for me it's clear, it's just a matter of reading the prototype -
-either we print the info _or_ we console_flush.
+This patch aims to fix it. It introduces new implementation of the EM
+registration callback. The new mechanism parses OPP node in DT which
+contains the power expressed in micro-Watts. It also allows to register
+'advanced' EM, which models total power (static + dynamic), so better
+reflects real HW.
 
-But let's see if others have a preference - if the preference is to use
-the bitmask as you suggest, we can do it in a next version.
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+---
+ drivers/opp/of.c | 70 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
 
-Cheers,
+diff --git a/drivers/opp/of.c b/drivers/opp/of.c
+index 2f40afa4e65c..94059408fa39 100644
+--- a/drivers/opp/of.c
++++ b/drivers/opp/of.c
+@@ -1395,6 +1395,40 @@ struct device_node *dev_pm_opp_get_of_node(struct dev_pm_opp *opp)
+ }
+ EXPORT_SYMBOL_GPL(dev_pm_opp_get_of_node);
+ 
++/*
++ * Callback function provided to the Energy Model framework upon registration.
++ * It provides the power based on DT by @dev at @kHz if it is the frequency
++ * of an existing OPP, or at the frequency of the first OPP above @kHz otherwise
++ * (see dev_pm_opp_find_freq_ceil()). This function updates @kHz to the ceiled
++ * frequency and @mW to the associated power.
++ *
++ * Returns 0 on success or a proper -EINVAL value in case of error.
++ */
++static int __maybe_unused
++_get_dt_power(unsigned long *mW, unsigned long *kHz, struct device *dev)
++{
++	struct dev_pm_opp *opp;
++	unsigned long opp_freq;
++	u32 opp_power;
++	int ret;
++
++	/* Find the right frequency and related OPP */
++	opp_freq = *kHz * 1000;
++	opp = dev_pm_opp_find_freq_ceil(dev, &opp_freq);
++	if (IS_ERR(opp))
++		return -EINVAL;
++
++	ret = of_property_read_u32(opp->np, "opp-microwatt", &opp_power);
++	dev_pm_opp_put(opp);
++	if (ret)
++		return -EINVAL;
++
++	*kHz = opp_freq / 1000;
++	*mW = opp_power / 1000;
++
++	return 0;
++}
++
+ /*
+  * Callback function provided to the Energy Model framework upon registration.
+  * This computes the power estimated by @dev at @kHz if it is the frequency
+@@ -1445,6 +1479,33 @@ static int __maybe_unused _get_power(unsigned long *mW, unsigned long *kHz,
+ 	return 0;
+ }
+ 
++static int _of_find_opp_microwatt_property(struct device *dev)
++{
++	unsigned long freq = 0;
++	struct dev_pm_opp *opp;
++	struct device_node *np;
++	struct property *prop;
++
++	/* We only support "operating-points-v2" */
++	np = dev_pm_opp_of_get_opp_desc_node(dev);
++	if (!np)
++		return -EINVAL;
++
++	of_node_put(np);
++
++	/* Check if an OPP has needed property */
++	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
++	if (IS_ERR(opp))
++		return -EINVAL;
++
++	prop = of_find_property(opp->np, "opp-microwatt", NULL);
++	dev_pm_opp_put(opp);
++	if (!prop)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /**
+  * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
+  * @dev		: Device for which an Energy Model has to be registered
+@@ -1474,6 +1535,15 @@ int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
+ 		goto failed;
+ 	}
+ 
++	/* First, try to find more precised Energy Model in DT */
++	if (!_of_find_opp_microwatt_property(dev)) {
++		struct em_data_callback em_dt_cb = EM_DATA_CB(_get_dt_power);
++
++		ret = em_dev_register_perf_domain(dev, nr_opp, &em_dt_cb,
++						  cpus, true);
++		return ret;
++	}
++
+ 	np = of_node_get(dev->of_node);
+ 	if (!np) {
+ 		ret = -EINVAL;
+-- 
+2.17.1
 
-
-Guilherme
