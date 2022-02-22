@@ -2,129 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3670CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FADC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbiBVRBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 12:01:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S234169AbiBVRBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:01:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiBVRBF (ORCPT
+        with ESMTP id S231290AbiBVRBS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 12:01:05 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A061016C4EB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 09:00:39 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id p21-20020a631e55000000b00372d919267cso11653224pgm.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 09:00:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=5qb5Zh5e8x0hA/HCW8SK7letHwHax9Wce8Hz1k3JTdg=;
-        b=ITgvGI+DDxrws5QD+aqNmanS1XXPkR5OB1mc/GjeEFKe1PUFInLivQOj2yo7QUg+Ms
-         jiQqEBIgx8+pm/kTGUv4kJbSou6k/zNoYhVYDkZAoPQcycS+1hRaIFS0LySP1N6gBZzN
-         UaUG12NsYuyKvxTJaL6deitrMeqYZr6WLyZD3VhFhAjEtFzDl9XHbYq3JslYm4d8OYjz
-         X/npdOM7xhWI6vlrhC6uIMRYM7xjLfG1ykah3QVJqU0WAp7G1+U7twKq7GAqvOV9yNkk
-         pKJSH3usycLKHhOjCm8vwteuS3A7gapZDcF2n0sPj1Iupc/Hz3asBMWMKtVvwjT0Yhf5
-         /1Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=5qb5Zh5e8x0hA/HCW8SK7letHwHax9Wce8Hz1k3JTdg=;
-        b=1vYKjfxTpGnw50sdbPPfeoDZAK1X6gmopRE2UuKaNCdEjem2Lx8JND5w37qTH0/j+h
-         Vlceo89YYJO8sUnSfjt3VsWJLVan2Z0einAVgdjSehZ7y+21pT4xFrGsgk8xbd/CZoUX
-         yOBMfEhbm7bdFF4zklGCMPrJJTJUjkZjxE55JWJM01a0zHijNvYEwd2Xi2LauyvlEFKf
-         CUNqzwKvBcU7hviVHpJuLzzfYd3TAsfN2B6LtCDEMjM3dljaB3PIpvxwVVwzlh0ORuVd
-         saTpa90ITFJuo4m4ZPNr0Bs0T/RiLeSOzO4wQrhQGrXWxqlS0BR2XageHu0LTkqA5gji
-         YdtA==
-X-Gm-Message-State: AOAM533enYHbduRE82RGsLiajDPehIoqXDMIhZJWv0P0mPRoST0J4D9/
-        0ww7ZUJJni/psHdU6qiCdXrqV4TCYSUC5yR7qw==
-X-Google-Smtp-Source: ABdhPJzH5Lfs/f/UpeVcOR5FEQsrODh9JTFqCt6nAPQwaG7BkrPBoWZU4Etxumn3mAF9Ju4JlTfm2YcSMf2h76tr4w==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5db7:1235:b3dd:cfcb])
- (user=kaleshsingh job=sendgmr) by 2002:a05:6a00:2296:b0:4e1:3029:ee2 with
- SMTP id f22-20020a056a00229600b004e130290ee2mr25396129pfe.22.1645549239077;
- Tue, 22 Feb 2022 09:00:39 -0800 (PST)
-Date:   Tue, 22 Feb 2022 08:51:08 -0800
-In-Reply-To: <20220222165212.2005066-1-kaleshsingh@google.com>
-Message-Id: <20220222165212.2005066-8-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220222165212.2005066-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH v2 7/9] KVM: arm64: Add hypervisor overflow stack
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Andrew Scull <ascull@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        Tue, 22 Feb 2022 12:01:18 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E8E16E7CB;
+        Tue, 22 Feb 2022 09:00:51 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 797D65803B7;
+        Tue, 22 Feb 2022 12:00:50 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 22 Feb 2022 12:00:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=HtCItNyhGVUgQ9zYx
+        8y8HwkSSNP7qG6erjhX3gp1Vas=; b=GtZc3a+Qfwr7g0xbB/r/BXPgspmACWS5G
+        0OGqRVvN6z11OqHVovHGRWCIY+6qwMtxF85hTXbUfkCrF+fnjHoeZnPCv0XXOJla
+        0JkgBu9WCWEnKJottlEKs/Q4JTZdyLmnRmhTbDr+/rVr0IPN2yxgwBw/wMgTVpG8
+        C9DoX4S/LL3KjKX65DZDCRznCURUQokspAfI6u2Fi3Fx8wU6QTNyq8N5GoT7nieO
+        Yhhv/C7ifwD/9umjdWpzeNwMitCll2oBCOj6sJ8t/mdGGx5OHFJ+xV/TdaC/1R0N
+        6AUjtVDxl/Y72YPEjJVL0il7EKgeRDlxX1hKjl3laKNHeOagby5aA==
+X-ME-Sender: <xms:wRYVYiV488PJ8dsyWXC2-qZX4Ec6K41Dsf4gR_5L-9d82sciAItPsQ>
+    <xme:wRYVYumBrUxVr8yJp28gXjHjH6idO1Ji3PhD6ODs9V4bVAf8CwKGf-myJP2AHBedc
+    jQyhpQuubrzuUs>
+X-ME-Received: <xmr:wRYVYmb-w1BGYM1gutgPONq5dR0QQG6p26CwXhoUD4DKQDnERE5vPOkh4d_7pU4ztW3VGAKMjf_r8oAuyqgkzbGcag0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdelfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:whYVYpVh7rh-btnjQECit2ixdjjH1xEQgpb0OQe732sLUJXzafy88w>
+    <xmx:whYVYskuy1ClagUaAi7TsEOtjRvTRcRyXCCXBfOPZhK_9PsMx-ELbw>
+    <xmx:whYVYucdvuL-RBwSfTBPxtNiwaIxsdnMxtpGFdKjt1-cJflnmCUyjw>
+    <xmx:whYVYqpPNokjYGIilBHrkHosAHqdWOFV-0p14_H7TjNh5i0VZ3gNjw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 22 Feb 2022 12:00:48 -0500 (EST)
+Date:   Tue, 22 Feb 2022 19:00:46 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net-next v4 5/5] selftests: forwarding: tests of locked
+ port feature
+Message-ID: <YhUWvhkhRVY+/Osd@shredder>
+References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
+ <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222132818.1180786-6-schultz.hans+netdev@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allocate and switch to 16-byte aligned secondary stack on overflow. This
-provides us stack space to better handle overflows; and is used in
-a subsequent patch to dump the hypervisor stacktrace. The overflow stack
-is only allocated if CONFIG_NVHE_EL2_DEBUG is enabled, as hypervisor
-stacktraces is a debug feature dependent on CONFIG_NVHE_EL2_DEBUG.
+On Tue, Feb 22, 2022 at 02:28:18PM +0100, Hans Schultz wrote:
+> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> new file mode 100755
+> index 000000000000..a8800e531d07
+> --- /dev/null
+> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> @@ -0,0 +1,180 @@
+> +#!/bin/bash
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
+> +NUM_NETIFS=4
+> +CHECK_TC="no"
+> +source lib.sh
+> +
+> +h1_create()
+> +{
+> +	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
+> +	vrf_create "vrf-vlan-h1"
+> +	ip link set dev vrf-vlan-h1 up
+> +	vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24 ::ffff:c633:6401/64
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/kvm/hyp/nvhe/host.S   | 5 +++++
- arch/arm64/kvm/hyp/nvhe/switch.c | 5 +++++
- 2 files changed, 10 insertions(+)
+Hi,
 
-diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
-index 78e4b612ac06..751a4b9e429f 100644
---- a/arch/arm64/kvm/hyp/nvhe/host.S
-+++ b/arch/arm64/kvm/hyp/nvhe/host.S
-@@ -171,6 +171,10 @@ SYM_FUNC_END(__host_hvc)
- 	b	hyp_panic
- 
- .L__hyp_sp_overflow\@:
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+	/* Switch to the overflow stack */
-+	adr_this_cpu sp, hyp_overflow_stack + PAGE_SIZE, x0
-+#else
- 	/*
- 	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
- 	 * This corrupts the stack but is ok, since we won't be attempting
-@@ -178,6 +182,7 @@ SYM_FUNC_END(__host_hvc)
- 	 */
- 	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
- 	mov	sp, x0
-+#endif
- 
- 	bl	hyp_panic_bad_stack
- 	ASM_BUG()
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index 5a2e1ab79913..2accc158210f 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -34,6 +34,11 @@ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
- DEFINE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
- DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
- 
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
-+	__aligned(16);
-+#endif
-+
- static void __activate_traps(struct kvm_vcpu *vcpu)
- {
- 	u64 val;
--- 
-2.35.1.473.g83b2b277ed-goog
+Why did you change it from 2001:db8:3::1/64 to ::ffff:c633:6401/64? It
+was actually OK the first time...
 
+Anyway, looking at locked_port_vlan() I see that you are only testing
+IPv4 so you can just drop this address:
+
+vlan_create $h1 100 vrf-vlan-h1 198.51.100.1/24
+
+Same for $h2
+
+LGTM otherwise. Feel free to add my tag to the next version
+
+
+> +}
