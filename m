@@ -2,111 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbiBVJ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:59:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
+        id S230325AbiBVKCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:02:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiBVJ7y (ORCPT
+        with ESMTP id S229526AbiBVKCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:59:54 -0500
-X-Greylist: delayed 174 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 01:59:28 PST
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9513D21FD
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:59:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645523606;
-    s=strato-dkim-0002; d=fpond.eu;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=dWKZOFQ+HIvrBNvfir4obwb7uVDZZb0beIIECXtlDkQ=;
-    b=exfJhR7jvCtg4CEw/NPhwh4CrS/VHlNeZhrary/CFZIVX0kpWMYhA10vK6naSw4iMY
-    nYyBeUC8Afyiu/qE7odMcG7NAQIFB9J41nU7dVAbQVLO3QmiY9cqp8faFxXIuGMFbzYw
-    KziTMkmXEwB0XAmjIkyE1GVV2nH4Qns92uFRI3zyIg3TuW0nw4D9ww1mn7FyJAorGnHE
-    yhJOqiyDQWnA+5Ll8RxVVFOQynKJ4EfD8iKLZPtJud/ZaaItB2dsBwDSW1j7BsbqkEv2
-    vRPmVu+o5PWG/mzREGV0C/+iZQ7OS3P/V0Qs4GgJCXRDBdkQbYoJK/vPtVecD9MMkLpF
-    EA5A==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/87J2o0="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp05-05.back.ox.d0m.de
-    by smtp-ox.front (RZmta 47.40.0 AUTH)
-    with ESMTPSA id 6c30c7y1M9rQ2KB
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Tue, 22 Feb 2022 10:53:26 +0100 (CET)
-Date:   Tue, 22 Feb 2022 10:53:26 +0100 (CET)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        Pavel Machek <pavel@denx.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Message-ID: <1103141484.974980.1645523606875@webmail.strato.com>
-In-Reply-To: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH] can: rcar_canfd: Register the CAN device when fully
- ready
+        Tue, 22 Feb 2022 05:02:12 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FF24D9E1;
+        Tue, 22 Feb 2022 02:01:45 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id n18-20020a05600c4f9200b003806ce86c6dso1338886wmq.5;
+        Tue, 22 Feb 2022 02:01:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/VLSitTrd+JFCZXSR5n/Er4w4lGem+eUtBiugHGU/Z4=;
+        b=S9lree33k8RehQXpjQz9yt2eOLH+BgQjoILefmlddLKENH/YAeRS1XXUi5ZjDy/7ir
+         2bP68rDyqkGKrMP9/ewP1d8xfe65AFSLRC3QEybfEBH90Ek95qK9fmLlVV1t33S3zj5v
+         zVah9SqBTF0EdXFT3490N+hVybH6DYDgtNrXPXteXJ4O8OskRB4Q8CFG5dOszF5XwzB4
+         UZoAOr0A/6H2hr7mYk1q5mCnfju37Y8jXcilJ8BryFGl46XsTzWierY4lwx1xQJZYyXB
+         PTHs0fbpIcqBNHntcSxgPJ5T8Whl1tYjEagk3oQMkJ9/KfRGHkry/jDYwdOFlOz5MLMF
+         mNfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/VLSitTrd+JFCZXSR5n/Er4w4lGem+eUtBiugHGU/Z4=;
+        b=7P/HzeOaB6Htsdg6EbmDpYg6TzZHZ0ZWaFE2wT3q54UBiNNkPWJguDecYnbPgOJJub
+         Iijsd8KGZAfjSGhgyNyQsS1tPqKu8XFtaFsOhE3gbVEcLDlZa1YIOPsPGdN8tO1pJkGV
+         c8B6gLhZ6L+5RJ+kBZw+sB6kjBsW0CqYZPjSGSXz2L+NfDoZjIv2iq/+uwXirL4kKFP4
+         /5uDrCgg+HoU+cxn+FQSO3EUFmmhJVWVr8hVuk/kNSHI2mNG1ZgItGdJ9bg6+4UGMJa0
+         HxwyP/aCYyl90Fk4arRdg3mTXnH2kXeoCqEoZ4X718OcT3cUli7bAXv7HE1LvyMfmkop
+         dn3Q==
+X-Gm-Message-State: AOAM530Z8KI3Hac7haWQBpWXxuQbAey+snBEli9JnyMc0MW3nDB556To
+        wkbYZmsvfQmCmpiJQ1AitaU=
+X-Google-Smtp-Source: ABdhPJzplDMVPJgQYu3DGBs1qKf+QnItZBegvj3CIeFpq1qWqdVwvcNeSzqPXGJpAT0rRfAYKBOIoQ==
+X-Received: by 2002:a1c:a483:0:b0:380:c27c:225b with SMTP id n125-20020a1ca483000000b00380c27c225bmr2443819wme.121.1645524104267;
+        Tue, 22 Feb 2022 02:01:44 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id u23-20020a7bcb17000000b0037bdfa1665asm2297026wmj.18.2022.02.22.02.01.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 02:01:44 -0800 (PST)
+Date:   Tue, 22 Feb 2022 11:01:41 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Harsha <harsha.harsha@xilinx.com>
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, michals@xilinx.com,
+        saratcha@xilinx.com, harshj@xilinx.com, git@xilinx.com
+Subject: Re: [PATCH V2 3/4] crypto: xilinx: Add Xilinx SHA3 driver
+Message-ID: <YhS0hY4c0p4rL8K/@Red>
+References: <1645125264-11033-1-git-send-email-harsha.harsha@xilinx.com>
+ <1645125264-11033-4-git-send-email-harsha.harsha@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.5-Rev38
-X-Originating-Client: open-xchange-appsuite
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1645125264-11033-4-git-send-email-harsha.harsha@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-> On 02/21/2022 11:59 PM Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+Le Fri, Feb 18, 2022 at 12:44:23AM +0530, Harsha a écrit :
+> This patch adds SHA3 driver support for the Xilinx ZynqMP SoC.
+> Xilinx ZynqMP SoC has SHA3 engine used for secure hash calculation.
+> The flow is
+> SHA3 request from Userspace -> SHA3 driver-> ZynqMp driver-> Firmware ->
+> SHA3 HW Engine
 > 
->  
-> Register the CAN device only when all the necessary initialization
-> is completed. This patch makes sure all the data structures and locks are
-> initialized before registering the CAN device.
+> SHA3 HW engine in Xilinx ZynqMP SoC, does not support parallel processing
+> of 2 hash requests.
+> Therefore, software fallback is being used for init, update, final,
+> export and import in the ZynqMP SHA driver
+> For digest, the calculation of SHA3 hash is done by the hardened
+> SHA3 accelerator in Xilinx ZynqMP SoC.
 > 
-> Reported-by: Pavel Machek <pavel@denx.de>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Signed-off-by: Harsha <harsha.harsha@xilinx.com>
 > ---
->  drivers/net/can/rcar/rcar_canfd.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  drivers/crypto/Kconfig             |  10 ++
+>  drivers/crypto/xilinx/Makefile     |   1 +
+>  drivers/crypto/xilinx/zynqmp-sha.c | 285 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 296 insertions(+)
+>  create mode 100644 drivers/crypto/xilinx/zynqmp-sha.c
 > 
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-> index 3ad3a6f6a1dd..8c378b20b2aa 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -1783,15 +1783,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+> diff --git a/drivers/crypto/Kconfig b/drivers/crypto/Kconfig
+> index 4f70567..bf4e55e 100644
+> --- a/drivers/crypto/Kconfig
+> +++ b/drivers/crypto/Kconfig
+> @@ -808,6 +808,16 @@ config CRYPTO_DEV_ZYNQMP_AES
+>  	  accelerator. Select this if you want to use the ZynqMP module
+>  	  for AES algorithms.
 >  
->  	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
->  		       RCANFD_NAPI_WEIGHT);
-> +	spin_lock_init(&priv->tx_lock);
-> +	devm_can_led_init(ndev);
-> +	gpriv->ch[priv->channel] = priv;
->  	err = register_candev(ndev);
->  	if (err) {
->  		dev_err(&pdev->dev,
->  			"register_candev() failed, error %d\n", err);
->  		goto fail_candev;
->  	}
-> -	spin_lock_init(&priv->tx_lock);
-> -	devm_can_led_init(ndev);
-> -	gpriv->ch[priv->channel] = priv;
->  	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
->  	return 0;
+> +config CRYPTO_DEV_ZYNQMP_SHA3
+> +	bool "Support for Xilinx ZynqMP SHA3 hardware accelerator"
+> +	depends on ARCH_ZYNQMP
+> +	select CRYPTO_SHA3
+> +	help
+> +	  Xilinx ZynqMP has SHA3 engine used for secure hash calculation.
+> +	  This driver interfaces with SHA3 hardware engine.
+> +	  Select this if you want to use the ZynqMP module
+> +	  for SHA3 hash computation.
+> +
+>  source "drivers/crypto/chelsio/Kconfig"
 >  
-> -- 
-> 2.17.1
+>  source "drivers/crypto/virtio/Kconfig"
+> diff --git a/drivers/crypto/xilinx/Makefile b/drivers/crypto/xilinx/Makefile
+> index 534e32d..730feff 100644
+> --- a/drivers/crypto/xilinx/Makefile
+> +++ b/drivers/crypto/xilinx/Makefile
+> @@ -1,2 +1,3 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  obj-$(CONFIG_CRYPTO_DEV_ZYNQMP_AES) += zynqmp-aes-gcm.o
+> +obj-$(CONFIG_CRYPTO_DEV_ZYNQMP_SHA3) += zynqmp-sha.o
+> diff --git a/drivers/crypto/xilinx/zynqmp-sha.c b/drivers/crypto/xilinx/zynqmp-sha.c
+> new file mode 100644
+> index 0000000..1eaca97
+> --- /dev/null
+> +++ b/drivers/crypto/xilinx/zynqmp-sha.c
+> @@ -0,0 +1,285 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Xilinx ZynqMP SHA Driver.
+> + * Copyright (c) 2022 Xilinx Inc.
+> + */
+> +#include <linux/cacheflush.h>
+> +#include <crypto/hash.h>
+> +#include <crypto/internal/hash.h>
+> +#include <crypto/sha3.h>
+> +#include <linux/crypto.h>
+> +#include <linux/device.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/firmware/xlnx-zynqmp.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define ZYNQMP_DMA_BIT_MASK		32U
+> +#define ZYNQMP_DMA_ALLOC_FIXED_SIZE	0x1000U
+> +
+> +enum zynqmp_sha_op {
+> +	ZYNQMP_SHA3_INIT = 1,
+> +	ZYNQMP_SHA3_UPDATE = 2,
+> +	ZYNQMP_SHA3_FINAL = 4,
+> +};
+> +
+> +struct zynqmp_sha_drv_ctx {
+> +	struct shash_alg sha3_384;
+> +	struct device *dev;
+> +};
+> +
+> +struct zynqmp_sha_tfm_ctx {
+> +	struct device *dev;
+> +	struct crypto_shash *fbk_tfm;
+> +};
+> +
+> +struct zynqmp_sha_desc_ctx {
+> +	struct shash_desc fbk_req;
+> +};
+> +
+> +static dma_addr_t update_dma_addr, final_dma_addr;
+> +static char *ubuf, *fbuf;
+> +
+> +static int zynqmp_sha_init_tfm(struct crypto_shash *hash)
+> +{
+> +	const char *fallback_driver_name = crypto_shash_alg_name(hash);
+> +	struct zynqmp_sha_tfm_ctx *tfm_ctx = crypto_shash_ctx(hash);
+> +	struct shash_alg *alg = crypto_shash_alg(hash);
+> +	struct crypto_shash *fallback_tfm;
+> +	struct zynqmp_sha_drv_ctx *drv_ctx;
+> +
+> +	drv_ctx = container_of(alg, struct zynqmp_sha_drv_ctx, sha3_384);
+> +	tfm_ctx->dev = drv_ctx->dev;
+> +
+> +	/* Allocate a fallback and abort if it failed. */
+> +	fallback_tfm = crypto_alloc_shash(fallback_driver_name, 0,
+> +					  CRYPTO_ALG_NEED_FALLBACK);
+> +	if (IS_ERR(fallback_tfm))
+> +		return PTR_ERR(fallback_tfm);
+> +
+> +	tfm_ctx->fbk_tfm = fallback_tfm;
+> +	hash->descsize += crypto_shash_descsize(tfm_ctx->fbk_tfm);
+> +
+> +	return 0;
+> +}
+> +
+> +static void zynqmp_sha_exit_tfm(struct crypto_shash *hash)
+> +{
+> +	struct zynqmp_sha_tfm_ctx *tfm_ctx = crypto_shash_ctx(hash);
+> +
+> +	if (tfm_ctx->fbk_tfm) {
+> +		crypto_free_shash(tfm_ctx->fbk_tfm);
+> +		tfm_ctx->fbk_tfm = NULL;
+> +	}
+> +
+> +	memzero_explicit(tfm_ctx, sizeof(struct zynqmp_sha_tfm_ctx));
+> +}
+> +
+> +static int zynqmp_sha_init(struct shash_desc *desc)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +	struct zynqmp_sha_tfm_ctx *tctx = crypto_shash_ctx(desc->tfm);
+> +
+> +	dctx->fbk_req.tfm = tctx->fbk_tfm;
+> +	return crypto_shash_init(&dctx->fbk_req);
+> +}
+> +
+> +static int zynqmp_sha_update(struct shash_desc *desc, const u8 *data, unsigned int length)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +
+> +	return crypto_shash_update(&dctx->fbk_req, data, length);
+> +}
+> +
+> +static int zynqmp_sha_final(struct shash_desc *desc, u8 *out)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +
+> +	return crypto_shash_final(&dctx->fbk_req, out);
+> +}
+> +
+> +static int zynqmp_sha_finup(struct shash_desc *desc, const u8 *data, unsigned int length, u8 *out)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +
+> +	return crypto_shash_finup(&dctx->fbk_req, data, length, out);
+> +}
+> +
+> +static int zynqmp_sha_import(struct shash_desc *desc, const void *in)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +	struct zynqmp_sha_tfm_ctx *tctx = crypto_shash_ctx(desc->tfm);
+> +
+> +	dctx->fbk_req.tfm = tctx->fbk_tfm;
+> +	return crypto_shash_import(&dctx->fbk_req, in);
+> +}
+> +
+> +static int zynqmp_sha_export(struct shash_desc *desc, void *out)
+> +{
+> +	struct zynqmp_sha_desc_ctx *dctx = shash_desc_ctx(desc);
+> +
+> +	return crypto_shash_export(&dctx->fbk_req, out);
+> +}
+> +
+> +static int zynqmp_sha_digest(struct shash_desc *desc, const u8 *data, unsigned int len, u8 *out)
+> +{
+> +	unsigned int remaining_len = len;
+> +	int update_size;
+> +	int ret;
+> +
+> +	ret = zynqmp_pm_sha_hash(0, 0, ZYNQMP_SHA3_INIT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	while (remaining_len != 0) {
+> +		memset(ubuf, 0, ZYNQMP_DMA_ALLOC_FIXED_SIZE);
+> +		if (remaining_len >= ZYNQMP_DMA_ALLOC_FIXED_SIZE) {
+> +			update_size = ZYNQMP_DMA_ALLOC_FIXED_SIZE;
+> +			remaining_len -= ZYNQMP_DMA_ALLOC_FIXED_SIZE;
+> +		} else {
+> +			update_size = remaining_len;
+> +			remaining_len = 0;
+> +		}
+> +		memcpy(ubuf, data, update_size);
+> +		flush_icache_range((unsigned long)ubuf, (unsigned long)ubuf + update_size);
 
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Hello
 
-CU
-Uli
+Why do you copy all data before processing and not use them in-place ?
+
+
+> +		ret = zynqmp_pm_sha_hash(update_dma_addr, update_size, ZYNQMP_SHA3_UPDATE);
+> +		if (ret)
+> +			return ret;
+> +
+> +		data += update_size;
+> +	}
+> +
+> +	ret = zynqmp_pm_sha_hash(final_dma_addr, SHA3_384_DIGEST_SIZE, ZYNQMP_SHA3_FINAL);
+> +	memcpy(out, fbuf, SHA3_384_DIGEST_SIZE);
+> +	memset(fbuf, 0, SHA3_384_DIGEST_SIZE);
+
+You should use memzero_explicit()
+
+Regards
