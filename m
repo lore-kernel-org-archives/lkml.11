@@ -2,107 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79150C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbiBVOWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
+        id S232714AbiBVOWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:22:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232484AbiBVOWA (ORCPT
+        with ESMTP id S232660AbiBVOWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:22:00 -0500
-Received: from gproxy4-pub.mail.unifiedlayer.com (gproxy4-pub.mail.unifiedlayer.com [69.89.23.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DBF6B0A1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:21:34 -0800 (PST)
-Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
-        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id E21DC10047FA8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 14:21:33 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id MW2nnap2Rwm8iMW2nnbrCf; Tue, 22 Feb 2022 14:21:33 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=DpSTREz+ c=1 sm=1 tr=0 ts=6214f16d
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=oGFeUVbbRNcA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+bTtUnnjQep40ozlUHBwlqgi9sKTUeV160TTuTnXvcE=; b=rZq5LXg3g/gKMY4tS7dWyYv5xF
-        JX0hkdY5AJGLPZFD04l5eHgQzuy2sbWhhXWgUXBLZumtdVN2jkTgUdf0j1wBEx6Y1Egv0ZNaAQoHx
-        aJfttJdBHFp7zI2I1iAaLB15o;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:55138 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nMW2n-003zml-1x; Tue, 22 Feb 2022 07:21:33 -0700
-Message-ID: <41106841-f445-07e4-55b3-63c87c158e8a@w6rz.net>
-Date:   Tue, 22 Feb 2022 06:21:31 -0800
+        Tue, 22 Feb 2022 09:22:21 -0500
+X-Greylist: delayed 445 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 06:21:56 PST
+Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895FDA278F;
+        Tue, 22 Feb 2022 06:21:56 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.bitwise.fi (Postfix) with ESMTP id 0E72D46001C;
+        Tue, 22 Feb 2022 16:14:30 +0200 (EET)
+X-Virus-Scanned: Debian amavisd-new at 
+Received: from mail.bitwise.fi ([127.0.0.1])
+        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 6HK8W964f5TN; Tue, 22 Feb 2022 16:14:24 +0200 (EET)
+Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: anssiha)
+        by mail.bitwise.fi (Postfix) with ESMTPSA id C51B546000C;
+        Tue, 22 Feb 2022 16:14:24 +0200 (EET)
+From:   Anssi Hannula <anssi.hannula@bitwise.fi>
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hv_balloon: rate-limit "Unhandled message" warning
+Date:   Tue, 22 Feb 2022 16:14:00 +0200
+Message-Id: <20220222141400.98160-1-anssi.hannula@bitwise.fi>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.16 000/227] 5.16.11-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220221084934.836145070@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-In-Reply-To: <20220221084934.836145070@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nMW2n-003zml-1x
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:55138
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 13
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 00:46, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.11 release.
-> There are 227 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.11-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+For a couple of times I have encountered a situation where
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+  hv_balloon: Unhandled message: type: 12447
 
-Tested-by: Ron Economos <re@w6rz.net>
+is being flooded over 1 million times per second with various values,
+filling the log and consuming cycles, making debugging difficult.
+
+Add rate limiting to the message.
+
+Most other Hyper-V drivers already have similar rate limiting in their
+message callbacks.
+
+The cause of the floods in my case was probably fixed by 96d9d1fa5cd5
+("Drivers: hv: balloon: account for vmbus packet header in
+max_pkt_size").
+
+Fixes: 9aa8b50b2b3d ("Drivers: hv: Add Hyper-V balloon driver")
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+---
+ drivers/hv/hv_balloon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+index f2d05bff4245..439f99b8b5de 100644
+--- a/drivers/hv/hv_balloon.c
++++ b/drivers/hv/hv_balloon.c
+@@ -1563,7 +1563,7 @@ static void balloon_onchannelcallback(void *context)
+ 			break;
+ 
+ 		default:
+-			pr_warn("Unhandled message: type: %d\n", dm_hdr->type);
++			pr_warn_ratelimited("Unhandled message: type: %d\n", dm_hdr->type);
+ 
+ 		}
+ 	}
+-- 
+2.34.1
 
