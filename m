@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB62C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3103EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiBVPBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:01:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        id S233029AbiBVPCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiBVPAx (ORCPT
+        with ESMTP id S233111AbiBVPBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:00:53 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088B510EC4E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:05 -0800 (PST)
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com [209.85.208.198])
+        Tue, 22 Feb 2022 10:01:15 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711C510F201
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:11 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D43633FCA8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 15:00:03 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E303B41270
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 15:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645542003;
-        bh=arKzCg0MYWfR0buWW2cokaDng0neBp5ISe/OJX5gEOA=;
+        s=20210705; t=1645542006;
+        bh=LfKEooVWXSt0X9amI75MXA0ImuzcwyjqGr8txR6hCCo=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=cwE0VXLclgNx4tEBtxubvNoAHmhTv4ti1HQnpvS5XmUzGBWfqHjyqx5YMCUetQd3I
-         7w0EzV8aeoVxdUUw/8Ql+1iSRgeCN0bBHqwbeQZV3Cu5Eig7SpvaBXDlr+0GjtLNPw
-         Ks9JQsLuRGplFDuuLkmGvzu5WVjuFmst8S2/KXyZQc+vu5HueMrQsB0Kp2tYo3Oghs
-         hdwgxCT/F8bJ9W3xhCyk743y+ibYkZyQLWz8ZLrKk9wDRI5YXSICJ5NMBN5MS3Cuea
-         6zikHM4HEO7F2LK3IciXyLpdEM/ykAoJ9rb47A3uxupPa7p96lmce6Zuvujp65Wuag
-         Zi5c5YsZIiA3A==
-Received: by mail-lj1-f198.google.com with SMTP id b16-20020a05651c0b1000b0024647a956a2so1984171ljr.5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:03 -0800 (PST)
+        b=Xpq+NWbyj+VlCotybwRWDbRayC5t9YCiN5vr/RhTjDkb9JfEuIWlrZD+ahkx78qVE
+         0gvfA4pi5IyOrqMpgVVCfmZeVFP+e2+fmXobZAnqcrV2s3Ulk8qS1MDJYP7/i3aISw
+         MIhC83Z6Z4oeith0Ju/BnFccxxsOTEhoqv2X2BDORP/cCNqRuKOCVOhG6wz+uP+Ht0
+         LZxkDMXIEm3jLmESBwmYT3iZ5K7to2i4FqCZFpEYIDNJAJgI1qlA8qAJITrPTy5IK4
+         bH2YSHoVaw1ZuIpn8UPPKNP8UJhmBE2o4B0qBVBEJcZC/MsLjqGZO6dvS5NZ+A8Zob
+         +DX5F3bqnz9xA==
+Received: by mail-ed1-f72.google.com with SMTP id d11-20020a50c88b000000b00410ba7a14acso12094751edh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=arKzCg0MYWfR0buWW2cokaDng0neBp5ISe/OJX5gEOA=;
-        b=Y5hm3FYUxT1ZzYvuE7xQqRgJyOqZNUJr7mhNsK+ICxVtcCb3z9X/GaoJHlHUv4MPou
-         jDeYPKAVDAsLdDi1fkBHDu2CmP0PzECqesOXL5KezE/Adc897HLcponISPmSlUbu9g6D
-         HBljKxSx+/0ct7wJLXCaKRNbP0dIkt6vBNCEFTPszqRqiBOHYufojphniqE02X6/Lb4Q
-         vg4rPiBQq5OX5LacK4VBJAQ4IcEOCCBF6fq7MPS1nGKtpQIJa7cV0sXRqp9/Bq1hj8Dx
-         UvI0oP86C9xkW+3c6az2/AbgYmsdzJs4aT+xUE/eYjZ5dIVwTmTXC2j+xXIEFjBzRipC
-         caag==
-X-Gm-Message-State: AOAM53209hxN3ZazE+zpFLJSYtvZiti/bEw94VCXkn7tGb9xivrYU4/8
-        2heFDQYMJ0mRSOVQGrHSHGymrooi0js+nN8CnEPj1/cL65iIZMuR7tjwCinXnaxDp/WpBCAz/Ge
-        d1GloZCxFJ9AJtu63gehi+6fzZlYfetyFGvgt9V7rig==
-X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id f1-20020a056402194100b004132b5f9074mr2026076edz.414.1645541992920;
-        Tue, 22 Feb 2022 06:59:52 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyuGCh02ChhaQcgWP8AI9k0NhxlMiAPxSs3pga+zesBZndYOMg1ZtIGJuD44dDaZzrGAARhjg==
-X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id f1-20020a056402194100b004132b5f9074mr2026054edz.414.1645541992714;
-        Tue, 22 Feb 2022 06:59:52 -0800 (PST)
+        bh=LfKEooVWXSt0X9amI75MXA0ImuzcwyjqGr8txR6hCCo=;
+        b=otc55xra9RbhELV3NhGgoveOwJRgY2xm1LLb3osbfeRnnFRSutbmKhOdPgGNqztvig
+         jwDIAg6TeuSllGNuqLfLdTz4J/yMZYNt1/80Ho5AzDuBko3pCPDreOAu76bjAFSreENT
+         GjEcmbcYqpIXADD4SAMVJnf/DZgLMN5fzuPPP0dNVgPUC7Ok/c41qStlhoK3w0tcSecv
+         6c1YC2v6QkcANBpT4zEam7IspxbzRzMoYdgXYdWDqpihsVahUOzoO9lTSuIzk8PO6wEY
+         8qGgHzvYPyo2SZahw7izS+tK6MqTzu8W08hfWpEgdthxruD3IOCtY7rhXFYhuBFvFqj8
+         zaCA==
+X-Gm-Message-State: AOAM531WL1sa/HmEKqAyGlXWsFg9BnralOHuF0kHc82Cndx3k2ziAaSl
+        HJUzfd5y8ukirMwSBUE4mxhLi1X7/NYtzcWI/NK4bVkcPYdFxvs1Nxvha7en/0EJ5+vSli9MGiW
+        w3BDkHiJcMzt5V4E23iq9NBhLz6mcqlLf20BDF0/UrA==
+X-Received: by 2002:a17:906:70c2:b0:6cf:e1cc:4d8c with SMTP id g2-20020a17090670c200b006cfe1cc4d8cmr20090154ejk.696.1645542004850;
+        Tue, 22 Feb 2022 07:00:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyR3qbd+Iftv6XGp15bvvgUICPOPWMYZg+AzIuOxdejdmzbh/iz1wm8C/0MI15ezn8MGt0S6w==
+X-Received: by 2002:a17:906:70c2:b0:6cf:e1cc:4d8c with SMTP id g2-20020a17090670c200b006cfe1cc4d8cmr20090120ejk.696.1645542004625;
+        Tue, 22 Feb 2022 07:00:04 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id m2sm2467960ejb.20.2022.02.22.06.59.51
+        by smtp.gmail.com with ESMTPSA id m2sm2467960ejb.20.2022.02.22.07.00.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 06:59:52 -0800 (PST)
+        Tue, 22 Feb 2022 07:00:04 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Alim Akhtar <alim.akhtar@samsung.com>,
         Avri Altman <avri.altman@wdc.com>,
@@ -77,9 +77,9 @@ To:     Alim Akhtar <alim.akhtar@samsung.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 08/15] dt-bindings: ufs: snps,tc-dwc-g210: convert to dtschema
-Date:   Tue, 22 Feb 2022 15:58:47 +0100
-Message-Id: <20220222145854.358646-9-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 15/15] arm64: dts: qcom: sm8350: drop duplicated ref_clk in UFS
+Date:   Tue, 22 Feb 2022 15:58:54 +0100
+Message-Id: <20220222145854.358646-16-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
 References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
@@ -89,106 +89,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Synopsys Universal Flash Storage (UFS) Controller to DT
-schema format.
+ref_clk clock in UFS node is already there with a <0 0> frequency, which
+matches other DTSI files.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/ufs/snps,tc-dwc-g210.yaml        | 51 +++++++++++++++++++
- .../bindings/ufs/tc-dwc-g210-pltfrm.txt       | 26 ----------
- 2 files changed, 51 insertions(+), 26 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/ufs/snps,tc-dwc-g210.yaml
- delete mode 100644 Documentation/devicetree/bindings/ufs/tc-dwc-g210-pltfrm.txt
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/ufs/snps,tc-dwc-g210.yaml b/Documentation/devicetree/bindings/ufs/snps,tc-dwc-g210.yaml
-new file mode 100644
-index 000000000000..671a70d95138
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ufs/snps,tc-dwc-g210.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ufs/snps,tc-dwc-g210.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Synopsys DesignWare Universal Flash Storage (UFS) Controller
-+
-+maintainers:
-+  - Li Wei <liwei213@huawei.com>
-+
-+# Select only our matches, not all jedec,ufs
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - snps,dwc-ufshcd-1.40a
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: ufs-common.yaml
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - snps,g210-tc-6.00-20bit
-+          - snps,g210-tc-6.00-40bit
-+      - const: snps,dwc-ufshcd-1.40a
-+      - const: jedec,ufs-2.0
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    ufs@d0000000 {
-+        compatible = "snps,g210-tc-6.00-40bit",
-+                     "snps,dwc-ufshcd-1.40a",
-+                     "jedec,ufs-2.0";
-+        reg = <0xd0000000 0x10000>;
-+        interrupts = <24>;
-+    };
-diff --git a/Documentation/devicetree/bindings/ufs/tc-dwc-g210-pltfrm.txt b/Documentation/devicetree/bindings/ufs/tc-dwc-g210-pltfrm.txt
-deleted file mode 100644
-index 71c0777960e9..000000000000
---- a/Documentation/devicetree/bindings/ufs/tc-dwc-g210-pltfrm.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--* Universal Flash Storage (UFS) DesignWare Host Controller
--
--DWC_UFS nodes are defined to describe on-chip UFS host controllers and MPHY.
--Each UFS controller instance should have its own node.
--
--Required properties:
--- compatible	: compatible list must contain the PHY type & version:
--			"snps,g210-tc-6.00-20bit"
--			"snps,g210-tc-6.00-40bit"
--		  complemented with the Controller IP version:
--			"snps,dwc-ufshcd-1.40a"
--		  complemented with the JEDEC version:
--			"jedec,ufs-1.1"
--			"jedec,ufs-2.0"
--
--- reg		: <registers mapping>
--- interrupts	: <interrupt mapping for UFS host controller IRQ>
--
--Example for a setup using a 1.40a DWC Controller with a 6.00 G210 40-bit TC:
--	dwc-ufs@d0000000 {
--		compatible = "snps,g210-tc-6.00-40bit",
--			     "snps,dwc-ufshcd-1.40a",
--			     "jedec,ufs-2.0";
--		reg = < 0xd0000000 0x10000 >;
--		interrupts = < 24 >;
--	};
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index a26bd3f13d4a..cb6442c9e761 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -1916,7 +1916,6 @@ ufs_mem_hc: ufshc@1d84000 {
+ 			iommus = <&apps_smmu 0xe0 0x0>;
+ 
+ 			clock-names =
+-				"ref_clk",
+ 				"core_clk",
+ 				"bus_aggr_clk",
+ 				"iface_clk",
+@@ -1926,7 +1925,6 @@ ufs_mem_hc: ufshc@1d84000 {
+ 				"rx_lane0_sync_clk",
+ 				"rx_lane1_sync_clk";
+ 			clocks =
+-				<&rpmhcc RPMH_CXO_CLK>,
+ 				<&gcc GCC_UFS_PHY_AXI_CLK>,
+ 				<&gcc GCC_AGGRE_UFS_PHY_AXI_CLK>,
+ 				<&gcc GCC_UFS_PHY_AHB_CLK>,
+@@ -1936,7 +1934,6 @@ ufs_mem_hc: ufshc@1d84000 {
+ 				<&gcc GCC_UFS_PHY_RX_SYMBOL_0_CLK>,
+ 				<&gcc GCC_UFS_PHY_RX_SYMBOL_1_CLK>;
+ 			freq-table =
+-				<75000000 300000000>,
+ 				<75000000 300000000>,
+ 				<0 0>,
+ 				<0 0>,
 -- 
 2.32.0
 
