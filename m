@@ -2,101 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 828D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83563C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:32:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiBVTcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 14:32:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S235243AbiBVTcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 14:32:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234445AbiBVTch (ORCPT
+        with ESMTP id S230467AbiBVTcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 14:32:37 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F1D8BE2F;
-        Tue, 22 Feb 2022 11:32:11 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21MJW6bh032536;
-        Tue, 22 Feb 2022 13:32:06 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645558326;
-        bh=VMSzmceLGTfxcOmF2qmhWIVBgsfVi18L43a4m1NAcZM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=u7bRFqRQILl9UWJYJIADHH1J66+fDuVqlBxJ1GCpkGcJdJwW000z9VHrIMMp8P2MC
-         7O3tLmwN+DCEQMHoP+s+C+0BtIkUD1I7jm2ugSrzparTWuV+XXZsPEpBkV+4oHFylO
-         M7CiaPVUHwiAK+Ojua49JnhZrxnYCelgCHk41toQ=
-Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21MJW6vD005628
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Feb 2022 13:32:06 -0600
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
- Feb 2022 13:32:05 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 22 Feb 2022 13:32:05 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21MJW5M0077569;
-        Tue, 22 Feb 2022 13:32:05 -0600
-From:   Nishanth Menon <nm@ti.com>
-To:     Pratyush Yadav <p.yadav@ti.com>
-CC:     Nishanth Menon <nm@ti.com>, <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/2] arm64: dts: ti: k3-*: Fix whitespace around flash@0 nodes
-Date:   Tue, 22 Feb 2022 13:32:04 -0600
-Message-ID: <164555831294.27295.15758870545966791533.b4-ty@ti.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220217181025.1815118-1-p.yadav@ti.com>
-References: <20220217181025.1815118-1-p.yadav@ti.com>
+        Tue, 22 Feb 2022 14:32:51 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B2C939C2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:32:25 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id a23so45885391eju.3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:32:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sxPYkxQ6mY3MfEsJx+8iE64/URTY/HAr2HMcmjeViMQ=;
+        b=V83V6RXAXvourhNVZvf2jgxzgWgbvwcqNI4r4pat82eR93ldTr1f7UnyLwwf2qycr7
+         a0xsJu4B7LJ0a8fb9YtI8NKspnKLSg3ZkC5edbZCl0z9GiEPzizCh1VTsL6b55uhFAT8
+         5XLvUxqQKyaIUvk9UTZ0CbvKc9mBw+5pp329s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sxPYkxQ6mY3MfEsJx+8iE64/URTY/HAr2HMcmjeViMQ=;
+        b=npkyVT25ICOaVtwHyVVGagxHqC2ZbzLKRT2zJ3rOUvl0zEh6R50K4oHx0GmR8no3SF
+         EBY6tP8aACwrotQ22RJBf70i1TCtaPlPwco9YYa5Rvx43k7WcBVn0PNPiKE/hFnvQG2L
+         WIqZbFXFobFzVLdSw4NsaliZ/zXWHNYWc6cY8XAnEge6VOWLnZi9Fymm0PlMFYJSS/1P
+         WOVBkW4extX7wuwqdWzmMOTLufrm1JUDDcXTaDYjnXmensD7CGx7bQkOnTneQYpBfUnB
+         34N8lPWOFfbqiOtnkxLLb/UNl+aGu7MVhl9eF98YxjvTOyY7eRRym/qbFW6xdpeaAhZB
+         EnCw==
+X-Gm-Message-State: AOAM5307dk9cZPsS9FD82U1kEa4LTXYs5opSqsGdc8oo4KWzkqPqzCN4
+        2+7OpW7aJe9NyHvh+h4qv0MNThSIQigDsF+5UIo=
+X-Google-Smtp-Source: ABdhPJwwtz/1tCA02ibWodeBzWo8RkC8ueCcBtcArw/7W4ue4ciZSkJqd0/h0iR5yQIyi/o5YyJNRw==
+X-Received: by 2002:a17:906:c788:b0:6ce:98db:d9eb with SMTP id cw8-20020a170906c78800b006ce98dbd9ebmr20894222ejb.139.1645558343684;
+        Tue, 22 Feb 2022 11:32:23 -0800 (PST)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id eq6sm10210253edb.83.2022.02.22.11.32.23
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 11:32:23 -0800 (PST)
+Received: by mail-ej1-f46.google.com with SMTP id gb39so46164880ejc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:32:23 -0800 (PST)
+X-Received: by 2002:adf:e4c2:0:b0:1e3:3e5d:bd65 with SMTP id
+ v2-20020adfe4c2000000b001e33e5dbd65mr21065461wrm.422.1645557950867; Tue, 22
+ Feb 2022 11:25:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <1645455086-9359-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1645455086-9359-2-git-send-email-quic_vpolimer@quicinc.com> <CAA8EJppRUZ5OHSMS1NdFXDDvRXJFNsdoJDWgU7ZPUoAW9OD+eQ@mail.gmail.com>
+In-Reply-To: <CAA8EJppRUZ5OHSMS1NdFXDDvRXJFNsdoJDWgU7ZPUoAW9OD+eQ@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 22 Feb 2022 11:25:37 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=W2wi47egKmWDS+BZGSy85K+A8jX0gvi6CYhmFgoBBRmw@mail.gmail.com>
+Message-ID: <CAD=FV=W2wi47egKmWDS+BZGSy85K+A8jX0gvi6CYhmFgoBBRmw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] drm/msm/dp: Add basic PSR support for eDP
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, quic_kalyant@quicinc.com,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        quic_vproddut@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pratyush Yadav,
+Hi,
 
-On Thu, 17 Feb 2022 23:40:24 +0530, Pratyush Yadav wrote:
-> The OSPI flash nodes are missing a space before the opening brace. Fix
-> that.
-> 
-> 
+On Mon, Feb 21, 2022 at 7:12 PM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> > +static int dp_link_psr_status(struct dp_link_private *link)
+> > +{
+> > +       u8 status[2];
+> > +
+> > +       drm_dp_dpcd_read(link->aux, DP_PSR_ERROR_STATUS, status, 2);
+> > +
+> > +       if (status[0] & DP_PSR_LINK_CRC_ERROR)
+> > +               DRM_ERROR("PSR LINK CRC ERROR\n");
+> > +       else if (status[0] & DP_PSR_RFB_STORAGE_ERROR)
+> > +               DRM_ERROR("PSR RFB STORAGE ERROR\n");
+> > +       else if (status[0] & DP_PSR_VSC_SDP_UNCORRECTABLE_ERROR)
+> > +               DRM_ERROR("PSR VSC SDP UNCORRECTABLE ERROR\n");
+> > +       else if (status[1] & DP_PSR_CAPS_CHANGE)
+> > +               DRM_INFO("PSR Capability Change\n");
+>
+> DRM_DEBUG_DP
 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
+Not sure I'll have time to go back and review the series, but one
+thing that caught my eye as this flashed through my inbox is that I
+think all of these "shouting" are deprecated. It's even officially
+documented now as of commit d2f0a8afc1be ("UPSTREAM: drm/print: Add
+deprecation notes to DRM_...() functions").
 
-[1/2] arm64: dts: ti: k3-*: Fix whitespace around flash@0 nodes
-      commit: 672e89d731c46b1f4118a070366dc117afed0f7c
-[2/2] arm64: dts: ti: k3-*: Drop address and size cells from flash nodes
-      commit: cd9342109a7a901a115227978b86a3db6ee3d7a9
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
-
+-Doug
