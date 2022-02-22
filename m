@@ -2,160 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 23:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30ED2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 23:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236300AbiBVX4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 18:56:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
+        id S236334AbiBVX4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 18:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236336AbiBVX4C (ORCPT
+        with ESMTP id S236303AbiBVX4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 18:56:02 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F257C338BD;
-        Tue, 22 Feb 2022 15:55:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645574136; x=1677110136;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tYgaWv6WfZ0FOsgSVokq4FS/wwrsSmaAJ13BslMvT2A=;
-  b=a6qy41XoBaBL3uc0lhPUBEdUhhptQrLgBKFupam6fXewuXWVAFwQdEjk
-   EN1go7jvDnY/NiiwlgH9BAg+Bt5A3X5uW4qxdMBFRNgatIDlfHT6+RnLb
-   Q8fpDXctRhMBUWgvHqW+6lTIdCQEGJZUH1NzcE0bZ1wRElrsp7aOVsNvc
-   4=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 22 Feb 2022 15:55:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 15:55:35 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 22 Feb 2022 15:55:34 -0800
-Received: from [10.110.64.217] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 22 Feb
- 2022 15:55:33 -0800
-Message-ID: <a5410cc6-54da-5f7f-325a-850a1aa2a83c@quicinc.com>
-Date:   Tue, 22 Feb 2022 15:55:32 -0800
+        Tue, 22 Feb 2022 18:56:40 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC79E6252;
+        Tue, 22 Feb 2022 15:56:09 -0800 (PST)
+X-UUID: 75955e18b78b4233b713773810e60346-20220223
+X-UUID: 75955e18b78b4233b713773810e60346-20220223
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 958287712; Wed, 23 Feb 2022 07:56:05 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 23 Feb 2022 07:56:03 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Feb 2022 07:56:03 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <Mark-YW.Chen@mediatek.com>, <sean.wang@mediatek.com>,
+        <Soul.Huang@mediatek.com>, <YN.Chen@mediatek.com>,
+        <Leon.Yen@mediatek.com>, <Eric-SY.Chang@mediatek.com>,
+        <Deren.Wu@mediatek.com>, <km.lin@mediatek.com>,
+        <robin.chiu@mediatek.com>, <Eddie.Chen@mediatek.com>,
+        <ch.yeh@mediatek.com>, <posh.sun@mediatek.com>,
+        <ted.huang@mediatek.com>, <Eric.Liang@mediatek.com>,
+        <Stella.Chang@mediatek.com>, <Tom.Chou@mediatek.com>,
+        <steve.lee@mediatek.com>, <jsiuda@google.com>,
+        <frankgor@google.com>, <jemele@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Yake Yang <yake.yang@mediatek.com>
+Subject: [PATCH 2/2] Bluetooth: btmtksdio: Fix kernel oops when sdio suspend.
+Date:   Wed, 23 Feb 2022 07:56:00 +0800
+Message-ID: <939606fc0825aa17729ab9a1400f3993043fa2d3.1645573830.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <dba1c05e4bfdf53e631ff134eaa9449e2ad5deef.1645573830.git.objelf@gmail.com>
+References: <dba1c05e4bfdf53e631ff134eaa9449e2ad5deef.1645573830.git.objelf@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v8 3/4] drm/msm/dpu: revise timing engine programming to
- support widebus feature
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
-        <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1645133788-5057-1-git-send-email-quic_khsieh@quicinc.com>
- <1645133788-5057-4-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n51Rewcp7uefTBJ2HwJN7gp-aTxrWe71XQ-RKosqw8uq8Q@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n51Rewcp7uefTBJ2HwJN7gp-aTxrWe71XQ-RKosqw8uq8Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yake Yang <yake.yang@mediatek.com>
 
-On 2/18/2022 6:53 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-02-17 13:36:27)
->> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> index 0d315b4..0c22839 100644
->> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> @@ -217,6 +219,14 @@ static u32 dither_matrix[DITHER_MATRIX_SZ] = {
->>          15, 7, 13, 5, 3, 11, 1, 9, 12, 4, 14, 6, 0, 8, 2, 10
->>   };
->>
->> +
->> +bool dpu_encoder_is_widebus_enabled(struct drm_encoder *drm_enc)
-> const?
->
->> +{
->> +       struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
-> const?
->
->> +
->> +       return dpu_enc->wide_bus_en;
->> +}
->> +
->>   static void _dpu_encoder_setup_dither(struct dpu_hw_pingpong *hw_pp, unsigned bpc)
->>   {
->>          struct dpu_hw_dither_cfg dither_cfg = { 0 };
->> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
->> index 99a5d73..893d74d 100644
->> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
->> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h
->> @@ -168,4 +168,6 @@ int dpu_encoder_get_linecount(struct drm_encoder *drm_enc);
->>    */
->>   int dpu_encoder_get_frame_count(struct drm_encoder *drm_enc);
->>
->> +bool dpu_encoder_is_widebus_enabled(struct drm_encoder *drm_enc);
-> const drm_enc?
->
->> +
->>   #endif /* __DPU_ENCODER_H__ */
->> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
->> index c2cd185..4e4fa56 100644
->> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
->> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_intf.c
->> @@ -147,17 +156,36 @@ static void dpu_hw_intf_setup_timing_engine(struct dpu_hw_intf *ctx,
->>          hsync_ctl = (hsync_period << 16) | p->hsync_pulse_width;
->>          display_hctl = (hsync_end_x << 16) | hsync_start_x;
->>
->> -       if (ctx->cap->type == INTF_EDP || ctx->cap->type == INTF_DP) {
->> +       /*
->> +        * DATA_HCTL_EN controls data timing which can be different from
->> +        * video timing. It is recommended to enable it for all cases, except
->> +        * if compression is enabled in 1 pixel per clock mode
->> +        */
->> +       if (p->wide_bus_en)
->> +               intf_cfg2 |= (INTF_CFG2_DATABUS_WIDEN | INTF_CFG2_DATA_HCTL_EN);
-> Drop useless parenthesis please.
->
->> +
->> +       data_width = p->width;
->> +
->> +       hsync_data_start_x = hsync_start_x;
->> +       hsync_data_end_x =  hsync_start_x + data_width - 1;
->> +
->> +       display_data_hctl = (hsync_data_end_x << 16) | hsync_data_start_x;
->> +
->> +       if (dp_intf) {
->> +               /* DP timing adjustment */
->> +               display_v_start += p->hsync_pulse_width + p->h_back_porch;
->> +               display_v_end   -= p->h_front_porch;
-> Is this code movement intentional?
-yes, this timing adjustment is required for DP/eDP
->
->> +
->>                  active_h_start = hsync_start_x;
->>                  active_h_end = active_h_start + p->xres - 1;
->>                  active_v_start = display_v_start;
-> display_v_start is different now.
->
->>                  active_v_end = active_v_start + (p->yres * hsync_period) - 1;
->>
->> -               display_v_start += p->hsync_pulse_width + p->h_back_porch;
->> -               display_v_end   -= p->h_front_porch;
->> -
->>                  active_hctl = (active_h_end << 16) | active_h_start;
->>                  display_hctl = active_hctl;
->> +
->> +               intf_cfg |= INTF_CFG_ACTIVE_H_EN;
->> +               intf_cfg |= INTF_CFG_ACTIVE_V_EN;
-> 		  intf_cfg |= INTF_CFG_ACTIVE_H_EN | INTF_CFG_ACTIVE_V_EN;
->
-> would be one less line.
+Do not kfree the skb when the skb failed to send with __hci_cmd_sync
+
+2435.241210] Call trace:
+[ 2435.241224]  kfree_skb+0x20/0x140
+[ 2435.241240]  btmtksdio_sdio_wakeup+0x8c/0xcc
+[ 2435.241360]  hci_suspend_notifier+0x108/0x184
+[ 2435.241377]  notifier_call_chain_robust+0x58/0xd8
+[ 2435.241390]  blocking_notifier_call_chain_robust+0x54/0x84
+[ 2435.241402]  pm_notifier_call_chain_robust+0x2c/0x4c
+[ 2435.241414]  suspend_prepare+0x40/0x238
+[ 2435.241425]  enter_state+0xec/0x3a8
+[ 2435.241436]  pm_suspend+0x60/0xcc
+[ 2435.241446]  state_store+0xb8/0x114
+[ 2435.241460]  kobj_attr_store+0x18/0x2c
+[ 2435.241473]  sysfs_kf_write+0x44/0x58
+[ 2435.241486]  kernfs_fop_write_iter+0xf4/0x190
+[ 2435.241500]  vfs_write+0x2b0/0x2e4
+[ 2435.241511]  ksys_write+0x80/0xec
+[ 2435.241523]  __arm64_sys_write+0x24/0x30
+[ 2435.241538]  el0_svc_common+0xf0/0x1d8
+[ 2435.241550]  do_el0_svc_compat+0x28/0x54
+[ 2435.241564]  el0_svc_compat+0x10/0x1c
+[ 2435.241574]  el0_sync_compat_handler+0xa8/0xcc
+[ 2435.241586]  el0_sync_compat+0x188/0x1c0
+[ 2435.241606] Code: a9014ff4 910003fd b40002c0 aa0003f3 (b84d4c08)
+[ 2435.241619] ---[ end trace d496539b850baf14 ]---
+
+Fixes: ce64b3e94919  ("Bluetooth: mt7921s: Support wake on bluetooth")
+Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+---
+ drivers/bluetooth/btmtksdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index cbb09e1b823d..df3f9d090529 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -1226,8 +1226,8 @@ static bool btmtksdio_sdio_wakeup(struct hci_dev *hdev)
+ 				      &bt_awake, HCI_CMD_TIMEOUT);
+ 		if (IS_ERR(skb))
+ 			may_wakeup = false;
+-
+-		kfree_skb(skb);
++		else
++			kfree_skb(skb);
+ 	}
+ 
+ 	return may_wakeup;
+-- 
+2.25.1
+
