@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 364F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A01C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbiBVHcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:32:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34300 "EHLO
+        id S229699AbiBVHkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:40:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiBVHcP (ORCPT
+        with ESMTP id S229452AbiBVHka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:32:15 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FCB26565;
-        Mon, 21 Feb 2022 23:31:49 -0800 (PST)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2rN53B6Pzbbfj;
-        Tue, 22 Feb 2022 15:27:17 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 22 Feb 2022 15:31:46 +0800
-Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
- device from smaller to bigger
-To:     Eric Dumazet <edumazet@google.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
- <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
- <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
- <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
- <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <124e1c43-95a8-1aad-c781-b43eba09984a@huawei.com>
-Date:   Tue, 22 Feb 2022 15:31:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+        Tue, 22 Feb 2022 02:40:30 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5168E125CA3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:40:06 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id z15so5379163pfe.7
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 23:40:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=NjlSIvkhTVirW9AjcVgK/bv/kP1TeZNvmGeoPnvDvqU=;
+        b=ofmhMbr92zX+t9ys9oSMqbuaURU/LN5aS0R7G8Fau6OATgdwtRcVds3ix83KQGSXmN
+         EWuw4uwYnIKFJPpsd5W3S3NpIlKFs+YVHXlXFhedKqay9xtiedhH9bD1oQlGCjSI+atY
+         bfogCYxMQSZe2oUlYtC5j8XBQdrukCZdzopc8b6glF1y4v0AS2HhtGxka4L+jzdrl2d8
+         ClM1c/7NuaXtoII4vHx7XSeXG5zPOW9vcr++GsN4HVXx90toIuA0MB0cQaLOYR0t9D94
+         ZvEn+qIQfIXaBZLtKz21NKPmZ0sDeP3yruezvXWbhpu5gv5CyJJiAPUPPulWZnt8CnMH
+         lNBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NjlSIvkhTVirW9AjcVgK/bv/kP1TeZNvmGeoPnvDvqU=;
+        b=F7maTPcBjeOgaEH+qCWiemZICQ2Oo6enUSq5m6WQRbr41tDJq5al163RMgoZJrJFWJ
+         TCjNDGSrW8T4ft55D0jZalKpCotxtGd9yvEEFLOITwbM87ZrTZb7KIJI415Gnu2ZL5Yc
+         4IfStnhRnLEzQrQjlpj+wLe74YDIu4JVF48ZPXa/313ApgNBxQW3DCxXjhMYvC+v01GM
+         cPn4tTGitliB+B3QVD7z+9Ctgzg3ljipTYPDkMUEiDhYUXX2mzUO8V5kXy447sprh3Eu
+         xA4Ewink0iPs3Qbm5CpEapD8BQh2RxKc3FMaUAIEhyZfyWAq1bwVdCJW4BCHiEXLcYaG
+         mf3g==
+X-Gm-Message-State: AOAM531sGq8zafDtRqt+fcTIcrn+1VUB76O5N20qkdV9zZfW2MIfbHXe
+        mWEQiiXVFAWgZqaYRENbYXA=
+X-Google-Smtp-Source: ABdhPJxoTcUTBDauTM4MFsu+I1xV6Z81CHLb149pntUgDpj3gFmUQHRwGwlYdff+JKX2jnYcUXGoRQ==
+X-Received: by 2002:a63:2bc1:0:b0:35e:c54b:3be0 with SMTP id r184-20020a632bc1000000b0035ec54b3be0mr18820358pgr.105.1645515605832;
+        Mon, 21 Feb 2022 23:40:05 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.21])
+        by smtp.googlemail.com with ESMTPSA id x2sm1635827pje.24.2022.02.21.23.40.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 23:40:05 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH v1] vt_ioctl: fix potential spectre v1 in VT_DISALLOCATE
+Date:   Tue, 22 Feb 2022 15:39:54 +0800
+Message-Id: <20220222073954.20212-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Mon, Feb 21, 2022 at 6:06 PM Ziyang Xuan (William)
-> <william.xuanziyang@huawei.com> wrote:
->>
->>> On Mon, Feb 21, 2022 at 07:43:18AM -0800, Eric Dumazet wrote:
->>>>
->>>> Herbert, do you recall why only a decrease was taken into consideration ?
->>>
->>> Because we shouldn't override administrative settings of the MTU
->>> on the vlan device, unless we have to because of an MTU reduction
->>> on the underlying device.
->>>
->>> Yes this is not perfect if the admin never set an MTU to start with
->>> but as we don't have a way of telling whether the admin has or has
->>> not changed the MTU setting, the safest course of action is to do
->>> nothing in that case.
->> If the admin has changed the vlan device MTU smaller than the underlying
->> device MTU firstly, then changed the underlying device MTU smaller than
->> the vlan device MTU secondly. The admin's configuration has been overridden.
->> Can we consider that the admin's configuration for the vlan device MTU has
->> been invalid and disappeared after the second change? I think so.
-> 
-> The answer is no.
-> 
-> Herbert is saying:
-> 
-> ip link add link eth1 dev eth1.100 type vlan id 100
-> ...
-> ip link set eth1.100 mtu 800
-> ..
-> ip link set eth1 mtu 256
-> ip link set eth1 mtu 1500
-> 
-> -> we do not want eth1.100 mtu being set back to 1500, this might
-> break applications, depending on old kernel feature.
->  Eventually, setting back to 800 seems ok.
+In VT_ACTIVATE an almost identical code path has been patched
+with array_index_nospec. In the VT_DISALLOCATE path, the arg is
+the user input from a system call argument and lately used as a index
+for vc_cons[index].d access, which can be reached through path like
+vt_disallocate->vc_busy or vt_disallocate->vc_deallocate.
+For consistency both code paths should have the same mitigations
+applied. Also, the code style is adjusted as suggested by Jiri.
 
-It seem that setting back to 800 more reasonable. We can record user
-setting MTU by interface ndo_change_mtu() in struct vlan_dev_priv.
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+ drivers/tty/vt/vt_ioctl.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-> 
-> If you want this new feature, we need to record in eth1.100 device
-> that no admin ever changed the mtu,
-> as Herbert suggested.
-> 
-> Then, it is okay to upgrade the vlan mtu (but still is a behavioral
-> change that _could_ break some scripts)
-> 
-> Thank you.
-> .
-> 
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 580136986..8c685b501 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -898,11 +898,13 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (arg > MAX_NR_CONSOLES)
+ 			return -ENXIO;
+ 
+-		if (arg == 0)
++		if (arg == 0) {
+ 			vt_disallocate_all();
+-		else
+-			return vt_disallocate(--arg);
+-		break;
++			break;
++		}
++
++		arg = array_index_nospec(arg - 1, MAX_NR_CONSOLES);
++		return vt_disallocate(arg);
+ 
+ 	case VT_RESIZE:
+ 	{
+-- 
+2.17.1
+
