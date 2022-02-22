@@ -2,87 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA17CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiBVFjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:39:42 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56386 "EHLO
+        id S229777AbiBVFkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:40:18 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiBVFjh (ORCPT
+        with ESMTP id S229723AbiBVFjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:39:37 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D924695A2C;
-        Mon, 21 Feb 2022 21:39:12 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id qe15so17282427pjb.3;
-        Mon, 21 Feb 2022 21:39:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=xJExj9QItyQjXYiedhpMto5VC3ZQviGurxN1YckvXEE=;
-        b=S3Yry2UQ8V4gtf4jjUfDPqsMuHxgi+lJruXchzRAnG3+AApsy0vtKS1cJdPJJp9Ib7
-         at/zLwz7zdPw9VJ4yOS2EDsUG9yC4uGUtSW0E6JjsuwnhFVy7+ZyF88cuqoS+0PPo4Ww
-         PeHKioVynDJSkb8CHiHOeWCzQGfLskY1hoYs9+IEfvq7ZGIr0gM/WVzKi6GmAwkQY5uF
-         VPAa6sYZ7B/m5SVkFbdcxSbBw+dy9TVRGh0/kSP7/+LMzHWHVDmRZBwB9WhwPWiib3sG
-         kt7rz2v4FS4B4yiuTrchcZ8OSiakIv4H/1L1GAdmkBXgFSssO6OXSz3lfl+Cnfvy2A84
-         qmDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=xJExj9QItyQjXYiedhpMto5VC3ZQviGurxN1YckvXEE=;
-        b=UZwf78U2AKiWhPSI5B5DzPiet0ZJOZxwbKFn0dpdD8mk/5RoyQ8iB0mjrFV/mwebzu
-         8iv/xOe+CEe/W+gCWlCm+OKjb45dIKEAV6OIcqnxGhbY4j/aq6R45XwM2OKR1ERUEBp7
-         yaesq/WfNUipICrgdQMH7vfE+QN2ig/DHrGXzI9zIrEoIyUpvBs3HQ6AR1FaLqs0PR32
-         +oAcazDUU9qC/Ee8lSuQSusb0dFLCegzPDg6C8rjcE6pEWNnLgxheI7+ztn5VTpfDs1g
-         dckjBpxcZ7u3yNtZixF8RrLWxDDIurLdzAykWnVjV6zfqImplBLIH7Mn7H+NhIWm0JdN
-         g7rg==
-X-Gm-Message-State: AOAM531il/FrafBol5l5qsajMkxRRsTgEDg8Rf7AKev4vIF9Pr0CINkL
-        JyduIoUaIIe3GU+b1Y5EUPg=
-X-Google-Smtp-Source: ABdhPJyS+flrC9zymhe56r57MyG7l+3zFyY6S+yCs+0NoYTTDmZ+1bTW1xRrsn3BGayn2CWivkhYoA==
-X-Received: by 2002:a17:90b:3509:b0:1b8:aaea:a82e with SMTP id ls9-20020a17090b350900b001b8aaeaa82emr2398175pjb.109.1645508352019;
-        Mon, 21 Feb 2022 21:39:12 -0800 (PST)
-Received: from [192.168.43.80] (subs03-180-214-233-68.three.co.id. [180.214.233.68])
-        by smtp.gmail.com with ESMTPSA id t16sm1067399pjo.26.2022.02.21.21.39.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Feb 2022 21:39:11 -0800 (PST)
-Message-ID: <8069aa79-467e-9af2-d3bc-3c28aa93f0ef@gmail.com>
-Date:   Tue, 22 Feb 2022 12:39:05 +0700
+        Tue, 22 Feb 2022 00:39:52 -0500
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4CD95A37
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:39:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=6bxiRaq+iqtuJ7foBluUPbLSTNYzP7L3/TvXFtYh2HU=;
+        b=HR3dhqWItJgW3mg9TdyxqTvNt0ywZdhKZbEk2zyjajrV9mQo5DQfZ6AKfVaT4gYs2Tw4VcCPJYU9X
+         /xW5Zs9NNTxuA3lZJSA1SoySMZmXnUAmmDcAgTR7O5b3qURVRgrj4xnk1NtOYboY3kkyMV0EkjMFtv
+         eHkaoRax9LOt9UJT2lOLgf/qolUq0RKFcwnNgORUlNbipzgQFg9FmE1kWaVXqAmoHOUMKEGtmHj4Ux
+         M1QO6zH1hSQ1L0rtX7zwc7GItUZbkQ230f5S/exxne+addOFGeStVNjBLI48rfUxRic1ascGER65pH
+         JO+unjA6Ssx0V2jmOkiihle3RlGh8lQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1403, Stamp: 3], Multi: [Enabled, t: (0.000009,0.028380)], BW: [Enabled, t: (0.000023,0.000002)], RTDA: [Enabled, t: (0.068177), Hit: No, Details: v2.25.0; Id: 15.52k0hi.1fsfv1l2f.62kd; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 22 Feb 2022 08:39:09 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru, Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Subject: [PATCH v3] bus: imx-weim: add DT overlay support for WEIM bus
+Date:   Tue, 22 Feb 2022 08:20:59 +0300
+Message-Id: <20220222052059.23610-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220205055006.23447-1-i.bornyakov@metrotek.ru>
+References: <20220205055006.23447-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: Re: [PATCH 5.15 000/196] 5.15.25-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220221084930.872957717@linuxfoundation.org>
-Content-Language: en-US
-In-Reply-To: <20220221084930.872957717@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/02/22 15.47, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.25 release.
-> There are 196 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+Add OF reconfiguration notifier handler for WEIM bus to setup Chip
+Select timings on runtime creation of child devices.
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig, gcc 11.2.0).
+However, it is not possible to load another DT overlay with conflicting
+CS timings with previously loaded overlay, even if the first one is
+unloaded. The reason is that there is no acces to CS timing property of
+a device node being removed, thus we can't track which of configured CS
+are available for re-configuration.
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+---
+Changelog:
+  v1 -> v2: minor style fixes
+   * rename "priv" -> weim_priv"
+   * remove excessive newline
+  v2 -> v3: minor style fixes
+   * rename "weim_data *weim_priv" -> "weim_priv *priv"
 
+ drivers/bus/imx-weim.c | 135 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 126 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/bus/imx-weim.c b/drivers/bus/imx-weim.c
+index bccb275b65ba..60fbd42041dd 100644
+--- a/drivers/bus/imx-weim.c
++++ b/drivers/bus/imx-weim.c
+@@ -64,6 +64,11 @@ struct cs_timing_state {
+ 	struct cs_timing cs[MAX_CS_COUNT];
+ };
+ 
++struct weim_priv {
++	void __iomem *base;
++	struct cs_timing_state timing_state;
++};
++
+ static const struct of_device_id weim_id_table[] = {
+ 	/* i.MX1/21 */
+ 	{ .compatible = "fsl,imx1-weim", .data = &imx1_weim_devtype, },
+@@ -128,21 +133,26 @@ static int imx_weim_gpr_setup(struct platform_device *pdev)
+ }
+ 
+ /* Parse and set the timing for this device. */
+-static int weim_timing_setup(struct device *dev,
+-			     struct device_node *np, void __iomem *base,
+-			     const struct imx_weim_devtype *devtype,
+-			     struct cs_timing_state *ts)
++static int weim_timing_setup(struct device *dev, struct device_node *np,
++			     const struct imx_weim_devtype *devtype)
+ {
+ 	u32 cs_idx, value[MAX_CS_REGS_COUNT];
+ 	int i, ret;
+ 	int reg_idx, num_regs;
+ 	struct cs_timing *cst;
++	struct weim_priv *priv;
++	struct cs_timing_state *ts;
++	void __iomem *base;
+ 
+ 	if (WARN_ON(devtype->cs_regs_count > MAX_CS_REGS_COUNT))
+ 		return -EINVAL;
+ 	if (WARN_ON(devtype->cs_count > MAX_CS_COUNT))
+ 		return -EINVAL;
+ 
++	priv = dev_get_drvdata(dev);
++	base = priv->base;
++	ts = &priv->timing_state;
++
+ 	ret = of_property_read_u32_array(np, "fsl,weim-cs-timing",
+ 					 value, devtype->cs_regs_count);
+ 	if (ret)
+@@ -189,14 +199,15 @@ static int weim_timing_setup(struct device *dev,
+ 	return 0;
+ }
+ 
+-static int weim_parse_dt(struct platform_device *pdev, void __iomem *base)
++static int weim_parse_dt(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id = of_match_device(weim_id_table,
+ 							   &pdev->dev);
+ 	const struct imx_weim_devtype *devtype = of_id->data;
+ 	struct device_node *child;
+ 	int ret, have_child = 0;
+-	struct cs_timing_state ts = {};
++	struct weim_priv *priv;
++	void __iomem *base;
+ 	u32 reg;
+ 
+ 	if (devtype == &imx50_weim_devtype) {
+@@ -205,6 +216,9 @@ static int weim_parse_dt(struct platform_device *pdev, void __iomem *base)
+ 			return ret;
+ 	}
+ 
++	priv = dev_get_drvdata(&pdev->dev);
++	base = priv->base;
++
+ 	if (of_property_read_bool(pdev->dev.of_node, "fsl,burst-clk-enable")) {
+ 		if (devtype->wcr_bcm) {
+ 			reg = readl(base + devtype->wcr_offset);
+@@ -229,7 +243,7 @@ static int weim_parse_dt(struct platform_device *pdev, void __iomem *base)
+ 	}
+ 
+ 	for_each_available_child_of_node(pdev->dev.of_node, child) {
+-		ret = weim_timing_setup(&pdev->dev, child, base, devtype, &ts);
++		ret = weim_timing_setup(&pdev->dev, child, devtype);
+ 		if (ret)
+ 			dev_warn(&pdev->dev, "%pOF set timing failed.\n",
+ 				child);
+@@ -248,17 +262,25 @@ static int weim_parse_dt(struct platform_device *pdev, void __iomem *base)
+ 
+ static int weim_probe(struct platform_device *pdev)
+ {
++	struct weim_priv *priv;
+ 	struct resource *res;
+ 	struct clk *clk;
+ 	void __iomem *base;
+ 	int ret;
+ 
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
+ 	/* get the resource */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
++	priv->base = base;
++	dev_set_drvdata(&pdev->dev, priv);
++
+ 	/* get the clock */
+ 	clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(clk))
+@@ -269,7 +291,7 @@ static int weim_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/* parse the device node */
+-	ret = weim_parse_dt(pdev, base);
++	ret = weim_parse_dt(pdev);
+ 	if (ret)
+ 		clk_disable_unprepare(clk);
+ 	else
+@@ -278,6 +300,81 @@ static int weim_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++#if IS_ENABLED(CONFIG_OF_DYNAMIC)
++static int of_weim_notify(struct notifier_block *nb, unsigned long action,
++			  void *arg)
++{
++	const struct imx_weim_devtype *devtype;
++	struct of_reconfig_data *rd = arg;
++	const struct of_device_id *of_id;
++	struct platform_device *pdev;
++	int ret = NOTIFY_OK;
++
++	switch (of_reconfig_get_state_change(action, rd)) {
++	case OF_RECONFIG_CHANGE_ADD:
++		of_id = of_match_node(weim_id_table, rd->dn->parent);
++		if (!of_id)
++			return NOTIFY_OK; /* not for us */
++
++		devtype = of_id->data;
++
++		pdev = of_find_device_by_node(rd->dn->parent);
++		if (!pdev) {
++			pr_err("%s: could not find platform device for '%pOF'\n",
++				__func__, rd->dn->parent);
++
++			return notifier_from_errno(-EINVAL);
++		}
++
++		if (weim_timing_setup(&pdev->dev, rd->dn, devtype))
++			dev_warn(&pdev->dev,
++				 "Failed to setup timing for '%pOF'\n", rd->dn);
++
++		if (!of_node_check_flag(rd->dn, OF_POPULATED)) {
++			if (!of_platform_device_create(rd->dn, NULL, &pdev->dev)) {
++				dev_err(&pdev->dev,
++					"Failed to create child device '%pOF'\n",
++					rd->dn);
++				ret = notifier_from_errno(-EINVAL);
++			}
++		}
++
++		platform_device_put(pdev);
++
++		break;
++	case OF_RECONFIG_CHANGE_REMOVE:
++		if (!of_node_check_flag(rd->dn, OF_POPULATED))
++			return NOTIFY_OK; /* device already destroyed */
++
++		of_id = of_match_node(weim_id_table, rd->dn->parent);
++		if (!of_id)
++			return NOTIFY_OK; /* not for us */
++
++		pdev = of_find_device_by_node(rd->dn);
++		if (!pdev) {
++			dev_err(&pdev->dev,
++				"Could not find platform device for '%pOF'\n",
++				rd->dn);
++
++			ret = notifier_from_errno(-EINVAL);
++		} else {
++			of_platform_device_destroy(&pdev->dev, NULL);
++			platform_device_put(pdev);
++		}
++
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++struct notifier_block weim_of_notifier = {
++	.notifier_call = of_weim_notify,
++};
++#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
++
+ static struct platform_driver weim_driver = {
+ 	.driver = {
+ 		.name		= "imx-weim",
+@@ -285,7 +382,27 @@ static struct platform_driver weim_driver = {
+ 	},
+ 	.probe = weim_probe,
+ };
+-module_platform_driver(weim_driver);
++
++static int __init weim_init(void)
++{
++#if IS_ENABLED(CONFIG_OF_DYNAMIC)
++	WARN_ON(of_reconfig_notifier_register(&weim_of_notifier));
++#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
++
++	return platform_driver_register(&weim_driver);
++}
++module_init(weim_init);
++
++static void __exit weim_exit(void)
++{
++#if IS_ENABLED(CONFIG_OF_DYNAMIC)
++	of_reconfig_notifier_unregister(&weim_of_notifier);
++#endif /* IS_ENABLED(CONFIG_OF_DYNAMIC) */
++
++	return platform_driver_unregister(&weim_driver);
++
++}
++module_exit(weim_exit);
+ 
+ MODULE_AUTHOR("Freescale Semiconductor Inc.");
+ MODULE_DESCRIPTION("i.MX EIM Controller Driver");
 -- 
-An old man doll... just what I always wanted! - Clara
+2.34.1
+
+
