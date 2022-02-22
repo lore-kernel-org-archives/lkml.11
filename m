@@ -2,201 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2144C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233169AbiBVPD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:03:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
+        id S233267AbiBVPDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:03:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233263AbiBVPCT (ORCPT
+        with ESMTP id S233700AbiBVPDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:02:19 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6D910EC5F;
-        Tue, 22 Feb 2022 07:00:58 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K32RL0vjgz9sSh;
-        Tue, 22 Feb 2022 16:00:46 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9eYGarSmxfDO; Tue, 22 Feb 2022 16:00:46 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32RF3BdPz9sSm;
-        Tue, 22 Feb 2022 16:00:41 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5D5758B779;
-        Tue, 22 Feb 2022 16:00:41 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id NofCSKp4xH38; Tue, 22 Feb 2022 16:00:41 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C38648B77A;
-        Tue, 22 Feb 2022 16:00:40 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MF0VIk1087068
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 16:00:31 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MF0Vfo1087067;
-        Tue, 22 Feb 2022 16:00:31 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: [PATCH v5 2/6] module: Prepare for handling several RB trees
-Date:   Tue, 22 Feb 2022 16:00:19 +0100
-Message-Id: <5211de4d8e10c11cae25aa75c5412ab39ba4a32e.1645541930.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645541930.git.christophe.leroy@csgroup.eu>
-References: <cover.1645541930.git.christophe.leroy@csgroup.eu>
+        Tue, 22 Feb 2022 10:03:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D19F103A
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:02:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645542156;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rdi/qxR3vXLdPYSOnT7lLR4Cj8YvfdXVSXReKwN9fr0=;
+        b=hvy8dN5hawx/78oN+f6qUiNwV4tliI3P7Jhjd7si/vfzIIiVUkxkJzmfbJiTHw7Trn7Nan
+        wc9+eBS4SQE5Sb4asISLwQTxtDvYC+0tjJbL2vE7TRxlNcvRJN7TqIj+p2ddQjqo3M2k+C
+        5TIUMO2zWai8aXTQZgDaA468wCdsasA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-619-ycF0cDwUNOqVxMyIFYm87w-1; Tue, 22 Feb 2022 10:02:34 -0500
+X-MC-Unique: ycF0cDwUNOqVxMyIFYm87w-1
+Received: by mail-ed1-f71.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so12118593edb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:02:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rdi/qxR3vXLdPYSOnT7lLR4Cj8YvfdXVSXReKwN9fr0=;
+        b=xgZIuOhTvGMsSVdlf/Rvl7rJvn4c1RdI5gziJXkW1y7IenT8Ny6EiTWDOwxeWcvNv2
+         cguAj8vcOH3RTkl7FQh5pC4OJEKFc/PlMhufzbrneVP8zLknMxXau/IDRgc8GfOa1Z0N
+         2YRlu0Nlj7ypREZY1Gq2hdwdxRWBxy8wupBFXoOJv42hluBZGqb/PcPUbTnotum2QUPk
+         sRq6wawofeXA5FDgFglawTpUQdiFjVvKEgQxnKkBl7qgQ7n0EXeE+QUHxWiE4N58DRpt
+         BKj2n7Z96VDVnd0Zc8LrO44xwlvEF4pCuw4fN+PYyArHuZK7Ga8TTjjHSjFsNphBa0Ng
+         g+QQ==
+X-Gm-Message-State: AOAM531gwE9XbtQvkODaw6MswVAf0FTXbgJU+Dy8zFNuLkzocKf6u0Fj
+        DU9RdVfE2euxuuYEi4KJdwEae57aLG+mzVMTVW5yWm5pTFoG1rL85sVcwenMyvbfSCwmC1S0iyd
+        uae72TiLgmy06bEB9Y2xh0vek
+X-Received: by 2002:a17:906:2991:b0:6cf:1fd4:39a3 with SMTP id x17-20020a170906299100b006cf1fd439a3mr19565081eje.21.1645542153504;
+        Tue, 22 Feb 2022 07:02:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwfs/vKQLHNEKKWfGdfWtjrGEHBFte8MvKz5Y50OjDrG513NxeN/Cw3t2XJvu4U4AxkMg15eQ==
+X-Received: by 2002:a17:906:2991:b0:6cf:1fd4:39a3 with SMTP id x17-20020a170906299100b006cf1fd439a3mr19565062eje.21.1645542153204;
+        Tue, 22 Feb 2022 07:02:33 -0800 (PST)
+Received: from redhat.com ([2.55.129.240])
+        by smtp.gmail.com with ESMTPSA id q16sm5998109ejc.21.2022.02.22.07.02.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 07:02:32 -0800 (PST)
+Date:   Tue, 22 Feb 2022 10:02:29 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Anirudh Rayabharam <mail@anirudhrb.com>,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
+Message-ID: <20220222090511-mutt-send-email-mst@kernel.org>
+References: <20220221195303.13560-1-mail@anirudhrb.com>
+ <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
+ <YhRtQEWBF0kqWMsI@anirudhrb.com>
+ <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542019; l=4776; s=20211009; h=from:subject:message-id; bh=RJovauv+wsApvJwnNWYWLpUCjAtXnivI97HGCsNugkw=; b=Gcvf145nRHzdfSD677aqrzmKiT3yB8z3I8punYMeMXzz0DrM7Yv0PEEeDY5/7oYXc913DqKs8cLS Z2wZ0s6DCkfi2a2so6CLE0Glu9UU5ugu9rotmBHORrOTnasO+zOW
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to separate text and data, we need to setup
-two rb trees.
+On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
+> On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
+> >
+> > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
+> > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
+> > > >
+> > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
+> > > > before proceeding with adding it to the iotlb.
+> > > >
+> > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > > > One instance where it can happen is when userspace sends an IOTLB
+> > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
+> > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
+> > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
+> > > > indefinitely due to that erroneous entry:
+> > > >
+> > > >         Call Trace:
+> > > >          <TASK>
+> > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+> > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+> > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+> > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+> > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> > > >          </TASK>
+> > > >
+> > > > Reported by syzbot at:
+> > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+> > > >
+> > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+> > > > ---
+> > > >  drivers/vhost/iotlb.c | 6 ++++--
+> > > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+> > > > index 670d56c879e5..b9de74bd2f9c 100644
+> > > > --- a/drivers/vhost/iotlb.c
+> > > > +++ b/drivers/vhost/iotlb.c
+> > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> > > >                               void *opaque)
+> > > >  {
+> > > >         struct vhost_iotlb_map *map;
+> > > > +       u64 size = last - start + 1;
+> > > >
+> > > > -       if (last < start)
+> > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > > > +       if (last < start || size == 0)
+> > > >                 return -EFAULT;
+> > >
+> > > I'd move this check to vhost_chr_iter_write(), then for the device who
+> > > has its own msg handler (e.g vDPA) can benefit from it as well.
+> >
+> > Thanks for reviewing!
+> >
+> > I kept the check here thinking that all devices would benefit from it
+> > because they would need to call vhost_iotlb_add_range() to add an entry
+> > to the iotlb. Isn't that correct?
+> 
+> Correct for now but not for the future, it's not guaranteed that the
+> per device iotlb message handler will use vhost iotlb.
+> 
+> But I agree that we probably don't need to care about it too much now.
+> 
+> > Do you see any other benefit in moving
+> > it to vhost_chr_iter_write()?
+> >
+> > One concern I have is that if we move it out some future caller to
+> > vhost_iotlb_add_range() might forget to handle this case.
+> 
+> Yes.
+> 
+> Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
+> which seems a little bit odd.
 
-Modify functions to give the tree as a parameter.
+Well, I guess ideally we'd split this up as two entries - this kind of
+thing is after all one of the reasons we initially used first,last as
+the API - as opposed to first,size.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/module/internal.h    |  4 ++--
- kernel/module/main.c        | 16 ++++++++--------
- kernel/module/tree_lookup.c | 20 ++++++++++----------
- 3 files changed, 20 insertions(+), 20 deletions(-)
+Anirudh, could you do it like this instead of rejecting?
 
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 743b598e7cc2..99a5be36190c 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -157,13 +157,13 @@ extern struct mod_tree_root mod_tree;
- void mod_tree_insert(struct module *mod);
- void mod_tree_remove_init(struct module *mod);
- void mod_tree_remove(struct module *mod);
--struct module *mod_find(unsigned long addr);
-+struct module *mod_find(unsigned long addr, struct mod_tree_root *tree);
- #else /* !CONFIG_MODULES_TREE_LOOKUP */
- 
- static inline void mod_tree_insert(struct module *mod) { }
- static inline void mod_tree_remove_init(struct module *mod) { }
- static inline void mod_tree_remove(struct module *mod) { }
--static inline struct module *mod_find(unsigned long addr)
-+static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
- {
- 	struct module *mod;
- 
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 3b75cb97f8c2..c0b961e02909 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -91,22 +91,22 @@ struct symsearch {
-  * Bounds of module text, for speeding up __module_address.
-  * Protected by module_mutex.
-  */
--static void __mod_update_bounds(void *base, unsigned int size)
-+static void __mod_update_bounds(void *base, unsigned int size, struct mod_tree_root *tree)
- {
- 	unsigned long min = (unsigned long)base;
- 	unsigned long max = min + size;
- 
--	if (min < module_addr_min)
--		module_addr_min = min;
--	if (max > module_addr_max)
--		module_addr_max = max;
-+	if (min < tree->addr_min)
-+		tree->addr_min = min;
-+	if (max > tree->addr_max)
-+		tree->addr_max = max;
- }
- 
- static void mod_update_bounds(struct module *mod)
- {
--	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size);
-+	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size, &mod_tree);
- 	if (mod->init_layout.size)
--		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size);
-+		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size, &mod_tree);
- }
- 
- static void module_assert_mutex_or_preempt(void)
-@@ -3051,7 +3051,7 @@ struct module *__module_address(unsigned long addr)
- 
- 	module_assert_mutex_or_preempt();
- 
--	mod = mod_find(addr);
-+	mod = mod_find(addr, &mod_tree);
- 	if (mod) {
- 		BUG_ON(!within_module(addr, mod));
- 		if (mod->state == MODULE_STATE_UNFORMED)
-diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
-index 0bc4ec3b22ce..995fe68059db 100644
---- a/kernel/module/tree_lookup.c
-+++ b/kernel/module/tree_lookup.c
-@@ -61,14 +61,14 @@ static const struct latch_tree_ops mod_tree_ops = {
- 	.comp = mod_tree_comp,
- };
- 
--static noinline void __mod_tree_insert(struct mod_tree_node *node)
-+static noinline void __mod_tree_insert(struct mod_tree_node *node, struct mod_tree_root *tree)
- {
--	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
-+	latch_tree_insert(&node->node, &tree->root, &mod_tree_ops);
- }
- 
--static void __mod_tree_remove(struct mod_tree_node *node)
-+static void __mod_tree_remove(struct mod_tree_node *node, struct mod_tree_root *tree)
- {
--	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
-+	latch_tree_erase(&node->node, &tree->root, &mod_tree_ops);
- }
- 
- /*
-@@ -80,28 +80,28 @@ void mod_tree_insert(struct module *mod)
- 	mod->core_layout.mtn.mod = mod;
- 	mod->init_layout.mtn.mod = mod;
- 
--	__mod_tree_insert(&mod->core_layout.mtn);
-+	__mod_tree_insert(&mod->core_layout.mtn, &mod_tree);
- 	if (mod->init_layout.size)
--		__mod_tree_insert(&mod->init_layout.mtn);
-+		__mod_tree_insert(&mod->init_layout.mtn, &mod_tree);
- }
- 
- void mod_tree_remove_init(struct module *mod)
- {
- 	if (mod->init_layout.size)
--		__mod_tree_remove(&mod->init_layout.mtn);
-+		__mod_tree_remove(&mod->init_layout.mtn, &mod_tree);
- }
- 
- void mod_tree_remove(struct module *mod)
- {
--	__mod_tree_remove(&mod->core_layout.mtn);
-+	__mod_tree_remove(&mod->core_layout.mtn, &mod_tree);
- 	mod_tree_remove_init(mod);
- }
- 
--struct module *mod_find(unsigned long addr)
-+struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
- {
- 	struct latch_tree_node *ltn;
- 
--	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
-+	ltn = latch_tree_find((void *)addr, &tree->root, &mod_tree_ops);
- 	if (!ltn)
- 		return NULL;
- 
--- 
-2.34.1
+
+> I wonder if it's better to just remove
+> the map->size. Having a quick glance at the the user, I don't see any
+> blocker for this.
+> 
+> Thanks
+
+I think it's possible but won't solve the bug by itself, and we'd need
+to review and fix all users - a high chance of introducing
+another regression. And I think there's value of fitting under the
+stable rule of 100 lines with context.
+So sure, but let's fix the bug first.
+
+
+
+> >
+> > Thanks!
+> >
+> >         - Anirudh.
+> >
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > >         if (iotlb->limit &&
+> > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> > > >                 return -ENOMEM;
+> > > >
+> > > >         map->start = start;
+> > > > -       map->size = last - start + 1;
+> > > > +       map->size = size;
+> > > >         map->last = last;
+> > > >         map->addr = addr;
+> > > >         map->perm = perm;
+> > > > --
+> > > > 2.35.1
+> > > >
+> > >
+> >
 
