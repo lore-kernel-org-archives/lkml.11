@@ -2,210 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbiBVUfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:35:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S235508AbiBVUgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:36:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235579AbiBVUfa (ORCPT
+        with ESMTP id S235592AbiBVUfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:35:30 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C2913D90E;
-        Tue, 22 Feb 2022 12:35:01 -0800 (PST)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21MIbtPp009442;
-        Tue, 22 Feb 2022 20:34:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=orLB5XX4M45ARGDTykwF5VP+SLGV+NFeBV2onkdnZjU=;
- b=nl0K/WTut9WDTzjezrjm5uZJu2DC3NcxYDBwGUqVRN/10VIlCYmnTcTZk9ls3LvovRjZ
- DllQn0nKO+NUUHj5fPlK7aVhHnZgJ6TcPfvcUr5YmtKde7Z3/NSq5piSkzDgp5oV6Ob7
- DKiFDJUGtUsG27b0lyVeqsoRCrfmPwwfc4URmzqAFCTnHSSQQzplBKKxamyydJgXXgon
- 77Umsguhn6GJSpg9RoXeUOQI/xNlbL1wBssfi3sH24fmOG4xUExWxHA4Bmemgcd4ZZ1r
- WjyHDqMZTOoOvdMkbVcZiti0NvGqiIJfirTTD+UMrPsp0aaIt4kd6IY5lfyubQgchUuF Mg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed34ueeyj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:34:41 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21MJf6pE008811;
-        Tue, 22 Feb 2022 20:34:40 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed34ueexc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:34:40 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21MKK30Q027797;
-        Tue, 22 Feb 2022 20:34:38 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ear695px1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 20:34:38 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21MKYZgR45351204
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 22 Feb 2022 20:34:36 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E0B1BA4062;
-        Tue, 22 Feb 2022 20:34:35 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 60C64A405C;
-        Tue, 22 Feb 2022 20:34:35 +0000 (GMT)
-Received: from localhost (unknown [9.43.75.136])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 22 Feb 2022 20:34:34 +0000 (GMT)
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     linux-ext4@vger.kernel.org
-Cc:     Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [RFC 2/9] ext4: Fix ext4_fc_stats trace point
-Date:   Wed, 23 Feb 2022 02:04:10 +0530
-Message-Id: <9a8c359270a6330ed384ea0a75441e367ecde924.1645558375.git.riteshh@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1645558375.git.riteshh@linux.ibm.com>
-References: <cover.1645558375.git.riteshh@linux.ibm.com>
+        Tue, 22 Feb 2022 15:35:36 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ECA13F896;
+        Tue, 22 Feb 2022 12:35:09 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 18B751F433BC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645562108;
+        bh=KWkBmtNLJcWwrlrj1/Uv+K+VhcT3/3TdLTKZ/vKm7V0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bjE6sjU4fM0pK3Dltr1i5dH7svCLm1ihqBsFld1i98ORStZ/3rNLITIL3xwqDQRVZ
+         jzjcwvtiKZzZIM/o3+LbhTUXqsMVS+TTcCSnHUXLNTWQ/Y2RvFgOTTbx3jA1OhJV1W
+         1FDG+P0rGS0p0cNnfXzbidp7sB7qNg3x6XPYLYmsYcyo8aoMdPP6ezf5NYddXU7/Ef
+         a1P6DrGAyFaYm6q7tAyS4wwRv2n55GEnP3dzi2aMwU8fjY7fLnZrLDnXbI1+34zAD9
+         wjKkJgb5pfbmV/vdadDRdOkR4yL46OroqRCwRQ4WUQ8FcSlzT2afAdYpkgUBMD6IN7
+         iW1hXmEM0ZsSQ==
+Date:   Tue, 22 Feb 2022 15:35:03 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>
+Subject: Re: [PATCH v2 08/23] arm64: dts: mt8192: Add audio-related nodes
+Message-ID: <20220222203503.ni4qsgv75pdzaz2c@notapiano>
+References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-9-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: iilZlSkV3yRsAFLmp5NPi8SnO2I2K1AT
-X-Proofpoint-ORIG-GUID: oN_oLcWEfToZOZtPtupz8VfvFjIDvee9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-22_07,2022-02-21_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
- clxscore=1011 malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202220126
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220218091633.9368-9-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ftrace's __print_symbolic() requires that any enum values used in the
-symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
-so that the enum value can be encoded in the ftrace ring buffer.
+On Fri, Feb 18, 2022 at 05:16:18PM +0800, Allen-KH Cheng wrote:
+> Add audio-related nodes in audsys for mt8192 SoC.
+> Move audsys node in ascending order.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 135 ++++++++++++++++++++++-
+>  1 file changed, 129 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 08c7c1c772f5..f93fe3779161 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -743,6 +743,135 @@
+>  			#size-cells = <2>;
+>  		};
+>  
+> +		audsys: syscon@11210000 {
+> +			compatible = "mediatek,mt8192-audsys", "syscon";
+> +			reg = <0 0x11210000 0 0x2000>;
 
-This patch also fixes few other problems found in this trace point.
-e.g. dereferencing structures in TP_printk which should not be done
-at any cost.
+You should mention in the commit message that the address range's length was
+increased as well (from 0x1000 to 0x2000).
 
-Also to avoid checkpatch warnings, this patch removes those
-whitespaces/tab stops issues.
-
-Fixes: commit aa75f4d3daae ("ext4: main fast-commit commit path")
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
----
- include/trace/events/ext4.h | 76 +++++++++++++++++++++++--------------
- 1 file changed, 47 insertions(+), 29 deletions(-)
-
-diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
-index 19e957b7f941..17fb9c506e8a 100644
---- a/include/trace/events/ext4.h
-+++ b/include/trace/events/ext4.h
-@@ -95,6 +95,16 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
- 	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
- 	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
- 
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
-+TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
-+
- #define show_fc_reason(reason)						\
- 	__print_symbolic(reason,					\
- 		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
-@@ -2723,41 +2733,49 @@ TRACE_EVENT(ext4_fc_commit_stop,
- 
- #define FC_REASON_NAME_STAT(reason)					\
- 	show_fc_reason(reason),						\
--	__entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
-+	__entry->fc_ineligible_rc[reason]
- 
- TRACE_EVENT(ext4_fc_stats,
--	    TP_PROTO(struct super_block *sb),
--
--	    TP_ARGS(sb),
-+	TP_PROTO(struct super_block *sb),
- 
--	    TP_STRUCT__entry(
--		    __field(dev_t, dev)
--		    __field(struct ext4_sb_info *, sbi)
--		    __field(int, count)
--		    ),
-+	TP_ARGS(sb),
- 
--	    TP_fast_assign(
--		    __entry->dev = sb->s_dev;
--		    __entry->sbi = EXT4_SB(sb);
--		    ),
-+	TP_STRUCT__entry(
-+		__field(dev_t, dev)
-+		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
-+		__field(unsigned long, fc_commits)
-+		__field(unsigned long, fc_ineligible_commits)
-+		__field(unsigned long, fc_numblks)
-+	),
- 
--	    TP_printk("dev %d:%d fc ineligible reasons:\n"
--		      "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
--		      "num_commits:%ld, ineligible: %ld, numblks: %ld",
--		      MAJOR(__entry->dev), MINOR(__entry->dev),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
--		      FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
--		      __entry->sbi->s_fc_stats.fc_num_commits,
--		      __entry->sbi->s_fc_stats.fc_ineligible_commits,
--		      __entry->sbi->s_fc_stats.fc_numblks)
-+	TP_fast_assign(
-+		int i;
- 
-+		__entry->dev = sb->s_dev;
-+		for (i = 0; i < EXT4_FC_REASON_MAX; i++)
-+			__entry->fc_ineligible_rc[i] =
-+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
-+		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
-+		__entry->fc_ineligible_commits =
-+			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
-+		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
-+	),
-+
-+	TP_printk("dev %d,%d fc ineligible reasons:\n"
-+		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
-+		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
-+		  MAJOR(__entry->dev), MINOR(__entry->dev),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
-+		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
-+		  __entry->fc_commits, __entry->fc_ineligible_commits,
-+		  __entry->fc_numblks)
- );
- 
- #define DEFINE_TRACE_DENTRY_EVENT(__type)				\
--- 
-2.31.1
-
+> +			#clock-cells = <1>;
+> +
+> +			afe: mt8192-afe-pcm {
+> +				compatible = "mediatek,mt8192-audio";
+> +				interrupts = <GIC_SPI 202 IRQ_TYPE_LEVEL_HIGH 0>;
+> +				resets = <&watchdog 17>;
+> +				reset-names = "audiosys";
+> +				mediatek,apmixedsys = <&apmixedsys>;
+> +				mediatek,infracfg = <&infracfg>;
+> +				mediatek,topckgen = <&topckgen>;
+> +				power-domains = <&spm MT8192_POWER_DOMAIN_AUDIO>;
+> +				clocks = <&audsys CLK_AUD_AFE>,
+> +					 <&audsys CLK_AUD_DAC>,
+> +					 <&audsys CLK_AUD_DAC_PREDIS>,
+> +					 <&audsys CLK_AUD_ADC>,
+> +					 <&audsys CLK_AUD_ADDA6_ADC>,
+> +					 <&audsys CLK_AUD_22M>,
+> +					 <&audsys CLK_AUD_24M>,
+> +					 <&audsys CLK_AUD_APLL_TUNER>,
+> +					 <&audsys CLK_AUD_APLL2_TUNER>,
+> +					 <&audsys CLK_AUD_TDM>,
+> +					 <&audsys CLK_AUD_TML>,
+> +					 <&audsys CLK_AUD_NLE>,
+> +					 <&audsys CLK_AUD_DAC_HIRES>,
+> +					 <&audsys CLK_AUD_ADC_HIRES>,
+> +					 <&audsys CLK_AUD_ADC_HIRES_TML>,
+> +					 <&audsys CLK_AUD_ADDA6_ADC_HIRES>,
+> +					 <&audsys CLK_AUD_3RD_DAC>,
+> +					 <&audsys CLK_AUD_3RD_DAC_PREDIS>,
+> +					 <&audsys CLK_AUD_3RD_DAC_TML>,
+> +					 <&audsys CLK_AUD_3RD_DAC_HIRES>,
+> +					 <&infracfg CLK_INFRA_AUDIO>,
+> +					 <&infracfg CLK_INFRA_AUDIO_26M_B>,
+> +					 <&topckgen CLK_TOP_AUDIO_SEL>,
+> +					 <&topckgen CLK_TOP_AUD_INTBUS_SEL>,
+> +					 <&topckgen CLK_TOP_MAINPLL_D4_D4>,
+> +					 <&topckgen CLK_TOP_AUD_1_SEL>,
+> +					 <&topckgen CLK_TOP_APLL1>,
+> +					 <&topckgen CLK_TOP_AUD_2_SEL>,
+> +					 <&topckgen CLK_TOP_APLL2>,
+> +					 <&topckgen CLK_TOP_AUD_ENGEN1_SEL>,
+> +					 <&topckgen CLK_TOP_APLL1_D4>,
+> +					 <&topckgen CLK_TOP_AUD_ENGEN2_SEL>,
+> +					 <&topckgen CLK_TOP_APLL2_D4>,
+> +					 <&topckgen CLK_TOP_APLL_I2S0_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S1_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S2_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S3_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S4_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S5_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S6_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S7_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S8_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL_I2S9_M_SEL>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV0>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV1>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV2>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV3>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV4>,
+> +					 <&topckgen CLK_TOP_APLL12_DIVB>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV5>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV6>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV7>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV8>,
+> +					 <&topckgen CLK_TOP_APLL12_DIV9>,
+> +					 <&topckgen CLK_TOP_AUDIO_H_SEL>,
+> +					 <&clk26m>;
+> +				clock-names = "aud_afe_clk",
+> +					      "aud_dac_clk",
+> +					      "aud_dac_predis_clk",
+> +					      "aud_adc_clk",
+> +					      "aud_adda6_adc_clk",
+> +					      "aud_apll22m_clk",
+> +					      "aud_apll24m_clk",
+> +					      "aud_apll1_tuner_clk",
+> +					      "aud_apll2_tuner_clk",
+> +					      "aud_tdm_clk",
+> +					      "aud_tml_clk",
+> +					      "aud_nle",
+> +					      "aud_dac_hires_clk",
+> +					      "aud_adc_hires_clk",
+> +					      "aud_adc_hires_tml",
+> +					      "aud_adda6_adc_hires_clk",
+> +					      "aud_3rd_dac_clk",
+> +					      "aud_3rd_dac_predis_clk",
+> +					      "aud_3rd_dac_tml",
+> +					      "aud_3rd_dac_hires_clk",
+> +					      "aud_infra_clk",
+> +					      "aud_infra_26m_clk",
+> +					      "top_mux_audio",
+> +					      "top_mux_audio_int",
+> +					      "top_mainpll_d4_d4",
+> +					      "top_mux_aud_1",
+> +					      "top_apll1_ck",
+> +					      "top_mux_aud_2",
+> +					      "top_apll2_ck",
+> +					      "top_mux_aud_eng1",
+> +					      "top_apll1_d4",
+> +					      "top_mux_aud_eng2",
+> +					      "top_apll2_d4",
+> +					      "top_i2s0_m_sel",
+> +					      "top_i2s1_m_sel",
+> +					      "top_i2s2_m_sel",
+> +					      "top_i2s3_m_sel",
+> +					      "top_i2s4_m_sel",
+> +					      "top_i2s5_m_sel",
+> +					      "top_i2s6_m_sel",
+> +					      "top_i2s7_m_sel",
+> +					      "top_i2s8_m_sel",
+> +					      "top_i2s9_m_sel",
+> +					      "top_apll12_div0",
+> +					      "top_apll12_div1",
+> +					      "top_apll12_div2",
+> +					      "top_apll12_div3",
+> +					      "top_apll12_div4",
+> +					      "top_apll12_divb",
+> +					      "top_apll12_div5",
+> +					      "top_apll12_div6",
+> +					      "top_apll12_div7",
+> +					      "top_apll12_div8",
+> +					      "top_apll12_div9",
+> +					      "top_mux_audio_h",
+> +					      "top_clk26m_clk";
+> +			};
+> +		};
+> +
+>  		nor_flash: spi@11234000 {
+>  			compatible = "mediatek,mt8192-nor";
+>  			reg = <0 0x11234000 0 0xe0>;
+> @@ -758,12 +887,6 @@
+>  			status = "disable";
+>  		};
+>  
+> -		audsys: clock-controller@11210000 {
+> -			compatible = "mediatek,mt8192-audsys", "syscon";
+> -			reg = <0 0x11210000 0 0x1000>;
+> -			#clock-cells = <1>;
+> -		};
+> -
+>  		i2c3: i2c@11cb0000 {
+>  			compatible = "mediatek,mt8192-i2c";
+>  			reg = <0 0x11cb0000 0 0x1000>,
+> -- 
+> 2.18.0
+> 
+> 
