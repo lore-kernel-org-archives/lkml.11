@@ -2,227 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660C3C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FF0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 17:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234727AbiBVR53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 12:57:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
+        id S234749AbiBVR5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 12:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234736AbiBVR50 (ORCPT
+        with ESMTP id S234726AbiBVR52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 12:57:26 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2062.outbound.protection.outlook.com [40.107.243.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43269F381;
+        Tue, 22 Feb 2022 12:57:28 -0500
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0463E9F3AB;
+        Tue, 22 Feb 2022 09:56:48 -0800 (PST)
+Received: by mail-oo1-f53.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso18694899oon.5;
+        Tue, 22 Feb 2022 09:56:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d0c5eaekgCsd/2MB/A2s3Yr0/x87WiLkg0ydsvjSbdg=;
+        b=X5ln7daP7x36ZsQwdFB3GPGWMZbyrSw1tImIzf0EpnnNkjrt1zBa4+uwoixGuyE8Ko
+         bgEhFZvEVl2Czxutg1OAhZv3S8fqJUs/N4onWCRB64yda9IFuA51xoRfmvpjOStBZJRX
+         WpvqmsJ6KjKYrq6kCllipG9O0s0wU3cyM+WJIzkW/fJv/gQzTa9x/kIPaidKAUdVRytm
+         ktqCiORrcA4/2xPE44Lc7tKu0jZAPLxKM8f+5F7qbMiBmLhdqjmQ4WacS2HzKqEOqqp7
+         P2nJtXHWoHTLNwiPlgV7ufu5whS81R+jvaKHMkDzgLl4kEa19v4Dt0tig5u8IOvquaip
+         z1Iw==
+X-Gm-Message-State: AOAM531G135hW3DBrg/Gjr7+0Jfvy9GGgzveZRGjOgN0qEZI+tkLFVVT
+        n0tOMbBMxyrShGVHpdKgDw==
+X-Google-Smtp-Source: ABdhPJzyCoIdb4zb2XlsBbH2K09wgxaBCtYwIdcE2Yqsud2oVcKlTNvKGVY6PBPFKAl9JjY+BPTX8g==
+X-Received: by 2002:a05:6870:790c:b0:d2:8591:d4a5 with SMTP id hg12-20020a056870790c00b000d28591d4a5mr2255509oab.265.1645552607973;
         Tue, 22 Feb 2022 09:56:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TPBijGUz3qzh97A5gE2B35hx28z5KZN35c8IZ6rqGXjLUh69vp7GlDgk/NLD0+vCEAlQp5NYEBjPob1N8YvRuuzxeL9Gw4arZaG2Hb1N/uwyDQa9C3uiPy+hF30MbTLFKQstjGXFkeraUP+IaVYfrq0wiVUDe/hYXAryeW4qmUxaR0LnSYSKE/XMSxSyufq5Q384GVNL2+0vV5NxYb+1khIxRydE6s3JqDcMY+dsYhZYWkQLzDEQjpTf7iwIC7xepOZlIlhd7lcaGPckm/EVqq+kWDAnSONIVuIk8flJRxdMbLpl+lCtmDh3dkXXNt+AynisrNrODGrVfjf82EfTOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VhCPh12QtjsbeGwk9VqrPRYkcoS2zEIEM+Daar7D0rE=;
- b=Lf60AOHRFGd12S/KLuzBfYNkPjZ6Fmwi5SW/jM1EdTvD5OE3P84k+NKwIwHVXRyHnr0mZVSu5hECTfU5cTe2XSi1F5pQaBZlIM0Diz8O6o4D5q+vDmB5E53xclAHHgIWAWalodbo/Ct4yk2g4Klg4alnYNcWyTHY4m77xI2mRU5AvWspqy0+9u8+BTi3YpsC68uWLf4UWYOm/HiOu8U6/7qYIhlE/4K/6DHlZ2Af1quAgvq73R+NdlSg3PGOhcupSNRnnR64FYuwYsoC0iGsy2mmBhrsnQki+0Py+sKmp3Jdjczq7vIqtlyeJ0lfHUBK9tWdMSf/FW+vssWnF/yGUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VhCPh12QtjsbeGwk9VqrPRYkcoS2zEIEM+Daar7D0rE=;
- b=mOP+YLyjWS/hm2VikYo3WBQWHAx+kwBkl5qL5ufDljWpV14Ud6fhUMkqhHzAVlVKSDkWDe0rEvMvItjNo83pKTsq7ny2CXkg8y04jwkSjJHaBfOwObuYv3r6A+N/6XroNzj6/vx/SOu5tv30HvrNza0df0xOrkHeXyQWqhoq0Zn9c/GxVDpg78+3P9LMZHcf9XH4iWyjAv0ypj08thaFYQ9Uk5LNRoBPt4WTO5A232bsUWxFcmhaNXIgz1b4Vf/7eAg30nFgMEXQflb3jluVCcLwXOClRJH7+FDhcIKP/cbeEViwO1StPYPHsfO6twFrkG6AMbnIqqGsmDIQdKx3fA==
-Received: from MWHPR01CA0030.prod.exchangelabs.com (2603:10b6:300:101::16) by
- DM6PR12MB3467.namprd12.prod.outlook.com (2603:10b6:5:3c::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.17; Tue, 22 Feb 2022 17:56:46 +0000
-Received: from CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:101:cafe::f7) by MWHPR01CA0030.outlook.office365.com
- (2603:10b6:300:101::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21 via Frontend
- Transport; Tue, 22 Feb 2022 17:56:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT024.mail.protection.outlook.com (10.13.174.162) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 17:56:45 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 22 Feb
- 2022 17:56:44 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 22 Feb 2022
- 09:56:43 -0800
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Tue, 22 Feb 2022 09:56:40 -0800
-From:   Krishna Yarlagadda <kyarlagadda@nvidia.com>
-To:     <broonie@kernel.org>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <linux-spi@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>
-CC:     <skomatineni@nvidia.com>, <ldewangan@nvidia.com>,
-        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: [PATCH v2 4/5] spi: tegra210-quad: add acpi support
-Date:   Tue, 22 Feb 2022 23:26:10 +0530
-Message-ID: <20220222175611.58051-5-kyarlagadda@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220222175611.58051-1-kyarlagadda@nvidia.com>
-References: <20220222175611.58051-1-kyarlagadda@nvidia.com>
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id o15sm6387844ooi.31.2022.02.22.09.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 09:56:47 -0800 (PST)
+Received: (nullmailer pid 3307024 invoked by uid 1000);
+        Tue, 22 Feb 2022 17:56:46 -0000
+Date:   Tue, 22 Feb 2022 11:56:46 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tyrone Ting <warp5tw@gmail.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        krzysztof.kozlowski@canonical.com, semen.protsenko@linaro.org,
+        yangyicong@hisilicon.com, wsa@kernel.org, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu,
+        christophe.leroy@csgroup.eu, lukas.bulwahn@gmail.com,
+        olof@lixom.net, arnd@arndb.de, digetx@gmail.com,
+        andriy.shevchenko@linux.intel.com, tali.perry@nuvoton.com,
+        Avi.Fishman@nuvoton.com, tomer.maimon@nuvoton.com,
+        KWLIU@nuvoton.com, JJLIU0@nuvoton.com, kfting@nuvoton.com,
+        openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 02/11] dt-bindings: i2c: npcm: support NPCM845
+Message-ID: <YhUj3uRQinOVF4eM@robh.at.kernel.org>
+References: <20220220035321.3870-1-warp5tw@gmail.com>
+ <20220220035321.3870-3-warp5tw@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ccc1462b-3670-4116-f8e7-08d9f62cb100
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3467:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB34671513551A6F68597295BCC33B9@DM6PR12MB3467.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n8EY0LAVvaIpIDZSxV/qWCmGVTHjbDt/1upoigRuzVeD/LWBdQCn8vPT2L4j2kDPH46i7nd5Kq0cSxCc8N7emDMs1Ync+jcx0e1A2oVO9NlzdlrDmOZoZLhlwe9FAMnj7gf6Hu2v/NvbmnJdK3M5QfIfMCYuAxept+8wLIhYmuHn08ZBVrUXjzGbWk1gm/gk8orOwZPFp2CSr7ylEa5IQKNEZSTy4UPZ1bxm8E1qoPjvc0LQ9fJMZ35w4wY4bUWpxfHo5S3+xAGwGS4y+45huFIFuwYNmKgNxPayneDzUnP6cyC7uqqRWKpzSLR6gDotyhUA5KXnxRTTBBA32VabBWhx2MAokKqY/lvbb2SVfmaBFrZy92ZSq3YNR2J3BSiKDc73px9kMHoEJhp6M4XK+/v/bsr2FifQXF++6ROnfmRXsQHEenMmxYvN8CYcGqp7ulBhf4+TA3o0vVKoSoak6TA6c7trbm4Mwml2j54xUv5ZiBGny6uTNHj6Xfg65RmucuYHw3SwfHD3q11ohdFo5sSxsixdOUm4u8XN0BNU97GN9bQEh2TfRXWccr8qJfkr4q3bBzE7dhraqPuIiPdO2zfgeD1KfOoz9w4j9sSXWMxj4F338rBbFEelX6X6iR0hDyNoUpIsSulgzqR2sKFFnSA2Y+esYbRfnc+xX2USVnCKhLf/3rPvmEU7Aynb3XcCnbUwG/kUbyiQDlSy1Pc7dw==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(26005)(186003)(7696005)(8676002)(36860700001)(508600001)(2616005)(110136005)(70206006)(6666004)(82310400004)(107886003)(316002)(54906003)(70586007)(1076003)(86362001)(356005)(81166007)(426003)(83380400001)(4326008)(47076005)(2906002)(5660300002)(8936002)(336012)(36756003)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 17:56:45.7167
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ccc1462b-3670-4116-f8e7-08d9f62cb100
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3467
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220220035321.3870-3-warp5tw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ACPI ID for Tegra QUAD SPI. Switch to common device property calls.
-Skip clock calls that are not updated in ACPI boot.
+On Sun, Feb 20, 2022 at 11:53:12AM +0800, Tyrone Ting wrote:
+> From: Tyrone Ting <kfting@nuvoton.com>
+> 
+> Add compatible and nuvoton,sys-mgr description for NPCM i2c module.
+> 
+> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+> ---
+>  .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml       | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> index 128444942aec..809c51ac32fe 100644
+> --- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> @@ -7,17 +7,18 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: nuvoton NPCM7XX I2C Controller Device Tree Bindings
+>  
+>  description: |
+> -  The NPCM750x includes sixteen I2C bus controllers. All Controllers support
+> -  both master and slave mode. Each controller can switch between master and slave
+> -  at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
+> -  RX.
+> +  I2C bus controllers of the NPCM series support both master and
+> +  slave mode. Each controller can switch between master and slave at run time
+> +  (i.e. IPMB mode). HW FIFO for TX and RX are supported.
+>  
+>  maintainers:
+>    - Tali Perry <tali.perry1@gmail.com>
+>  
+>  properties:
+>    compatible:
+> -    const: nuvoton,npcm750-i2c
+> +     enum:
+> +      - nuvoton,npcm750-i2c
+> +      - nuvoton,npcm845-i2c
+>  
+>    reg:
+>      maxItems: 1
+> @@ -36,11 +37,16 @@ properties:
+>      default: 100000
+>      enum: [100000, 400000, 1000000]
+>  
+> +  nuvoton,sys-mgr:
+> +    $ref: "/schemas/types.yaml#/definitions/phandle"
+> +    description: The phandle of system manager register node.
+> +
+>  required:
+>    - compatible
+>    - reg
+>    - interrupts
+>    - clocks
+> +  - nuvoton,sys-mgr
 
-Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
----
- drivers/spi/spi-tegra210-quad.c | 50 +++++++++++++++++++++++++--------
- 1 file changed, 39 insertions(+), 11 deletions(-)
+You can't make nuvoton,sys-mgr required for existing users. You can add 
+an if/then schema for nuvoton,npcm845-i2c if you want to make it 
+required in that case.
 
-diff --git a/drivers/spi/spi-tegra210-quad.c b/drivers/spi/spi-tegra210-quad.c
-index 3725ee5331ae..0dbcb5fffc03 100644
---- a/drivers/spi/spi-tegra210-quad.c
-+++ b/drivers/spi/spi-tegra210-quad.c
-@@ -21,6 +21,8 @@
- #include <linux/of_device.h>
- #include <linux/reset.h>
- #include <linux/spi/spi.h>
-+#include <linux/acpi.h>
-+#include <linux/property.h>
- 
- #define QSPI_COMMAND1				0x000
- #define QSPI_BIT_LENGTH(x)			(((x) & 0x1f) << 0)
-@@ -771,7 +773,7 @@ static u32 tegra_qspi_setup_transfer_one(struct spi_device *spi, struct spi_tran
- 	u32 tx_tap = 0, rx_tap = 0;
- 	int req_mode;
- 
--	if (speed != tqspi->cur_speed) {
-+	if (!has_acpi_companion(tqspi->dev) && speed != tqspi->cur_speed) {
- 		clk_set_rate(tqspi->clk, speed);
- 		tqspi->cur_speed = speed;
- 	}
-@@ -879,16 +881,16 @@ static int tegra_qspi_start_transfer_one(struct spi_device *spi,
- static struct tegra_qspi_client_data *tegra_qspi_parse_cdata_dt(struct spi_device *spi)
- {
- 	struct tegra_qspi_client_data *cdata;
--	struct device_node *slave_np = spi->dev.of_node;
- 
- 	cdata = devm_kzalloc(&spi->dev, sizeof(*cdata), GFP_KERNEL);
- 	if (!cdata)
- 		return NULL;
- 
--	of_property_read_u32(slave_np, "nvidia,tx-clk-tap-delay",
--			     &cdata->tx_clk_tap_delay);
--	of_property_read_u32(slave_np, "nvidia,rx-clk-tap-delay",
--			     &cdata->rx_clk_tap_delay);
-+	device_property_read_u32(&spi->dev, "nvidia,tx-clk-tap-delay",
-+				 &cdata->tx_clk_tap_delay);
-+	device_property_read_u32(&spi->dev, "nvidia,rx-clk-tap-delay",
-+				 &cdata->rx_clk_tap_delay);
-+
- 	return cdata;
- }
- 
-@@ -1227,6 +1229,24 @@ static const struct of_device_id tegra_qspi_of_match[] = {
- 
- MODULE_DEVICE_TABLE(of, tegra_qspi_of_match);
- 
-+#ifdef CONFIG_ACPI
-+static const struct acpi_device_id tegra_qspi_acpi_match[] = {
-+	{
-+		.id = "NVDA1213",
-+		.driver_data = (kernel_ulong_t)&tegra210_qspi_soc_data,
-+	}, {
-+		.id = "NVDA1313",
-+		.driver_data = (kernel_ulong_t)&tegra186_qspi_soc_data,
-+	}, {
-+		.id = "NVDA1413",
-+		.driver_data = (kernel_ulong_t)&tegra234_qspi_soc_data,
-+	},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, tegra_qspi_acpi_match);
-+#endif
-+
- static int tegra_qspi_probe(struct platform_device *pdev)
- {
- 	struct spi_master	*master;
-@@ -1269,11 +1289,14 @@ static int tegra_qspi_probe(struct platform_device *pdev)
- 		return qspi_irq;
- 	tqspi->irq = qspi_irq;
- 
--	tqspi->clk = devm_clk_get(&pdev->dev, "qspi");
--	if (IS_ERR(tqspi->clk)) {
--		ret = PTR_ERR(tqspi->clk);
--		dev_err(&pdev->dev, "failed to get clock: %d\n", ret);
--		return ret;
-+	if (!has_acpi_companion(tqspi->dev)) {
-+		tqspi->clk = devm_clk_get(&pdev->dev, "qspi");
-+		if (IS_ERR(tqspi->clk)) {
-+			ret = PTR_ERR(tqspi->clk);
-+			dev_err(&pdev->dev, "failed to get clock: %d\n", ret);
-+			return ret;
-+		}
-+
- 	}
- 
- 	tqspi->max_buf_size = QSPI_FIFO_DEPTH << 2;
-@@ -1377,6 +1400,8 @@ static int __maybe_unused tegra_qspi_runtime_suspend(struct device *dev)
- 	struct spi_master *master = dev_get_drvdata(dev);
- 	struct tegra_qspi *tqspi = spi_master_get_devdata(master);
- 
-+	if (has_acpi_companion(tqspi->dev))
-+		return 0;
- 	/* flush all write which are in PPSB queue by reading back */
- 	tegra_qspi_readl(tqspi, QSPI_COMMAND1);
- 
-@@ -1391,6 +1416,8 @@ static int __maybe_unused tegra_qspi_runtime_resume(struct device *dev)
- 	struct tegra_qspi *tqspi = spi_master_get_devdata(master);
- 	int ret;
- 
-+	if (has_acpi_companion(tqspi->dev))
-+		return 0;
- 	ret = clk_prepare_enable(tqspi->clk);
- 	if (ret < 0)
- 		dev_err(tqspi->dev, "failed to enable clock: %d\n", ret);
-@@ -1408,6 +1435,7 @@ static struct platform_driver tegra_qspi_driver = {
- 		.name		= "tegra-qspi",
- 		.pm		= &tegra_qspi_pm_ops,
- 		.of_match_table	= tegra_qspi_of_match,
-+		.acpi_match_table = ACPI_PTR(tegra_qspi_acpi_match),
- 	},
- 	.probe =	tegra_qspi_probe,
- 	.remove =	tegra_qspi_remove,
--- 
-2.17.1
-
+Rob
