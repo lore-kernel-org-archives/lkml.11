@@ -2,85 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C34C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232714AbiBVOWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:22:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        id S232770AbiBVOXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:23:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbiBVOWV (ORCPT
+        with ESMTP id S231732AbiBVOXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:22:21 -0500
-X-Greylist: delayed 445 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 06:21:56 PST
-Received: from mail.bitwise.fi (mail.bitwise.fi [109.204.228.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895FDA278F;
-        Tue, 22 Feb 2022 06:21:56 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.bitwise.fi (Postfix) with ESMTP id 0E72D46001C;
-        Tue, 22 Feb 2022 16:14:30 +0200 (EET)
-X-Virus-Scanned: Debian amavisd-new at 
-Received: from mail.bitwise.fi ([127.0.0.1])
-        by localhost (mustetatti.dmz.bitwise.fi [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 6HK8W964f5TN; Tue, 22 Feb 2022 16:14:24 +0200 (EET)
-Received: from localhost.net (fw1.dmz.bitwise.fi [192.168.69.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: anssiha)
-        by mail.bitwise.fi (Postfix) with ESMTPSA id C51B546000C;
-        Tue, 22 Feb 2022 16:14:24 +0200 (EET)
-From:   Anssi Hannula <anssi.hannula@bitwise.fi>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] hv_balloon: rate-limit "Unhandled message" warning
-Date:   Tue, 22 Feb 2022 16:14:00 +0200
-Message-Id: <20220222141400.98160-1-anssi.hannula@bitwise.fi>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 22 Feb 2022 09:23:10 -0500
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB0CC3C26;
+        Tue, 22 Feb 2022 06:22:45 -0800 (PST)
+Received: by mail-oo1-f48.google.com with SMTP id k13-20020a4a948d000000b003172f2f6bdfso17730027ooi.1;
+        Tue, 22 Feb 2022 06:22:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=duotqgpfYkJR3rbAMtFGAN9TYcSBj0vnwFmaV5CSvtk=;
+        b=5bGLNg6yPpSAa7Os4QqGPTQ24a+SfKg859JwLDtzoiTq+0/3DArrrwCeAhKmGDnbzi
+         kMZwRNOIGRGlhANwbDam4lVgbccZhnbA6A6tHpkOxvq5CFz7fdw4a04AUKbMrDlVFk5f
+         ErYgmm3aSSAQT5IJUaBiPRYgNi/mL+AA1dj8Eafk4HImVxu4LsK60Gg9QOWn2jq7Vb41
+         AyoxKDyq932NBpMmqBqzgKwVBxLtiouMPXPOa5VDQznJvKHA5JeF3lcfiz/nod6boO2D
+         CO+7P6E1c/QGKvNgp1I/4ZCRQlVXn7rqo2qOt5bl/CPH9RJSYAeQMQZ5ky6DY4XWPzeS
+         QPtg==
+X-Gm-Message-State: AOAM530u8rC+jH0MfBBd1bMG6DsyXXd+Ak7Hal7J1pe8WaqOq158MWly
+        2MPEl8l77qsxum/uRGVgDg==
+X-Google-Smtp-Source: ABdhPJwE6tKFVG0cvwF6+HecJ1I8I3GNERldYB4YrFiT+QZlMk0YmfLf2j4/NfuK/5LdJaYsakvkKQ==
+X-Received: by 2002:a05:6871:4096:b0:d3:41b9:5350 with SMTP id kz22-20020a056871409600b000d341b95350mr1727027oab.124.1645539764869;
+        Tue, 22 Feb 2022 06:22:44 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id d18sm8932139oiw.18.2022.02.22.06.22.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 06:22:44 -0800 (PST)
+Received: (nullmailer pid 3016151 invoked by uid 1000);
+        Tue, 22 Feb 2022 14:22:43 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Qin Jian <qinjian@cqplus1.com>
+Cc:     maz@kernel.org, arnd@arndb.de, linux-clk@vger.kernel.org,
+        wells.lu@sunplus.com, linux-kernel@vger.kernel.org,
+        stefan.wahren@i2se.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        linux@armlinux.org.uk, broonie@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, mturquette@baylibre.com,
+        linux-arm-kernel@lists.infradead.org, tglx@linutronix.de
+In-Reply-To: <2089471296584b527f1e08f51f5216d1e733741f.1645413746.git.qinjian@cqplus1.com>
+References: <cover.1645413746.git.qinjian@cqplus1.com> <2089471296584b527f1e08f51f5216d1e733741f.1645413746.git.qinjian@cqplus1.com>
+Subject: Re: [PATCH v9 05/10] dt-bindings: clock: Add bindings for SP7021 clock driver
+Date:   Tue, 22 Feb 2022 08:22:43 -0600
+Message-Id: <1645539763.057346.3016150.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For a couple of times I have encountered a situation where
+On Mon, 21 Feb 2022 11:29:16 +0800, Qin Jian wrote:
+> Add documentation to describe Sunplus SP7021 clock driver bindings.
+> 
+> Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+> ---
+>  .../bindings/clock/sunplus,sp7021-clkc.yaml   |  52 ++++++++
+>  MAINTAINERS                                   |   2 +
+>  include/dt-bindings/clock/sp-sp7021.h         | 112 ++++++++++++++++++
+>  3 files changed, 166 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+>  create mode 100644 include/dt-bindings/clock/sp-sp7021.h
+> 
 
-  hv_balloon: Unhandled message: type: 12447
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-is being flooded over 1 million times per second with various values,
-filling the log and consuming cycles, making debugging difficult.
+yamllint warnings/errors:
 
-Add rate limiting to the message.
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.example.dts:23.38-39 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1398: dt_binding_check] Error 2
 
-Most other Hyper-V drivers already have similar rate limiting in their
-message callbacks.
+doc reference errors (make refcheckdocs):
 
-The cause of the floods in my case was probably fixed by 96d9d1fa5cd5
-("Drivers: hv: balloon: account for vmbus packet header in
-max_pkt_size").
+See https://patchwork.ozlabs.org/patch/1595308
 
-Fixes: 9aa8b50b2b3d ("Drivers: hv: Add Hyper-V balloon driver")
-Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
----
- drivers/hv/hv_balloon.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index f2d05bff4245..439f99b8b5de 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -1563,7 +1563,7 @@ static void balloon_onchannelcallback(void *context)
- 			break;
- 
- 		default:
--			pr_warn("Unhandled message: type: %d\n", dm_hdr->type);
-+			pr_warn_ratelimited("Unhandled message: type: %d\n", dm_hdr->type);
- 
- 		}
- 	}
--- 
-2.34.1
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
