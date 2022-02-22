@@ -2,433 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBCAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7059DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232446AbiBVNKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:10:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
+        id S231373AbiBVNLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:11:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232292AbiBVNKK (ORCPT
+        with ESMTP id S232259AbiBVNKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:10:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9140C154D09
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645535373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=akE8OiHzJZIISM63S6KtNcmr+sYPpgo/QTrlGAyqYEE=;
-        b=LtGvKKg6JROb1eUM0FINC8qQRlQgnNoBxZqCH7CmONVxX3HUhwa6Zb3r648DC3GdRuOBnU
-        5Afic7vkYUaqX6j21VNBXqOEGSZ57vrcXllovoXo6/yKMbQaH8JyxsH0piepQzv63CRgZw
-        PNxp+7Wgn/fzbobzMMX+CAVI83NtCJo=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-649-08M32B43PgKW9-bj8LU3Yg-1; Tue, 22 Feb 2022 08:09:32 -0500
-X-MC-Unique: 08M32B43PgKW9-bj8LU3Yg-1
-Received: by mail-wr1-f69.google.com with SMTP id v17-20020adfc5d1000000b001e6405c2b56so8986953wrg.7
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:09:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=akE8OiHzJZIISM63S6KtNcmr+sYPpgo/QTrlGAyqYEE=;
-        b=ZY0mXDALhYvRB34PpG7nrFWdBRjSdKMZwNNBAXn9555r6WX59NK8vp+Inq3NVyVgHk
-         GmChgyZAtsq21MV4zFSaSStKARK2/v74/Az/vLBAee7fYdRwWvGl9J6cdmIUi8UKqxQ1
-         Fawg0zPXGEDOe4CebR7ifFAPJ/cvi7blRAE357l1STIv7Derqoc+En15WIwXAzDy9Eh8
-         hwNiiatFIJWiM+7lxxiTwx4nnCCcm3AzclqkV4frh8KAFMqMYgkC4lDNzysZiD+a+7Y6
-         1nwTNzbxMpedcKEc1l4kUq2Y74VpXfXbhi4F9I7HbDPVji6JIEnmzk0iBnNwmjKwidcm
-         TaWw==
-X-Gm-Message-State: AOAM531zrb5VR+GciYciVMdJe8+WoNGlTzkWhjgMVuLkS7BQLU7GDcFH
-        685OqVKpGHPSPEiaziDMXQpIY3XzGsRuF54XqHXq6XwC72NsqVtWwT4/lrm9BaIS9wB7B0scm7A
-        f9+Q/UzRDePEW3TI8baRJuXU=
-X-Received: by 2002:a05:600c:4f4f:b0:37b:d847:ef15 with SMTP id m15-20020a05600c4f4f00b0037bd847ef15mr3252895wmq.130.1645535364540;
-        Tue, 22 Feb 2022 05:09:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyPPs2zt5WDuz81GDDadZZyI2wN0+uxEF07BgKxylxinQprKwNDUWx92hw5lj4IXjbTXsJLjw==
-X-Received: by 2002:a05:600c:4f4f:b0:37b:d847:ef15 with SMTP id m15-20020a05600c4f4f00b0037bd847ef15mr3252869wmq.130.1645535364253;
-        Tue, 22 Feb 2022 05:09:24 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id d2sm25036836wro.49.2022.02.22.05.09.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 05:09:23 -0800 (PST)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     mcgrof@kernel.org, christophe.leroy@csgroup.eu
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
-        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name
-Subject: [PATCH v7 10/13] module: Move procfs support into a separate file
-Date:   Tue, 22 Feb 2022 13:09:08 +0000
-Message-Id: <20220222130911.1348513-11-atomlin@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220222130911.1348513-1-atomlin@redhat.com>
-References: <20220222130911.1348513-1-atomlin@redhat.com>
+        Tue, 22 Feb 2022 08:10:04 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2074.outbound.protection.outlook.com [40.107.237.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75301533BB;
+        Tue, 22 Feb 2022 05:09:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=X5jfkoAVeLUAf7mGS8yqZW0DqDBbBdYgC9chpZ/RP83RXQvy2GeIMPpCcX2v+jS/NW8Swauy4tnC+s7IPUrjjrCc7Q135u/XBOpKE9fEzXmis8lhBIiskUSW/EZGDGAyAxpN18G3FJLgEaKaCi73MzQqQdUz6Xj7eMAJInzvn0rQLLqfsgJ1Fl/UoZTJingMp25bUVtzKD3wPSesiKPkZA2TXnxmwAxDnGikRvOWHNIkqTijhRUj9Fimp/gVCE4rdB24XNijDofmeZ1Y91HKxOS8t+TFx2LSWv7YFO73icHS1pBNtpsJ0jk0r5tNYMkAWBpwjOGj5eF3O0/Fm02MTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6vfXcr536bemeh81FHzrlNim153nDcqpdr7jFH1GHMQ=;
+ b=m+Q0uspoS+cPuQaZAqf8nEmmY8Kp8w5t8UVezHeZQvjAroMg6ZAvAOkjSzNm7Kp0tV3NutiIi0Wybx3Fj1VTH9kRvoEiWUCXBkaO1cO8ePcfVzhRiqlwP/YpHRZw7gdq0Ues6/2RdNBA8ozERVfmcdNvi1kWmlKKmzu6PX635jsO38FS+tNErQUAHnTpd7gYfPQMaR9/3WH4wQWd4AnwkH0Ust+zmgIDsFdzlP6dEoq5jr56fe+iwQmh74VDrbGXkSPAgGZFxv8kxJT/so4IKWQ2gki8JvAJbkeF4lPL1SQyuqw7HY/ZzFyVB/6muzHR3S3GRBSklvQ98k+YYNVC4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6vfXcr536bemeh81FHzrlNim153nDcqpdr7jFH1GHMQ=;
+ b=Em7M+jvnt7iHkgbaOnVGWDrJhYEiKa6i+cLKKWo+n8p+VYCA2e+z9EweO/Kf3f6uqEut/ViAHeeR36P4qsKoZFIK4j1UUmS5gSzVDeYYm598Xzo+PORnqNT7aPV54kzM9XiKUz0IuulwlyeUDj9UC4zVKY1vgJz3mUQOh7QWxuY=
+Received: from DS7PR05CA0085.namprd05.prod.outlook.com (2603:10b6:8:56::15) by
+ BY5PR02MB7026.namprd02.prod.outlook.com (2603:10b6:a03:23d::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
+ 2022 13:09:25 +0000
+Received: from DM3NAM02FT037.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:8:56:cafe::75) by DS7PR05CA0085.outlook.office365.com
+ (2603:10b6:8:56::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.9 via Frontend
+ Transport; Tue, 22 Feb 2022 13:09:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT037.mail.protection.outlook.com (10.13.4.166) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4995.19 via Frontend Transport; Tue, 22 Feb 2022 13:09:25 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Tue, 22 Feb 2022 05:09:24 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Tue, 22 Feb 2022 05:09:24 -0800
+Envelope-to: git@xilinx.com,
+ linux-clk@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.59] (port=35690 helo=xhdshubhraj40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <shubhrajyoti.datta@xilinx.com>)
+        id 1nMUux-000Eql-K8; Tue, 22 Feb 2022 05:09:24 -0800
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+To:     <linux-clk@vger.kernel.org>
+CC:     <git@xilinx.com>, <michal.simek@xilinx.com>,
+        <linux-kernel@vger.kernel.org>,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Subject: [PATCH 2/2] clk: zynq: Update the parameters to zynq_clk_register_periph_clk
+Date:   Tue, 22 Feb 2022 18:39:03 +0530
+Message-ID: <20220222130903.17235-3-shubhrajyoti.datta@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220222130903.17235-1-shubhrajyoti.datta@xilinx.com>
+References: <20220222130903.17235-1-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1994d895-6f7e-4db8-e567-08d9f6048cde
+X-MS-TrafficTypeDiagnostic: BY5PR02MB7026:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR02MB7026C9C2A15323375D9005CBAA3B9@BY5PR02MB7026.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: M3mbS1x9XA4rLwSrHDMlNUzHpiEFFp+RslrfPMiJaeQv4mKa1bkP08+rMoJzatGzK5zAoGi+eZgTVfeKNg1qFjxDr7vUtMsd5D2FGwekyPOOwe5B2u29GrgwAniLg2TnFHIyHgs+PDjqpsFvxh6hEmh5e65DjvtAvDo1ccTmaa7t30r11+MuAjyQ9IIIJid71e+KX6vTAdiD/txSE85vd/x7DcCzcJ9Toc3eN4vQJ8OmJPv/z0vqJNqXfTuy+6Z3ngzigzMw74y3TksDDGIgVi0WNmcphxZKhGh4L8dCagAIgNoJjeoHYgxzE5m+UaUhC8fOYL3wgoQXTqDOtbIQyceBbLvMwAPLpXiddPySAaJXNS2Be5DFOm6UKH5dCaIFAHPgmrkyBQ6RfmUHZF52fm/8wSbmJ2JMzKpj75tuqWmei8rMBI/uP87gQ3vI6SZdVk9D/bYUpOsPU6X7t5iHyFIn4oRXW/v1dfHEQPS5i63zbUGcok4/oxTXFC2exb3zrcZ/wFduvErd9sniLFpsBaDGWJSGDfhrb/UhjQxOcZhq4l8kw47NshQvF1aYoWbbQnMctC9NUZNGJBlrrheJG5ftLaLU6RA1YFXlTwOQSh07OPV23pbfT1PvId4iuIUZ9pqAn5OjsiToJS0egkK/h8jZTSG4+xPh2D7VmhNL9LfKqj6kd0LNTqWH9K5pdYm4
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(4326008)(426003)(47076005)(336012)(83380400001)(44832011)(36756003)(5660300002)(9786002)(2906002)(8936002)(26005)(7696005)(2616005)(107886003)(36860700001)(186003)(70586007)(70206006)(1076003)(356005)(7636003)(54906003)(8676002)(508600001)(316002)(6916009)(82310400004)(6666004)(450100002)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 13:09:25.2417
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1994d895-6f7e-4db8-e567-08d9f6048cde
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT037.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB7026
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change.
+In case there are only one gate or the two_gate is 0 the clk1 clock
+passed is not used. We are passing 0 which is arm_pll.
+Pass a invalid clock instead.
 
-This patch migrates code that allows one to generate a
-list of loaded/or linked modules via /proc when procfs
-support is enabled into kernel/module/procfs.c.
-
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
 ---
- kernel/module/Makefile   |   1 +
- kernel/module/internal.h |   1 +
- kernel/module/main.c     | 131 +-----------------------------------
- kernel/module/procfs.c   | 142 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 145 insertions(+), 130 deletions(-)
- create mode 100644 kernel/module/procfs.c
+ drivers/clk/zynq/clkc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index 4d11753f9e4e..5a32a7e7f73f 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -16,4 +16,5 @@ obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
- obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
- obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
- obj-$(CONFIG_KALLSYMS) += kallsyms.o
-+obj-$(CONFIG_PROC_FS) += procfs.o
- endif
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 44ca05b9eb8f..6af40c2d145f 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -72,6 +72,7 @@ struct module *find_module_all(const char *name, size_t len, bool even_unformed)
- int cmp_name(const void *name, const void *sym);
- long module_get_offset(struct module *mod, unsigned int *size, Elf_Shdr *sechdr,
- 		       unsigned int section);
-+char *module_flags(struct module *mod, char *buf);
+diff --git a/drivers/clk/zynq/clkc.c b/drivers/clk/zynq/clkc.c
+index 434511dcf5cb..7bdeaff2bfd6 100644
+--- a/drivers/clk/zynq/clkc.c
++++ b/drivers/clk/zynq/clkc.c
+@@ -355,14 +355,14 @@ static void __init zynq_clk_setup(struct device_node *np)
+ 				periph_parents, enable);
+ 	}
  
- static inline unsigned long kernel_symbol_value(const struct kernel_symbol *sym)
- {
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 952079987ea4..44b6fd1acc44 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -22,7 +22,6 @@
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/elf.h>
--#include <linux/proc_fs.h>
- #include <linux/seq_file.h>
- #include <linux/syscalls.h>
- #include <linux/fcntl.h>
-@@ -805,31 +804,6 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
- 	return ret;
- }
+-	zynq_clk_register_periph_clk(lqspi, 0, clk_output_name[lqspi], NULL,
+-			SLCR_LQSPI_CLK_CTRL, periph_parents, 0);
++	zynq_clk_register_periph_clk(lqspi, clk_max, clk_output_name[lqspi], NULL,
++				     SLCR_LQSPI_CLK_CTRL, periph_parents, 0);
  
--static inline void print_unload_info(struct seq_file *m, struct module *mod)
--{
--	struct module_use *use;
--	int printed_something = 0;
--
--	seq_printf(m, " %i ", module_refcount(mod));
--
--	/*
--	 * Always include a trailing , so userspace can differentiate
--	 * between this and the old multi-field proc format.
--	 */
--	list_for_each_entry(use, &mod->source_list, source_list) {
--		printed_something = 1;
--		seq_printf(m, "%s,", use->source->name);
--	}
--
--	if (mod->init != NULL && mod->exit == NULL) {
--		printed_something = 1;
--		seq_puts(m, "[permanent],");
--	}
--
--	if (!printed_something)
--		seq_puts(m, "-");
--}
--
- void __symbol_put(const char *symbol)
- {
- 	struct find_symbol_arg fsa = {
-@@ -919,12 +893,6 @@ void module_put(struct module *module)
- EXPORT_SYMBOL(module_put);
+-	zynq_clk_register_periph_clk(smc, 0, clk_output_name[smc], NULL,
+-			SLCR_SMC_CLK_CTRL, periph_parents, 0);
++	zynq_clk_register_periph_clk(smc, clk_max, clk_output_name[smc], NULL,
++				     SLCR_SMC_CLK_CTRL, periph_parents, 0);
  
- #else /* !CONFIG_MODULE_UNLOAD */
--static inline void print_unload_info(struct seq_file *m, struct module *mod)
--{
--	/* We don't know the usage count, or what modules are using. */
--	seq_puts(m, " - -");
--}
--
- static inline void module_unload_free(struct module *mod)
- {
- }
-@@ -3596,7 +3564,7 @@ static void cfi_cleanup(struct module *mod)
- }
+-	zynq_clk_register_periph_clk(pcap, 0, clk_output_name[pcap], NULL,
+-			SLCR_PCAP_CLK_CTRL, periph_parents, 0);
++	zynq_clk_register_periph_clk(pcap, clk_max, clk_output_name[pcap], NULL,
++				     SLCR_PCAP_CLK_CTRL, periph_parents, 0);
  
- /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
--static char *module_flags(struct module *mod, char *buf)
-+char *module_flags(struct module *mod, char *buf)
- {
- 	int bx = 0;
- 
-@@ -3619,103 +3587,6 @@ static char *module_flags(struct module *mod, char *buf)
- 	return buf;
- }
- 
--#ifdef CONFIG_PROC_FS
--/* Called by the /proc file system to return a list of modules. */
--static void *m_start(struct seq_file *m, loff_t *pos)
--{
--	mutex_lock(&module_mutex);
--	return seq_list_start(&modules, *pos);
--}
--
--static void *m_next(struct seq_file *m, void *p, loff_t *pos)
--{
--	return seq_list_next(p, &modules, pos);
--}
--
--static void m_stop(struct seq_file *m, void *p)
--{
--	mutex_unlock(&module_mutex);
--}
--
--static int m_show(struct seq_file *m, void *p)
--{
--	struct module *mod = list_entry(p, struct module, list);
--	char buf[MODULE_FLAGS_BUF_SIZE];
--	void *value;
--
--	/* We always ignore unformed modules. */
--	if (mod->state == MODULE_STATE_UNFORMED)
--		return 0;
--
--	seq_printf(m, "%s %u",
--		   mod->name, mod->init_layout.size + mod->core_layout.size);
--	print_unload_info(m, mod);
--
--	/* Informative for users. */
--	seq_printf(m, " %s",
--		   mod->state == MODULE_STATE_GOING ? "Unloading" :
--		   mod->state == MODULE_STATE_COMING ? "Loading" :
--		   "Live");
--	/* Used by oprofile and other similar tools. */
--	value = m->private ? NULL : mod->core_layout.base;
--	seq_printf(m, " 0x%px", value);
--
--	/* Taints info */
--	if (mod->taints)
--		seq_printf(m, " %s", module_flags(mod, buf));
--
--	seq_puts(m, "\n");
--	return 0;
--}
--
--/*
-- * Format: modulename size refcount deps address
-- *
-- * Where refcount is a number or -, and deps is a comma-separated list
-- * of depends or -.
-- */
--static const struct seq_operations modules_op = {
--	.start	= m_start,
--	.next	= m_next,
--	.stop	= m_stop,
--	.show	= m_show
--};
--
--/*
-- * This also sets the "private" pointer to non-NULL if the
-- * kernel pointers should be hidden (so you can just test
-- * "m->private" to see if you should keep the values private).
-- *
-- * We use the same logic as for /proc/kallsyms.
-- */
--static int modules_open(struct inode *inode, struct file *file)
--{
--	int err = seq_open(file, &modules_op);
--
--	if (!err) {
--		struct seq_file *m = file->private_data;
--		m->private = kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
--	}
--
--	return err;
--}
--
--static const struct proc_ops modules_proc_ops = {
--	.proc_flags	= PROC_ENTRY_PERMANENT,
--	.proc_open	= modules_open,
--	.proc_read	= seq_read,
--	.proc_lseek	= seq_lseek,
--	.proc_release	= seq_release,
--};
--
--static int __init proc_modules_init(void)
--{
--	proc_create("modules", 0, NULL, &modules_proc_ops);
--	return 0;
--}
--module_init(proc_modules_init);
--#endif
--
- /* Given an address, look for it in the module exception tables. */
- const struct exception_table_entry *search_module_extables(unsigned long addr)
- {
-diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
-new file mode 100644
-index 000000000000..2717e130788e
---- /dev/null
-+++ b/kernel/module/procfs.c
-@@ -0,0 +1,142 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Module proc support
-+ *
-+ * Copyright (C) 2008 Alexey Dobriyan
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kallsyms.h>
-+#include <linux/mutex.h>
-+#include <linux/seq_file.h>
-+#include <linux/proc_fs.h>
-+#include "internal.h"
-+
-+#ifdef CONFIG_MODULE_UNLOAD
-+static inline void print_unload_info(struct seq_file *m, struct module *mod)
-+{
-+	struct module_use *use;
-+	int printed_something = 0;
-+
-+	seq_printf(m, " %i ", module_refcount(mod));
-+
-+	/*
-+	 * Always include a trailing , so userspace can differentiate
-+	 * between this and the old multi-field proc format.
-+	 */
-+	list_for_each_entry(use, &mod->source_list, source_list) {
-+		printed_something = 1;
-+		seq_printf(m, "%s,", use->source->name);
-+	}
-+
-+	if (mod->init && !mod->exit) {
-+		printed_something = 1;
-+		seq_puts(m, "[permanent],");
-+	}
-+
-+	if (!printed_something)
-+		seq_puts(m, "-");
-+}
-+#else /* !CONFIG_MODULE_UNLOAD */
-+static inline void print_unload_info(struct seq_file *m, struct module *mod)
-+{
-+	/* We don't know the usage count, or what modules are using. */
-+	seq_puts(m, " - -");
-+}
-+#endif /* CONFIG_MODULE_UNLOAD */
-+
-+/* Called by the /proc file system to return a list of modules. */
-+static void *m_start(struct seq_file *m, loff_t *pos)
-+{
-+	mutex_lock(&module_mutex);
-+	return seq_list_start(&modules, *pos);
-+}
-+
-+static void *m_next(struct seq_file *m, void *p, loff_t *pos)
-+{
-+	return seq_list_next(p, &modules, pos);
-+}
-+
-+static void m_stop(struct seq_file *m, void *p)
-+{
-+	mutex_unlock(&module_mutex);
-+}
-+
-+static int m_show(struct seq_file *m, void *p)
-+{
-+	struct module *mod = list_entry(p, struct module, list);
-+	char buf[MODULE_FLAGS_BUF_SIZE];
-+	void *value;
-+
-+	/* We always ignore unformed modules. */
-+	if (mod->state == MODULE_STATE_UNFORMED)
-+		return 0;
-+
-+	seq_printf(m, "%s %u",
-+		   mod->name, mod->init_layout.size + mod->core_layout.size);
-+	print_unload_info(m, mod);
-+
-+	/* Informative for users. */
-+	seq_printf(m, " %s",
-+		   mod->state == MODULE_STATE_GOING ? "Unloading" :
-+		   mod->state == MODULE_STATE_COMING ? "Loading" :
-+		   "Live");
-+	/* Used by oprofile and other similar tools. */
-+	value = m->private ? NULL : mod->core_layout.base;
-+	seq_printf(m, " 0x%px", value);
-+
-+	/* Taints info */
-+	if (mod->taints)
-+		seq_printf(m, " %s", module_flags(mod, buf));
-+
-+	seq_puts(m, "\n");
-+	return 0;
-+}
-+
-+/*
-+ * Format: modulename size refcount deps address
-+ *
-+ * Where refcount is a number or -, and deps is a comma-separated list
-+ * of depends or -.
-+ */
-+static const struct seq_operations modules_op = {
-+	.start	= m_start,
-+	.next	= m_next,
-+	.stop	= m_stop,
-+	.show	= m_show
-+};
-+
-+/*
-+ * This also sets the "private" pointer to non-NULL if the
-+ * kernel pointers should be hidden (so you can just test
-+ * "m->private" to see if you should keep the values private).
-+ *
-+ * We use the same logic as for /proc/kallsyms.
-+ */
-+static int modules_open(struct inode *inode, struct file *file)
-+{
-+	int err = seq_open(file, &modules_op);
-+
-+	if (!err) {
-+		struct seq_file *m = file->private_data;
-+
-+		m->private = kallsyms_show_value(file->f_cred) ? NULL : (void *)8ul;
-+	}
-+
-+	return err;
-+}
-+
-+static const struct proc_ops modules_proc_ops = {
-+	.proc_flags	= PROC_ENTRY_PERMANENT,
-+	.proc_open	= modules_open,
-+	.proc_read	= seq_read,
-+	.proc_lseek	= seq_lseek,
-+	.proc_release	= seq_release,
-+};
-+
-+static int __init proc_modules_init(void)
-+{
-+	proc_create("modules", 0, NULL, &modules_proc_ops);
-+	return 0;
-+}
-+module_init(proc_modules_init);
+ 	zynq_clk_register_periph_clk(sdio0, sdio1, clk_output_name[sdio0],
+ 			clk_output_name[sdio1], SLCR_SDIO_CLK_CTRL,
 -- 
-2.34.1
+2.17.1
 
