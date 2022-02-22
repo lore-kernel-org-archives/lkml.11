@@ -2,74 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C37C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B000C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235312AbiBVTzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 14:55:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54708 "EHLO
+        id S235334AbiBVT4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 14:56:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiBVTzC (ORCPT
+        with ESMTP id S235316AbiBVTz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 14:55:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57787C486B;
-        Tue, 22 Feb 2022 11:54:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15425B81C5B;
-        Tue, 22 Feb 2022 19:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75EEAC340E8;
-        Tue, 22 Feb 2022 19:54:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645559673;
-        bh=2yoZXAZ2q0++zmDjP+ejRntLgW9usbykRPKM+jn7RvA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F8UWrXJujLmvHh1w9CqBKy4QutjAMfCCUw/wULVyy+4whPVz+AQ6eIhIlZ5+tvwIF
-         Uo6oIDK8PmySh3bxyFhbUoVovrdntR/sm7clciM6v5dW+KSTLkQ+TOXvsNAfFuQekU
-         smFD6X+zDZiKjlpeYgxSinerPqxZdGO1YAzOh51O5n17SXSNsfynAh4TYGYm3R6Ml0
-         VJrIy8r+nqrYalv3nLt5W4otYLms6QueecW67VJ7SpQ2nL3Q9MupfWvk97Sv1IeXkx
-         wSPCXynfm22snba36Zg9KqZzFctDsZCQgVIvfWguIIbV+jddkxUz6YmtMFaRCEeQH8
-         WyPUgnsOv6hXg==
-Date:   Tue, 22 Feb 2022 11:54:31 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
-        martin.petersen@oracle.com, colyli@suse.de
-Subject: Re: [PATCHv3 06/10] crypto: add rocksoft 64b crc framework
-Message-ID: <YhU/d6wn55/GWPxm@sol.localdomain>
-References: <20220222163144.1782447-1-kbusch@kernel.org>
- <20220222163144.1782447-7-kbusch@kernel.org>
- <YhU+kuMhueXVQvxe@sol.localdomain>
+        Tue, 22 Feb 2022 14:55:57 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF4EC621D;
+        Tue, 22 Feb 2022 11:55:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645559731; x=1677095731;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VHSxbtD4mVx8CwpUuPAeIMnzDxuN5vCFvKRBG3+7rIs=;
+  b=K9IgKY9KYFhrkkRVT+Dl8DqIEQUdV6U3nCB5uUxsGshQarMZYRMUwdjq
+   s0VgH6Ooe2B3dKn5bPsTBW6x/egCfL81YG5a/OoEO8dN0ha8qo1YP3L1Y
+   PpXJPfKE7m0DGxgCd7g72+j2Wa6AEZprazarVWnKOeBGzhRokT7xrEAsk
+   5KDzZe/SWw1LutoR7+01IANEEFx1AO8uJQAQc7cApRiixmaJXsCXmxRW/
+   i8ykxboByRN4RheM4tJAGJo8AJBT2bnYEZkWJLYStEhHFgZMKUUbnhIPm
+   YlhDUnh9fA2qKyZGz0D4a2ac/VoEKwFykS3jwNoL5rqcskTBYl+/7gIxq
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231772629"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="231772629"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 11:55:18 -0800
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="639032064"
+Received: from mjpatel-mobl.amr.corp.intel.com (HELO [10.212.37.223]) ([10.212.37.223])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 11:55:18 -0800
+Message-ID: <5e050d4c-e3d2-35fb-ca49-7be53579bc31@linux.intel.com>
+Date:   Tue, 22 Feb 2022 13:26:57 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhU+kuMhueXVQvxe@sol.localdomain>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] soundwire: qcom: add wake up interrupt support
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        robh+dt@kernel.org, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com
+Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
+References: <20220221104127.15670-1-srinivas.kandagatla@linaro.org>
+ <20220221104127.15670-4-srinivas.kandagatla@linaro.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220221104127.15670-4-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 11:50:44AM -0800, Eric Biggers wrote:
-> > +config CRC64_ROCKSOFT
-> > +	tristate "CRC calculation for the Rocksoft^TM model CRC64"
-> 
-> I'm sure what the rules for trademarks are, but kernel source code usually
-> doesn't have the trademark symbol/abbreviation scattered everywhere.
-> 
-> > +	select CRYPTO
-> > +	select CRYPTO_CRC64_ROCKSOFT
-> > +	help
-> > +	  This option is only needed if a module that's not in the
-> > +	  kernel tree needs to calculate CRC checks for use with the
-> > +	  rocksoft model parameters.
-> 
-> Out-of-tree modules can't be the reason to have a kconfig option.  What is the
-> real reason?
 
-Also this option can be enabled without the CONFIG_CRC64 it depends on, which is
-broken.
 
-- Eric
+
+> +static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct qcom_swrm_ctrl *swrm = dev_id;
+> +	int ret = IRQ_HANDLED;
+> +	struct sdw_slave *slave;
+> +
+> +	clk_prepare_enable(swrm->hclk);
+> +
+> +	if (swrm->wake_irq > 0) {
+> +		if (!irqd_irq_disabled(irq_get_irq_data(swrm->wake_irq)))
+> +			disable_irq_nosync(swrm->wake_irq);
+> +	}
+> +
+> +	/*
+> +	 * resume all the slaves which must have potentially generated this
+> +	 * interrupt, this should also wake the controller at the same time.
+> +	 * this is much safer than waking controller directly that will deadlock!
+> +	 */
+There should be no difference if you first resume the controller and
+then attached peripherals, or do a loop where you rely on the pm_runtime
+framework.
+
+The notion that there might be a dead-lock is surprising, you would need
+to elaborate here.
+
+> +	list_for_each_entry(slave, &swrm->bus.slaves, node) {
+> +		ret = pm_runtime_get_sync(&slave->dev);
+
+In my experience, you don't want to blur layers and take references on
+the child devices from the parent device. I don't know how many times we
+end-up with weird behavior.
+
+we've done something similar on the Intel side but implemented in a less
+directive manner.
+
+ret = device_for_each_child(bus->dev, NULL, intel_resume_child_device);
+
+static int intel_resume_child_device(struct device *dev, void *data)
+{
+[...]	
+	ret = pm_request_resume(dev);
+	if (ret < 0)
+		dev_err(dev, "%s: pm_request_resume failed: %d\n", __func__, ret);
+
+	return ret;
+}
+
+
+> +		if (ret < 0 && ret != -EACCES) {
+> +			dev_err_ratelimited(swrm->dev,
+> +					    "pm_runtime_get_sync failed in %s, ret %d\n",
+> +					    __func__, ret);
+> +			pm_runtime_put_noidle(&slave->dev);
+> +			ret = IRQ_NONE;
+> +			goto err;
+> +		}
+> +	}
+> +
+> +	list_for_each_entry(slave, &swrm->bus.slaves, node) {
+> +		pm_runtime_mark_last_busy(&slave->dev);
+> +		pm_runtime_put_autosuspend(&slave->dev);
+> +	}
+> +err:
+> +	clk_disable_unprepare(swrm->hclk);
+> +	return IRQ_HANDLED;
+> +}
+> +
+
