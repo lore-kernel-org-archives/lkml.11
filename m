@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B953EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240146AbiBVDuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 22:50:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60200 "EHLO
+        id S232114AbiBVDx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 22:53:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229789AbiBVDuK (ORCPT
+        with ESMTP id S229625AbiBVDxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 22:50:10 -0500
+        Mon, 21 Feb 2022 22:53:25 -0500
 Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0F624BD7;
-        Mon, 21 Feb 2022 19:49:45 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id bq11so12341569edb.2;
-        Mon, 21 Feb 2022 19:49:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C102A256;
+        Mon, 21 Feb 2022 19:52:58 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id i11so31990794eda.9;
+        Mon, 21 Feb 2022 19:52:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=s2XSMVj1kILwt68WwMudYnmLz1ROeiH1LOdTavQMelo=;
-        b=oOHR9c5Wf55GRsvLNqdswIBJpUBSrMPSg/Ou0HlmCVg3+8TmzRHE/UrAYQVyUZK4ia
-         PeMeq+IddUMoWrYYqW1GFiJIZgOFcJSJJMwbWjxoPN8fMy1I/S/SVTyClbjCS0fkhPnv
-         5H5NpizsrTuknRRRBNSbJOCf6CINwgYZ1QIUSM2ursPxRP8am7hs5E6Auv0iGbqDvA4F
-         MOMkEDB8bLVO0QxqMPNixoLe/XA9AZiKakFXeZ+StN1UA5cJX5Ox6bnX8GFhTAc6aiIW
-         quke8hAzfnMNzocvLbiDdJ0zgA4WRA2FYgQqPoj/jj13aXHbOV9FgbzXufxrUlxAV8UV
-         k+lQ==
+        bh=9ZgQXvZsELc67V/yMhgs9KgblP3IFQsF3DCluKIvHKw=;
+        b=lVaEZqzYR7smwdFaIjgLjx6+jCb/kseFnkpfOD4fET89Pq2Hfph9uE1j8sN5t2WR+w
+         IcNAE0xRi4+JqAxLJ5+3/2z4FSM3vtrK+0PlfyKadYhKEolLN7Sl/7JUPDzyrl1gvKCT
+         1xp+AAowN8t+YAghA8piED042G6OUA25Fp3MMSAy0WKwJsCNlzU0GDbvwen2Cxi6aVWO
+         y70cz8yYwv1PYvdeB5bP+eup9AEPwZg7/+Rx0a9cQJv34BVBJlRZeYDjNkI+VNKNQqri
+         pfx2xZt0EScxDb41WscyD6I7vaN3qOnvuEq/5dmXPRO7bbQuYWv4D2VTmJw6KkO8lpLN
+         4n5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=s2XSMVj1kILwt68WwMudYnmLz1ROeiH1LOdTavQMelo=;
-        b=IQyEqMNCBoTAJYr2ynr6SMzH1iC97sz+BgxnfPMyYyo2aQMmeAVUnk4YkSUBudc9T/
-         28sZRRKnZpUdebLQ6aBL3xHmxQKsDy2OYCnVTaaauVPzCNLG3keZHe1Ca4FXpQbU6lJ3
-         xiqUVZl5z5vW07kv/d7naSaeyhuJsCNIkmdoANfKiWB/xGjjMkOol8IIut+cQknxbzWR
-         oFAFybGsT7WfgajD7Kur4kflJNsCOh9seR1gMz6tR7GYY5lYyM805Cp440mt6V18CIfd
-         1odtFiMCV5P5EWa9JOH7FYO0hsYjnnEMxG+YXd9lTjVsbVxYheoJrnr1gXKMrbVAPrRU
-         r04A==
-X-Gm-Message-State: AOAM533o4x0yNH+US3WZlhvOfg3BQwvxfKvxPu/DT6c8QsuamQASRRKi
-        0NoOHQwNGxeTnF1ApbNxXjPT47RlIUnk3jit0nE=
-X-Google-Smtp-Source: ABdhPJxgnDvWvb2diDocMe2RJQoCH11Grw1/0dR5EAwDrSr/Bu+/DWHw7xgWPaYTAGyIegHH88P11WecFKe62GKOOTM=
-X-Received: by 2002:a05:6402:17c8:b0:406:80a3:5cad with SMTP id
- s8-20020a05640217c800b0040680a35cadmr24039051edy.388.1645501783973; Mon, 21
- Feb 2022 19:49:43 -0800 (PST)
+        bh=9ZgQXvZsELc67V/yMhgs9KgblP3IFQsF3DCluKIvHKw=;
+        b=28LRfiF3iqNusluFzuwUIBYI37Z5+7BlNtXiHkqub2xmlTSUQn3e4i17Rfn+W+3bHn
+         vGzGDfrtf1gMxKl8WGJbaQnetwQflXgl3CHtu3DcID9TCnXByfOQitSYuHbvXoyATE4Y
+         iHP8IqfI9OD98z1r893kQXOPVPvwBZdU2C6RiPFjtVbcXTMiTiayMuaouV26uAANqBzF
+         hZWGKfsy6/SzDL+BVO2y1zobvi+2EvNKsF/czf+/I0wVocypmfSfN9lh5tU4X0X3ZylE
+         /5YOMdSMaXdP9TuVSlsMvBoZ+FFCn6DkEiZOgd8fydJyVK4FII3UywXAnb3Yw4EDOZHE
+         d4aA==
+X-Gm-Message-State: AOAM5309Nb5hTwH+ES/alpIemxJ7TMcUqVy3fI75UGUJbIXNQx2eDHjO
+        SpWJXMICiTkgLF30zz1FNvaW+jsBc7xdtMzMJ6w=
+X-Google-Smtp-Source: ABdhPJwECknUN4HgmiXQAEsGZDIbkmhr5k3+UG3WEcenrX0WRxxLVNKK6JAmsYh+R6JyZ/XWHWkqzMMbi8RwgtYbdWA=
+X-Received: by 2002:aa7:d7c8:0:b0:3f9:3b65:f2b3 with SMTP id
+ e8-20020aa7d7c8000000b003f93b65f2b3mr24053092eds.389.1645501977019; Mon, 21
+ Feb 2022 19:52:57 -0800 (PST)
 MIME-Version: 1.0
 References: <20220220155705.194266-1-imagedong@tencent.com>
- <20220220155705.194266-2-imagedong@tencent.com> <3183c3c9-6644-b2de-885e-9e3699138102@kernel.org>
-In-Reply-To: <3183c3c9-6644-b2de-885e-9e3699138102@kernel.org>
+ <20220220155705.194266-3-imagedong@tencent.com> <2969b15c-b825-3b0e-2ad7-00633ee6815b@kernel.org>
+In-Reply-To: <2969b15c-b825-3b0e-2ad7-00633ee6815b@kernel.org>
 From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Tue, 22 Feb 2022 11:44:24 +0800
-Message-ID: <CADxym3aMn_h_x0HYopDRu8y_sgRii+=myFtVr8iAYYxJuT2_JA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: ip: add skb drop reasons for ip egress path
+Date:   Tue, 22 Feb 2022 11:47:38 +0800
+Message-ID: <CADxym3YX2+3EQPxynQj6FyXquNWJaefDrQJLAH4YroC8CvkHwQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] net: neigh: use kfree_skb_reason() for __neigh_event_send()
 To:     David Ahern <dsahern@kernel.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
@@ -78,105 +78,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 11:13 AM David Ahern <dsahern@kernel.org> wrote:
+On Tue, Feb 22, 2022 at 11:17 AM David Ahern <dsahern@kernel.org> wrote:
 >
 > On 2/20/22 8:57 AM, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > Replace kfree_skb() with kfree_skb_reason() in the packet egress path of
-> > IP layer (both IPv4 and IPv6 are considered).
-> >
-> > Following functions are involved:
-> >
-> > __ip_queue_xmit()
-> > ip_finish_output()
-> > ip_mc_finish_output()
-> > ip6_output()
-> > ip6_finish_output()
-> > ip6_finish_output2()
-> >
-> > Following new drop reasons are introduced:
-> >
-> > SKB_DROP_REASON_IP_OUTNOROUTES
-> > SKB_DROP_REASON_BPF_CGROUP_EGRESS
-> > SKB_DROP_REASON_IPV6DSIABLED
-> >
-> > Reviewed-by: Mengen Sun <mengensun@tencent.com>
-> > Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  include/linux/skbuff.h     | 13 +++++++++++++
-> >  include/trace/events/skb.h |  4 ++++
-> >  net/ipv4/ip_output.c       |  6 +++---
-> >  net/ipv6/ip6_output.c      |  6 +++---
-> >  4 files changed, 23 insertions(+), 6 deletions(-)
-> >
 > > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index a3e90efe6586..c310a4a8fc86 100644
+> > index c310a4a8fc86..206b66f5ce6b 100644
 > > --- a/include/linux/skbuff.h
 > > +++ b/include/linux/skbuff.h
-> > @@ -380,6 +380,19 @@ enum skb_drop_reason {
-> >                                        * the ofo queue, corresponding to
-> >                                        * LINUX_MIB_TCPOFOMERGE
+> > @@ -393,6 +393,15 @@ enum skb_drop_reason {
+> >                                        * see the doc for disable_ipv6
+> >                                        * in ip-sysctl.rst for detail
 > >                                        */
-> > +     SKB_DROP_REASON_IP_OUTNOROUTES, /* route lookup failed during
-> > +                                      * packet outputting
+> > +     SKB_DROP_REASON_NEIGH_FAILED,   /* dropped as the state of
+> > +                                      * neighbour is NUD_FAILED
 > > +                                      */
 >
-> This should be good enough since the name contains OUT.
+> /* neigh entry in failed state */
 >
-> /* route lookup failed */
->
-> > +     SKB_DROP_REASON_BPF_CGROUP_EGRESS,      /* dropped by eBPF program
-> > +                                              * with type of BPF_PROG_TYPE_CGROUP_SKB
-> > +                                              * and attach type of
-> > +                                              * BPF_CGROUP_INET_EGRESS
-> > +                                              * during packet sending
+> > +     SKB_DROP_REASON_NEIGH_QUEUEFULL,        /* the skbs that waiting
+> > +                                              * for sending on the queue
+> > +                                              * of neigh->arp_queue is
+> > +                                              * full, and the skbs on the
+> > +                                              * tail will be dropped
 > > +                                              */
 >
-> /* dropped by BPF_CGROUP_INET_EGRESS eBPF program */
->
-> > +     SKB_DROP_REASON_IPV6DSIABLED,   /* IPv6 is disabled on the device,
-> > +                                      * see the doc for disable_ipv6
-> > +                                      * in ip-sysctl.rst for detail
-> > +                                      */
->
-> Just /* IPv6 is disabled on the device */
+> /* arp_queue for neigh entry is full */
 >
 >
-> >       SKB_DROP_REASON_MAX,
-> >  };
+> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> > index ec0bf737b076..c353834e8fa9 100644
+> > --- a/net/core/neighbour.c
+> > +++ b/net/core/neighbour.c
+> > @@ -1171,7 +1171,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
+> >                       neigh->updated = jiffies;
+> >                       write_unlock_bh(&neigh->lock);
 > >
+> > -                     kfree_skb(skb);
+> > +                     kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
+> >                       return 1;
+> >               }
+> >       } else if (neigh->nud_state & NUD_STALE) {
+> > @@ -1193,7 +1193,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb,
+> >                               if (!buff)
+> >                                       break;
+> >                               neigh->arp_queue_len_bytes -= buff->truesize;
+> > -                             kfree_skb(buff);
+> > +                             kfree_skb_reason(buff, SKB_DROP_REASON_NEIGH_QUEUEFULL);
+> >                               NEIGH_CACHE_STAT_INC(neigh->tbl, unres_discards);
+> >                       }
+> >                       skb_dst_force(skb);
 >
-> > diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> > index 0c0574eb5f5b..df549b7415fb 100644
-> > --- a/net/ipv4/ip_output.c
-> > +++ b/net/ipv4/ip_output.c
->
-> This file has other relevant drops. e.g., ip_finish_output2 when a neigh
-> entry can not be created and after skb_gso_segment. The other set for
-> tun/tap devices has SKB_DROP_REASON_SKB_GSO_SEG which can be used for
-> the latter. That set also adds kfree_skb_list_reason for the frag drops.
->
+> what about out_dead: path? the tracepoint there shows that path is of
+> interest.
 
-I tried to add a drop reason for neigh creating fail, but I found it's hard
-to find the root reason, as __neigh_create() can fail in many cases.
-And I'm not sure if there is any help when we get a
-'SKB_DROP_REASON_NEIGH_CREATEFAIL' message.
-
-Seems it's hard to make every drop reason accurate, is it ok if we
-use the name 'SKB_DROP_REASON_NEIGH_CREATEFAIL' for
-this path?
-
->
-> > diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> > index 0c6c971ce0a5..4cd9e5fd25e4 100644
-> > --- a/net/ipv6/ip6_output.c
-> > +++ b/net/ipv6/ip6_output.c
->
-> Similarly here. The other set should land in the next few days, so you
-> cna put this set on top of it.
-
-Yeah, I can make use of it.
-
->
+You are right, that path should be considered too.
