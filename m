@@ -2,154 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00461C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D47C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 14:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbiBVOJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 09:09:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45454 "EHLO
+        id S232762AbiBVOJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 09:09:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232720AbiBVOJW (ORCPT
+        with ESMTP id S232734AbiBVOJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 09:09:22 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1CA515F620;
-        Tue, 22 Feb 2022 06:08:56 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8075A139F;
-        Tue, 22 Feb 2022 06:08:56 -0800 (PST)
-Received: from e123648.arm.com (unknown [10.57.9.152])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4A4D23F5A1;
-        Tue, 22 Feb 2022 06:08:54 -0800 (PST)
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, nm@ti.com, sboyd@kernel.org,
-        mka@chromium.org, dianders@chromium.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: [[PATCH v2 2/2] OPP: Add 'opp-microwatt' parsing for advanced EM registration
-Date:   Tue, 22 Feb 2022 14:07:46 +0000
-Message-Id: <20220222140746.12293-3-lukasz.luba@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220222140746.12293-1-lukasz.luba@arm.com>
-References: <20220222140746.12293-1-lukasz.luba@arm.com>
+        Tue, 22 Feb 2022 09:09:26 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75B015F617
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:09:00 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id h13so362653qvk.12
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 06:09:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Xqy5QKYZUVik+xQ3v/BV4Q233CuzTNH+f5Hje8r4UrI=;
+        b=aGIIG0timJUg6GqBs7BQEga6tkXr3leN8qS/gdipqyzpUFCqQkhRhM7UZe2pVyLcgm
+         NOb3dsFsdJciYIMXJuNhQY2WUhYIwifHoKXAxGkcT+WEJUP6rAWREQ8BsToWjyfTPIrv
+         1Gia/lwpYFtICvwKofZOdKvajWAV0p2Yj6N4JVAbKmVeu1/iV0LKcPwccNE71C6LFLrI
+         1UL2sV6UmJqsZt9jsrcCgwaKVMRq3o3rBAMI85FQ/PZRZZ3ywz5wKyIOOlqhsHSRTe/y
+         b20BwfwS8h8HFx5aY6uAhL/6Ug/B65sontRAmVB2YUKzm9kzcsNjicDtP4SeQiYeumNs
+         VAzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xqy5QKYZUVik+xQ3v/BV4Q233CuzTNH+f5Hje8r4UrI=;
+        b=OlT6LN9rwQHk1zKznN5NFRMnwMHtb+6vwQVhX/tbiIbngZPubeFM9TVOwdn152iU4Y
+         FWzW2TjT/CzvpuC4S2LC+5fJMBtdZ1ar7Cx2Kda1C4J7VQVOBjePGopDRpl1RMtDG9Vi
+         FgdJPPRgwgZQeZIg3xibahokP+zsqOcT+hbVCYASe+vK3QaeU+0XJ4K74rafH63WgBeZ
+         0yidq7TTVa1yOkPkJNHsnaCxE5kF5YmMXaIsSir3KKJC7tMvuyiFgA1JQSQNrmgkIvSq
+         +3xea7gp0QgyZDfaWh90DWx28qbkiCp1W57KZBd1rmLSE7iAM5iuxpBMZLbgItCLeNjE
+         72oA==
+X-Gm-Message-State: AOAM532Qvi9OgG6EpIvRaoWTbQqrAzX8IPLFXxQB3mloMXIq0I2wYaKn
+        ebZIMYh9ugOfQ7EqIGonU7FMWg==
+X-Google-Smtp-Source: ABdhPJyu9Jgp+cBMPis6i+EmxSqRp8Qurp/ec9d0f6KFWdqDr/xI0wAEwk7qjS45pCIqzW1QSNPz9Q==
+X-Received: by 2002:a05:622a:607:b0:2d7:35db:81e4 with SMTP id z7-20020a05622a060700b002d735db81e4mr21875783qta.281.1645538939986;
+        Tue, 22 Feb 2022 06:08:59 -0800 (PST)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id m5sm6184543qkd.36.2022.02.22.06.08.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 06:08:59 -0800 (PST)
+Message-ID: <72118049-0ae0-69a9-97de-2c132e5f3b6c@linaro.org>
+Date:   Tue, 22 Feb 2022 08:08:57 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 15/25] bus: mhi: ep: Add support for processing MHI
+ endpoint interrupts
+Content-Language: en-US
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
+        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
+        quic_cang@quicinc.com, quic_skananth@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
+ <20220212182117.49438-16-manivannan.sadhasivam@linaro.org>
+ <d5bf8b66-e9ec-4750-9d9d-deb55cbcee94@linaro.org>
+ <20220222081859.GC5029@thinkpad>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220222081859.GC5029@thinkpad>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Energy Model (EM) can be created based on DT entry:
-'dynamic-power-coefficient'. It's a 'simple' EM which is limited to the
-dynamic power. It has to fit into the math formula which requires also
-information about voltage. Some of the platforms don't expose voltage
-information, thus it's not possible to use EM registration using DT.
+On 2/22/22 2:18 AM, Manivannan Sadhasivam wrote:
+> On Tue, Feb 15, 2022 at 04:39:30PM -0600, Alex Elder wrote:
+>> On 2/12/22 12:21 PM, Manivannan Sadhasivam wrote:
+>>> Add support for processing MHI endpoint interrupts such as control
+>>> interrupt, command interrupt and channel interrupt from the host.
+>>>
+>>> The interrupts will be generated in the endpoint device whenever host
+>>> writes to the corresponding doorbell registers. The doorbell logic
+>>> is handled inside the hardware internally.
+>>>
+>>> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>>
+>> Unless I'm mistaken, you have some bugs here.
+>>
+>> Beyond that, I question whether you should be using workqueues
+>> for handling all interrupts.  For now, it's fine, but there
+>> might be room for improvement after this is accepted upstream
+>> (using threaded interrupt handlers, for example).
+>>
+> 
+> Only reason I didn't use bottom halves is that the memory for TRE buffers need
+> to be allocated each time, so essentially the caller should not sleep.
 
-This patch aims to fix it. It introduces new implementation of the EM
-registration callback. The new mechanism parses OPP node in DT which
-contains the power expressed in micro-Watts. It also allows to register
-'advanced' EM, which models total power (static + dynamic), so better
-reflects real HW.
+Threaded interrupt handlers can sleep.  If scheduled, they run
+immediately after hard interrupt handlers.  For receive buffers,
+yes, replacing a receive buffer just consumed would require an
+allocation, but for transmit I think it might be possible to
+avoid the need to do a memory allocation.  (Things to think
+about at some future date.)
 
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
----
- drivers/opp/of.c | 70 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+> This is currently a limitation of iATU where there are only 8 windows for
+> mapping the host memory and each memory region size is also limited.
 
-diff --git a/drivers/opp/of.c b/drivers/opp/of.c
-index 2f40afa4e65c..94059408fa39 100644
---- a/drivers/opp/of.c
-+++ b/drivers/opp/of.c
-@@ -1395,6 +1395,40 @@ struct device_node *dev_pm_opp_get_of_node(struct dev_pm_opp *opp)
- }
- EXPORT_SYMBOL_GPL(dev_pm_opp_get_of_node);
- 
-+/*
-+ * Callback function provided to the Energy Model framework upon registration.
-+ * It provides the power based on DT by @dev at @kHz if it is the frequency
-+ * of an existing OPP, or at the frequency of the first OPP above @kHz otherwise
-+ * (see dev_pm_opp_find_freq_ceil()). This function updates @kHz to the ceiled
-+ * frequency and @mW to the associated power.
-+ *
-+ * Returns 0 on success or a proper -EINVAL value in case of error.
-+ */
-+static int __maybe_unused
-+_get_dt_power(unsigned long *mW, unsigned long *kHz, struct device *dev)
-+{
-+	struct dev_pm_opp *opp;
-+	unsigned long opp_freq;
-+	u32 opp_power;
-+	int ret;
-+
-+	/* Find the right frequency and related OPP */
-+	opp_freq = *kHz * 1000;
-+	opp = dev_pm_opp_find_freq_ceil(dev, &opp_freq);
-+	if (IS_ERR(opp))
-+		return -EINVAL;
-+
-+	ret = of_property_read_u32(opp->np, "opp-microwatt", &opp_power);
-+	dev_pm_opp_put(opp);
-+	if (ret)
-+		return -EINVAL;
-+
-+	*kHz = opp_freq / 1000;
-+	*mW = opp_power / 1000;
-+
-+	return 0;
-+}
-+
- /*
-  * Callback function provided to the Energy Model framework upon registration.
-  * This computes the power estimated by @dev at @kHz if it is the frequency
-@@ -1445,6 +1479,33 @@ static int __maybe_unused _get_power(unsigned long *mW, unsigned long *kHz,
- 	return 0;
- }
- 
-+static int _of_find_opp_microwatt_property(struct device *dev)
-+{
-+	unsigned long freq = 0;
-+	struct dev_pm_opp *opp;
-+	struct device_node *np;
-+	struct property *prop;
-+
-+	/* We only support "operating-points-v2" */
-+	np = dev_pm_opp_of_get_opp_desc_node(dev);
-+	if (!np)
-+		return -EINVAL;
-+
-+	of_node_put(np);
-+
-+	/* Check if an OPP has needed property */
-+	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
-+	if (IS_ERR(opp))
-+		return -EINVAL;
-+
-+	prop = of_find_property(opp->np, "opp-microwatt", NULL);
-+	dev_pm_opp_put(opp);
-+	if (!prop)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- /**
-  * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
-  * @dev		: Device for which an Energy Model has to be registered
-@@ -1474,6 +1535,15 @@ int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
- 		goto failed;
- 	}
- 
-+	/* First, try to find more precised Energy Model in DT */
-+	if (!_of_find_opp_microwatt_property(dev)) {
-+		struct em_data_callback em_dt_cb = EM_DATA_CB(_get_dt_power);
-+
-+		ret = em_dev_register_perf_domain(dev, nr_opp, &em_dt_cb,
-+						  cpus, true);
-+		return ret;
-+	}
-+
- 	np = of_node_get(dev->of_node);
- 	if (!np) {
- 		ret = -EINVAL;
--- 
-2.17.1
+Those are hard limitations, and probably what constrains you the most.
+
+					-Alex
+> 
+>> 					-Alex
+>>
+>>> ---
+>>>    drivers/bus/mhi/ep/main.c | 113 +++++++++++++++++++++++++++++++++++++-
+>>>    include/linux/mhi_ep.h    |   2 +
+>>>    2 files changed, 113 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+>>> index ccb3c2795041..072b872e735b 100644
+>>> --- a/drivers/bus/mhi/ep/main.c
+>>> +++ b/drivers/bus/mhi/ep/main.c
+>>> @@ -185,6 +185,56 @@ static void mhi_ep_ring_worker(struct work_struct *work)
+>>>    	}
+>>>    }
+>>> +static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl,
+>>> +				    unsigned long ch_int, u32 ch_idx)
+>>> +{
+>>> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+>>> +	struct mhi_ep_ring_item *item;
+>>> +	struct mhi_ep_ring *ring;
+>>> +	unsigned int i;
+>>
+>> Why not u32 i?  And why is the ch_int argument unsigned long?  The value
+>> passed in is a u32.
+>>
+> 
+> for_each_set_bit() expects the 2nd argument to be of type "unsigned long".
+> 
+> Thanks,
+> Mani
 
