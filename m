@@ -2,95 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C614C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9295C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 19:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbiBVT7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 14:59:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S235368AbiBVT7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 14:59:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230522AbiBVT65 (ORCPT
+        with ESMTP id S235357AbiBVT7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 14:58:57 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6781DE2D8;
-        Tue, 22 Feb 2022 11:58:30 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nMbIs-0006bB-00; Tue, 22 Feb 2022 20:58:30 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 9ABD8C26B8; Tue, 22 Feb 2022 20:58:06 +0100 (CET)
-Date:   Tue, 22 Feb 2022 20:58:06 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-mips <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MIPS: Handle address errors for accesses above CPU max
- virtual user address
-Message-ID: <20220222195806.GA17107@alpha.franken.de>
-References: <20220222155345.138861-1-tsbogend@alpha.franken.de>
- <CAK8P3a0QV7y_gFv=VHGKVWjXyYmFFZRrXj3m52d21Fyydib4NQ@mail.gmail.com>
+        Tue, 22 Feb 2022 14:59:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B72AE7F7E
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 11:59:16 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nMbJF-00050W-2Y; Tue, 22 Feb 2022 20:58:53 +0100
+Received: from afa by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nMbJC-009hyS-Dw; Tue, 22 Feb 2022 20:58:50 +0100
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+To:     James Bottomley <jejb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>
+Cc:     kernel@pengutronix.de, Sumit Garg <sumit.garg@linaro.org>,
+        David Gstir <david@sigma-star.at>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Aymen Sghaier <aymen.sghaier@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: [PATCH v5 3/5] KEYS: trusted: allow trust sources to use kernel RNG for key material
+Date:   Tue, 22 Feb 2022 20:58:17 +0100
+Message-Id: <20220222195819.2313913-4-a.fatoum@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220222195819.2313913-1-a.fatoum@pengutronix.de>
+References: <20220222195819.2313913-1-a.fatoum@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a0QV7y_gFv=VHGKVWjXyYmFFZRrXj3m52d21Fyydib4NQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: afa@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 06:04:07PM +0100, Arnd Bergmann wrote:
-> On Tue, Feb 22, 2022 at 4:53 PM Thomas Bogendoerfer
-> <tsbogend@alpha.franken.de> wrote:
-> >
-> > Address errors have always been treated as unaliged accesses and handled
-> > as such. But address errors are also issued for illegal accesses like
-> > user to kernel space or accesses outside of implemented spaces. This
-> > change implements Linux exception handling for accesses to the illegal
-> > space above the CPU implemented maximum virtual user address and the
-> > MIPS 64bit architecture maximum. With this we can now use a fixed value
-> > for the maximum task size on every MIPS CPU and get a more optimized
-> > access_ok().
-> >
-> > Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> 
-> Thank you for addressing this. Should I add this patch to my series
-> ahead of "mips: use simpler access_ok()"? That way I can keep it all
-> in my asm-generic tree as a series for 5.18.
+The two existing trusted key sources don't make use of the kernel RNG,
+but instead let the hardware that does the sealing/unsealing also
+generate the random key material. While a previous change offers users
+the choice to use the kernel RNG instead for both, new trust sources
+may want to unconditionally use the kernel RNG for generating key
+material, like it's done elsewhere in the kernel.
 
-yes please add it to your series.
+This is especially prudent for hardware that has proven-in-production
+HWRNG drivers implemented, as otherwise code would have to be duplicated
+only to arrive at a possibly worse result.
 
-> >  arch/mips/kernel/unaligned.c | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
-> >
-> > diff --git a/arch/mips/kernel/unaligned.c b/arch/mips/kernel/unaligned.c
-> > index df4b708c04a9..7b5aba5df02e 100644
-> > --- a/arch/mips/kernel/unaligned.c
-> > +++ b/arch/mips/kernel/unaligned.c
-> > @@ -1480,6 +1480,23 @@ asmlinkage void do_ade(struct pt_regs *regs)
-> >         prev_state = exception_enter();
-> >         perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS,
-> >                         1, regs, regs->cp0_badvaddr);
-> > +
-> > +#ifdef CONFIG_64BIT
-> > +       /*
-> > +        * check, if we are hitting space between CPU implemented maximum
-> > +        * virtual user address and 64bit maximum virtual user address
-> > +        * and do exception handling to get EFAULTs for get_user/put_user
-> > +        */
-> > +       if ((regs->cp0_badvaddr >= (1UL << cpu_vmbits)) &&
-> > +           (regs->cp0_badvaddr < XKSSEG)) {
-> 
-> It might be clearer to use TASK_SIZE_MAX here instead of XKSSEG,
-> to match the check in access_ok(). If you like, I can change that while
-> applying.
+Make this possible by turning struct trusted_key_ops::get_random
+into an optional member. If a driver leaves it NULL, kernel RNG
+will be used instead.
 
-I had TASK_SIZE_MAX in an intermediate version, but decided to go with XKSSEG,
-because it's what this check is about. It's about checking what the MIPS
-architecture defined.
+Acked-by: Sumit Garg <sumit.garg@linaro.org>
+Reviewed-by: David Gstir <david@sigma-star.at>
+Tested-By: Tim Harvey <tharvey@gateworks.com>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+---
+To: James Bottomley <jejb@linux.ibm.com>
+To: Jarkko Sakkinen <jarkko@kernel.org>
+To: Mimi Zohar <zohar@linux.ibm.com>
+To: David Howells <dhowells@redhat.com>
+Cc: James Morris <jmorris@namei.org>
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Cc: "Horia Geantă" <horia.geanta@nxp.com>
+Cc: Aymen Sghaier <aymen.sghaier@nxp.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Biggers <ebiggers@kernel.org>
+Cc: Jan Luebbe <j.luebbe@pengutronix.de>
+Cc: David Gstir <david@sigma-star.at>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Franck LENORMAND <franck.lenormand@nxp.com>
+Cc: Sumit Garg <sumit.garg@linaro.org>
+Cc: Tim Harvey <tharvey@gateworks.com>
+Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc: Pankaj Gupta <pankaj.gupta@nxp.com>
+Cc: keyrings@vger.kernel.org
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-integrity@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+---
+ include/keys/trusted-type.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thomas.
-
+diff --git a/include/keys/trusted-type.h b/include/keys/trusted-type.h
+index d89fa2579ac0..4eb64548a74f 100644
+--- a/include/keys/trusted-type.h
++++ b/include/keys/trusted-type.h
+@@ -64,7 +64,7 @@ struct trusted_key_ops {
+ 	/* Unseal a key. */
+ 	int (*unseal)(struct trusted_key_payload *p, char *datablob);
+ 
+-	/* Get a randomized key. */
++	/* Optional: Get a randomized key. */
+ 	int (*get_random)(unsigned char *key, size_t key_len);
+ 
+ 	/* Exit key interface. */
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.30.2
+
