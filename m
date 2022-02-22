@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0048CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91876C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 09:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbiBVJde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 04:33:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S230226AbiBVJgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:36:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiBVJdb (ORCPT
+        with ESMTP id S229489AbiBVJgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 04:33:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26A4A2516
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 01:33:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l3iLjqgJEnGAdr8zF+Sn6XYn8tIjrfh5Ii/qv9Svt0s=; b=S66n8VWTMAiqk9sMFOjJ/ng+Uj
-        zEf/fQwqAByQAsaVQKPUHNulLqK4kaxHYNpOF0VpjItDAqkmn5q5nbIEwpKVBWmtbfFS3cmHSHJ1K
-        ZRBwkULj/W9WUi0fd8xHEsA9Qs5VHmxBq4AwkyBR/Le7aUB/RihzZqHn6rdB+mrhEVwcQnpMp9gZP
-        Ki8Utdtiv+XOHeuQdnVz+BplaitcY2Q8PZTa09hT43JRqMla9GWFruvEnrPjZBAmZjcTN3eh/5jse
-        rkpl6W+t7pbaVZ+jRFQHxkehHowXVgVMqnK7iecjsfTrtYWytLFTCr5x0J1Uc5X9enFe7jAl6mTZ1
-        JMLti5pA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMRXM-002dJs-Ua; Tue, 22 Feb 2022 09:32:49 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 28E6E3005B2;
-        Tue, 22 Feb 2022 10:32:48 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0AC18200D182B; Tue, 22 Feb 2022 10:32:48 +0100 (CET)
-Date:   Tue, 22 Feb 2022 10:32:48 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc:     "Poimboe, Josh" <jpoimboe@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "Milburn, Alyssa" <alyssa.milburn@intel.com>
-Subject: Re: [PATCH 14/29] x86/ibt: Add IBT feature, MSR and #CP handling
-Message-ID: <YhStwI95PmMyxgqx@hirez.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.395399333@infradead.org>
- <6874fd181ad46cd48f12da6ff5c955a64e193564.camel@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6874fd181ad46cd48f12da6ff5c955a64e193564.camel@intel.com>
+        Tue, 22 Feb 2022 04:36:15 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB36156C71;
+        Tue, 22 Feb 2022 01:35:49 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id u5so15125731ple.3;
+        Tue, 22 Feb 2022 01:35:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=kSokq3mwNVmEXiv+4+dH+H1BL4icCF0v47issCuCpjc=;
+        b=WRSbUkBKdl/FP1flca2/Wpw4wj4IHKFGsTx3im4n2aKZlaVE789JPtYpB2944u7hKH
+         ZqDc8aFFYOx+Uj5Ui7qUdw6YXw6ikvOghnqYJfvfr+Pp05GseVmJQrKlNfYUkjs+fu43
+         guL9AWOUVQuc0NJMADK7wJ22VpcSULxuaU0GLfmfiVSf4+d4kM4QcqMHPPcKJDD7Uka3
+         bZvOwiy1sUpsq8h18uMXlwMl64+9fmaIeevyeArCPnOhGwFMYblZh+Nfp5Xxy/nFpSaX
+         kauMVcsO+dkhaFHEUCQ7/+A2afN0DCJ8KC0SUfRae7y6JLTNpozOr8DnWBfYqGIb+fvy
+         Sg1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kSokq3mwNVmEXiv+4+dH+H1BL4icCF0v47issCuCpjc=;
+        b=rHeQphLyjRFQ50srZ5Y4MT0jGwZ5GGEZ3MCvZFw+S/ml6l9k9KAEcMDRbc08kH6ra1
+         MF+lbb8LB/QPq1jncG7h53Gc83de00Cw9zZQ7eMsJiBbzSfsUt+FKWznTwFuX0jRFQdl
+         o0CX1yrA+IlN7VLPnm0i/rcO3ipt4ia04mudlgQgd1vL8szxnD7eckxzo52PuW39C3dF
+         +ispT/qU0wEMMmnzXNMhr6HaVXVhCbY9Odq4HYjPz9NbJWUNOGY1lxHTdWd3OGxmMgVW
+         BH8kYU8ZwchuhZspsdlIuD2oH4jtkuK6CoLh/QUHUHK4KSyBb11LZfr+pnw14sal1OHb
+         PPDg==
+X-Gm-Message-State: AOAM530mA+0WRtWCj0B7wM+3tL6+K9m9HEP5c8doVY4GpC8scVzzsNuU
+        VeRt/GrLPtRvSY0l4Nd0JC1YaZ7mwV2VIQ==
+X-Google-Smtp-Source: ABdhPJxfCexfzOzl1CTDM3NcW43b6drAGbnWvxMeL2MWrmBM15psiBD+tYHMZMAeaXtvXhhkgk5UYw==
+X-Received: by 2002:a17:90a:db90:b0:1bc:529f:7071 with SMTP id h16-20020a17090adb9000b001bc529f7071mr3237535pjv.40.1645522548580;
+        Tue, 22 Feb 2022 01:35:48 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id h20sm15390650pfq.162.2022.02.22.01.35.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 22 Feb 2022 01:35:48 -0800 (PST)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+To:     gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Subject: [PATCH v9 0/2] Add UART driver for Suplus SP7021 SoC
+Date:   Tue, 22 Feb 2022 17:36:01 +0800
+Message-Id: <1645522563-17183-1-git-send-email-hammerh0314@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 04:38:22AM +0000, Edgecombe, Rick P wrote:
-> On Fri, 2022-02-18 at 17:49 +0100, Peter Zijlstra wrote:
-> > +       cr4_set_bits(X86_CR4_CET);
-> > +
-> > +       rdmsrl(MSR_IA32_S_CET, msr);
-> > +       if (cpu_feature_enabled(X86_FEATURE_IBT))
-> > +               msr |= CET_ENDBR_EN;
-> > +       wrmsrl(MSR_IA32_S_CET, msr);
-> 
-> So I guess implicit in all of this is that MSR_IA32_S_CET will not be
-> managed by xsaves (makes sense).
-> 
-> But it still might be good to add the supervisor cet xfeature number to
-> XFEATURE_MASK_SUPERVISOR_UNSUPPORTED, with analogous reasoning to
-> XFEATURE_MASK_PT.
+This is a patch series for UART driver for Suplus SP7021 SoC.
 
-Yeah, no, I'm not touching that.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART. I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
+
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Refer to (UART):
+https://sunplus.atlassian.net/wiki/spaces/doc/pages/1873412290/13.+Universal+Asynchronous+Receiver+Transmitter+UART
+
+Hammer Hsieh (2):
+  dt-bindings:serial:Add bindings doc for Sunplus SoC UART Driver
+  serial:sunplus-uart:Add Sunplus SoC UART Driver
+
+ .../bindings/serial/sunplus,sp7021-uart.yaml       |  56 ++
+ MAINTAINERS                                        |   6 +
+ drivers/tty/serial/Kconfig                         |  25 +
+ drivers/tty/serial/Makefile                        |   1 +
+ drivers/tty/serial/sunplus-uart.c                  | 770 +++++++++++++++++++++
+ include/uapi/linux/serial_core.h                   |   3 +
+ 6 files changed, 861 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+ create mode 100644 drivers/tty/serial/sunplus-uart.c
+
+-- 
+2.7.4
+
