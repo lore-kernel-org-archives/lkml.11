@@ -2,224 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD282C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233336AbiBVQAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:00:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S233875AbiBVQBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:01:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233877AbiBVQA3 (ORCPT
+        with ESMTP id S233532AbiBVQBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:00:29 -0500
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2057.outbound.protection.outlook.com [40.107.223.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C57163073;
-        Tue, 22 Feb 2022 07:59:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M9eyvJT1EjW8UXS0BOlVtkUQAbjut74O0Av4JMAhKe33tYrAjsHvqcws0n0mKKpjbwU3Yz00b+tNohaNx3feipC+sB84QSOfjYk0iPS/IoVa/UMtdY7xqHFOUv2ab6xzw4117YTrKNtofqpTD7k6wACYjMiNKdyU0+CQUE1ph6yJHnTQY5nL1WXftuiKKtgI9XxSaw9MrfMsKL3RV1WuuZTfIwdrurorqBLRPCZw8iuDHVlRGJd5LyTfH6IH6keBshvn9FRV4bOWFX5P3BSPyxWFqGcgoSU3YOta/lYrVzyfv6y6BJ4OsOnGZMDOUVUJlFIEo59N5DtL+bOU5/rcAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nWOOiUxWAiLtmWdSoudeV/JlGU7/Jk7CAlLEalJlTJI=;
- b=U7YDeThD4s+VOERXft0nYZqiuW/leS/LrjEuE5XPLReDMWVluHjBrwiGWEgk3M6LI+/bVf3OQdCckm9LUnr4tQKCQ+unpyVfCCLPbuYakUBUAEIO0FVzEg9gAfRyUf4yPenXUEhUJtBpqwqgU65O95l0NpEXJOhanHrodFTi4yWmF9LgDZusMVOiLIDfwYDV72EgFYbjvIO+2TJ2/qvU5Ts5YlkBFv0CAfCmJ39GisCIvoa3lZe4e7vdv0h4uh3aCcYg4jfyMORswZXxWdHl4ZR0XnJlxqthNFbseslSmpR2Vxp/Wwq3iHq4+qYDFELxVbFTGCfdBKVce4dxVdIdaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nWOOiUxWAiLtmWdSoudeV/JlGU7/Jk7CAlLEalJlTJI=;
- b=sbGoGQ4RTm9TPwl6o0kZLBQR1jHNdWnYjazyq/18xy2TCZfv5o7JgTlTr7PLH04Ae0yLEr5WbvQXh2/VwwU44swF02uqG/ejDgGAW+ruRLbDgW5vO5HKRftxmwg/BPNQ59ugG55ahl0AMYnlqRMjLGEDV+pdB2qaOzSo5oUSayI=
-Received: from DM3PR03CA0008.namprd03.prod.outlook.com (2603:10b6:0:50::18) by
- MN2PR12MB4344.namprd12.prod.outlook.com (2603:10b6:208:26e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Tue, 22 Feb
- 2022 15:59:54 +0000
-Received: from DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
- (2603:10b6:0:50:cafe::c2) by DM3PR03CA0008.outlook.office365.com
- (2603:10b6:0:50::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
- Transport; Tue, 22 Feb 2022 15:59:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT044.mail.protection.outlook.com (10.13.173.185) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 15:59:53 +0000
-Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Tue, 22 Feb 2022 09:59:43 -0600
-From:   Carlos Bilbao <carlos.bilbao@amd.com>
-To:     <bp@alien8.de>, <tony.luck@intel.com>, <bp@suse.de>
-CC:     <yazen.ghannam@amd.com>, <Smita.KoralahalliChannabasappa@amd.com>,
-        <linux-kernel@vger.kernel.org>, <linux-edac@vger.kernel.org>,
-        Carlos Bilbao <carlos.bilbao@amd.com>
-Subject: [PATCH] x86/mce: Simplify CPU vendor checks for AMD/Hygon and Intel/Zhaoxin
-Date:   Tue, 22 Feb 2022 09:58:58 -0600
-Message-ID: <20220222155857.276286-1-carlos.bilbao@amd.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 22 Feb 2022 11:01:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC10E125CB0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:00:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645545636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7j5XB5PHt4v2EZRj2xa7IPpDQY6qbeddhaMQI3ZMvR8=;
+        b=P1LOSwcfexLJwJd0dGaQwlonvWsnBulUpiqkesstCpsFPVkBNEZqpXji3l1rwUxLyckoWh
+        MKHr+bE9XzxtlkURRNuoby6gBjuZI3aUXNTOVI3gzMe3ITHD4cyxOTEVNL7knMhmmgvdWM
+        bWiGKnzlFIaDD/xkwdaMyr4fEzAcwOI=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-361-m7ZUcOJfOnWmFuUox1JBdw-1; Tue, 22 Feb 2022 11:00:34 -0500
+X-MC-Unique: m7ZUcOJfOnWmFuUox1JBdw-1
+Received: by mail-qk1-f198.google.com with SMTP id i10-20020a05620a144a00b00648d4fa059dso79699qkl.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:00:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7j5XB5PHt4v2EZRj2xa7IPpDQY6qbeddhaMQI3ZMvR8=;
+        b=8Gxds3LovJ61brBfriqF+tR6iLDczWWDuEN7PITvG8iA1sqK/Fdb7fSylH1JIuJmLD
+         g8vt0XEuHr7OJyeER79R+iGhfiQ9ld2D3wVuxuS+Bo94k1hLDGhKAfVxz0GK/ZOf40fu
+         uW9yI5DUosqLCz2LNcuJG2fK/bQ8bHjwZXXWCGoVDsHQ0EPBCbko3qXwlsXz57HSaKmr
+         9G2fohNbSYb5eByak+qC8g+AGVOQsdHa+sQp1V8FUmO4MNrcVxjiiNDkOcB8VsORuPHi
+         HdjFOMZ85QirFbFJaU/+nHI0P+ZwFh0CSdy8n01xAjiH/X7d8XlrijKoF7dt4jNL07LC
+         IU0w==
+X-Gm-Message-State: AOAM533q5aUSTi+wS2r7Av+SXXginEnLwYWyp8EiVwZ3j9btyE9DzbRI
+        UGsDmrNSljemDJPAZEq4xAjg6gemulsbGFYJ8/4dP/HvqjlR/mTlCvPn9+Uff08lWj5qYnYSGmL
+        tIK0jqYRXiY37ZFFFU9UOv0M=
+X-Received: by 2002:a37:4646:0:b0:5e9:562c:ac48 with SMTP id t67-20020a374646000000b005e9562cac48mr16038761qka.140.1645545633641;
+        Tue, 22 Feb 2022 08:00:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxryPhmCAvy6V12tr9ic0DJ2vhMYnP9pzcqZxnXZ3eH8/ot/d3iuhUAxdNQeoKTb7fJKlWKtg==
+X-Received: by 2002:a37:4646:0:b0:5e9:562c:ac48 with SMTP id t67-20020a374646000000b005e9562cac48mr16038726qka.140.1645545633187;
+        Tue, 22 Feb 2022 08:00:33 -0800 (PST)
+Received: from localhost (pool-68-160-176-52.bstnma.fios.verizon.net. [68.160.176.52])
+        by smtp.gmail.com with ESMTPSA id h21sm18450qtb.13.2022.02.22.08.00.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 08:00:32 -0800 (PST)
+Date:   Tue, 22 Feb 2022 11:00:31 -0500
+From:   Mike Snitzer <snitzer@redhat.com>
+To:     Nitesh Shetty <nj.shetty@samsung.com>
+Cc:     javier@javigon.com, chaitanyak@nvidia.com,
+        linux-block@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dm-devel@redhat.com, linux-nvme@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, axboe@kernel.dk,
+        msnitzer@redhat.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, hare@suse.de, kbusch@kernel.org,
+        hch@lst.de, Frederick.Knight@netapp.com, osandov@fb.com,
+        lsf-pc@lists.linux-foundation.org, djwong@kernel.org,
+        josef@toxicpanda.com, clm@fb.com, dsterba@suse.com, tytso@mit.edu,
+        jack@suse.com, joshi.k@samsung.com, arnav.dawn@samsung.com,
+        nitheshshetty@gmail.com, Alasdair Kergon <agk@redhat.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        James Smart <james.smart@broadcom.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 08/10] dm: Add support for copy offload.
+Message-ID: <YhUIny/Huielcit9@redhat.com>
+References: <20220214080002.18381-1-nj.shetty@samsung.com>
+ <CGME20220214080649epcas5p36ab21e7d33b99eac1963e637389c8be4@epcas5p3.samsung.com>
+ <20220214080002.18381-9-nj.shetty@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ce84cd6a-9446-4299-67fd-08d9f61c5d9a
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4344:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4344588DF12FB5DA492A4B9CF83B9@MN2PR12MB4344.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EkPOMdV1QMJsVEitMvdj90am/Ub3vsWKBzXEh3NFvMQ8VFCYS5dXgsuAySY1msCEQd3l4aHM1gojoTGDVqbyCvokdvDCH01aOnc/5O8ibFih4/uHWAwZvzFbnb7jG2lp2Vm7NwvJEZ/AhEgNWKXrpw1NhCP2Lb7ZkR+uRlf7GjVaWSSXBnOxCQ36IXtfk8je7q9CvSXhR+QzSF2l9ts5Bp4eOKP96/KJUpOBiELTLQg3x83SuxFqM/rOFLm1QfJ/+EzpnIPiiVG2kEirVGK+lB+wImrS1vXoAfLejWT7VMCH+IJskSdh7wa91F9i6/2wq3D00Z557XfKVnHap6PMjR5ElGY3GpVNopPMfDqDpx8qqgNJ/k46IGIJwONs9vKtlGRquo0xGjwKxRBn5VwVMA1jEz2bewKaiNoGYaQW4nQxNiwOJd0pr+WEw937B4ewwbh/9iKusgx6YKvPGHPlNQZ8uV2RW+qBmhSLzMCYe3de52HUXcU1QQRl0JePzL4fdNBV4QKHCZg4ArvR6qrSlPqSIT1LbOo3LQHZElXTySABFo0uEYNjPNg4NFEk8hVidtogwyaxEJ7oVePvWgZ9PhHwP9qqIGbmIK75mx3mMD9jOAeJRgO2mOU9OV9WtmVCWfMr+eeYuXghcTwhXgbtrcujPZdIFvSl4Fst63hn1FUoUJ2Psj1TR6QuQsEMxDJdsb4XMp+QhqAsdDyCupe+rDHgI7ggDJImCL7XBiZ9Xvd1NHhKaZs3/ob1AgmJqdpq
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(40460700003)(47076005)(70586007)(336012)(36860700001)(36756003)(356005)(44832011)(26005)(2906002)(70206006)(426003)(81166007)(186003)(83380400001)(16526019)(5660300002)(316002)(2616005)(86362001)(82310400004)(8936002)(1076003)(54906003)(8676002)(4326008)(6666004)(7696005)(110136005)(508600001)(36900700001)(309714004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 15:59:53.8459
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce84cd6a-9446-4299-67fd-08d9f61c5d9a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4344
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214080002.18381-9-nj.shetty@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a number of places across the MCE subsystem we check if we are running
-an x86 processor from AMD/Hygon or Intel/Zhaoxin vendors. Simplify these
-checks with two mce_flags updated at CPU MCE initialization.
+On Mon, Feb 14 2022 at  2:59P -0500,
+Nitesh Shetty <nj.shetty@samsung.com> wrote:
 
-Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
----
- arch/x86/kernel/cpu/mce/core.c     | 22 ++++++++--------------
- arch/x86/kernel/cpu/mce/intel.c    |  3 +--
- arch/x86/kernel/cpu/mce/internal.h |  8 +++++++-
- arch/x86/kernel/cpu/mce/severity.c |  3 +--
- 4 files changed, 17 insertions(+), 19 deletions(-)
+> Before enabling copy for dm target, check if underlying devices and
+> dm target support copy. Avoid split happening inside dm target.
+> Fail early if the request needs split, currently splitting copy
+> request is not supported.
+> 
+> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
+> ---
+>  drivers/md/dm-table.c         | 45 +++++++++++++++++++++++++++++++++++
+>  drivers/md/dm.c               |  6 +++++
+>  include/linux/device-mapper.h |  5 ++++
+>  3 files changed, 56 insertions(+)
+> 
+> diff --git a/drivers/md/dm-table.c b/drivers/md/dm-table.c
+> index e43096cfe9e2..8dc9ae6a6a86 100644
+> --- a/drivers/md/dm-table.c
+> +++ b/drivers/md/dm-table.c
+> @@ -1903,6 +1903,38 @@ static bool dm_table_supports_nowait(struct dm_table *t)
+>  	return true;
+>  }
+>  
+> +static int device_not_copy_capable(struct dm_target *ti, struct dm_dev *dev,
+> +				      sector_t start, sector_t len, void *data)
+> +{
+> +	struct request_queue *q = bdev_get_queue(dev->bdev);
+> +
+> +	return !blk_queue_copy(q);
+> +}
+> +
+> +static bool dm_table_supports_copy(struct dm_table *t)
+> +{
+> +	struct dm_target *ti;
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < dm_table_get_num_targets(t); i++) {
+> +		ti = dm_table_get_target(t, i);
+> +
+> +		if (!ti->copy_supported)
+> +			return false;
+> +
+> +		/*
+> +		 * target provides copy support (as implied by setting
+> +		 * 'copy_supported') and it relies on _all_ data devices having copy support.
+> +		 */
+> +		if (ti->copy_supported &&
+> +		    (!ti->type->iterate_devices ||
+> +		     ti->type->iterate_devices(ti, device_not_copy_capable, NULL)))
+> +			return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  static int device_not_discard_capable(struct dm_target *ti, struct dm_dev *dev,
+>  				      sector_t start, sector_t len, void *data)
+>  {
+> @@ -2000,6 +2032,19 @@ int dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
+>  	} else
+>  		blk_queue_flag_set(QUEUE_FLAG_DISCARD, q);
+>  
+> +	if (!dm_table_supports_copy(t)) {
+> +		blk_queue_flag_clear(QUEUE_FLAG_COPY, q);
+> +		/* Must also clear discard limits... */
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 5818b837fd4d..d88c7ba7f67a 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -241,7 +241,7 @@ static void print_mce(struct mce *m)
- {
- 	__print_mce(m);
- 
--	if (m->cpuvendor != X86_VENDOR_AMD && m->cpuvendor != X86_VENDOR_HYGON)
-+	if (!mce_flags.amd_compatible)
- 		pr_emerg_ratelimited(HW_ERR "Run the above through 'mcelog --ascii'\n");
- }
- 
-@@ -503,8 +503,7 @@ int mce_usable_address(struct mce *m)
- 		return 0;
- 
- 	/* Checks after this one are Intel/Zhaoxin-specific: */
--	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL &&
--	    boot_cpu_data.x86_vendor != X86_VENDOR_ZHAOXIN)
-+	if (!mce_flags.intel_compatible)
- 		return 1;
- 
- 	if (!(m->status & MCI_STATUS_MISCV))
-@@ -562,10 +561,7 @@ static bool whole_page(struct mce *m)
- 
- bool mce_is_correctable(struct mce *m)
- {
--	if (m->cpuvendor == X86_VENDOR_AMD && m->status & MCI_STATUS_DEFERRED)
--		return false;
--
--	if (m->cpuvendor == X86_VENDOR_HYGON && m->status & MCI_STATUS_DEFERRED)
-+	if (mce_flags.amd_compatible && m->status & MCI_STATUS_DEFERRED)
- 		return false;
- 
- 	if (m->status & MCI_STATUS_UC)
-@@ -1450,8 +1446,7 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	 * Check if this MCE is signaled to only this logical processor,
- 	 * on Intel, Zhaoxin only.
- 	 */
--	if (m.cpuvendor == X86_VENDOR_INTEL ||
--	    m.cpuvendor == X86_VENDOR_ZHAOXIN)
-+	if (mce_flags.intel_compatible)
- 		lmce = m.mcgstatus & MCG_STATUS_LMCES;
- 
- 	/*
-@@ -1910,7 +1905,9 @@ static void __mcheck_cpu_init_early(struct cpuinfo_x86 *c)
- 		mce_flags.succor	 = !!cpu_has(c, X86_FEATURE_SUCCOR);
- 		mce_flags.smca		 = !!cpu_has(c, X86_FEATURE_SMCA);
- 		mce_flags.amd_threshold	 = 1;
--	}
-+		mce_flags.amd_compatible = 1;
-+	} else if (c->x86_vendor == X86_VENDOR_INTEL || c->x86_vendor == X86_VENDOR_ZHAOXIN)
-+		mce_flags.intel_compatible = 1;
- }
- 
- static void mce_centaur_feature_init(struct cpuinfo_x86 *c)
-@@ -2277,10 +2274,7 @@ static void vendor_disable_error_reporting(void)
- 	 * the socket like the last level cache (LLC), the integrated memory
- 	 * controller (iMC), etc.
- 	 */
--	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL ||
--	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON ||
--	    boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
--	    boot_cpu_data.x86_vendor == X86_VENDOR_ZHAOXIN)
-+	if (mce_flags.intel_compatible || mce_flags.amd_compatible)
- 		return;
- 
- 	mce_disable_error_reporting();
-diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
-index bb9a46a804bf..169064fa12a9 100644
---- a/arch/x86/kernel/cpu/mce/intel.c
-+++ b/arch/x86/kernel/cpu/mce/intel.c
-@@ -85,8 +85,7 @@ static int cmci_supported(int *banks)
- 	 * initialization is vendor keyed and this
- 	 * makes sure none of the backdoors are entered otherwise.
- 	 */
--	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL &&
--	    boot_cpu_data.x86_vendor != X86_VENDOR_ZHAOXIN)
-+	if (!mce_flags.intel_compatible)
- 		return 0;
- 
- 	if (!boot_cpu_has(X86_FEATURE_APIC) || lapic_get_maxlvt() < 6)
-diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
-index 52c633950b38..562c768ceaf5 100644
---- a/arch/x86/kernel/cpu/mce/internal.h
-+++ b/arch/x86/kernel/cpu/mce/internal.h
-@@ -170,7 +170,13 @@ struct mce_vendor_flags {
- 	/* SandyBridge IFU quirk */
- 	snb_ifu_quirk		: 1,
- 
--	__reserved_0		: 57;
-+	/* CPUs are from AMD or Hygon */
-+	amd_compatible		: 1,
-+
-+	/* CPUs are from Intel or Zhaoxin */
-+	intel_compatible	: 1,
-+
-+	__reserved_0		: 55;
- };
- 
- extern struct mce_vendor_flags mce_flags;
-diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
-index 7aa2bda93cbb..21aa31bd17a2 100644
---- a/arch/x86/kernel/cpu/mce/severity.c
-+++ b/arch/x86/kernel/cpu/mce/severity.c
-@@ -423,8 +423,7 @@ static noinstr int mce_severity_intel(struct mce *m, struct pt_regs *regs,
- int noinstr mce_severity(struct mce *m, struct pt_regs *regs, int tolerant, char **msg,
- 			 bool is_excp)
- {
--	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
--	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
-+	if (mce_flags.amd_compatible)
- 		return mce_severity_amd(m, regs, tolerant, msg, is_excp);
- 	else
- 		return mce_severity_intel(m, regs, tolerant, msg, is_excp);
--- 
-2.27.0
+copy-and-paste mistake: s/discard/copy/ ^
+
+> +		q->limits.max_copy_sectors = 0;
+> +		q->limits.max_hw_copy_sectors = 0;
+> +		q->limits.max_copy_range_sectors = 0;
+> +		q->limits.max_hw_copy_range_sectors = 0;
+> +		q->limits.max_copy_nr_ranges = 0;
+> +		q->limits.max_hw_copy_nr_ranges = 0;
+> +	} else {
+> +		blk_queue_flag_set(QUEUE_FLAG_COPY, q);
+> +	}
+> +
+>  	if (dm_table_supports_secure_erase(t))
+>  		blk_queue_flag_set(QUEUE_FLAG_SECERASE, q);
+>  
+> diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+> index ab9cc91931f9..3b4cd49c489d 100644
+> --- a/drivers/md/dm.c
+> +++ b/drivers/md/dm.c
+> @@ -1372,6 +1372,12 @@ static int __split_and_process_non_flush(struct clone_info *ci)
+>  	if (__process_abnormal_io(ci, ti, &r))
+>  		return r;
+>  
+> +	if ((unlikely(op_is_copy(ci->bio->bi_opf)) &&
+> +				max_io_len(ti, ci->sector) < ci->sector_count)) {
+> +		DMERR("%s: Error IO size(%u) is greater than maximum target size(%llu)\n",
+> +				__func__, ci->sector_count, max_io_len(ti, ci->sector));
+> +		return -EIO;
+> +	}
+>  	len = min_t(sector_t, max_io_len(ti, ci->sector), ci->sector_count);
+>  
+>  	r = __clone_and_map_data_bio(ci, ti, ci->sector, &len);
+
+There isn't a need for __func__ prefix here.
+
+You'll also need to rebase on latest dm-5.18 (or wait until 5.18 merge
+window opens) because there has been some conflicting changes since
+you posted.
+
+> diff --git a/include/linux/device-mapper.h b/include/linux/device-mapper.h
+> index b26fecf6c8e8..acfd4018125a 100644
+> --- a/include/linux/device-mapper.h
+> +++ b/include/linux/device-mapper.h
+> @@ -362,6 +362,11 @@ struct dm_target {
+>  	 * zone append operations using regular writes.
+>  	 */
+>  	bool emulate_zone_append:1;
+> +
+> +	/*
+> +	 * copy offload is supported
+> +	 */
+> +	bool copy_supported:1;
+>  };
+
+Would prefer this be "copy_offload_supported".
+
+>  
+>  void *dm_per_bio_data(struct bio *bio, size_t data_size);
+> -- 
+> 2.30.0-rc0
+> 
 
