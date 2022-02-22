@@ -2,264 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59104C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A839C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233156AbiBVPNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:13:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S232506AbiBVPOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:14:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233287AbiBVPNi (ORCPT
+        with ESMTP id S229620AbiBVPOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:13:38 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760F21275D8;
-        Tue, 22 Feb 2022 07:13:10 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K32j636hyz9sT2;
-        Tue, 22 Feb 2022 16:12:42 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Lsm4pOSsKJKl; Tue, 22 Feb 2022 16:12:42 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32hx3ZVzz9sSh;
-        Tue, 22 Feb 2022 16:12:33 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 6A89B8B764;
-        Tue, 22 Feb 2022 16:12:33 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id aMGDjrgitSXc; Tue, 22 Feb 2022 16:12:33 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2BED68B787;
-        Tue, 22 Feb 2022 16:12:32 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFCNN21087456
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 16:12:23 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFCN9Q1087455;
-        Tue, 22 Feb 2022 16:12:23 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/4] module: Move module_enable_x() and frob_text() in strict_rwx.c
-Date:   Tue, 22 Feb 2022 16:12:16 +0100
-Message-Id: <1545ae8fcef61d5741fa684ad5816b5dd3a418bc.1645542447.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645542447.git.christophe.leroy@csgroup.eu>
-References: <cover.1645542447.git.christophe.leroy@csgroup.eu>
+        Tue, 22 Feb 2022 10:14:30 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EA41255AC;
+        Tue, 22 Feb 2022 07:14:05 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 73F7422205;
+        Tue, 22 Feb 2022 16:14:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645542843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Q9OzFs0JT05sRe8mjCP51k7s1VvBDHqyuY2zEjl3qjs=;
+        b=Tv/aW2EDBj9bQZYZRJj0mSOHfSdOPwhB4lW+bY9zw7ew9SShLS7zlsrwDIUsmzhbzH5IUc
+        5h6AWxNOuVD0dCQW1s3fautnTZCM5Q+jcEX5qJDOBV+bylStW7GOxhbITm2QF1nldDbemX
+        GD7sROZ+lMxhOT6EOuJlqjtOJEYltHc=
+From:   Michael Walle <michael@walle.cc>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     devicetree@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        linux-kernel@vger.kernel.org, heiko.thiery@gmail.com,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
+Date:   Tue, 22 Feb 2022 16:13:57 +0100
+Message-Id: <20220222151357.1710503-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542740; l=7341; s=20211009; h=from:subject:message-id; bh=wUj6D7B9/Eu7E72Eq1hFg4hRDQ2fPolBrGntvtG6lQ8=; b=0rzs5nm7amEe1pab8Jt3hnq0vXLyZbHa4QOMnDUSeYFWhMXniIpvuF9TLuS1iXYQmbfao2Du4uUl pdVvtspgB0FMLxO1DxqGjVRNb0IV0JpwDEVJ08cD8XXcHyMXivn0
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move module_enable_x() together with module_enable_nx() and
-module_enable_ro().
+Add a new compatible string for that eval board. It features an IMX8MN
+UltraLite and has DDR3L RAM. The product part number is 8MNANOD3L-EVK.
 
-Those three functions are going together, they are all used
-to set up the correct page flags on the different sections.
-
-As module_enable_x() is used independently of
-CONFIG_STRICT_MODULE_RWX, build strict_rwx.c all the time and
-use IS_ENABLED(CONFIG_STRICT_MODULE_RWX) when relevant.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- kernel/module/Makefile     |  3 +--
- kernel/module/internal.h   | 15 +-----------
- kernel/module/main.c       | 37 -----------------------------
- kernel/module/strict_rwx.c | 48 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 50 insertions(+), 53 deletions(-)
+ Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index a46e6361017f..a94f7b8b2740 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -7,12 +7,11 @@
- # and produce insane amounts of uninteresting coverage.
- KCOV_INSTRUMENT_module.o := n
- 
--obj-y += main.o
-+obj-y += main.o strict_rwx.o
- obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
- obj-$(CONFIG_MODULE_SIG) += signing.o
- obj-$(CONFIG_LIVEPATCH) += livepatch.o
- obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
--obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
- obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
- obj-$(CONFIG_KALLSYMS) += kallsyms.o
- obj-$(CONFIG_PROC_FS) += procfs.o
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 7178b7c09cdd..276e3f49a4ae 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -182,25 +182,12 @@ static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *
- }
- #endif /* CONFIG_MODULES_TREE_LOOKUP */
- 
--void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
--								     int num_pages));
--
--#ifdef CONFIG_STRICT_MODULE_RWX
- void module_enable_ro(const struct module *mod, bool after_init);
- void module_enable_nx(const struct module *mod);
-+void module_enable_x(const struct module *mod);
- int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 				char *secstrings, struct module *mod);
- 
--#else /* !CONFIG_STRICT_MODULE_RWX */
--static inline void module_enable_nx(const struct module *mod) { }
--static inline void module_enable_ro(const struct module *mod, bool after_init) {}
--static inline int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
--{
--	return 0;
--}
--#endif /* CONFIG_STRICT_MODULE_RWX */
--
- #ifdef CONFIG_MODULE_SIG
- int module_sig_check(struct load_info *info, int flags);
- #else /* !CONFIG_MODULE_SIG */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index be3b31ba6e16..47addf849ef7 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -1142,43 +1142,6 @@ resolve_symbol_wait(struct module *mod,
- 	return ksym;
- }
- 
--/*
-- * LKM RO/NX protection: protect module's text/ro-data
-- * from modification and any data from execution.
-- *
-- * General layout of module is:
-- *          [text] [read-only-data] [ro-after-init] [writable data]
-- * text_size -----^                ^               ^               ^
-- * ro_size ------------------------|               |               |
-- * ro_after_init_size -----------------------------|               |
-- * size -----------------------------------------------------------|
-- *
-- * These values are always page-aligned (as is base)
-- */
--
--/*
-- * Since some arches are moving towards PAGE_KERNEL module allocations instead
-- * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() outside of the
-- * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless of
-- * whether we are strict.
-- */
--void frob_text(const struct module_layout *layout,
--	       int (*set_memory)(unsigned long start, int num_pages))
--{
--	set_memory((unsigned long)layout->base,
--		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
--}
--
--static void module_enable_x(const struct module *mod)
--{
--	if (!PAGE_ALIGNED(mod->core_layout.base) ||
--	    !PAGE_ALIGNED(mod->init_layout.base))
--		return;
--
--	frob_text(&mod->core_layout, set_memory_x);
--	frob_text(&mod->init_layout, set_memory_x);
--}
--
- void __weak module_memfree(void *module_region)
- {
- 	/*
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-index 1a6b9573260b..6b99be9e88e1 100644
---- a/kernel/module/strict_rwx.c
-+++ b/kernel/module/strict_rwx.c
-@@ -11,6 +11,34 @@
- #include <linux/set_memory.h>
- #include "internal.h"
- 
-+/*
-+ * LKM RO/NX protection: protect module's text/ro-data
-+ * from modification and any data from execution.
-+ *
-+ * General layout of module is:
-+ *          [text] [read-only-data] [ro-after-init] [writable data]
-+ * text_size -----^                ^               ^               ^
-+ * ro_size ------------------------|               |               |
-+ * ro_after_init_size -----------------------------|               |
-+ * size -----------------------------------------------------------|
-+ *
-+ * These values are always page-aligned (as is base) when
-+ * CONFIG_STRICT_MODULE_RWX is set.
-+ */
-+
-+/*
-+ * Since some arches are moving towards PAGE_KERNEL module allocations instead
-+ * of PAGE_KERNEL_EXEC, keep frob_text() and module_enable_x() independent of
-+ * CONFIG_STRICT_MODULE_RWX because they are needed regardless of whether we
-+ * are strict.
-+ */
-+static void frob_text(const struct module_layout *layout,
-+		      int (*set_memory)(unsigned long start, int num_pages))
-+{
-+	set_memory((unsigned long)layout->base,
-+		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
-+}
-+
- static void frob_rodata(const struct module_layout *layout,
- 		 int (*set_memory)(unsigned long start, int num_pages))
- {
-@@ -41,10 +69,24 @@ static void frob_writable_data(const struct module_layout *layout,
- 		   (layout->size - layout->ro_after_init_size) >> PAGE_SHIFT);
- }
- 
-+void module_enable_x(const struct module *mod)
-+{
-+	if (!PAGE_ALIGNED(mod->core_layout.base) ||
-+	    !PAGE_ALIGNED(mod->init_layout.base))
-+		return;
-+
-+	frob_text(&mod->core_layout, set_memory_x);
-+	frob_text(&mod->init_layout, set_memory_x);
-+}
-+
- void module_enable_ro(const struct module *mod, bool after_init)
- {
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return;
-+#ifdef CONFIG_STRICT_MODULE_RWX
- 	if (!rodata_enabled)
- 		return;
-+#endif
- 
- 	set_vm_flush_reset_perms(mod->core_layout.base);
- 	set_vm_flush_reset_perms(mod->init_layout.base);
-@@ -60,6 +102,9 @@ void module_enable_ro(const struct module *mod, bool after_init)
- 
- void module_enable_nx(const struct module *mod)
- {
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return;
-+
- 	frob_rodata(&mod->data_layout, set_memory_nx);
- 	frob_ro_after_init(&mod->data_layout, set_memory_nx);
- 	frob_writable_data(&mod->data_layout, set_memory_nx);
-@@ -73,6 +118,9 @@ int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 	const unsigned long shf_wx = SHF_WRITE | SHF_EXECINSTR;
- 	int i;
- 
-+	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return 0;
-+
- 	for (i = 0; i < hdr->e_shnum; i++) {
- 		if ((sechdrs[i].sh_flags & shf_wx) == shf_wx) {
- 			pr_err("%s: section %s (index %d) has invalid WRITE|EXEC flags\n",
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 23e678232451..e11ffaa8721e 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -834,6 +834,7 @@ properties:
+               - bsh,imx8mn-bsh-smm-s2     # i.MX8MN BSH SystemMaster S2
+               - bsh,imx8mn-bsh-smm-s2pro  # i.MX8MN BSH SystemMaster S2 PRO
+               - fsl,imx8mn-ddr4-evk       # i.MX8MN DDR4 EVK Board
++              - fsl,imx8mn-ddr3l-evk      # i.MX8MN DDR3L EVK Board
+               - fsl,imx8mn-evk            # i.MX8MN LPDDR4 EVK Board
+               - gw,imx8mn-gw7902          # i.MX8MM Gateworks Board
+           - const: fsl,imx8mn
 -- 
-2.34.1
+2.30.2
 
