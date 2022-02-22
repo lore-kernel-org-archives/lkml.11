@@ -2,111 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF06BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7AFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiBVITq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:19:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
+        id S229747AbiBVIUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:20:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiBVITo (ORCPT
+        with ESMTP id S229452AbiBVIU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:19:44 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC18154706;
-        Tue, 22 Feb 2022 00:19:19 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9BF2221112;
-        Tue, 22 Feb 2022 08:19:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645517957; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Djpi2wqg5KZNuxo5tXaJwLf7ivkdFtpr27BC3EwWuGg=;
-        b=UWKGI6yvKyZY26UvlDfM3wsvaAujuAK4TrF9o82hgRQEUaCpds/6xAs2YERbuyn9gK2gLl
-        XLf9Wp96tvXbWlRb/D3YJEx/Ty7WRlSl1aYE8SG8+9NbMhEDRk8cSDIqc1QVl+IyV2/M1x
-        trWI3sEP0GWo5DTyAk4usGMG58quqKA=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 65AEAA3B84;
-        Tue, 22 Feb 2022 08:19:17 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 09:19:14 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH v4 02/20] kallsyms: increase maximum kernel symbol length
- to 512
-Message-ID: <YhScgnV+n7w75WH7@alley>
-References: <20220212130410.6901-1-ojeda@kernel.org>
- <20220212130410.6901-3-ojeda@kernel.org>
+        Tue, 22 Feb 2022 03:20:29 -0500
+X-Greylist: delayed 444 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Feb 2022 00:20:03 PST
+Received: from mail.avm.de (mail.avm.de [IPv6:2001:bf0:244:244::120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941CE154D35;
+        Tue, 22 Feb 2022 00:20:03 -0800 (PST)
+Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [212.42.244.71])
+        by mail.avm.de (Postfix) with ESMTPS;
+        Tue, 22 Feb 2022 09:12:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+        t=1645517554; bh=KEa0HEq9elkheo1S0XRmlXqPLxqZBVn71+sq+tx/6i8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DGmzZT9iqagkTOPUypiFfi15ZqAp9bYEBZij8jLMfhmg6tiiCU0BwZUCKQcki5DJN
+         2iB6113ZsYrFj4in4EBwsS+xGQGdVInTbEsWMkh60rIhnDEUCLCLpG7S0bZ1/DJrd5
+         If32mPKQGoK17+Q8sQ5AKIFVX2VBqH1s8NJUW05Y=
+Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
+        by mail-auth.avm.de (Postfix) with ESMTPSA id 99984804A2;
+        Tue, 22 Feb 2022 09:12:34 +0100 (CET)
+Date:   Tue, 22 Feb 2022 09:12:33 +0100
+From:   Nicolas Schier <n.schier@avm.de>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] certs: simplify empty certs creation in
+ certs/Makefile
+Message-ID: <YhSa8bOW7sOd1cp0@buildd.core.avm.de>
+References: <20220218044634.169520-1-masahiroy@kernel.org>
+ <20220218044634.169520-2-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220212130410.6901-3-ojeda@kernel.org>
+In-Reply-To: <20220218044634.169520-2-masahiroy@kernel.org>
+X-purgate-ID: 149429::1645517554-00000620-B1D4181E/0/0
+X-purgate-type: clean
+X-purgate-size: 2668
+X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
+X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 2022-02-12 14:03:28, Miguel Ojeda wrote:
-> Rust symbols can become quite long due to namespacing introduced
-> by modules, types, traits, generics, etc. For instance,
-> the following code:
-> 
->     pub mod my_module {
->         pub struct MyType;
->         pub struct MyGenericType<T>(T);
-> 
->         pub trait MyTrait {
->             fn my_method() -> u32;
->         }
-> 
->         impl MyTrait for MyGenericType<MyType> {
->             fn my_method() -> u32 {
->                 42
->             }
->         }
->     }
-> 
-> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
-> 
->     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
-> 
-> At the moment, Rust symbols may reach up to 300 in length.
-> Setting 512 as the maximum seems like a reasonable choice to
-> keep some headroom.
-> 
-> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
-> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-> Co-developed-by: Gary Guo <gary@garyguo.net>
-> Signed-off-by: Gary Guo <gary@garyguo.net>
-> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+On Fri, Feb 18, 2022 at 01:46:34PM +0900, Masahiro Yamada wrote:
+> To create an empty cert file, we need to pass "" to the extract-cert
+> tool, which is common for all the three call-sites of cmd_exract_certs.
 
-The livepatch selftest still pass. Feel free to add:
+Missing a 't' in 'cmd_exract_certs'.
 
-Tested-by: Petr Mladek <pmladek@suse.com>	# livepatch
-Acked-by: Petr Mladek <pmladek@suse.com>	# livepatch
+Reviewed-by: Nicolas Schier <n.schier@avm.de>
 
-Best Regards,
-Petr
+> 
+> Factor out the logic into extract-cert-in.
+> 
+> One exceptional case is PKCS#11 case, where we override extract-cert-in
+> with the URI.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  certs/Makefile | 21 +++++++++++----------
+>  1 file changed, 11 insertions(+), 10 deletions(-)
+> 
+> diff --git a/certs/Makefile b/certs/Makefile
+> index 68c1d7b9a388..d8443cfb1c40 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -13,12 +13,13 @@ obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
+>  endif
+>  
+>  quiet_cmd_extract_certs  = CERT    $@
+> -      cmd_extract_certs  = $(obj)/extract-cert $(2) $@
+> +      cmd_extract_certs  = $(obj)/extract-cert $(extract-cert-in) $@
+> +extract-cert-in = $(or $(filter-out $(obj)/extract-cert, $(real-prereqs)),"")
+>  
+>  $(obj)/system_certificates.o: $(obj)/x509_certificate_list
+>  
+>  $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert FORCE
+> -	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_TRUSTED_KEYS),$<,""))
+> +	$(call if_changed,extract_certs)
+>  
+>  targets += x509_certificate_list
+>  
+> @@ -52,22 +53,22 @@ $(obj)/x509.genkey:
+>  
+>  endif # CONFIG_MODULE_SIG_KEY
+>  
+> -# If CONFIG_MODULE_SIG_KEY isn't a PKCS#11 URI, depend on it
+> -ifneq ($(filter-out pkcs11:%, $(CONFIG_MODULE_SIG_KEY)),)
+> -X509_DEP := $(CONFIG_MODULE_SIG_KEY)
+> -endif
+> -
+>  $(obj)/system_certificates.o: $(obj)/signing_key.x509
+>  
+> -$(obj)/signing_key.x509: $(X509_DEP) $(obj)/extract-cert FORCE
+> -	$(call if_changed,extract_certs,$(if $(CONFIG_MODULE_SIG_KEY),$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)),""))
+> +PKCS11_URI := $(filter pkcs11:%, $(CONFIG_MODULE_SIG_KEY))
+> +ifdef PKCS11_URI
+> +$(obj)/signing_key.x509: extract-cert-in := $(PKCS11_URI)
+> +endif
+> +
+> +$(obj)/signing_key.x509: $(filter-out $(PKCS11_URI),$(CONFIG_MODULE_SIG_KEY)) $(obj)/extract-cert FORCE
+> +	$(call if_changed,extract_certs)
+>  
+>  targets += signing_key.x509
+>  
+>  $(obj)/revocation_certificates.o: $(obj)/x509_revocation_list
+>  
+>  $(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cert FORCE
+> -	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_REVOCATION_KEYS),$<,""))
+> +	$(call if_changed,extract_certs)
+>  
+>  targets += x509_revocation_list
+>  
+> -- 
+> 2.32.0
+> 
