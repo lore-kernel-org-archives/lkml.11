@@ -2,143 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47879C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234201AbiBVQdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:33:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
+        id S234135AbiBVQdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:33:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234098AbiBVQcu (ORCPT
+        with ESMTP id S234095AbiBVQcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 11:32:50 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83B09E579
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:32:24 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id p15so15116342oip.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:32:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aSdxbzUUBFyhsvNwdRhnX3Mec7pbpC71E8zAtuMoNSw=;
-        b=FX0sGlOaHKUnWtxEV6HYKy2nafu8fuljFBoACNBVftni/Q58eaCkncHFWGp2OrD2C7
-         SDoNGW9popiT9/vht4gT9Bxb0ur4WAPXseAppf5T46OFdmKkpfESNAT2bFZ+FzWYushi
-         Cup7BrHE+eOWFUq/y8CwoD8aORSMiasZHczGydJhs4/qlq28l/+PL4RDeNpi5SdA1B1a
-         miu/LbAaMWwhsdqEjVqbhMwrBCOrNaekbAFCk4vLbL4s+ZJPCOzs7oJY3kFtjqdxJcZW
-         nLEUXyj5/0RGoBn154D9dFV2Q6lYXTDe1FTVOHRUAFFHjJGRrUVuMGLmBPzIPz3aTUlZ
-         d34A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aSdxbzUUBFyhsvNwdRhnX3Mec7pbpC71E8zAtuMoNSw=;
-        b=ko3SbAEXiBYPrT3QquhBPXnAnzS/1AT3lW3zbtrGfH+PSU5POB29Num5qN+08hAepj
-         RA6e5JA9UVxnipzFjW0G0bNB0qeGHabXRQFNtP4o5b1EJEwJNgSaKPi7515/WoBzKoe8
-         jdDLQGxGGgvXwpwo+jxIbRfbjbXRz6d9zAKShtSd/4dVKlQWCCatQhxZ7TdxbxVrfibb
-         g9UDQ1K8B2kduxJYrL/8KzVvjZRtPJJUxpfmIOiAG0AD238WNj1jytVa24p0fHqTh2Ef
-         YKZW22an/tj009GjYLrOfSCdXTl9eCV3zA8jawUIDEyki9/IofCljRLZoch0o1t5VK6i
-         AWBA==
-X-Gm-Message-State: AOAM532Htm+HdAaEdpVqriGd3Mc0u39qnvq6m1i+p85nzqMsp1DJm1Zs
-        tPUU/l0vzq7O7D5ssQ/x8VkZ+Q5UgB/GZHOC3Q0=
-X-Google-Smtp-Source: ABdhPJy6A7uqVEJVD4y7y1YfQGjjopexCYY0c40a6Xh4XUKujc3FuLvcm8mgvXFwCBo2/1BU/wrLj1y1uaQOcVZOi00=
-X-Received: by 2002:aca:ab4c:0:b0:2d4:7c7d:606e with SMTP id
- u73-20020acaab4c000000b002d47c7d606emr2374308oie.132.1645547544141; Tue, 22
- Feb 2022 08:32:24 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37914BB091;
+        Tue, 22 Feb 2022 08:32:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8CA860A2B;
+        Tue, 22 Feb 2022 16:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709A5C340F6;
+        Tue, 22 Feb 2022 16:32:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645547543;
+        bh=r/bd83ebHmk3oq087sNFUNNVtBRYLznJSmRLMlpTbUw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GCSf5tRNML33gIhC3sIrrGWNIgk5kvVblmBu4I3xUoYSfiBZQ7ehJCYaFMnjgfYrh
+         OEya2ydwEKX3H3fD0dwoZ6w+H+uVTnLvXdVh13m4ZYJeOwoVOR8FpM5mREFIghRXun
+         Hbo1Vj+fgL7RwAtA8rRkuMSwCelOJIR8YWHIIT259xvZllYv4OVf9/3czpEuPPVy05
+         LfWvNjQZxOLoyJOF48fW/B6VWOY4CLWhcn4SoZpbDixEkczclmp/n15F/B5+EtU2/C
+         QIy+oT0tinibuGXLKZUog8+xSn83qCPVsd+HVtOq+tDiYftWhlgYVwby4IeweuNnAO
+         rEhXiElbv4AFg==
+From:   Keith Busch <kbusch@kernel.org>
+To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
+        colyli@suse.de, Keith Busch <kbusch@kernel.org>,
+        Bart Van Assche <bvanassche@acm.org>
+Subject: [PATCHv3 04/10] linux/kernel: introduce lower_48_bits macro
+Date:   Tue, 22 Feb 2022 08:31:38 -0800
+Message-Id: <20220222163144.1782447-5-kbusch@kernel.org>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20220222163144.1782447-1-kbusch@kernel.org>
+References: <20220222163144.1782447-1-kbusch@kernel.org>
 MIME-Version: 1.0
-References: <20220222131701.356117-1-maira.canal@usp.br> <20220222131701.356117-6-maira.canal@usp.br>
-In-Reply-To: <20220222131701.356117-6-maira.canal@usp.br>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 22 Feb 2022 11:32:13 -0500
-Message-ID: <CADnq5_MaeAaKemJyNyAkzsVrnUv9G4zqQrd4PbCj3vJaTpxVoA@mail.gmail.com>
-Subject: Re: [PATCH 05/10] drm/amd/display: Remove unused dcn316_smu_set_voltage_via_phyclk
- function
-To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        John Clements <john.clements@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        "Chai, Thomas" <YiPeng.Chai@amd.com>,
-        "Tuikov, Luben" <luben.tuikov@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Dennis Li <Dennis.Li@amd.com>,
-        "Joshi, Mukul" <mukul.joshi@amd.com>,
-        "Wentland, Harry" <harry.wentland@amd.com>,
-        "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
-        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Magali Lemes <magalilemes00@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, mwen@igalia.com,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Isabella Basso <isabbasso@riseup.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+Recent data integrity field enhancements allow 48-bit reference tags.
+Introduce a helper macro since this will be a repeated operation.
 
-Alex
+Suggested-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+---
+ include/linux/kernel.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-On Tue, Feb 22, 2022 at 8:18 AM Ma=C3=ADra Canal <maira.canal@usp.br> wrote=
-:
->
-> Remove dcn316_smu_set_voltage_via_phyclk function, which is not used in t=
-he
-> codebase.
->
-> This was pointed by clang with the following warning:
->
-> drivers/gpu/drm/amd/amdgpu/../display/dc/clk_mgr/dcn316/dcn316_smu.c:171:=
-5:
-> warning: no previous prototype for function
-> 'dcn316_smu_set_voltage_via_phyclk' [-Wmissing-prototypes]
-> int dcn316_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, i=
-nt
-> requested_phyclk_khz)
->     ^
->
-> Signed-off-by: Ma=C3=ADra Canal <maira.canal@usp.br>
-> ---
->  .../amd/display/dc/clk_mgr/dcn316/dcn316_smu.c   | 16 ----------------
->  1 file changed, 16 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c b=
-/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
-> index b7f9e1b34c11..fd6497fd2dc5 100644
-> --- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
-> +++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_smu.c
-> @@ -168,22 +168,6 @@ int dcn316_smu_set_dispclk(struct clk_mgr_internal *=
-clk_mgr, int requested_dispc
->         return actual_dispclk_set_mhz * 1000;
->  }
->
-> -int dcn316_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, =
-int requested_phyclk_khz)
-> -{
-> -       int actual_phypclk_set_mhz =3D -1;
-> -
-> -       if (!clk_mgr->smu_present && requested_phyclk_khz)
-> -               return requested_phyclk_khz;
-> -
-> -       /*  Unit of SMU msg parameter is Mhz */
-> -       actual_phypclk_set_mhz =3D dcn316_smu_send_msg_with_param(
-> -                       clk_mgr,
-> -                       VBIOSSMC_MSG_SetPhyclkVoltageByFreq,
-> -                       khz_to_mhz_ceil(requested_phyclk_khz));
-> -
-> -       return actual_phypclk_set_mhz * 1000;
-> -}
-> -
->  int dcn316_smu_set_hard_min_dcfclk(struct clk_mgr_internal *clk_mgr, int=
- requested_dcfclk_khz)
->  {
->         int actual_dcfclk_set_mhz =3D -1;
-> --
-> 2.35.1
->
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 33f47a996513..c1fa9fc2b5cd 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -63,6 +63,12 @@
+ }					\
+ )
+ 
++/**
++ * lower_48_bits - return bits 0-47 of a number
++ * @n: the number we're accessing
++ */
++#define lower_48_bits(n) ((u64)((n) & 0xffffffffffffull))
++
+ /**
+  * upper_32_bits - return bits 32-63 of a number
+  * @n: the number we're accessing
+-- 
+2.25.4
+
