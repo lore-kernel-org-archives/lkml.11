@@ -2,196 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7396BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 20:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235642AbiBVUxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 15:53:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
+        id S235574AbiBVUzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 15:55:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbiBVUxL (ORCPT
+        with ESMTP id S231699AbiBVUzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 15:53:11 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9115EA2F15;
-        Tue, 22 Feb 2022 12:52:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EF67DCE1894;
-        Tue, 22 Feb 2022 20:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72825C340E8;
-        Tue, 22 Feb 2022 20:52:40 +0000 (UTC)
-Date:   Tue, 22 Feb 2022 15:52:38 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Ritesh Harjani <riteshh@linux.ibm.com>
-Cc:     linux-ext4@vger.kernel.org,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC 2/9] ext4: Fix ext4_fc_stats trace point
-Message-ID: <20220222155238.669e598e@gandalf.local.home>
-In-Reply-To: <9a8c359270a6330ed384ea0a75441e367ecde924.1645558375.git.riteshh@linux.ibm.com>
-References: <cover.1645558375.git.riteshh@linux.ibm.com>
-        <9a8c359270a6330ed384ea0a75441e367ecde924.1645558375.git.riteshh@linux.ibm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 22 Feb 2022 15:55:12 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFC1A2F15
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:54:46 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id m3so33934795eda.10
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:54:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SPRBbHRt1jN0bCazBjflxzkMQpBKCrhFsjWbB/Pd2ho=;
+        b=d8byAmakXv8TUEk2D3GwlOKX2veEXZG3SWc2Oaanly7GJmSflwIsHiwmAW1Aa2txaX
+         AKK3+3n03VecgUvTM1Mi6rNS8aDHCmfVQUJmMiUpE3pmhqDMi+B2xRts9mbJUecdnSbG
+         KGIw6911dhsDhVjGLJH1evW17Ycoey+JUh5TO5i48ZRTiLmNOEyzz+TLFuAFVvZ2Enru
+         kcmQF9MsPyqrsrMAJOYwyxeyvnskKlFZOzZDgvFJ3RCeQgzMJDZq/ERMFqADAO/5UoLh
+         /E8cANGceNrsLPHdXEmGExgir+nUUx1gz+ICKFUCpYPEkJmMkDm7rtspo1sVW7ettc9Q
+         y5Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SPRBbHRt1jN0bCazBjflxzkMQpBKCrhFsjWbB/Pd2ho=;
+        b=0tjJMvADARHhR467Xqc7i0SNlPHcjPm5u/MCqmI18AA+yRERgJ1mcjS9nZQDsNprhP
+         boAd0RLw1X7OsSli919TQHkx5vUb3Gr9ps4+w6PQ808JTexZrI0t95NL7omTnwnXoRDi
+         tAkA+59ExsqfN2FKA5fS0t2CS1VtfaavagEBSnpPtUgrw34A8CmwOUsuUgOj/LY+pji9
+         S6BuAceaXKbtdIPsXgP9Ns+Lmnm8AShMVyWiXo9K27BSTwMwroy8XQpuZ5rFFVDpVsM9
+         5EjVFCobilptEVoEUfsKyywhO9UOULqycjiUAvRpG64s3RBp+UJyQj60hPg5mbhNKb6V
+         dG8g==
+X-Gm-Message-State: AOAM531TTsZh7C9rYfg38ELLaGxzewdLlU8nPMx9+8QO7VQ7FbbGIwXL
+        CoImc+neWPnbo5UWkRdJdSkKOob+QAzjzYueDMk=
+X-Google-Smtp-Source: ABdhPJwdHuLXrwIwpdBJAf4/39epc/M85MPWl0qEVJog5KwT3yV9aX9Lv1vppSRgkpo7O6i4fZ7LtUt34SnQcTuhQQI=
+X-Received: by 2002:a05:6402:1cc1:b0:413:2b12:fc49 with SMTP id
+ ds1-20020a0564021cc100b004132b12fc49mr3663984edb.118.1645563285075; Tue, 22
+ Feb 2022 12:54:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220218155725.487785-1-robdclark@gmail.com> <CAPaKu7R+6g9XRzWPk-u0jKWa602z6CJVxhPqgjJPipzY=S-txA@mail.gmail.com>
+ <CAF6AEGtrQ7rcK6sEbiaHa72cebGbrdS0RNS22T07XQwCM2sQ0g@mail.gmail.com>
+In-Reply-To: <CAF6AEGtrQ7rcK6sEbiaHa72cebGbrdS0RNS22T07XQwCM2sQ0g@mail.gmail.com>
+From:   Chia-I Wu <olvaffe@gmail.com>
+Date:   Tue, 22 Feb 2022 12:54:34 -0800
+Message-ID: <CAPaKu7TqRBQ6_v2nKCTsc4OySOSeK9_kzKK=HfALL_42qU2WnQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/virtio: Add USE_INTERNAL blob flag
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 02:04:10 +0530
-Ritesh Harjani <riteshh@linux.ibm.com> wrote:
+On Fri, Feb 18, 2022 at 9:51 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> On Fri, Feb 18, 2022 at 8:42 AM Chia-I Wu <olvaffe@gmail.com> wrote:
+> >
+> > On Fri, Feb 18, 2022 at 7:57 AM Rob Clark <robdclark@gmail.com> wrote:
+> > >
+> > > From: Rob Clark <robdclark@chromium.org>
+> > >
+> > > With native userspace drivers in guest, a lot of GEM objects need to be
+> > > neither shared nor mappable.  And in fact making everything mappable
+> > > and/or sharable results in unreasonably high fd usage in host VMM.
+> > >
+> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > > ---
+> > > This is for a thing I'm working on, a new virtgpu context type that
+> > > allows for running native userspace driver in the guest, with a
+> > > thin shim in the host VMM.  In this case, the guest has a lot of
+> > > GEM buffer objects which need to be neither shared nor mappable.
+> > >
+> > > Alternative idea is to just drop the restriction that blob_flags
+> > > be non-zero.  I'm ok with either approach.
+> > Dropping the restriction sounds better to me.
+> >
+> > What is the use case for such a resource?  Does the host need to know
+> > such a resource exists?
+>
+> There are a bunch of use cases, some internal (like visibility stream
+> buffers filled during binning pass and consumed during draw pass),
+> some external (tiled and/or UBWC buffers are never accessed on the
+> CPU).
+For these use cases, it's true that userspace might want internal bos,
+and serialize them as res_ids which the host maps to host gem_handles.
+But userspace can also skip the internal bos and encode host
+gem_handles directly.
 
-> ftrace's __print_symbolic() requires that any enum values used in the
-> symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
-> so that the enum value can be encoded in the ftrace ring buffer.
+But the kernel probably should not dictate what the userspace should
+do by requiring non-zero blob flags.
 
-Actually, you mean "decoded from the ftrace ring buffer by user space
-tooling".
-
-> 
-> This patch also fixes few other problems found in this trace point.
-> e.g. dereferencing structures in TP_printk which should not be done
-> at any cost.
-> 
-> Also to avoid checkpatch warnings, this patch removes those
-> whitespaces/tab stops issues.
-> 
-> Fixes: commit aa75f4d3daae ("ext4: main fast-commit commit path")
-
-Should add:
-
-Cc: stable@kernel.org
-
-as the commit landed in 5.10.
-
-> Reported-by: Steven Rostedt <rostedt@goodmis.org>
-> Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-
-Looks good with one small nit below.
-
-> ---
->  include/trace/events/ext4.h | 76 +++++++++++++++++++++++--------------
->  1 file changed, 47 insertions(+), 29 deletions(-)
-> 
-> diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
-> index 19e957b7f941..17fb9c506e8a 100644
-> --- a/include/trace/events/ext4.h
-> +++ b/include/trace/events/ext4.h
-> @@ -95,6 +95,16 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
->  	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
->  	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
->  
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
-> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
-> +
->  #define show_fc_reason(reason)						\
->  	__print_symbolic(reason,					\
->  		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
-> @@ -2723,41 +2733,49 @@ TRACE_EVENT(ext4_fc_commit_stop,
->  
->  #define FC_REASON_NAME_STAT(reason)					\
->  	show_fc_reason(reason),						\
-> -	__entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
-> +	__entry->fc_ineligible_rc[reason]
->  
->  TRACE_EVENT(ext4_fc_stats,
-> -	    TP_PROTO(struct super_block *sb),
-> -
-> -	    TP_ARGS(sb),
-> +	TP_PROTO(struct super_block *sb),
->  
-> -	    TP_STRUCT__entry(
-> -		    __field(dev_t, dev)
-> -		    __field(struct ext4_sb_info *, sbi)
-> -		    __field(int, count)
-> -		    ),
-> +	TP_ARGS(sb),
->  
-> -	    TP_fast_assign(
-> -		    __entry->dev = sb->s_dev;
-> -		    __entry->sbi = EXT4_SB(sb);
-> -		    ),
-> +	TP_STRUCT__entry(
-> +		__field(dev_t, dev)
-> +		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
-> +		__field(unsigned long, fc_commits)
-> +		__field(unsigned long, fc_ineligible_commits)
-> +		__field(unsigned long, fc_numblks)
-> +	),
->  
-> -	    TP_printk("dev %d:%d fc ineligible reasons:\n"
-> -		      "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
-> -		      "num_commits:%ld, ineligible: %ld, numblks: %ld",
-> -		      MAJOR(__entry->dev), MINOR(__entry->dev),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
-> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
-> -		      __entry->sbi->s_fc_stats.fc_num_commits,
-> -		      __entry->sbi->s_fc_stats.fc_ineligible_commits,
-> -		      __entry->sbi->s_fc_stats.fc_numblks)
-> +	TP_fast_assign(
-> +		int i;
->  
-> +		__entry->dev = sb->s_dev;
-> +		for (i = 0; i < EXT4_FC_REASON_MAX; i++)
-> +			__entry->fc_ineligible_rc[i] =
-> +			EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
-
-As the above line is a continuation of the previous line, it should be
-indented as such. And since you added a line break, it is recommend to have
-any blocks use brackets. That is:
-
-		for (i = 0; i < EXT4_FC_REASON_MAX; i++) {
-			__entry->fc_ineligible_rc[i] =
-				EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
-		}
-
-Other than that:
-
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-
--- Steve
+>
+> In theory, at least currently, drm/virtgpu does not need to know about
+> them, but there are a lot of places in userspace that expect to have a
+> gem handle.  Longer term, I think I want to extend virtgpu with
+> MADVISE ioctl so we can track DONTNEED state in guest and only release
+> buffers when host and/or guest is under memory pressure.  For that we
+> will defn need guest side gem handles
+MADVICE is a hint that userspace sets and is not based on memory
+pressure.  It is the receivers of the hint who take actions when under
+memory pressure.  I think it can be between the guest userspace and
+the host?
 
 
-> +		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
-> +		__entry->fc_ineligible_commits =
-> +			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
-> +		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
-> +	),
-> +
-> +	TP_printk("dev %d,%d fc ineligible reasons:\n"
-> +		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
-> +		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
-> +		  MAJOR(__entry->dev), MINOR(__entry->dev),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
-> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
-> +		  __entry->fc_commits, __entry->fc_ineligible_commits,
-> +		  __entry->fc_numblks)
->  );
->  
->  #define DEFINE_TRACE_DENTRY_EVENT(__type)				\
-
+>
+> BR,
+> -R
+>
+> > >
+> > >  drivers/gpu/drm/virtio/virtgpu_ioctl.c | 7 ++++++-
+> > >  include/uapi/drm/virtgpu_drm.h         | 1 +
+> > >  2 files changed, 7 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> > > index 69f1952f3144..92e1ba6b8078 100644
+> > > --- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> > > +++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
+> > > @@ -36,7 +36,8 @@
+> > >
+> > >  #define VIRTGPU_BLOB_FLAG_USE_MASK (VIRTGPU_BLOB_FLAG_USE_MAPPABLE | \
+> > >                                     VIRTGPU_BLOB_FLAG_USE_SHAREABLE | \
+> > > -                                   VIRTGPU_BLOB_FLAG_USE_CROSS_DEVICE)
+> > > +                                   VIRTGPU_BLOB_FLAG_USE_CROSS_DEVICE | \
+> > > +                                   VIRTGPU_BLOB_FLAG_USE_INTERNAL)
+> > >
+> > >  static int virtio_gpu_fence_event_create(struct drm_device *dev,
+> > >                                          struct drm_file *file,
+> > > @@ -662,6 +663,10 @@ static int verify_blob(struct virtio_gpu_device *vgdev,
+> > >         params->size = rc_blob->size;
+> > >         params->blob = true;
+> > >         params->blob_flags = rc_blob->blob_flags;
+> > > +
+> > > +       /* USE_INTERNAL is local to guest kernel, don't past to host: */
+> > > +       params->blob_flags &= ~VIRTGPU_BLOB_FLAG_USE_INTERNAL;
+> > > +
+> > >         return 0;
+> > >  }
+> > >
+> > > diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.h
+> > > index 0512fde5e697..62b7483e5c60 100644
+> > > --- a/include/uapi/drm/virtgpu_drm.h
+> > > +++ b/include/uapi/drm/virtgpu_drm.h
+> > > @@ -163,6 +163,7 @@ struct drm_virtgpu_resource_create_blob {
+> > >  #define VIRTGPU_BLOB_FLAG_USE_MAPPABLE     0x0001
+> > >  #define VIRTGPU_BLOB_FLAG_USE_SHAREABLE    0x0002
+> > >  #define VIRTGPU_BLOB_FLAG_USE_CROSS_DEVICE 0x0004
+> > > +#define VIRTGPU_BLOB_FLAG_USE_INTERNAL     0x0008   /* not-mappable, not-shareable */
+> > >         /* zero is invalid blob_mem */
+> > >         __u32 blob_mem;
+> > >         __u32 blob_flags;
+> > > --
+> > > 2.34.1
+> > >
