@@ -2,208 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56160C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3493C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240126AbiBVDpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 22:45:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58554 "EHLO
+        id S240218AbiBVDsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 22:48:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234459AbiBVDpi (ORCPT
+        with ESMTP id S229789AbiBVDsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 22:45:38 -0500
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DAF240BE;
-        Mon, 21 Feb 2022 19:45:13 -0800 (PST)
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 21M3j0i4032480;
-        Tue, 22 Feb 2022 12:45:00 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 21M3j0i4032480
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1645501501;
-        bh=R2Wl9mO/uTrVsBj3vIXpY3Af06YT9dbiQUgtaSK3yWQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=q17fLXl+la77Rw/OrgU35Cu2+M6dQpaFFxeQIShi5qMbxwrLLQ4XwsNXda/1wLsFK
-         L9leRNYy8wSJsm1+4okwZe9UeIfSG/yg8qHKbv6IvHlGLuycKI+8YlxT+nqRgV44xN
-         jrDffJukNGP8CoZc3uku9HGWj4i3UufkoGbIw+USqbipeP/L4heBzmsTKNUwmQvFcR
-         lFx5Ouvwjs1ykv0LRtXzvkRGhVc7gebaKVO76/xx7ZmS/lZDCMRjW49u19NCLnRJTv
-         AQOIdXgGfADY+mVtKk9COKRaUIAuOk80B8GrY1+UZs9kZMO5+LfkbS4uIhTfrsLIr+
-         z/7/r7AwdHybw==
-X-Nifty-SrcIP: [209.85.210.181]
-Received: by mail-pf1-f181.google.com with SMTP id i21so10635792pfd.13;
-        Mon, 21 Feb 2022 19:45:00 -0800 (PST)
-X-Gm-Message-State: AOAM530ubKckJqYXKNUpdbd99N07fyGOEC21zhcg7JnhCTZIn7+rU1rE
-        r60mrSFlx5bOimWPY4JATIuq9IuF4V4ff5EhXf8=
-X-Google-Smtp-Source: ABdhPJwkFaH664Eu2+lSbukb04IdKTOs/E9jWk6zh/0pu8hwLH3fAWQ9gngSTM58BpK+Q6LI9wE3BorVRbBBVnwdQlM=
-X-Received: by 2002:a05:6a00:24c7:b0:4e1:cb76:32d1 with SMTP id
- d7-20020a056a0024c700b004e1cb7632d1mr21840603pfv.36.1645501499642; Mon, 21
- Feb 2022 19:44:59 -0800 (PST)
+        Mon, 21 Feb 2022 22:48:16 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F19524BD3
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:47:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645501672; x=1677037672;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ay21XNpMYTX5RnLpflKexkXgUtuSuC5IhzNLm8m5hWI=;
+  b=Pr9EaY9Pw+ZnLv0Q4AjtU+OQYDwTQqsFvCvJr171Rq22R/eGGeaj4HjI
+   8xMZ5s6cTk+z3m9Qp5SMVfkUuUEUa4nmFFwBAkK4Cfxh7F8rg7oDCjIs/
+   q3bo6YSGr+NbXrtGOaLujYig3L1Ls7jyMRi2IV0rkc6hUgBMuuJlfgQop
+   8ndTt1a7kt+Z9/yOe4Dsw18m2F33fkxZ+lYceHfenxzQdDi8b2HQArgbV
+   DMFMcDH4ffXQJC+mehqfgmDfGyfLBF+SOMiX0s6npcaFvnlfnUqDXn2+U
+   BS0H3MzHYeHy7xE32IrB+NKpuYd0sKRzEiyZ5t3p3lhPJa20/BV6VjwL8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="239022882"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="239022882"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 19:47:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="532062778"
+Received: from lkp-server01.sh.intel.com (HELO da3212ac2f54) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 21 Feb 2022 19:47:50 -0800
+Received: from kbuild by da3212ac2f54 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMM9V-0002IG-P2; Tue, 22 Feb 2022 03:47:49 +0000
+Date:   Tue, 22 Feb 2022 11:46:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Prasad Sodagudi <psodagud@codeaurora.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Elliot Berman <eberman@codeaurora.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2021-11
+ 239/9999] drivers/android/debug_symbols.c:11:10: fatal error:
+ asm/stacktrace.h: No such file or directory
+Message-ID: <202202221136.tCMedR7t-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220221164316.113489-1-masahiroy@kernel.org> <04d06889d8ea41589628995a6cb53874@AcuMS.aculab.com>
-In-Reply-To: <04d06889d8ea41589628995a6cb53874@AcuMS.aculab.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 22 Feb 2022 12:44:21 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQgucSQQLauRoaFza6YHGMBrSr+-ag1m=bmWXas5WEb0A@mail.gmail.com>
-Message-ID: <CAK7LNAQgucSQQLauRoaFza6YHGMBrSr+-ag1m=bmWXas5WEb0A@mail.gmail.com>
-Subject: Re: [PATCH] fixdep: use fflush() and ferror() to ensure successful
- write to files
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 7:33 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Masahiro Yamada
-> > Sent: 21 February 2022 16:43
-> > To: linux-kbuild@vger.kernel.org
-> >
-> > Checking the return value of (v)printf does not ensure the successful
-> > write to the .cmd file.
-> >
-> > Call fflush() and ferror() to make sure that everything has been
-> > written to the file.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> Reviewed-by: David Laight <dvid.laight@aculab.com>
->
-> I'll note that you've lost the perror("fixdep").
-> But I suspect that isn't very meaningful.
-> If the disk is full it'd probably get lost anyway.
+Hi Prasad,
+
+FYI, the error/warning still remains.
+
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10-2021-11
+head:   6207e9121a093289b249b66385af719b68c4b889
+commit: 3fcbb15c1a91a318fb9367bee24603af24648a2d [239/9999] ANDROID: android: Create debug_symbols driver
+config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220222/202202221136.tCMedR7t-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/3fcbb15c1a91a318fb9367bee24603af24648a2d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10-2021-11
+        git checkout 3fcbb15c1a91a318fb9367bee24603af24648a2d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/android/debug_symbols.c:11:10: fatal error: asm/stacktrace.h: No such file or directory
+      11 | #include <asm/stacktrace.h>
+         |          ^~~~~~~~~~~~~~~~~~
+   compilation terminated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for SND_VMASTER
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_PCM_IEC958
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_SOC_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_JACK
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_JACK_INPUT_DEV
+   Depends on SOUND && !UML && SND && SND_JACK
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_PCM_ELD
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_INTEL_NHLT
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS && ACPI
 
 
-perror() will go to stderr, i.e. tty here.
-So, that is not the issue.
+vim +11 drivers/android/debug_symbols.c
 
-ferror() itself does not set errno here; "man ferror" says,
-"These  functions  should  not  fail  and  do  not set the external
-variable errno"
+     2	
+     3	/*
+     4	 * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+     5	 */
+     6	
+     7	#include <linux/types.h>
+     8	#include <linux/kernel.h>
+     9	#include <linux/module.h>
+    10	#include <linux/android_debug_symbols.h>
+  > 11	#include <asm/stacktrace.h>
+    12	#include <asm/sections.h>
+    13	
 
-So, I dropped perror() because I am not sure if any related error
-message is printed here.
-
-Perhaps, errno was set by some of preceding printf() calls,
-but I am not quite sure if it is carried all the way to the end
-of this program.
-
-
-
-
-
-
-
-
->
-> > ---
-> >
-> >  scripts/basic/fixdep.c | 44 ++++++++++++++++--------------------------
-> >  1 file changed, 17 insertions(+), 27 deletions(-)
-> >
-> > diff --git a/scripts/basic/fixdep.c b/scripts/basic/fixdep.c
-> > index 44e887cff49b..fad6f29373a9 100644
-> > --- a/scripts/basic/fixdep.c
-> > +++ b/scripts/basic/fixdep.c
-> > @@ -105,25 +105,6 @@ static void usage(void)
-> >       exit(1);
-> >  }
-> >
-> > -/*
-> > - * In the intended usage of this program, the stdout is redirected to .*.cmd
-> > - * files. The return value of printf() must be checked to catch any error,
-> > - * e.g. "No space left on device".
-> > - */
-> > -static void xprintf(const char *format, ...)
-> > -{
-> > -     va_list ap;
-> > -     int ret;
-> > -
-> > -     va_start(ap, format);
-> > -     ret = vprintf(format, ap);
-> > -     if (ret < 0) {
-> > -             perror("fixdep");
-> > -             exit(1);
-> > -     }
-> > -     va_end(ap);
-> > -}
-> > -
-> >  struct item {
-> >       struct item     *next;
-> >       unsigned int    len;
-> > @@ -189,7 +170,7 @@ static void use_config(const char *m, int slen)
-> >
-> >       define_config(m, slen, hash);
-> >       /* Print out a dependency path from a symbol name. */
-> > -     xprintf("    $(wildcard include/config/%.*s) \\\n", slen, m);
-> > +     printf("    $(wildcard include/config/%.*s) \\\n", slen, m);
-> >  }
-> >
-> >  /* test if s ends in sub */
-> > @@ -318,13 +299,13 @@ static void parse_dep_file(char *m, const char *target)
-> >                                */
-> >                               if (!saw_any_target) {
-> >                                       saw_any_target = 1;
-> > -                                     xprintf("source_%s := %s\n\n",
-> > -                                             target, m);
-> > -                                     xprintf("deps_%s := \\\n", target);
-> > +                                     printf("source_%s := %s\n\n",
-> > +                                            target, m);
-> > +                                     printf("deps_%s := \\\n", target);
-> >                               }
-> >                               is_first_dep = 0;
-> >                       } else {
-> > -                             xprintf("  %s \\\n", m);
-> > +                             printf("  %s \\\n", m);
-> >                       }
-> >
-> >                       buf = read_file(m);
-> > @@ -347,8 +328,8 @@ static void parse_dep_file(char *m, const char *target)
-> >               exit(1);
-> >       }
-> >
-> > -     xprintf("\n%s: $(deps_%s)\n\n", target, target);
-> > -     xprintf("$(deps_%s):\n", target);
-> > +     printf("\n%s: $(deps_%s)\n\n", target, target);
-> > +     printf("$(deps_%s):\n", target);
-> >  }
-> >
-> >  int main(int argc, char *argv[])
-> > @@ -363,11 +344,20 @@ int main(int argc, char *argv[])
-> >       target = argv[2];
-> >       cmdline = argv[3];
-> >
-> > -     xprintf("cmd_%s := %s\n\n", target, cmdline);
-> > +     printf("cmd_%s := %s\n\n", target, cmdline);
-> >
-> >       buf = read_file(depfile);
-> >       parse_dep_file(buf, target);
-> >       free(buf);
-> >
-> > +     fflush(stdout);
-> > +
-> > +     /*
-> > +      * In the intended usage, the stdout is redirected to .*.cmd files.
-> > +      * Call ferror() to catch errors such as "No space left on device".
-> > +      */
-> > +     if (ferror(stdout))
-> > +             exit(1);
-> > +
-> >       return 0;
-> >  }
-> > --
-> > 2.32.0
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
->
-
-
---
-Best Regards
-Masahiro Yamada
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
