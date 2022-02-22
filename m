@@ -2,201 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E466AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB98C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbiBVLAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 06:00:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S231573AbiBVLCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 06:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbiBVLAd (ORCPT
+        with ESMTP id S229659AbiBVLCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 06:00:33 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFEBB15A21A;
-        Tue, 22 Feb 2022 03:00:06 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8EA51139F;
-        Tue, 22 Feb 2022 03:00:06 -0800 (PST)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6AA8A3F70D;
-        Tue, 22 Feb 2022 03:00:05 -0800 (PST)
-Date:   Tue, 22 Feb 2022 11:00:03 +0000
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Souvik Chakravarty <Souvik.Chakravarty@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
-Message-ID: <20220222110003.GC21915@e120937-lin>
-References: <cover.1645460043.git.oleksii_moisieiev@epam.com>
+        Tue, 22 Feb 2022 06:02:37 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04F13123F;
+        Tue, 22 Feb 2022 03:02:11 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id j7so23981745lfu.6;
+        Tue, 22 Feb 2022 03:02:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FEr1dmlBfqy5sXD3HLj/KlzbzoUju1Ng5vIhD2tYoCk=;
+        b=hnSpJ/7MqXwGc38P5+/jVdY1t3pGZ2iHpclQ2/+v/rF/L2k4WCOAfMLf8/cccWVb1C
+         s1vLWucOsp+uZ0Bzd4TlXCRx9udMGJ08XL8FouAPYYkxmfIlHGSP1KWHcCfcEWxkNBuy
+         Q3YoOinDU0DsmWtZQ48CEp8uj3Lr+ooVWavekiL43/3ULiDOnJ19mI2kqxEmNn+CcmVh
+         /3gZzTSQUW/NUOqiXMTWEIPQVdx5V95gysF/bdIyuvwZ6SVJWVJsY0dHBCQE7A1BvRJI
+         9ZHPKHCa2oi+73iL8iBqRZ1O/1juwfISS3bKQe4uqFwKWpqi+PRj19RntWVziCX4T/oy
+         D4cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FEr1dmlBfqy5sXD3HLj/KlzbzoUju1Ng5vIhD2tYoCk=;
+        b=RZTJS9Xi4e6scWKT+423vjhIIIhpqaP/xTxoLLpDhAE6aLGE2IxmlpYFeMVYSyq0BX
+         wA9X1VBDYC9q821zxe7kGpaLdHB22WHoJL6F5z8B0Y8H025bwAWzI50RR8d7XNlJd7q/
+         JUa+j4tMLgqloGZqfEFAeh2ni9mccVrJL86M0JPDfkC0nh079okYu4MknuIjTzIvJ7LP
+         st9mgeLP7tH+GK8sMfq5kW2uzsGnrNzHjx3o3NlDz6veMrbT3eXtfiojjN9XYnq317ze
+         gVh7iPnfOuSTSVc0QfqF8pKLNVVXfFjkrLrXccofUNryEzwRNk2uF0Y+0Lxu5kbhYSJl
+         ZJVg==
+X-Gm-Message-State: AOAM532nxfi0y/dloZFs9YxwBpiGs0FpRFVB9wdyeDxBLkiJf/oB3ZeO
+        EAtWkIIO+6CsQTm4THrPAQ5CfTN5mio=
+X-Google-Smtp-Source: ABdhPJynaoI+/XmYPUSX1yz2BgAVDgkX9V5kPsQkAvgnbnw1gWNWYK5gRqWCmMUOwD33fRqB/rj21A==
+X-Received: by 2002:a05:6512:3748:b0:443:c3f0:6691 with SMTP id a8-20020a056512374800b00443c3f06691mr12238118lfs.603.1645527730316;
+        Tue, 22 Feb 2022 03:02:10 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id t1sm1360167lfr.8.2022.02.22.03.02.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 03:02:09 -0800 (PST)
+Message-ID: <3b0b8b41-ddf0-3b83-5edd-8768393ad201@gmail.com>
+Date:   Tue, 22 Feb 2022 14:02:08 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1645460043.git.oleksii_moisieiev@epam.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
+Content-Language: en-US
+To:     Mikko Perttunen <cyndis@kapsi.fi>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
+Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-9-mperttunen@nvidia.com>
+ <b1df816b-6838-c435-1a23-5029144e4cfe@gmail.com>
+ <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
+ <5d1b6e82-2c9d-8388-697f-0d7305a1206f@kapsi.fi>
+ <ee648994-b296-2ac4-a676-ddcac463a428@gmail.com>
+ <30033f5b-3fd1-22c7-896b-af034a4041df@kapsi.fi>
+ <4352fda7-ecb6-4a5e-7d6c-a50537d8eaff@gmail.com>
+ <b947e0b2-a78d-bacf-0d78-b5d57e821e6e@kapsi.fi>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <b947e0b2-a78d-bacf-0d78-b5d57e821e6e@kapsi.fi>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:26:46PM +0000, Oleksii Moisieiev wrote:
-> Introducing new parameter called scmi_devid to the device-tree bindings.
-> This parameter should be set for the device nodes, which has
-> clocks/power-domains/resets working through SCMI.
-> Given parameter should set the device_id, needed to set device
-> permissions in the Firmware. This feature will be extremely useful for
-> the virtualized systems, which has more that one Guests running on the
-> system at the same time or for the syestems, which require several
-> agents with different permissions. Trusted agent will use scmi_devid to
-> set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
-> for details).
-> Agents concept is described in Section 4.2.1 [0].
+22.02.2022 13:54, Mikko Perttunen пишет:
+> On 2/22/22 12:46, Dmitry Osipenko wrote:
+>> 22.02.2022 11:27, Mikko Perttunen пишет:
+>>> On 2/21/22 22:10, Dmitry Osipenko wrote:
+>>>> 21.02.2022 14:44, Mikko Perttunen пишет:
+>>>>> On 2/19/22 20:54, Dmitry Osipenko wrote:
+>>>>>> 19.02.2022 21:49, Dmitry Osipenko пишет:
+>>>>>>> 18.02.2022 14:39, Mikko Perttunen пишет:
+>>>>>>>> +static int vic_get_streamid_offset(struct tegra_drm_client
+>>>>>>>> *client)
+>>>>>>>> +{
+>>>>>>>> +    struct vic *vic = to_vic(client);
+>>>>>>>> +    int err;
+>>>>>>>> +
+>>>>>>>> +    err = vic_load_firmware(vic);
+>>>>>>>
+>>>>>>> You can't invoke vic_load_firmware() while RPM is suspended. Either
+>>>>>>> replace this with RPM get/put or do something else.
+>>>>>
+>>>>> Why not, I'm not seeing any HW accesses in vic_load_firmware? Although
+>>>>> it looks like it might race with the vic_load_firmware call in
+>>>>> vic_runtime_resume which probably needs to be fixed.
+>>>>
+>>>> It was not clear from the function's name that h/w is untouched, I read
+>>>> "load" as "upload" and then looked at vic_runtime_resume(). I'd rename
+>>>> vic_load_firmware() to vic_prepare_firmware_image().
+>>>>
+>>>> And yes, technically lock is needed.
+>>>
+>>> Yep, I'll consider renaming it.
+>>
+>> Looking at this all again, I'd suggest to change:
+>>
+>> int get_streamid_offset(client)
+>>
+>> to:
+>>
+>> int get_streamid_offset(client, *offset)
+>>
+>> and bail out if get_streamid_offset() returns error. It's never okay to
+>> ignore errors.
 > 
+> Sure, seems reasonable. We'll still need some error code to indicate
+> that context isolation isn't available for the engine and continue on in
+> that case but that's better than just ignoring all of them.
 
-Hi Oleksii,
-
-I had a look at this patch and the related XEN series and I'd have a few
-questions/doubts. (adding to the loop in CC Souvik from ATG and Vincent
-from Linaro since he's working on similar SCMI virtualization stuff)
-
-> scmi_devid in Device-tree node example:
-> usb@e6590000
-> {
->     scmi_devid = <19>;
->     clocks = <&scmi_clock 3>, <&scmi_clock 2>;
->     resets = <&scmi_reset 10>, <&scmi_reset 9>;
->     power-domains = <&scmi_power 0>;
-> };
-> 
-
-So this SCMI device ID is meant to identify an SCMI device, viewed as a
-grouping of SCMI resources (clock/power/...etc) so that a Trusted Agent
-can issue a BASE_SET_DEVICE_PERMISSIONS telling to the SCMI Server
-platform backend (SCP sw sitting somewhere) which SCMI agents on the
-system can access which (SCMI) devices (in the Normal nonSecure world):
-basically, if I got it right from the Xen series, your hypervisor acting
-as Trusted Agent (and recognized as trusted agent by by the SCP) tells
-the SCMI platform server SCP (via SMC in your case) how to configure the
-access to the devices for all the other (non trusted) agents in the system
-(other Guest OS/Domains instances).
-
-The SCMI spec does not indeed cover the discovery of such devices and
-the related associated resources: it indeed delegates such description
-to FDT/ACPI as of now.
-
-AFAIU in this scenario I imagine:
-
-- SCMI Server platform (SCP) knows via its own methods (builtin_config
-  FDT...etc) the list of defined SCMI devices and related associated
-  resources like:
-  
-  deviceNNN -->> clock_X / power_Q
-  deviceYYY ---> clock_Z / power_W
-  ..etc
-
-
-- Trusted Agent (XEN hypervisor) in turn:
-
-  + is configured/recognized by the SCMI Server as a Trusted Agent (based
-    on the channel it uses to talk to the server) and as such it is allowed
-    to issue BASE_SET_DEVICE_PERMISSIONS (by the SCMI server)
-
-  + has knowledge of the same set of devices/resources allocations (via
-    its own FDT) as the SCMI server
-
-  + can issue a proper set of BASE_SET_DEVICE_PERMISSIONS telling the
-    SCMI server backend which devices can be used by which non-trusted
-    agents (GuestOS) ... even dynamically I suppose when guests come and
-    go.
-
-    Xen:
-	    BASE_SET_DEVICE_PERMISSIONS(dev_NNN, agent_3)
-	    BASE_SET_DEVICE_PERMISSIONS(dev_YYY, agent_2)
-	    BASE_SET_DEVICE_PERMISSIONS(dev_NNN, agent_4)
-
-    and in this scenario the same dev_NNN could be made accessible to
-    two different agents, it will be anyway up to the SCMI Server
-    backend to armonize or reject such requests from 2 different
-    agents around the same shared resources
-
-
-- Other non-trusted agents on the system (GuestOSes or other non
-  virtualized subsystems...e.g. WiFi/Modem...etc), described in their
-  DTs (for Linux GuestOS) as using SCMI resources as usual (without SCMI
-  device id) just issue SCMI request on the basic resource and those are
-  routed to the SCMI Server backend by the Hypervisor UNMODIFIED:
-
-  example for a shared resource:
-
-   - Agent_2 set power_Q ON --->>> SCMI Server - OK - powerQ TURNED ON
-    				  (allowed as configured by Trusted Agent,
-				   powerQ hw was OFF turn it ON)
-
-   - Agent_3 set power_Q OFF --->>> SCMI Server - DENIED
-    				  (disallowed as configured by Trusted Agent)
-
-   - Agent_4 set power_Q ON --->>> SCMI Server - OK - powerQ ALREADY ON
-    				  (allowed as configured by Trusted Agent,
-				   powerQ hw was ON nothing to be done)
-
-   - Agent_2 set power_Q OFF --->>> SCMI Server - OK - powerQ UNCHANGED (SHARED with Agent_2)
-    				  (allowed as configured by Trusted Agent but shared with
-				   another agent)
-
-   - Agent_4 set power_Q OFF --->>> SCMI Server - OK - powerQ OFF
-    				  (allowed as configured by Trusted Agent but shared with
-				   another agent
-
-So in all of this, I don't get why you need this DT definition aggregating SCMI
-resources to SCMI device IDs in the Guest OS, which is an SCMI agent that does not
-need to now anything about SCMI device IDs (at least with the current spec): this
-would make sense only if the Linux Kernel was the TrustedAgent in charge of
-configuring the devices permissions via BASE_SET_DEVICE_PERMISSIONS.
-(in fact you said you won't provide any code to manage this scmi_devid
-in the kernel since those guests are not trusted agents and the won't be
-allowed to set device permissions...)
-
-The only tricky part I can see in all of the above is agent identification, since
-the agents are assigned an ID by the SCMI platform (which can be queried) and they
-have a set of dedicated channels to use, so basically the platform really identifies
-the Agents looking at the channel from which a request is coming from and AgentID is
-not carried inside the message as a source and cannot be spoofed.
-
-> Given example shows the configuration of the hsusb node, which is using
-> scmi to contol clocks, resets and power-domains. scmi_devid is set
-> equals to 19, which should match defined id for usb in the Firmware.
-> 
-> Trusted agent will use scmi_devid to set the device permissions for
-> the Agents. Guest OS should not have an access to the permissions
-> settings, so no code to process scmi_devid was presented in Linux
-> kernel.
-> 
-> We are currently contributing changes to Xen, which are intended to
-> mediate SCMI access from Guests to the Firmware. Xen uses scmi_devid to set
-> the permissions for the devices. See [1] thread for details.
-> 
-> [0] https://developer.arm.com/documentation/den0056/latest
-> [1] https://xen.markmail.org/message/mmi4fpb4qr6e3kad
-
-IMHO, but I could be wrong, looking at the current SCMI spec you cannot just
-gather messages from a set of GuestOs talking via different SCMI channels and
-then pipe/route them through a single channel to the backend server,
-attaching/spoofing some sort of Agent source ID to each message like you seem to
-be doing in the Xen series
-
-" Also XEN is the mediator which redirects SCMI requests, adding agentID so
-  firmware should know the sender."
-
-I may missing something though, not really a Xen expert here, or maybe this
-agentID identification trick could be considered something not covered
-by the spec and strictly part of the transport layer...not sure... the guys
-in CC may have different/opposite opinions so feel free to redirect my
-blabbing to /dev/null at the end :D
-
-Thanks,
-Cristian
+Yes, check for -EOPNOTSUPP and skip it.
 
