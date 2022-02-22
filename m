@@ -2,105 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E325BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA21C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 11:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231666AbiBVLTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 06:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S231666AbiBVLVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 06:21:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbiBVLTL (ORCPT
+        with ESMTP id S230352AbiBVLVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 06:19:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFF71108778
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 03:18:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645528725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A2gckBtnixMVaahVtnNibGnabKhb0jcedbRGPNNAXj0=;
-        b=YQNUO0erd2QUKYfR/AbHaCec38fv2MvrXL9NyGsZ5/82YTC2MaN4IgtzSMiB9Yge8qgNat
-        Ur8BG5GNECbfZc3MdfXA61qVvtnA+TEEtaRL5sLC7rnGBm3uuhWoalzAsEVcCulJC7K2Ok
-        JaIvIvoOu7TLAekXNuCLYv2BYoYyTew=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-17-UHa7RaLOP4KA4u_DAbwn8A-1; Tue, 22 Feb 2022 06:18:43 -0500
-X-MC-Unique: UHa7RaLOP4KA4u_DAbwn8A-1
-Received: by mail-lj1-f198.google.com with SMTP id 20-20020a05651c009400b002462f08f8d2so3892409ljq.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 03:18:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A2gckBtnixMVaahVtnNibGnabKhb0jcedbRGPNNAXj0=;
-        b=ACBt0ntsq2WCX0fi1d+J8qXplj3uWh87ElKld5KRtaYj84N0EXZk+9gDk/lGcayvyV
-         OkpYLwBRhQdDCeM71kJ8ZgNjl4kAgdNpSb7ws5BPJoCFbthyjyKEUpP+1kJlbqdPmD8b
-         52H/wgT8jLEFTsS0QS+4kr4ryoPMnawc0UteB6fs1TCxabrXU4l81ahbo037477QT47a
-         WZqnU75uwyNH0gf90UFEwzQWEO9HkHws8NojbS+6C3KOQBK+7u/2A+imysHNYyb8qGJF
-         a6b4yO5LWu6bCndxkPYlVEP878AuXOFTkryO3s4VqB0urHQihBaqLkduQ18P5+V197st
-         3y4Q==
-X-Gm-Message-State: AOAM533h8kvS6KdMJBL8Of/jB1Tpl3PjhAvRp5so8nMVTC4E05SVGQKL
-        2lr3Ccw82aptNIngUdTOo1tiFCfT04avdPYvQpBYcaujTFxxEyP3MOBCd5keGRC3FObQRiMCKD3
-        BX1pFCn84nvWaTIXyApxccXyQhakgECg2wMQNPYY=
-X-Received: by 2002:ac2:5cd0:0:b0:443:b112:e512 with SMTP id f16-20020ac25cd0000000b00443b112e512mr14638302lfq.118.1645528722355;
-        Tue, 22 Feb 2022 03:18:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyfIlZqtjd+JGObGg/qk7CWDZ/9xEu4n9eTUbEhI/8LWxeCG+1eUeDp/NcygYU0N+2juzdpOKkYm0z34f9B6/A=
-X-Received: by 2002:ac2:5cd0:0:b0:443:b112:e512 with SMTP id
- f16-20020ac25cd0000000b00443b112e512mr14638272lfq.118.1645528722101; Tue, 22
- Feb 2022 03:18:42 -0800 (PST)
+        Tue, 22 Feb 2022 06:21:47 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D218CEA2D
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 03:21:20 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K2xV84YfSz9sBC;
+        Tue, 22 Feb 2022 19:17:52 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Feb
+ 2022 19:21:18 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] kernel/ksysfs.c: use helper macro __ATTR_RW
+Date:   Tue, 22 Feb 2022 19:20:34 +0800
+Message-ID: <20220222112034.48298-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <20220218212511.887059-1-atomlin@redhat.com> <YhBSBzmuiDQ4yMER@bombadil.infradead.org>
-In-Reply-To: <YhBSBzmuiDQ4yMER@bombadil.infradead.org>
-From:   Aaron Tomlin <atomlin@redhat.com>
-Date:   Tue, 22 Feb 2022 11:18:30 +0000
-Message-ID: <CANfR36jqAk2DMxVOawYZfAz-BL-g-Dxj=x-mOes3wqnukz+VAg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/13] module: core code clean up
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     "Lameter, Christoph" <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, live-patching@vger.kernel.org,
-        Aaron Tomlin <atomlin@atomlin.com>,
-        Grzegorz Halat <ghalat@redhat.com>,
-        Allen <allen.lkml@gmail.com>, Joe Perches <joe@perches.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michal Suchanek <msuchanek@suse.de>, oleksandr@natalenko.name
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-02-18 18:12 -0800, Luis Chamberlain wrote:
-> On Fri, Feb 18, 2022 at 09:24:58PM +0000, Aaron Tomlin wrote:
-> > Hi Luis,
-> >
-> > As per your suggestion [1], this is an attempt to refactor and split
-> > optional code out of core module support code into separate components.
-> > This version is based on Linus' commit 7993e65fdd0f ("Merge tag
-> > 'mtd/fixes-for-5.17-rc5' of
-> > git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux").
-> > Please let me know your thoughts.
->
-> Fantastic, thanks for doing all this work, I've pushed this out to
-> modules-next so that the testing can start as this will be in linux-next
-> soon. I'll obviously wait for more reviews, we have a long time before this
-> gets merged to Linus, so just want to start getting testing done now rather
-> than later. And other folks are depending on your changes to start
-> getting their own code up too.
+Use helper macro __ATTR_RW to define kobj_attribute to make code more
+clear. Minor readability improvement.
 
-Hi Luis,
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ kernel/ksysfs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-No problem. Unfortunately, this was not the complete series. I can send a
-v7 later today with the suggested improvements made by Christophe.
-
-
-Kind regards,
-
+diff --git a/kernel/ksysfs.c b/kernel/ksysfs.c
+index 35859da8bd4f..b1292a57c2a5 100644
+--- a/kernel/ksysfs.c
++++ b/kernel/ksysfs.c
+@@ -24,8 +24,7 @@
+ static struct kobj_attribute _name##_attr = __ATTR_RO(_name)
+ 
+ #define KERNEL_ATTR_RW(_name) \
+-static struct kobj_attribute _name##_attr = \
+-	__ATTR(_name, 0644, _name##_show, _name##_store)
++static struct kobj_attribute _name##_attr = __ATTR_RW(_name)
+ 
+ /* current uevent sequence number */
+ static ssize_t uevent_seqnum_show(struct kobject *kobj,
 -- 
-Aaron Tomlin
+2.23.0
 
