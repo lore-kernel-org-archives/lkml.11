@@ -2,127 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF06BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:19:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiBVITf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
+        id S229741AbiBVITq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:19:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiBVITc (ORCPT
+        with ESMTP id S229730AbiBVITo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:19:32 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9BB1533B2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 00:19:07 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id iq13-20020a17090afb4d00b001bc4437df2cso1791791pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 00:19:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0RpgV13GqW4CH/NAM61Sb/P8WRwF6jsfgBYkU/X8494=;
-        b=BtIuxxaMmQ4jUX+ROZ7gUGZWW58HHgVzJrB+OgBrXYVCPp2YtV6aLeRyXAOV13nTzR
-         lAlubsr2GH6P2odnEPfZ/R9xr2Leulv4vj33Z4+XQnm0NTQlsaldrPkY+0eTxRVciqpY
-         IAIWbvRiOEWbjU51Di9PDZWjG4mrY0uKaBKh8iG787xgQckWaGtvbE1X02pQ9NAksvvm
-         GllzKQxdy/ef//tpZC+mcyVnPzmpISPFl6+Dp/TawR+wnOIbBu9MUBVMRrEN4vvL0oIA
-         LWzpcw+da+FHlX64StmwAyt/uQTjBQv4MhrC76lS+Ah4w0e0p4xnvEnBUpBC+69hzMeD
-         bwrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0RpgV13GqW4CH/NAM61Sb/P8WRwF6jsfgBYkU/X8494=;
-        b=vQQxJ9Q0c43nfTZVea8TW0F+WA3utrI/g+IZzXqRq0dLlDJJuq9pO+cROuM76+Dzl4
-         gBkUxvCEHCzgHULA14IQzwso1Dap1STkBSKLWLjSyWPeO3SecWM5dPfWVe63IGH6Jun3
-         245bhMvgf5CYilv8Tlj54orIFXqqXhDT8/77cSh8oHN1ISeidjWqvkPSRxlRhksAQR6T
-         TiutT7DEjJQpl1MHANODBKU4P9+1/aTykc00Uzj08nkACI1HoDDkd0/EVcShgOJjgYor
-         qFG3wBqf7w3g796y0t22Wh6LtLKNsHd7y5cBbCbV2N08n2U8RTXsC3sr8sbdIKgTYj92
-         tdrQ==
-X-Gm-Message-State: AOAM5309/SkigUXVHuUHm1aGnFRETOdJKhvV1lKF2PBT+NjjC19GM+RV
-        OYuCKthWSdcswkGFW3H0Xz0H
-X-Google-Smtp-Source: ABdhPJybsRJHlzEd7+S49/pHGp1xlz06OxOcLHQN9JsCUR67mXiwPUsgi7JH+R2/DWQC0eYR+hVo/A==
-X-Received: by 2002:a17:902:be0a:b0:14d:5db0:7a14 with SMTP id r10-20020a170902be0a00b0014d5db07a14mr21895118pls.155.1645517946688;
-        Tue, 22 Feb 2022 00:19:06 -0800 (PST)
-Received: from thinkpad ([117.217.186.202])
-        by smtp.gmail.com with ESMTPSA id d8sm15219894pfl.163.2022.02.22.00.19.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 00:19:06 -0800 (PST)
-Date:   Tue, 22 Feb 2022 13:48:59 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
-        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
-        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
-        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
-        quic_cang@quicinc.com, quic_skananth@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 15/25] bus: mhi: ep: Add support for processing MHI
- endpoint interrupts
-Message-ID: <20220222081859.GC5029@thinkpad>
-References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
- <20220212182117.49438-16-manivannan.sadhasivam@linaro.org>
- <d5bf8b66-e9ec-4750-9d9d-deb55cbcee94@linaro.org>
+        Tue, 22 Feb 2022 03:19:44 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC18154706;
+        Tue, 22 Feb 2022 00:19:19 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9BF2221112;
+        Tue, 22 Feb 2022 08:19:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645517957; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Djpi2wqg5KZNuxo5tXaJwLf7ivkdFtpr27BC3EwWuGg=;
+        b=UWKGI6yvKyZY26UvlDfM3wsvaAujuAK4TrF9o82hgRQEUaCpds/6xAs2YERbuyn9gK2gLl
+        XLf9Wp96tvXbWlRb/D3YJEx/Ty7WRlSl1aYE8SG8+9NbMhEDRk8cSDIqc1QVl+IyV2/M1x
+        trWI3sEP0GWo5DTyAk4usGMG58quqKA=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 65AEAA3B84;
+        Tue, 22 Feb 2022 08:19:17 +0000 (UTC)
+Date:   Tue, 22 Feb 2022 09:19:14 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        live-patching@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH v4 02/20] kallsyms: increase maximum kernel symbol length
+ to 512
+Message-ID: <YhScgnV+n7w75WH7@alley>
+References: <20220212130410.6901-1-ojeda@kernel.org>
+ <20220212130410.6901-3-ojeda@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d5bf8b66-e9ec-4750-9d9d-deb55cbcee94@linaro.org>
+In-Reply-To: <20220212130410.6901-3-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 04:39:30PM -0600, Alex Elder wrote:
-> On 2/12/22 12:21 PM, Manivannan Sadhasivam wrote:
-> > Add support for processing MHI endpoint interrupts such as control
-> > interrupt, command interrupt and channel interrupt from the host.
-> > 
-> > The interrupts will be generated in the endpoint device whenever host
-> > writes to the corresponding doorbell registers. The doorbell logic
-> > is handled inside the hardware internally.
-> > 
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+On Sat 2022-02-12 14:03:28, Miguel Ojeda wrote:
+> Rust symbols can become quite long due to namespacing introduced
+> by modules, types, traits, generics, etc. For instance,
+> the following code:
 > 
-> Unless I'm mistaken, you have some bugs here.
+>     pub mod my_module {
+>         pub struct MyType;
+>         pub struct MyGenericType<T>(T);
 > 
-> Beyond that, I question whether you should be using workqueues
-> for handling all interrupts.  For now, it's fine, but there
-> might be room for improvement after this is accepted upstream
-> (using threaded interrupt handlers, for example).
+>         pub trait MyTrait {
+>             fn my_method() -> u32;
+>         }
 > 
+>         impl MyTrait for MyGenericType<MyType> {
+>             fn my_method() -> u32 {
+>                 42
+>             }
+>         }
+>     }
+> 
+> generates a symbol of length 96 when using the upcoming v0 mangling scheme:
+> 
+>     _RNvXNtCshGpAVYOtgW1_7example9my_moduleINtB2_13MyGenericTypeNtB2_6MyTypeENtB2_7MyTrait9my_method
+> 
+> At the moment, Rust symbols may reach up to 300 in length.
+> Setting 512 as the maximum seems like a reasonable choice to
+> keep some headroom.
+> 
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: Gary Guo <gary@garyguo.net>
+> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 
-Only reason I didn't use bottom halves is that the memory for TRE buffers need
-to be allocated each time, so essentially the caller should not sleep.
+The livepatch selftest still pass. Feel free to add:
 
-This is currently a limitation of iATU where there are only 8 windows for
-mapping the host memory and each memory region size is also limited.
+Tested-by: Petr Mladek <pmladek@suse.com>	# livepatch
+Acked-by: Petr Mladek <pmladek@suse.com>	# livepatch
 
-> 					-Alex
-> 
-> > ---
-> >   drivers/bus/mhi/ep/main.c | 113 +++++++++++++++++++++++++++++++++++++-
-> >   include/linux/mhi_ep.h    |   2 +
-> >   2 files changed, 113 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-> > index ccb3c2795041..072b872e735b 100644
-> > --- a/drivers/bus/mhi/ep/main.c
-> > +++ b/drivers/bus/mhi/ep/main.c
-> > @@ -185,6 +185,56 @@ static void mhi_ep_ring_worker(struct work_struct *work)
-> >   	}
-> >   }
-> > +static void mhi_ep_queue_channel_db(struct mhi_ep_cntrl *mhi_cntrl,
-> > +				    unsigned long ch_int, u32 ch_idx)
-> > +{
-> > +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-> > +	struct mhi_ep_ring_item *item;
-> > +	struct mhi_ep_ring *ring;
-> > +	unsigned int i;
-> 
-> Why not u32 i?  And why is the ch_int argument unsigned long?  The value
-> passed in is a u32.
-> 
-
-for_each_set_bit() expects the 2nd argument to be of type "unsigned long".
-
-Thanks,
-Mani
+Best Regards,
+Petr
