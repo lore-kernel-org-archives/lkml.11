@@ -2,98 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9538C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD58C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbiBVHUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:20:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43362 "EHLO
+        id S230463AbiBVHVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:21:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiBVHUr (ORCPT
+        with ESMTP id S230401AbiBVHVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:20:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48137DE2E3;
-        Mon, 21 Feb 2022 23:20:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD7FCB8187E;
-        Tue, 22 Feb 2022 07:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F384DC340E8;
-        Tue, 22 Feb 2022 07:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645514419;
-        bh=OQSsfI/rYiou2N7ZTh0DUG0l24IHBrN7xdfpMv6qtaQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=SsVuZTBJoj5wKuFAawkg2OU5yO5c6sWFaeqD08ZWWIis0gyYFsK7gsHnP4qRbzPFJ
-         oandL0a/3muIDKbW38SIMYynY6N0zGI2TJU6oKe+d/QSUiWWHus6W/ybyXa//2PbVL
-         1Kp7bIQPYYi1LEoKIq203KJMvrEsBfU7SUwtRRhCKuCu4ksjYDpyTzR+6XkTGlHAW3
-         9GaIIKHI4pQ+a4G/wuwpjgjF83rPzK7nWLB8ypxV53iQPTcrK8S+pa8hf/sEn5OR3g
-         9OiG+Ddwc2RwcRXaI0wpbjtbBlO0VX6CzOcEHOGjGAugBIF1yAr4DrYqrcNqny5ivi
-         Rme5pryUm7hgQ==
-Date:   Tue, 22 Feb 2022 01:28:12 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH 0/8] scsi: aacraid: Replace one-element arrays with
- flexible-array members
-Message-ID: <cover.1645513670.git.gustavoars@kernel.org>
+        Tue, 22 Feb 2022 02:21:12 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6003EDEA07;
+        Mon, 21 Feb 2022 23:20:47 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=haoxu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V5CE4Mj_1645514444;
+Received: from 30.226.12.35(mailfrom:haoxu@linux.alibaba.com fp:SMTPD_---0V5CE4Mj_1645514444)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 22 Feb 2022 15:20:45 +0800
+Message-ID: <54b21f27-2c0d-1b3d-b35f-a88bdb766c54@linux.alibaba.com>
+Date:   Tue, 22 Feb 2022 15:20:44 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 4/4] io_uring: pre-increment f_pos on rw
+Content-Language: en-US
+To:     Pavel Begunkov <asml.silence@gmail.com>,
+        Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>,
+        io-uring@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <20220221141649.624233-1-dylany@fb.com>
+ <20220221141649.624233-5-dylany@fb.com>
+ <ec1647f3-2c37-04be-bdbd-ab78b9f07a03@gmail.com>
+From:   Hao Xu <haoxu@linux.alibaba.com>
+In-Reply-To: <ec1647f3-2c37-04be-bdbd-ab78b9f07a03@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series aims to replace one-element arrays with flexible-array
-members in multiple structures in drivers/scsi/aacraid/aacraid.h.
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use “flexible array members”[1] for these cases. The older
-style of one-element or zero-length arrays should no longer be used[2].
-
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
-
-These issues were found with the help of Coccinelle and audited and fixed,
-manually.
-
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-
-Link: https://github.com/KSPP/linux/issues/79
-
-Gustavo A. R. Silva (8):
-  scsi: aacraid: Replace one-element array with flexible-array member
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct sgmap
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct user_sgmap
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct sgmap64
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct user_sgmap64
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct sgmapraw
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct user_sgmapraw
-  scsi: aacraid: Replace one-element array with flexible-array member in
-    struct aac_aifcmd
-
- drivers/scsi/aacraid/aachba.c   | 76 +++++++++++----------------------
- drivers/scsi/aacraid/aacraid.h  | 16 +++----
- drivers/scsi/aacraid/commctrl.c |  5 +--
- drivers/scsi/aacraid/comminit.c |  3 +-
- 4 files changed, 37 insertions(+), 63 deletions(-)
-
--- 
-2.27.0
-
+On 2/22/22 02:00, Pavel Begunkov wrote:
+> On 2/21/22 14:16, Dylan Yudaken wrote:
+>> In read/write ops, preincrement f_pos when no offset is specified, and
+>> then attempt fix up the position after IO completes if it completed less
+>> than expected. This fixes the problem where multiple queued up IO 
+>> will all
+>> obtain the same f_pos, and so perform the same read/write.
+>>
+>> This is still not as consistent as sync r/w, as it is able to advance 
+>> the
+>> file offset past the end of the file. It seems it would be quite a
+>> performance hit to work around this limitation - such as by keeping 
+>> track
+>> of concurrent operations - and the downside does not seem to be too
+>> problematic.
+>>
+>> The attempt to fix up the f_pos after will at least mean that in 
+>> situations
+>> where a single operation is run, then the position will be consistent.
+>>
+>> Co-developed-by: Jens Axboe <axboe@kernel.dk>
+>> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+>> Signed-off-by: Dylan Yudaken <dylany@fb.com>
+>> ---
+>>   fs/io_uring.c | 81 ++++++++++++++++++++++++++++++++++++++++++---------
+>>   1 file changed, 68 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/fs/io_uring.c b/fs/io_uring.c
+>> index abd8c739988e..a951d0754899 100644
+>> --- a/fs/io_uring.c
+>> +++ b/fs/io_uring.c
+>> @@ -3066,21 +3066,71 @@ static inline void io_rw_done(struct kiocb 
+>> *kiocb, ssize_t ret)
+>
+> [...]
+>
+>> +            return false;
+>>           }
+>>       }
+>> -    return is_stream ? NULL : &kiocb->ki_pos;
+>> +    *ppos = is_stream ? NULL : &kiocb->ki_pos;
+>> +    return false;
+>> +}
+>> +
+>> +static inline void
+>> +io_kiocb_done_pos(struct io_kiocb *req, struct kiocb *kiocb, u64 
+>> actual)
+>
+> That's a lot of inlining, I wouldn't be surprised if the compiler
+> will even refuse to do that.
+>
+> io_kiocb_done_pos() {
+>     // rest of it
+> }
+>
+> inline io_kiocb_done_pos() {
+>     if (!(flags & CUR_POS));
+>         return;
+>     __io_kiocb_done_pos();
+> }
+>
+> io_kiocb_update_pos() is huge as well
+>
+>> +{
+>> +    u64 expected;
+>> +
+>> +    if (likely(!(req->flags & REQ_F_CUR_POS)))
+>> +        return;
+>> +
+>> +    expected = req->rw.len;
+>> +    if (actual >= expected)
+>> +        return;
+>> +
+>> +    /*
+>> +     * It's not definitely safe to lock here, and the assumption is,
+>> +     * that if we cannot lock the position that it will be changing,
+>> +     * and if it will be changing - then we can't update it anyway
+>> +     */
+>> +    if (req->file->f_mode & FMODE_ATOMIC_POS
+>> +        && !mutex_trylock(&req->file->f_pos_lock))
+>> +        return;
+>> +
+>> +    /*
+>> +     * now we want to move the pointer, but only if everything is 
+>> consistent
+>> +     * with how we left it originally
+>> +     */
+>> +    if (req->file->f_pos == kiocb->ki_pos + (expected - actual))
+>> +        req->file->f_pos = kiocb->ki_pos;
+>
+> I wonder, is it good enough / safe to just assign it considering that
+> the request was executed outside of locks? vfs_seek()?
+>
+>> +
+>> +    /* else something else messed with f_pos and we can't do 
+>> anything */
+>> +
+>> +    if (req->file->f_mode & FMODE_ATOMIC_POS)
+>> +        mutex_unlock(&req->file->f_pos_lock);
+>>   }
+>
+> Do we even care about races while reading it? E.g.
+> pos = READ_ONCE();
+>
+>>   -    ppos = io_kiocb_update_pos(req, kiocb);
+>> -
+>>       ret = rw_verify_area(READ, req->file, ppos, req->result);
+>>       if (unlikely(ret)) {
+>>           kfree(iovec);
+>> +        io_kiocb_done_pos(req, kiocb, 0);
+>
+> Why do we update it on failure?
+It seems like a fallback, if no pos change, fallback file->f_pos to the 
+original place
+>
+> [...]
+>
+>> -    ppos = io_kiocb_update_pos(req, kiocb);
+>> -
+>>       ret = rw_verify_area(WRITE, req->file, ppos, req->result);
+>>       if (unlikely(ret))
+>>           goto out_free;
+>> @@ -3858,6 +3912,7 @@ static int io_write(struct io_kiocb *req, 
+>> unsigned int issue_flags)
+>>           return ret ?: -EAGAIN;
+>>       }
+>>   out_free:
+>> +    io_kiocb_done_pos(req, kiocb, 0);
+>
+> Looks weird. It appears we don't need it on failure and
+> successes are covered by kiocb_done() / ->ki_complete
+>
+>>       /* it's reportedly faster than delegating the null check to 
+>> kfree() */
+>>       if (iovec)
+>>           kfree(iovec);
+>
