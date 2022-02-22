@@ -2,209 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37426C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB78C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234394AbiBVQzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:55:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        id S234395AbiBVQzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:55:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234391AbiBVQzA (ORCPT
+        with ESMTP id S233461AbiBVQzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:55:00 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A0B158EB6;
-        Tue, 22 Feb 2022 08:54:35 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id z66so290110qke.10;
-        Tue, 22 Feb 2022 08:54:34 -0800 (PST)
+        Tue, 22 Feb 2022 11:55:23 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9037D16BCF5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:54:57 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id k10-20020a056902070a00b0062469b00335so8994297ybt.14
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:54:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CcdY16oA6AEJHhyCwLx6vJhNTGI8QJ+QzSpB8t1ill0=;
-        b=Lm9rDh7gw/7aiB+6W42iKUvP8tfWj3lREmLaWJRa/Nfpo3AX9V6cVg0yylDmCEmCqV
-         mTG3Ht6w4bbWmcOuDGNlALpznlM9HvxV3hrDszNM1FJk91Ij8ybmOyCIhV2yozbqGCxp
-         rGqb9ijbBvMr67n8xvdH6V8xSEw6gHUfMePRmP+d0NgfE/NluJ9u9lHGISdcv8xOjllH
-         6acFw+h3DYj1g7xPqAPDCl7mYvLXljQM2k2lSRdHV37oIXPHoeW9kKRRnF6NPLYlygcL
-         mCzQhHCuqqMo5ndvltPdKbEdAHgGFXJi73il3OFb3OgEjnChGiKL2ZPT6uwGBqhOB3wB
-         6cpQ==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=ZlyAAqqDhAE4WxbyZ31+jkqH/YpnLCKmJnh7POCxqTo=;
+        b=TIooTTyH5x1F5nebrNIhkxrh2HuWrtPHN3fTIyBzs1a6KH6OGiKUp1PWOlO6NXsbQT
+         k7h9zWn15cvo5sZhfXstOZ7RpAD+Gat9qLxoStKOCv0K160fImoXF6iu00kBuJnVyT6n
+         YeThCRS0IPdnxIFck9JWsb0bj7sYMYA9LYn4MWVPyD2giNP+0cLZ8uSvz0IwXqXOXaOu
+         G/dlwHj4gGGF4Y6nSgBvhRU/4Yq7YkrEaClamVuzK+tUFIXdOsSYoS/NWO0g8LCGrMsX
+         It+EBn3ntQqg8tQNu7EC0xgAKjXEbbsSJs8P+w445Q4D6gLEB+GMhwcdWzAmnJsKbA4J
+         Pgrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=CcdY16oA6AEJHhyCwLx6vJhNTGI8QJ+QzSpB8t1ill0=;
-        b=wuDfxw56b5xs0zO+HqCMMBd6IXkzag8YQSqqa7LLxD1krkszSdL/wEGf+eP+J27X1c
-         ZfVTHKT68bF1wftRgyxhjQy4HZRKs50jAOU73bj3DP1c/V3ooqMBRZV9XF9NLf3TwBF+
-         J+qgfARzPy17Ip4tp+m8godw9Geks2HYk1SxvwOjExRBm6a+6gM8cnvV8zyweBNvJuin
-         G5QQUJmHoISmwzngpSAcfd3eVMwBx5T/GxUvPk2B6/252BvQgfMZ3cNdrGFCv+43wPw+
-         aL3yjii9u5HQbgCpwtxpIXm32hIagnh266cVlON4BF6VoTg5vQCTwC6hweu/qNMyiQS5
-         S8sw==
-X-Gm-Message-State: AOAM530it6O/erwRmn5BvwI1/qpnKgu6xkhKnqBphtS79HGmCapZmYAO
-        1LD6XvOR8dnXcLvEiqKDPA2q5dOvWCpQTA==
-X-Google-Smtp-Source: ABdhPJwt8k/RMr/TJJpH9bdEihTLWOJoPqU2p9KS7pP8nagJkzh/bXCDjpJT+RCZpycVVkWxB6JYPQ==
-X-Received: by 2002:a37:b882:0:b0:649:1532:fcbf with SMTP id i124-20020a37b882000000b006491532fcbfmr2717960qkf.151.1645548874136;
-        Tue, 22 Feb 2022 08:54:34 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id u2sm63456qkf.84.2022.02.22.08.54.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 08:54:33 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 22 Feb 2022 08:54:32 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Armin Wolf <W_Armin@gmx.de>
-Cc:     pali@kernel.org, jdelvare@suse.com, David.Laight@ACULAB.COM,
-        linux-hwmon@vger.kernel.org, linux-assembly@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] hwmon: (dell-smm) Improve assembly code
-Message-ID: <20220222165432.GA255373@roeck-us.net>
-References: <20220220190851.17965-1-W_Armin@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220220190851.17965-1-W_Armin@gmx.de>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=ZlyAAqqDhAE4WxbyZ31+jkqH/YpnLCKmJnh7POCxqTo=;
+        b=FEq/NQkzuc0UgMysaEDwxjybb2bBdaIwEmZLnR1lNaAbRIZjcsarYXt7tbxbrA8Z0t
+         uzMHmo1Jj/EfCHhUYwC8GPZhctgk6ojIBiJufpNN+ROJgyumkipBA2ERAm6jWg0Fk5j/
+         Jzw2AHwh/4fGmzt7A+ynqS9RhYCCDfEFEZVuo/A5zGfAmOW4a2SPlUsJRZLrhJ03UxtZ
+         r2mH3vWzyCyU6P03J9OSGSEJTraUZCei2zFwGcwZ9GrotiQ1cKdxzLHKi5PZ3Zs/88IS
+         8i8VJN8OjUedrg01f7heV+oCuxyzk7JKHgjbccDNhouVoBMDl8oLjedy5QT3sIw9q7Rr
+         jtWw==
+X-Gm-Message-State: AOAM531yM8UeMgEK79bprCwCy+FTXydRI+ruik0gMEBCm/q5lAEI4cJU
+        Gcj4jdNARtqlGzSgGOrOINttCQAAh9apF+To5g==
+X-Google-Smtp-Source: ABdhPJwTHC6zcsc1CP1g9QcEYL9chbpjl/nOUt74qFxAcpxZyUBNLrnrRhwJaWgirDTS7AoSkxlDAybxGjmkVJWUJw==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:5db7:1235:b3dd:cfcb])
+ (user=kaleshsingh job=sendgmr) by 2002:a81:911:0:b0:2d2:c5c6:b4a1 with SMTP
+ id 17-20020a810911000000b002d2c5c6b4a1mr24349571ywj.48.1645548896812; Tue, 22
+ Feb 2022 08:54:56 -0800 (PST)
+Date:   Tue, 22 Feb 2022 08:51:03 -0800
+In-Reply-To: <20220222165212.2005066-1-kaleshsingh@google.com>
+Message-Id: <20220222165212.2005066-3-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220222165212.2005066-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v2 2/9] KVM: arm64: Introduce pkvm_alloc_private_va_range()
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 20, 2022 at 08:08:51PM +0100, Armin Wolf wrote:
-> The new assembly code works on both 32 bit and 64 bit
-> cpus and allows for more compiler optimisations.
-> Since clang runs out of registers on 32 bit x86 when
-> using CC_OUT, we need to execute "setc" ourself.
-> Also modify the debug message so we can still see
-> the result (eax) when the carry flag was set.
-> 
-> Tested with 32 bit and 64 bit kernels on a Dell Inspiron 3505.
-> 
-> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+pkvm_hyp_alloc_private_va_range() can be used to reserve private VA ranges
+in the pKVM nVHE hypervisor (). Also update __pkvm_create_private_mapping()
+to allow specifying an alignment for the private VA mapping.
 
-It would be great if I can get some Tested-by/Acked-by/Reviewed-by
-tags for this patch.
+These will be used to implement stack guard pages for pKVM nVHE hypervisor
+(in a subsequent patch in the series).
 
-Thanks,
-Guenter
+Credits to Quentin Perret <qperret@google.com> for the idea of moving
+private VA allocation out of __pkvm_create_private_mapping()
 
-> ---
-> Changes in v4:
-> - reword commit message
-> 
-> Changes in v3:
-> - make carry an unsigned char
-> - use "+a", ... for output registers
-> - drop "cc" from clobbered list
-> 
-> Changes in v2:
-> - fix clang running out of registers on 32 bit x86
-> - modify debug message
-> ---
->  drivers/hwmon/dell-smm-hwmon.c | 78 ++++++++--------------------------
->  1 file changed, 18 insertions(+), 60 deletions(-)
-> 
-> --
-> 2.30.2
-> 
-> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-> index c5939e68586d..38d23a8e83f2 100644
-> --- a/drivers/hwmon/dell-smm-hwmon.c
-> +++ b/drivers/hwmon/dell-smm-hwmon.c
-> @@ -119,7 +119,7 @@ struct smm_regs {
->  	unsigned int edx;
->  	unsigned int esi;
->  	unsigned int edi;
-> -} __packed;
-> +};
-> 
->  static const char * const temp_labels[] = {
->  	"CPU",
-> @@ -164,74 +164,32 @@ static int i8k_smm_func(void *par)
->  	struct smm_regs *regs = par;
->  	int eax = regs->eax;
->  	int ebx = regs->ebx;
-> +	unsigned char carry;
->  	long long duration;
-> -	int rc;
-> 
->  	/* SMM requires CPU 0 */
->  	if (smp_processor_id() != 0)
->  		return -EBUSY;
-> 
-> -#if defined(CONFIG_X86_64)
-> -	asm volatile("pushq %%rax\n\t"
-> -		"movl 0(%%rax),%%edx\n\t"
-> -		"pushq %%rdx\n\t"
-> -		"movl 4(%%rax),%%ebx\n\t"
-> -		"movl 8(%%rax),%%ecx\n\t"
-> -		"movl 12(%%rax),%%edx\n\t"
-> -		"movl 16(%%rax),%%esi\n\t"
-> -		"movl 20(%%rax),%%edi\n\t"
-> -		"popq %%rax\n\t"
-> -		"out %%al,$0xb2\n\t"
-> -		"out %%al,$0x84\n\t"
-> -		"xchgq %%rax,(%%rsp)\n\t"
-> -		"movl %%ebx,4(%%rax)\n\t"
-> -		"movl %%ecx,8(%%rax)\n\t"
-> -		"movl %%edx,12(%%rax)\n\t"
-> -		"movl %%esi,16(%%rax)\n\t"
-> -		"movl %%edi,20(%%rax)\n\t"
-> -		"popq %%rdx\n\t"
-> -		"movl %%edx,0(%%rax)\n\t"
-> -		"pushfq\n\t"
-> -		"popq %%rax\n\t"
-> -		"andl $1,%%eax\n"
-> -		: "=a"(rc)
-> -		:    "a"(regs)
-> -		:    "%ebx", "%ecx", "%edx", "%esi", "%edi", "memory");
-> -#else
-> -	asm volatile("pushl %%eax\n\t"
-> -	    "movl 0(%%eax),%%edx\n\t"
-> -	    "push %%edx\n\t"
-> -	    "movl 4(%%eax),%%ebx\n\t"
-> -	    "movl 8(%%eax),%%ecx\n\t"
-> -	    "movl 12(%%eax),%%edx\n\t"
-> -	    "movl 16(%%eax),%%esi\n\t"
-> -	    "movl 20(%%eax),%%edi\n\t"
-> -	    "popl %%eax\n\t"
-> -	    "out %%al,$0xb2\n\t"
-> -	    "out %%al,$0x84\n\t"
-> -	    "xchgl %%eax,(%%esp)\n\t"
-> -	    "movl %%ebx,4(%%eax)\n\t"
-> -	    "movl %%ecx,8(%%eax)\n\t"
-> -	    "movl %%edx,12(%%eax)\n\t"
-> -	    "movl %%esi,16(%%eax)\n\t"
-> -	    "movl %%edi,20(%%eax)\n\t"
-> -	    "popl %%edx\n\t"
-> -	    "movl %%edx,0(%%eax)\n\t"
-> -	    "lahf\n\t"
-> -	    "shrl $8,%%eax\n\t"
-> -	    "andl $1,%%eax\n"
-> -	    : "=a"(rc)
-> -	    :    "a"(regs)
-> -	    :    "%ebx", "%ecx", "%edx", "%esi", "%edi", "memory");
-> -#endif
-> -	if (rc != 0 || (regs->eax & 0xffff) == 0xffff || regs->eax == eax)
-> -		rc = -EINVAL;
-> +	asm volatile("out %%al,$0xb2\n\t"
-> +		     "out %%al,$0x84\n\t"
-> +		     "setc %0\n"
-> +		     : "=mr" (carry),
-> +		       "+a" (regs->eax),
-> +		       "+b" (regs->ebx),
-> +		       "+c" (regs->ecx),
-> +		       "+d" (regs->edx),
-> +		       "+S" (regs->esi),
-> +		       "+D" (regs->edi));
-> 
->  	duration = ktime_us_delta(ktime_get(), calltime);
-> -	pr_debug("smm(0x%.4x 0x%.4x) = 0x%.4x  (took %7lld usecs)\n", eax, ebx,
-> -		 (rc ? 0xffff : regs->eax & 0xffff), duration);
-> +	pr_debug("smm(0x%.4x 0x%.4x) = 0x%.4x carry: %d (took %7lld usecs)\n",
-> +		 eax, ebx, regs->eax & 0xffff, carry, duration);
-> 
-> -	return rc;
-> +	if (carry || (regs->eax & 0xffff) == 0xffff || regs->eax == eax)
-> +		return -EINVAL;
-> +
-> +	return 0;
->  }
-> 
->  /*
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+
+Changes in v2:
+  - Allow specifying an alignment for the private VA allocations, per Marc
+
+ arch/arm64/kvm/hyp/include/nvhe/mm.h |  3 +-
+ arch/arm64/kvm/hyp/nvhe/hyp-main.c   |  5 +--
+ arch/arm64/kvm/hyp/nvhe/mm.c         | 49 +++++++++++++++++++---------
+ arch/arm64/kvm/mmu.c                 |  2 +-
+ 4 files changed, 39 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/mm.h b/arch/arm64/kvm/hyp/include/nvhe/mm.h
+index 2d08510c6cc1..05d06ad00347 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/mm.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/mm.h
+@@ -20,7 +20,8 @@ int pkvm_cpu_set_vector(enum arm64_hyp_spectre_vector slot);
+ int pkvm_create_mappings(void *from, void *to, enum kvm_pgtable_prot prot);
+ int pkvm_create_mappings_locked(void *from, void *to, enum kvm_pgtable_prot prot);
+ unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+-					    enum kvm_pgtable_prot prot);
++					size_t align, enum kvm_pgtable_prot prot);
++unsigned long pkvm_alloc_private_va_range(size_t size, size_t align);
+ 
+ static inline void hyp_vmemmap_range(phys_addr_t phys, unsigned long size,
+ 				     unsigned long *start, unsigned long *end)
+diff --git a/arch/arm64/kvm/hyp/nvhe/hyp-main.c b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
+index 5e2197db0d32..96b2312a0f1d 100644
+--- a/arch/arm64/kvm/hyp/nvhe/hyp-main.c
++++ b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
+@@ -158,9 +158,10 @@ static void handle___pkvm_create_private_mapping(struct kvm_cpu_context *host_ct
+ {
+ 	DECLARE_REG(phys_addr_t, phys, host_ctxt, 1);
+ 	DECLARE_REG(size_t, size, host_ctxt, 2);
+-	DECLARE_REG(enum kvm_pgtable_prot, prot, host_ctxt, 3);
++	DECLARE_REG(size_t, align, host_ctxt, 3);
++	DECLARE_REG(enum kvm_pgtable_prot, prot, host_ctxt, 4);
+ 
+-	cpu_reg(host_ctxt, 1) = __pkvm_create_private_mapping(phys, size, prot);
++	cpu_reg(host_ctxt, 1) = __pkvm_create_private_mapping(phys, size, align, prot);
+ }
+ 
+ static void handle___pkvm_prot_finalize(struct kvm_cpu_context *host_ctxt)
+diff --git a/arch/arm64/kvm/hyp/nvhe/mm.c b/arch/arm64/kvm/hyp/nvhe/mm.c
+index 526a7d6fa86f..298fbbe4651d 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mm.c
++++ b/arch/arm64/kvm/hyp/nvhe/mm.c
+@@ -37,26 +37,46 @@ static int __pkvm_create_mappings(unsigned long start, unsigned long size,
+ 	return err;
+ }
+ 
+-unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+-					    enum kvm_pgtable_prot prot)
++/*
++ * Allocates a private VA range above __io_map_base.
++ *
++ * @size:	The size of the VA range to reserve.
++ * @align:	The required alignment for the allocation.
++ */
++unsigned long pkvm_alloc_private_va_range(size_t size, size_t align)
+ {
+-	unsigned long addr;
+-	int err;
++	unsigned long base, addr;
+ 
+ 	hyp_spin_lock(&pkvm_pgd_lock);
+ 
+-	size = PAGE_ALIGN(size + offset_in_page(phys));
+-	addr = __io_map_base;
+-	__io_map_base += size;
++	addr = ALIGN(__io_map_base, align);
++
++	/* The allocated size is always a multiple of PAGE_SIZE */
++	base = addr + PAGE_ALIGN(size);
+ 
+ 	/* Are we overflowing on the vmemmap ? */
+-	if (__io_map_base > __hyp_vmemmap) {
+-		__io_map_base -= size;
++	if (base > __hyp_vmemmap)
+ 		addr = (unsigned long)ERR_PTR(-ENOMEM);
++	else
++		__io_map_base = base;
++
++	hyp_spin_unlock(&pkvm_pgd_lock);
++
++	return addr;
++}
++
++unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
++					size_t align, enum kvm_pgtable_prot prot)
++{
++	unsigned long addr;
++	int err;
++
++	size += offset_in_page(phys);
++	addr = pkvm_alloc_private_va_range(size, align);
++	if (IS_ERR((void *)addr))
+ 		goto out;
+-	}
+ 
+-	err = kvm_pgtable_hyp_map(&pkvm_pgtable, addr, size, phys, prot);
++	err = __pkvm_create_mappings(addr, size, phys, prot);
+ 	if (err) {
+ 		addr = (unsigned long)ERR_PTR(err);
+ 		goto out;
+@@ -64,8 +84,6 @@ unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+ 
+ 	addr = addr + offset_in_page(phys);
+ out:
+-	hyp_spin_unlock(&pkvm_pgd_lock);
+-
+ 	return addr;
+ }
+ 
+@@ -152,9 +170,8 @@ int hyp_map_vectors(void)
+ 		return 0;
+ 
+ 	phys = __hyp_pa(__bp_harden_hyp_vecs);
+-	bp_base = (void *)__pkvm_create_private_mapping(phys,
+-							__BP_HARDEN_HYP_VECS_SZ,
+-							PAGE_HYP_EXEC);
++	bp_base = (void *)__pkvm_create_private_mapping(phys, __BP_HARDEN_HYP_VECS_SZ,
++							PAGE_SIZE, PAGE_HYP_EXEC);
+ 	if (IS_ERR_OR_NULL(bp_base))
+ 		return PTR_ERR(bp_base);
+ 
+diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
+index e5abcce44ad0..18a711d6a52f 100644
+--- a/arch/arm64/kvm/mmu.c
++++ b/arch/arm64/kvm/mmu.c
+@@ -505,7 +505,7 @@ int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+ 
+ 	if (!kvm_host_owns_hyp_mappings()) {
+ 		addr = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
+-					 phys_addr, size, prot);
++					 phys_addr, size, align, prot);
+ 		if (IS_ERR_OR_NULL((void *)addr))
+ 			return PTR_ERR((void *)addr);
+ 		*haddr = addr;
+-- 
+2.35.1.473.g83b2b277ed-goog
+
