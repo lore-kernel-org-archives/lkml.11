@@ -2,100 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B37C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbiBVKCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:02:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S230386AbiBVKEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:04:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbiBVKCP (ORCPT
+        with ESMTP id S229735AbiBVKEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:02:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CEC4D9E1;
-        Tue, 22 Feb 2022 02:01:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB4E3B81979;
-        Tue, 22 Feb 2022 10:01:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748F6C340F1;
-        Tue, 22 Feb 2022 10:01:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645524106;
-        bh=WlKysR3fh9cyTsBx7g4oItMVVN2tFxPCnNUbkhVb5nw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NF0HYkUOI0T/c3YEkbbhITM2wsz8a1nY+2BBS7Ae1Qq3VQlDKXDwweAiLgzY07a0D
-         CkamuFzar7TxDgxm+QX7I/1Fq1DUFGwnXlPyDla0GiaEX32655LtgKJLcX4zJTFjls
-         61Il/UAGUO7DOVokjixgZgiqpmyhPo1jYvg7/pAGch63DfOdl2iFR/rng+VPpn2ELs
-         xtC7Z1kwFlCUqvcnqxPJ9osES2woTYbxMPm+oOe4oBRJa2GDNGjQmvr70CX22+ay6d
-         vDTZuWldYKrdJnsT7LE8zzB82pPUU2Dr/XdVS2sUIOGL4KiX3Iste78hkfDogmOIH0
-         zRPc6i0BqFc6A==
-Received: by mail-yb1-f178.google.com with SMTP id v186so39969219ybg.1;
-        Tue, 22 Feb 2022 02:01:46 -0800 (PST)
-X-Gm-Message-State: AOAM533Zan2M52b4S0gar/jlnhE6g/l27hzEhWn7rRiAdM2DOCpyI3FT
-        lPxte3sYTSsuCD51QJNxGp1zSUR9DasvpfhiaZ8=
-X-Google-Smtp-Source: ABdhPJzlvtAFNBuRnF7Dm7wHjcBG42cmva1ven6sDLXUphEjMJfNZZBaJeENh17z+ZNcYmS98StpGZzI20vsmBNiZmw=
-X-Received: by 2002:a25:4214:0:b0:624:6215:4823 with SMTP id
- p20-20020a254214000000b0062462154823mr13087478yba.432.1645524105607; Tue, 22
- Feb 2022 02:01:45 -0800 (PST)
+        Tue, 22 Feb 2022 05:04:09 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F6EF5D1AE;
+        Tue, 22 Feb 2022 02:03:44 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0A95106F;
+        Tue, 22 Feb 2022 02:03:43 -0800 (PST)
+Received: from [10.57.9.152] (unknown [10.57.9.152])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C61B83F5A1;
+        Tue, 22 Feb 2022 02:03:40 -0800 (PST)
+Message-ID: <c83ae91b-6901-de2b-913e-b28af73c52fa@arm.com>
+Date:   Tue, 22 Feb 2022 10:03:38 +0000
 MIME-Version: 1.0
-References: <20220216113323.53332-1-Jason@zx2c4.com> <164543897830.26423.13654986323403498456.kvalo@kernel.org>
-In-Reply-To: <164543897830.26423.13654986323403498456.kvalo@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 22 Feb 2022 11:01:34 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
-Message-ID: <CAMj1kXFLx1xGexd5P9xnB-2=cFn1DScCa8U6a7AyRAxQPLCWLw@mail.gmail.com>
-Subject: Re: [PATCH v3] ath9k: use hw_random API instead of directly dumping
- into random.c
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, miaoqing@codeaurora.org,
-        Rui Salvaterra <rsalvaterra@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        "Sepehrdad, Pouyan" <pouyans@qti.qualcomm.com>,
-        ath9k-devel <ath9k-devel@qca.qualcomm.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC][PATCH 1/2] dt-bindings: power: add Energy Model bindings
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
+        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220221225131.15836-1-lukasz.luba@arm.com>
+ <20220221225131.15836-2-lukasz.luba@arm.com>
+ <20220222030337.ijnfrh367illmidr@vireshk-i7>
+ <147e48e5-e310-cd8f-ba8c-ff32e3094be3@arm.com>
+ <20220222094547.tgj4bciq6rez62nk@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220222094547.tgj4bciq6rez62nk@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Feb 2022 at 11:57, Kalle Valo <kvalo@kernel.org> wrote:
->
-> "Jason A. Donenfeld" <Jason@zx2c4.com> wrote:
->
-> > Hardware random number generators are supposed to use the hw_random
-> > framework. This commit turns ath9k's kthread-based design into a proper
-> > hw_random driver.
-> >
-> > Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > Cc: Kalle Valo <kvalo@kernel.org>
-> > Cc: Rui Salvaterra <rsalvaterra@gmail.com>
-> > Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> > Tested-by: Rui Salvaterra <rsalvaterra@gmail.com>
-> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
-> > Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
->
-> Patch applied to ath-next branch of ath.git, thanks.
->
-> fcd09c90c3c5 ath9k: use hw_random API instead of directly dumping into ra=
-ndom.c
->
 
-With this patch, it seems we end up registering the hw_rng every time
-the link goes up, and unregister it again when the link goes down,
-right?
 
-Wouldn't it be better to split off this driver from the 802.11 link
-state handling?
+On 2/22/22 09:45, Viresh Kumar wrote:
+> On 22-02-22, 08:06, Lukasz Luba wrote:
+>> I'm not sure if that would be flexible enough to meet the requirement:
+>> power for each OPP might be different in one board vs. other board.
+> 
+> Don't DT files overload values from board files all the time ? Why wouldn't the
+> same apply for OPP table as well ?
+
+In that SoC and family of the boards, there are no such examples.
+It used to be popular in arm32 boards, but I'm not sure nowadays.
+
+> 
+>> AFAIK the OPP definition is more SoC specific.
+> 
+> This isn't about OPP definition as well, but just that if DT allows you to
+> override or not. I think it will.
+> 
+
+Redefining the whole OPP table, when the freq, voltage, interconnect,
+and other old entries don't change isn't too messy?
+
+As I said, I would prefer something lightweight, not redefining all
+stuff from OPP in every board file.
