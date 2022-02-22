@@ -2,134 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8574C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34587C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiBVF56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:57:58 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:32822 "EHLO
+        id S230138AbiBVF6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:58:06 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiBVF54 (ORCPT
+        with ESMTP id S230086AbiBVF6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:57:56 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB0E7DE3D
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:57:31 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id qx21so39324397ejb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:57:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p/PmgnBMBE+a+LwnMw7RC+TxwSBL0sVYbhSV1c+Rplg=;
-        b=HlroeRgk73cYJrya57IgoHaHYLeOQRZ8CFTKMyFrCQHZQft9rOKWBt3CMXGj8Hwp9y
-         OGy7sNphB9Uqe6NWrSnzVQST3fDo8GycVwSxApBKE3AyeyubM14vpJoCdrwaTkK5kp7n
-         cQyH7ksBDdcAQf+va82zEfbNiMIfQ7/cIXkVCcOwQbjxF1f5sLftHexJzTNZLmjXJvrQ
-         WTVOPvI57wSmoZTTx1AVEgdWqYkpSr6ypiNnPHrvNh6daYJjvApt9/Ud15DRX8oTYctF
-         MPEysQxdr7jBz9rTvY+DeVJw5EiPD0hc4QIeTMefTCLu+iCc3VWzd2Og153uAUiWlD09
-         0APg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p/PmgnBMBE+a+LwnMw7RC+TxwSBL0sVYbhSV1c+Rplg=;
-        b=bGNauJaVY4/cnhmKLbrJSTK6GyycSFTcTx6YBwyzXjc00hfOTFdnN2ntP3E8wZR+8m
-         bg3Z5XWku6uifjeElvXzjgg9GYpFMhTjTuUVDXFpzpCGgj0aTaAaftUBZ6GVIJtsKBSN
-         cf6qA67tgUKbUJbt8nXinBGpEXFxzvrK2etVZ//iLWZGUCVQppi+O7bNf5NlUZNRMBEq
-         8Eqjry3ZtwC9T3QKQy105AqGw7RJ4MO1c/33iVoCd66zT1tXAIP6+Ysq4u0yJ1FGMVyS
-         GUCzyJQQN7UqhBrOdMbEW+W/KnI3ek67OV+gM31n1JIfExPFmjMbeE7snj2aAr5sDBXC
-         C+/g==
-X-Gm-Message-State: AOAM531SKcSgmS1Olsqhh7zeD/iUacQ+fYTBjF9paPBU2tUajwRB1azq
-        Ig0DrXw+qaiuRXtpn/8hMFzvRsxs6XpQkWe9LvzWmEV6CV0=
-X-Google-Smtp-Source: ABdhPJz8UvpHNGjwosxt0eNuD825WY1Yan8kUpAgvw5cnK0YhJVzisH6PHoeBKC7hmKBNTUEoKrxFSkN0+HDrNt/e8M=
-X-Received: by 2002:a17:906:b201:b0:6b5:58c8:e43c with SMTP id
- p1-20020a170906b20100b006b558c8e43cmr17564278ejz.441.1645509450470; Mon, 21
- Feb 2022 21:57:30 -0800 (PST)
+        Tue, 22 Feb 2022 00:58:02 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484D98E192;
+        Mon, 21 Feb 2022 21:57:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645509458; x=1677045458;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=7bEcFXv/PBrDnpJkRJDcOGeL+LDolQ6d+dndBSOh350=;
+  b=K6lG22bBANh7vO+MZkeL9DQEOQvHvzY1CHN2nxl1iL8SuCJtiJ6zS+x7
+   loZmz4zG9cGn03doJDazMIVlrOcmZFhb56+/5a7SoPTFbQGnNAuO0AZwA
+   ujpE2bT/mlMYD54qlaYAlqAYeuQzo5DiI/b3XQxQkSbGnVeO0+FYLI1aB
+   FZTxv6EB0jn9LUda5nxGa232om7at/Jxh7Re0KMR7zhHvAW2hXUmZGHsh
+   rg6sbToORhbJQZqKrTzYjCbViaV9WitlJeC/JJAeuvhRan9dnr8mcRzWe
+   IF8ny2bF+fqCBnqVs94g+e+UEain4na0fxZJTa8kdDp//TPlxdPIz5hNy
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="250432165"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="250432165"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 20:50:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="683385469"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2022 20:50:06 -0800
+Message-ID: <c212094a-399e-1038-99e0-7a08d0da2a61@linux.intel.com>
+Date:   Tue, 22 Feb 2022 12:48:39 +0800
 MIME-Version: 1.0
-References: <20220221215911.2948692-1-broonie@kernel.org>
-In-Reply-To: <20220221215911.2948692-1-broonie@kernel.org>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Tue, 22 Feb 2022 06:57:19 +0100
-Message-ID: <CAMGffEm_J9WcP2eoopwX8eEnRz9n4EycWxwgzP4c+NFr0eYXkw@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the scsi-mkp tree with the block tree
-To:     broonie@kernel.org
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Christoph Hellwig <hch@lst.de>, Gioh Kim <gi-oh.kim@ionos.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Md Haris Iqbal <haris.iqbal@ionos.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Christoph Hellwig <hch@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
+        rafael@kernel.org, David Airlie <airlied@linux.ie>,
+        linux-pci@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        iommu@lists.linux-foundation.org,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in
+ bus_type
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        Robin Murphy <robin.murphy@arm.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+ <20220218005521.172832-3-baolu.lu@linux.intel.com>
+ <YhCdEmC2lYStmUSL@infradead.org>
+ <1d8004d3-1887-4fc7-08d2-0e2ee6b5fdcb@arm.com>
+ <20220221234837.GA10061@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220221234837.GA10061@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:59 PM <broonie@kernel.org> wrote:
->
-> Hi all,
->
-> Today's linux-next merge of the scsi-mkp tree got a conflict in:
->
->   drivers/block/rnbd/rnbd-clt.c
->
-> between commit:
->
->   448025c103938 ("block/rnbd: client device does not care queue/rotationa=
-l")
->
-> from the block tree and commit:
->
->   e8e9884730b36 ("scsi: rnbd: Remove WRITE_SAME support")
->
-> from the scsi-mkp tree.
->
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-Hi Broonie,
+On 2/22/22 7:48 AM, Jason Gunthorpe wrote:
+>> since we should only care about ownership at probe, hotplug, and other
+>> places well outside critical fast-paths, I'm not sure we really need to keep
+>> track of that anyway - it can always be recalculated by walking the
+>> group->devices list,
+> It has to be locked against concurrent probe, and there isn't
+> currently any locking scheme that can support this. The owner_cnt is
+> effectively a new lock for this purpose. It is the same issue we
+> talked about with that VFIO patch you showed me.
+> 
+> So, using the group->device_list would require adding something else
+> somewhere - which I think should happen when someone has
+> justification for another use of whatever that something else is.
 
-Thanks for fixing it up, it looks good. We will pay attention on this next =
-time!
+This series was originated from the similar idea by adding some fields
+in driver structure and intercepting it in iommu core. We stopped doing
+that due to the lack of lock mechanism between iommu and driver core.
+It then evolved into what it is today.
 
-Regards!
-Jinpu Wang
->
-> diff --cc drivers/block/rnbd/rnbd-clt.c
-> index 1f63f308eb394,dc192d2738854..0000000000000
-> --- a/drivers/block/rnbd/rnbd-clt.c
-> +++ b/drivers/block/rnbd/rnbd-clt.c
-> @@@ -1606,13 -1607,13 +1603,13 @@@ struct rnbd_clt_dev *rnbd_clt_map_devi=
-c
->         }
->
->         rnbd_clt_info(dev,
-> -                      "map_device: Device mapped as %s (nsectors: %zu, l=
-ogical_block_size: %d, physical_block_size: %d, max_write_same_sectors: %d,=
- max_discard_sectors: %d, discard_granularity: %d, discard_alignment: %d, s=
-ecure_discard: %d, max_segments: %d, max_hw_sectors: %d, wc: %d, fua: %d)\n=
-",
->  -                     "map_device: Device mapped as %s (nsectors: %zu, l=
-ogical_block_size: %d, physical_block_size: %d, max_discard_sectors: %d, di=
-scard_granularity: %d, discard_alignment: %d, secure_discard: %d, max_segme=
-nts: %d, max_hw_sectors: %d, rotational: %d, wc: %d, fua: %d)\n",
-> ++                     "map_device: Device mapped as %s (nsectors: %zu, l=
-ogical_block_size: %d, physical_block_size: %d, max_discard_sectors: %d, di=
-scard_granularity: %d, discard_alignment: %d, secure_discard: %d, max_segme=
-nts: %d, max_hw_sectors: %d, wc: %d, fua: %d)\n",
->                        dev->gd->disk_name, dev->nsectors,
->                        dev->logical_block_size, dev->physical_block_size,
-> -                      dev->max_write_same_sectors, dev->max_discard_sect=
-ors,
-> +                      dev->max_discard_sectors,
->                        dev->discard_granularity, dev->discard_alignment,
->                        dev->secure_discard, dev->max_segments,
->  -                     dev->max_hw_sectors, dev->rotational, dev->wc, dev=
-->fua);
->  +                     dev->max_hw_sectors, dev->wc, dev->fua);
->
->         mutex_unlock(&dev->lock);
->         rnbd_clt_put_sess(sess);
+Best regards,
+baolu
