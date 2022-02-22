@@ -2,123 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 21:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7604EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 21:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235511AbiBVV2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 16:28:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45180 "EHLO
+        id S235816AbiBVV2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 16:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235832AbiBVV1l (ORCPT
+        with ESMTP id S235740AbiBVV2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 16:27:41 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519208E196
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 13:27:11 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21MLQgJt094027;
-        Tue, 22 Feb 2022 15:26:42 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645565202;
-        bh=4IgUtNPOVL10Vp/1imi/uYZI63freW9H4+vX2DPlXSY=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=LAiCT48cWfLm7s/Qi781s8RcKxLPuwos03bIGtQxAOiGatxkEHNkQX9tlLsVaLlA/
-         +gMHbBht/OQ26yNsOaS3bNUeKIhwKyvFWQNTKLjT3EO8okdbAqUrLiDGa0NBFFfy77
-         t4uiayVOEan2qDs1T2LWQHz9oP/9jPlcoq9qXJnQ=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21MLQgUv093354
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Feb 2022 15:26:42 -0600
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
- Feb 2022 15:26:42 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 22 Feb 2022 15:26:42 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21MLQgU8074960;
-        Tue, 22 Feb 2022 15:26:42 -0600
-Date:   Tue, 22 Feb 2022 15:26:42 -0600
-From:   Nishanth Menon <nm@ti.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Rahul T R <r-ravikumar@ti.com>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <shawnguo@kernel.org>, <krzk@kernel.org>,
-        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
-        <biju.das.jz@bp.renesas.com>, <vkoul@kernel.org>,
-        <enric.balletbo@collabora.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] arm64: defconfig: Enable configs for DisplayPort on J721e
-Message-ID: <20220222212642.vwtw7xiz7cck63ea@zombie>
-References: <20220222180703.30401-1-r-ravikumar@ti.com>
- <20220222193930.sbc5xlsofhg3amgk@overrun>
- <YhVKSpMOKWzZy9a2@ripper>
+        Tue, 22 Feb 2022 16:28:03 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3198B113DA6;
+        Tue, 22 Feb 2022 13:27:36 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id bg10so46875483ejb.4;
+        Tue, 22 Feb 2022 13:27:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jS5gM1YIuXIK/IIJZRTIoCY8pDveqvlxNRuXyb+ydIc=;
+        b=TgCxT6VHp+F40PdbdgBVhu+Hvidulvu8QbEHTIyjOmX6ZjpKQ6YIUrf3iM/bP4V9pH
+         2Coq9+cZCJh3Mgo6sc45MjyeUocT/vG03XMgZ1/a7tcjDMcA/noYw1KmQwNzmnLT/hn4
+         99Ds/f3cSXBX3cUYOeXpPNKgACR8BAgzJv7x/w1rCPHf/bnZleSwzWQFGsNsYpvMsg/o
+         t8YXh0oHEhTcrrP+7z5FBrkEAKdy1jMR9EG8MR30d3FkXFIRc1jSgOdgEqIkZEajhBgT
+         l4Zool/DpzLYt/oB37JlD8EdlMmRkOxfA+HAy8en/K1VU6IAkug9SDl5yQ8erTeGQfFz
+         XeHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jS5gM1YIuXIK/IIJZRTIoCY8pDveqvlxNRuXyb+ydIc=;
+        b=1RTXsPjXl+LnKtD49bznL+387YTKBsUird+KRa4tAZebeD+wY7bcb9DX3lrJ5Bv583
+         ieJVd1onXs5NnH8qI+vaxDjSU+PVasqyK+Y+hoQt6und0tWZVGegG3HqUmEhbfna36J1
+         nBJ5oPTEmxqCL4i1h3wTh5ObNPu5yeZFwXZ0zB8oA6FtnCUxdZiLWqOYX5pjRiL2nx18
+         d7T9lhHKAIzn8BKLcwMzkvMn5aKYaiXl+yIyPRntEQkoOEzviq9RvYiZEs0C2/Pf+lnm
+         PEbARPMoVwNglg9DQbAYjYXSJ3PTcCpza2x03G1L3BtoxHBnex9RGlELbLPkKPsIRSqT
+         OmTA==
+X-Gm-Message-State: AOAM53136wKjCmz21WYdprA79fqNHrPTft1zsRmm+7U9rD34IoI1SteT
+        ldYKCTPVqa4aSwU6hp+NTLEEDvUdziw=
+X-Google-Smtp-Source: ABdhPJwHs27QqqK3E5MP2/I3MYUuYbNhU7XOLH2vAFSeCe4bO0TizjNhk3HNQP4SxqFiHzQB0MzSew==
+X-Received: by 2002:a17:906:2a97:b0:6b4:143f:37c6 with SMTP id l23-20020a1709062a9700b006b4143f37c6mr21415480eje.133.1645565254722;
+        Tue, 22 Feb 2022 13:27:34 -0800 (PST)
+Received: from fuji.fritz.box (ip-89-161-76-237.tel.tkb.net.pl. [89.161.76.237])
+        by smtp.gmail.com with ESMTPSA id i6sm6709778eja.132.2022.02.22.13.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 13:27:34 -0800 (PST)
+Date:   Tue, 22 Feb 2022 22:27:29 +0100
+From:   Tomasz =?UTF-8?B?V2FybmllxYLFgm8=?= <tomasz.warniello@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 01/11] scripts: kernel-doc: Add the basic POD
+ sections
+Message-ID: <20220222222729.404611b7@fuji.fritz.box>
+In-Reply-To: <7852b505-a65a-6cdd-29a8-3bc966dfc750@infradead.org>
+References: <20220218181628.1411551-1-tomasz.warniello@gmail.com>
+        <20220218181628.1411551-2-tomasz.warniello@gmail.com>
+        <7852b505-a65a-6cdd-29a8-3bc966dfc750@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YhVKSpMOKWzZy9a2@ripper>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12:40-20220222, Bjorn Andersson wrote:
-> On Tue 22 Feb 11:39 PST 2022, Nishanth Menon wrote:
-> 
-> > On 23:37-20220222, Rahul T R wrote:
-> > > Enable DRM and PHY configs required for supporting
-> > > DisplayPort on J721e
-> > > 
-> > > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-> > > ---
-> > >  arch/arm64/configs/defconfig | 5 +++++
-> > >  1 file changed, 5 insertions(+)
-> > > 
-> > > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> > > index 9f23d7ec1232..b0cb894a392e 100644
-> > > --- a/arch/arm64/configs/defconfig
-> > > +++ b/arch/arm64/configs/defconfig
-> > > @@ -702,6 +702,9 @@ CONFIG_DRM_EXYNOS_DSI=y
-> > >  CONFIG_DRM_EXYNOS_HDMI=y
-> > >  CONFIG_DRM_EXYNOS_MIC=y
-> > >  CONFIG_DRM_ROCKCHIP=m
-> > > +CONFIG_DRM_TIDSS=m
-> > > +CONFIG_DRM_DISPLAY_CONNECTOR=m
-> > > +CONFIG_DRM_CDNS_MHDP8546=m
-> > 
-> > Please use savedefconfig to place the changes in the correct location
-> > 
-> 
-> Just to clarify the request, use "make savedefconfig" to generate a
-> defconfig, then based on that put _only_ the relevant changes in the
-> commit.
+On Mon, 21 Feb 2022 22:10:22 -0800
+Randy Dunlap <rdunlap@infradead.org> wrote:
 
-Yup, thanks for clarifying.
-> 
-> > Also indicate changes if any in vmlinux in commit message.
-> > 
-> 
-> Nishanth, what are you asking for here? Just a mentioning if this has
-> any impact to vmlinux (or is isolated to the modules selected), or are
-> you asking for anything specific?
+> Nit:
+> $ ./scripts/kernel-doc -h
+> says:
+>     Run `kernel-doc -h` for details.
 
-In this case, just ensure to state that vmlinux size has'nt
-changed, in case where we see a =y, we should indicate via
-./scripts/bloat-o-meter change that is introduced and if yes, we
-should explain why this is fundamental to system boot.
+Hi Randy,
 
-Why is this necessary? This is to prevent product specific
-configurations (such as early display banner, chime etc) from creeping
-and increasing vmlinux size which has an impact for all ARM SoCs.
+The -h printout is complete and the synopsis section is only a doc section.
+To me this is a very minor concern. I wouldn't even bother to correct this.
+The phrasing is not very intelligent in the -h context, but I wouldn't
+contextualise this sentence for simplicity. It might be toned down to fit
+nicer in multiple contexts, but in the end someone running the -h mode
+doesn't need this information at all. And the same applies to this parameter's
+description in the "Other parameters" subsection. A user running -h will
+know that. What counts to me is syntactical coherence and again - simplicity.
 
+Thanks,
 
-[...]
+Tomasz
 
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
