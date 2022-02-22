@@ -2,86 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6ABEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiBVFnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:43:20 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43182 "EHLO
+        id S229909AbiBVFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:44:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiBVFnN (ORCPT
+        with ESMTP id S229786AbiBVFoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:43:13 -0500
-Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF4EDEAB;
-        Mon, 21 Feb 2022 21:42:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-        :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GmHGvFlMERYoctqrhlXNA24je+le5xDzuYUVLipVXiQ=; b=HXKbeB87PoAiP5/i0Tiq7WLqNR
-        xhurak0NO3Du3ZAg3Xy+YxnAQyxIuV4VnW0EEkUWVdQ4nh5bkKVW9vt+TechfdA9c7aw2LRgS4xIe
-        YlwfCssgeJ9YC+Ey2wFFVrlgz2tBOXx26+JAxgoWu9dupU8YqdNMvHtCO5XNkgjeweDIE0MEG1Mpq
-        yg1Up+ua9gv+ZTQuK6s/YTyoar3/GBvED+x57araH6sQS6B87YmDVmKzG+i2xtwqT8I3Onr/O0AoI
-        e6Qu+KbwyBpmJ6lBRUzd0eP9KTUPY+fo2NpMetRD3eqO7W5++2LCAtZuVvY0tcAaH0/5er5nG6s+Z
-        sJwkzcrw==;
-Received: from 20e7-cd64-ca8f-bce1-aa00-87c4-07d0-2001.dyn.estpak.ee ([2001:7d0:87c4:aa00:bce1:ca8f:cd64:20e7]:62077)
-        by mailserv1.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <maukka@ext.kapsi.fi>)
-        id 1nMNwW-0000BI-5o; Tue, 22 Feb 2022 07:42:32 +0200
-Message-ID: <91729285-67f9-8fdb-4f97-f0e958cff8dd@ext.kapsi.fi>
-Date:   Tue, 22 Feb 2022 07:42:30 +0200
+        Tue, 22 Feb 2022 00:44:03 -0500
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176CFDF51
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 21:43:39 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1645505868; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=h0xPrwJ5xGaQ7hS8AtO3/fYL0N55YKxhd/jXerhoKjn3RngVKcJegU23fFugjn1UH8BpOWBFc5nUFdGYC40Kc4RbEs016Tw1UgKJOi2FlzlGUoX8QiCkpPCHolRBLoAZWzgc3GXN9xE06e0/MBr8WRtdkpQwC8EhocN8eOR1GaU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1645505868; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=/UkmmgY62YSyoybGQMVGKnMB0V73rrqLXwcLwXohdrE=; 
+        b=kYZTgbEAgUrQLWj81hitkI22wm9QRkAiIQFETNvereHyAu4zZ4I9f4PmgoiX3XAsWmiDX7XzBaoIGDYOdyFDjbRJcuylseav/4KCeS0RztWsc5VOEEFURAoN+kEIfhvjN8nRUf8D0SHJ5uqmJUqUR/+HuxpDV3L51uAiprOF+Lw=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645505868;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+        bh=/UkmmgY62YSyoybGQMVGKnMB0V73rrqLXwcLwXohdrE=;
+        b=DAL4UQbqhqYw/lUDKJshckOaV4YzQjaPqIyk1j7FJkZXEalmunG2DDMx7RPN4/lB
+        V5zcrEdZTscUbzSHDt5R2xdWmJvAO834PlW+fNVJAFj7W8+PEud/cErIJk9+MNVObTW
+        8xIgrctPAzzo8I9vrfTu2Z+BI2szWm98PX46O3Yg=
+Received: from anirudhrb.com (49.207.226.61 [49.207.226.61]) by mx.zohomail.com
+        with SMTPS id 1645505864771584.2630304556701; Mon, 21 Feb 2022 20:57:44 -0800 (PST)
+Date:   Tue, 22 Feb 2022 10:27:36 +0530
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
+Message-ID: <YhRtQEWBF0kqWMsI@anirudhrb.com>
+References: <20220221195303.13560-1-mail@anirudhrb.com>
+ <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, maukka@ext.kapsi.fi
-References: <20220221062441.2685-1-maukka@ext.kapsi.fi>
- <YhOD3eCm8mYHJ1HF@lunn.ch>
- <72041ee7-a618-85d0-4687-76dae2b04bbc@ext.kapsi.fi>
- <YhQO52cvzIo8prKi@lunn.ch>
-From:   Mauri Sandberg <maukka@ext.kapsi.fi>
-In-Reply-To: <YhQO52cvzIo8prKi@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:7d0:87c4:aa00:bce1:ca8f:cd64:20e7
-X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
-Subject: Re: [PATCH] net: mv643xx_eth: handle EPROBE_DEFER
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 22.2.2022 0.15, Andrew Lunn wrote:
->>> Please can you add code to remove the platform device when the probe
->>> fails.
->>
->> I am looking at the vector 'port_platdev' that holds pointers to already
->> initialised ports. There is this mv643xx_eth_shared_of_remove(), which
->> probably could be utilised to remove them. Should I remove the platform
->> devices only in case of probe defer or always if probe fails?
->   
-> In general, a failing probe should always undo anything it has done so
-> far. Sometimes you can call the release function, or its
-> helpers. Other times you do a goto out: and then release stuff in the
-> reverse order it was taken.
+On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
+> On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
+> >
+> > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
+> > before proceeding with adding it to the iotlb.
+> >
+> > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > One instance where it can happen is when userspace sends an IOTLB
+> > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
+> > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
+> > iotlb. Next time a packet is sent, iotlb_access_ok() loops
+> > indefinitely due to that erroneous entry:
+> >
+> >         Call Trace:
+> >          <TASK>
+> >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+> >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+> >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+> >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+> >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
+> >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> >          </TASK>
+> >
+> > Reported by syzbot at:
+> >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+> >
+> > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+> > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+> > ---
+> >  drivers/vhost/iotlb.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+> > index 670d56c879e5..b9de74bd2f9c 100644
+> > --- a/drivers/vhost/iotlb.c
+> > +++ b/drivers/vhost/iotlb.c
+> > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> >                               void *opaque)
+> >  {
+> >         struct vhost_iotlb_map *map;
+> > +       u64 size = last - start + 1;
+> >
+> > -       if (last < start)
+> > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
+> > +       if (last < start || size == 0)
+> >                 return -EFAULT;
 > 
-> It looks like platform_device_del() can take a NULL pointer, so it is
-> probably O.K. to call mv643xx_eth_shared_of_remove().
+> I'd move this check to vhost_chr_iter_write(), then for the device who
+> has its own msg handler (e.g vDPA) can benefit from it as well.
 
-While I am on it, should I call of_node_put() to all port nodes as is
-being done to the current child node if probe fails in function
-mv643xx_eth_shared_of_probe() [1]?
+Thanks for reviewing!
 
-[1] 
-https://elixir.bootlin.com/linux/v5.16/source/drivers/net/ethernet/marvell/mv643xx_eth.c#L2800
+I kept the check here thinking that all devices would benefit from it
+because they would need to call vhost_iotlb_add_range() to add an entry
+to the iotlb. Isn't that correct? Do you see any other benefit in moving
+it to vhost_chr_iter_write()?
 
--- Mauri
+One concern I have is that if we move it out some future caller to
+vhost_iotlb_add_range() might forget to handle this case.
+
+Thanks!
+
+	- Anirudh.
+
+> 
+> Thanks
+> 
+> >
+> >         if (iotlb->limit &&
+> > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+> >                 return -ENOMEM;
+> >
+> >         map->start = start;
+> > -       map->size = last - start + 1;
+> > +       map->size = size;
+> >         map->last = last;
+> >         map->addr = addr;
+> >         map->perm = perm;
+> > --
+> > 2.35.1
+> >
+> 
