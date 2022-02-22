@@ -2,106 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A37E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB75C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 05:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbiBVFUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 00:20:08 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39060 "EHLO
+        id S229500AbiBVFXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 00:23:23 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBVFUG (ORCPT
+        with ESMTP id S229436AbiBVFXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 00:20:06 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D06213C384;
-        Mon, 21 Feb 2022 21:19:42 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id z4so16083980pgh.12;
-        Mon, 21 Feb 2022 21:19:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=22C4cVx+wwRK5mM3PpCccFYagn1VQQoWygpX53OoDD8=;
-        b=Fitx7Rz21j0muIjVlHevlKW2uIPsKeArKu5llXn1ypgfZUWYeblPkj8+IjVwlSeIda
-         MR5Grczq8OppWjGPao4gL65cjecUmuL/AnTrfCUBSioRltkbbWYavBPbyu3VXia7tlWp
-         vJQwEQ7hlYZ0sQZkKXaUgz6Zxxyut1RdfVrxV1WrTjoJiGRQA4GO2OLfuUjzZXcUiICb
-         IpFYLVxh+ir2TnUT2taTJRhqqdHflnmwmdMnSEr0vjYSjsuwXKgcxqNngo6pzN2PFe1t
-         b8KBGJqfRVv/zPVgqdgt7f6SjxNq9PlB7NvPqKobDh6Bvg6opcXtoifeP1F/TjXtQvSL
-         qDzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=22C4cVx+wwRK5mM3PpCccFYagn1VQQoWygpX53OoDD8=;
-        b=uY9O/8mf8pJCyh7BAkBaHAjPVSmKHYOldIylLX3SJavGiaAAr+Tt7bZma6vug43SLw
-         DG1QowSq+juRrB8WTbr9FvEfsnbvXNjG4VPUypmRFMvzta8SAIaPCJQrHZEzw0/GdBVV
-         slh8AiTfHs7otzICe+5R0vIAweJ0R0uk+ui586gctYhG47/QP5t69BGUYL8xn+Y/dlNh
-         r49nnUbkAHi8mnb/ssvbWtI+mX+1W21LjVb1VZHDd1531ZB4Hlfy2zLMAVsDWOqzPgBs
-         hrywCpNdX5Szgch1Ela+EgB0t5ckUOkZJItAx3pvLw6apvDyrzLuQD+E1YyA6mZ2gZ7A
-         uSTA==
-X-Gm-Message-State: AOAM530o4GTls5piFL6N9acV80gLiu6iNT1Qxdax3bDHUz4Y6B0GBmOT
-        F0LIZIuJTF9TRrHGI5d8o6b179wM09Xl1Srzh3GExWUnfRgDtQ==
-X-Google-Smtp-Source: ABdhPJx2nohtO7sqA42Cth7WpO+cxFz9XNQYZr102InHpoyzE3whglzftuYg4H3A+RIjeTvFVPP9yl5SvJjbd37QQRQ=
-X-Received: by 2002:a67:b34a:0:b0:31b:f0fd:fbe1 with SMTP id
- b10-20020a67b34a000000b0031bf0fdfbe1mr9156792vsm.9.1645504800565; Mon, 21 Feb
- 2022 20:40:00 -0800 (PST)
+        Tue, 22 Feb 2022 00:23:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA5EB6D14;
+        Mon, 21 Feb 2022 21:22:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31795B81754;
+        Tue, 22 Feb 2022 05:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A35C340EB;
+        Tue, 22 Feb 2022 05:22:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645507357;
+        bh=KCTcj5TseEAUcvGzo4Wj0gTwBw0tNSSMLCB6TBjzO/o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YqfBCdQOkblPXZ0t5+y1SjzzAmAVZVBfCOTxiJf/NnYx0y5GvX6M/ehX0FfBLcx4q
+         FuYsgSjAnhdtAsrz0AmhKXDaZAavMCrlofIA8jLaDlJNXXTec4f5SCq3gquAHD+gHi
+         TH9S1846C1rPAgxCUYSdLQFonpTgfuAwRjBvoYQH0Zog5bfZKtSh5/cYBPnaQLUm9I
+         JdS9iWejT/tePeno6otX6673OFB1pNZqW/HV91nxiDxZv8ic5cru1DjijVQyHRGnUX
+         z9nCp2CdZk3QX+1m+uZHyGfddMHFtCKOGPJEyCMRdrzvEHFqinQIzg4SrE9fqbu7SV
+         GC11hcpIgnzMw==
+Date:   Tue, 22 Feb 2022 10:52:33 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roger Quadros <rogerq@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: update Roger Quadros email
+Message-ID: <YhRzGbSHLrDwxxSm@matsya>
+References: <20220221100701.48593-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <20220222042700.385001-1-yusisamerican@gmail.com>
-In-Reply-To: <20220222042700.385001-1-yusisamerican@gmail.com>
-From:   Yusuf Khan <yusisamerican@gmail.com>
-Date:   Mon, 21 Feb 2022 20:39:48 -0800
-Message-ID: <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
-Subject: Re: [PATCH -next] pga: dfl: pci: Make sure DMA related error check is
- not done twice
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-fpga@vger.kernel.org, yilun.xu@intel.com, mdf@kernel.org,
-        trix@redhat.com, hao.wu@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221100701.48593-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Note: This bug was introduced here:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/?id=ada3caabaf6135150077c3f729bb06e8f3b5b8f6
-I saw this commit inside the linux-next branch, it is not present in
-the mainline branch.
-The linux-next branch was last updated 5 days ago, so I am unsure
-about the state of that commit.
-
-On Mon, Feb 21, 2022 at 8:27 PM Yusuf Khan <yusisamerican@gmail.com> wrote:
->
-> In the case that the DMA 64 bit bit mask error check does not fail,
-> the error check will be done twice, this patch fixed that.
->
-> NOTE: This patch is only for use in the linux-next branch as the
-> commit that caused this bug happened there.
->
-> Signed-off-by: Yusuf Khan <yusisamerican@gmail.com>
+On 21-02-22, 11:07, Krzysztof Kozlowski wrote:
+> Emails to Roger Quadros TI account bounce with:
+>   550 Invalid recipient <rogerq@ti.com> (#5.1.1)
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> 
 > ---
->  drivers/fpga/dfl-pci.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-> index 717ac9715970..6222f18aed4b 100644
-> --- a/drivers/fpga/dfl-pci.c
-> +++ b/drivers/fpga/dfl-pci.c
-> @@ -356,11 +356,12 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
->         pci_set_master(pcidev);
->
->         ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
-> -       if (ret)
-> -               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
->         if (ret) {
-> -               dev_err(&pcidev->dev, "No suitable DMA support available.\n");
-> -               goto disable_error_report_exit;
-> +               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
-> +               if (ret) {
-> +                       dev_err(&pcidev->dev, "No suitable DMA support available.\n");
-> +                       goto disable_error_report_exit;
-> +               }
->         }
->
->         ret = cci_init_drvdata(pcidev);
-> --
-> 2.25.1
->
+> 
+> Roger,
+> You should also add a mailmap entry for your inactive emails.
+> 
+> Best regards,
+> Krzysztof
+> ---
+>  .../devicetree/bindings/mfd/ti,j721e-system-controller.yaml     | 2 +-
+>  Documentation/devicetree/bindings/phy/ti,omap-usb2.yaml         | 2 +-
+
+Acked-By: Vinod Koul <vkoul@kernel.org>
+
+-- 
+~Vinod
