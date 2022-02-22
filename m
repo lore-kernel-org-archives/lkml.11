@@ -2,117 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 01:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 01:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238408AbiBVBQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 20:16:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52274 "EHLO
+        id S238438AbiBVBQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 20:16:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238091AbiBVBQE (ORCPT
+        with ESMTP id S238206AbiBVBQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 20:16:04 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DF324F2A;
-        Mon, 21 Feb 2022 17:15:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1645492512;
-        bh=b2y7rSofyMsAlLxNarbQCRJjCqiYzdU9dmvDBfCGMLU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=HHyhmPBXip9YYtenzshreMUrlHEgCwgJ6wWiL/edeehDc1L9FOIWnsma8Bu6uZZyD
-         WkEX/X87zgvOP77rTQKWAm3o7zDefUjJz8HnuJ/nD1rhqTix3XlYzHJDUMyJssIx/h
-         nshou38+ERYs0+EqfKUkYzd49GigfpK6SX/dsj9Y=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MysRk-1o9SNJ303m-00vtVm; Tue, 22
- Feb 2022 02:15:11 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v3 8/9] serial: fsl_lpuart: remove redundant code in rs485_config functions
-Date:   Tue, 22 Feb 2022 02:14:32 +0100
-Message-Id: <20220222011433.8761-9-LinoSanfilippo@gmx.de>
+        Mon, 21 Feb 2022 20:16:16 -0500
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2EC24F2E;
+        Mon, 21 Feb 2022 17:15:50 -0800 (PST)
+Received: from localhost.localdomain (abxh33.neoplus.adsl.tpnet.pl [83.9.1.33])
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 97EDB3F586;
+        Tue, 22 Feb 2022 02:15:46 +0100 (CET)
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+To:     ~postmarketos/upstreaming@lists.sr.ht
+Cc:     martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] dt-bindings: clock: add QCOM SM6350 display clock bindings
+Date:   Tue, 22 Feb 2022 02:15:28 +0100
+Message-Id: <20220222011534.3502-1-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
-References: <20220222011433.8761-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:R0QwZ7CNF/l/mRVr+oYBpn8dTdTWnAg8vgoTGVXQ9Mtiola7ML7
- Mkl6ZXbpw9nxjwQ/YrMsXG2eychqcNDicAHEe+IabnCRP/RAvPcJ62XIxtBfpGAF+em2sek
- kUgKEtTAosYJNi0QhCrHzl2C/mYfmrhCSBRcRGlzm2+8QTn3h+O5RxxmHLTEkVJPxtuFdYE
- E+2R4PaSc8DQHuCuSPcyw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DUG/ztOuIFI=:1BsmmNuF7gdS2hxGJQpIHJ
- 5hpDyATXMN3pr7gBPEGWyh3vAF/XwBTer6Ej5JP4t+K/4C4kurCUZKMuYxzMi1Xz5NoUoNX4q
- 9l21cWU4Pv7pui2RjU7YNu3FiQK4Jk4uZo3hVTqZpZYZ4mOt2G4IXi0xu8dtC7VzZqFtEThXo
- D29SNRRz0zJsS7fV1o7BzW4gUoreZ0i2W0PlFsaluRF8fRPmhmPoahynjwBo6z/S5xHadGD0f
- r9kO9UYv+aCI5meYUYrO37GTBHDxnrkHiDNCJStcWJ5WW3kDXH4DmXJlQsxljJpycdrL9hWqq
- 9aZHwS3iRjn6zat858JCplxguKC2gb60qRDyg/A584yjHq6TGTo7j+gTNGSHv3j6yUCwyoem1
- YAZKrCL7KAJ7AhFcKb31/kMRwmGjH+NO7VFblWN7BvaKs/39vrNonBtrNa4dXTg8juV4WMHAQ
- yGOY0jpyh9hnVvC5c8rTv1LMBjJSgUuv8YhgTqYu7U237Bdz7O1nyGFqAyY9KjWCuvDJr96Dr
- FtGSJ+hKgcDpNQw410ctyRHiyJnmsJmTkXF0+HzfhZ6w2ysj5nmgNiCk01FyNGCcAYp6CfD7H
- i6dreZ1DgIj1Ydt2a/pJYynR0SBMxakK4ArPSrPSDt9YJ3dyvYJrCQf7TzbOckGf8qT/u53WP
- /wf0mcE5PUjp4+r0IAvbwp2q4yga+zS9oLatt3p+JxdA90Rl2raox8xM7B6GgWoAXTF4/nrXu
- 7tAAHLRJtGjhmvwhvAdhCUh2HGey4qi4zfw70VImeH+FB9xXrh+R7jCRDeRiRYDPjWSQLF3xy
- TD+/+LDL/vZsi+SepeInxHaP1yzcsR8r7OlHicy7xO7mHclozUdbnkKmHgQDoc47l+0us0wB+
- UwkAf7bg+5d6r4RINRFrgbySE0XVnBq7lWHJyHpjAUuoKgLyCvAfmfpM1DvcYeQp9iiiL5UjW
- 4HXjKxQF84bIRqbZbg8XgLD1Dv1CHmH+LbIiDvYhdt1Urv1AUtUH0kyJHzCu1gUu3monwdCoj
- pyZqFbfcmYieAK4/7HVQFjGYri+JtV30JpBymfzWn98afpf1m3RtLuxJ22RQn6rRrGjmZ1B2Q
- st6kdOr4Wviz+I=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgZW5zdXJl
-cyB0aGF0IG9ubHkgb25lIG9mCmJvdGggb3B0aW9ucyBSVFMgb24gc2VuZCBvciBSVFMgYWZ0ZXIg
-c2VuZCBpcyBzZXQuIEl0IGFsc28gYXNzaWducyB0aGUKcGFzc2VkIHNlcmlhbF9yczQ4NSBzdHJ1
-Y3QgdG8gdGhlIHVhcnQgcG9ydC4KClNvIHJlbW92ZSB0aGUgY2hlY2sgYW5kIHRoZSBhc3NpZ25t
-ZW50IGZyb20gdGhlIGRyaXZlcnMgcnM0ODVfY29uZmlnKCkKZnVuY3Rpb24gdG8gYXZvaWQgcmVk
-dW5kYW5jeS4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBwbyA8TGlub1NhbmZpbGlwcG9A
-Z214LmRlPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgfCAzMiAtLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMyIGRlbGV0aW9ucygt
-KQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMgYi9kcml2ZXJz
-L3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jCmluZGV4IDdkOTBjNWE1MzBlZS4uYTIwMWJlNDRkNjhh
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvZnNsX2xwdWFydC5jCisrKyBiL2RyaXZl
-cnMvdHR5L3NlcmlhbC9mc2xfbHB1YXJ0LmMKQEAgLTEzNzcsMTkgKzEzNzcsNiBAQCBzdGF0aWMg
-aW50IGxwdWFydF9jb25maWdfcnM0ODUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwKIAkJLyogRW5h
-YmxlIGF1dG8gUlMtNDg1IFJUUyBtb2RlICovCiAJCW1vZGVtIHw9IFVBUlRNT0RFTV9UWFJUU0U7
-CiAKLQkJLyoKLQkJICogUlRTIG5lZWRzIHRvIGJlIGxvZ2ljIEhJR0ggZWl0aGVyIGR1cmluZyB0
-cmFuc2ZlciBfb3JfIGFmdGVyCi0JCSAqIHRyYW5zZmVyLCBvdGhlciB2YXJpYW50cyBhcmUgbm90
-IHN1cHBvcnRlZCBieSB0aGUgaGFyZHdhcmUuCi0JCSAqLwotCi0JCWlmICghKHJzNDg1LT5mbGFn
-cyAmIChTRVJfUlM0ODVfUlRTX09OX1NFTkQgfAotCQkJCVNFUl9SUzQ4NV9SVFNfQUZURVJfU0VO
-RCkpKQotCQkJcnM0ODUtPmZsYWdzIHw9IFNFUl9SUzQ4NV9SVFNfT05fU0VORDsKLQotCQlpZiAo
-cnM0ODUtPmZsYWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EICYmCi0JCQkJcnM0ODUtPmZsYWdz
-ICYgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EKQotCQkJcnM0ODUtPmZsYWdzICY9IH5TRVJfUlM0
-ODVfUlRTX0FGVEVSX1NFTkQ7Ci0KIAkJLyoKIAkJICogVGhlIGhhcmR3YXJlIGRlZmF1bHRzIHRv
-IFJUUyBsb2dpYyBISUdIIHdoaWxlIHRyYW5zZmVyLgogCQkgKiBTd2l0Y2ggcG9sYXJpdHkgaW4g
-Y2FzZSBSVFMgc2hhbGwgYmUgbG9naWMgSElHSApAQCAtMTQwMiw5ICsxMzg5LDYgQEAgc3RhdGlj
-IGludCBscHVhcnRfY29uZmlnX3JzNDg1KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQsCiAJCQltb2Rl
-bSB8PSBVQVJUTU9ERU1fVFhSVFNQT0w7CiAJfQogCi0JLyogU3RvcmUgdGhlIG5ldyBjb25maWd1
-cmF0aW9uICovCi0Jc3BvcnQtPnBvcnQucnM0ODUgPSAqcnM0ODU7Ci0KIAl3cml0ZWIobW9kZW0s
-IHNwb3J0LT5wb3J0Lm1lbWJhc2UgKyBVQVJUTU9ERU0pOwogCXJldHVybiAwOwogfQpAQCAtMTQy
-OCwxOSArMTQxMiw2IEBAIHN0YXRpYyBpbnQgbHB1YXJ0MzJfY29uZmlnX3JzNDg1KHN0cnVjdCB1
-YXJ0X3BvcnQgKnBvcnQsCiAJCS8qIEVuYWJsZSBhdXRvIFJTLTQ4NSBSVFMgbW9kZSAqLwogCQlt
-b2RlbSB8PSBVQVJUTU9ERU1fVFhSVFNFOwogCi0JCS8qCi0JCSAqIFJUUyBuZWVkcyB0byBiZSBs
-b2dpYyBISUdIIGVpdGhlciBkdXJpbmcgdHJhbnNmZXIgX29yXyBhZnRlcgotCQkgKiB0cmFuc2Zl
-ciwgb3RoZXIgdmFyaWFudHMgYXJlIG5vdCBzdXBwb3J0ZWQgYnkgdGhlIGhhcmR3YXJlLgotCQkg
-Ki8KLQotCQlpZiAoIShyczQ4NS0+ZmxhZ3MgJiAoU0VSX1JTNDg1X1JUU19PTl9TRU5EIHwKLQkJ
-CQlTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQpKSkKLQkJCXJzNDg1LT5mbGFncyB8PSBTRVJfUlM0
-ODVfUlRTX09OX1NFTkQ7Ci0KLQkJaWYgKHJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfT05f
-U0VORCAmJgotCQkJCXJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORCkKLQkJ
-CXJzNDg1LT5mbGFncyAmPSB+U0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EOwotCiAJCS8qCiAJCSAq
-IFRoZSBoYXJkd2FyZSBkZWZhdWx0cyB0byBSVFMgbG9naWMgSElHSCB3aGlsZSB0cmFuc2Zlci4K
-IAkJICogU3dpdGNoIHBvbGFyaXR5IGluIGNhc2UgUlRTIHNoYWxsIGJlIGxvZ2ljIEhJR0gKQEAg
-LTE0NTMsOSArMTQyNCw2IEBAIHN0YXRpYyBpbnQgbHB1YXJ0MzJfY29uZmlnX3JzNDg1KHN0cnVj
-dCB1YXJ0X3BvcnQgKnBvcnQsCiAJCQltb2RlbSB8PSBVQVJUTU9ERU1fVFhSVFNQT0w7CiAJfQog
-Ci0JLyogU3RvcmUgdGhlIG5ldyBjb25maWd1cmF0aW9uICovCi0Jc3BvcnQtPnBvcnQucnM0ODUg
-PSAqcnM0ODU7Ci0KIAlscHVhcnQzMl93cml0ZSgmc3BvcnQtPnBvcnQsIG1vZGVtLCBVQVJUTU9E
-SVIpOwogCXJldHVybiAwOwogfQotLSAKMi4zNS4xCgo=
+Add device tree bindings for display clock controller for
+Qualcomm Technology Inc's SM6350 SoC.
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+---
+ .../bindings/clock/qcom,dispcc-sm6350.yaml    | 86 +++++++++++++++++++
+ .../dt-bindings/clock/qcom,dispcc-sm6350.h    | 48 +++++++++++
+ 2 files changed, 134 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/qcom,dispcc-sm6350.yaml
+ create mode 100644 include/dt-bindings/clock/qcom,dispcc-sm6350.h
+
+diff --git a/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6350.yaml b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6350.yaml
+new file mode 100644
+index 000000000000..e706678b353a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/qcom,dispcc-sm6350.yaml
+@@ -0,0 +1,86 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/qcom,dispcc-sm6350.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Display Clock & Reset Controller Binding for SM6350
++
++maintainers:
++  - Konrad Dybcio <konrad.dybcio@somainline.org>
++
++description: |
++  Qualcomm display clock control module which supports the clocks, resets and
++  power domains on SM6350.
++
++  See also dt-bindings/clock/qcom,dispcc-sm6350.h.
++
++properties:
++  compatible:
++    const: qcom,sm6350-dispcc
++
++  clocks:
++    items:
++      - description: Board XO source
++      - description: GPLL0 source from GCC
++      - description: Byte clock from DSI PHY
++      - description: Pixel clock from DSI PHY
++      - description: Link clock from DP PHY
++      - description: VCO DIV clock from DP PHY
++
++  clock-names:
++    items:
++      - const: bi_tcxo
++      - const: gcc_disp_gpll0_clk
++      - const: dsi0_phy_pll_out_byteclk
++      - const: dsi0_phy_pll_out_dsiclk
++      - const: dp_phy_pll_link_clk
++      - const: dp_phy_pll_vco_div_clk
++
++  '#clock-cells':
++    const: 1
++
++  '#reset-cells':
++    const: 1
++
++  '#power-domain-cells':
++    const: 1
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - '#clock-cells'
++  - '#reset-cells'
++  - '#power-domain-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-sm6350.h>
++    #include <dt-bindings/clock/qcom,rpmh.h>
++    clock-controller@af00000 {
++      compatible = "qcom,sm6350-dispcc";
++      reg = <0x0af00000 0x20000>;
++      clocks = <&rpmhcc RPMH_CXO_CLK>,
++               <&gcc GCC_DISP_GPLL0_CLK>,
++               <&dsi_phy 0>,
++               <&dsi_phy 1>,
++               <&dp_phy 0>,
++               <&dp_phy 1>;
++      clock-names = "bi_tcxo",
++                    "gcc_disp_gpll0_clk",
++                    "dsi0_phy_pll_out_byteclk",
++                    "dsi0_phy_pll_out_dsiclk",
++                    "dp_phy_pll_link_clk",
++                    "dp_phy_pll_vco_div_clk";
++      #clock-cells = <1>;
++      #reset-cells = <1>;
++      #power-domain-cells = <1>;
++    };
++...
+diff --git a/include/dt-bindings/clock/qcom,dispcc-sm6350.h b/include/dt-bindings/clock/qcom,dispcc-sm6350.h
+new file mode 100644
+index 000000000000..cb54aae2723e
+--- /dev/null
++++ b/include/dt-bindings/clock/qcom,dispcc-sm6350.h
+@@ -0,0 +1,48 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
++ */
++
++#ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6350_H
++#define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6350_H
++
++/* DISP_CC clocks */
++#define DISP_CC_PLL0				0
++#define DISP_CC_MDSS_AHB_CLK			1
++#define DISP_CC_MDSS_AHB_CLK_SRC		2
++#define DISP_CC_MDSS_BYTE0_CLK			3
++#define DISP_CC_MDSS_BYTE0_CLK_SRC		4
++#define DISP_CC_MDSS_BYTE0_DIV_CLK_SRC		5
++#define DISP_CC_MDSS_BYTE0_INTF_CLK		6
++#define DISP_CC_MDSS_DP_AUX_CLK			7
++#define DISP_CC_MDSS_DP_AUX_CLK_SRC		8
++#define DISP_CC_MDSS_DP_CRYPTO_CLK		9
++#define DISP_CC_MDSS_DP_CRYPTO_CLK_SRC		10
++#define DISP_CC_MDSS_DP_LINK_CLK		11
++#define DISP_CC_MDSS_DP_LINK_CLK_SRC		12
++#define DISP_CC_MDSS_DP_LINK_DIV_CLK_SRC	13
++#define DISP_CC_MDSS_DP_LINK_INTF_CLK		14
++#define DISP_CC_MDSS_DP_PIXEL_CLK		15
++#define DISP_CC_MDSS_DP_PIXEL_CLK_SRC		16
++#define DISP_CC_MDSS_ESC0_CLK			17
++#define DISP_CC_MDSS_ESC0_CLK_SRC		18
++#define DISP_CC_MDSS_MDP_CLK			19
++#define DISP_CC_MDSS_MDP_CLK_SRC		20
++#define DISP_CC_MDSS_MDP_LUT_CLK		21
++#define DISP_CC_MDSS_NON_GDSC_AHB_CLK		22
++#define DISP_CC_MDSS_PCLK0_CLK			23
++#define DISP_CC_MDSS_PCLK0_CLK_SRC		24
++#define DISP_CC_MDSS_ROT_CLK			25
++#define DISP_CC_MDSS_ROT_CLK_SRC		26
++#define DISP_CC_MDSS_RSCC_AHB_CLK		27
++#define DISP_CC_MDSS_RSCC_VSYNC_CLK		28
++#define DISP_CC_MDSS_VSYNC_CLK			29
++#define DISP_CC_MDSS_VSYNC_CLK_SRC		30
++#define DISP_CC_SLEEP_CLK			31
++#define DISP_CC_XO_CLK				32
++
++/* GDSCs */
++#define MDSS_GDSC				0
++
++#endif
+-- 
+2.35.1
+
