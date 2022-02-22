@@ -2,97 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC31C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD19C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbiBVKcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:32:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
+        id S231204AbiBVKdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:33:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiBVKcR (ORCPT
+        with ESMTP id S229785AbiBVKdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:32:17 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30B61598FE
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:31:51 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 6171B1F43E;
-        Tue, 22 Feb 2022 10:31:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645525910; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=qqkcQJVhi4mzQvuwd9aG53kpS3X7TOhUy3dWnkQuXwQ=;
-        b=ZpOBaLrJv/FYMGI2sZj0ta89NP7joBZ8b+QKBjWXdDkx2UpFgOAEmVGZOZ6Y/eDFH4dFus
-        zD2bOaHRr2OQImsV5L3hGgz+H093kUPXtXsKFmSTS4Plz+Zqw8HLX9rYPo913oA8iPZMYX
-        KCMML42BvAjM6pAqID98N8TVIwE3gVw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645525910;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=qqkcQJVhi4mzQvuwd9aG53kpS3X7TOhUy3dWnkQuXwQ=;
-        b=iNBpfdppU5u+KuwSQ+Az6ToGrNleLavO1rKv9+dfo6W4Yn2FGF8olG+t00Jdw2K/pXLzgS
-        nE+73JYSHvjLiWAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3AE4F13C99;
-        Tue, 22 Feb 2022 10:31:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yiujDZa7FGIpfgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 22 Feb 2022 10:31:50 +0000
-From:   Vlastimil Babka <vbabka@suse.cz>
-To:     Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH] MAINTAINERS, SLAB: Add Roman as reviewer, git tree
-Date:   Tue, 22 Feb 2022 11:31:04 +0100
-Message-Id: <20220222103104.13241-1-vbabka@suse.cz>
-X-Mailer: git-send-email 2.35.1
+        Tue, 22 Feb 2022 05:33:16 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D59159E9C;
+        Tue, 22 Feb 2022 02:32:51 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K2wV94QtFz9sSj;
+        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id KhXs1n8nazcn; Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K2wV93ZFcz9sS4;
+        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 678BE8B781;
+        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id aAHTjz21EQky; Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 290468B77B;
+        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MAWiFp1075982
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 11:32:44 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MAWhg21075981;
+        Tue, 22 Feb 2022 11:32:43 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jessica Yu <jeyu@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Subject: [PATCH v4 6/6] powerpc: Select ARCH_WANTS_MODULES_DATA_IN_VMALLOC on book3s/32 and 8xx
+Date:   Tue, 22 Feb 2022 11:32:20 +0100
+Message-Id: <bb3d7fa8b4f52d0942240b5d95041be8909a7daa.1645525635.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645525635.git.christophe.leroy@csgroup.eu>
+References: <cover.1645525635.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=927; h=from:subject; bh=IwK/UKIMgzNUgo9X5ifJGXwOReRorivAdTzRSiyIiwM=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiFLtnD/1nv4ok5JQwwWtllV7rk4Vtnf+BP+Flp7w0 10LO552JATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYhS7ZwAKCRDgIcpz8YmpEBxaB/ oCAZZ4hmQUSxlerPu/FGYZMWwSfKyuE82RMCdChzFmU6Y0tKGj8mxJ8IBLnFfJKwmxIsKHoVs/wBYD RQP2uEfwb6EC7NYvJABJ+UNSbo0fUmDnanIdfCXU9+AKp3tXdjKqU1eDry6qlCtjhdDeyOGWDLud+M SXGYcTpoJr6zqCDzup2Vz7MSx3F/Iy7Pa6u/UznMAPfRzhPfpPqgnG4LcK83g1aiyJnSndFOGmI9PH DNFTTW/I5ja/1kjrRYxQZwyL3bAgey6PwkkOQ+29rzZ5mjAHaXmB0GMz6XshKyziv4rj2ra/5vjM47 T4eHqHo26sO6BwLanE9qAPkMgi3VWW
-X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645525928; l=1645; s=20211009; h=from:subject:message-id; bh=K04OWtjguCoft4Etc2/16pdJhJKZWZgWbhOpnNSgE7U=; b=hpk03SBCszNo742+2VK/eQLT92kOJCrSS+maM/ldh4eoCtbxQ0D87Y7BYTqu+2LyHwxlc99CUMOc cc433DAAB/dzMLBXJGZIifit9O7AQfafd+1sMzIYAzRMqytJi3zJ
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The slab code has an overlap with kmem accounting, where Roman has done
-a lot of work recently and it would be useful to make sure he's CC'd on
-patches that potentially affect it. Thus add him as a reviewer for the
-SLAB subsystem.
+book3s/32 and 8xx have a separate area for allocating modules,
+defined by MODULES_VADDR / MODULES_END.
 
-Also while at it, add the link to slab git tree.
+On book3s/32, it is not possible to protect against execution
+on a page basis. A full 256M segment is either Exec or NoExec.
+The module area is in an Exec segment while vmalloc area is
+in a NoExec segment.
 
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+In order to protect module data against execution, select
+ARCH_WANTS_MODULES_DATA_IN_VMALLOC.
+
+For the 8xx (and possibly other 32 bits platform in the future),
+there is no such constraint on Exec/NoExec protection, however
+there is a critical distance between kernel functions and callers
+that needs to remain below 32Mbytes in order to avoid costly
+trampolines. By allocating data outside of module area, we
+increase the chance for module text to remain within acceptable
+distance from kernel core text.
+
+So select ARCH_WANTS_MODULES_DATA_IN_VMALLOC for 8xx as well.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fca970a46e77..5ddd45450fdc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17764,8 +17764,10 @@ M:	David Rientjes <rientjes@google.com>
- M:	Joonsoo Kim <iamjoonsoo.kim@lge.com>
- M:	Andrew Morton <akpm@linux-foundation.org>
- M:	Vlastimil Babka <vbabka@suse.cz>
-+R:	Roman Gushchin <roman.gushchin@linux.dev>
- L:	linux-mm@kvack.org
- S:	Maintained
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git
- F:	include/linux/sl?b*.h
- F:	mm/sl?b*
- 
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 28e4047e99e8..478ee49a4fb4 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -156,6 +156,7 @@ config PPC
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+ 	select ARCH_WANT_LD_ORPHAN_WARN
++	select ARCH_WANTS_MODULES_DATA_IN_VMALLOC	if PPC_BOOK3S_32 || PPC_8xx
+ 	select ARCH_WEAK_RELEASE_ACQUIRE
+ 	select BINFMT_ELF
+ 	select BUILDTIME_TABLE_SORT
 -- 
-2.35.1
+2.34.1
 
