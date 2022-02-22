@@ -2,100 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 18:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235143AbiBVS6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 13:58:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
+        id S235162AbiBVS7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 13:59:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235153AbiBVS60 (ORCPT
+        with ESMTP id S232614AbiBVS73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 13:58:26 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E876ADE2E9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:58:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645556280; x=1677092280;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mnfE3Ie1oXRHjkG/pTiqBvf/XO47rcs2La5n3K55+Bg=;
-  b=TvHcIwRQD0aJh9IfvQHN1kzKAoS8b3J3di+5sZS9XSRqmbb5lNPW1Hzt
-   knvx5/UWK+aAwC7tB5PTyNfBf9cUAg8wjIk93Bxr25sLbkyuo+OGrqZsu
-   ST2OxRHNNZJGDPNfRKmvYguwE+Re6CJxFMheOLq7o7CqbgK/TCyNpPUHv
-   XWUdjyd5KL542MXazm6ugCM28JyXmPQ/FYih2+SSzkNdrG5PLQmmX7ZEK
-   HZLDH9aONnavRKb2FXsfkGfYlDnL0hZqegPVfYdQGgZhKaSS2apN78VoE
-   +XMJxI6b6ZMHOQqwLxjWYikXXSVSDNIkXKD9xWhzR5NL41UW84XEK8Hzc
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="315013545"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="315013545"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 10:57:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
-   d="scan'208";a="639012249"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 22 Feb 2022 10:57:34 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 42A5142; Tue, 22 Feb 2022 20:57:51 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jmattson@google.com, seanjc@google.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>
-Subject: [PATCH 1/4] x86/hyperv: Add missing ARCH_HAS_CC_PLATFORM dependency
-Date:   Tue, 22 Feb 2022 21:57:37 +0300
-Message-Id: <20220222185740.26228-2-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
-References: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
+        Tue, 22 Feb 2022 13:59:29 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055B4151343
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:59:03 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id a7-20020a9d5c87000000b005ad1467cb59so10311060oti.5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 10:59:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sr0bZ/IYx5fNgYIhrtES2Y53AQkSGkgSrNO7ZdZIC3Q=;
+        b=ZhqRZL1lIFwgAvx2B1EAPpwJgojg1Hi42R0xhoNL9F+8ADtR+J+GLx8Dyemeyz07bb
+         AKCjA1lLb6wiFn0GLKn2i3cUZpz9QhYKsXQb2P3c0cF5wyU9nt1sdZKqoWYXpR5HGLV0
+         cTFEGK5CmTSsZ2zEhqU4IKtoLYMINfiFDTJr0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sr0bZ/IYx5fNgYIhrtES2Y53AQkSGkgSrNO7ZdZIC3Q=;
+        b=Ujq8P6dbugBVFLw1Fi3vVbhIEEnwd6R1gPr3EujodTDF+bvUWMNIiqsBdvxEzkJROc
+         B7k4wnlX7ncb9/Q25HzcgIvLuk74K9KKVumzp74jM6EjjDSko0/wsJUQt80GESDY+hrV
+         8R0nO2FqYP4LVckCmVNSCOldbxioDbCHgHRGY0CcO7yUtQ+s2WJ/1/IymhVTdlsuxlNV
+         swJTnZoyavhTsL79pQ9gyV54Rt0qEmFuF1YQxgL0h+MkribPdA75qOSjmO0Ht0zDHifc
+         FVTdKfxgqImG4K9miKK1cTP1+0CvbRy+sFTEig/NTgp0GJg+D3liw3duic1H63MZDdr+
+         t2Zg==
+X-Gm-Message-State: AOAM533lpXlLmjhDQ2uKdXI+28+9Pl5/4qX8kiWnMSNud+Wv0hAbc/Dk
+        K5i/C+AZxVFq/NiRMhdC7CVkEQ==
+X-Google-Smtp-Source: ABdhPJx43lTtrcAsV/EG4qlYsVml8Jq/qj9Hd4Y/C+i0e4zg3+UpdjivGCQxjYv7vBO59tVaan2CtA==
+X-Received: by 2002:a9d:715c:0:b0:5ad:3858:4d54 with SMTP id y28-20020a9d715c000000b005ad38584d54mr6872077otj.214.1645556342321;
+        Tue, 22 Feb 2022 10:59:02 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id p13sm8964946oiv.23.2022.02.22.10.59.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 10:59:02 -0800 (PST)
+Subject: Re: [PATCH 2/2] Documentation/vm/page_owner.rst: fix a phrase
+To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>, corbet@lwn.net
+Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au,
+        hanshenghong2019@email.szu.edu.cn, vbabka@suse.cz,
+        georgi.djakov@linaro.org, weizhenliang@huawei.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220220082932.2808-1-caoyixuan2019@email.szu.edu.cn>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <f27d2965-bd4d-bad3-4137-09c7f4214bd9@linuxfoundation.org>
+Date:   Tue, 22 Feb 2022 11:59:01 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220220082932.2808-1-caoyixuan2019@email.szu.edu.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On x86, cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) supposes to return
-true for HyperV if isolation is supported. But it only does it if the
-kernel is compiled with AMD_MEM_ENCRYPT enabled.
+On 2/20/22 1:29 AM, Yixuan Cao wrote:
+> I think that using "by default" will be better.
+> 
+> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
 
-It happens due to missed ARCH_HAS_CC_PLATFORM dependency. Without
-ARCH_HAS_CC_PLATFORM enabled, cc_platform_has() always returns false.
+While you are at it could you fix others as well:
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- drivers/hv/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+> ---
+>   Documentation/vm/page_owner.rst | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
+> index 2b54e82b9fe1..5ac1c12fcfc2 100644
+> --- a/Documentation/vm/page_owner.rst
+> +++ b/Documentation/vm/page_owner.rst
+> @@ -26,7 +26,7 @@ fragmentation statistics can be obtained through gfp flag information of
+>   each page. It is already implemented and activated if page owner is
+>   enabled. Other usages are more than welcome.
+>   
+> -page owner is disabled in default. So, if you'd like to use it, you need
+> +page owner is disabled by default. So, if you'd like to use it, you need
+>   to add "page_owner=on" into your boot cmdline. If the kernel is built
 
-diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
-index 0747a8f1fcee..424d3f0751dc 100644
---- a/drivers/hv/Kconfig
-+++ b/drivers/hv/Kconfig
-@@ -8,6 +8,7 @@ config HYPERV
- 		|| (ARM64 && !CPU_BIG_ENDIAN))
- 	select PARAVIRT
- 	select X86_HV_CALLBACK_VECTOR if X86
-+	select ARCH_HAS_CC_PLATFORM if x86
- 	select VMAP_PFN
- 	help
- 	  Select this option to run Linux as a Hyper-V client operating
--- 
-2.34.1
+page owner is disabled by default. So, if you'd like to use it, you need
+to add "page_owner=on" to your boot cmdline.
 
+>   with page owner and page owner is disabled in runtime due to no enabling
+
+with page owner and page owner is disabled in runtime due to not enabling
+
+>   boot option, runtime overhead is marginal. If disabled in runtime, it
+> 
+
+With these fixed:
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
