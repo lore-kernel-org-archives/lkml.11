@@ -2,133 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 12:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbiBVM4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 07:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
+        id S232064AbiBVM5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 07:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231889AbiBVM4f (ORCPT
+        with ESMTP id S229491AbiBVM5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 07:56:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A01F128DF7
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 04:56:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16BF2B81998
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 12:56:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2026AC340E8;
-        Tue, 22 Feb 2022 12:56:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645534567;
-        bh=oJ/w9DrjJ8UVUe7wYc1OQHhSMTw8H6h+UWV8CFaeNPM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Mxayw4Pqw5XPRdaAsVWmuRsbbbCslKZoiBb8FJ2oApvIJFv2jL35xShhlroFOEs2X
-         JlyvhbEnkYlsVX1DVTiGtFmjmCtmTJQ0FN1S2fKvb09j99a+mieAjG3KL/gQvyhotn
-         UbUbnPE3id7GMKPRIZ2pkuQ08QRucvGUXiSjl1GkmigHeQWN3WewzT+QirTa7Sejdg
-         QT+NdZnzL650m9fIShnU8GmzP2rh0op5qBZEePzwT2BM1Bc5/+cBsVxLPT+4r5Oxu4
-         HJtrX21OVDYaNvGZxHj9rwx9A+7MWi0FQENZ0eS+xELs9GA+8BVMtHPaqHYRMzoKVY
-         uRe3dZbIto9uQ==
-Date:   Tue, 22 Feb 2022 18:26:03 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Swapnil Jakhade <sjakhade@cadence.com>
-Cc:     kishon@ti.com, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org, mparab@cadence.com,
-        a-govindraju@ti.com, r-ravikumar@ti.com
-Subject: Re: [PATCH 1/4] phy: cadence-torrent: Add function to get PLL to be
- configured for DP
-Message-ID: <YhTdY+UfIEtvDBK+@matsya>
-References: <20220127142958.23465-1-sjakhade@cadence.com>
- <20220127142958.23465-2-sjakhade@cadence.com>
+        Tue, 22 Feb 2022 07:57:01 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCF96548;
+        Tue, 22 Feb 2022 04:56:34 -0800 (PST)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2zZW4T2yz67ZkT;
+        Tue, 22 Feb 2022 20:51:47 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Feb 2022 13:56:32 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Feb 2022 12:56:28 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <artur.paszkiewicz@intel.com>, <jinpu.wang@cloud.ionos.com>,
+        <chenxiang66@hisilicon.com>, <damien.lemoal@opensource.wdc.com>,
+        <hch@lst.de>
+CC:     <Ajish.Koshy@microchip.com>, <yanaijie@huawei.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <Viswas.G@microchip.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v3 00/18] scsi: libsas and users: Factor out LLDD TMF code
+Date:   Tue, 22 Feb 2022 20:50:41 +0800
+Message-ID: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127142958.23465-2-sjakhade@cadence.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27-01-22, 15:29, Swapnil Jakhade wrote:
-> Torrent PHY PLL0 or PLL1 is used for DP depending on the single link or
-> multilink protocol configuration for which PHY is configured. In multilink
-> configurations with other protocols, either PLL0 or PLL1 will be used
-> for DP. For single link DP, both PLLs need to be configured at POR.
-> 
-> Signed-off-by: Swapnil Jakhade <sjakhade@cadence.com>
-> ---
->  drivers/phy/cadence/phy-cadence-torrent.c | 30 +++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
-> 
-> diff --git a/drivers/phy/cadence/phy-cadence-torrent.c b/drivers/phy/cadence/phy-cadence-torrent.c
-> index 7c4b8050485f..0e2839a6c65d 100644
-> --- a/drivers/phy/cadence/phy-cadence-torrent.c
-> +++ b/drivers/phy/cadence/phy-cadence-torrent.c
-> @@ -38,6 +38,9 @@
->  #define POLL_TIMEOUT_US		5000
->  #define PLL_LOCK_TIMEOUT	100000
->  
-> +#define DP_PLL0			BIT(0)
-> +#define DP_PLL1			BIT(1)
-> +
->  #define TORRENT_COMMON_CDB_OFFSET	0x0
->  
->  #define TORRENT_TX_LANE_CDB_OFFSET(ln, block_offset, reg_offset)	\
-> @@ -323,6 +326,7 @@ struct cdns_torrent_phy {
->  	void __iomem *base;	/* DPTX registers base */
->  	void __iomem *sd_base; /* SD0801 registers base */
->  	u32 max_bit_rate; /* Maximum link bit rate to use (in Mbps) */
-> +	u32 dp_pll;
->  	struct reset_control *phy_rst;
->  	struct reset_control *apb_rst;
->  	struct device *dev;
-> @@ -978,6 +982,30 @@ void cdns_torrent_dp_pma_cmn_vco_cfg_100mhz(struct cdns_torrent_phy *cdns_phy,
->  	}
->  }
->  
-> +/* Set PLL used for DP configuration */
-> +static int cdns_torrent_dp_get_pll(struct cdns_torrent_phy *cdns_phy,
-> +				   enum cdns_torrent_phy_type phy_t2)
+This is just an update of the series to fix a build error, as reported
+here:
+https://lore.kernel.org/lkml/59b538b7-b4c5-8111-d2bf-7fb353ecb19b@huawei.com/
 
-why return an error if you are going to ignore it!
+Original cover letter is here:
+https://lore.kernel.org/linux-scsi/0d4f988d-881c-3717-f9d8-38739cf17e91@opensource.wdc.com/T/#mcae9d344f2795bdbb8845da29a140b58dbafb6f8
 
-> +{
-> +	switch (phy_t2) {
-> +	case TYPE_PCIE:
-> +	case TYPE_USB:
-> +		cdns_phy->dp_pll = DP_PLL1;
-> +		break;
-> +	case TYPE_SGMII:
-> +	case TYPE_QSGMII:
-> +		cdns_phy->dp_pll = DP_PLL0;
-> +		break;
-> +	case TYPE_NONE:
-> +		cdns_phy->dp_pll = DP_PLL0 | DP_PLL1;
-> +		break;
-> +	default:
-> +		dev_err(cdns_phy->dev, "Unsupported PHY configuration\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /*
->   * Enable or disable PLL for selected lanes.
->   */
-> @@ -1640,6 +1668,8 @@ static int cdns_torrent_dp_init(struct phy *phy)
->  		return -EINVAL;
->  	}
->  
-> +	cdns_torrent_dp_get_pll(cdns_phy, TYPE_NONE);
-> +
->  	cdns_torrent_dp_common_init(cdns_phy, inst);
->  
->  	return cdns_torrent_dp_start(cdns_phy, inst, phy);
-> -- 
-> 2.34.1
+I also included Damien's Tested-by tags.
+
+Baseline is mkp-scsi 5.18/scsi-staging at ac2beb4e3bd7
+
+Damien's following series is based on this series:
+https://lore.kernel.org/linux-scsi/20220220031810.738362-1-damien.lemoal@opensource.wdc.com/T/#t
+
+John Garry (18):
+  scsi: libsas: Handle non-TMF codes in sas_scsi_find_task()
+  scsi: libsas: Use enum for response frame DATAPRES field
+  scsi: libsas: Delete lldd_clear_aca callback
+  scsi: libsas: Delete SAS_SG_ERR
+  scsi: hisi_sas: Delete unused I_T_NEXUS_RESET_PHYUP_TIMEOUT
+  scsi: libsas: Move SMP task handlers to core
+  scsi: libsas: Add struct sas_tmf_task
+  scsi: libsas: Add sas_task.tmf
+  scsi: libsas: Add sas_execute_tmf()
+  scsi: libsas: Add sas_execute_ssp_tmf()
+  scsi: libsas: Add TMF handler exec complete callback
+  scsi: libsas: Add TMF handler aborted callback
+  scsi: libsas: Add sas_abort_task_set()
+  scsi: libsas: Add sas_clear_task_set()
+  scsi: libsas: Add sas_lu_reset()
+  scsi: libsas: Add sas_query_task()
+  scsi: libsas: Add sas_abort_task()
+  scsi: libsas: Add sas_execute_ata_cmd()
+
+ Documentation/scsi/libsas.rst          |   2 -
+ drivers/scsi/aic94xx/aic94xx.h         |   1 -
+ drivers/scsi/aic94xx/aic94xx_init.c    |   1 -
+ drivers/scsi/aic94xx/aic94xx_tmf.c     |  11 +-
+ drivers/scsi/hisi_sas/hisi_sas.h       |   9 +-
+ drivers/scsi/hisi_sas/hisi_sas_main.c  | 227 ++++--------------------
+ drivers/scsi/hisi_sas/hisi_sas_v1_hw.c |   2 +-
+ drivers/scsi/hisi_sas/hisi_sas_v2_hw.c |   9 +-
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c |   2 +-
+ drivers/scsi/isci/init.c               |   1 -
+ drivers/scsi/isci/request.c            |   7 +-
+ drivers/scsi/isci/task.c               |  18 --
+ drivers/scsi/isci/task.h               |   4 -
+ drivers/scsi/libsas/sas_ata.c          |  10 +-
+ drivers/scsi/libsas/sas_expander.c     |  24 +--
+ drivers/scsi/libsas/sas_internal.h     |   6 +
+ drivers/scsi/libsas/sas_scsi_host.c    | 229 ++++++++++++++++++++++++-
+ drivers/scsi/libsas/sas_task.c         |  14 +-
+ drivers/scsi/mvsas/mv_defs.h           |   5 -
+ drivers/scsi/mvsas/mv_init.c           |   5 +-
+ drivers/scsi/mvsas/mv_sas.c            | 179 +------------------
+ drivers/scsi/mvsas/mv_sas.h            |   3 -
+ drivers/scsi/pm8001/pm8001_hwi.c       |   4 +-
+ drivers/scsi/pm8001/pm8001_init.c      |   5 +-
+ drivers/scsi/pm8001/pm8001_sas.c       | 194 ++++-----------------
+ drivers/scsi/pm8001/pm8001_sas.h       |  14 +-
+ include/scsi/libsas.h                  |  21 ++-
+ include/scsi/sas.h                     |   7 +
+ include/scsi/sas_ata.h                 |   8 +
+ 29 files changed, 382 insertions(+), 640 deletions(-)
 
 -- 
-~Vinod
+2.26.2
+
