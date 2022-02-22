@@ -2,115 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2091CC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbiBVPCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:02:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S233269AbiBVPCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:02:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233202AbiBVPBR (ORCPT
+        with ESMTP id S233182AbiBVPCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:01:17 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633D610E044
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:15 -0800 (PST)
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
+        Tue, 22 Feb 2022 10:02:00 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1270E14EF74
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=3m8N/pbSaW7IFq5Zg9KAiVLIQW/cSc9Z6gH3HL38bvM=; b=pruQPWEnrDH6n+wMF9FJQxB0ek
+        zMnZf/+56aZavVGp2P8XWHAiMmLe72015warxfujwagX3xTjBsLvUJXFB7V/rJe2rlQALbXw+ejOo
+        IXU4I07/dAThjMCiYbIs21318EH3wODNh5MUSli6/cNqlLaKa/oNtyMtnE4Uapp0K9PNSk62jhgnJ
+        6dIE6Q0ENpeTYssHMzqD/9BxqCax/xajmz1KKthAruzmw3K8FCaOls9QrXeFolAGSvWAc3Fo4z59W
+        bAMc/U3B3T1C4+lq55IvRtp+s9wdkgyrh2heX6jqJcYVxORzf1P7C8XpcYAVrl92g1mP2NLP9A2ng
+        3dQ4Z5UQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMWeK-00ByR4-I2; Tue, 22 Feb 2022 15:00:20 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 39F4E3FCA0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 15:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645542014;
-        bh=YBEC74wb9GPpBj/B6mQOA+S5GClKlTxflH8/ImjOGfA=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=eu9OdbGwK/yj8IZU3LIG0KLQm/aFyrzjbIVAzrce6DAsV97pOn+lHMQvGPHXuGDFm
-         BJTMtnm5jCq24DkEGBEo9yU5FwMhpZkIGNq8dILMzq6RqVd45/E8KIlPaSIeISvS/q
-         2uHpI+28W4cJ0tKCqR9NedQwhNbWfjEaaSsVPN2I0YZrkaop8sIDDdxcoPyWUMwx6x
-         Q6oFjCmJrw13zOu2ufVWwPM30xhySmhPivFWSZZVSVcsdGX0pxO0KOQEHcGYQiJKFm
-         jddjB0I1bIRDsZpSpLSWecnAtiZRCy1mfR9FT15II4FSC2RyARl5BJbpmEzn22Cp20
-         3c4hxzjOeZ0rg==
-Received: by mail-wm1-f70.google.com with SMTP id i20-20020a05600c051400b00380d5eb51a7so661940wmc.3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:00:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YBEC74wb9GPpBj/B6mQOA+S5GClKlTxflH8/ImjOGfA=;
-        b=RmqFUv4psQXbGfxELwPq1sO+O5E7t15hCOdhDFmeDFsZPApK6mhR/IGfn5pbRGEc3x
-         HMSlBcQeyDhQCyu6CS7fzmRcOOuJZJwLJ5e2pHLXqWw8OiDfx6GU/qxrHeotX4hwM0OB
-         gC+742mgp1eAM9trPFrMEtda+2VO+3snjxHd/2GnhYQz9r321LK4axljdc32OTWci/MT
-         6vpe4oWzVVaASOz+9iyjlzwqDaSeumE0WolMgSfZTO2BxrGBr37HVcCSyvFVwxB+5fHg
-         eweY6CJhrPNRVfDmiUh3+52+GpQxowvqMyQ4HOeagHp6ch5w5cNDqAWNxjgWLauekTLE
-         Hssg==
-X-Gm-Message-State: AOAM533dcIOSHsfJrOzEoKlRmUo1SvaCr0hklLwanUCh95zQrK7fy6ZY
-        ew7Cmod8j9JOAO2lPTP3oMrmH3vDpC1G/cOU7W61glTu5gZCdbn+TGaev+yWtAq0Uv6nOylQqCI
-        DqU9anwRL3WLbp11JFLj3rzxOeuKqhoqtuxlGGdEV0A==
-X-Received: by 2002:a17:906:7746:b0:6ce:a12e:489f with SMTP id o6-20020a170906774600b006cea12e489fmr18914904ejn.551.1645542003130;
-        Tue, 22 Feb 2022 07:00:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwLi2RkpjMH1XnBpd7ijPxBtJkEM6ya606jWmcrmuPZusdxAuidRgjMaupSJDwmi2J8JqbfkQ==
-X-Received: by 2002:a17:906:7746:b0:6ce:a12e:489f with SMTP id o6-20020a170906774600b006cea12e489fmr18914869ejn.551.1645542002826;
-        Tue, 22 Feb 2022 07:00:02 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id m2sm2467960ejb.20.2022.02.22.07.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 07:00:02 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wei Xu <xuwei5@hisilicon.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Jan Kotas <jank@cadence.com>, Li Wei <liwei213@huawei.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Yaniv Gardi <ygardi@codeaurora.org>,
-        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 14/15] arm64: dts: qcom: msm8996: correct UFS compatible
-Date:   Tue, 22 Feb 2022 15:58:53 +0100
-Message-Id: <20220222145854.358646-15-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
-References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 62B553001C0;
+        Tue, 22 Feb 2022 16:00:18 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2BED722149159; Tue, 22 Feb 2022 16:00:18 +0100 (CET)
+Date:   Tue, 22 Feb 2022 16:00:18 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com
+Subject: Re: [PATCH 16/29] x86/bugs: Disable Retpoline when IBT
+Message-ID: <YhT6gthym/jCUME4@hirez.programming.kicks-ass.net>
+References: <20220218164902.008644515@infradead.org>
+ <20220218171409.520731494@infradead.org>
+ <20220219021530.hq6po7uexc4w36qo@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220219021530.hq6po7uexc4w36qo@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm UFS bindings require to use specific (qcom,msm8996-ufshc)
-and generic (jedec,ufs-2.0) compatibles.
+On Fri, Feb 18, 2022 at 06:15:30PM -0800, Josh Poimboeuf wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- arch/arm64/boot/dts/qcom/msm8996.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> This code is confusing, not helped by the fact that the existing code
+> already looks like spaghetti.
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-index fad1bbfa1c0a..f25c68511b64 100644
---- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-@@ -1728,7 +1728,8 @@ pcie2: pcie@610000 {
- 		};
- 
- 		ufshc: ufshc@624000 {
--			compatible = "qcom,ufshc";
-+			compatible = "qcom,msm8996-ufshc", "qcom,ufshc",
-+				     "jedec,ufs-2.0";
- 			reg = <0x00624000 0x2500>;
- 			interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>;
- 
--- 
-2.32.0
+I'd say that's an insult to spaghetti.
 
+> Assuming IBT systems also have eIBRS (right?), I don't think the above
+> SPECTRE_V2_CMD_{FORCE,AUTO} cases would be possible.
+
+Virt FTW.. if I don't handle it, some idiot will create a virtual
+machine that doesn't expose eIBRS but does do IBT just to spite me.
+
+> AFAICT, if execution reached the retpoline_generic label, the user
+> specified either RETPOLINE or RETPOLINE_GENERIC.
+
+Only RETPOLINE_GENERIC;
+
+> I'm not sure it makes sense to put RETPOLINE in the "silent" list.  If
+> the user boots an Intel system with spectre_v2=retpoline on the cmdline,
+> they're probably expecting a traditional retpoline and should be warned
+> if that changes, especially if it's a "demotion".
+
+too friggin bad as to expectations; retpoline == auto. Not saying that
+makes sense, just saying that's what it does.
+
+> In that case the switch statement isn't even needed.  It can instead
+> just unconditinoally print the warning.
+> 
+> 
+> Also, why "demote" retpoline to LFENCE rather than attempting to
+> "promote" it to eIBRS?  Maybe there's a good reason but it probably at
+> least deserves some mention in the commit log.
+
+The current code will never select retpoline if eibrs is available.
+
+
+The alternative is doing this in apply_retpolines(), but that might be
+even more nasty.
