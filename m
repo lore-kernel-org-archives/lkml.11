@@ -2,67 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B04BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiBVIsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:48:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S229999AbiBVIsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:48:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiBVIsN (ORCPT
+        with ESMTP id S229944AbiBVIsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 03:48:13 -0500
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 288D4A2F3C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28B00BA75D;
         Tue, 22 Feb 2022 00:47:48 -0800 (PST)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nMQpn-0001CP-00; Tue, 22 Feb 2022 09:47:47 +0100
+        id 1nMQpn-0001CP-04; Tue, 22 Feb 2022 09:47:47 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 54F15C25FC; Tue, 22 Feb 2022 09:43:31 +0100 (CET)
-Date:   Tue, 22 Feb 2022 09:43:31 +0100
+        id 2DDFBC2609; Tue, 22 Feb 2022 09:47:14 +0100 (CET)
+Date:   Tue, 22 Feb 2022 09:47:14 +0100
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH] mips: setup: fix setnocoherentio() boolean setting
-Message-ID: <20220222084331.GA7049@alpha.franken.de>
-References: <20220221175029.6046-1-rdunlap@infradead.org>
+To:     Rikard Falkeborn <rikard.falkeborn@gmail.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] MIPS: Constify static irq_domain_ops structs
+Message-ID: <20220222084714.GB7123@alpha.franken.de>
+References: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220221175029.6046-1-rdunlap@infradead.org>
+In-Reply-To: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 09:50:29AM -0800, Randy Dunlap wrote:
-> Correct a typo/pasto: setnocoherentio() should set
-> dma_default_coherent to false, not true.
+On Mon, Feb 07, 2022 at 10:18:13PM +0100, Rikard Falkeborn wrote:
+> Constify a number of static irq_domain_ops structs that were never
+> modified. This allows the compiler to put them in read-only memory.
 > 
-> Fixes: 14ac09a65e19 ("MIPS: refactor the runtime coherent vs noncoherent DMA indicators")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-mips@vger.kernel.org
-> ---
->  arch/mips/kernel/setup.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Rikard Falkeborn (3):
+>   MIPS: OCTEON: Constify static irq_domain_ops
+>   MIPS: ath25: Constify static irq_domain_ops
+>   MIPS: pci-ar2315: Constify static irq_domain_ops
 > 
-> --- linux-next-20220217.orig/arch/mips/kernel/setup.c
-> +++ linux-next-20220217/arch/mips/kernel/setup.c
-> @@ -803,7 +803,7 @@ early_param("coherentio", setcoherentio)
->  
->  static int __init setnocoherentio(char *str)
->  {
-> -	dma_default_coherent = true;
-> +	dma_default_coherent = false;
->  	pr_info("Software DMA cache coherency (command line)\n");
->  	return 0;
->  }
+>  arch/mips/ath25/ar2315.c             |  2 +-
+>  arch/mips/ath25/ar5312.c             |  2 +-
+>  arch/mips/cavium-octeon/octeon-irq.c | 10 +++++-----
+>  arch/mips/pci/pci-ar2315.c           |  2 +-
+>  4 files changed, 8 insertions(+), 8 deletions(-)
 
-applied to mips-fixes.
+series applied to mips-next.
 
 Thomas.
 
