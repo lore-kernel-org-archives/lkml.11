@@ -2,242 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A36CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 634D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234147AbiBVQeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39782 "EHLO
+        id S234304AbiBVQfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:35:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234065AbiBVQcr (ORCPT
+        with ESMTP id S234268AbiBVQfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:32:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B96DBB091;
-        Tue, 22 Feb 2022 08:32:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E90A360AC8;
-        Tue, 22 Feb 2022 16:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F382EC340EB;
-        Tue, 22 Feb 2022 16:32:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645547540;
-        bh=8/bdC9IksqEvPqTzZhPSiT319NiwbJYyn6PKo0ZgPJ0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uYkxD0gbGh/IEja4Sz1GZLSbOoiKicNK6plE4O0wpzcKRLjV894SQOPmN8jQn4v6f
-         cgi+r/Zh2VOygyZPVj5WvBfsYYd/fHO8qQskCUNq37ADEqu6IXavTPenSqvHM3kKk3
-         9YsX4iS+CJOlYPrqDfNwD5T4gg6RrhF/BsVC36DK0LtQn34w7Lcd+BuH6e8S7HvkWj
-         oSjMx77titZx+lgFwXO0uUfIUfWRqyFb501QVz0xgHnEasrhwvPZkxlOkRAfi6z2I4
-         1a5f6z4qpl4ej6oL1PyH/mYr5aOWJh+Pq94sXNPslZWJmHzIgHFEz0Tvg+Ec6Je+Sm
-         34VhHjoqqrSww==
-Received: by pali.im (Postfix)
-        id ABB3FFDB; Tue, 22 Feb 2022 17:32:19 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/6] PCI: mvebu: Add support for sending Set_Slot_Power_Limit message
-Date:   Tue, 22 Feb 2022 17:31:57 +0100
-Message-Id: <20220222163158.1666-6-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220222163158.1666-1-pali@kernel.org>
-References: <20220222163158.1666-1-pali@kernel.org>
+        Tue, 22 Feb 2022 11:35:33 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3928816E7F2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:34:21 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id ba20so452541qvb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:34:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2pjjU5zHuaxPJTKda8Jl5cHbMT8Mpw2hlMIdhnjkMTk=;
+        b=xGdwdrTr+PVvzHmGxLrfQ8lZ1kFry5pJlG+CnWsag0DswuSZIeyEJpz9s5RTAavQQd
+         d6d4Qe4t9ZeAC7AFQU2sIR6mt2d7E7657obKwwHSJP6BuMjaO1FuHA6jQBD2lEIMP/gv
+         KWZqSycsAvowxw65Xn0Dn0V5DCyKALHG/EZd5xEQQoryFGjVorGfD/ABH/tXbwpkfswg
+         VV7v03mSPCry5prSzvSCax4BA9XE6685uHcyRNqhwZR1DouitIV6urZ1WCK0Xn56Nc1T
+         C99SqVsj/ySVfrZrFFqyiU+cRnnsSfglQm9IiTElvkGSUPEWJT4EqD6/hXY3K381DYqI
+         u3/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2pjjU5zHuaxPJTKda8Jl5cHbMT8Mpw2hlMIdhnjkMTk=;
+        b=rthBsAY1Y8dOmtUwbbt2K20nzpb774IZHBEG/jDGiBXyPVBhG+h1dauH9JpXOzgKFY
+         vdtUkIRdh8pjJ99yB3foFS2BfLZQPJvopdU/PpyRpg9hbS316vDjCCroC925EM+p17OI
+         cYlwzoxVAnf/dhPHSJqtp336+zlWQJaHdg3mAZRcyjo0PaRR3Mpoc1STRNgbV/xO5BAu
+         pIlpM/Sf4e8XFgGvWqk3n0/R2JkdVX+eP+0mHAFK65wixfBDvNq//TBc6DZP+UR3eH98
+         q45RSRRGEeaMOQRwtAJttQqwC92j66Pbd934rCTzu/pNDOX3bxX/K/cK0n4UAPBwcn4I
+         TfxQ==
+X-Gm-Message-State: AOAM530x7pTaWGFQ3IWx4f6FE81vPewy43TjArJgZC2d6232lNvFKisZ
+        93FjqhZ1zHTePRvxqUx68Ky0tQ==
+X-Google-Smtp-Source: ABdhPJyYjQ0swClJ5D1OlmgUW4KG7J4LAiCCD+RMaflR2hpgwXvv9ZP/fApy7yxOrmcfJJYlWwgziw==
+X-Received: by 2002:a05:622a:2c4:b0:2dd:2d86:3fe9 with SMTP id a4-20020a05622a02c400b002dd2d863fe9mr22824519qtx.624.1645547656242;
+        Tue, 22 Feb 2022 08:34:16 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id x17sm35291qtr.69.2022.02.22.08.34.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 08:34:15 -0800 (PST)
+Date:   Tue, 22 Feb 2022 11:34:15 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Huang Ying <ying.huang@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH -V13 2/3] NUMA balancing: optimize page placement for
+ memory tiering system
+Message-ID: <YhUQh3DKpKeFqiXL@cmpxchg.org>
+References: <20220221084529.1052339-1-ying.huang@intel.com>
+ <20220221084529.1052339-3-ying.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221084529.1052339-3-ying.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This PCIe message is sent automatically by mvebu HW when link changes
-status from down to up.
+On Mon, Feb 21, 2022 at 04:45:28PM +0800, Huang Ying wrote:
+> With the advent of various new memory types, some machines will have
+> multiple types of memory, e.g. DRAM and PMEM (persistent memory).  The
+> memory subsystem of these machines can be called memory tiering
+> system, because the performance of the different types of memory are
+> usually different.
+> 
+> In such system, because of the memory accessing pattern changing etc,
+> some pages in the slow memory may become hot globally.  So in this
+> patch, the NUMA balancing mechanism is enhanced to optimize the page
+> placement among the different memory types according to hot/cold
+> dynamically.
+> 
+> In a typical memory tiering system, there are CPUs, fast memory and
+> slow memory in each physical NUMA node.  The CPUs and the fast memory
+> will be put in one logical node (called fast memory node), while the
+> slow memory will be put in another (faked) logical node (called slow
+> memory node).  That is, the fast memory is regarded as local while the
+> slow memory is regarded as remote.  So it's possible for the recently
+> accessed pages in the slow memory node to be promoted to the fast
+> memory node via the existing NUMA balancing mechanism.
+> 
+> The original NUMA balancing mechanism will stop to migrate pages if
+> the free memory of the target node becomes below the high watermark.
+> This is a reasonable policy if there's only one memory type.  But this
+> makes the original NUMA balancing mechanism almost do not work to
+> optimize page placement among different memory types.  Details are as
+> follows.
+> 
+> It's the common cases that the working-set size of the workload is
+> larger than the size of the fast memory nodes.  Otherwise, it's
+> unnecessary to use the slow memory at all.  So, there are almost
+> always no enough free pages in the fast memory nodes, so that the
+> globally hot pages in the slow memory node cannot be promoted to the
+> fast memory node.  To solve the issue, we have 2 choices as follows,
+> 
+> a. Ignore the free pages watermark checking when promoting hot pages
+>    from the slow memory node to the fast memory node.  This will
+>    create some memory pressure in the fast memory node, thus trigger
+>    the memory reclaiming.  So that, the cold pages in the fast memory
+>    node will be demoted to the slow memory node.
+> 
+> b. Make kswapd of the fast memory node to reclaim pages until the free
+>    pages are a little more than the high watermark (named as promo
+>    watermark).  Then, if the free pages of the fast memory node reaches
+>    high watermark, and some hot pages need to be promoted, kswapd of the
+>    fast memory node will be waken up to demote more cold pages in the
+>    fast memory node to the slow memory node.  This will free some extra
+>    space in the fast memory node, so the hot pages in the slow memory
+>    node can be promoted to the fast memory node.
+> 
+> The choice "a" may create high memory pressure in the fast memory
+> node.  If the memory pressure of the workload is high, the memory
+> pressure may become so high that the memory allocation latency of the
+> workload is influenced, e.g. the direct reclaiming may be triggered.
+> 
+> The choice "b" works much better at this aspect.  If the memory
+> pressure of the workload is high, the hot pages promotion will stop
+> earlier because its allocation watermark is higher than that of the
+> normal memory allocation.  So in this patch, choice "b" is
+> implemented.  A new zone watermark (WMARK_PROMO) is added.  Which is
+> larger than the high watermark and can be controlled via
+> watermark_scale_factor.
+> 
+> In addition to the original page placement optimization among sockets,
+> the NUMA balancing mechanism is extended to be used to optimize page
+> placement according to hot/cold among different memory types.  So the
+> sysctl user space interface (numa_balancing) is extended in a backward
+> compatible way as follow, so that the users can enable/disable these
+> functionality individually.
+> 
+> The sysctl is converted from a Boolean value to a bits field.  The
+> definition of the flags is,
+> 
+> - 0: NUMA_BALANCING_DISABLED
+> - 1: NUMA_BALANCING_NORMAL
+> - 2: NUMA_BALANCING_MEMORY_TIERING
+> 
+> We have tested the patch with the pmbench memory accessing benchmark
+> with the 80:20 read/write ratio and the Gauss access address
+> distribution on a 2 socket Intel server with Optane DC Persistent
+> Memory Model.  The test results shows that the pmbench score can
+> improve up to 95.9%.
+> 
+> Thanks Andrew Morton to help fix the document format error.
+> 
+> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+> Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Michal Hocko <mhocko@suse.com>
+> Cc: Rik van Riel <riel@surriel.com>
+> Cc: Mel Gorman <mgorman@techsingularity.net>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Yang Shi <shy828301@gmail.com>
+> Cc: Zi Yan <ziy@nvidia.com>
+> Cc: Wei Xu <weixugc@google.com>
+> Cc: Oscar Salvador <osalvador@suse.de>
+> Cc: Shakeel Butt <shakeelb@google.com>
+> Cc: zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Johannes Weiner <hannes@cmpxchg.org>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-mm@kvack.org
 
-Slot power limit is read from DT property 'slot-power-limit-milliwatt' and
-set to mvebu HW. When this DT property is not specified then driver treat
-it as "Slot Capabilities register has not yet been initialized".
+Looks good to me,
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/pci/controller/pci-mvebu.c | 85 ++++++++++++++++++++++++++++--
- 1 file changed, 80 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index a75d2b9196f9..c786feec4d17 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -66,6 +66,12 @@
- #define  PCIE_STAT_BUS                  0xff00
- #define  PCIE_STAT_DEV                  0x1f0000
- #define  PCIE_STAT_LINK_DOWN		BIT(0)
-+#define PCIE_SSPL_OFF		0x1a0c
-+#define  PCIE_SSPL_VALUE_SHIFT		0
-+#define  PCIE_SSPL_VALUE_MASK		GENMASK(7, 0)
-+#define  PCIE_SSPL_SCALE_SHIFT		8
-+#define  PCIE_SSPL_SCALE_MASK		GENMASK(9, 8)
-+#define  PCIE_SSPL_ENABLE		BIT(16)
- #define PCIE_RC_RTSTA		0x1a14
- #define PCIE_DEBUG_CTRL         0x1a60
- #define  PCIE_DEBUG_SOFT_RESET		BIT(20)
-@@ -111,6 +117,8 @@ struct mvebu_pcie_port {
- 	struct mvebu_pcie_window iowin;
- 	u32 saved_pcie_stat;
- 	struct resource regs;
-+	u8 slot_power_limit_value;
-+	u8 slot_power_limit_scale;
- 	struct irq_domain *intx_irq_domain;
- 	raw_spinlock_t irq_lock;
- 	int intx_irq;
-@@ -239,7 +247,7 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
- 
- static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- {
--	u32 ctrl, lnkcap, cmd, dev_rev, unmask;
-+	u32 ctrl, lnkcap, cmd, dev_rev, unmask, sspl;
- 
- 	/* Setup PCIe controller to Root Complex mode. */
- 	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
-@@ -292,6 +300,20 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- 	/* Point PCIe unit MBUS decode windows to DRAM space. */
- 	mvebu_pcie_setup_wins(port);
- 
-+	/*
-+	 * Program Root Complex to automatically sends Set Slot Power Limit
-+	 * PCIe Message when changing status from Dl-Down to Dl-Up and valid
-+	 * slot power limit was specified.
-+	 */
-+	sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+	sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-+	if (port->slot_power_limit_value && port->slot_power_limit_scale) {
-+		sspl |= port->slot_power_limit_value << PCIE_SSPL_VALUE_SHIFT;
-+		sspl |= port->slot_power_limit_scale << PCIE_SSPL_SCALE_SHIFT;
-+		sspl |= PCIE_SSPL_ENABLE;
-+	}
-+	mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+
- 	/* Mask all interrupt sources. */
- 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
- 
-@@ -628,9 +650,16 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 			  (PCI_EXP_LNKSTA_DLLLA << 16) : 0);
- 		break;
- 
--	case PCI_EXP_SLTCTL:
--		*value = PCI_EXP_SLTSTA_PDS << 16;
-+	case PCI_EXP_SLTCTL: {
-+		u16 slotsta = le16_to_cpu(bridge->pcie_conf.slotsta);
-+		u32 val = 0;
-+		if (!(mvebu_readl(port, PCIE_SSPL_OFF) & PCIE_SSPL_ENABLE))
-+			val |= PCI_EXP_SLTCTL_ASPL_DISABLE;
-+		/* PCI_EXP_SLTCTL is 32-bit and contains also slot status bits */
-+		val |= slotsta << 16;
-+		*value = val;
- 		break;
-+	}
- 
- 	case PCI_EXP_RTSTA:
- 		*value = mvebu_readl(port, PCIE_RC_RTSTA);
-@@ -774,6 +803,19 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
- 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL);
- 		break;
- 
-+	case PCI_EXP_SLTCTL:
-+		if ((mask & PCI_EXP_SLTCTL_ASPL_DISABLE) &&
-+		    port->slot_power_limit_value &&
-+		    port->slot_power_limit_scale) {
-+			u32 sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+			if (new & PCI_EXP_SLTCTL_ASPL_DISABLE)
-+				sspl &= ~PCIE_SSPL_ENABLE;
-+			else
-+				sspl |= PCIE_SSPL_ENABLE;
-+			mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+		}
-+		break;
-+
- 	case PCI_EXP_RTSTA:
- 		/*
- 		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
-@@ -868,8 +910,26 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	/*
- 	 * Older mvebu hardware provides PCIe Capability structure only in
- 	 * version 1. New hardware provides it in version 2.
-+	 * Enable slot support which is emulated.
- 	 */
--	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
-+	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver | PCI_EXP_FLAGS_SLOT);
-+
-+	/*
-+	 * Set Presence Detect State bit permanently as there is no support for
-+	 * unplugging PCIe card from the slot. Assume that PCIe card is always
-+	 * connected in slot.
-+	 *
-+	 * Set physical slot number to port+1 as mvebu ports are indexed from
-+	 * zero and zero value is reserved for ports within the same silicon
-+	 * as Root Port which is not mvebu case.
-+	 *
-+	 * Also set correct slot power limit.
-+	 */
-+	bridge->pcie_conf.slotcap = cpu_to_le32(
-+		(port->slot_power_limit_value << PCI_EXP_SLTCAP_SPLV_SHIFT) |
-+		(port->slot_power_limit_scale << PCI_EXP_SLTCAP_SPLS_SHIFT) |
-+		((port->port+1) << PCI_EXP_SLTCAP_PSN_SHIFT));
-+	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
- 
- 	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
- 	bridge->subsystem_id = ssdev_id >> 16;
-@@ -1191,6 +1251,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- {
- 	struct device *dev = &pcie->pdev->dev;
- 	enum of_gpio_flags flags;
-+	u32 slot_power_limit;
- 	int reset_gpio, ret;
- 	u32 num_lanes;
- 
-@@ -1291,6 +1352,15 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- 		port->reset_gpio = gpio_to_desc(reset_gpio);
- 	}
- 
-+	slot_power_limit = of_pci_get_slot_power_limit(child,
-+				&port->slot_power_limit_value,
-+				&port->slot_power_limit_scale);
-+	if (slot_power_limit)
-+		dev_info(dev, "%s: Slot power limit %u.%uW\n",
-+			 port->name,
-+			 slot_power_limit / 1000,
-+			 (slot_power_limit / 100) % 10);
-+
- 	port->clk = of_clk_get_by_name(child, NULL);
- 	if (IS_ERR(port->clk)) {
- 		dev_err(dev, "%s: cannot get clock\n", port->name);
-@@ -1587,7 +1657,7 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- {
- 	struct mvebu_pcie *pcie = platform_get_drvdata(pdev);
- 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
--	u32 cmd;
-+	u32 cmd, sspl;
- 	int i;
- 
- 	/* Remove PCI bus with all devices. */
-@@ -1624,6 +1694,11 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- 		/* Free config space for emulated root bridge. */
- 		pci_bridge_emul_cleanup(&port->bridge);
- 
-+		/* Disable sending Set Slot Power Limit PCIe Message. */
-+		sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+		sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-+		mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+
- 		/* Disable and clear BARs and windows. */
- 		mvebu_pcie_disable_wins(port);
- 
--- 
-2.20.1
-
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
