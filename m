@@ -2,129 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56702C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234047AbiBVQcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:32:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35886 "EHLO
+        id S234035AbiBVQcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiBVQb6 (ORCPT
+        with ESMTP id S233875AbiBVQcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:31:58 -0500
-Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8406C6266
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:31:32 -0800 (PST)
-Received: by mail-oo1-xc2b.google.com with SMTP id p206-20020a4a2fd7000000b0031bfec11983so18276863oop.13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:31:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dtYXm2hT3lcm5wvRcUbNMDyXlIE45DADQhitf3Rlc88=;
-        b=LLMAhUgwrk/DYdWw6wgJuwrPS/o2NfgI10xeypJfrum8mmbBBX7d3r55885xcA0GSs
-         N/0qnhPz6EDwjfCDK9EZLNApIQzBOjUAMTbhqcUrBws8r9XcYI+ZsjrQ1ackTdFYnXca
-         KSe0mNO3CmeSvS7ItohT2P9sU7Dj+jbiFaynHZLO0MRk1EWBfi4n3U+MDt0xN/KgkRbR
-         PUNRwRCH7/I5NqRt3zdTxI5yt4hkikKqm97sSwd5jrXi84dTOOy6v7mgYho9MtQZxmcW
-         QzXsp71CoMubPYHdfyu53sEstrFfcN6QNLP2z/JN+YpWcau4FD4aw1cQMev20HollGSz
-         gEvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dtYXm2hT3lcm5wvRcUbNMDyXlIE45DADQhitf3Rlc88=;
-        b=AxD7P8Us1RDgjZ2bJ0k7dEIx7GY2dJE8oPP/MIdQfdUFM5UKzjNCR1gFHtLZRF+jGH
-         QXgFqhzZPsSox/d1S8tLLqVxpZDr7Ibg34jnJKQ3nZ9VoUj9ysX883FRWfviD0R2+nKa
-         4VMcYEieGwvy+UY8o4rYBondwkXLef8DxWRTrsqTMJq7Zx+N18m5jtlvEGKceWfAcv8g
-         iTy5yZwbtdNbNcizn6X7W+JgvhFSwg2ABvC3or9VZaWVKp96ORwFyxvSlfq1WPbeRLGK
-         0u9Ci9766W6jn5sZUxwqIjYh515kmIbZMWm/g9rIGq6BE2WfPoaIFkCqhykXAErWaG/e
-         3+dA==
-X-Gm-Message-State: AOAM530hLVWF8EKuxmyn2p0KVxYgMaw8sOkHaVY1YEl7paCzGNkMOvLK
-        OvPfeLdjeTmT0WmA2X1SZQyam1mZg66BPZf08/A=
-X-Google-Smtp-Source: ABdhPJwfj6FZ41K/ClOtZcMS0gc0gQWKuRYKXqqfYle6jHWNbXIrWRxGaQ1cQvTxxQ6ZhiRII8f7GBeUIdvBRT/zdf8=
-X-Received: by 2002:a05:6870:3e0d:b0:d3:fe6d:57c3 with SMTP id
- lk13-20020a0568703e0d00b000d3fe6d57c3mr2020968oab.225.1645547491928; Tue, 22
- Feb 2022 08:31:31 -0800 (PST)
+        Tue, 22 Feb 2022 11:32:09 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1FA6E54E;
+        Tue, 22 Feb 2022 08:31:41 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2F93420003;
+        Tue, 22 Feb 2022 16:31:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645547500;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DX9NhASmajHZnyC217wOwL7ov42sa2Tz6XVPF8ddW48=;
+        b=fxrNoOOksIBC1l5jidCWAAr+FXTdxwIp8gWk4WyB7gClWMLtgcsXyc3A5AR4kvQb8TldMv
+        2BWw2VfmwDCecO2uE9h3yultbIRm+SfRJUFKnKcB4r0GOXZ7j9uIrvktXSkufIhm0Fax9S
+        FGMZt6csFKJ5F1Yw0euMmULxpV+Y6eI50ruJqz3N69qRQq6EEXqP1pZ+nGrNtFo61aKHQE
+        Fue4GuJVvnmemlvUWJ6gT56QOxQ43FonwjGxNUzB4BoEWAfgMREaLy30XEWDrxH/daz3k9
+        4ieES7Wfi6/8u47FTCyuIT1BfnD1MxOao7CzI/KejjawmbhpvBZ7rx5w1czB+g==
+Date:   Tue, 22 Feb 2022 17:30:19 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220222173019.2380dcaf@fixe.home>
+In-Reply-To: <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220222131701.356117-1-maira.canal@usp.br> <20220222131701.356117-5-maira.canal@usp.br>
-In-Reply-To: <20220222131701.356117-5-maira.canal@usp.br>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 22 Feb 2022 11:31:20 -0500
-Message-ID: <CADnq5_NSMvOUuLo936pbs+J7ajMCn3zDV5knYQo5t1f94KYW-w@mail.gmail.com>
-Subject: Re: [PATCH 04/10] drm/amd/display: Remove unused temp variable
-To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        John Clements <john.clements@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        "Chai, Thomas" <YiPeng.Chai@amd.com>,
-        "Tuikov, Luben" <luben.tuikov@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Dennis Li <Dennis.Li@amd.com>,
-        "Joshi, Mukul" <mukul.joshi@amd.com>,
-        "Wentland, Harry" <harry.wentland@amd.com>,
-        "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
-        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Magali Lemes <magalilemes00@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, mwen@igalia.com,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Isabella Basso <isabbasso@riseup.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+Le Mon, 21 Feb 2022 19:41:24 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-Alex
+> >=20
+> > We thought about adding CONFIG_OF to x86 and potentially describe this
+> > card using device-tree overlays but it introduce other problems that
+> > also seems difficult to solve (overlay loading without base
+> > device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
+> > often enabled on x86 to say the least. =20
+>=20
+> Why it can't be described by SSDT overlay (if the x86 platform in questio=
+n is
+> ACPI based)?
 
-On Tue, Feb 22, 2022 at 8:18 AM Ma=C3=ADra Canal <maira.canal@usp.br> wrote=
-:
->
-> Remove unused temp variable from the dmub_rb_flush_pending function by
-> using arithmetic to remove the loop.
->
-> The -Wunused-but-set-variable warning was pointed out by Clang with the
-> following warning:
->
-> drivers/gpu/drm/amd/amdgpu/../display/dmub/inc/dmub_cmd.h:2921:12: warnin=
-g:
-> variable 'temp' set but not used [-Wunused-but-set-variable]
->     uint64_t temp;
->              ^
->
-> Signed-off-by: Ma=C3=ADra Canal <maira.canal@usp.br>
-> ---
->  drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h b/drivers/gp=
-u/drm/amd/display/dmub/inc/dmub_cmd.h
-> index fb01ff49e655..d3088836d4e4 100644
-> --- a/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h
-> +++ b/drivers/gpu/drm/amd/display/dmub/inc/dmub_cmd.h
-> @@ -2918,11 +2918,8 @@ static inline void dmub_rb_flush_pending(const str=
-uct dmub_rb *rb)
->         while (rptr !=3D wptr) {
->                 uint64_t volatile *data =3D (uint64_t volatile *)((uint8_=
-t *)(rb->base_address) + rptr);
->                 //uint64_t volatile *p =3D (uint64_t volatile *)data;
-> -               uint64_t temp;
-> -               uint8_t i;
->
-> -               for (i =3D 0; i < DMUB_RB_CMD_SIZE / sizeof(uint64_t); i+=
-+)
-> -                       temp =3D *data++;
-> +               *data +=3D DMUB_RB_CMD_SIZE / sizeof(uint64_t);
->
->                 rptr +=3D DMUB_RB_CMD_SIZE;
->                 if (rptr >=3D rb->capacity)
-> --
-> 2.35.1
->
+This devices uses a SoC for which drivers are already available but are
+meant to be used by a device-tree description. These drivers uses the
+following subsystems:
+- reset (no ACPI support ?)
+- clk (no ACPI support ?)
+- pinctrl (no ACPI support ?)
+- syscon (no ACPI support ?)
+- gpio
+- phy
+- mdio
+
+Converting existing OF support to fwnode support and thus allowing
+drivers and subsystems to be compatible with software nodes seemed like
+the easiest way to do what I needed by keeping all existing drivers.
+With this support, the driver is completely self-contained and does
+allow the card to be plugged on whatever platform the user may have.
+
+Again, the PCI card is independent of the platform, I do not really see
+why it should be described using platform description language.
+
+> >=20
+> > This series introduce a number of changes in multiple subsystems to
+> > allow registering and using devices that are described with a
+> > software_node description attached to a mfd_cell, making them usable
+> > with the fwnode API. It was needed to modify many subsystem where
+> > CONFIG_OF was tightly integrated through the use of of_xlate()
+> > functions and other of_* calls. New calls have been added to use fwnode
+> > API and thus be usable with a wider range of nodes. Functions that are
+> > used to get the devices (pinctrl_get, clk_get and so on) also needed
+> > to be changed to use the fwnode API internally.
+> >=20
+> > For instance, the clk framework has been modified to add a
+> > fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
+> > has been added. This function will register a clock using
+> > fwnode_xlate() callback. Note that since the fwnode API is compatible
+> > with devices that have a of_node member set, it will still be possible
+> > to use the driver and get the clocks with CONFIG_OF enabled
+> > configurations. =20
+>=20
+> How does this all is compatible with ACPI approaches?
+> I mean we usually do not reintroduce 1:1 DT schemas in ACPI.
+
+For the moment, I only added fwnode API support as an alternative to
+support both OF and software nodes. ACPI is not meant to be handled by
+this code "as-is". There is for sure some modifications to be made and
+I do not know how clocks are handled when using ACPI. Based on some
+thread dating back to 2018 [1], it seem it was even not supported at
+all.
+
+To be clear, I added the equivalent of the OF support but using
+fwnode API because I was interested primarly in using it with software
+nodes and still wanted OF support to work. I did not planned it to be
+"ACPI compliant" right now since I do not have any knowledge in that
+field.
+
+>=20
+> I think the CCF should be converted to use fwnode APIs and meanwhile
+> we may discuss how to deal with clocks on ACPI platforms, because
+> it may be a part of the power management methods.
+
+Ok, before going down that way, should the fwnode support be the "only"
+one, ie remove of_clk_register and others and convert them to
+fwnode_clk_register for instance or should it be left to avoid
+modifying all clock drivers ?
+
+>=20
+> > In some subsystems, it was possible to keep OF related function by
+> > wrapping the fwnode ones. It is not yet sure if both support
+> > (device-tree and fwnode) should still continue to coexists. For instance
+> > if fwnode_xlate() and of_xlate() should remain since the fwnode version
+> > also supports device-tree. Removing of_xlate() would of course require
+> > to modify all drivers that uses it.
+> >=20
+> > Here is an excerpt of the lan966x description when used as a PCIe card.
+> > The complete description is visible at [2]. This part only describe the
+> > flexcom controller and the fixed-clock that is used as an input clock.
+> >=20
+> > static const struct property_entry ddr_clk_props[] =3D {
+> >         PROPERTY_ENTRY_U32("clock-frequency", 30000000), =20
+>=20
+> >         PROPERTY_ENTRY_U32("#clock-cells", 0), =20
+>=20
+> Why this is used?
+>=20
+
+These props actually describes a fixed-clock properties. When adding
+fwnode support to clk framework, it was needed to add the
+equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
+cells used to describe a reference is still needed to do the
+translation using fwnode_property_get_reference_args() and give the
+correct arguments to fwnode_xlate().
+
+[1]
+https://lore.kernel.org/lkml/914341e7-ca94-054d-6127-522b745006b4@arm.com/T/
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
