@@ -2,78 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F71AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF94C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 13:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232326AbiBVNiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 08:38:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
+        id S232382AbiBVNiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 08:38:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbiBVNhu (ORCPT
+        with ESMTP id S232147AbiBVNis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 08:37:50 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1355A5BB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 05:37:25 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C67891EC0478;
-        Tue, 22 Feb 2022 14:37:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1645537039;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=rIzCHu7vWbE7jPkhWFahwChinGRQ+u4nZtOXmNmbih4=;
-        b=kvrwwzw/InANdZgtVqRFahRs3d9e0TmqgNfvgkv3nElMq/pS9QdZeueLQPz2b1ADnYxNV3
-        0FI8C0g3kXsug29tDKwI2xKoCJ/Z/EyXGzCW2IwA0wmzGq69DOoWrb9tWgM3u0FCgFFej5
-        LgS6qcxOnwjwRq2/HuEDdsFpSd8XNPY=
-Date:   Tue, 22 Feb 2022 14:37:27 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
-        mingo@redhat.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv3 02/32] x86/coco: Add API to handle encryption mask
-Message-ID: <YhTnF4Wpd8/9QjO/@zn.tnic>
-References: <20220218161718.67148-1-kirill.shutemov@linux.intel.com>
- <20220218161718.67148-3-kirill.shutemov@linux.intel.com>
- <66fcd7e7-deb6-f27e-9fc6-33293ce04f16@intel.com>
- <20220218213300.2bs4t3admhozonaq@black.fi.intel.com>
- <7ebd6ba1-85a4-6fee-c897-22ed108ac8b7@intel.com>
- <20220221222856.c6b74b3n3fwqe6vy@black.fi.intel.com>
- <20220222110312.q7eaepfph2tyjq3e@black.fi.intel.com>
+        Tue, 22 Feb 2022 08:38:48 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E2C6C7D4F;
+        Tue, 22 Feb 2022 05:38:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=xaR5BAb2iA8Q4IbzOaNaow/c/pauqA9sg81gbN/llx8=; b=oyYMROg7m2mOqCt2bM5HiEQqX0
+        y18gWLnlDNIZ5IneEYSH8eVd0PLoookyCw/NGZJ7UqiOHVW90p4QyGVdadCDeDpwnG1KzmVbs21Cr
+        u9jkfSQBaUfOUUzMhVSCSZ/e8HTK7/O6Bk/fVWnnO21HGl+c7nm7MjLQ9FlIw5tygrE9Iqtwzf/AX
+        z99H267wLxeeHijwbGhCPjbsQKFC8eUI+igkP1tm4MMzKv0fHbE/NgGLUFErNYZ4887HDR9FuKmsw
+        bmNifFUV2CYdHFlZSYZG5pEQ+2gC8UPycw3kBkUIBNHEXE3scDmPaIYNhiWH5PORVY9bT42gF1T7n
+        VMS0iZuw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMVMx-002nWP-F9; Tue, 22 Feb 2022 13:38:19 +0000
+Date:   Tue, 22 Feb 2022 13:38:19 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jan Kara <jack@suse.cz>
+Cc:     Edward Shishkin <edward.shishkin@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        reiserfs-devel@vger.kernel.org
+Subject: Re: [PATCH] reiserfs: get rid of AOP_FLAG_CONT_EXPAND flag
+Message-ID: <YhTnSwmHVRe5AzJQ@casper.infradead.org>
+References: <fbc744c9-e22f-138c-2da3-f76c3edfcc3d@gmail.com>
+ <20220220232219.1235-1-edward.shishkin@gmail.com>
+ <20220222102727.2sqf4wfdtjaxrqat@quack3.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220222110312.q7eaepfph2tyjq3e@black.fi.intel.com>
+In-Reply-To: <20220222102727.2sqf4wfdtjaxrqat@quack3.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 02:03:12PM +0300, Kirill A. Shutemov wrote:
-> I would rather make cc_mkenc()/cc_mkdec() to operate on u64 (or
-> phys_addr_t?) while pgprot_encrypted()/pgprot_decrypted() cover pgprot_t.
-> It also makes set_memory cleaner:
+On Tue, Feb 22, 2022 at 11:27:27AM +0100, Jan Kara wrote:
+> On Mon 21-02-22 00:22:19, Edward Shishkin wrote:
+> > Signed-off-by: Edward Shishkin <edward.shishkin@gmail.com>
+> > ---
+> >  fs/reiserfs/inode.c | 16 +++++-----------
+> >  1 file changed, 5 insertions(+), 11 deletions(-)
 > 
-> 	cpa.mask_set = __pgprot(enc ? cc_mkenc(0) : cc_mkdec(0));
-> 	cpa.mask_clr = __pgprot(enc ? cc_mkdec(0) : cc_mkenc(0));
-> 
-> Opinions?
+> Thanks! I have queued this patch into my tree.
 
-Right, do I see it correctly that the cc_mk{enc,dec}() things should
-take a u64 as an argument and return a pgprot_t, and that would be the
-most optimal way for all the use cases?
+I added the following commit message to it for my tree:
 
--- 
-Regards/Gruss,
-    Boris.
+Author: Edward Shishkin <edward.shishkin@gmail.com>
+Date:   Mon Feb 21 00:22:19 2022 +0100
 
-https://people.kernel.org/tglx/notes-about-netiquette
+    reiserfs: Stop using AOP_FLAG_CONT_EXPAND flag
+
+    We can simplify write_begin() and write_end() by handling the
+    cont_expand case in reiserfs_setattr().
+
+    Signed-off-by: Edward Shishkin <edward.shishkin@gmail.com>
+    Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+
+I don't object if it goes via your tree; I doubt I'll get the AOP_FLAG
+removal finished in time for the next merge window.
