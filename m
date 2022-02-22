@@ -2,132 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A280C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 00:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA87DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 00:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237713AbiBVAT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 19:19:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33674 "EHLO
+        id S237721AbiBVATc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 19:19:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237768AbiBVATL (ORCPT
+        with ESMTP id S237788AbiBVATL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 21 Feb 2022 19:19:11 -0500
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE17925C6B;
-        Mon, 21 Feb 2022 16:18:28 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 7647D3200E18;
-        Mon, 21 Feb 2022 19:18:27 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 21 Feb 2022 19:18:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=V9Y0aM
-        UYHoxDUjucoxLUoyDrdDFBnSbiTwU4Pu0uuFw=; b=Lk7v6cS86buxdL8uLglrJ8
-        gc9GPXof0oIZU84PNZS0mRqvfXb64ccuVy9qySymDTnYJcySt/ZwrRz0HTeVk1CR
-        l61CGJ2G87b0Pmmse9ZprfW4w2/RH/6jCsvVm61jxpFdSGc5RjuFjUeL2rNr5RDd
-        ulmpGv/OUnMLQSxHyTbIRZStwuzcYkBsljArWHqMossMrQZUttPK/t2pHvrOjPuy
-        6E1VIMgHN8sQnTbsOHtm6FuwU4Zxeh//vY9jr50+jJCSvZYMn7ouk1S09tIEsv0S
-        YSaXnVWcxH0WIEAPaz0ZMsMN6fbmZ49DeZHEVxgKSVw9CR8N5QcZdtFF1lVZnadQ
-        ==
-X-ME-Sender: <xms:0isUYhajOZif2OF11acXMQugW-NrH2b_uuhjTeHOte1ytVDE7J4LdA>
-    <xme:0isUYoZQTk298bz6NhkJeJo7nh3pTWf_TqtPCeZqxGMcAvB8nZC98OnBF8stf414H
-    _ra65IIJq8Q9g>
-X-ME-Received: <xmr:0isUYj8Fma0A7ZZPlTu5Ohh-ivjB3OnThldADd9LeVck_MhkjSXkkBpMPGxEEqz1v9r9EtbJM8gDo4y_gW_AN_BwPIglIc29MWH1z2mccvDVaoiFxpg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeejgddvtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofggtghogfesthekredtredtjeenucfhrhhomhepofgrrhgvkhcu
-    ofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinhhvih
-    hsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhephefhfeet
-    ueelvddvtedttdevieeluedtvedtfeejieelhedutdeuheduieejgfegnecuffhomhgrih
-    hnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehmrghrmhgrrhgvkhesihhnvhhishhisghlvghthhhinhhgshhlrg
-    gsrdgtohhm
-X-ME-Proxy: <xmx:0isUYvpB1SHuZaVw5a9ZhadbYdSGae9vJeyV7K4x5gcIdddd6wJkkQ>
-    <xmx:0isUYsp3z9sEfUZi6pmTXeG08t01qdZBkrZQzYGtyGS0gnvDoqmjNg>
-    <xmx:0isUYlQZFBhIIe7JTbGpftfH5DnpbHB-9W_VdhqSgmxKUVbwYd-ktw>
-    <xmx:0ysUYkIIpexJHEw0wIokCFdZ7Y1kjK8qUNuZ1i1wytH5LTyJUaaMIw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 21 Feb 2022 19:18:25 -0500 (EST)
-From:   =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, stable@vger.kernel.org,
-        Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3810625C70;
+        Mon, 21 Feb 2022 16:18:29 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id y5so10268362pfe.4;
+        Mon, 21 Feb 2022 16:18:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sqmDzRebjfXOuXlMcryS3UNB9N3nRJHs/4eRz+Wbrr4=;
+        b=ZDb8MOt0Qlds6sX6kcrGKLHGbqGQlGs/k09IXtjrZdRyidr8VkBTyBz2Y28TqeGG0V
+         PuwU0+/UVDnJilS6WnCEznxpoeRTfPn/NtWdJlx4GcEmy+jND7gYp1sApCANMyy7qufX
+         wWpEv3a45Z85E3FUT+bay+S1uP5lQk/EMAMhqHn7ibr9JKgZeauzHmgAk7GqY1ISxQj1
+         2AAFBvJTWno9GeCZVYvfYpIdACubw4PKCd84CiYydU13fHWsfihS8OjM3vSJYBhq0dvn
+         0J/uyibKyV5f8pZRQFNrqhjfpl24toJdbHI+YrCyxirkOv9dyuZ1uqJdFrvrtmHQI7Vj
+         NfHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sqmDzRebjfXOuXlMcryS3UNB9N3nRJHs/4eRz+Wbrr4=;
+        b=6FIoofKbZJ1g6P3v2pXuM+l9QxKPIP7kaDf88weUkcia6d6EdwmMgteZm+q3s/L1wN
+         O+hSBQKyyjg2qd4xjpW9gw4VNzMuoz5/dVbt0tm4IusaTEnUc/uSqBXfbUHyyeYqCn3M
+         tGmjgoPJZstiTpa3W/VPWyFhvhddK0865bE/0FDCLfsTT5Hofzex/xhTu6bHovcWJw9Y
+         26rJhU5f9AlcAwncKVp5+LOYbsdMSWfdEBw8U6AvfiWM4b/gr2PBgrI3Nk0EUyEFrhgQ
+         b745b5EjgOKMkDfZxJfmxIcF3gcPIuLQVOE1eq+WTMwxxyDqypnLkT9wvbe9S+1SgdR+
+         Ntpw==
+X-Gm-Message-State: AOAM532+Qqte0UEOUjyUvUarkDQpgG0xFaTHxlyk6GNTBrExbouvYFyR
+        Rdu9AdsfHNTkE74wgnrV08kRHgmoEYsvs6tCZD4=
+X-Google-Smtp-Source: ABdhPJwBzVlPVdSYUnyE8DCCygZJ+7BruiW9k8D1CHhvwO8NOCwx0byud2EwwF9qj6dYM0Nc+UqKBWiDKl0J9JRKReQ=
+X-Received: by 2002:a05:6a00:be5:b0:4e1:9050:1e16 with SMTP id
+ x37-20020a056a000be500b004e190501e16mr22516628pfu.78.1645489108727; Mon, 21
+ Feb 2022 16:18:28 -0800 (PST)
+MIME-Version: 1.0
+References: <20220216160500.2341255-1-alvin@pqrs.dk> <20220216160500.2341255-3-alvin@pqrs.dk>
+ <20220216233906.5dh67olhgfz7ji6o@skbuf> <CAJq09z6XBQUTBZoQ81Vy3nUc_5QGTF0GH8V-S3bXOw=JpYODvA@mail.gmail.com>
+ <87v8xdrjpw.fsf@bang-olufsen.dk>
+In-Reply-To: <87v8xdrjpw.fsf@bang-olufsen.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Mon, 21 Feb 2022 21:18:17 -0300
+Message-ID: <CAJq09z4sbh1zWKd-yiQpeV1H_1fEU6f7uhsH69JmTXcb4YEVZg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: dsa: realtek: rtl8365mb: serialize
+ indirect PHY register access
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        xen-devel@lists.xenproject.org (moderated list:XEN NETWORK BACKEND
-        DRIVER),
-        netdev@vger.kernel.org (open list:XEN NETWORK BACKEND DRIVER)
-Subject: [PATCH v2 1/2] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
-Date:   Tue, 22 Feb 2022 01:18:16 +0100
-Message-Id: <20220222001817.2264967-1-marmarek@invisiblethingslab.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Organization: Invisible Things Lab
-Content-Transfer-Encoding: 8bit
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Michael Rasmussen <MIR@bang-olufsen.dk>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
+> > The realtek "API/driver" does exactly how the driver was doing. They
+> > do have a lock/unlock placeholder, but only in the equivalent
+> > regmap_{read,write} functions. Indirect access does not use locks at
+> > all (in fact, there is no other mention of "lock" elsewhere), even
+> > being obvious that it is not thread-safe. It was just with a DSA
+> > driver that we started to exercise register access for real, specially
+> > without interruptions. And even in that case, we could only notice
+> > this issue in multicore devices. I believe that, if they know about
+> > this issue, they might not be worried because it has never affected a
+> > real device. It would be very interesting to hear from Realtek but I
+> > do not have the contacts.
+>
+> This is not true, at least with the sources I am reading. As I said in
+> my reply to Vladimir, the Realtek code takes a lock around each
+> top-level API call. Example:
+>
+> rtk_api_ret_t rtk_port_phyStatus_get(...)
+> {
+>     rtk_api_ret_t retVal;
+>
+>     if (NULL == RT_MAPPER->port_phyStatus_get)
+>         return RT_ERR_DRIVER_NOT_FOUND;
+>
+>     RTK_API_LOCK();
+>     retVal = RT_MAPPER->port_phyStatus_get(port, pLinkStatus, pSpeed, pDuplex);
+>     RTK_API_UNLOCK();
+>
+>     return retVal;
+> }
+>
+> Deep down in this port_phyStatus_get() callback, the indirect PHY
+> register access takes place.
 
-The 'hotplug-status' node should not be removed as long as the vif
-device remains configured. Otherwise the xen-netback would wait for
-re-running the network script even if it was already called (in case of
-the frontent re-connecting). But also, it _should_ be removed when the
-vif device is destroyed (for example when unbinding the driver) -
-otherwise hotplug script would not configure the device whenever it
-re-appear.
+For the record, in the rtl8367c driver I'm using as reference, there
+is no mention of RTK_API_LOCK(). Check here same function you copied:
 
-Moving removal of the 'hotplug-status' node was a workaround for nothing
-calling network script after xen-netback module is reloaded. But when
-vif interface is re-created (on xen-netback unbind/bind for example),
-the script should be called, regardless of who does that - currently
-this case is not handled by the toolstack, and requires manual
-script call. Keeping hotplug-status=connected to skip the call is wrong
-and leads to not configured interface.
+https://github.com/openwrt/openwrt/blob/aae7af4219e56c2787f675109d9dd1a44a5dcba4/target/linux/mediatek/files-5.10/drivers/net/phy/rtk/rtl8367c/port.c#L1003-L1040
 
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+So, this indirect reg access protection is something they added along
+the way, probably when they started to use it with SMP systems.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
----
-Cc: Michael Brown <mcb30@ipxe.org>
-Changes in v2:
- - build fix, reported by kernel test robot <lkp@intel.com>
-
----
- drivers/net/xen-netback/xenbus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index d24b7a7993aa..3fad58d22155 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
- 		unsigned int queue_index;
- 
- 		xen_unregister_watchers(vif);
-+		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- #ifdef CONFIG_DEBUG_FS
- 		xenvif_debugfs_delif(vif);
- #endif /* CONFIG_DEBUG_FS */
-@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
- 
- 		/* Not interested in this watch anymore. */
- 		unregister_hotplug_status_watch(be);
--		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- 	}
- 	kfree(str);
- }
--- 
-2.31.1
-
+> Kind regards,
+> Alvin
