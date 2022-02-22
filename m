@@ -2,71 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2AD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9538C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 07:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230432AbiBVHPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:15:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52220 "EHLO
+        id S230456AbiBVHUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 02:20:49 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiBVHPO (ORCPT
+        with ESMTP id S230401AbiBVHUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 02:15:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F63EC5D1;
-        Mon, 21 Feb 2022 23:14:49 -0800 (PST)
+        Tue, 22 Feb 2022 02:20:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48137DE2E3;
+        Mon, 21 Feb 2022 23:20:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CD89B8187C;
-        Tue, 22 Feb 2022 07:14:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E929C340E8;
-        Tue, 22 Feb 2022 07:14:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645514086;
-        bh=42HUBcB/Xpcc3EbTCx3rh8l8f37rcOULqq05I5g7uhM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nmx9+EDYvsPwfCigEWjwKjdpSEwpL6ET8SPgOcFp6TsM2X9pDKOWrzzDS8V5j9PCw
-         VxGI+88kENXw7ZPEQ9C8ILVGcU0+7kOzatx8TdELM2XkPET/fZtkTgZVrzfxU3Y2Hv
-         egy4Pk7MlVpyGtFuo1mWD/OtTkau2hmbMZA1RJdw=
-Date:   Tue, 22 Feb 2022 08:14:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Thomas Hebb <tommyhebb@gmail.com>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mmc: rtsx: Let MMC core handle runtime PM
-Message-ID: <YhSNZAu22OJWAlNJ@kroah.com>
-References: <20220216055435.2335297-1-kai.heng.feng@canonical.com>
- <CAPDyKFrAjT2PJBg+d00Tvekujk6Bh_dsK33121Fxr9hwHi9gLw@mail.gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD7FCB8187E;
+        Tue, 22 Feb 2022 07:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F384DC340E8;
+        Tue, 22 Feb 2022 07:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645514419;
+        bh=OQSsfI/rYiou2N7ZTh0DUG0l24IHBrN7xdfpMv6qtaQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=SsVuZTBJoj5wKuFAawkg2OU5yO5c6sWFaeqD08ZWWIis0gyYFsK7gsHnP4qRbzPFJ
+         oandL0a/3muIDKbW38SIMYynY6N0zGI2TJU6oKe+d/QSUiWWHus6W/ybyXa//2PbVL
+         1Kp7bIQPYYi1LEoKIq203KJMvrEsBfU7SUwtRRhCKuCu4ksjYDpyTzR+6XkTGlHAW3
+         9GaIIKHI4pQ+a4G/wuwpjgjF83rPzK7nWLB8ypxV53iQPTcrK8S+pa8hf/sEn5OR3g
+         9OiG+Ddwc2RwcRXaI0wpbjtbBlO0VX6CzOcEHOGjGAugBIF1yAr4DrYqrcNqny5ivi
+         Rme5pryUm7hgQ==
+Date:   Tue, 22 Feb 2022 01:28:12 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 0/8] scsi: aacraid: Replace one-element arrays with
+ flexible-array members
+Message-ID: <cover.1645513670.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAPDyKFrAjT2PJBg+d00Tvekujk6Bh_dsK33121Fxr9hwHi9gLw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 11:29:52AM +0100, Ulf Hansson wrote:
-> On Wed, 16 Feb 2022 at 06:55, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-> >
-> > Since MMC core handles runtime PM reference counting, we can avoid doing
-> > redundant runtime PM work in the driver. That means the only thing
-> > commit 5b4258f6721f ("misc: rtsx: rts5249 support runtime PM") misses is
-> > to always enable runtime PM, to let its parent driver enable ASPM in the
-> > runtime idle routine.
-> >
-> > Fixes: 7499b529d97f ("mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM")
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> 
-> This looks good to me!
-> 
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> 
-> Greg, do you want to funnel this through your tree - or should I wait
-> for an rc containing 7499b529d97f and take it through my mmc tree?
-> Either way works for me.
+This series aims to replace one-element arrays with flexible-array
+members in multiple structures in drivers/scsi/aacraid/aacraid.h.
 
-I will take it now, thanks.
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-greg k-h
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+These issues were found with the help of Coccinelle and audited and fixed,
+manually.
+
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+
+Link: https://github.com/KSPP/linux/issues/79
+
+Gustavo A. R. Silva (8):
+  scsi: aacraid: Replace one-element array with flexible-array member
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct sgmap
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct user_sgmap
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct sgmap64
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct user_sgmap64
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct sgmapraw
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct user_sgmapraw
+  scsi: aacraid: Replace one-element array with flexible-array member in
+    struct aac_aifcmd
+
+ drivers/scsi/aacraid/aachba.c   | 76 +++++++++++----------------------
+ drivers/scsi/aacraid/aacraid.h  | 16 +++----
+ drivers/scsi/aacraid/commctrl.c |  5 +--
+ drivers/scsi/aacraid/comminit.c |  3 +-
+ 4 files changed, 37 insertions(+), 63 deletions(-)
+
+-- 
+2.27.0
+
