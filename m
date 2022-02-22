@@ -2,162 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41000C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B572C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbiBVQIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:08:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S233911AbiBVQJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233535AbiBVQIr (ORCPT
+        with ESMTP id S233912AbiBVQI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:08:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05E941081B1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:08:20 -0800 (PST)
+        Tue, 22 Feb 2022 11:08:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA39D165C07
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:08:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645546100;
+        s=mimecast20190719; t=1645546108;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=aT/7AVxDblmzHdwSW2K30Fv/JrfyrN0Jjx03lSN/s60=;
-        b=acC0m0FpbndTWuP7S+7cconegRahktVAPz3/ip3NqNcZFPRjStPezVEP8UCZ7effFcHyTq
-        iRe4O7tTJzRqkxSGHjNEigycGtmIjF7f3nQ+DLBqqax5ocrYeK2Avjzr+9rO6w3WM/uLPh
-        cSKhRpoJbRqdEbBTuNZ6vHulV4ANzdM=
+        bh=ayZQO14IuVvLb4KFAu15b92K05gesQyRdVPfr8lUqdY=;
+        b=MWhD7hl05/eINDT3h9XfiwjwYkHnbd7z8CYR9xvh5RN+O5jyMq+P2tBqWh/24EdZeV4X62
+        IFFtY8sGKy2R8q8OpQhz7huSFDini/JdH95HBGnpeZNZ+LUQm5e4EXs+JcYq3O64bd3dAG
+        VURwAEqNZZN4L/XOIJMO0dH8FT264T4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-oUwiTlTgPMuleG23-Tm_Vg-1; Tue, 22 Feb 2022 11:08:16 -0500
-X-MC-Unique: oUwiTlTgPMuleG23-Tm_Vg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-517-MG6RiG2uMxy0URq4p3XVmw-1; Tue, 22 Feb 2022 11:08:25 -0500
+X-MC-Unique: MG6RiG2uMxy0URq4p3XVmw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FDE1801AAD;
-        Tue, 22 Feb 2022 16:08:15 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0987A188E3C2;
+        Tue, 22 Feb 2022 16:08:24 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3AE004EC7C;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3DD4282765;
         Tue, 22 Feb 2022 16:08:00 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id E98284171300; Tue, 22 Feb 2022 13:07:35 -0300 (-03)
-Date:   Tue, 22 Feb 2022 13:07:35 -0300
+        id D5215416D862; Tue, 22 Feb 2022 12:51:51 -0300 (-03)
+Date:   Tue, 22 Feb 2022 12:51:51 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, Minchan Kim <minchan@kernel.org>,
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Minchan Kim <minchan@kernel.org>,
         Matthew Wilcox <willy@infradead.org>,
         Mel Gorman <mgorman@techsingularity.net>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
+        Juri Lelli <juril@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [patch v3] mm: lru_cache_disable: replace work queue synchronization
- with synchronize_rcu
-Message-ID: <YhUKRzEKxMvlGQ5n@fuller.cnet>
-References: <YhUI1wUtV8yguijO@fuller.cnet>
+Subject: Re: [patch 1/2] mm: protect local lock sections with rcu_read_lock
+ (on RT)
+Message-ID: <YhUGl2F6gZxaNA7v@fuller.cnet>
+References: <20220222144706.937848439@redhat.com>
+ <20220222144907.023121407@redhat.com>
+ <5f96c7e306546af4604cfaddb895a089811cb99b.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YhUI1wUtV8yguijO@fuller.cnet>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <5f96c7e306546af4604cfaddb895a089811cb99b.camel@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Feb 22, 2022 at 04:21:26PM +0100, Nicolas Saenz Julienne wrote:
+> On Tue, 2022-02-22 at 11:47 -0300, Marcelo Tosatti wrote:
+> > For the per-CPU LRU page vectors, augment the local lock protected
+> > code sections with rcu_read_lock.
+> > 
+> > This makes it possible to replace the queueing of work items on all 
+> > CPUs by synchronize_rcu (which is necessary to run FIFO:1 applications
+> > uninterrupted on isolated CPUs).
+> 
+> I don't think this is needed. In RT local_locks use a spinlock. See
+> kernel/locking/spinlock_rt.c:
+> 
+> "The RT [spinlock] substitutions explicitly disable migration and take
+> rcu_read_lock() across the lock held section."
 
-On systems that run FIFO:1 applications that busy loop 
-on isolated CPUs, executing tasks on such CPUs under
-lower priority is undesired (since that will either
-hang the system, or cause longer interruption to the
-FIFO task due to execution of lower priority task 
-with very small sched slices).
+Nice! Then the migrate_disable from __local_lock and friends seems unnecessary as
+well
 
-Commit d479960e44f27e0e52ba31b21740b703c538027c ("mm: disable LRU 
-pagevec during the migration temporarily") relies on 
-queueing work items on all online CPUs to ensure visibility
-of lru_disable_count.
+#define __local_lock(__lock)                                    \
+        do {                                                    \
+                migrate_disable();                              \
+                spin_lock(this_cpu_ptr((__lock)));              \
+        } while (0)
 
-However, its possible to use synchronize_rcu which will provide the same
-guarantees (see comment this patch modifies on lru_cache_disable).
+Since:
 
-Fixes:
+static __always_inline void __rt_spin_lock(spinlock_t *lock)
+{
+        rtlock_might_resched();
+        rtlock_lock(&lock->lock); 
+        rcu_read_lock();
+        migrate_disable();
+}
 
-[ 1873.243925] INFO: task kworker/u160:0:9 blocked for more than 622 seconds.
-[ 1873.243927]       Tainted: G          I      --------- ---  5.14.0-31.rt21.31.el9.x86_64 #1
-[ 1873.243929] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1873.243929] task:kworker/u160:0  state:D stack:    0 pid:    9 ppid:     2 flags:0x00004000
-[ 1873.243932] Workqueue: cpuset_migrate_mm cpuset_migrate_mm_workfn
-[ 1873.243936] Call Trace:
-[ 1873.243938]  __schedule+0x21b/0x5b0
-[ 1873.243941]  schedule+0x43/0xe0
-[ 1873.243943]  schedule_timeout+0x14d/0x190
-[ 1873.243946]  ? resched_curr+0x20/0xe0
-[ 1873.243953]  ? __prepare_to_swait+0x4b/0x70
-[ 1873.243958]  wait_for_completion+0x84/0xe0
-[ 1873.243962]  __flush_work.isra.0+0x146/0x200
-[ 1873.243966]  ? flush_workqueue_prep_pwqs+0x130/0x130
-[ 1873.243971]  __lru_add_drain_all+0x158/0x1f0
-[ 1873.243978]  do_migrate_pages+0x3d/0x2d0
-[ 1873.243985]  ? pick_next_task_fair+0x39/0x3b0
-[ 1873.243989]  ? put_prev_task_fair+0x1e/0x30
-[ 1873.243992]  ? pick_next_task+0xb30/0xbd0
-[ 1873.243995]  ? __tick_nohz_task_switch+0x1e/0x70
-[ 1873.244000]  ? raw_spin_rq_unlock+0x18/0x60
-[ 1873.244002]  ? finish_task_switch.isra.0+0xc1/0x2d0
-[ 1873.244005]  ? __switch_to+0x12f/0x510
-[ 1873.244013]  cpuset_migrate_mm_workfn+0x22/0x40
-[ 1873.244016]  process_one_work+0x1e0/0x410
-[ 1873.244019]  worker_thread+0x50/0x3b0
-[ 1873.244022]  ? process_one_work+0x410/0x410
-[ 1873.244024]  kthread+0x173/0x190
-[ 1873.244027]  ? set_kthread_struct+0x40/0x40
-[ 1873.244031]  ret_from_fork+0x1f/0x30
+Will resend -v2.
 
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-
----
-
-v3: update stale comment			(Nicolas Saenz Julienne)
-v2: rt_spin_lock calls rcu_read_lock, no need
-to add it before local_lock on swap.c		(Nicolas Saenz Julienne) 
-
-diff --git a/mm/swap.c b/mm/swap.c
-index bcf3ac288b56..abb26293e7c1 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
- 	for_each_online_cpu(cpu) {
- 		struct work_struct *work = &per_cpu(lru_add_drain_work, cpu);
- 
--		if (force_all_cpus ||
--		    pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
-+		if (pagevec_count(&per_cpu(lru_pvecs.lru_add, cpu)) ||
- 		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
- 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
- 		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
-@@ -876,14 +875,19 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
- void lru_cache_disable(void)
- {
- 	atomic_inc(&lru_disable_count);
-+	synchronize_rcu();
- #ifdef CONFIG_SMP
- 	/*
--	 * lru_add_drain_all in the force mode will schedule draining on
--	 * all online CPUs so any calls of lru_cache_disabled wrapped by
--	 * local_lock or preemption disabled would be ordered by that.
--	 * The atomic operation doesn't need to have stronger ordering
--	 * requirements because that is enforced by the scheduling
--	 * guarantees.
-+	 * synchronize_rcu() waits for preemption disabled
-+	 * and RCU read side critical sections.
-+	 * For the users of lru_disable_count:
-+	 *
-+	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
-+	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
-+	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
-+	 *
-+	 * so any calls of lru_cache_disabled wrapped by local_lock or
-+	 * preemption disabled would be ordered by that.
- 	 */
- 	__lru_add_drain_all(true);
- #else
 
