@@ -2,200 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2144C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C69C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233267AbiBVPDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        id S233242AbiBVPDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:03:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233700AbiBVPDS (ORCPT
+        with ESMTP id S233202AbiBVPCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:03:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D19F103A
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:02:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645542156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rdi/qxR3vXLdPYSOnT7lLR4Cj8YvfdXVSXReKwN9fr0=;
-        b=hvy8dN5hawx/78oN+f6qUiNwV4tliI3P7Jhjd7si/vfzIIiVUkxkJzmfbJiTHw7Trn7Nan
-        wc9+eBS4SQE5Sb4asISLwQTxtDvYC+0tjJbL2vE7TRxlNcvRJN7TqIj+p2ddQjqo3M2k+C
-        5TIUMO2zWai8aXTQZgDaA468wCdsasA=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-ycF0cDwUNOqVxMyIFYm87w-1; Tue, 22 Feb 2022 10:02:34 -0500
-X-MC-Unique: ycF0cDwUNOqVxMyIFYm87w-1
-Received: by mail-ed1-f71.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so12118593edb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:02:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rdi/qxR3vXLdPYSOnT7lLR4Cj8YvfdXVSXReKwN9fr0=;
-        b=xgZIuOhTvGMsSVdlf/Rvl7rJvn4c1RdI5gziJXkW1y7IenT8Ny6EiTWDOwxeWcvNv2
-         cguAj8vcOH3RTkl7FQh5pC4OJEKFc/PlMhufzbrneVP8zLknMxXau/IDRgc8GfOa1Z0N
-         2YRlu0Nlj7ypREZY1Gq2hdwdxRWBxy8wupBFXoOJv42hluBZGqb/PcPUbTnotum2QUPk
-         sRq6wawofeXA5FDgFglawTpUQdiFjVvKEgQxnKkBl7qgQ7n0EXeE+QUHxWiE4N58DRpt
-         BKj2n7Z96VDVnd0Zc8LrO44xwlvEF4pCuw4fN+PYyArHuZK7Ga8TTjjHSjFsNphBa0Ng
-         g+QQ==
-X-Gm-Message-State: AOAM531gwE9XbtQvkODaw6MswVAf0FTXbgJU+Dy8zFNuLkzocKf6u0Fj
-        DU9RdVfE2euxuuYEi4KJdwEae57aLG+mzVMTVW5yWm5pTFoG1rL85sVcwenMyvbfSCwmC1S0iyd
-        uae72TiLgmy06bEB9Y2xh0vek
-X-Received: by 2002:a17:906:2991:b0:6cf:1fd4:39a3 with SMTP id x17-20020a170906299100b006cf1fd439a3mr19565081eje.21.1645542153504;
-        Tue, 22 Feb 2022 07:02:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwfs/vKQLHNEKKWfGdfWtjrGEHBFte8MvKz5Y50OjDrG513NxeN/Cw3t2XJvu4U4AxkMg15eQ==
-X-Received: by 2002:a17:906:2991:b0:6cf:1fd4:39a3 with SMTP id x17-20020a170906299100b006cf1fd439a3mr19565062eje.21.1645542153204;
-        Tue, 22 Feb 2022 07:02:33 -0800 (PST)
-Received: from redhat.com ([2.55.129.240])
-        by smtp.gmail.com with ESMTPSA id q16sm5998109ejc.21.2022.02.22.07.02.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 07:02:32 -0800 (PST)
-Date:   Tue, 22 Feb 2022 10:02:29 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Anirudh Rayabharam <mail@anirudhrb.com>,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] vhost: validate range size before adding to iotlb
-Message-ID: <20220222090511-mutt-send-email-mst@kernel.org>
-References: <20220221195303.13560-1-mail@anirudhrb.com>
- <CACGkMEvLE=kV4PxJLRjdSyKArU+MRx6b_mbLGZHSUgoAAZ+-Fg@mail.gmail.com>
- <YhRtQEWBF0kqWMsI@anirudhrb.com>
- <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
+        Tue, 22 Feb 2022 10:02:20 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AF115F34E;
+        Tue, 22 Feb 2022 07:01:01 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K32RM19WHz9sSm;
+        Tue, 22 Feb 2022 16:00:47 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cXlVZuWkRwWK; Tue, 22 Feb 2022 16:00:47 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32RF3gP2z9sSp;
+        Tue, 22 Feb 2022 16:00:41 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 6D33E8B764;
+        Tue, 22 Feb 2022 16:00:41 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id QOwbd7_ZHCjS; Tue, 22 Feb 2022 16:00:41 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id C5D458B77B;
+        Tue, 22 Feb 2022 16:00:40 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MF0ZRV1087076
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 16:00:35 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MF0VtJ1087075;
+        Tue, 22 Feb 2022 16:00:31 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH v5 4/6] module: Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+Date:   Tue, 22 Feb 2022 16:00:21 +0100
+Message-Id: <fe41ba636a1e229ab3c47543670182d68e38b1e5.1645541930.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645541930.git.christophe.leroy@csgroup.eu>
+References: <cover.1645541930.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEvd7ETC_ANyrOSAVz_i64xqpYYazmm=+39E51=DMRFXdw@mail.gmail.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542019; l=10326; s=20211009; h=from:subject:message-id; bh=jfohywy7Pj0RCHc9nfFEkluhtuy5nMPObt52zQJtLMw=; b=eA/6vfTfI7bqW8XwFoEf2DmsuFFhBE9N/jvxa+cIXZEaO1I65UT8aQjeZG6axGUnTtQeFsjpxGfX Qx7x64s2DRbHxCBzciuWlY+wHjiZVAslNq9pK/4rtpYl+7FCnMTO
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 03:11:07PM +0800, Jason Wang wrote:
-> On Tue, Feb 22, 2022 at 12:57 PM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> >
-> > On Tue, Feb 22, 2022 at 10:50:20AM +0800, Jason Wang wrote:
-> > > On Tue, Feb 22, 2022 at 3:53 AM Anirudh Rayabharam <mail@anirudhrb.com> wrote:
-> > > >
-> > > > In vhost_iotlb_add_range_ctx(), validate the range size is non-zero
-> > > > before proceeding with adding it to the iotlb.
-> > > >
-> > > > Range size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > One instance where it can happen is when userspace sends an IOTLB
-> > > > message with iova=size=uaddr=0 (vhost_process_iotlb_msg). So, an
-> > > > entry with size = 0, start = 0, last = (2^64 - 1) ends up in the
-> > > > iotlb. Next time a packet is sent, iotlb_access_ok() loops
-> > > > indefinitely due to that erroneous entry:
-> > > >
-> > > >         Call Trace:
-> > > >          <TASK>
-> > > >          iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-> > > >          vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-> > > >          vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-> > > >          vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-> > > >          kthread+0x2e9/0x3a0 kernel/kthread.c:377
-> > > >          ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > > >          </TASK>
-> > > >
-> > > > Reported by syzbot at:
-> > > >         https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
-> > > >
-> > > > Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-> > > > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-> > > > ---
-> > > >  drivers/vhost/iotlb.c | 6 ++++--
-> > > >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> > > > index 670d56c879e5..b9de74bd2f9c 100644
-> > > > --- a/drivers/vhost/iotlb.c
-> > > > +++ b/drivers/vhost/iotlb.c
-> > > > @@ -53,8 +53,10 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > >                               void *opaque)
-> > > >  {
-> > > >         struct vhost_iotlb_map *map;
-> > > > +       u64 size = last - start + 1;
-> > > >
-> > > > -       if (last < start)
-> > > > +       // size can overflow to 0 when start is 0 and last is (2^64 - 1).
-> > > > +       if (last < start || size == 0)
-> > > >                 return -EFAULT;
-> > >
-> > > I'd move this check to vhost_chr_iter_write(), then for the device who
-> > > has its own msg handler (e.g vDPA) can benefit from it as well.
-> >
-> > Thanks for reviewing!
-> >
-> > I kept the check here thinking that all devices would benefit from it
-> > because they would need to call vhost_iotlb_add_range() to add an entry
-> > to the iotlb. Isn't that correct?
-> 
-> Correct for now but not for the future, it's not guaranteed that the
-> per device iotlb message handler will use vhost iotlb.
-> 
-> But I agree that we probably don't need to care about it too much now.
-> 
-> > Do you see any other benefit in moving
-> > it to vhost_chr_iter_write()?
-> >
-> > One concern I have is that if we move it out some future caller to
-> > vhost_iotlb_add_range() might forget to handle this case.
-> 
-> Yes.
-> 
-> Rethink the whole fix, we're basically rejecting [0, ULONG_MAX] range
-> which seems a little bit odd.
+Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC to allow architectures
+to request having modules data in vmalloc area instead of module area.
 
-Well, I guess ideally we'd split this up as two entries - this kind of
-thing is after all one of the reasons we initially used first,last as
-the API - as opposed to first,size.
+This is required on powerpc book3s/32 in order to set data non
+executable, because it is not possible to set executability on page
+basis, this is done per 256 Mbytes segments. The module area has exec
+right, vmalloc area has noexec.
 
-Anirudh, could you do it like this instead of rejecting?
+This can also be useful on other powerpc/32 in order to maximize the
+chance of code being close enough to kernel core to avoid branch
+trampolines.
 
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/Kconfig                |  6 ++++
+ include/linux/module.h      |  8 +++++
+ kernel/debug/kdb/kdb_main.c | 10 +++++--
+ kernel/module/internal.h    |  3 ++
+ kernel/module/main.c        | 58 +++++++++++++++++++++++++++++++++++--
+ kernel/module/procfs.c      |  8 +++--
+ kernel/module/tree_lookup.c |  8 +++++
+ 7 files changed, 95 insertions(+), 6 deletions(-)
 
-> I wonder if it's better to just remove
-> the map->size. Having a quick glance at the the user, I don't see any
-> blocker for this.
-> 
-> Thanks
-
-I think it's possible but won't solve the bug by itself, and we'd need
-to review and fix all users - a high chance of introducing
-another regression. And I think there's value of fitting under the
-stable rule of 100 lines with context.
-So sure, but let's fix the bug first.
-
-
-
-> >
-> > Thanks!
-> >
-> >         - Anirudh.
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > >         if (iotlb->limit &&
-> > > > @@ -69,7 +71,7 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
-> > > >                 return -ENOMEM;
-> > > >
-> > > >         map->start = start;
-> > > > -       map->size = last - start + 1;
-> > > > +       map->size = size;
-> > > >         map->last = last;
-> > > >         map->addr = addr;
-> > > >         map->perm = perm;
-> > > > --
-> > > > 2.35.1
-> > > >
-> > >
-> >
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 678a80713b21..b5d1f2c19c27 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -882,6 +882,12 @@ config MODULES_USE_ELF_REL
+ 	  Modules only use ELF REL relocations.  Modules with ELF RELA
+ 	  relocations will give an error.
+ 
++config ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	bool
++	help
++	  For architectures like powerpc/32 which have constraints on module
++	  allocation and need to allocate module data outside of module area.
++
+ config HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 	bool
+ 	help
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 7ec9715de7dc..134c1df04b14 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -422,6 +422,9 @@ struct module {
+ 	/* Core layout: rbtree is accessed frequently, so keep together. */
+ 	struct module_layout core_layout __module_layout_align;
+ 	struct module_layout init_layout;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	struct module_layout data_layout;
++#endif
+ 
+ 	/* Arch-specific module values */
+ 	struct mod_arch_specific arch;
+@@ -569,6 +572,11 @@ bool is_module_text_address(unsigned long addr);
+ static inline bool within_module_core(unsigned long addr,
+ 				      const struct module *mod)
+ {
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	if ((unsigned long)mod->data_layout.base <= addr &&
++	    addr < (unsigned long)mod->data_layout.base + mod->data_layout.size)
++		return true;
++#endif
+ 	return (unsigned long)mod->core_layout.base <= addr &&
+ 	       addr < (unsigned long)mod->core_layout.base + mod->core_layout.size;
+ }
+diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+index 5369bf45c5d4..94de2889a062 100644
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -2027,8 +2027,11 @@ static int kdb_lsmod(int argc, const char **argv)
+ 		if (mod->state == MODULE_STATE_UNFORMED)
+ 			continue;
+ 
+-		kdb_printf("%-20s%8u  0x%px ", mod->name,
+-			   mod->core_layout.size, (void *)mod);
++		kdb_printf("%-20s%8u", mod->name, mod->core_layout.size);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++		kdb_printf("/%8u", mod->data_layout.size);
++#endif
++		kdb_printf("  0x%px ", (void *)mod);
+ #ifdef CONFIG_MODULE_UNLOAD
+ 		kdb_printf("%4d ", module_refcount(mod));
+ #endif
+@@ -2039,6 +2042,9 @@ static int kdb_lsmod(int argc, const char **argv)
+ 		else
+ 			kdb_printf(" (Live)");
+ 		kdb_printf(" 0x%px", mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++		kdb_printf("/0x%px", mod->data_layout.base);
++#endif
+ 
+ #ifdef CONFIG_MODULE_UNLOAD
+ 		{
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 5ad6233d409a..6911c7533ede 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -20,7 +20,9 @@
+ /* Maximum number of characters written by module_flags() */
+ #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
+ 
++#ifndef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+ #define	data_layout core_layout
++#endif
+ 
+ /*
+  * Modules' sections will be aligned on page boundaries
+@@ -154,6 +156,7 @@ struct mod_tree_root {
+ };
+ 
+ extern struct mod_tree_root mod_tree;
++extern struct mod_tree_root mod_data_tree;
+ 
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
+ void mod_tree_insert(struct module *mod);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index bd26280f2880..f4d95a2ff08f 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -78,6 +78,12 @@ struct mod_tree_root mod_tree __cacheline_aligned = {
+ 	.addr_min = -1UL,
+ };
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++struct mod_tree_root mod_data_tree __cacheline_aligned = {
++	.addr_min = -1UL,
++};
++#endif
++
+ #define module_addr_min mod_tree.addr_min
+ #define module_addr_max mod_tree.addr_max
+ 
+@@ -107,6 +113,9 @@ static void mod_update_bounds(struct module *mod)
+ 	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size, &mod_tree);
+ 	if (mod->init_layout.size)
+ 		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size, &mod_tree);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	__mod_update_bounds(mod->data_layout.base, mod->data_layout.size, &mod_data_tree);
++#endif
+ }
+ 
+ static void module_assert_mutex_or_preempt(void)
+@@ -940,6 +949,17 @@ static ssize_t show_coresize(struct module_attribute *mattr,
+ static struct module_attribute modinfo_coresize =
+ 	__ATTR(coresize, 0444, show_coresize, NULL);
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++static ssize_t show_datasize(struct module_attribute *mattr,
++			     struct module_kobject *mk, char *buffer)
++{
++	return sprintf(buffer, "%u\n", mk->mod->data_layout.size);
++}
++
++static struct module_attribute modinfo_datasize =
++	__ATTR(datasize, 0444, show_datasize, NULL);
++#endif
++
+ static ssize_t show_initsize(struct module_attribute *mattr,
+ 			     struct module_kobject *mk, char *buffer)
+ {
+@@ -968,6 +988,9 @@ struct module_attribute *modinfo_attrs[] = {
+ 	&modinfo_srcversion,
+ 	&modinfo_initstate,
+ 	&modinfo_coresize,
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	&modinfo_datasize,
++#endif
+ 	&modinfo_initsize,
+ 	&modinfo_taint,
+ #ifdef CONFIG_MODULE_UNLOAD
+@@ -1233,6 +1256,9 @@ static void free_module(struct module *mod)
+ 
+ 	/* Finally, free the core (containing the module structure) */
+ 	module_memfree(mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	vfree(mod->data_layout.base);
++#endif
+ }
+ 
+ void *__symbol_get(const char *symbol)
+@@ -2163,6 +2189,24 @@ static int move_module(struct module *mod, struct load_info *info)
+ 	} else
+ 		mod->init_layout.base = NULL;
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	/* Do the allocs. */
++	ptr = vmalloc(mod->data_layout.size);
++	/*
++	 * The pointer to this block is stored in the module structure
++	 * which is inside the block. Just mark it as not being a
++	 * leak.
++	 */
++	kmemleak_not_leak(ptr);
++	if (!ptr) {
++		module_memfree(mod->core_layout.base);
++		module_memfree(mod->init_layout.base);
++		return -ENOMEM;
++	}
++
++	memset(ptr, 0, mod->data_layout.size);
++	mod->data_layout.base = ptr;
++#endif
+ 	/* Transfer each section which specifies SHF_ALLOC */
+ 	pr_debug("final section addresses:\n");
+ 	for (i = 0; i < info->hdr->e_shnum; i++) {
+@@ -2338,6 +2382,9 @@ static void module_deallocate(struct module *mod, struct load_info *info)
+ 	module_arch_freeing_init(mod);
+ 	module_memfree(mod->init_layout.base);
+ 	module_memfree(mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	vfree(mod->data_layout.base);
++#endif
+ }
+ 
+ int __weak module_finalize(const Elf_Ehdr *hdr,
+@@ -3049,13 +3096,20 @@ bool is_module_address(unsigned long addr)
+ struct module *__module_address(unsigned long addr)
+ {
+ 	struct module *mod;
++	struct mod_tree_root *tree;
+ 
+-	if (addr < module_addr_min || addr > module_addr_max)
++	if (addr >= mod_tree.addr_min && addr <= mod_tree.addr_max)
++		tree = &mod_tree;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	else if (addr >= mod_data_tree.addr_min && addr <= mod_data_tree.addr_max)
++		tree = &mod_data_tree;
++#endif
++	else
+ 		return NULL;
+ 
+ 	module_assert_mutex_or_preempt();
+ 
+-	mod = mod_find(addr, &mod_tree);
++	mod = mod_find(addr, tree);
+ 	if (mod) {
+ 		BUG_ON(!within_module(addr, mod));
+ 		if (mod->state == MODULE_STATE_UNFORMED)
+diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
+index 2717e130788e..9a8f4f0f6329 100644
+--- a/kernel/module/procfs.c
++++ b/kernel/module/procfs.c
+@@ -67,13 +67,17 @@ static int m_show(struct seq_file *m, void *p)
+ 	struct module *mod = list_entry(p, struct module, list);
+ 	char buf[MODULE_FLAGS_BUF_SIZE];
+ 	void *value;
++	unsigned int size;
+ 
+ 	/* We always ignore unformed modules. */
+ 	if (mod->state == MODULE_STATE_UNFORMED)
+ 		return 0;
+ 
+-	seq_printf(m, "%s %u",
+-		   mod->name, mod->init_layout.size + mod->core_layout.size);
++	size = mod->init_layout.size + mod->core_layout.size;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	size += mod->data_layout.size;
++#endif
++	seq_printf(m, "%s %u", mod->name, size);
+ 	print_unload_info(m, mod);
+ 
+ 	/* Informative for users. */
+diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
+index 995fe68059db..8ec5cfd60496 100644
+--- a/kernel/module/tree_lookup.c
++++ b/kernel/module/tree_lookup.c
+@@ -83,6 +83,11 @@ void mod_tree_insert(struct module *mod)
+ 	__mod_tree_insert(&mod->core_layout.mtn, &mod_tree);
+ 	if (mod->init_layout.size)
+ 		__mod_tree_insert(&mod->init_layout.mtn, &mod_tree);
++
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	mod->data_layout.mtn.mod = mod;
++	__mod_tree_insert(&mod->data_layout.mtn, &mod_data_tree);
++#endif
+ }
+ 
+ void mod_tree_remove_init(struct module *mod)
+@@ -95,6 +100,9 @@ void mod_tree_remove(struct module *mod)
+ {
+ 	__mod_tree_remove(&mod->core_layout.mtn, &mod_tree);
+ 	mod_tree_remove_init(mod);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	__mod_tree_remove(&mod->data_layout.mtn, &mod_data_tree);
++#endif
+ }
+ 
+ struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
+-- 
+2.34.1
 
