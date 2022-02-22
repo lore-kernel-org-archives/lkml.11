@@ -2,530 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D876EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02012C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234213AbiBVQeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:34:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
+        id S234190AbiBVQeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:34:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234137AbiBVQc6 (ORCPT
+        with ESMTP id S234088AbiBVQdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:32:58 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBB5BB091;
-        Tue, 22 Feb 2022 08:32:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8002FCE17A9;
-        Tue, 22 Feb 2022 16:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25F19C340F3;
-        Tue, 22 Feb 2022 16:32:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645547548;
-        bh=gOLNNSW5Geh3wfVR6/JfYsAKw6uI81oMxU3qD4ONSO0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e7jmaeyldiXqtvDN0SHe+Ksme9c2hBoEjnr1DskEQOJsgVm1SU/h0W9mgYhg3PkyJ
-         B68+r63Q2+5GWP3L4iZh8uXG58LktLBdRrLbYEEJ4vYa1EY3/4v5pX/IIFHZSjMO9w
-         uS/Q08XWFZOA+dTfG0qWXnuZWlG/w1OZmBndFL9MsPIJF2p6GrPOf6dGKNCYBn0U71
-         72CpMVadCsBpw3nT4yCTRKqob30p+Jpjn8YgdIF6FErJSPyh/AVTAN546hUZB0Oy2v
-         GyGlkksfvQ+N1AnW8OfTqphOmQeVZtKW/e7GMrQ9FUBHiThF3cqGbXMrxvhaWic/qY
-         yK6saR6GFmGIQ==
-From:   Keith Busch <kbusch@kernel.org>
-To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     axboe@kernel.dk, hch@lst.de, martin.petersen@oracle.com,
-        colyli@suse.de, Keith Busch <kbusch@kernel.org>,
-        Hannes Reinecke <hare@suse.de>,
-        Klaus Jensen <its@irrelevant.dk>
-Subject: [PATCHv3 09/10] nvme: add support for enhanced metadata
-Date:   Tue, 22 Feb 2022 08:31:43 -0800
-Message-Id: <20220222163144.1782447-10-kbusch@kernel.org>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20220222163144.1782447-1-kbusch@kernel.org>
-References: <20220222163144.1782447-1-kbusch@kernel.org>
+        Tue, 22 Feb 2022 11:33:02 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2061.outbound.protection.outlook.com [40.107.223.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE8C78067
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:32:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fUNxUjlfgozREInkhROu+Q0KtQ1g3/tlDbdm1Uh/bnAEDdCTXP+AC6ywYDBAe7UwE3OjNWQPGnNbZGIb4MALafKw91hl0Kbdw9tg9EXKlJmYlV1dbVSrnGM4XTdSduEHiseX86gTfXgmYu0QEq0JQMGX5nkDdW9SV1gF8H0KTGzVKKo3PHBac3s4U8roNhlRWb+yor3yN5e1HguIOISeozKGt/NswokNsCXRdhSlLSvJSL8+91HxRvNpzJkJtFe48qpO6BiPk/U753g2V9knm3M0b6+bfKo/lhgvmjhcKuR7DAkCEL5v8zHfanhaF640meGJKtRid4nEMNxlNvWGIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mUrD48/lKf99g7pxXn2ANNtaUcqrgcLYXES05dtmjUg=;
+ b=CluUeqSSnpWra59DXFSo12pw2myReklj8uPbnP3tqVsAY1Ka1SL+9kQSIf/bk9JVAtkZqUkkVpIJixWaJDdPS8gES5TtH81riHyJlzHYY+QqEH/sz9FcTj/3pDzHNETPnUg+P3dPFbBXHAMpAgNwhm2G5nMfZNPp0PnRbdMEb0dj+tzoQF524eQXYc7rAYLmrinrxIaqO7togjTtWsRUHhZt0coIjQ1q6vZX8ZQJKyxTg+zj0DiPI1bB6gPGDojTiIDnKs5a28Io8MGwTzT+j/jwpsw4qzLgUX1I/fXPdRRAgmaqX0YW8+FJvku6lqKYeo6mc+lZkHuVtBeey7/RCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mUrD48/lKf99g7pxXn2ANNtaUcqrgcLYXES05dtmjUg=;
+ b=p2lxVNLGNyLsfKi95L2kudOu7X77jQ5X8UuF4FlG/wj88ZKu47DJJm28SilhVRO6TUBNuAyqBvam0/LGRUb6wgmpTWJPvEpGANJaNRFvETRf8BPuaT0AWUoYlh223slermLCQUTxpGoIkJfpz8MiYYA88WfmrRZsAjc7wdtYBQo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com (2603:10b6:208:396::17)
+ by BN7PR12MB2690.namprd12.prod.outlook.com (2603:10b6:408:32::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
+ 2022 16:32:35 +0000
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8d44:d69b:b031:1d50]) by BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8d44:d69b:b031:1d50%4]) with mapi id 15.20.4995.027; Tue, 22 Feb 2022
+ 16:32:34 +0000
+Message-ID: <6b4d8615-4c60-3d89-5210-b495344cabd4@amd.com>
+Date:   Tue, 22 Feb 2022 10:32:32 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] kernel/sched: Update schedstats when migrating threads
+Content-Language: en-US
+To:     peterz@infradead.org, juri.lelli@redhat.com
+Cc:     vincent.guittot@linaro.org, mingo@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
+References: <20220126152222.5429-1-carlos.bilbao@amd.com>
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+In-Reply-To: <20220126152222.5429-1-carlos.bilbao@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR12CA0004.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::17) To BL1PR12MB5874.namprd12.prod.outlook.com
+ (2603:10b6:208:396::17)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 601e52e4-8abe-4d37-cd46-08d9f620ee49
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2690:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR12MB269081086E6A4A352C6AD72FF83B9@BN7PR12MB2690.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CBnI4kK/13Cl76qITBysSbaHN2tYqEBaiRHt2a9+eUfJSajBNaiavtq3ncPJ4g5WnEybRbTvFhrnuj6BBVOnPXBNotc0DW4nFOWDn99jYByyvs7M2YDRW/TQ3LIKYY1bD0nnqVi0nDmvxY4boYpZ7T/v2keam0fjo0FYvokUAxuaei/SyWTewvFdc+ps0wWaP4HcWl3ua8EEL1vGPmqyv1aHCHhT22ZN6hd5AFEpD4XyqTWZDBRe7gIe7cFntAbsyRIftsAxWhFHHjECcFzp3apBxC9jY5oGnA28AhOA7Z7fu4uUEGpJUHY2w83EKDKSgh2QkCGDsjPnBNVzObbWirREWR+BRaibLA1i68BtnHmJtFUnTiIvgf6fBJO0x9v58yo/npn+ZkuGIRo+D0gbh15wKhXOYl2hCL70erxIyXvCYFdQrsMPRJH29b5+Yb4Cf1JeluEzdk2P2cQbIIyRTEnHDUB72wtVRBI4S6bzfvtVLcfdEs5d/RhAWtp+L5P3CtqO2RcwsCilD10uQu6WHdGy0N0m19pyONK27eCQPiiF20ma90uCYh3Y9YhFOJMO6oI/xzj+AM39WrTEdW2HXqvQujiKAMG6yFCzoQgDafYqa5DJVkoi87Uq31+SPZvZAe+B6kvr/Eb+vKnFmUYKFjLpjr09pmmaAE9vl2pSCbZByA5rjHnRFio4MylTynce4kq3KwFwTDY3F1J+KSOdr7u0x2DW8MgEC/SMClwf3WU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5874.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(83380400001)(508600001)(4326008)(53546011)(8676002)(66556008)(6486002)(66476007)(31686004)(36756003)(6506007)(7416002)(26005)(8936002)(86362001)(44832011)(316002)(31696002)(38100700002)(6512007)(2906002)(5660300002)(2616005)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RU5lYkpabXlFWlF2Q0srMVE4TVc5eHJrcWZQdUlVT0xha01vS3R1eStqYWF5?=
+ =?utf-8?B?cmNJRUE5OHBSNDFyN3Vua1BUUDNFMFpYVkpFd0dDMFc5ZlpQaVEzVXFJYWQz?=
+ =?utf-8?B?N01NcDZlcE1xZkxqSEcveGxsaDZqYjVOays5dGQ3OWJkVFN1M2hYQm5Za1ZS?=
+ =?utf-8?B?MThaWVVtdTJTOFRpcXYyQjlYTktUUElqaUt6RzNtdlNBRXh2WkVzMnVwMVZk?=
+ =?utf-8?B?ZVZCbmc3MFE1UnJqOVB6M3VZVW1mMzFOajc4UmxUWnI0dlAvYnRvUXZONDVW?=
+ =?utf-8?B?NGdCQUx1UEVadXEyQ0JMaFd1L1FMbC9WeHVrRGJ1dlF1Q2I0Z0ZVWENFL1p6?=
+ =?utf-8?B?ZFBUNXZvakp2VzdQbHRzUXZzeXNvRlQzR1RrVzdmdUYzSDl4cVpEc2VLVlY4?=
+ =?utf-8?B?Y0dERlZrdEo0OUNmTFg0a2d3NFFKVjVoM256QkpsOE1uVWpCK01HbGdWcjZL?=
+ =?utf-8?B?VW8rclZYRlZiVFJBK0p1OWNJRTg0cmtvcGxKR3piMm5Vb1JRRXkvTVMzS3Zy?=
+ =?utf-8?B?U2lNVDc2a1gySXlsQ1p1aGxGVUJpSFV3aGtReFlvSTNISzBWM2pyZU80bDdI?=
+ =?utf-8?B?bmZuSGpwRlJwWFNickJGalE0QmlQamFMT05BeXdhcGtzMmx4b3FvcDY5cG84?=
+ =?utf-8?B?RGx1a0VsR1pjOGV0dW5URGx3RDRNeXlpdEFHQlF4MmdkazY5ZHFPTlFadEh6?=
+ =?utf-8?B?cGxpdGcyQzFwL3owaGNKY3JsNFpOM1Y5RFNxUWFvVEhNU2RyTmZBNUVUZjEy?=
+ =?utf-8?B?dFF0TkpYcjZiOVNua0dvRWNmTDNjc2Vac1hZQUVEdXhwYlNiYjloTjNxOGxX?=
+ =?utf-8?B?dmhYbnNPRVlka1VqVUVkb0IxejdrOExhbS9uNGdLOVRWcy80R0t4MXNmTE0y?=
+ =?utf-8?B?anhQdmJkZ3c1VHc3cXpYVkNkeDM0Um1kSjlDaUZFTE1LVGYwY3dUMkJIRlpI?=
+ =?utf-8?B?NEsrNnQ5MlpGS3A2cTVPZlZwdlRRK2NXOE80WUZYa01UdTFleStjRjJuc29U?=
+ =?utf-8?B?Y3dRbDNSMHB3aWF0N0JMVU5jQ1hXRk1LcFNvMXZsY2thZ0FTWWE0MjE5QXkv?=
+ =?utf-8?B?MVJXd1JEOTIwQy9wRnpmRGh6dFlPK3Y4UFA3anhFMUs5a3EvZTlkMHJYK3Zr?=
+ =?utf-8?B?TVpOSGZQSGhKSW9Ua0F1ZVdqYW1jSzRNZXp0SDlvZWZuWGw0a21MZVJHVWJO?=
+ =?utf-8?B?Mk9rcHJQMTdwUHNXamhXdGlxRmZSV1N6SUR0eXN6REYzSjNGYkMxczIvZ0J1?=
+ =?utf-8?B?ZnhoK2Zya2lIUXF0NnRyLzQ0U3NDSnJERUE4REdQK0l5akplKzk3YUNBU1NO?=
+ =?utf-8?B?Q3RKaGJpS1lQb3RzMEJEZ0gxUTd1MGJlODlRWExPbHhyMW1IZnVVaDd3T2Js?=
+ =?utf-8?B?UzZxSUEwMEF1Z3pOSmUwazUzK0QwMjgvZ0RDMXBYaFlrMjZDTGVVbHJ1dkd5?=
+ =?utf-8?B?OG0vUUcxVXc2VjZOSWRaUldrWWlIbzNPZ0tIV3dxSTNkOGRUVjB3MnBVWHR1?=
+ =?utf-8?B?NE12OVFvZWVnaEpsRk82a09XU1pXSGhxd1M1WmhEOGY1cG9lMHBVd21DTmNW?=
+ =?utf-8?B?aUl1NDlNeDlscHlpOUlVYUg0UlF0UnFTRXh5R1k0dEkwUDEwWkdvMUpqUmtm?=
+ =?utf-8?B?SUJJMVk1RnBvbStVV2Y1cE42VjY5ZGNTNEN0VGR3SGdQMFhxZGI2Nk5XMSty?=
+ =?utf-8?B?TStYczZlUDErblByd3cwK2dOWlJMd0JibytId01Za1pTMGRXK00wYzd6RHNQ?=
+ =?utf-8?B?a3c0WGpqcGJTNXFsTGtTaUlkdjQ0UDNVU3JFaGljZDVCRmZGOU1NU21WWlk4?=
+ =?utf-8?B?Z25aQ0hEUDVRWnZKNFBIRHFnbXJKZloyMTlnZHZLd1B3V09mSStoRjFhdTBq?=
+ =?utf-8?B?dzdYTmE0KzZ2QXlkVzRwbzFHYlN0MUs0RCszUStOUERFZGlDcmM1SHBlc05F?=
+ =?utf-8?B?RWJ5eU1WZXQzaWsyY2EveDVjU2ZnVjk4WnlkSUJzTlY0QytlWTZSZUt0S3pN?=
+ =?utf-8?B?ZkN6T01EcElQcmxoVVdYZFpZc2U1Ti9saVJHZmpzaGhGd3VnbTNNSlB3dnZC?=
+ =?utf-8?B?R3d1aFRITzVlOWtHdDhKbzhiQnpWTndET3NsTmpLRitxZXVRSFlUbDl5Zytn?=
+ =?utf-8?B?T2I5N2JNT2h1Y080ams0UTRkSS92aUpwY1oxUFc2WUllTFhpak0vZHVrdE52?=
+ =?utf-8?Q?7GtWm6yfeUgnrPHWkEmcGf4=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 601e52e4-8abe-4d37-cd46-08d9f620ee49
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5874.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 16:32:34.7617
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: h1lKFaJxguEIbxOEB09dxfVkWmaXHuOg5WV8pGysmiP1yNKOSFbA03CkPKyJng1CQZvhXAnT0CpRWk6GnPOw3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2690
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NVM Express ratified TP 4068 defines new protection information formats.
-Implement support for the CRC64 guard tags.
+Hi,
 
-Since the block layer doesn't support variable length reference tags,
-driver support for the Storage Tag space is not supported at this time.
+On 1/26/2022 9:22 AM, Carlos Bilbao wrote:
+> The kernel manages per-task scheduler statistics or schedstats. Such
+> counters should be reinitialized when the thread is migrated to a
+> different core rq, except for the values recording number of migrations.
+> 
+> Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
+> ---
+>  kernel/sched/core.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> index fe53e510e711..d64c2a290176 100644
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -8757,6 +8757,7 @@ bool sched_smp_initialized __read_mostly;
+>  int migrate_task_to(struct task_struct *p, int target_cpu)
+>  {
+>  	struct migration_arg arg = { p, target_cpu };
+> +	uint64_t forced_migrations, migrations_cold;
+>  	int curr_cpu = task_cpu(p);
+>  
+>  	if (curr_cpu == target_cpu)
+> @@ -8765,7 +8766,14 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
+>  	if (!cpumask_test_cpu(target_cpu, p->cpus_ptr))
+>  		return -EINVAL;
+>  
+> -	/* TODO: This is not properly updating schedstats */
+> +	if (schedstat_enabled()) {
+> +		forced_migrations = schedstat_val(p->stats.nr_forced_migrations);
+> +		migrations_cold = schedstat_val(p->stats.nr_migrations_cold);
+> +		memset(&p->stats, 0, sizeof(p->stats));
+> +		schedstat_set(p->stats.nr_forced_migrations, forced_migrations);
+> +		schedstat_set(p->stats.nr_migrations_cold, migrations_cold);
+> +		schedstat_inc(p->stats.nr_migrations_cold);
+> +	}
+>  
+>  	trace_sched_move_numa(p, curr_cpu, target_cpu);
+>  	return stop_one_cpu(curr_cpu, migration_cpu_stop, &arg);
 
-Cc: Hannes Reinecke <hare@suse.de>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc: Klaus Jensen <its@irrelevant.dk>
-Signed-off-by: Keith Busch <kbusch@kernel.org>
----
- drivers/nvme/host/core.c | 172 ++++++++++++++++++++++++++++++++-------
- drivers/nvme/host/nvme.h |   4 +-
- include/linux/nvme.h     |  53 ++++++++++--
- 3 files changed, 191 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 8132b1282082..5599c84ec5ec 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -918,6 +918,30 @@ static blk_status_t nvme_setup_discard(struct nvme_ns *ns, struct request *req,
- 	return BLK_STS_OK;
- }
- 
-+static inline void nvme_set_ref_tag(struct nvme_ns *ns, struct nvme_command *cmnd,
-+				    struct request *req)
-+{
-+	u32 upper, lower;
-+	u64 ref48;
-+
-+	/* both rw and write zeroes share the same reftag format */
-+	switch (ns->guard_type) {
-+	case NVME_NVM_NS_16B_GUARD:
-+		cmnd->rw.reftag = cpu_to_le32(t10_pi_ref_tag(req));
-+		break;
-+	case NVME_NVM_NS_64B_GUARD:
-+		ref48 = nvme_pi_extended_ref_tag(req);
-+		lower = lower_32_bits(ref48);
-+		upper = upper_32_bits(ref48);
-+
-+		cmnd->rw.reftag = cpu_to_le32(lower);
-+		cmnd->rw.cdw3 = cpu_to_le32(upper);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static inline blk_status_t nvme_setup_write_zeroes(struct nvme_ns *ns,
- 		struct request *req, struct nvme_command *cmnd)
- {
-@@ -939,8 +963,7 @@ static inline blk_status_t nvme_setup_write_zeroes(struct nvme_ns *ns,
- 		switch (ns->pi_type) {
- 		case NVME_NS_DPS_PI_TYPE1:
- 		case NVME_NS_DPS_PI_TYPE2:
--			cmnd->write_zeroes.reftag =
--				cpu_to_le32(t10_pi_ref_tag(req));
-+			nvme_set_ref_tag(ns, cmnd, req);
- 			break;
- 		}
- 	}
-@@ -967,7 +990,8 @@ static inline blk_status_t nvme_setup_rw(struct nvme_ns *ns,
- 	cmnd->rw.opcode = op;
- 	cmnd->rw.flags = 0;
- 	cmnd->rw.nsid = cpu_to_le32(ns->head->ns_id);
--	cmnd->rw.rsvd2 = 0;
-+	cmnd->rw.cdw2 = 0;
-+	cmnd->rw.cdw3 = 0;
- 	cmnd->rw.metadata = 0;
- 	cmnd->rw.slba = cpu_to_le64(nvme_sect_to_lba(ns, blk_rq_pos(req)));
- 	cmnd->rw.length = cpu_to_le16((blk_rq_bytes(req) >> ns->lba_shift) - 1);
-@@ -1001,7 +1025,7 @@ static inline blk_status_t nvme_setup_rw(struct nvme_ns *ns,
- 					NVME_RW_PRINFO_PRCHK_REF;
- 			if (op == nvme_cmd_zone_append)
- 				control |= NVME_RW_APPEND_PIREMAP;
--			cmnd->rw.reftag = cpu_to_le32(t10_pi_ref_tag(req));
-+			nvme_set_ref_tag(ns, cmnd, req);
- 			break;
- 		}
- 	}
-@@ -1653,33 +1677,58 @@ int nvme_getgeo(struct block_device *bdev, struct hd_geometry *geo)
- }
- 
- #ifdef CONFIG_BLK_DEV_INTEGRITY
--static void nvme_init_integrity(struct gendisk *disk, u16 ms, u8 pi_type,
-+static void nvme_init_integrity(struct gendisk *disk, struct nvme_ns *ns,
- 				u32 max_integrity_segments)
- {
- 	struct blk_integrity integrity = { };
- 
--	switch (pi_type) {
-+	switch (ns->pi_type) {
- 	case NVME_NS_DPS_PI_TYPE3:
--		integrity.profile = &t10_pi_type3_crc;
--		integrity.tag_size = sizeof(u16) + sizeof(u32);
--		integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+		switch (ns->guard_type) {
-+		case NVME_NVM_NS_16B_GUARD:
-+			integrity.profile = &t10_pi_type3_crc;
-+			integrity.tag_size = sizeof(u16) + sizeof(u32);
-+			integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+			break;
-+		case NVME_NVM_NS_64B_GUARD:
-+			integrity.profile = &nvme_pi_type3_crc64;
-+			integrity.tag_size = sizeof(u16) + 6;
-+			integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+			break;
-+		default:
-+			integrity.profile = NULL;
-+			break;
-+		}
- 		break;
- 	case NVME_NS_DPS_PI_TYPE1:
- 	case NVME_NS_DPS_PI_TYPE2:
--		integrity.profile = &t10_pi_type1_crc;
--		integrity.tag_size = sizeof(u16);
--		integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+		switch (ns->guard_type) {
-+		case NVME_NVM_NS_16B_GUARD:
-+			integrity.profile = &t10_pi_type1_crc;
-+			integrity.tag_size = sizeof(u16);
-+			integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+			break;
-+		case NVME_NVM_NS_64B_GUARD:
-+			integrity.profile = &nvme_pi_type1_crc64;
-+			integrity.tag_size = sizeof(u16);
-+			integrity.flags |= BLK_INTEGRITY_DEVICE_CAPABLE;
-+			break;
-+		default:
-+			integrity.profile = NULL;
-+			break;
-+		}
- 		break;
- 	default:
- 		integrity.profile = NULL;
- 		break;
- 	}
--	integrity.tuple_size = ms;
-+
-+	integrity.tuple_size = ns->ms;
- 	blk_integrity_register(disk, &integrity);
- 	blk_queue_max_integrity_segments(disk->queue, max_integrity_segments);
- }
- #else
--static void nvme_init_integrity(struct gendisk *disk, u16 ms, u8 pi_type,
-+static void nvme_init_integrity(struct gendisk *disk, struct nvme_ns *ns,
- 				u32 max_integrity_segments)
- {
- }
-@@ -1756,20 +1805,76 @@ static int nvme_setup_streams_ns(struct nvme_ctrl *ctrl, struct nvme_ns *ns,
- 	return 0;
- }
- 
--static int nvme_configure_metadata(struct nvme_ns *ns, struct nvme_id_ns *id)
-+static int nvme_init_ms(struct nvme_ns *ns, struct nvme_id_ns *id)
- {
-+	bool first = id->dps & NVME_NS_DPS_PI_FIRST;
-+	unsigned lbaf = nvme_lbaf_index(id->flbas);
- 	struct nvme_ctrl *ctrl = ns->ctrl;
-+	struct nvme_command c = { };
-+	struct nvme_id_ns_nvm *nvm;
-+	int ret = 0;
-+	u32 elbaf;
-+
-+	ns->pi_size = 0;
-+	ns->ms = le16_to_cpu(id->lbaf[lbaf].ms);
-+	if (!(ctrl->ctratt & NVME_CTRL_ATTR_ELBAS)) {
-+		ns->pi_size = sizeof(struct t10_pi_tuple);
-+		ns->guard_type = NVME_NVM_NS_16B_GUARD;
-+		goto set_pi;
-+	}
-+
-+	nvm = kzalloc(sizeof(*nvm), GFP_KERNEL);
-+	if (!nvm)
-+		return -ENOMEM;
-+
-+	c.identify.opcode = nvme_admin_identify;
-+	c.identify.nsid = cpu_to_le32(ns->head->ns_id);
-+	c.identify.cns = NVME_ID_CNS_CS_NS;
-+	c.identify.csi = NVME_CSI_NVM;
- 
--	ns->ms = le16_to_cpu(id->lbaf[id->flbas & NVME_NS_FLBAS_LBA_MASK].ms);
--	if (id->dps & NVME_NS_DPS_PI_FIRST ||
--	    ns->ms == sizeof(struct t10_pi_tuple))
-+	ret = nvme_submit_sync_cmd(ns->ctrl->admin_q, &c, nvm, sizeof(*nvm));
-+	if (ret)
-+		goto free_data;
-+
-+	elbaf = le32_to_cpu(nvm->elbaf[lbaf]);
-+
-+	/* no support for storage tag formats right now */
-+	if (nvme_elbaf_sts(elbaf))
-+		goto free_data;
-+
-+	ns->guard_type = nvme_elbaf_guard_type(elbaf);
-+	switch (ns->guard_type) {
-+	case NVME_NVM_NS_64B_GUARD:
-+		ns->pi_size = sizeof(struct nvme_crc64_pi_tuple);
-+		break;
-+	case NVME_NVM_NS_16B_GUARD:
-+		ns->pi_size = sizeof(struct t10_pi_tuple);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+free_data:
-+	kfree(nvm);
-+set_pi:
-+	if (ns->pi_size && (first || ns->ms == ns->pi_size))
- 		ns->pi_type = id->dps & NVME_NS_DPS_PI_MASK;
- 	else
- 		ns->pi_type = 0;
- 
-+	return ret;
-+}
-+
-+static void nvme_configure_metadata(struct nvme_ns *ns, struct nvme_id_ns *id)
-+{
-+	struct nvme_ctrl *ctrl = ns->ctrl;
-+
-+	if (nvme_init_ms(ns, id))
-+		return;
-+
- 	ns->features &= ~(NVME_NS_METADATA_SUPPORTED | NVME_NS_EXT_LBAS);
- 	if (!ns->ms || !(ctrl->ops->flags & NVME_F_METADATA_SUPPORTED))
--		return 0;
-+		return;
- 	if (ctrl->ops->flags & NVME_F_FABRICS) {
- 		/*
- 		 * The NVMe over Fabrics specification only supports metadata as
-@@ -1777,7 +1882,7 @@ static int nvme_configure_metadata(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		 * remap the separate metadata buffer from the block layer.
- 		 */
- 		if (WARN_ON_ONCE(!(id->flbas & NVME_NS_FLBAS_META_EXT)))
--			return -EINVAL;
-+			return;
- 
- 		ns->features |= NVME_NS_EXT_LBAS;
- 
-@@ -1804,8 +1909,6 @@ static int nvme_configure_metadata(struct nvme_ns *ns, struct nvme_id_ns *id)
- 		else
- 			ns->features |= NVME_NS_METADATA_SUPPORTED;
- 	}
--
--	return 0;
- }
- 
- static void nvme_set_queue_limits(struct nvme_ctrl *ctrl,
-@@ -1884,7 +1987,7 @@ static void nvme_update_disk_info(struct gendisk *disk,
- 	if (ns->ms) {
- 		if (IS_ENABLED(CONFIG_BLK_DEV_INTEGRITY) &&
- 		    (ns->features & NVME_NS_METADATA_SUPPORTED))
--			nvme_init_integrity(disk, ns->ms, ns->pi_type,
-+			nvme_init_integrity(disk, ns,
- 					    ns->ctrl->max_integrity_segments);
- 		else if (!nvme_ns_has_pi(ns))
- 			capacity = 0;
-@@ -1939,16 +2042,14 @@ static void nvme_set_chunk_sectors(struct nvme_ns *ns, struct nvme_id_ns *id)
- 
- static int nvme_update_ns_info(struct nvme_ns *ns, struct nvme_id_ns *id)
- {
--	unsigned lbaf = id->flbas & NVME_NS_FLBAS_LBA_MASK;
-+	unsigned lbaf = nvme_lbaf_index(id->flbas);
- 	int ret;
- 
- 	blk_mq_freeze_queue(ns->disk->queue);
- 	ns->lba_shift = id->lbaf[lbaf].ds;
- 	nvme_set_queue_limits(ns->ctrl, ns->queue);
- 
--	ret = nvme_configure_metadata(ns, id);
--	if (ret)
--		goto out_unfreeze;
-+	nvme_configure_metadata(ns, id);
- 	nvme_set_chunk_sectors(ns, id);
- 	nvme_update_disk_info(ns->disk, ns, id);
- 
-@@ -2286,20 +2387,27 @@ static int nvme_configure_timestamp(struct nvme_ctrl *ctrl)
- 	return ret;
- }
- 
--static int nvme_configure_acre(struct nvme_ctrl *ctrl)
-+static int nvme_configure_host_options(struct nvme_ctrl *ctrl)
- {
- 	struct nvme_feat_host_behavior *host;
-+	u8 acre = 0, lbafee = 0;
- 	int ret;
- 
- 	/* Don't bother enabling the feature if retry delay is not reported */
--	if (!ctrl->crdt[0])
-+	if (ctrl->crdt[0])
-+		acre = NVME_ENABLE_ACRE;
-+	if (ctrl->ctratt & NVME_CTRL_ATTR_ELBAS)
-+		lbafee = NVME_ENABLE_LBAFEE;
-+
-+	if (!acre && !lbafee)
- 		return 0;
- 
- 	host = kzalloc(sizeof(*host), GFP_KERNEL);
- 	if (!host)
- 		return 0;
- 
--	host->acre = NVME_ENABLE_ACRE;
-+	host->acre = acre;
-+	host->lbafee = lbafee;
- 	ret = nvme_set_features(ctrl, NVME_FEAT_HOST_BEHAVIOR, 0,
- 				host, sizeof(*host), NULL);
- 	kfree(host);
-@@ -3141,7 +3249,7 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = nvme_configure_acre(ctrl);
-+	ret = nvme_configure_host_options(ctrl);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -4814,12 +4922,14 @@ static inline void _nvme_check_size(void)
- 	BUILD_BUG_ON(sizeof(struct nvme_id_ctrl) != NVME_IDENTIFY_DATA_SIZE);
- 	BUILD_BUG_ON(sizeof(struct nvme_id_ns) != NVME_IDENTIFY_DATA_SIZE);
- 	BUILD_BUG_ON(sizeof(struct nvme_id_ns_zns) != NVME_IDENTIFY_DATA_SIZE);
-+	BUILD_BUG_ON(sizeof(struct nvme_id_ns_nvm) != NVME_IDENTIFY_DATA_SIZE);
- 	BUILD_BUG_ON(sizeof(struct nvme_id_ctrl_zns) != NVME_IDENTIFY_DATA_SIZE);
- 	BUILD_BUG_ON(sizeof(struct nvme_id_ctrl_nvm) != NVME_IDENTIFY_DATA_SIZE);
- 	BUILD_BUG_ON(sizeof(struct nvme_lba_range_type) != 64);
- 	BUILD_BUG_ON(sizeof(struct nvme_smart_log) != 512);
- 	BUILD_BUG_ON(sizeof(struct nvme_dbbuf) != 64);
- 	BUILD_BUG_ON(sizeof(struct nvme_directive_cmd) != 64);
-+	BUILD_BUG_ON(sizeof(struct nvme_feat_host_behavior) != 512);
- }
- 
- 
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 587d92df118b..77257e02ef03 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -454,9 +454,11 @@ struct nvme_ns {
- 
- 	int lba_shift;
- 	u16 ms;
-+	u16 pi_size;
- 	u16 sgs;
- 	u32 sws;
- 	u8 pi_type;
-+	u8 guard_type;
- #ifdef CONFIG_BLK_DEV_ZONED
- 	u64 zsze;
- #endif
-@@ -479,7 +481,7 @@ struct nvme_ns {
- /* NVMe ns supports metadata actions by the controller (generate/strip) */
- static inline bool nvme_ns_has_pi(struct nvme_ns *ns)
- {
--	return ns->pi_type && ns->ms == sizeof(struct t10_pi_tuple);
-+	return ns->pi_type && ns->ms == ns->pi_size;
- }
- 
- struct nvme_ctrl_ops {
-diff --git a/include/linux/nvme.h b/include/linux/nvme.h
-index 9dbc3ef4daf7..4f44f83817a9 100644
---- a/include/linux/nvme.h
-+++ b/include/linux/nvme.h
-@@ -244,6 +244,7 @@ enum {
- enum nvme_ctrl_attr {
- 	NVME_CTRL_ATTR_HID_128_BIT	= (1 << 0),
- 	NVME_CTRL_ATTR_TBKAS		= (1 << 6),
-+	NVME_CTRL_ATTR_ELBAS		= (1 << 15),
- };
- 
- struct nvme_id_ctrl {
-@@ -399,8 +400,7 @@ struct nvme_id_ns {
- 	__le16			endgid;
- 	__u8			nguid[16];
- 	__u8			eui64[8];
--	struct nvme_lbaf	lbaf[16];
--	__u8			rsvd192[192];
-+	struct nvme_lbaf	lbaf[64];
- 	__u8			vs[3712];
- };
- 
-@@ -418,8 +418,7 @@ struct nvme_id_ns_zns {
- 	__le32			rrl;
- 	__le32			frl;
- 	__u8			rsvd20[2796];
--	struct nvme_zns_lbafe	lbafe[16];
--	__u8			rsvd3072[768];
-+	struct nvme_zns_lbafe	lbafe[64];
- 	__u8			vs[256];
- };
- 
-@@ -428,6 +427,30 @@ struct nvme_id_ctrl_zns {
- 	__u8	rsvd1[4095];
- };
- 
-+struct nvme_id_ns_nvm {
-+	__le64	lbstm;
-+	__u8	pic;
-+	__u8	rsvd9[3];
-+	__le32	elbaf[64];
-+	__u8	rsvd268[3828];
-+};
-+
-+enum {
-+	NVME_ID_NS_NVM_STS_MASK		= 0x3f,
-+	NVME_ID_NS_NVM_GUARD_SHIFT	= 7,
-+	NVME_ID_NS_NVM_GUARD_MASK	= 0x3,
-+};
-+
-+static inline __u8 nvme_elbaf_sts(__u32 elbaf)
-+{
-+	return elbaf & NVME_ID_NS_NVM_STS_MASK;
-+}
-+
-+static inline __u8 nvme_elbaf_guard_type(__u32 elbaf)
-+{
-+	return (elbaf >> NVME_ID_NS_NVM_GUARD_SHIFT) & NVME_ID_NS_NVM_GUARD_MASK;
-+}
-+
- struct nvme_id_ctrl_nvm {
- 	__u8	vsl;
- 	__u8	wzsl;
-@@ -478,6 +501,8 @@ enum {
- 	NVME_NS_FEAT_IO_OPT	= 1 << 4,
- 	NVME_NS_ATTR_RO		= 1 << 0,
- 	NVME_NS_FLBAS_LBA_MASK	= 0xf,
-+	NVME_NS_FLBAS_LBA_UMASK	= 0x60,
-+	NVME_NS_FLBAS_LBA_SHIFT	= 1,
- 	NVME_NS_FLBAS_META_EXT	= 0x10,
- 	NVME_NS_NMIC_SHARED	= 1 << 0,
- 	NVME_LBAF_RP_BEST	= 0,
-@@ -496,6 +521,18 @@ enum {
- 	NVME_NS_DPS_PI_TYPE3	= 3,
- };
- 
-+enum {
-+	NVME_NVM_NS_16B_GUARD	= 0,
-+	NVME_NVM_NS_32B_GUARD	= 1,
-+	NVME_NVM_NS_64B_GUARD	= 2,
-+};
-+
-+static inline __u8 nvme_lbaf_index(__u8 flbas)
-+{
-+	return (flbas & NVME_NS_FLBAS_LBA_MASK) |
-+		((flbas & NVME_NS_FLBAS_LBA_UMASK) >> NVME_NS_FLBAS_LBA_SHIFT);
-+}
-+
- /* Identify Namespace Metadata Capabilities (MC): */
- enum {
- 	NVME_MC_EXTENDED_LBA	= (1 << 0),
-@@ -842,7 +879,8 @@ struct nvme_rw_command {
- 	__u8			flags;
- 	__u16			command_id;
- 	__le32			nsid;
--	__u64			rsvd2;
-+	__le32			cdw2;
-+	__le32			cdw3;
- 	__le64			metadata;
- 	union nvme_data_ptr	dptr;
- 	__le64			slba;
-@@ -996,11 +1034,14 @@ enum {
- 
- struct nvme_feat_host_behavior {
- 	__u8 acre;
--	__u8 resv1[511];
-+	__u8 etdas;
-+	__u8 lbafee;
-+	__u8 resv1[509];
- };
- 
- enum {
- 	NVME_ENABLE_ACRE	= 1,
-+	NVME_ENABLE_LBAFEE	= 1,
- };
- 
- /* Admin commands */
--- 
-2.25.4
+I would love to hear some thoughts on this. 
 
+Thanks,
+Carlos
