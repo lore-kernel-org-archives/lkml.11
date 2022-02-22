@@ -2,98 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F854C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B9DC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233407AbiBVPT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:19:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
+        id S233408AbiBVPVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:21:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbiBVPTx (ORCPT
+        with ESMTP id S231143AbiBVPVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:19:53 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E791617E3
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:19:27 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id ay3so7043191plb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:19:27 -0800 (PST)
+        Tue, 22 Feb 2022 10:21:38 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAA21617CD
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:21:13 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id g6so20464848ybe.12
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:21:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=065W2+7lVOrV2GcgMzw5UaR+s8GD1b5OP/wE8XesdUw=;
-        b=M6o9Eqsxq9Sw+GXYBxLjd+Tl8x27VtCbtUrM0kPlPwmRvyoeQj4YVcvdFYXRazP9Lq
-         8/IulR1QJIiDevh4bufqW/tYtPTdEVBO6p55gMxVWOZ80QToDR2X6EHhRYgyb81yOB+7
-         ttV719vvggrvnjI6DnxlCrCq9xetRsCk75OV9MTg6EUx2B8JtPF/JtbWgZ66oYwtQ318
-         HILrpMoMxnkFvJ00NVc9jHq8Vl9MhbBd0qSJNMYMlKga2TtQNlZuioXDbv/UUiIMwh06
-         y4X8njKSsbcao2FduUFmZWA0hzcvom9YdkO+JDOuvPtHQ9LQCm3Mww0zoQbQNy61r9tr
-         /cFg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HVdVMfysf95jTHRvOxuNoVjxuB0CjZvhXhqlbIHuN0Y=;
+        b=KTh8aFNGaoyntsSAxBWClVP9/nSFTBS6irzubM66J/T39Yf6IABij0qQupUfuzzdZH
+         ihIj4SU7EJtHUp3eNKbXfhrrfrdHCRjI06QOYhuWfa0CrRe5czKlGZ0kFgPhNtdusiE/
+         0cWGtj2Eo8LQ48RmeuO5gh48DJcz9Ic28mn3vkGeynwoJm2hTtHUmOW3NPXIa4x6jgsf
+         6IVhC3O85FyU1YztP8Nj8fRJuiHPBP5iQXLzDxOET1eFSu7QBjKPOJvhBmaOXJMJnFLm
+         a5nEmVP4VCmsyQ2WvCMH6N508jNFlxP3rso6X+xul9CMCySIXCetVpdBnk8Y2gRuOE2p
+         bnRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=065W2+7lVOrV2GcgMzw5UaR+s8GD1b5OP/wE8XesdUw=;
-        b=Q5k/tcyZHONc3CykxwYR8YiTVWlNdNAPF01xtTilzcZ7KH+s32hiFS3pBxDJKrupk4
-         39spYiILK1SehQKNZFjMcVC7ODIuPmmybSUQrcchEXQyV3YEWORKdfbJqyiOcEWnWyjC
-         Uumwwr6nDn4l4MzUV9xGK8R/H8bz8eVR0oLQ64wLTXPbq5I2jOHrAVdQjq6w6sDILfNv
-         rbB4WYEtG2+h7i6zi8s8vKplNEVzwtfiyrH0UJAWd+uKowHmfkRky5oTBsab1j6sH1DK
-         JctzB7xghdXezaxCK5PmJ5Plzr1Wnko5MdnsbMEoK8oReJh8HQok+59glCkmfARd5un0
-         l4Yw==
-X-Gm-Message-State: AOAM5328Nb6BZXVUCD6J0arhlGFucPwBpVD6X5/hdWQMmRIBPz6rT3xy
-        SMHEOZmRa6JMNg7m8mPeX+VHrA==
-X-Google-Smtp-Source: ABdhPJzi/cY1RRFVwaUXZmKVSHGczkZD8tS0IdmxJVGzLTCaKbkOKxh+swzfMDo5MH1l5QehMEnGZQ==
-X-Received: by 2002:a17:902:d502:b0:14b:4520:9380 with SMTP id b2-20020a170902d50200b0014b45209380mr23995568plg.53.1645543166647;
-        Tue, 22 Feb 2022 07:19:26 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id y72sm17067538pfb.91.2022.02.22.07.19.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 07:19:26 -0800 (PST)
-Date:   Tue, 22 Feb 2022 15:19:22 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peng Hao <flyingpenghao@gmail.com>
-Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM:nVMX: Make setup/unsetup under the same conditions
-Message-ID: <YhT++ivZqDVzYRX0@google.com>
-References: <20220222104054.70286-1-flyingpeng@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HVdVMfysf95jTHRvOxuNoVjxuB0CjZvhXhqlbIHuN0Y=;
+        b=1G35xupxnyYiMz2Cq8MQWU3iyS/O7XMwhir7Yf6yocRWvg+fbwbuX+UHI7/rwnEYbm
+         ZGq5dXNGx0sT1oo1vhsnPONlExkcurPdAB7KsEHdB/D/7lW0uKCJNpWj7ZTjPcd+R9nx
+         xY+84ouvSu0eYFZ1fmVaUN/mHCEGR1HLmiEGWFwKL/f6BxodF+fPC8jHISjtXUPTqnO/
+         +mUq2L+9gmNzo4OTVD0d2vvumN70wNZMPyUUeSovISWHAKEOW5NNa3gQYuxElIWX1x3y
+         lp33QtQA7VLHGgbIkyb7DLmHU7GGdFMfZRiayA+RuQk/MPEw7/I9m+ZR8QKHyNaPOc9P
+         mn/A==
+X-Gm-Message-State: AOAM532rnkuk42+5ZEphp4FzQS6wnt4sHjMFvpAJ4qkyjxegDVPvZJTI
+        Rf2VaZ6dWPd2iK0/Fpn4gSoGl+QMILoSO+Bjzrv9nQ==
+X-Google-Smtp-Source: ABdhPJyCcJARRbkiTPXc35f6YTtpOe1UTQH526CZggy98Wmxv6UfuXKgc5itp4zRkLxISttmSWvkXXI+3Fq9wJhPrqM=
+X-Received: by 2002:a25:aac3:0:b0:624:ab10:49dc with SMTP id
+ t61-20020a25aac3000000b00624ab1049dcmr6967837ybi.291.1645543272820; Tue, 22
+ Feb 2022 07:21:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222104054.70286-1-flyingpeng@tencent.com>
+References: <20220216212433.1373903-1-luca@z3ntu.xyz> <20220216212433.1373903-2-luca@z3ntu.xyz>
+In-Reply-To: <20220216212433.1373903-2-luca@z3ntu.xyz>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 22 Feb 2022 16:21:01 +0100
+Message-ID: <CACRpkdZhtdyni0cKT43nd9YVSnA_Dza6=kuECuXLJKbDG2rbEA@mail.gmail.com>
+Subject: Re: [PATCH 1/5] dt-bindings: bluetooth: broadcom: add BCM43430A0
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Needs a space added as fixup.
+On Wed, Feb 16, 2022 at 10:25 PM Luca Weiss <luca@z3ntu.xyz> wrote:
 
-On Tue, Feb 22, 2022, Peng Hao wrote:
-> From: Peng Hao <flyingpeng@tencent.com>
-> 
-> Make sure nested_vmx_hardware_setup/unsetup() are called in pairs under
-> the same conditions.  Calling nested_vmx_hardware_unsetup() when nested
-> is false "works" right now because it only calls free_page() on zero-
-> initialized pointers, but it's possible that more code will be added to
-> nested_vmx_hardware_unsetup() in the future.
-> 
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 75ed7d6f35cc..9fad3c73395a 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -7852,7 +7852,7 @@ static __init int hardware_setup(void)
->  	vmx_set_cpu_caps();
->  
->  	r = alloc_kvm_area();
-> -	if (r)
-> +	if (r && nested)
->  		nested_vmx_hardware_unsetup();
->  
->  	kvm_set_posted_intr_wakeup_handler(pi_wakeup_handler);
-> -- 
-> 2.27.0
-> 
+> Document the compatible string for BCM43430A0 bluetooth.
+>
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+
+Looks good to me:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
