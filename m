@@ -2,113 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17278C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiBVI2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:28:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
+        id S229820AbiBVI2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:28:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbiBVI1t (ORCPT
+        with ESMTP id S229780AbiBVI1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:27:49 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455319BBB3;
-        Tue, 22 Feb 2022 00:27:25 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F1AA31F397;
-        Tue, 22 Feb 2022 08:27:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645518444; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dKa9YzG6WdPDW42WrXRDZOX/ZgG302zZsU6kzGjfuRk=;
-        b=Td2+1nGSGsZ5KMAOXZdDV1sjvAKTWie8Ea7gXdjxrT1MQOLxRE4sf1yFUF0ozBZVaxx57G
-        F2w6B+J4F1f3Eg7LYwOH4bUr084LTNnx3qdml8GVzZw7C34nAkA10vZYP/GcPXeYqmArAE
-        wCViF/uK3oZXRCgtuFDkWlfv6CnR2eU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645518444;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dKa9YzG6WdPDW42WrXRDZOX/ZgG302zZsU6kzGjfuRk=;
-        b=NGZGyoSgJN2YJMiLD1FSYJmywAnquy44CmumlY0Lj78LVdd0HvqzHfi6xzzURKNLWHg+/L
-        L+QdSHBoxKlpW+CA==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DE5A8A3B88;
-        Tue, 22 Feb 2022 08:27:23 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 9F9B5A0606; Tue, 22 Feb 2022 09:27:23 +0100 (CET)
-Date:   Tue, 22 Feb 2022 09:27:23 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Byungchul Park <byungchul.park@lge.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, axboe@kernel.dk,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: Re: Report 1 in ext4 and journal based on v5.17-rc1
-Message-ID: <20220222082723.rddf4typah3wegrc@quack3.lan>
-References: <1645095472-26530-1-git-send-email-byungchul.park@lge.com>
- <1645096204-31670-1-git-send-email-byungchul.park@lge.com>
+        Tue, 22 Feb 2022 03:27:45 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF442A419C;
+        Tue, 22 Feb 2022 00:27:20 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id bq11so13710137edb.2;
+        Tue, 22 Feb 2022 00:27:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YeBwl+cDNDxkcii4iqqmSQh8iOckl1iaIpteuIFwTpM=;
+        b=cqCcBFsrzeJKHRx4gHlf7ld7nCQ2LRR7Hk9EwhMt4BExbFeDUyhfESgj3mb/pNAks1
+         f6v5gibh6yg8f2rpo3rnCmV4aOu9aQtdWSWFnkeIwvF7ZzW2jH9wD828iRo++5Qq9hiP
+         iFMSSWli1mUKheJ+ByRAVr+DTrlxrN8d1GpL8csErTYywrIdJD+wgKdJhbz14YcTjNN9
+         QLYHpOJj4+aD1gQXQR4BBuFY7ODOlwSbpWIlkPcFtX1RGy1o2J52AsHyRf+K/sMYD/Ts
+         Qkp6/Su6sQs5AZVED84I1YoDKGniaI4xqKFxUJqRAyMuXaws9yZcAuBmOBlZ4fLUwczV
+         njhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YeBwl+cDNDxkcii4iqqmSQh8iOckl1iaIpteuIFwTpM=;
+        b=jkiLqk4URiNcID+mVrM9Ld7MfA5+WGAXfDXHq23CPXH0inIG4TqnASrJpqn0voSJ2j
+         z+NxKjzxEZiDMEhG1SLjHUb1yqJqU+VGX9t5koqEq6N3UXD/M76qJw7uFtwctdVJSow/
+         F5wgt1cv//aVN4bqffjJ3rVh/UTXvjGfLVl8JVXAjqXHYn5qQ4lrt7b5wSw/ovjB3T93
+         ySK9CrK9tjgJGJ1PntcjG277Nn0BepEyBfrjEBnobzYvp1kWRRogsqtjl7xbsjHeTij0
+         HovlHpuHKQrHKDR8nqOKcBF98cj7TVGnjM9hIDISBexMPFRMGRxdN0mZzQSQN5m3QMHc
+         FJxw==
+X-Gm-Message-State: AOAM533WNDEv71tK6zq5f6gxm+XZyozsX9nvExWeDBfWvIQTNZZv4g+q
+        aT4aEQUOBYdTOgotgS9KkfLgob9rVXXHkOROL44=
+X-Google-Smtp-Source: ABdhPJzaz9o/CRhBuFWxIAMNaUpZe/CUzLwFI2z7NFjp37R9qL4VEb/wnJoPDe0i1GXAZrVXlCIg3+4GTr9kvxWyShw=
+X-Received: by 2002:a05:6402:51ca:b0:410:a0d1:c6e9 with SMTP id
+ r10-20020a05640251ca00b00410a0d1c6e9mr25307011edd.200.1645518439393; Tue, 22
+ Feb 2022 00:27:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1645096204-31670-1-git-send-email-byungchul.park@lge.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com> <YhQHqDJvahgriDZK@lunn.ch>
+In-Reply-To: <YhQHqDJvahgriDZK@lunn.ch>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 22 Feb 2022 09:26:43 +0100
+Message-ID: <CAHp75VeHiTo6B=Ppz9Yc6OiC7nb5DViDt_bGifj6Jr=g89zf8Q@mail.gmail.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 17-02-22 20:10:03, Byungchul Park wrote:
-> [    7.009608] ===================================================
-> [    7.009613] DEPT: Circular dependency has been detected.
-> [    7.009614] 5.17.0-rc1-00014-g8a599299c0cb-dirty #30 Tainted: G        W
-> [    7.009616] ---------------------------------------------------
-> [    7.009617] summary
-> [    7.009618] ---------------------------------------------------
-> [    7.009618] *** DEADLOCK ***
-> [    7.009618]
-> [    7.009619] context A
-> [    7.009619]     [S] (unknown)(&(bit_wait_table + i)->dmap:0)
-> [    7.009621]     [W] down_write(&ei->i_data_sem:0)
-> [    7.009623]     [E] event(&(bit_wait_table + i)->dmap:0)
-> [    7.009624]
-> [    7.009625] context B
-> [    7.009625]     [S] down_read(&ei->i_data_sem:0)
-> [    7.009626]     [W] wait(&(bit_wait_table + i)->dmap:0)
-> [    7.009627]     [E] up_read(&ei->i_data_sem:0)
-> [    7.009628]
+On Tue, Feb 22, 2022 at 5:57 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > This series has been tested on a x86 kernel build without CONFIG_OF.
+> > Another kernel was also built with COMPILE_TEST and CONFIG_OF support
+> > to build as most drivers as possible. It was also tested on a sparx5
+> > arm64 with CONFIG_OF. However, it was not tested with an ACPI
+> > description evolved enough to validate all the changes.
+>
+> By that, do you mean a DSD description?
+>
+> In the DT world, we avoid snow flakes. Once you define a binding, it
+> is expected every following board will use it. So what i believe you
+> are doing here is defining how i2c muxes are described in APCI.
 
-Looking into this I have noticed that Dept here tracks bitlocks (buffer
-locks in particular) but it apparently treats locks on all buffers as one
-locking class so it conflates lock on superblock buffer with a lock on
-extent tree block buffer. These are wastly different locks with different
-locking constraints. So to avoid false positives in filesystems we will
-need to add annotations to differentiate locks on different buffers (based
-on what the block is used for). Similarly how we e.g. annotate i_rwsem for
-different inodes.
+Linux kernel has already established description of I2C muxes in ACPI:
+https://www.kernel.org/doc/html/latest/firmware-guide/acpi/i2c-muxes.html
 
-								Honza
+I'm not sure we want another one.
+
+> How
+> SFP devices are described in ACPI. Until the ACPI standards committee
+> says otherwise, this is it. So you need to clearly document
+> this. Please add to Documentation/firmware-guide/acpi/dsd.
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+With Best Regards,
+Andy Shevchenko
