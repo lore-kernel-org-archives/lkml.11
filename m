@@ -2,94 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 163C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 02:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 02:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238892AbiBVCG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 21:06:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36748 "EHLO
+        id S238912AbiBVCHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 21:07:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiBVCGy (ORCPT
+        with ESMTP id S238893AbiBVCHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 21:06:54 -0500
-Received: from out203-205-221-209.mail.qq.com (out203-205-221-209.mail.qq.com [203.205.221.209])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4E9240B2
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:06:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1645495584;
-        bh=uGSXRskyGSjCdegTSUAsPooBnCz/sf0teMn+TYg1BzM=;
-        h=From:To:Cc:Subject:Date;
-        b=inMSIudDGEc/UQfadcjArDoIN3pYkQLH15wc6CjL6J10Zac+KTRZT+ppRcOKLT0jk
-         S/GZwgNg4b/5uhaqobP/+tRzAMhRfN96xcVk0cFUCUt/GHFpicTfxxUEQCBUZrqlPe
-         v45VUq4s8zrmFRI9hYjzxPKVn8gOMV9ZVnr2FBxI=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
-        id 89BF689; Tue, 22 Feb 2022 10:02:09 +0800
-X-QQ-mid: xmsmtpt1645495329twjjodjhi
-Message-ID: <tencent_D9887936F780A393C232DC48C9EC3F1D4405@qq.com>
-X-QQ-XMAILINFO: NIbHSc2ysKlDIVpcczwrsD6Mk3E7W3mD0aSsBerJF+SdT1oIkxVMzSQMrWwRhg
-         hoOwvP10MXXW/nsY0PXGEL8AKPsvXxqA9p/IUU/0kKMvz9UJiUoW5CJRCSn1DwfDCvaX+070h4aG
-         9kCmmAfHtDvLcaWgkfetTwxSiuOxAUeQco0OPPf2fQgbXbkiyJ1ljZZpyIC3I5z440xmmOKjf3ql
-         Jdlu8qJQJuyWkOk4n6QuRDaX8f77cauGW6YRi1tlJkbEfk+jOeoedaUPR5RJP/eKK3ejiD4r6xcd
-         kEOSUDdwQ6njieO4GOkXOnDVzUnG7cDaBTRDGJbLcXYJgq/6mXKRsjPuz+cSxNzDscsk/t0FiYIh
-         cc172OQBwxLI3vwMYdIGY5a6MP+mIQshXjFFJJA/nvF6He7U1an4eO+o4BaUoxHM/HHwa9AW76nF
-         24/kUUAtUT1hm6MAqar58ORv7ThXbRSYX2jVhkw28DEAFgJY4EYXWv7h9AgLWMpcwy3rnMMsPIqJ
-         awSVKhckn5FHPuHe26vw3Mv+olvHQJ+kKiHKfAp3AWMEgAaKAjLOFSr1gu1iEcrgTXJv/EyRvasT
-         fi1Ljrg6vRnrIZ2fHqot9qZXKkZw4AFp08MCboyd7GDcHW9A5NbWhc9eeGYBMtX75vTc1eKmLzSX
-         G+Fe/SPNW0BBlq1ip4H6FVnX2zqhwEzigzuEhOLhNsIa0f3vYfvgcLftbGG33pMZcAsVs/plONZG
-         1IPp7GScdU41+WOGa9fJ536nqx9C6qZ2LbTQ7c8Hu2iNBE2tqX2iFovX40f+bfGw7OgxE1+cEZRN
-         LZfiVcpqThcJ82mAtzCyw9fBsaBH53JKTwvdH1FoGR6zOuMbfhwKTSi1AP8IKJv/GAqauk6Bo8EE
-         hVr7FCSv8h+l6OXlKj7OM=
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, jerome.pouiller@silabs.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v3 2/2] staging: wfx: check the return value of devm_kmalloc()
-Date:   Tue, 22 Feb 2022 10:00:24 +0800
-X-OQ-MSGID: <20220222020024.3620-1-xkernel.wang@foxmail.com>
+        Mon, 21 Feb 2022 21:07:16 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA7DF18
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:06:51 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id y11so10447731pfi.11
+        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 18:06:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WpheS558QebQmAzCqdnB2qwELzokfGBgEVFRE8fJ3OU=;
+        b=HstUXHaaGOFOwZp7qatCSERoH2HZ/h8eUJPfiv/15pdXJCfyt7a5t+mthYg7vGe//I
+         N6wD5z6KhzSkPPt32sSyZVM0GuorITATsIt2MLsi59flQqFGhyjqT14hIz39kciaVnnC
+         rGg7Of8TAfijYfh3UVhgDaymWDa9dR/w5NnaY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WpheS558QebQmAzCqdnB2qwELzokfGBgEVFRE8fJ3OU=;
+        b=n+A+N6MTLyFCEJQd2WBf7kVvo6WbTCKHCMTJ7BUCyRhSs6/1vH6jCSRlzKWtT38YMN
+         BT/St88f7O1JkogV45UEXLS/+oq5UBUa+8uB1InFjCxMG739PboQrmx/0/WtrtBGiub6
+         waBC10ZmHDuZrH9zQ+p6UCl+k89WJPT8btPFX4eF2IICXROUrcYD3JXO02yDKvW/34WL
+         lgPyr9H1B/+nY0pONMNtstfVbxyljdVSDsCQQUcq6KyVZMYYIZ17x+P87sV0+Vv2IbkG
+         7Jk0I8aLfCFoMXoTJbGiPLKktZnmP5Uor4m5bEXPCq19XG6YvE+9pDcCk6JOYXl3NKxR
+         QzCw==
+X-Gm-Message-State: AOAM530gTMdj1tQvlswDlHW1Fh5S1WHMb8OkqQDoaRqsqAp4Dh4jgldf
+        QxeDBDbSQva0UmA+cbI9JfQfhQ==
+X-Google-Smtp-Source: ABdhPJzWDpCEnhLjgpdTTPYlMMYnwEswpRkmPnFllusyYMBaszFpAEw0jj2bXr0HFnezIsU/0JA3Cg==
+X-Received: by 2002:a62:e917:0:b0:4e0:1646:3b82 with SMTP id j23-20020a62e917000000b004e016463b82mr22736008pfh.57.1645495611127;
+        Mon, 21 Feb 2022 18:06:51 -0800 (PST)
+Received: from google.com ([2401:fa00:8f:203:3f16:2239:960e:24f])
+        by smtp.gmail.com with ESMTPSA id h9sm14317305pfv.135.2022.02.21.18.06.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Feb 2022 18:06:50 -0800 (PST)
+Date:   Tue, 22 Feb 2022 11:06:44 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     linux-kernel@vger.kernel.org, bhe@redhat.com, pmladek@suse.com,
+        akpm@linux-foundation.org, anton@enomsg.org, ccross@android.com,
+        dyoung@redhat.com, feng.tang@intel.com, john.ogness@linutronix.de,
+        keescook@chromium.org, kernel@gpiccoli.net,
+        kexec@lists.infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, tony.luck@intel.com, vgoyal@redhat.com
+Subject: Re: [PATCH V6] panic: Move panic_print before kmsg dumpers
+Message-ID: <YhRFNKtxSE8Xrbfw@google.com>
+References: <20220214141308.841525-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214141308.841525-1-gpiccoli@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On (22/02/14 11:13), Guilherme G. Piccoli wrote:
+> 
+> The additional messages from panic_print could overwrite the oldest
+> messages when the buffer is full. The only reasonable solution is to
+> use a large enough log buffer, hence we added an advice into the kernel
+> parameters documentation about that.
 
-devm_kmalloc() returns a pointer to allocated memory on success, NULL
-on failure. While there is a memory allocation of devm_kmalloc()
-without proper check. It is better to check the return value of it to
-prevent wrong memory access.
-And I use the err label which is introduced by the previous patch to
-handle the error.
+By additional panic_print messages you mean that panic_print_sys_info()
+will print everything (except PANIC_PRINT_ALL_PRINTK_MSG) twice?
 
-Link: https://lore.kernel.org/r/tencent_24A24A3EFF61206ECCC4B94B1C5C1454E108@qq.com
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-Note:
-I only send this one as the another patch had been applied.
-And I put the Link of the applied patch as a reference.
-Changelog:
-v1->v2 update the description.
-v2->v3 resolve a conflict with the staging-testing tree.
- drivers/staging/wfx/main.c | 3 +++
- 1 file changed, 3 insertions(+)
+Do we really need to dump everything twice? show_mem(), show_state(),
+ftrace_dump(DUMP_ALL). That's quite a bit of extra data.
 
-diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
-index c4b062b..23ae7d4 100644
---- a/drivers/staging/wfx/main.c
-+++ b/drivers/staging/wfx/main.c
-@@ -293,6 +293,9 @@ struct wfx_dev *wfx_init_common(struct device *dev, const struct wfx_platform_da
- 	hw->wiphy->n_iface_combinations = ARRAY_SIZE(wfx_iface_combinations);
- 	hw->wiphy->iface_combinations = wfx_iface_combinations;
- 	hw->wiphy->bands[NL80211_BAND_2GHZ] = devm_kmalloc(dev, sizeof(wfx_band_2ghz), GFP_KERNEL);
-+	if (!hw->wiphy->bands[NL80211_BAND_2GHZ])
-+		goto err;
-+
- 	/* FIXME: also copy wfx_rates and wfx_2ghz_chantable */
- 	memcpy(hw->wiphy->bands[NL80211_BAND_2GHZ], &wfx_band_2ghz, sizeof(wfx_band_2ghz));
- 
--- 
+Can instead this be something like (?):
+
+@@ -286,6 +289,8 @@ void panic(const char *fmt, ...)
+ 	 */
+ 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
+
+
++	panic_print_sys_info(panic_print & ~PANIC_PRINT_ALL_PRINTK_MSG);
+
+
+ 	kmsg_dump(KMSG_DUMP_PANIC);
+  
+ 	/*
+@@ -316,7 +321,7 @@ void panic(const char *fmt, ...)
+ 	debug_locks_off();
+ 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+
+
++	panic_print_sys_info(PANIC_PRINT_ALL_PRINTK_MSG);
+
+
+ 	if (!panic_blink)
+ 		panic_blink = no_blink;
