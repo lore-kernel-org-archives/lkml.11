@@ -2,133 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233985AbiBVQaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:30:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        id S230341AbiBVQcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbiBVQag (ORCPT
+        with ESMTP id S232197AbiBVQbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 11:30:36 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBD0166E1B
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:30:10 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id p206-20020a4a2fd7000000b0031bfec11983so18270820oop.13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:30:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eSk/B5akCpkVV7QxSZtURlOxcgNjBBC3d9BzaaHV+Yo=;
-        b=aXvHXnmshI/v4gnEa7KQ/u5AnLl0KUHmoodSrXYzKv/VI6xttGqGaV+7DgkVsF2+xN
-         PD31tb6JFeswkMQwQg4OszytvuKhiSW5fnV3GdpOZtF6nqzB4SYhG9I358zOJyNFHV6V
-         ihh/83PRWA2jMmGD2X9nszbPjUvEECJwmm0yKcuggNBXEqq57KJAiAoV6WNFMAM2Na7w
-         2RPVyoNH4HBwdafAMqVmW2OAIXOUuEKjHMXvmqYUVyH56ClWtBHRx1xAFH6vCaReNfCh
-         4SRf4gsX+BlxDotxPR7AHmhOmVN77mIU3kg2fUewutUQn8U4Xjkqsx0MzgyLqXaGseNU
-         P3Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eSk/B5akCpkVV7QxSZtURlOxcgNjBBC3d9BzaaHV+Yo=;
-        b=Ge9zuMuCUIhvwEWwnSLFKmrlcVHpM2NO9OfJYHxISyMAx9VTvzXx345cL+t5wcCuaR
-         zbV9/Wy/paIq0oNIiZcGhDx7IlKW9MPm5ITEhomICQIfFehfasFpZ2VR3IwK+yB+TWEP
-         iRHj8hFB9a4c/Xo3P2suef6aqObNL6r3c2LK5XVOptJZTxLpPXptiyEBHTmBp8qMoDXD
-         PoGxwM+DXuxn26jIQRq0UTSMtIQyurduwQDzfJe4cuJ3QncaHRq+wUZT73Q1XvWr26vX
-         rFDS0lbX1xlXHgSbh+st4DZtF5kZ0hLVpGSQpvamcvvGZEcAT6ZkL7RjHK/P1WNify3+
-         e4yw==
-X-Gm-Message-State: AOAM532sSjILgGYQEE24RI1ZF6Xy4pPy8rxW2tWzqTVvVGGjAUW0dZkT
-        3tynq9nuuvK4GdR0fXhBWVhu71xCzQbdSIlZXwM=
-X-Google-Smtp-Source: ABdhPJyLdPbLN0J/R5Xdqs7KCIPSpW/mVSbPiQRj47dCrvZ67kzJey1F9VFOY8uP9l94Cb8W+OSClk6J6BJU0CtnUWk=
-X-Received: by 2002:a05:6870:3e0d:b0:d3:fe6d:57c3 with SMTP id
- lk13-20020a0568703e0d00b000d3fe6d57c3mr2017599oab.225.1645547409808; Tue, 22
- Feb 2022 08:30:09 -0800 (PST)
+        Tue, 22 Feb 2022 11:31:51 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84657167F91;
+        Tue, 22 Feb 2022 08:31:25 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 50AB35802CB;
+        Tue, 22 Feb 2022 11:31:22 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 22 Feb 2022 11:31:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=4ss1OyObCw6S1k0Bd
+        D49Bd/baqeCBEC7bJc1jbF4kQ8=; b=Zr/jral3v63ownQ139f6+E1aDV9q8GCHc
+        KcTQMkkm41zRVwqqeRw+mE0twRJb8xNBgaoDzK4OW7As70ult9xz7UFXuMDlqGTN
+        Vin2dmDadlbFkZtCZcMg7Qepi5DEEWurHkkfkgtR5WYoMS2ccaj6VTUjUyjxTR+J
+        Dco1PWhrY+HXa+WRv6BHHjj5ly3XiQH5KOEDii3t6MfowBddgHK2Zr+hJuq3q9tp
+        WnLprQCI2WxP5fcFvqyN/aq+YsCIhlGOp87G9/UVpt7NPAM2qQ8bqGv3L/0eFeXE
+        RbqiQ50evYv7FFDIJddcPlUwjhkDWNalKUFtkBsq2EAXVwz/WGQog==
+X-ME-Sender: <xms:2A8VYlizXRrpm-lof6juTHVPTX1wdlyGcFJyJO-e04ClbWBT2p0iww>
+    <xme:2A8VYqCIHFYedOOfl_LLu6kgSn_yve2Yv8nV4WsMVQZBM-sbFcoteoLXVm_dnu03r
+    SuIfjaUenoA-Ow>
+X-ME-Received: <xmr:2A8VYlFExvdFaBqqXvIBd-LpuqQF-6srEFT3vuEshY_PPg82dWeH1Rp-aPqXuVPm6CFRPErT7Gv3oV16eZ4as_h6awI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeekgdekkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:2A8VYqRIWx5dxUGGtzepG7eWrUSMcjCBLDsqggKFU8COb1rXcMYuyg>
+    <xmx:2A8VYiwKlVsG-o6frmym9pzzrfLIfO5B5JP2SxOpinJMGQbwg_r3Fg>
+    <xmx:2A8VYg55D-9rXrFLrexJEzc2_fsRt3GfRhQ8HXMmKDnGobmrAvanFg>
+    <xmx:2g8VYsqmbIT4gyC0pp00XkrHZtXN9KfiWMtZSAajG9LDBUInFMKZWQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 22 Feb 2022 11:31:19 -0500 (EST)
+Date:   Tue, 22 Feb 2022 18:31:14 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Baowen Zheng <baowen.zheng@corigine.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jianbo Liu <jianbol@nvidia.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        oss-drivers <oss-drivers@corigine.com>,
+        "hkelam@marvell.com" <hkelam@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Nole Zhang <peng.zhang@corigine.com>,
+        "louis.peens@netronome.com" <louis.peens@netronome.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "rajur@chelsio.com" <rajur@chelsio.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "sbhatta@marvell.com" <sbhatta@marvell.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        Roi Dayan <roid@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "sgoutham@marvell.com" <sgoutham@marvell.com>,
+        "gakula@marvell.com" <gakula@marvell.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/2] flow_offload: reject offload for all
+ drivers with invalid police parameters
+Message-ID: <YhUP0lVaq+M/mwdY@shredder>
+References: <20220217082803.3881-1-jianbol@nvidia.com>
+ <20220217082803.3881-3-jianbol@nvidia.com>
+ <20220217124935.p7pbgv2cfmhpshxv@skbuf>
+ <6291dabcca7dd2d95b4961f660ec8b0226b8fbce.camel@nvidia.com>
+ <20220222100929.gj2my4maclyrwz35@skbuf>
+ <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220222131701.356117-1-maira.canal@usp.br> <20220222131701.356117-4-maira.canal@usp.br>
-In-Reply-To: <20220222131701.356117-4-maira.canal@usp.br>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 22 Feb 2022 11:29:58 -0500
-Message-ID: <CADnq5_OQ5s4tSHduzdVFWbGKwmH57dkxXqs6ykbTxh+BzwihPQ@mail.gmail.com>
-Subject: Re: [PATCH 03/10] drm/amdgpu: Remove unused get_umc_v8_7_channel_index
- function
-To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        John Clements <john.clements@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        "Chai, Thomas" <YiPeng.Chai@amd.com>,
-        "Tuikov, Luben" <luben.tuikov@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>,
-        Dennis Li <Dennis.Li@amd.com>,
-        "Joshi, Mukul" <mukul.joshi@amd.com>,
-        "Wentland, Harry" <harry.wentland@amd.com>,
-        "Leo (Sunpeng) Li" <sunpeng.li@amd.com>,
-        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
-        Anthony Koo <Anthony.Koo@amd.com>,
-        Magali Lemes <magalilemes00@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, mwen@igalia.com,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Isabella Basso <isabbasso@riseup.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM5PR1301MB21724BB2B0FF7C7A57BD1631E73B9@DM5PR1301MB2172.namprd13.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Tue, Feb 22, 2022 at 10:29:57AM +0000, Baowen Zheng wrote:
+> Since almost all the drivers that support to offload police action make the similar validation, if it make sense to add the validation in the file of flow_offload.h or flow_offload.c?
+> Then the other drivers do not need to make the similar validation.
+> WDYT?
 
-Alex
+But not all the drivers need the same validation. For example, nfp is
+one of the few drivers that supports policing based on packet rate. The
+octeontx2 driver has different restrictions based on whether the policer
+is attached to matchall or flower.
 
-On Tue, Feb 22, 2022 at 8:17 AM Ma=C3=ADra Canal <maira.canal@usp.br> wrote=
-:
->
-> Remove get_umc_v8_7_channel_index function, which is not used
-> in the codebase.
->
-> This was pointed by clang with the following warning:
->
-> drivers/gpu/drm/amd/amdgpu/umc_v8_7.c:50:24: warning: unused function
-> 'get_umc_v8_7_channel_index' [-Wunused-function]
-> static inline uint32_t get_umc_v8_7_channel_index(struct amdgpu_device *a=
-dev,
->                        ^
->
-> Signed-off-by: Ma=C3=ADra Canal <maira.canal@usp.br>
-> ---
->  drivers/gpu/drm/amd/amdgpu/umc_v8_7.c | 7 -------
->  1 file changed, 7 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c b/drivers/gpu/drm/amd/=
-amdgpu/umc_v8_7.c
-> index de85a998ef99..f35253e0eaa6 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
-> @@ -47,13 +47,6 @@ static inline uint32_t get_umc_v8_7_reg_offset(struct =
-amdgpu_device *adev,
->         return adev->umc.channel_offs*ch_inst + UMC_8_INST_DIST*umc_inst;
->  }
->
-> -static inline uint32_t get_umc_v8_7_channel_index(struct amdgpu_device *=
-adev,
-> -                                               uint32_t umc_inst,
-> -                                               uint32_t ch_inst)
-> -{
-> -       return adev->umc.channel_idx_tbl[umc_inst * adev->umc.channel_ins=
-t_num + ch_inst];
-> -}
-> -
->  static void umc_v8_7_ecc_info_query_correctable_error_count(struct amdgp=
-u_device *adev,
->                                                 uint32_t umc_inst, uint32=
-_t ch_inst,
->                                                 unsigned long *error_coun=
-t)
-> --
-> 2.35.1
->
+We can put the restrictions that are common between all the drivers
+somewhere, but it's not that much and it will also change over time,
+resulting in needless churn where checks are moved to individual
+drivers.
