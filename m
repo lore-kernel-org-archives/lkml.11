@@ -2,116 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1915BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D716FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 03:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241538AbiBVDWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 21 Feb 2022 22:22:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53120 "EHLO
+        id S233908AbiBVDW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 21 Feb 2022 22:22:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241551AbiBVDWD (ORCPT
+        with ESMTP id S240513AbiBVDUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 21 Feb 2022 22:22:03 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F28A27142
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:21:27 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id d21so15956929yba.11
-        for <linux-kernel@vger.kernel.org>; Mon, 21 Feb 2022 19:21:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MZmWgceQ6d0EJDvYHIwt2SeSJZCWvvIDtaWqqmY4OMA=;
-        b=DrPJ477mHkIvsVG73tpIaNLu6pLFpEIIqmAUrwV2BmcWkzPeUA+j1IusCbgfZ0t3nV
-         zroHaYD7xo6WtfwZMIE85TsMJ39VJhAZQt4cXKPZjcljp1PxYz8OLCkamgJl+wJ7kREv
-         SR4lEk4X+3DQyQX7tgFVZS1Pqp1kyT5uurxnc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MZmWgceQ6d0EJDvYHIwt2SeSJZCWvvIDtaWqqmY4OMA=;
-        b=5pZ/BIXinEvO9rOAMFfpt9NNhJ5ASUD/kTDwhWjqFB0JQgAJQ689BHmjNhebsgSvc/
-         vwZM1X7k56ajTr49K1hrxM5TU3l3pgM+zNJKQ20fCOROqFsZXQQBcCgc5+9YqDjMdTV2
-         NhFuCF12KXXqv2Z9gTZDk9ANfKHPSMic8K5AErRET0FevTWoMXfn1u1zqX4joN003iNM
-         mPFy+fKhWPnbqhdBg7fJw4MtD9JUEgkobrxYTZLQRZWa337Bb25USV4hGspltXZcaPcq
-         pRXbhwQ/XKtyedptzSn7HTdyhZVl7ZwfVpoX4TtrEDNBttgW6VlGdq10pfWnquF6TJJl
-         sJfg==
-X-Gm-Message-State: AOAM530tTBRjNBHRVj0jcPnLUcfSZyhrw9bDOMCkmWKJE9uyJ92PPYmY
-        oPlOvVerfQEEr9zh5utNB7uc6UTeDOC1S9tyaKYe+Yii2lo=
-X-Google-Smtp-Source: ABdhPJxt7WwycTtizv9sQEejATOIAE0jfqZbArOAZiarEyoXEA95Nu+HBOjjRAGBu2adA3cQSIpv+e7ZPkkikuTfZUg=
-X-Received: by 2002:a25:d314:0:b0:624:6c1a:6f2d with SMTP id
- e20-20020a25d314000000b006246c1a6f2dmr11111568ybf.189.1645500087178; Mon, 21
- Feb 2022 19:21:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
-In-Reply-To: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Tue, 22 Feb 2022 11:21:16 +0800
-Message-ID: <CAGXv+5EHLi0TpZaZq3rbOZeUjiFA_0t3QwZtjSLPZEe_zFO6XA@mail.gmail.com>
-Subject: Re: [PATCH v2 00/23] Add driver nodes for MT8192 SoC
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "--to=Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Ryder Lee <ryder.lee@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 21 Feb 2022 22:20:20 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51088140F7;
+        Mon, 21 Feb 2022 19:19:43 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 10E28580183;
+        Mon, 21 Feb 2022 22:19:40 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Mon, 21 Feb 2022 22:19:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=eCDJze6QD00/gH
+        YfYhsVR8fpoe1ybo+eYeOBYvXih20=; b=coC5n4U6CSnH7E3DMHZcCPalY+0f/6
+        60PiWY9O0g/jH8YMSJluZJP3mZZQRquViWGKuAwJ3tOZdnZA1wNh5izuthO4BjbH
+        mgtpOCTUA5hBiAN+w6aijMD9p2A+7G5nCQ7uZW+6DycsAg42S9+4Pa27f9sh/tHp
+        SNU/chvwnQdVl5DE5PKF2O0hYcA046VEpS5KQIEe1oSyIPTxk+vtJYRD/wIWKxJk
+        xTo5opdBPYrTgUD/L+E2qJSLPShtqu5aEhu3iUdJ57aqq9z7MfVOEIkUn6XnB6CH
+        NqBSBMiDclaH03CQJsLPhtGipW3BlGxL8QV+0+jHgd0pZ/2xvYlHXusw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=eCDJze6QD00/gHYfY
+        hsVR8fpoe1ybo+eYeOBYvXih20=; b=HFYgkx0X6CO1XWycJOSLhLto0CNc8pinD
+        nKa9THYUkYJRffDJJR5tDs59GZoot3hXZ5NYK6Bqv5xDOlSMhtL6TgZB5gr0qA/D
+        dCoyXDYJ+i9ozd7MhgYKnHO4CSyLvNaAWqzGxeTJOSFpi1DQ4+O3V1xWcV1O1Xfu
+        5TbSAAEtzOhC+L5JjxMKS7RN9h5T0KYCJImFhROrM6nz+3TgSD2cYC/BHm0dSS2X
+        cooqAZgGrSLFWKFHWJ/R2P8x70q0KYm02avry954WuiOfGd6oV+n6nE3hIsnZWhu
+        JBWRZFyM01EG0Hs/UQkjM1YVlabgFycD+00V5BTPfhSdnMhwipu5Q==
+X-ME-Sender: <xms:S1YUYkM6C_TFb-qwVNRKohg25PuDCO4RTrYuDvkicMKC4zFGadTJcQ>
+    <xme:S1YUYq8c2hbiqS8evB0cDUx0dnl6y1eoyMMvcGlpwE_HromuTc_7gFrTAKwVqBpI8
+    08gr4NDIiPM6GJDFgk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeejgdehiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhlrggu
+    vgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteehtdet
+    leegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:S1YUYrTIV9vmYe77AqoLEtgpAfKERWriEBrjSOTuLXnhQpAjcYxf-w>
+    <xmx:S1YUYsuYhaVormwtWiOMrE6akjxqzikaKAljtHvuXlEGxC5YZJjVIw>
+    <xmx:S1YUYsc0kKLdMkXrNuEhCPFzxDm4RfpbeWginXkEnmJt_tWrG97UrA>
+    <xmx:S1YUYtWGmYEQj5TH5aAUqsJ5BxgfEnKZeWVxZMAGKKly-u9hSYnd4PGyrf4>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 1D0EFF6007E; Mon, 21 Feb 2022 22:19:39 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
+Mime-Version: 1.0
+Message-Id: <b5930805-fc05-4fde-a91b-a8c7e3eee1c0@www.fastmail.com>
+In-Reply-To: <20220221084915.554151737@linuxfoundation.org>
+References: <20220221084915.554151737@linuxfoundation.org>
+Date:   Mon, 21 Feb 2022 22:19:38 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.4 00/80] 5.4.181-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 5:16 PM Allen-KH Cheng
-<allen-kh.cheng@mediatek.com> wrote:
+On Mon, Feb 21, 2022, at 3:48 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.181 release.
+> There are 80 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> This series are based on tag: next-20220216, linux-next/master
-> and apply the below patchs
-> https://patchwork.kernel.org/project/linux-mediatek/patch/20220207094024.22674-1-allen-kh.cheng@mediatek.com/
+> Responses should be made by Wed, 23 Feb 2022 08:48:58 +0000.
+> Anything received after that time might be too late.
 
-It would make things easier if you incorporated the above patch into this
-series when you send v3.
+5.4.181-rc1 compiled and booted with no errors or regressions on my x86_64 test system.
 
-ChenYu
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-> https://patchwork.kernel.org/project/linux-mediatek/patch/20220217135620.10559-1-allen-kh.cheng@mediatek.com/
->
-> There some patches are missed in PATCH v1.
-> I resend series again and also add display related nodes in PATCH v2.
->
-> changes since v1:
-> - add usb-phy node for xhci node
-> - move infracfg_rst patch in front of PCIe patch
-> - add display nodes, i2c aliases and pwm node.
->
-> Allen-KH Cheng (23):
->   arm64: dts: mt8192: Add power domains controller
->   arm64: dts: mt8192: Add pwrap node
->   arm64: dts: mt8192: Add spmi node
->   arm64: dts: mt8192: Add gce node
->   arm64: dts: mt8192: Add SCP node
->   arm64: dts: mt8192: Add usb-phy node
->   arm64: dts: mt8192: Add xhci node
->   arm64: dts: mt8192: Add audio-related nodes
->   arm64: dts: mt8192: Add infracfg_rst node
->   arm64: dts: mt8192: Add PCIe node
->   arm64: dts: mt8192: Correct nor_flash status of mt8192
->   arm64: dts: mt8192: Add efuse node
->   arm64: dts: mt8192: Add mmc device nodes
->   arm64: dts: mt8192: Add mipi_tx node
->   arm64: dts: mt8192: Add m4u and smi nodes
->   arm64: dts: mt8192: Add H264 venc device node
->   arm64: dts: mt8192: Add vcodec lat and core nodes
->   arm64: dts: mt8192: Add dpi node
->   arm64: dts: mt8192: Add i2c aliases
->   arm64: dts: mt8192: Add display nodes
->   arm64: dts: mt8192: Add dsi node
->   arm64: dts: mt8192: Add gce info for display nodes
->   arm64: dts: mt8192: Add pwm node
->
->  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 1000 +++++++++++++++++++++-
->  1 file changed, 989 insertions(+), 11 deletions(-)
->
-> --
-> 2.18.0
->
+Cheers, 
+Slade
