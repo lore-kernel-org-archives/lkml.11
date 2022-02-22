@@ -2,103 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17785C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbiBVPTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:19:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
+        id S233385AbiBVPTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:19:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233372AbiBVPS6 (ORCPT
+        with ESMTP id S233423AbiBVPRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 10:18:58 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D85E14EF4E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:18:29 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id q1so7313140plx.4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:18:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KTIgayfF256C1V3doe1DdTxEVA57V8A5z8D2kONEGBU=;
-        b=phCKcy6ZlyPZILwJUuf5krXb9GXGiI+Q+qqv/bFW/YJcaPBmAdKjGBM1ZUs+ykOeV4
-         nB9egMrtpTXPwCC5WfjBHjfmeDOwlShk+0G6IlEauOM8Njv5XFDbPA55tOT9lKddY/k2
-         lDv7A3nqdcxfQPH3wW4Hkm7BDuVp2Bzr+H/GbIV2OHpb6uq9gQ0DzrMZU6p6WXKsgdkW
-         oaPc7t1wl5OvRsHba3BUjdT7PMF71C1tqCzUgX+LwsVXpsYEZ60RfnFAHSVOYn44xdym
-         UgfS7uxsf+nbtDj170mV8tvJSZP7YlUxWgAydYh6cjvUq3o9XbaY8xhzYe66L3LLHqQ5
-         bpQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KTIgayfF256C1V3doe1DdTxEVA57V8A5z8D2kONEGBU=;
-        b=pMMk1eHqVTfCM+4UKM++SFuYQDL4LYh5EBLdCyGzfcZ82RwLUtXtSFfQJ8fdLBkRQt
-         i5/VWEbCVvSo5GHH23VShKiZGYzjpNkj3vJvL6ZUkF1HD7vT//ewxCJG75HX1tsQgtJi
-         s/thfHypL0BLwLyePTYPNCXs2Nqa+xtRfVH/nQchQUbEAtwu1HxSN6xkZCQM8E9WBDi3
-         8/nZSlBBpFG/Otzg6xeGW7yuqSkWuVRDwyJ2oUfOygNcPEyS8e3HLT/fEdn8WwpE8TWI
-         nkoxlDse7GPz+LzsiRokbxTW6Zm6ds1inhdHgUmKIBRgsUGxSfYjq8ldt+Hz09XnGWf3
-         ZIJg==
-X-Gm-Message-State: AOAM532JyRzGM0y4HkkbtpWyyIxMVQsuzpe0iCVyr2924x862z493bbz
-        sA06EIjGAowLGKPOaBmKcCNP9A==
-X-Google-Smtp-Source: ABdhPJwvlQXIDcBUOToJAayzxtth7rwk5FzeKqCmlWGndNY53wWW7Nj0TkPlLboM5Q+8JBUI+Wfa9A==
-X-Received: by 2002:a17:90a:168f:b0:1b9:453a:fe79 with SMTP id o15-20020a17090a168f00b001b9453afe79mr4661886pja.107.1645543108883;
-        Tue, 22 Feb 2022 07:18:28 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id p9sm17849001pfo.97.2022.02.22.07.18.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 07:18:28 -0800 (PST)
-Date:   Tue, 22 Feb 2022 15:18:24 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peng Hao <flyingpenghao@gmail.com>
-Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
+        Tue, 22 Feb 2022 10:17:51 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF55AC050;
+        Tue, 22 Feb 2022 07:17:21 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K32p01qGNz9sSp;
+        Tue, 22 Feb 2022 16:16:56 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 0ZAij4c_o5z4; Tue, 22 Feb 2022 16:16:56 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K32nw60Q7z9sSq;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B34268B778;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id MDdogt3d3Anz; Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.78])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4C4008B77B;
+        Tue, 22 Feb 2022 16:16:52 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MFGgQ91087710
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 22 Feb 2022 16:16:42 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MFGgMC1087709;
+        Tue, 22 Feb 2022 16:16:42 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Aaron Tomlin <atomlin@redhat.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] kvm:vmx: Fix typos comment in __loaded_vmcs_clear()
-Message-ID: <YhT+wOc18G7Twujw@google.com>
-References: <20220222104029.70129-1-flyingpeng@tencent.com>
+Subject: [PATCH v3 1/4] module: Make module_enable_x() independent of CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+Date:   Tue, 22 Feb 2022 16:16:31 +0100
+Message-Id: <bc2fca7e1d7cc58cd23d92c2579341be18f3619a.1645542893.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645542893.git.christophe.leroy@csgroup.eu>
+References: <cover.1645542893.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222104029.70129-1-flyingpeng@tencent.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645542983; l=3326; s=20211009; h=from:subject:message-id; bh=slcWvL5mfhhgv6JxVWYF47o6CNCENkz5Vmk0v6Zd5Ww=; b=LVS/ZU8Ej7TG5wdNg+fOQcoSTdPJs1Q2RZQVLGA9gn0VBR4To9tnWfUFsliV8psZzwJ5ONml2OOU 1tmIZ9SkDU00S+yJb6MY6981DaqzyPXdvwzf4NWEB740gZ1vWsQ5
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Needs a space on this shortlog too.  And please capitalize both KVM and VMX.
-Again, no need to send another version.
+module_enable_x() has nothing to do with CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+allthough by coincidence architectures who need module_enable_x() are
+selection CONFIG_ARCH_HAS_STRICT_MODULE_RWX.
 
-On Tue, Feb 22, 2022, Peng Hao wrote:
-> From: Peng Hao <flyingpeng@tencent.com>
-> 
-> Fix a comment documenting the memory barrier related to clearing a
-> loaded_vmcs; loaded_vmcs tracks the host CPU the VMCS is loaded on via
-> the field 'cpu', it doesn't have a 'vcpu' field.
-> 
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 6101c2980a9c..75ed7d6f35cc 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -644,10 +644,10 @@ static void __loaded_vmcs_clear(void *arg)
->  
->  	/*
->  	 * Ensure all writes to loaded_vmcs, including deleting it from its
-> -	 * current percpu list, complete before setting loaded_vmcs->vcpu to
-> -	 * -1, otherwise a different cpu can see vcpu == -1 first and add
-> -	 * loaded_vmcs to its percpu list before it's deleted from this cpu's
-> -	 * list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
-> +	 * current percpu list, complete before setting loaded_vmcs->cpu to
-> +	 * -1, otherwise a different cpu can see loaded_vmcs->cpu == -1 first
-> +	 * and add loaded_vmcs to its percpu list before it's deleted from this
-> +	 * cpu's list. Pairs with the smp_rmb() in vmx_vcpu_load_vmcs().
->  	 */
->  	smp_wmb();
->  
-> -- 
-> 2.27.0
-> 
+Enable module_enable_x() for everyone everytime. If an architecture
+already has module text set executable, it's a no-op.
+
+Don't check text_size alignment. When CONFIG_STRICT_MODULE_RWX is set
+the verification is already done in frob_rodata(). When
+CONFIG_STRICT_MODULE_RWX is not set it is not a big deal to have the
+start of data as executable. Just make sure we entirely get the last
+page when the boundary is not aligned.
+
+And don't BUG on misaligned base as some architectures like nios2
+use kmalloc() for allocating modules. So just bail out in that case.
+If that's a problem, a page fault will occur later anyway.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ kernel/module/internal.h |  6 ++----
+ kernel/module/main.c     | 12 +++++-------
+ 2 files changed, 7 insertions(+), 11 deletions(-)
+
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 6911c7533ede..7178b7c09cdd 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -27,9 +27,9 @@
+ /*
+  * Modules' sections will be aligned on page boundaries
+  * to ensure complete separation of code and data, but
+- * only when CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
++ * only when CONFIG_STRICT_MODULE_RWX=y
+  */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
++#ifdef CONFIG_STRICT_MODULE_RWX
+ # define debug_align(X) PAGE_ALIGN(X)
+ #else
+ # define debug_align(X) (X)
+@@ -182,10 +182,8 @@ static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *
+ }
+ #endif /* CONFIG_MODULES_TREE_LOOKUP */
+ 
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+ void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned long start,
+ 								     int num_pages));
+-#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+ 
+ #ifdef CONFIG_STRICT_MODULE_RWX
+ void module_enable_ro(const struct module *mod, bool after_init);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index db503a212532..be3b31ba6e16 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1162,24 +1162,22 @@ resolve_symbol_wait(struct module *mod,
+  * CONFIG_STRICT_MODULE_RWX block below because they are needed regardless of
+  * whether we are strict.
+  */
+-#ifdef CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+ void frob_text(const struct module_layout *layout,
+ 	       int (*set_memory)(unsigned long start, int num_pages))
+ {
+-	BUG_ON((unsigned long)layout->base & (PAGE_SIZE-1));
+-	BUG_ON((unsigned long)layout->text_size & (PAGE_SIZE-1));
+ 	set_memory((unsigned long)layout->base,
+-		   layout->text_size >> PAGE_SHIFT);
++		   PAGE_ALIGN(layout->text_size) >> PAGE_SHIFT);
+ }
+ 
+ static void module_enable_x(const struct module *mod)
+ {
++	if (!PAGE_ALIGNED(mod->core_layout.base) ||
++	    !PAGE_ALIGNED(mod->init_layout.base))
++		return;
++
+ 	frob_text(&mod->core_layout, set_memory_x);
+ 	frob_text(&mod->init_layout, set_memory_x);
+ }
+-#else /* !CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+-static void module_enable_x(const struct module *mod) { }
+-#endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
+ 
+ void __weak module_memfree(void *module_region)
+ {
+-- 
+2.34.1
+
