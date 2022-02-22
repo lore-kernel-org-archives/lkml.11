@@ -2,147 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD26C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbiBVKY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:24:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S231135AbiBVKZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:25:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiBVKYX (ORCPT
+        with ESMTP id S229768AbiBVKZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:24:23 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851AC1598D2;
-        Tue, 22 Feb 2022 02:23:58 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K2wHh2GJxz9sS4;
-        Tue, 22 Feb 2022 11:23:44 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id jxVYnHUx8S-W; Tue, 22 Feb 2022 11:23:44 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K2wHd57kTz9sSP;
-        Tue, 22 Feb 2022 11:23:41 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9E47E8B764;
-        Tue, 22 Feb 2022 11:23:41 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id X5UJTYpoUT3A; Tue, 22 Feb 2022 11:23:41 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7962C8B778;
-        Tue, 22 Feb 2022 11:23:41 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MANWiT1075630
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 11:23:32 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MANW7r1075629;
-        Tue, 22 Feb 2022 11:23:32 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] Fixup for e5973a14d187 ("module: Move strict rwx support to a separate file")
-Date:   Tue, 22 Feb 2022 11:23:26 +0100
-Message-Id: <2c21af8d7dec7f76c0888f5487d0070b21060747.1645525354.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cab881354cedd64c53ce4e35ef8c86806baad99c.1645525354.git.christophe.leroy@csgroup.eu>
-References: <cab881354cedd64c53ce4e35ef8c86806baad99c.1645525354.git.christophe.leroy@csgroup.eu>
+        Tue, 22 Feb 2022 05:25:05 -0500
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A55158DB0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:24:40 -0800 (PST)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2d66f95f1d1so167824277b3.0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:24:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=69eFH6spOTwBGKABYsbbrmb+Lpi5NbL+IMsR8wV2fQU=;
+        b=HcQ+d0ZJ/JtQx+qYGvzS9hVynevZWtI7FbGk/0iwjEZDx6m4lGAAWq+Uw7uz5YW6Po
+         /pwn4tDSMF4vCWmjm4DnesJ23mj3CdFloQGFLINcu1Zt+JtAl5MoivJ8wK98sETyfENq
+         +pndWzIXS/yLatEpX4NMiOTFLWwKlQBJS5u5E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=69eFH6spOTwBGKABYsbbrmb+Lpi5NbL+IMsR8wV2fQU=;
+        b=O2z5FKInrGPtSMonztfWkuKitv6kvKaORiCcqxdYcQtuL9GtAC7PYdTU56RYXbLAK5
+         WW/NkuMEqzuunoAPbnvjLU59HzPgBOS59Q6XLT4q+jvjDD3vUT+f5yZZrY81RDXpnGKK
+         AU8HMhGsGXA/KLRl6jNllVJLymo9g3ooq892ZhcbRqOn6kSEW1HRGQBmm1Pgq/idzQ5d
+         UbXSSpW2lwSyPmEjXilufT+1hdoyTzu8agtWqvps2yXo5ge9XEN6NW+8GM/IzMZ87yvz
+         HvtTae9grMIU3MoKg9NeGi0c+erltY2keW4yrIR0KLaE8O2ZfUTtHxtZkQ9+oUqEzkq5
+         CynA==
+X-Gm-Message-State: AOAM530VbCUSgEfC8op7g0I2ZDLRJW8OpwryM2CENR8H8D0YiJj9lm5G
+        E3U8zs3rp84MUHGVVF9U23jQ1Q7UlZzvt75fUKBoxA==
+X-Google-Smtp-Source: ABdhPJz68mpmxTWnXQ4sCxmsI+dEugOJ1Iyt555rWWgvyVmRIezO951j51SxTwtOaI+GoDLQNC4lG1WyXxLqX6GGVsE=
+X-Received: by 2002:a81:35d8:0:b0:2d6:b5aa:217 with SMTP id
+ c207-20020a8135d8000000b002d6b5aa0217mr20755538ywa.286.1645525480023; Tue, 22
+ Feb 2022 02:24:40 -0800 (PST)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645525381; l=3547; s=20211009; h=from:subject:message-id; bh=mLhyWEWSW/LPZmLaaZtAyoj0qoyMiE2w/STsvCOO5SQ=; b=TPhW276FZApI2vNw+S/EoGUx5IaX+EIkQtxffrvizLBGgr/zqQGeo+NpYOYV32NVwNqtcqY2xprZ 7DC638YbCDqoBmrCsb/iA3rSkogZ5DCggsl1dyJYGKryT2I8lwBK
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com> <20220218091633.9368-21-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220218091633.9368-21-allen-kh.cheng@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Tue, 22 Feb 2022 18:24:29 +0800
+Message-ID: <CAGXv+5H8WY6=qvcz1CARfjf5UREH7i7v2Uz99frby5S=eqV6gQ@mail.gmail.com>
+Subject: Re: [PATCH v2 20/23] arm64: dts: mt8192: Add display nodes
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "--to=Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Ryder Lee <ryder.lee@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes: e5973a14d187 ("module: Move strict rwx support to a separate file")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/module/internal.h   | 14 ++++----------
- kernel/module/strict_rwx.c | 13 +++++++------
- 2 files changed, 11 insertions(+), 16 deletions(-)
+Hi,
 
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 97d9faec3a9a..6a54a1e06f4f 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -181,22 +181,16 @@ void frob_text(const struct module_layout *layout, int (*set_memory)(unsigned lo
- #endif /* CONFIG_ARCH_HAS_STRICT_MODULE_RWX */
- 
- #ifdef CONFIG_STRICT_MODULE_RWX
--void frob_rodata(const struct module_layout *layout,
--		 int (*set_memory)(unsigned long start, int num_pages));
--void frob_ro_after_init(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages));
--void frob_writable_data(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages));
- void module_enable_ro(const struct module *mod, bool after_init);
- void module_enable_nx(const struct module *mod);
- int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
- 				char *secstrings, struct module *mod);
- 
- #else /* !CONFIG_STRICT_MODULE_RWX */
--static void module_enable_nx(const struct module *mod) { }
--static void module_enable_ro(const struct module *mod, bool after_init) {}
--static int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
--				       char *secstrings, struct module *mod)
-+static inline void module_enable_nx(const struct module *mod) { }
-+static inline void module_enable_ro(const struct module *mod, bool after_init) {}
-+static inline int module_enforce_rwx_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
-+					      char *secstrings, struct module *mod)
- {
- 	return 0;
- }
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-index c642889f8e77..bfee740f4bc1 100644
---- a/kernel/module/strict_rwx.c
-+++ b/kernel/module/strict_rwx.c
-@@ -6,12 +6,13 @@
-  */
- 
- #include <linux/module.h>
-+#include <linux/mm.h>
- #include <linux/vmalloc.h>
- #include <linux/set_memory.h>
- #include "internal.h"
- 
--void frob_rodata(const struct module_layout *layout,
--		 int (*set_memory)(unsigned long start, int num_pages))
-+static void frob_rodata(const struct module_layout *layout,
-+			int (*set_memory)(unsigned long start, int num_pages))
- {
- 	BUG_ON(!PAGE_ALIGNED(layout->base));
- 	BUG_ON(!PAGE_ALIGNED(layout->text_size));
-@@ -20,8 +21,8 @@ void frob_rodata(const struct module_layout *layout,
- 		   (layout->ro_size - layout->text_size) >> PAGE_SHIFT);
- }
- 
--void frob_ro_after_init(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages))
-+static void frob_ro_after_init(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages))
- {
- 	BUG_ON(!PAGE_ALIGNED(layout->base));
- 	BUG_ON(!PAGE_ALIGNED(layout->ro_size));
-@@ -30,8 +31,8 @@ void frob_ro_after_init(const struct module_layout *layout,
- 		   (layout->ro_after_init_size - layout->ro_size) >> PAGE_SHIFT);
- }
- 
--void frob_writable_data(const struct module_layout *layout,
--			int (*set_memory)(unsigned long start, int num_pages))
-+static void frob_writable_data(const struct module_layout *layout,
-+			       int (*set_memory)(unsigned long start, int num_pages))
- {
- 	BUG_ON(!PAGE_ALIGNED(layout->base));
- 	BUG_ON(!PAGE_ALIGNED(layout->ro_after_init_size));
--- 
-2.34.1
+On Fri, Feb 18, 2022 at 5:16 PM Allen-KH Cheng
+<allen-kh.cheng@mediatek.com> wrote:
+>
+> Add display nodes for mt8192 SoC.
+>
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 115 +++++++++++++++++++++++
+>  1 file changed, 115 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index e3314cdc7c1a..026f2d8141b0 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -32,6 +32,11 @@
+>                 i2c7 = &i2c7;
+>                 i2c8 = &i2c8;
+>                 i2c9 = &i2c9;
+> +               ovl0 = &ovl0;
+> +               ovl-2l0 = &ovl_2l0;
+> +               ovl-2l2 = &ovl_2l2;
+> +               rdma0 = &rdma0;
+> +               rdma4 = &rdma4;
+>         };
+>
+>         clk26m: oscillator0 {
+> @@ -1224,6 +1229,13 @@
+>                         #clock-cells = <1>;
+>                 };
+>
+> +               mutex: mutex@14001000 {
+> +                       compatible = "mediatek,mt8192-disp-mutex";
+> +                       reg = <0 0x14001000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       clocks = <&mmsys CLK_MM_DISP_MUTEX0>;
+> +               };
+> +
+>                 smi_common: smi@14002000 {
+>                         compatible = "mediatek,mt8192-smi-common";
+>                         reg = <0 0x14002000 0 0x1000>;
+> @@ -1255,6 +1267,109 @@
+>                         power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+>                 };
+>
+> +               ovl0: ovl@14005000 {
+> +                       compatible = "mediatek,mt8192-disp-ovl";
+> +                       reg = <0 0x14005000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 254 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       clocks = <&mmsys CLK_MM_DISP_OVL0>;
+> +                       iommus = <&iommu0 M4U_PORT_L0_OVL_RDMA0>,
+> +                                <&iommu0 M4U_PORT_L0_OVL_RDMA0_HDR>;
+> +                       power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +               };
+> +
+> +               ovl_2l0: ovl@14006000 {
+> +                       compatible = "mediatek,mt8192-disp-ovl-2l";
+> +                       reg = <0 0x14006000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +                       clocks = <&mmsys CLK_MM_DISP_OVL0_2L>;
+> +                       iommus = <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0>,
+> +                                <&iommu0 M4U_PORT_L1_OVL_2L_RDMA0_HDR>;
+> +               };
+> +
+> +               rdma0: rdma@14007000 {
+> +                       compatible = "mediatek,mt8192-disp-rdma";
+> +                       reg = <0 0x14007000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       clocks = <&mmsys CLK_MM_DISP_RDMA0>;
+> +                       iommus = <&iommu0 M4U_PORT_L0_DISP_RDMA0>;
+> +                       mediatek,larb = <&larb0>;
+> +                       mediatek,rdma-fifo-size = <5120>;
+> +                       power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +               };
+> +
+> +               color0: color@14009000 {
+> +                       compatible = "mediatek,mt8192-disp-color",
+> +                                    "mediatek,mt8173-disp-color";
+> +                       reg = <0 0x14009000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +                       clocks = <&mmsys CLK_MM_DISP_COLOR0>;
+> +               };
+> +
+> +               ccorr0: ccorr@1400a000 {
+> +                       compatible = "mediatek,mt8192-disp-ccorr";
+> +                       reg = <0 0x1400a000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH 0>;
+> +                       power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+> +                       clocks = <&mmsys CLK_MM_DISP_CCORR0>;
+> +               };
+> +
+> +               aal0: aal@1400b000 {
+> +                       compatible = "mediatek,mt8192-disp-aal";
 
+git.kernel.org/chunkuang.hu/c/4ed545e7d10049b5492afc184e61a67e478a2cfd
+
+suggests that there should be a fallback compatible? Otherwise this
+doesn't probe.
+
+ChenYu
