@@ -2,202 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E76CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 10:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231285AbiBVKeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 05:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
+        id S231264AbiBVKfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 05:35:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbiBVKdl (ORCPT
+        with ESMTP id S231254AbiBVKff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 05:33:41 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B4F15B3DF;
-        Tue, 22 Feb 2022 02:33:12 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K2wVH1Zjyz9sSX;
-        Tue, 22 Feb 2022 11:32:55 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RiMi_WsiuT-o; Tue, 22 Feb 2022 11:32:55 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K2wV94NjPz9sSh;
-        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 870788B779;
-        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id tymd31yq-Hgr; Tue, 22 Feb 2022 11:32:49 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1D60E8B778;
-        Tue, 22 Feb 2022 11:32:49 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21MAWgOH1075965
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 22 Feb 2022 11:32:42 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21MAWgRT1075964;
-        Tue, 22 Feb 2022 11:32:42 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Aaron Tomlin <atomlin@redhat.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: [PATCH v4 2/6] module: Prepare for handling several RB trees
-Date:   Tue, 22 Feb 2022 11:32:16 +0100
-Message-Id: <f8f7e052b8190fa98abe4a2a2adb9619b47c4b3e.1645525635.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645525635.git.christophe.leroy@csgroup.eu>
-References: <cover.1645525635.git.christophe.leroy@csgroup.eu>
+        Tue, 22 Feb 2022 05:35:35 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED18115B3EA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:35:09 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id om7so17979398pjb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 02:35:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6n3VRa/D2GqDHXoAIdoTyfHyQ43B5WXlaWf6FDGebB8=;
+        b=StqIqmVXW/v1Ki1c0Lzfr4M7dgO1nPOW5q1kB5ViTN15zBXaOlkzohWk9Bpp8etMt0
+         R1aixOuKgsLlc8uXxlHM42QtEYgdbE3L+oEeEd+dRXr4GhPqB1I8P5E13NcIycvdrmeh
+         G2GZLaH0VFMlTJDIHS5AXY5FGvgeatjH7lByRuJODgrv/EUIdUFmuVJ7gU05g27sx/7Z
+         xEX1XmwkETnc6S18GLLWFAPiptYNeRdgZ+enPfSYxkIp6A+jXY5bfmTNJ+B8V1cX4jG2
+         yY5X7ZfTwT8eTW+TFBcn+hkBhy9nVMbVSUE0Y98LR18bE4oRp9655UGFbQUmVENPPQ4d
+         x5lQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6n3VRa/D2GqDHXoAIdoTyfHyQ43B5WXlaWf6FDGebB8=;
+        b=HBSmwwHOKtVfk+u9ukldNN9bhzcZezzOETsy2HGxvIOKcyTQjX5+2qRQlGHRGesxK+
+         +d3xo2Noge7ForMp9cKNw8C6E8h8f2skuVyT2rlCsEJePtv47fnPCl769eC91etJetUw
+         WxJJYmPYSshAdu1HVcKVhqCHu0YZ9Vsnc41G46Py5hVwKGc/1iC6cL0a8UyhuVgA45Y1
+         NfMY4XCC535m3bRywr5rS6ORlmfzy1RbCg7uHIK0iE/qwyeuojzGb69JmuIhWGABn68Z
+         OEYCBLqyURQqPoEUM0Gys7uIkEF9ZV+bOp8ZONnX5XVz3KbdYP2ekRVVQ5GiAJum8xj8
+         gvrQ==
+X-Gm-Message-State: AOAM533xccOF150M0qZED825985l/6HNjwlakn6PVMFcaDAVxaT87/fw
+        XoUhAOe1KkmyQE+y7yp7MvcP
+X-Google-Smtp-Source: ABdhPJxiYqpf88KXSvuj96Qc4L/U4W4AlGzyaOMDS/LFG0Gps5+G30kp66V8Z/IGZ81OGm2Mu3MOUg==
+X-Received: by 2002:a17:902:e88d:b0:14f:446b:264b with SMTP id w13-20020a170902e88d00b0014f446b264bmr22530782plg.166.1645526109352;
+        Tue, 22 Feb 2022 02:35:09 -0800 (PST)
+Received: from thinkpad ([117.217.186.202])
+        by smtp.gmail.com with ESMTPSA id c9sm16944241pfv.70.2022.02.22.02.35.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 02:35:08 -0800 (PST)
+Date:   Tue, 22 Feb 2022 16:05:02 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     mhi@lists.linux.dev, quic_hemantk@quicinc.com,
+        quic_bbhatt@quicinc.com, quic_jhugo@quicinc.com,
+        vinod.koul@linaro.org, bjorn.andersson@linaro.org,
+        dmitry.baryshkov@linaro.org, quic_vbadigan@quicinc.com,
+        quic_cang@quicinc.com, quic_skananth@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 20/25] bus: mhi: ep: Add support for processing
+ command ring
+Message-ID: <20220222103502.GF5029@thinkpad>
+References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
+ <20220212182117.49438-21-manivannan.sadhasivam@linaro.org>
+ <05956282-57f4-996b-13ae-282fb40e1578@linaro.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645525927; l=4776; s=20211009; h=from:subject:message-id; bh=Y55P+lefbDvXl7Onl0oN61fsJiw/jOLXz7/hnTxCB40=; b=T4TgUgtng1Z89lSYq4tAQ5GtC7ah6hMe5JwBz08myA7GN+AB1D/vdJZtYUYggS408vpP4j5K9d3v k7LHQtJyBV4IOsaJ2mBGMLKOkd9xJIFJV/KcKHjmAzMvjlbIGcle
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05956282-57f4-996b-13ae-282fb40e1578@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to separate text and data, we need to setup
-two rb trees.
+On Tue, Feb 15, 2022 at 04:40:01PM -0600, Alex Elder wrote:
+> On 2/12/22 12:21 PM, Manivannan Sadhasivam wrote:
+> > Add support for processing the command ring. Command ring is used by the
+> > host to issue channel specific commands to the ep device. Following
+> > commands are supported:
+> > 
+> > 1. Start channel
+> > 2. Stop channel
+> > 3. Reset channel
+> > 
+> > Once the device receives the command doorbell interrupt from host, it
+> > executes the command and generates a command completion event to the
+> > host in the primary event ring.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> 
+> I'll let you consider my few comments below, but whether or not you
+> address them, this looks OK to me.
+> 
+> Reviewed-by: Alex Elder <elder@linaro.org>
+> 
+> > ---
+> >   drivers/bus/mhi/ep/main.c | 151 ++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 151 insertions(+)
+> > 
+> > diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+> > index 6378ac5c7e37..4c2ee517832c 100644
+> > --- a/drivers/bus/mhi/ep/main.c
+> > +++ b/drivers/bus/mhi/ep/main.c
+> > @@ -21,6 +21,7 @@
+> >   static DEFINE_IDA(mhi_ep_cntrl_ida);
+> > +static int mhi_ep_create_device(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id);
+> >   static int mhi_ep_destroy_device(struct device *dev, void *data);
+> >   static int mhi_ep_send_event(struct mhi_ep_cntrl *mhi_cntrl, u32 ring_idx,
+> > @@ -185,6 +186,156 @@ void mhi_ep_unmap_free(struct mhi_ep_cntrl *mhi_cntrl, u64 pci_addr, phys_addr_t
+> >   	mhi_cntrl->free_addr(mhi_cntrl, phys - offset, virt - offset, size);
+> >   }
+> > +int mhi_ep_process_cmd_ring(struct mhi_ep_ring *ring, struct mhi_ep_ring_element *el)
+> > +{
+> > +	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
+> > +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> > +	struct mhi_result result = {};
+> > +	struct mhi_ep_chan *mhi_chan;
+> > +	struct mhi_ep_ring *ch_ring;
+> > +	u32 tmp, ch_id;
+> > +	int ret;
+> > +
+> > +	ch_id = MHI_TRE_GET_CMD_CHID(el);
+> > +	mhi_chan = &mhi_cntrl->mhi_chan[ch_id];
+> > +	ch_ring = &mhi_cntrl->mhi_chan[ch_id].ring;
+> > +
+> > +	switch (MHI_TRE_GET_CMD_TYPE(el)) {
+> 
+> No MHI_PKT_TYPE_NOOP_CMD?
+> 
 
-Modify functions to give the tree as a parameter.
+Not now.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/module/internal.h    |  4 ++--
- kernel/module/main.c        | 16 ++++++++--------
- kernel/module/tree_lookup.c | 20 ++++++++++----------
- 3 files changed, 20 insertions(+), 20 deletions(-)
+> > +	case MHI_PKT_TYPE_START_CHAN_CMD:
+> > +		dev_dbg(dev, "Received START command for channel (%d)\n", ch_id);
+> > +
+> > +		mutex_lock(&mhi_chan->lock);
+> > +		/* Initialize and configure the corresponding channel ring */
+> > +		if (!ch_ring->started) {
+> > +			ret = mhi_ep_ring_start(mhi_cntrl, ch_ring,
+> > +				(union mhi_ep_ring_ctx *)&mhi_cntrl->ch_ctx_cache[ch_id]);
+> > +			if (ret) {
+> > +				dev_err(dev, "Failed to start ring for channel (%d)\n", ch_id);
+> > +				ret = mhi_ep_send_cmd_comp_event(mhi_cntrl,
+> > +							MHI_EV_CC_UNDEFINED_ERR);
+> > +				if (ret)
+> > +					dev_err(dev, "Error sending completion event (%d)\n",
+> > +						MHI_EV_CC_UNDEFINED_ERR);
+> 
+> Print the value of ret in the above message (not UNDEFINED_ERR).
+> 
+> > +
+> > +				goto err_unlock;
+> > +			}
+> > +		}
+> > +
+> > +		/* Enable DB for the channel */
+> > +		mhi_ep_mmio_enable_chdb_a7(mhi_cntrl, ch_id);
+> 
+> If an error occurs later, this will be enabled.  Is that what
+> you want?  Maybe wait to enable the doorbell until everything
+> else succeeds.
+> 
 
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 07561753158d..26a1a3711d66 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -157,13 +157,13 @@ extern struct mod_tree_root mod_tree;
- void mod_tree_insert(struct module *mod);
- void mod_tree_remove_init(struct module *mod);
- void mod_tree_remove(struct module *mod);
--struct module *mod_find(unsigned long addr);
-+struct module *mod_find(unsigned long addr, struct mod_tree_root *tree);
- #else /* !CONFIG_MODULES_TREE_LOOKUP */
- 
- static inline void mod_tree_insert(struct module *mod) { }
- static inline void mod_tree_remove_init(struct module *mod) { }
- static inline void mod_tree_remove(struct module *mod) { }
--static inline struct module *mod_find(unsigned long addr)
-+static inline struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
- {
- 	struct module *mod;
- 
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 3b75cb97f8c2..c0b961e02909 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -91,22 +91,22 @@ struct symsearch {
-  * Bounds of module text, for speeding up __module_address.
-  * Protected by module_mutex.
-  */
--static void __mod_update_bounds(void *base, unsigned int size)
-+static void __mod_update_bounds(void *base, unsigned int size, struct mod_tree_root *tree)
- {
- 	unsigned long min = (unsigned long)base;
- 	unsigned long max = min + size;
- 
--	if (min < module_addr_min)
--		module_addr_min = min;
--	if (max > module_addr_max)
--		module_addr_max = max;
-+	if (min < tree->addr_min)
-+		tree->addr_min = min;
-+	if (max > tree->addr_max)
-+		tree->addr_max = max;
- }
- 
- static void mod_update_bounds(struct module *mod)
- {
--	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size);
-+	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size, &mod_tree);
- 	if (mod->init_layout.size)
--		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size);
-+		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size, &mod_tree);
- }
- 
- static void module_assert_mutex_or_preempt(void)
-@@ -3051,7 +3051,7 @@ struct module *__module_address(unsigned long addr)
- 
- 	module_assert_mutex_or_preempt();
- 
--	mod = mod_find(addr);
-+	mod = mod_find(addr, &mod_tree);
- 	if (mod) {
- 		BUG_ON(!within_module(addr, mod));
- 		if (mod->state == MODULE_STATE_UNFORMED)
-diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
-index 0bc4ec3b22ce..995fe68059db 100644
---- a/kernel/module/tree_lookup.c
-+++ b/kernel/module/tree_lookup.c
-@@ -61,14 +61,14 @@ static const struct latch_tree_ops mod_tree_ops = {
- 	.comp = mod_tree_comp,
- };
- 
--static noinline void __mod_tree_insert(struct mod_tree_node *node)
-+static noinline void __mod_tree_insert(struct mod_tree_node *node, struct mod_tree_root *tree)
- {
--	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
-+	latch_tree_insert(&node->node, &tree->root, &mod_tree_ops);
- }
- 
--static void __mod_tree_remove(struct mod_tree_node *node)
-+static void __mod_tree_remove(struct mod_tree_node *node, struct mod_tree_root *tree)
- {
--	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
-+	latch_tree_erase(&node->node, &tree->root, &mod_tree_ops);
- }
- 
- /*
-@@ -80,28 +80,28 @@ void mod_tree_insert(struct module *mod)
- 	mod->core_layout.mtn.mod = mod;
- 	mod->init_layout.mtn.mod = mod;
- 
--	__mod_tree_insert(&mod->core_layout.mtn);
-+	__mod_tree_insert(&mod->core_layout.mtn, &mod_tree);
- 	if (mod->init_layout.size)
--		__mod_tree_insert(&mod->init_layout.mtn);
-+		__mod_tree_insert(&mod->init_layout.mtn, &mod_tree);
- }
- 
- void mod_tree_remove_init(struct module *mod)
- {
- 	if (mod->init_layout.size)
--		__mod_tree_remove(&mod->init_layout.mtn);
-+		__mod_tree_remove(&mod->init_layout.mtn, &mod_tree);
- }
- 
- void mod_tree_remove(struct module *mod)
- {
--	__mod_tree_remove(&mod->core_layout.mtn);
-+	__mod_tree_remove(&mod->core_layout.mtn, &mod_tree);
- 	mod_tree_remove_init(mod);
- }
- 
--struct module *mod_find(unsigned long addr)
-+struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
- {
- 	struct latch_tree_node *ltn;
- 
--	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
-+	ltn = latch_tree_find((void *)addr, &tree->root, &mod_tree_ops);
- 	if (!ltn)
- 		return NULL;
- 
--- 
-2.34.1
+Makes sense. Will move this to the end.
 
+> > +
+> > +		/* Set channel state to RUNNING */
+> > +		mhi_chan->state = MHI_CH_STATE_RUNNING;
+> > +		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[ch_id].chcfg);
+> > +		tmp &= ~CHAN_CTX_CHSTATE_MASK;
+> > +		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
+> > +		mhi_cntrl->ch_ctx_cache[ch_id].chcfg = cpu_to_le32(tmp);
+> > +
+> > +		ret = mhi_ep_send_cmd_comp_event(mhi_cntrl, MHI_EV_CC_SUCCESS);
+> > +		if (ret) {
+> > +			dev_err(dev, "Error sending command completion event (%d)\n",
+> > +				MHI_EV_CC_SUCCESS);
+> > +			goto err_unlock;
+> > +		}
+> > +
+> > +		mutex_unlock(&mhi_chan->lock);
+> > +
+> > +		/*
+> > +		 * Create MHI device only during UL channel start. Since the MHI
+> > +		 * channels operate in a pair, we'll associate both UL and DL
+> > +		 * channels to the same device.
+> > +		 *
+> > +		 * We also need to check for mhi_dev != NULL because, the host
+> > +		 * will issue START_CHAN command during resume and we don't
+> > +		 * destroy the device during suspend.
+> > +		 */
+> > +		if (!(ch_id % 2) && !mhi_chan->mhi_dev) {
+> > +			ret = mhi_ep_create_device(mhi_cntrl, ch_id);
+> > +			if (ret) {
+> 
+> If this occurs, the host will already have been told the
+> request completed successfully.  Is that a problem that
+> can/should be avoided?
+> 
+
+This should result in SYSERR. Will handle.
+
+Thanks,
+Mani
