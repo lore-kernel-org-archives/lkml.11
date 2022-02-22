@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E606C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41000C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 16:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233901AbiBVQIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 11:08:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
+        id S233907AbiBVQIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 11:08:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233602AbiBVQIr (ORCPT
+        with ESMTP id S233535AbiBVQIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 11:08:47 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FA9A163D7E
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:08:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05E941081B1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 08:08:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1645546100;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=DwTS4ZAe5En4e5bUnjwAk7/r75DA0tIgyXdfJ7hCMak=;
-        b=etrh3loeYoUQ9o9HDoBhiIc8kDM7yQ0RlJX/wW1EYyEEevffDdZqOmOq0T7hMV3lls0fCe
-        oU9QFy2w8TVj2XTJsekOxmb8HZw5ka6nkFnYeIucL18f7e06d2B8EzKz3JBJV2Q6EX1rv7
-        wYbBYYy2Tq21HbgPLoB++zMBqRWcFnc=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aT/7AVxDblmzHdwSW2K30Fv/JrfyrN0Jjx03lSN/s60=;
+        b=acC0m0FpbndTWuP7S+7cconegRahktVAPz3/ip3NqNcZFPRjStPezVEP8UCZ7effFcHyTq
+        iRe4O7tTJzRqkxSGHjNEigycGtmIjF7f3nQ+DLBqqax5ocrYeK2Avjzr+9rO6w3WM/uLPh
+        cSKhRpoJbRqdEbBTuNZ6vHulV4ANzdM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-282-u4u20x2YOeSyFi9jz9Xmhw-1; Tue, 22 Feb 2022 11:08:17 -0500
-X-MC-Unique: u4u20x2YOeSyFi9jz9Xmhw-1
+ us-mta-208-oUwiTlTgPMuleG23-Tm_Vg-1; Tue, 22 Feb 2022 11:08:16 -0500
+X-MC-Unique: oUwiTlTgPMuleG23-Tm_Vg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D4ACF800422;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FDE1801AAD;
         Tue, 22 Feb 2022 16:08:15 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 422BB8378A;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3AE004EC7C;
         Tue, 22 Feb 2022 16:08:00 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id 40D214168B8E; Tue, 22 Feb 2022 13:01:27 -0300 (-03)
-Date:   Tue, 22 Feb 2022 13:01:27 -0300
+        id E98284171300; Tue, 22 Feb 2022 13:07:35 -0300 (-03)
+Date:   Tue, 22 Feb 2022 13:07:35 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-mm@kvack.org, Minchan Kim <minchan@kernel.org>,
@@ -49,12 +50,14 @@ Cc:     linux-mm@kvack.org, Minchan Kim <minchan@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [patch v2] mm: lru_cache_disable: replace work queue synchronization
+Subject: [patch v3] mm: lru_cache_disable: replace work queue synchronization
  with synchronize_rcu
-Message-ID: <YhUI1wUtV8yguijO@fuller.cnet>
+Message-ID: <YhUKRzEKxMvlGQ5n@fuller.cnet>
+References: <YhUI1wUtV8yguijO@fuller.cnet>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <YhUI1wUtV8yguijO@fuller.cnet>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -74,20 +77,7 @@ queueing work items on all online CPUs to ensure visibility
 of lru_disable_count.
 
 However, its possible to use synchronize_rcu which will provide the same
-guarantees:
-
-    * synchronize_rcu() waits for preemption disabled
-    * and RCU read side critical sections
-    * For the users of lru_disable_count:
-    *
-    * preempt_disable, local_irq_disable() [bh_lru_lock()]
-    * rcu_read_lock                        [lru_pvecs CONFIG_PREEMPT_RT]
-    * preempt_disable                      [lru_pvecs !CONFIG_PREEMPT_RT]
-    *
-    *
-    * so any calls of lru_cache_disabled wrapped by
-    * local_lock+rcu_read_lock or preemption disabled would be
-    * ordered by that. 
+guarantees (see comment this patch modifies on lru_cache_disable).
 
 Fixes:
 
@@ -124,11 +114,14 @@ Fixes:
 
 Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 
+---
+
+v3: update stale comment			(Nicolas Saenz Julienne)
 v2: rt_spin_lock calls rcu_read_lock, no need
 to add it before local_lock on swap.c		(Nicolas Saenz Julienne) 
 
 diff --git a/mm/swap.c b/mm/swap.c
-index bcf3ac288b56..48299a125d68 100644
+index bcf3ac288b56..abb26293e7c1 100644
 --- a/mm/swap.c
 +++ b/mm/swap.c
 @@ -831,8 +831,7 @@ inline void __lru_add_drain_all(bool force_all_cpus)
@@ -141,7 +134,7 @@ index bcf3ac288b56..48299a125d68 100644
  		    data_race(pagevec_count(&per_cpu(lru_rotate.pvec, cpu))) ||
  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate_file, cpu)) ||
  		    pagevec_count(&per_cpu(lru_pvecs.lru_deactivate, cpu)) ||
-@@ -876,14 +875,21 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
+@@ -876,14 +875,19 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
  void lru_cache_disable(void)
  {
  	atomic_inc(&lru_disable_count);
@@ -163,9 +156,7 @@ index bcf3ac288b56..48299a125d68 100644
 +	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
 +	 *
 +	 * so any calls of lru_cache_disabled wrapped by local_lock or
-+	 * preemption disabled would be ordered by that. The atomic
-+	 * operation doesn't need to have stronger ordering requirements
-+	 * because that is enforced by the scheduling guarantees.
++	 * preemption disabled would be ordered by that.
  	 */
  	__lru_add_drain_all(true);
  #else
