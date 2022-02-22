@@ -2,122 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B95C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60615C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 15:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbiBVPfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 10:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S233496AbiBVPfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 10:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233391AbiBVPfb (ORCPT
+        with ESMTP id S233405AbiBVPfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 10:35:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E6D216306C
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:35:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645544102;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gzDriewqgRZ9io4uPq8+Th48FK+kOj3Iy64ttany+bU=;
-        b=aXqe+FfJrZ6+pOUG/CLkiWL1/xkEymV3PmKybJMTIm2URTiKOwR4X3+O7/S8f5x7aqq6OQ
-        8KBHWTyads1g0WiOY0TB8xBrajdoY0fZWepSqqqK1XDDZH3cvPLmBGAmG0WwHXgLaNjq8r
-        4UV6FsbCIGoVeSY5juhZbOwSYVmMS+o=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-379-sM93uXe1MOqEysCM7XJrZg-1; Tue, 22 Feb 2022 10:35:01 -0500
-X-MC-Unique: sM93uXe1MOqEysCM7XJrZg-1
-Received: by mail-qv1-f69.google.com with SMTP id kc30-20020a056214411e00b0042cb92fe8bbso21465803qvb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 07:35:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gzDriewqgRZ9io4uPq8+Th48FK+kOj3Iy64ttany+bU=;
-        b=FCWQUQQtUy0moxOIzuv2WvoG1Ll8LjAjGo7cIwN76XmVpljJPz9laETlmxnMFrb7IG
-         40UKodUvmI5jo+XPVA4f+9i6T7LiTTFcJnMYPcFaOTF5qTIEubdt2d9edPNNNu71+4fQ
-         weAiQSaJVWyqNgesX43XOYyrKmlcS2yt6KZENcxxeLVo8UjK49Fae/ROTgGNSlKb6RdG
-         EqEVQkCrlhCO3oZy5xfU/ED7F2Hmy6Dk/gEsusf06w2u96f2jPds9LQ8omHjW1CLDWd9
-         PuyhR13c670jcu4kJ1XMw6gqZ1rNYMakgNG2jfWC+H4kbfIT612FBD59WxZOxQG5LgXc
-         sG4g==
-X-Gm-Message-State: AOAM530nyEqFAXDSBMoEfJ/7zMEn9F+LF1EQvMuKs6AapnJXsvfrkzL1
-        9tpMG0530bvxKkp8y2sFwB4NW7gZrL8Znh2XakIJCcfAdj8Z5TRgbtfWR4Pv/fT0myNpTeT/xeK
-        +amc0ZX2ucwOBpJrRdXcUJrjX
-X-Received: by 2002:a37:9744:0:b0:508:48cd:5f91 with SMTP id z65-20020a379744000000b0050848cd5f91mr15481955qkd.127.1645544100560;
-        Tue, 22 Feb 2022 07:35:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw2JvSCA9d5bqs7ykg+cC+lHp7PPs64v92J2LbgKonNM67ESC05NAhByuZAggoWd6lP27ZDVA==
-X-Received: by 2002:a37:9744:0:b0:508:48cd:5f91 with SMTP id z65-20020a379744000000b0050848cd5f91mr15481856qkd.127.1645544099190;
-        Tue, 22 Feb 2022 07:34:59 -0800 (PST)
-Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
-        by smtp.gmail.com with ESMTPSA id e16sm33080419qty.47.2022.02.22.07.34.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 07:34:58 -0800 (PST)
-Subject: Re: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be
- configured
-To:     Petr Mladek <pmladek@suse.com>, David Vernet <void@manifault.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        corbet@lwn.net, kernel-team@fb.com
-References: <20220216161100.3243100-1-void@manifault.com>
- <YhOd/vQGnv9I1WCX@alley>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <42dfc6bf-cc18-138b-9e9d-cf460e5277da@redhat.com>
-Date:   Tue, 22 Feb 2022 10:34:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22EA163062;
+        Tue, 22 Feb 2022 07:35:01 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dx6YvNEK7jAcWHCQhiBwSs6WFOE4LW2OIkuKnQy7/QZ1Y60OuDylJTkQmVtpyEk6kH9Y9uBkX/3RAKrfKO8PtYacTMpvMeHe13JSYYJzyUp+8PgfCSLYaTRh9oseH1RM9iOGJllZ3UZ3M+xA26siA6VZ1RjGrv8hn1YtcbTiWuRLjVI5+4KXGSe/pe6jBrX9wIUkyrqp2ns5iMsgmQtJV2OG1OKHeQ8XGm/yh/mCID3ysIhjQDJC84NIAQE9qTpoCVpzCY6n6OwMef1cL9YuydgtTlvQ0yZ9/texoESk7qLRsClq5tbvtgdFFO+icR8ZS8FWNXQcyWjL/o18q/UCng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IR0wBb+b8UoTM1GoiX/M5OJbOl1cycbDU15JfAwfGLw=;
+ b=FsNkp1noyC6qwz4Vm3XTXOH0XH3g5Tg9ynJlyzmDbk7Hg/Vh8y7od1Fdz8ZAzJt33ja+3blGRlt+ZlNEI+cz/CtzhYbH+1yXXFeuq96+SFUrCxXmLe0OLLF6EwbEKWYB6e4h0Q9R1DGnDD2Z2g0eEP5DnvQnd44RDuHWq4fHnVNTbXyShlYFB8GQThOlJ4W5obKFDvavPyUdHFcxgYfG8483plgnrb6jgScPlBSQLt0I9e2OxIfVbbyy/PSqCx7MqLrk4jnIvfW/ZrLMjJmC/IK6aRXkbQgXxvRPkuiP2goLDqRrGpjxVi3P4hPJ4w71wWxG8q3CzwyaqrWWhfQQYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IR0wBb+b8UoTM1GoiX/M5OJbOl1cycbDU15JfAwfGLw=;
+ b=ITZFVR7sOAj/+2WMW9JLf9mu8f8a0hlbyVDNAOHEBjT1dMALqSbDMEY9uCSKF5jZKiRUgOvkNcXRgyqOyevAs71BejZycEGGqkwqLPeH4rejZIGti9616BgzS6OMMKfeXYGASLmBwZrd2yjV2p18Q36nB2sA9mb2oFPizecUMZM=
+Received: from DS7PR03CA0148.namprd03.prod.outlook.com (2603:10b6:5:3b4::33)
+ by DM4PR12MB5373.namprd12.prod.outlook.com (2603:10b6:5:39d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.22; Tue, 22 Feb
+ 2022 15:35:00 +0000
+Received: from DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b4:cafe::58) by DS7PR03CA0148.outlook.office365.com
+ (2603:10b6:5:3b4::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21 via Frontend
+ Transport; Tue, 22 Feb 2022 15:35:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT031.mail.protection.outlook.com (10.13.172.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4995.15 via Frontend Transport; Tue, 22 Feb 2022 15:35:00 +0000
+Received: from hr-amd.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 22 Feb
+ 2022 09:34:54 -0600
+From:   Huang Rui <ray.huang@amd.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        <linux-pm@vger.kernel.org>
+CC:     Deepak Sharma <deepak.sharma@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Steven Noonan <steven@valvesoftware.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>,
+        Xiaojian Du <Xiaojian.Du@amd.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Jassmine Meng <li.meng@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Giovanni Gherdovich" <ggherdovich@suse.cz>,
+        <linux-kernel@vger.kernel.org>, Huang Rui <ray.huang@amd.com>
+Subject: [PATCH v7 02/10] cpupower: Add the function to check AMD P-State enabled
+Date:   Tue, 22 Feb 2022 23:34:18 +0800
+Message-ID: <20220222153426.2216974-3-ray.huang@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220222153426.2216974-1-ray.huang@amd.com>
+References: <20220222153426.2216974-1-ray.huang@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <YhOd/vQGnv9I1WCX@alley>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 06af5af6-0287-4fd3-0561-08d9f618e351
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5373:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5373AC40C7F1415EF2F7C80DEC3B9@DM4PR12MB5373.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0MFC94RKjT47mzjy7sEPcRW8oZwqdAPMSi3vzJ98/ZTDiWb2V8IVDYP2NVsd/6EC+DDDgJrzYtJ7KqawotkRoWueXOIrRNzlKuGdxwubi/T6oC6/tiytqxUeT35KddaTn5aJ7VNR5KzjMmeK+r1d43Bysxi0rLVq1mpinfzk0/6ks0N109b9Qnx6hDQOtozkpE+oX+TK5v+NsdLN0UQY1+wefdvLNGTOFiVSrBZtXahrUDrmelbwO0Z733QSg5QFFnAc4d/AdJuWJEaqz2f6sRODtxB79vu5X6X9E6NDHv6NC6T23Vre6YA0KmaE451oOZkRVdyFoRPHP/6OQrY2OiEAlNbvkyz5QNf1FNZNXb4DbyhSNAIot0CF84mEbjzYIWmnb2Dw7Kg5S7pEXhBchgMa2B3Zp1PGhlQn7cTBmEJf872D0NgrirsnKlZKElLXyX5ieCKWFP0KvGfNWJPGedi2ay+QipxOHBA7SdE0K6IOyZETxmRI12EAz6y7frWpfpcVdqLhDzT16Qvo+6OhEs0VYudsLke7WScpugAtUwzuZNOEIL/DrzJi7Oh2Y+yJ8TmYnypwxdiJTROyLXe7xk4JwxLdk9P38PgvF2oVvxj4NorkSSyCBTvV1YZX/ow3eZusnn2j3IKr/dGusQWNj8awA0QfW7PLigC+d4H0YU3njJ8i21nSZ3VO98vl/cWPVjHlvsEOUeVHzkUUVFZL5w==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(336012)(7696005)(70206006)(6666004)(316002)(186003)(110136005)(40460700003)(426003)(26005)(82310400004)(47076005)(86362001)(4326008)(36860700001)(8676002)(54906003)(36756003)(5660300002)(7416002)(2906002)(8936002)(2616005)(1076003)(81166007)(70586007)(508600001)(356005)(16526019)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 15:35:00.1927
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06af5af6-0287-4fd3-0561-08d9f618e351
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5373
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/21/22 9:13 AM, Petr Mladek wrote:
-> On Wed 2022-02-16 08:11:01, David Vernet wrote:
->> livepatch has a set of selftests that are used to validate the behavior of
->> the livepatching subsystem.  One of the testcases in the livepatch
->> testsuite is test-ftrace.sh, which among other things, validates that
->> livepatching gracefully fails when ftrace is disabled.  In the event that
->> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
->> will fail later due to it unexpectedly successfully loading the
->> test_klp_livepatch module.
->>
->> While the livepatch selftests are careful to remove any of the livepatch
->> test modules between testcases to avoid this situation, ftrace may still
->> fail to be disabled if another trace is active on the system that was
->> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
->> that use trampolines will cause this test to fail due to the trampoline
->> being implemented with register_ftrace_direct().  The following is an
->> example of such a trace:
->>
->> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
->> (call_direct_funcs+0x0/0x30)
->>         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
->>
->> In order to make the test more resilient to system state that is out of its
->> control, this patch updates set_ftrace_enabled() to detect sysctl failures,
->> and skip the testrun when appropriate.
->>
->> Suggested-by: Petr Mladek <pmladek@suse.com>
->> Signed-off-by: David Vernet <void@manifault.com>
-> 
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Tested-by: Petr Mladek <pmladek@suse.com>
-> 
-> I am going to push it after two days or so unless anyone is against.
-> 
+The processor with AMD P-State function also supports legacy ACPI
+hardware P-States feature as well. Once driver sets AMD P-State eanbled,
+the processor will respond the finer grain AMD P-State feature instead of
+legacy ACPI P-States. So it introduces the cpupower_amd_pstate_enabled()
+to check whether the current kernel enables AMD P-State or AMD CPUFreq
+module.
 
-Sorry for late replies as I'm just back from PTO, but v3 looks good to
-me.  Thanks Petr and David.
+Signed-off-by: Huang Rui <ray.huang@amd.com>
+---
+ tools/power/cpupower/utils/helpers/helpers.h | 10 ++++++++++
+ tools/power/cpupower/utils/helpers/misc.c    | 18 ++++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
-Acked-by: Joe Lawrence <joe.lawrence@redhat.com>
-
+diff --git a/tools/power/cpupower/utils/helpers/helpers.h b/tools/power/cpupower/utils/helpers/helpers.h
+index b4813efdfb00..62771a086871 100644
+--- a/tools/power/cpupower/utils/helpers/helpers.h
++++ b/tools/power/cpupower/utils/helpers/helpers.h
+@@ -11,6 +11,7 @@
+ 
+ #include <libintl.h>
+ #include <locale.h>
++#include <stdbool.h>
+ 
+ #include "helpers/bitmask.h"
+ #include <cpupower.h>
+@@ -136,6 +137,12 @@ extern int decode_pstates(unsigned int cpu, int boost_states,
+ 
+ extern int cpufreq_has_boost_support(unsigned int cpu, int *support,
+ 				     int *active, int * states);
++
++/* AMD P-State stuff **************************/
++bool cpupower_amd_pstate_enabled(void);
++
++/* AMD P-State stuff **************************/
++
+ /*
+  * CPUID functions returning a single datum
+  */
+@@ -168,6 +175,9 @@ static inline int cpufreq_has_boost_support(unsigned int cpu, int *support,
+ 					    int *active, int * states)
+ { return -1; }
+ 
++static inline bool cpupower_amd_pstate_enabled(void)
++{ return false; }
++
+ /* cpuid and cpuinfo helpers  **************************/
+ 
+ static inline unsigned int cpuid_eax(unsigned int op) { return 0; };
+diff --git a/tools/power/cpupower/utils/helpers/misc.c b/tools/power/cpupower/utils/helpers/misc.c
+index fc6e34511721..0c483cdefcc2 100644
+--- a/tools/power/cpupower/utils/helpers/misc.c
++++ b/tools/power/cpupower/utils/helpers/misc.c
+@@ -3,9 +3,11 @@
+ #include <stdio.h>
+ #include <errno.h>
+ #include <stdlib.h>
++#include <string.h>
+ 
+ #include "helpers/helpers.h"
+ #include "helpers/sysfs.h"
++#include "cpufreq.h"
+ 
+ #if defined(__i386__) || defined(__x86_64__)
+ 
+@@ -83,6 +85,22 @@ int cpupower_intel_set_perf_bias(unsigned int cpu, unsigned int val)
+ 	return 0;
+ }
+ 
++bool cpupower_amd_pstate_enabled(void)
++{
++	char *driver = cpufreq_get_driver(0);
++	bool ret = false;
++
++	if (!driver)
++		return ret;
++
++	if (!strcmp(driver, "amd-pstate"))
++		ret = true;
++
++	cpufreq_put_driver(driver);
++
++	return ret;
++}
++
+ #endif /* #if defined(__i386__) || defined(__x86_64__) */
+ 
+ /* get_cpustate
 -- 
-Joe
+2.25.1
 
