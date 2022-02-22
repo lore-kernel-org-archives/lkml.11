@@ -2,60 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 318BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 22 Feb 2022 08:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiBVIsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 03:48:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
+        id S229704AbiBVItH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 03:49:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiBVIsN (ORCPT
+        with ESMTP id S229449AbiBVItF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 03:48:13 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28B00BA75D;
-        Tue, 22 Feb 2022 00:47:48 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nMQpn-0001CP-04; Tue, 22 Feb 2022 09:47:47 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 2DDFBC2609; Tue, 22 Feb 2022 09:47:14 +0100 (CET)
-Date:   Tue, 22 Feb 2022 09:47:14 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] MIPS: Constify static irq_domain_ops structs
-Message-ID: <20220222084714.GB7123@alpha.franken.de>
-References: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
+        Tue, 22 Feb 2022 03:49:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44D4A2F32;
+        Tue, 22 Feb 2022 00:48:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EF6D61459;
+        Tue, 22 Feb 2022 08:48:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83CE9C340E8;
+        Tue, 22 Feb 2022 08:48:37 +0000 (UTC)
+Message-ID: <de212d97-538f-f25c-5211-8606901cef00@xs4all.nl>
+Date:   Tue, 22 Feb 2022 09:48:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207211816.57860-1-rikard.falkeborn@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3] media: imx-jpeg: Set V4L2_BUF_FLAG_LAST at eos
+Content-Language: en-US
+To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220222084116.5619-1-ming.qian@nxp.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <20220222084116.5619-1-ming.qian@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 10:18:13PM +0100, Rikard Falkeborn wrote:
-> Constify a number of static irq_domain_ops structs that were never
-> modified. This allows the compiler to put them in read-only memory.
+What changed in v3?
+
+The v2 is already part of a PR, so if the changes are just of the cleanup
+type, then I prefer to have a diff on top of the v2. Otherwise I need to
+respin the PR.
+
+Regards,
+
+	Hans
+
+On 2/22/22 09:41, Ming Qian wrote:
+> The V4L2_EVENT_EOS event is a deprecated behavior,
+> the V4L2_BUF_FLAG_LAST buffer flag should be used instead.
 > 
-> Rikard Falkeborn (3):
->   MIPS: OCTEON: Constify static irq_domain_ops
->   MIPS: ath25: Constify static irq_domain_ops
->   MIPS: pci-ar2315: Constify static irq_domain_ops
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
+> ---
+>  drivers/media/platform/imx-jpeg/mxc-jpeg.c | 41 ++++++++++++++++++++--
+>  drivers/media/platform/imx-jpeg/mxc-jpeg.h |  1 +
+>  2 files changed, 40 insertions(+), 2 deletions(-)
 > 
->  arch/mips/ath25/ar2315.c             |  2 +-
->  arch/mips/ath25/ar5312.c             |  2 +-
->  arch/mips/cavium-octeon/octeon-irq.c | 10 +++++-----
->  arch/mips/pci/pci-ar2315.c           |  2 +-
->  4 files changed, 8 insertions(+), 8 deletions(-)
-
-series applied to mips-next.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+> diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+> index ec5a326affd6..1de0400750aa 100644
+> --- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+> +++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+> @@ -997,6 +997,20 @@ static void mxc_jpeg_device_run(void *priv)
+>  	spin_unlock_irqrestore(&ctx->mxc_jpeg->hw_lock, flags);
+>  }
+>  
+> +static void mxc_jpeg_set_last_buffer_dequeued(struct mxc_jpeg_ctx *ctx)
+> +{
+> +	struct vb2_queue *q;
+> +
+> +	ctx->stopped = 1;
+> +	q = v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx);
+> +	if (!list_empty(&q->done_list))
+> +		return;
+> +
+> +	q->last_buffer_dequeued = true;
+> +	wake_up(&q->done_wq);
+> +	ctx->stopped = 0;
+> +}
+> +
+>  static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
+>  				struct v4l2_decoder_cmd *cmd)
+>  {
+> @@ -1014,6 +1028,7 @@ static int mxc_jpeg_decoder_cmd(struct file *file, void *priv,
+>  		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
+>  			/* No more src bufs, notify app EOS */
+>  			notify_eos(ctx);
+> +			mxc_jpeg_set_last_buffer_dequeued(ctx);
+>  		} else {
+>  			/* will send EOS later*/
+>  			ctx->stopping = 1;
+> @@ -1040,6 +1055,7 @@ static int mxc_jpeg_encoder_cmd(struct file *file, void *priv,
+>  		if (v4l2_m2m_num_src_bufs_ready(fh->m2m_ctx) == 0) {
+>  			/* No more src bufs, notify app EOS */
+>  			notify_eos(ctx);
+> +			mxc_jpeg_set_last_buffer_dequeued(ctx);
+>  		} else {
+>  			/* will send EOS later*/
+>  			ctx->stopping = 1;
+> @@ -1116,6 +1132,10 @@ static void mxc_jpeg_stop_streaming(struct vb2_queue *q)
+>  		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
+>  	}
+>  	pm_runtime_put_sync(&ctx->mxc_jpeg->pdev->dev);
+> +	if (V4L2_TYPE_IS_OUTPUT(q->type)) {
+> +		ctx->stopping = 0;
+> +		ctx->stopped = 0;
+> +	}
+>  }
+>  
+>  static int mxc_jpeg_valid_comp_id(struct device *dev,
+> @@ -1407,12 +1427,29 @@ static int mxc_jpeg_buf_prepare(struct vb2_buffer *vb)
+>  	return 0;
+>  }
+>  
+> +static void mxc_jpeg_buf_finish(struct vb2_buffer *vb)
+> +{
+> +	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+> +	struct mxc_jpeg_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
+> +	struct vb2_queue *q = vb->vb2_queue;
+> +
+> +	if (V4L2_TYPE_IS_OUTPUT(vb->type))
+> +		return;
+> +	if (!ctx->stopped)
+> +		return;
+> +	if (list_empty(&q->done_list)) {
+> +		vbuf->flags |= V4L2_BUF_FLAG_LAST;
+> +		ctx->stopped = 0;
+> +	}
+> +}
+> +
+>  static const struct vb2_ops mxc_jpeg_qops = {
+>  	.queue_setup		= mxc_jpeg_queue_setup,
+>  	.wait_prepare		= vb2_ops_wait_prepare,
+>  	.wait_finish		= vb2_ops_wait_finish,
+>  	.buf_out_validate	= mxc_jpeg_buf_out_validate,
+>  	.buf_prepare		= mxc_jpeg_buf_prepare,
+> +	.buf_finish             = mxc_jpeg_buf_finish,
+>  	.start_streaming	= mxc_jpeg_start_streaming,
+>  	.stop_streaming		= mxc_jpeg_stop_streaming,
+>  	.buf_queue		= mxc_jpeg_buf_queue,
+> @@ -1848,14 +1885,14 @@ static int mxc_jpeg_dqbuf(struct file *file, void *priv,
+>  	int ret;
+>  
+>  	dev_dbg(dev, "DQBUF type=%d, index=%d", buf->type, buf->index);
+> -	if (ctx->stopping == 1	&& num_src_ready == 0) {
+> +	if (ctx->stopping == 1 && num_src_ready == 0) {
+>  		/* No more src bufs, notify app EOS */
+>  		notify_eos(ctx);
+>  		ctx->stopping = 0;
+> +		mxc_jpeg_set_last_buffer_dequeued(ctx);
+>  	}
+>  
+>  	ret = v4l2_m2m_dqbuf(file, fh->m2m_ctx, buf);
+> -
+>  	return ret;
+>  }
+>  
+> diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+> index 9fb2a5aaa941..f53f004ba851 100644
+> --- a/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+> +++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.h
+> @@ -91,6 +91,7 @@ struct mxc_jpeg_ctx {
+>  	struct v4l2_fh			fh;
+>  	enum mxc_jpeg_enc_state		enc_state;
+>  	unsigned int			stopping;
+> +	unsigned int			stopped;
+>  	unsigned int			slot;
+>  };
+>  
