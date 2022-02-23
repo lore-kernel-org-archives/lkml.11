@@ -2,127 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25995C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241465AbiBWUjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 15:39:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
+        id S241599AbiBWUpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 15:45:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234184AbiBWUjS (ORCPT
+        with ESMTP id S234184AbiBWUpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 15:39:18 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C8547AD9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:38:50 -0800 (PST)
+        Wed, 23 Feb 2022 15:45:17 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE9D4D9E1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:44:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645648730; x=1677184730;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BU0GOWTUhF9yJXXVIV+UeYaKiM/2sV3bpXc7BZH9FDo=;
-  b=f3rVht9IhkymHkC1YIqwnhhS28KhgIOD7VvAtZuPRGg8kHovoHMB8xvD
-   tbNnJcHKWqz7KBOeQp6yjtLrQwq1GMYU+secMepBhYr1G4NKJdAvq8w8k
-   E9zeRGaaHRLg0K/bJKJYT83NGKrVxXMgDBAckSkOg0YaiMb+rgdW7WBpt
-   2u5pYlkgDNOqvJyuOQVewkuPm+8ALUGTpSd97NrkXIIm1/lzV6U5DbJ/2
-   gK9/grTI8b3cnxIIC7SBxVniIJApnmSbjkLPlmSvn6iLdkG3QfZs5XE8R
-   s0RcKJlX6r0EAnXiYJFoZGIECYbaYF+NjjxpIPDqDTdXZ9Kto34/dKCyT
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="315302482"
+  t=1645649089; x=1677185089;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LXA9cbBLlKs8dna7KBTuoNyWnHV95leu102aR+60kFE=;
+  b=Whn3ikY6FNibzpP3ALqwhZfUiqWo3NCrJ6zkgqpC5sjQvt+q9jy/Fji7
+   p9O7P8lnpozA8TuFOvNAOC51FaKF38kTO8RBwRosPwlP2EOCCJqnQfU0s
+   F6LqNLGGBzN3eFqHR1/3kP1ZlF2jcs1XqHjU0uZMeChNFXvoO7IbGz4Al
+   8GcCxLe33ljSg4KHQ+VKGL0Fj9uHmvQ1XQtuhhpfX8Tayr0Qu6Rml5UVA
+   fHIuW7Rob1wEx6Nn95shh71syrFATvYC5GzpEDuNPMDx30Pg8aqYBFA5S
+   o0krH5S7pkS0XZuSDg7c+XhywLsQxXVzLJzivo04Z692chExICd9qHgTh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232051085"
 X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="315302482"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 12:38:50 -0800
+   d="scan'208";a="232051085"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 12:44:48 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="591842134"
+   d="scan'208";a="707187259"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Feb 2022 12:38:47 -0800
+  by orsmga005.jf.intel.com with ESMTP; 23 Feb 2022 12:44:47 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nMyPO-0001oE-Q8; Wed, 23 Feb 2022 20:38:46 +0000
-Date:   Thu, 24 Feb 2022 04:38:32 +0800
+        id 1nMyVC-0001ob-W0; Wed, 23 Feb 2022 20:44:46 +0000
+Date:   Thu, 24 Feb 2022 04:44:07 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Quinn Tran <qutran@marvell.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Larry Wisneski <Larry.Wisneski@marvell.com>,
-        Duane Grigsby <duane.grigsby@marvell.com>,
-        Rick Hicksted Jr <rhicksted@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>
-Subject: drivers/scsi/qla2xxx/qla_edif_bsg.h:93:12: warning: field remote_pid
- within 'struct app_pinfo_req' is less aligned than 'port_id_t' and is
- usually due to 'struct app_pinfo_req' being packed, which can lead to
- unaligned accesses
-Message-ID: <202202240422.NUeO1V58-lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:master] BUILD SUCCESS
+ abe87fe230d7233bce90b7e40f005864954153eb
+Message-ID: <62169c97.gfbvjOXZx6hdYJpM%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Quinn,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: abe87fe230d7233bce90b7e40f005864954153eb  Merge branch into tip/master: 'core/core'
 
-FYI, the error/warning still remains.
+elapsed time: 728m
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   5c1ee569660d4a205dced9cb4d0306b907fb7599
-commit: 7878f22a2e03b69baf792f74488962981a1c9547 scsi: qla2xxx: edif: Add getfcinfo and statistic bsgs
-date:   7 months ago
-config: arm-randconfig-r033-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240422.NUeO1V58-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7878f22a2e03b69baf792f74488962981a1c9547
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7878f22a2e03b69baf792f74488962981a1c9547
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/scsi/
+configs tested: 126
+configs skipped: 3
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-All warnings (new ones prefixed by >>):
+gcc tested configs:
+arm                                 defconfig
+arm                              allmodconfig
+arm                              allyesconfig
+arm64                               defconfig
+arm64                            allyesconfig
+i386                          randconfig-c001
+s390                          debug_defconfig
+mips                             allyesconfig
+arm                           stm32_defconfig
+h8300                    h8300h-sim_defconfig
+arm                        clps711x_defconfig
+arm                          pxa3xx_defconfig
+sh                   rts7751r2dplus_defconfig
+arm                        trizeps4_defconfig
+powerpc                    sam440ep_defconfig
+sh                   sh7724_generic_defconfig
+openrisc                            defconfig
+powerpc                     sequoia_defconfig
+powerpc                         ps3_defconfig
+m68k                        m5307c3_defconfig
+mips                         db1xxx_defconfig
+sparc                               defconfig
+arm                          pxa910_defconfig
+parisc                           alldefconfig
+nios2                         3c120_defconfig
+powerpc                mpc7448_hpc2_defconfig
+powerpc                     redwood_defconfig
+powerpc                      pasemi_defconfig
+sh                     magicpanelr2_defconfig
+arm                  randconfig-c002-20220221
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nds32                             allnoconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+i386                 randconfig-a002-20220221
+i386                 randconfig-a001-20220221
+i386                 randconfig-a005-20220221
+i386                 randconfig-a003-20220221
+i386                 randconfig-a006-20220221
+i386                 randconfig-a004-20220221
+x86_64               randconfig-a003-20220221
+x86_64               randconfig-a002-20220221
+x86_64               randconfig-a005-20220221
+x86_64               randconfig-a006-20220221
+x86_64               randconfig-a001-20220221
+x86_64               randconfig-a004-20220221
+arc                  randconfig-r043-20220221
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
 
-   In file included from drivers/scsi/qla2xxx/qla_edif.c:6:
-   In file included from drivers/scsi/qla2xxx/qla_def.h:34:
-   include/uapi/scsi/scsi_bsg_fc.h:280:4: warning: field rqst_data within 'struct fc_bsg_request' is less aligned than 'union (unnamed union at include/uapi/scsi/scsi_bsg_fc.h:271:2)' and is usually due to 'struct fc_bsg_request' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           } rqst_data;
-             ^
-   In file included from drivers/scsi/qla2xxx/qla_edif.c:6:
-   In file included from drivers/scsi/qla2xxx/qla_def.h:74:
-   In file included from drivers/scsi/qla2xxx/qla_bsg.h:298:
->> drivers/scsi/qla2xxx/qla_edif_bsg.h:93:12: warning: field remote_pid within 'struct app_pinfo_req' is less aligned than 'port_id_t' and is usually due to 'struct app_pinfo_req' being packed, which can lead to unaligned accesses [-Wunaligned-access]
-           port_id_t remote_pid;
-                     ^
-   2 warnings generated.
-
-
-vim +93 drivers/scsi/qla2xxx/qla_edif_bsg.h
-
-7ebb336e45ef1c Quinn Tran 2021-06-23  89  
-7ebb336e45ef1c Quinn Tran 2021-06-23  90  struct app_pinfo_req {
-7ebb336e45ef1c Quinn Tran 2021-06-23  91  	struct app_id app_info;
-7ebb336e45ef1c Quinn Tran 2021-06-23  92  	uint8_t	 num_ports;
-7ebb336e45ef1c Quinn Tran 2021-06-23 @93  	port_id_t remote_pid;
-7ebb336e45ef1c Quinn Tran 2021-06-23  94  	uint8_t	 reserved[VND_CMD_APP_RESERVED_SIZE];
-7ebb336e45ef1c Quinn Tran 2021-06-23  95  } __packed;
-7ebb336e45ef1c Quinn Tran 2021-06-23  96  
-
-:::::: The code at line 93 was first introduced by commit
-:::::: 7ebb336e45ef1ce23462c3bbd03779929008901f scsi: qla2xxx: edif: Add start + stop bsgs
-
-:::::: TO: Quinn Tran <qutran@marvell.com>
-:::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
+clang tested configs:
+powerpc              randconfig-c003-20220223
+x86_64                        randconfig-c007
+arm                  randconfig-c002-20220223
+mips                 randconfig-c004-20220223
+i386                          randconfig-c001
+riscv                randconfig-c006-20220223
+arm                              alldefconfig
+mips                           rs90_defconfig
+arm                        multi_v5_defconfig
+riscv                          rv32_defconfig
+mips                      malta_kvm_defconfig
+powerpc                     ksi8560_defconfig
+mips                           ip22_defconfig
+mips                        maltaup_defconfig
+arm                           spitz_defconfig
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64               randconfig-a011-20220221
+x86_64               randconfig-a012-20220221
+x86_64               randconfig-a014-20220221
+x86_64               randconfig-a013-20220221
+x86_64               randconfig-a015-20220221
+x86_64               randconfig-a016-20220221
+i386                 randconfig-a016-20220221
+i386                 randconfig-a012-20220221
+i386                 randconfig-a015-20220221
+i386                 randconfig-a011-20220221
+i386                 randconfig-a014-20220221
+i386                 randconfig-a013-20220221
+hexagon              randconfig-r045-20220223
+hexagon              randconfig-r041-20220223
+riscv                randconfig-r042-20220223
+hexagon              randconfig-r045-20220221
+hexagon              randconfig-r041-20220221
+riscv                randconfig-r042-20220221
+s390                 randconfig-r044-20220221
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
