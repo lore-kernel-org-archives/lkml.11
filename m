@@ -2,210 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC512C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84393C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244044AbiBWSz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S244051AbiBWS4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233132AbiBWSzz (ORCPT
+        with ESMTP id S233132AbiBWS4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:55:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0453EF00;
-        Wed, 23 Feb 2022 10:55:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B94C0B8218D;
-        Wed, 23 Feb 2022 18:55:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E10C340E7;
-        Wed, 23 Feb 2022 18:55:23 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QkOuubY0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645642521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cwY0EDD6eopPWtPCL3v37+kjOKqJXSVA7WTKzKBMdiU=;
-        b=QkOuubY0JZAuCOGq4M7e4/QFDp9EvBWpOOFuim35X9plkeushAGzJT967j8qZV1YLiHotT
-        uoDVEZw8YT1I1JdZVYHAlqUfTh+Mz/+fw/vXYuFJqiiGqZRFjOoTRZGmtoSNcKUolk6vGw
-        vhaOlpSlh1oP0edkfAuYTOu1rEJaFkc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e60620e8 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 23 Feb 2022 18:55:20 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        bigeasy@linutronix.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH] random: do crng pre-init loading in worker rather than irq
-Date:   Wed, 23 Feb 2022 19:55:11 +0100
-Message-Id: <20220223185511.628452-1-Jason@zx2c4.com>
+        Wed, 23 Feb 2022 13:56:14 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DDA3EF00
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 10:55:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645642546; x=1677178546;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=55FeCcb1ARGRmEKxVh+6A3zlRphXv2FFw32s6I+V6sk=;
+  b=f1Dcae9RiHrpLwJnlo5EO7GVx+j5gyT6Mc0yffI3AwhzxcVzosG6by1p
+   k0gI2Mt+y3a+vNNo7YAoLz8OIT9sr+rFXMqu9cTimr0alxmjyzHfr8zh2
+   sPNEtDaTWkCnNOlmAZozk5tcAF7+VtraL4lRbI2zGLoDfMDCIfp5HggWM
+   DhZabSn5oUQHsLElQ1lUwVwcF21Ishuzr9hR3w5a/LQvsz3dls8RgO1MK
+   l7RnOvUbkFhaPOUoMkVPfJX7CDtdDRn4biDfMSQj1l5HQocGU9p+So5YV
+   878LvFi+6G+rKAYrXqM/V0dqHHhgfjRscSzNzz7pdwgsovHAPQN0cIY9y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="312772099"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="312772099"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:55:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="707153545"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 23 Feb 2022 10:55:44 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMwnf-0001iF-LT; Wed, 23 Feb 2022 18:55:43 +0000
+Date:   Thu, 24 Feb 2022 02:54:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>,
+        Lee Shawn C <shawn.c.lee@intel.com>
+Subject: drivers/gpu/drm/i915/display/intel_cursor.c:155:6: error: implicit
+ declaration of function 'intel_crtc_is_bigjoiner_slave'
+Message-ID: <202202240216.mijx1JlB-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Taking spinlocks from IRQ context is problematic for PREEMPT_RT. That
-is, in part, why we take trylocks instead. But apparently this still
-trips up various lock dependency analyzers. That seems like a bug in the
-analyzers that should be fixed, rather than having to change things
-here.
+tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220223-215130/Ville-Syrjala/drm-i915-Fix-cursor-coordinates-on-bigjoiner-slave/20220215-142435
+head:   57b0973986ab3f838289ef1e4d27e8638c04b72f
+commit: 57b0973986ab3f838289ef1e4d27e8638c04b72f drm/i915: Fix cursor coordinates on bigjoiner slave
+date:   5 hours ago
+config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220224/202202240216.mijx1JlB-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/57b0973986ab3f838289ef1e4d27e8638c04b72f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review UPDATE-20220223-215130/Ville-Syrjala/drm-i915-Fix-cursor-coordinates-on-bigjoiner-slave/20220215-142435
+        git checkout 57b0973986ab3f838289ef1e4d27e8638c04b72f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-But maybe there's another reason to change things up: by deferring the
-crng pre-init loading to the worker, we can use the cryptographic hash
-function rather than xor, which is perhaps a meaningful difference when
-considering this data has only been through the relatively weak
-fast_mix() function.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The biggest downside of this approach is that the pre-init loading is
-now deferred until later, which means things that need random numbers
-after interrupts are enabled, but before workqueues are running -- or
-before this particular worker manages to run -- are going to get into
-trouble. Hopefully in the real world, this window is rather small,
-especially since this code won't run until 64 interrupts had occurred.
+All errors (new ones prefixed by >>):
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+>> drivers/gpu/drm/i915/display/intel_cursor.c:155:6: error: implicit declaration of function 'intel_crtc_is_bigjoiner_slave' [-Werror,-Wimplicit-function-declaration]
+           if (intel_crtc_is_bigjoiner_slave(crtc_state))
+               ^
+   1 error generated.
+
+
+vim +/intel_crtc_is_bigjoiner_slave +155 drivers/gpu/drm/i915/display/intel_cursor.c
+
+   130	
+   131	static int intel_check_cursor(struct intel_crtc_state *crtc_state,
+   132				      struct intel_plane_state *plane_state)
+   133	{
+   134		const struct drm_framebuffer *fb = plane_state->hw.fb;
+   135		struct drm_i915_private *i915 = to_i915(plane_state->uapi.plane->dev);
+   136		const struct drm_rect src = plane_state->uapi.src;
+   137		const struct drm_rect dst = plane_state->uapi.dst;
+   138		int ret;
+   139	
+   140		if (fb && fb->modifier != DRM_FORMAT_MOD_LINEAR) {
+   141			drm_dbg_kms(&i915->drm, "cursor cannot be tiled\n");
+   142			return -EINVAL;
+   143		}
+   144	
+   145		ret = intel_atomic_plane_check_clipping(plane_state, crtc_state,
+   146							DRM_PLANE_HELPER_NO_SCALING,
+   147							DRM_PLANE_HELPER_NO_SCALING,
+   148							true);
+   149		if (ret)
+   150			return ret;
+   151	
+   152		/* Use the unclipped src/dst rectangles, which we program to hw */
+   153		plane_state->uapi.src = src;
+   154		plane_state->uapi.dst = dst;
+ > 155		if (intel_crtc_is_bigjoiner_slave(crtc_state))
+   156			drm_rect_translate(&plane_state->uapi.dst,
+   157					   -crtc_state->pipe_src_w, 0);
+   158	
+   159		ret = intel_cursor_check_surface(plane_state);
+   160		if (ret)
+   161			return ret;
+   162	
+   163		if (!plane_state->uapi.visible)
+   164			return 0;
+   165	
+   166		ret = intel_plane_check_src_coordinates(plane_state);
+   167		if (ret)
+   168			return ret;
+   169	
+   170		return 0;
+   171	}
+   172	
+
 ---
- drivers/char/random.c | 62 ++++++++++++-------------------------------
- 1 file changed, 17 insertions(+), 45 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 536237a0f073..9fb06fc298d3 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -443,10 +443,6 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
-  * boot time when it's better to have something there rather than
-  * nothing.
-  *
-- * There are two paths, a slow one and a fast one. The slow one
-- * hashes the input along with the current key. The fast one simply
-- * xors it in, and should only be used from interrupt context.
-- *
-  * If account is set, then the crng_init_cnt counter is incremented.
-  * This shouldn't be set by functions like add_device_randomness(),
-  * where we can't trust the buffer passed to it is guaranteed to be
-@@ -455,19 +451,15 @@ static void crng_make_state(u32 chacha_state[CHACHA_STATE_WORDS],
-  * Returns the number of bytes processed from input, which is bounded
-  * by CRNG_INIT_CNT_THRESH if account is true.
-  */
--static size_t crng_pre_init_inject(const void *input, size_t len,
--				   bool fast, bool account)
-+static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
- {
- 	static int crng_init_cnt = 0;
-+	struct blake2s_state hash;
- 	unsigned long flags;
- 
--	if (fast) {
--		if (!spin_trylock_irqsave(&base_crng.lock, flags))
--			return 0;
--	} else {
--		spin_lock_irqsave(&base_crng.lock, flags);
--	}
-+	blake2s_init(&hash, sizeof(base_crng.key));
- 
-+	spin_lock_irqsave(&base_crng.lock, flags);
- 	if (crng_init != 0) {
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		return 0;
-@@ -476,21 +468,9 @@ static size_t crng_pre_init_inject(const void *input, size_t len,
- 	if (account)
- 		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 
--	if (fast) {
--		const u8 *src = input;
--		size_t i;
--
--		for (i = 0; i < len; ++i)
--			base_crng.key[(crng_init_cnt + i) %
--				      sizeof(base_crng.key)] ^= src[i];
--	} else {
--		struct blake2s_state hash;
--
--		blake2s_init(&hash, sizeof(base_crng.key));
--		blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--		blake2s_update(&hash, input, len);
--		blake2s_final(&hash, base_crng.key);
--	}
-+	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
-+	blake2s_update(&hash, input, len);
-+	blake2s_final(&hash, base_crng.key);
- 
- 	if (account) {
- 		crng_init_cnt += len;
-@@ -1040,7 +1020,7 @@ void add_device_randomness(const void *buf, size_t size)
- 	unsigned long flags;
- 
- 	if (crng_init == 0 && size)
--		crng_pre_init_inject(buf, size, false, false);
-+		crng_pre_init_inject(buf, size, false);
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(buf, size);
-@@ -1157,7 +1137,7 @@ void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0)) {
--		size_t ret = crng_pre_init_inject(buffer, count, false, true);
-+		size_t ret = crng_pre_init_inject(buffer, count, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
- 		buffer += ret;
-@@ -1298,7 +1278,12 @@ static void mix_interrupt_randomness(struct work_struct *work)
- 	local_irq_enable();
- 
- 	mix_pool_bytes(pool, sizeof(pool));
--	credit_entropy_bits(1);
-+
-+	if (unlikely(crng_init == 0))
-+		crng_pre_init_inject(pool, sizeof(pool), true);
-+	else
-+		credit_entropy_bits(1);
-+
- 	memzero_explicit(pool, sizeof(pool));
- }
- 
-@@ -1331,24 +1316,11 @@ void add_interrupt_randomness(int irq)
- 	fast_mix(fast_pool->pool32);
- 	new_count = ++fast_pool->count;
- 
--	if (unlikely(crng_init == 0)) {
--		if (new_count >= 64 &&
--		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
--					 true, true) > 0) {
--			fast_pool->count = 0;
--			fast_pool->last = now;
--			if (spin_trylock(&input_pool.lock)) {
--				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
--				spin_unlock(&input_pool.lock);
--			}
--		}
--		return;
--	}
--
- 	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (new_count < 64 && !time_after(now, fast_pool->last + HZ))
-+	if (new_count < 64 && (!time_after(now, fast_pool->last + HZ) ||
-+			       unlikely(crng_init == 0)))
- 		return;
- 
- 	if (unlikely(!fast_pool->mix.func))
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
