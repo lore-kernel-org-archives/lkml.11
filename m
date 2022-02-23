@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C11C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B09FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241177AbiBWNp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:45:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S241254AbiBWNqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:46:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241066AbiBWNos (ORCPT
+        with ESMTP id S241095AbiBWNow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:44:48 -0500
+        Wed, 23 Feb 2022 08:44:52 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EECBAC918
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6178BAD100
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:17 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 7902222453;
-        Wed, 23 Feb 2022 14:44:11 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id CC3C0223F6;
+        Wed, 23 Feb 2022 14:44:15 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645623851;
+        t=1645623855;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CqhkHAkkrKiJhs+qhvMCYUbLSrfnVv6IBJOqUiinTes=;
-        b=d2g4oSzifZXDqqqNQEDrKH1FEmLMbOdvlU6SBHr8JPpAlUXTSw16Gh2K0VFQTCA+zBLvRn
-        zaIt7v4jsPeozeljez8eIR6FGdNUovhZUvHZ99pYL52GFbv3XFRvqLuBLcyXFogSNRPBbc
-        kErTuogFUCOCo/vOdUS19Z5PzlKhkXw=
+        bh=35/TrCmEc5UMzhIA1WiLFawNYfLWm/HAT5pOPDWhA7g=;
+        b=oGhvUGdgRR6POL7pFSOWL899Vqs1yn00SDOSXcW5ESSlWSeYArrNCo/BKV29iGWF8Zi03i
+        nQNiUvM4bO97oSswQQc7xnQw2XY+NS78D7banYY01NyLWQ3k+IT90wS5SiURY11revl1iP
+        Mw6fCfWGsKqUqEvxE35LGOoYxfYCUCs=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 16/32] mtd: spi-nor: xmc: unify function names
-Date:   Wed, 23 Feb 2022 14:43:42 +0100
-Message-Id: <20220223134358.1914798-17-michael@walle.cc>
+Subject: [PATCH v5 26/32] mtd: spi-nor: micron-st: rename vendor specific functions and defines
+Date:   Wed, 23 Feb 2022 14:43:52 +0100
+Message-Id: <20220223134358.1914798-27-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223134358.1914798-1-michael@walle.cc>
 References: <20220223134358.1914798-1-michael@walle.cc>
@@ -51,42 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid name clashes unify all the function and static object names and
-use one of the following prefixes which should be sufficiently unique:
- - <vendor>_nor_
- - <flash_family>_nor_
- - <flash_part>_
-
-There are no functional changes.
+Drop the generic spi_nor prefix for all the micron-st functions.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Pratyush Yadav <p.yadav@ti.com>
+Tested-by: Pratyush Yadav <p.yadav@ti.com> # on mt35xu512aba, s28hs512t
 ---
- drivers/mtd/spi-nor/xmc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/mtd/spi-nor/micron-st.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/xmc.c b/drivers/mtd/spi-nor/xmc.c
-index 2992af03cb0a..051411e86339 100644
---- a/drivers/mtd/spi-nor/xmc.c
-+++ b/drivers/mtd/spi-nor/xmc.c
-@@ -8,7 +8,7 @@
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index 1a7227594bf0..8a20475ce77a 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -309,7 +309,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+ }
  
- #include "core.h"
+ /**
+- * spi_nor_read_fsr() - Read the Flag Status Register.
++ * micron_st_nor_read_fsr() - Read the Flag Status Register.
+  * @nor:	pointer to 'struct spi_nor'
+  * @fsr:	pointer to a DMA-able buffer where the value of the
+  *              Flag Status Register will be written. Should be at least 2
+@@ -317,7 +317,7 @@ static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+  *
+  * Return: 0 on success, -errno otherwise.
+  */
+-static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
++static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
+ {
+ 	int ret;
  
--static const struct flash_info xmc_parts[] = {
-+static const struct flash_info xmc_nor_parts[] = {
- 	/* XMC (Wuhan Xinxin Semiconductor Manufacturing Corp.) */
- 	{ "XM25QH64A", INFO(0x207017, 0, 64 * 1024, 128)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
-@@ -20,6 +20,6 @@ static const struct flash_info xmc_parts[] = {
+@@ -353,10 +353,10 @@ static int spi_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
+ }
  
- const struct spi_nor_manufacturer spi_nor_xmc = {
- 	.name = "xmc",
--	.parts = xmc_parts,
--	.nparts = ARRAY_SIZE(xmc_parts),
-+	.parts = xmc_nor_parts,
-+	.nparts = ARRAY_SIZE(xmc_nor_parts),
- };
+ /**
+- * spi_nor_clear_fsr() - Clear the Flag Status Register.
++ * micron_st_nor_clear_fsr() - Clear the Flag Status Register.
+  * @nor:	pointer to 'struct spi_nor'.
+  */
+-static void spi_nor_clear_fsr(struct spi_nor *nor)
++static void micron_st_nor_clear_fsr(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+@@ -380,14 +380,14 @@ static void spi_nor_clear_fsr(struct spi_nor *nor)
+ }
+ 
+ /**
+- * spi_nor_fsr_ready() - Query the Status Register as well as the Flag Status
++ * micron_st_nor_ready() - Query the Status Register as well as the Flag Status
+  * Register to see if the flash is ready for new commands. If there are any
+  * errors in the FSR clear them.
+  * @nor:	pointer to 'struct spi_nor'.
+  *
+  * Return: 1 if ready, 0 if not ready, -errno on errors.
+  */
+-static int spi_nor_fsr_ready(struct spi_nor *nor)
++static int micron_st_nor_ready(struct spi_nor *nor)
+ {
+ 	int sr_ready, ret;
+ 
+@@ -395,7 +395,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+ 	if (sr_ready < 0)
+ 		return sr_ready;
+ 
+-	ret = spi_nor_read_fsr(nor, nor->bouncebuf);
++	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -409,7 +409,7 @@ static int spi_nor_fsr_ready(struct spi_nor *nor)
+ 			dev_err(nor->dev,
+ 				"Attempted to modify a protected sector.\n");
+ 
+-		spi_nor_clear_fsr(nor);
++		micron_st_nor_clear_fsr(nor);
+ 
+ 		/*
+ 		 * WEL bit remains set to one when an erase or page program
+@@ -438,7 +438,7 @@ static void micron_st_nor_default_init(struct spi_nor *nor)
+ static void micron_st_nor_late_init(struct spi_nor *nor)
+ {
+ 	if (nor->info->mfr_flags & USE_FSR)
+-		nor->params->ready = spi_nor_fsr_ready;
++		nor->params->ready = micron_st_nor_ready;
+ }
+ 
+ static const struct spi_nor_fixups micron_st_nor_fixups = {
 -- 
 2.30.2
 
