@@ -2,225 +2,376 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE81C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238336AbiBWFZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:25:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        id S238234AbiBWFZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:25:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238300AbiBWFZE (ORCPT
+        with ESMTP id S238253AbiBWFZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:25:04 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4156D4DC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:23 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id m10-20020a25800a000000b0061daa5b7151so26449489ybk.10
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:23 -0800 (PST)
+        Wed, 23 Feb 2022 00:25:36 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0188E694AF
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:32 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6b6cf0cafso150368717b3.21
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=J1PJHeAg+5GsFDWdvzoAJvbqIGqngaUErLJYlufPa+k=;
-        b=E8ylcvEY7HObuUi7YReOD7Xi+5ii//8STuZIJO/P8zS7AqqFvr59ONAjhLdHaJFCVd
-         ANMtkHwUkTCW3M7pycyZwbgMNj908KdgtDwrheZQ6geVat7tNVM68QbPQQZm1CRl1l6l
-         Y4ISDUE0Oi8e8zBW/PcuKqI33TayofpiZRwi9zPR+wcWJ0CNMO0p+82XCjaXWKVoLCcG
-         P0m9VyO7WwmFPDExN5wo9Zkywpckb/NizMoYl/Y1S6i3OD/kq/dMFyBf0yRW04D/GG97
-         5W9at4d8tgmUGtV7LAQny8Hl7A704zcz/QnIbquS3/UrNABcFf6svGwZpVuu40Fb0cN9
-         xygg==
+        bh=CYYrqCq/zRkZaGiiFDeL2WZqXbaiwLweAdvv3KPw30Q=;
+        b=gttTspcTbeOxem9vIHTEp8HxBKLNL6kOKKunFMomQY7gQjAmmA7zLLKeW3pD5BHCG4
+         n+cavMcNG3z81q2MsF1OUm8LD7b7lNc/CiICe2jeX2JuESrjhWO3zBSCqlZo0v8ri/13
+         wSpPkKBkIUU4Lon1cqB6YDkf8UKIBOe6n1yOTYHkccD+ZHQbtAOffPifXTCZr0f1Etmj
+         7oxfXxlKJ56Y/Q570Q0HNRmXemUr5RxMgLdTEadmhWn3pzJBdmkD+yWBtTx1hkL9PZjC
+         s4h9v+aGt/9IsWDNJnCTYuoYPrr3fqgrmkUg8lETXm3ikW63y2HAoRDcoo7ArQV+H7ZF
+         BqDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=J1PJHeAg+5GsFDWdvzoAJvbqIGqngaUErLJYlufPa+k=;
-        b=vUkCzKdjQyh9S1t/JxOtNV+K3Alz0urlRgXycXFvslac1PUcWxrODeGHoWpI3yAdUQ
-         vPjeJb5CBOvAyiA3cQ39Evr6Goc/X30VATIFA3ErG3Ww5TFXvAAxW7EkzmwVAYa779wj
-         qakTWkIm9DHJxGfepZyVzCyBOtOPip6YalGeRE0D70F0Nh68Ftijpt9Yt+Z+MnWwN46W
-         yH97zLsOFSJryqfJC3gZ2WZOH0JcwWJASCZNIpiN5DeZd4thBYiEcyJSdHwTZWB4aOwq
-         UFfQDndvCwVtTHT3oP+x2n765nvCBR0yuzN8LbiVBN0gHoUJb08mTEsY8XhA8K5MThzv
-         kEvQ==
-X-Gm-Message-State: AOAM532Mx1E95oCNRNugsd5m6z//weyQ/Ybr9Bjy5OkmM598Ao+Ts50I
-        HbpMTp0YHGlycrKY1+iPsi6GBhbxJL0kAtnxDBsMKANp2VgJZ2phyr8f0KcvnwgeGVteAplnCC5
-        UnJwzqg0NBFW++t3qcH44Dbt9Bfc4TOHQa1SiZC1GOPE1yK6Ke4GN6lZ0723k8bb/la8Q/irS
-X-Google-Smtp-Source: ABdhPJwO2zSkIt0Rgd4eSBL4j29VK3OAOmCOM+xoXLfQvXzLhs6JlCYQqS7jIhDe/nPgasCVydPPru7Y6T7c
+        bh=CYYrqCq/zRkZaGiiFDeL2WZqXbaiwLweAdvv3KPw30Q=;
+        b=hYnqSFLGhx8jI1Sjr0hu39cFXpyPvorif9WzNMcZtNousTVoq/ZVKzZ+hUgcvc6o4b
+         b2YDI2SO1kgRtGQJE8MmsQpkSymwJRDfKQlEp/FUvgupfANDgVuo2mijTBjV25dpsQ94
+         VnvvKJ4t2x+iM7kLfPgGtpqJJ1APCy0+oEt+KGpEkVoikyDv2k6mSt4ZcfuYLEQgwn79
+         FWX5uGRCcL4Ynh+sFRPZBamsyBvNl1minS7ZibpWITV+d0oEEkKEe+TqC6RKWH3j1ARc
+         QyvR/wtiTM55EltOB+1Y1EU6DZpAXFgOiAzyYTVeT38PErA1g37i6zWvS048V6xW4nYf
+         pXGg==
+X-Gm-Message-State: AOAM530+N7BzXXMczdaErrOwd3DanOWENIQH1hzGYaA6+VCMJmwkDaP/
+        UscExBXmFi9LWo9QZnTgcBuv6ESrwYAuhXq9K9CVlKxtuou8EeaDk42em+jGtHOwOsiyrDp3zp8
+        Del6ak6EP3VGR32dmWcd4UfPt/3lm9Ob1QVSxSpMMlEwzXGjzICUtjbl3x1/f9aSboJ1j8bfz
+X-Google-Smtp-Source: ABdhPJyHSwIU1ypDJg3UAIk4OCagkwsYrp4hfbAB5svLD0KoToAB7kgIvdsaPCw4R5P2Bj++u4Uv/BXKWrDE
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a81:106:0:b0:2d0:e682:8a7a with SMTP id
- 6-20020a810106000000b002d0e6828a7amr27939534ywb.257.1645593854910; Tue, 22
- Feb 2022 21:24:14 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:49 -0800
+ (user=junaids job=sendgmr) by 2002:a81:9842:0:b0:2cb:86f2:560d with SMTP id
+ p63-20020a819842000000b002cb86f2560dmr27884434ywg.375.1645593859219; Tue, 22
+ Feb 2022 21:24:19 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:51 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-14-junaids@google.com>
+Message-Id: <20220223052223.1202152-16-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 13/47] asi: Added ASI memory cgroup flag
+Subject: [RFC PATCH 15/47] kvm: asi: Restricted address space for VM execution
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Ofir Weisse <oweisse@google.com>, kvm@vger.kernel.org,
-        pbonzini@redhat.com, jmattson@google.com, pjt@google.com,
-        alexandre.chartre@oracle.com, rppt@linux.ibm.com,
-        dave.hansen@linux.intel.com, peterz@infradead.org,
-        tglx@linutronix.de, luto@kernel.org, linux-mm@kvack.org
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
+        pjt@google.com, oweisse@google.com, alexandre.chartre@oracle.com,
+        rppt@linux.ibm.com, dave.hansen@linux.intel.com,
+        peterz@infradead.org, tglx@linutronix.de, luto@kernel.org,
+        linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ofir Weisse <oweisse@google.com>
+An ASI restricted address space is added for KVM. It is currently only
+enabled for Intel CPUs. The ASI hooks have been setup to do an L1D
+cache flush and MDS clear when entering the restricted address space.
 
-Adds a cgroup flag to control if ASI is enabled for processes in
-that cgroup.
+The hooks are also meant to stun and unstun the sibling hyperthread
+when exiting and entering the restricted address space. Internally,
+we do have a full stunning implementation available, but it hasn't
+yet been determined whether it is fully compatible with the upstream
+core scheduling implementation, so it is not included in this patch
+series and instead this patch just includes corresponding stub
+functions to demonstrate where the stun/unstun would happen.
 
-Can be set or cleared by writing to the memory.use_asi file in the
-memory cgroup. The flag only affects new processes created after
-the flag was set.
-
-In addition to the cgroup flag, we may also want to add a per-process
-flag, though it will have to be something that can be set at process
-creation time.
-
-Signed-off-by: Ofir Weisse <oweisse@google.com>
-Co-developed-by: Junaid Shahid <junaids@google.com>
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/mm/asi.c          | 14 ++++++++++++++
- include/linux/memcontrol.h |  3 +++
- include/linux/mm_types.h   | 17 +++++++++++++++++
- mm/memcontrol.c            | 30 ++++++++++++++++++++++++++++++
- 4 files changed, 64 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  2 +
+ arch/x86/kvm/vmx/vmx.c          | 41 ++++++++++++-----
+ arch/x86/kvm/x86.c              | 81 ++++++++++++++++++++++++++++++++-
+ include/linux/kvm_host.h        |  2 +
+ 4 files changed, 113 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 71348399baf1..ca50a32ecd7e 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -2,6 +2,7 @@
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 555f4de47ef2..98cbd6447e3e 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1494,6 +1494,8 @@ struct kvm_x86_ops {
+ 	int (*complete_emulated_msr)(struct kvm_vcpu *vcpu, int err);
  
- #include <linux/init.h>
- #include <linux/memblock.h>
-+#include <linux/memcontrol.h>
+ 	void (*vcpu_deliver_sipi_vector)(struct kvm_vcpu *vcpu, u8 vector);
++
++	void (*flush_sensitive_cpu_state)(struct kvm_vcpu *vcpu);
+ };
  
- #include <asm/asi.h>
- #include <asm/pgalloc.h>
-@@ -322,7 +323,20 @@ EXPORT_SYMBOL_GPL(asi_exit);
+ struct kvm_x86_nested_ops {
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 0dbf94eb954f..e0178b57be75 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -47,6 +47,7 @@
+ #include <asm/spec-ctrl.h>
+ #include <asm/virtext.h>
+ #include <asm/vmx.h>
++#include <asm/asi.h>
  
- void asi_init_mm_state(struct mm_struct *mm)
+ #include "capabilities.h"
+ #include "cpuid.h"
+@@ -300,7 +301,7 @@ static int vmx_setup_l1d_flush(enum vmx_l1d_flush_state l1tf)
+ 	else
+ 		static_branch_disable(&vmx_l1d_should_flush);
+ 
+-	if (l1tf == VMENTER_L1D_FLUSH_COND)
++	if (l1tf == VMENTER_L1D_FLUSH_COND && !boot_cpu_has(X86_FEATURE_ASI))
+ 		static_branch_enable(&vmx_l1d_flush_cond);
+ 	else
+ 		static_branch_disable(&vmx_l1d_flush_cond);
+@@ -6079,6 +6080,8 @@ static noinstr void vmx_l1d_flush(struct kvm_vcpu *vcpu)
+ 	if (static_branch_likely(&vmx_l1d_flush_cond)) {
+ 		bool flush_l1d;
+ 
++		VM_BUG_ON(vcpu->kvm->asi);
++
+ 		/*
+ 		 * Clear the per-vcpu flush bit, it gets set again
+ 		 * either from vcpu_run() or from one of the unsafe
+@@ -6590,16 +6593,31 @@ static fastpath_t vmx_exit_handlers_fastpath(struct kvm_vcpu *vcpu)
+ 	}
+ }
+ 
+-static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+-					struct vcpu_vmx *vmx)
++static void vmx_flush_sensitive_cpu_state(struct kvm_vcpu *vcpu)
  {
-+	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(mm);
+-	kvm_guest_enter_irqoff();
+-
+ 	/* L1D Flush includes CPU buffer clear to mitigate MDS */
+ 	if (static_branch_unlikely(&vmx_l1d_should_flush))
+ 		vmx_l1d_flush(vcpu);
+ 	else if (static_branch_unlikely(&mds_user_clear))
+ 		mds_clear_cpu_buffers();
++}
 +
- 	memset(mm->asi, 0, sizeof(mm->asi));
-+	mm->asi_enabled = false;
++static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
++					struct vcpu_vmx *vmx)
++{
++	unsigned long cr3;
 +
-+	/*
-+	 * TODO: In addition to a cgroup flag, we may also want a per-process
-+	 * flag.
-+	 */
-+        if (memcg) {
-+		mm->asi_enabled = boot_cpu_has(X86_FEATURE_ASI) &&
-+				  memcg->use_asi;
-+		css_put(&memcg->css);
++	kvm_guest_enter_irqoff();
++
++	vmx_flush_sensitive_cpu_state(vcpu);
++
++	asi_enter(vcpu->kvm->asi);
++
++	cr3 = __get_current_cr3_fast();
++	if (unlikely(cr3 != vmx->loaded_vmcs->host_state.cr3)) {
++		vmcs_writel(HOST_CR3, cr3);
++		vmx->loaded_vmcs->host_state.cr3 = cr3;
 +	}
+ 
+ 	if (vcpu->arch.cr2 != native_read_cr2())
+ 		native_write_cr2(vcpu->arch.cr2);
+@@ -6609,13 +6627,16 @@ static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+ 
+ 	vcpu->arch.cr2 = native_read_cr2();
+ 
++	VM_WARN_ON_ONCE(vcpu->kvm->asi && !is_asi_active());
++	asi_set_target_unrestricted();
++
+ 	kvm_guest_exit_irqoff();
  }
  
- static bool is_page_within_range(size_t addr, size_t page_size,
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0c5c403f4be6..a883cb458b06 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -259,6 +259,9 @@ struct mem_cgroup {
- 	 */
- 	bool oom_group;
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        bool use_asi;
-+#endif
- 	/* protected by memcg_oom_lock */
- 	bool		oom_lock;
- 	int		under_oom;
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 5b8028fcfe67..8624d2783661 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -607,6 +607,14 @@ struct mm_struct {
- 		 * new_owner->alloc_lock is held
- 		 */
- 		struct task_struct __rcu *owner;
-+
-+#endif
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+                /* Is ASI enabled for this mm? ASI requires allocating extra
-+                 * resources, such as ASI page tables. To prevent allocationg
-+                 * these resources for every mm in the system, we expect that
-+                 * only VM mm's will have this flag set. */
-+		bool asi_enabled;
- #endif
- 		struct user_namespace *user_ns;
- 
-@@ -665,6 +673,15 @@ struct mm_struct {
- 
- extern struct mm_struct init_mm;
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+static inline bool mm_asi_enabled(struct mm_struct *mm)
-+{
-+        return mm->asi_enabled;
-+}
-+#else
-+static inline bool mm_asi_enabled(struct mm_struct *mm) { return false; }
-+#endif
-+
- /* Pointer magic because the dynamic array size confuses some compilers. */
- static inline void mm_init_cpumask(struct mm_struct *mm)
+ static fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu)
  {
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 2ed5f2a0879d..a66d6b222ecf 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -3539,6 +3539,29 @@ static int mem_cgroup_hierarchy_write(struct cgroup_subsys_state *css,
- 	return -EINVAL;
- }
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+-	unsigned long cr3, cr4;
++	unsigned long cr4;
+ 
+ 	/* Record the guest's net vcpu time for enforced NMI injections. */
+ 	if (unlikely(!enable_vnmi &&
+@@ -6657,12 +6678,6 @@ static fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	if (kvm_register_is_dirty(vcpu, VCPU_REGS_RIP))
+ 		vmcs_writel(GUEST_RIP, vcpu->arch.regs[VCPU_REGS_RIP]);
+ 
+-	cr3 = __get_current_cr3_fast();
+-	if (unlikely(cr3 != vmx->loaded_vmcs->host_state.cr3)) {
+-		vmcs_writel(HOST_CR3, cr3);
+-		vmx->loaded_vmcs->host_state.cr3 = cr3;
+-	}
+-
+ 	cr4 = cr4_read_shadow();
+ 	if (unlikely(cr4 != vmx->loaded_vmcs->host_state.cr4)) {
+ 		vmcs_writel(HOST_CR4, cr4);
+@@ -7691,6 +7706,8 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 	.complete_emulated_msr = kvm_complete_insn_gp,
+ 
+ 	.vcpu_deliver_sipi_vector = kvm_vcpu_deliver_sipi_vector,
++
++	.flush_sensitive_cpu_state = vmx_flush_sensitive_cpu_state,
+ };
+ 
+ static __init void vmx_setup_user_return_msrs(void)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index e50e97ac4408..dd07f677d084 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -81,6 +81,7 @@
+ #include <asm/emulate_prefix.h>
+ #include <asm/sgx.h>
+ #include <clocksource/hyperv_timer.h>
++#include <asm/asi.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include "trace.h"
+@@ -297,6 +298,8 @@ EXPORT_SYMBOL_GPL(supported_xcr0);
+ 
+ static struct kmem_cache *x86_emulator_cache;
+ 
++static int __read_mostly kvm_asi_index;
++
+ /*
+  * When called, it means the previous get/set msr reached an invalid msr.
+  * Return true if we want to ignore/silent this failed msr access.
+@@ -8620,6 +8623,50 @@ static struct notifier_block pvclock_gtod_notifier = {
+ };
+ #endif
  
 +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
 +
-+static u64 mem_cgroup_asi_read(struct cgroup_subsys_state *css,
-+				     struct cftype *cft)
++/*
++ * We have an HT-stunning implementation available internally,
++ * but it is yet to be determined if it is fully compatible with the
++ * upstream core scheduling implementation. So leaving it out for now
++ * and just leaving these stubs here.
++ */
++static void stun_sibling(void) { }
++static void unstun_sibling(void) { }
++
++/*
++ * This function must be fully re-entrant and idempotent.
++ * Though the idempotency requirement could potentially be relaxed for stuff
++ * like stats where complete accuracy is not needed.
++ */
++static void kvm_pre_asi_exit(void)
 +{
-+        return mem_cgroup_from_css(css)->use_asi;
++	stun_sibling();
 +}
 +
-+static int mem_cgroup_asi_write(struct cgroup_subsys_state *css,
-+				      struct cftype *cft, u64 val)
++/*
++ * This function must be fully re-entrant and idempotent.
++ * Though the idempotency requirement could potentially be relaxed for stuff
++ * like stats where complete accuracy is not needed.
++ */
++static void kvm_post_asi_enter(void)
 +{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
++	struct kvm_vcpu *vcpu = raw_cpu_read(*kvm_get_running_vcpus());
 +
-+	if (val == 1 || val == 0)
-+		memcg->use_asi = val;
-+	else
-+		return -EINVAL;
++	kvm_x86_ops.flush_sensitive_cpu_state(vcpu);
++
++	unstun_sibling();
++}
++
++#endif
++
++static const struct asi_hooks kvm_asi_hooks = {
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	.pre_asi_exit = kvm_pre_asi_exit,
++	.post_asi_enter = kvm_post_asi_enter
++#endif
++};
++
+ int kvm_arch_init(void *opaque)
+ {
+ 	struct kvm_x86_init_ops *ops = opaque;
+@@ -8674,6 +8721,15 @@ int kvm_arch_init(void *opaque)
+ 	if (r)
+ 		goto out_free_percpu;
+ 
++	if (ops->runtime_ops->flush_sensitive_cpu_state) {
++		r = asi_register_class("KVM", ASI_MAP_STANDARD_NONSENSITIVE,
++				       &kvm_asi_hooks);
++		if (r < 0)
++			goto out_mmu_exit;
++
++		kvm_asi_index = r;
++	}
++
+ 	kvm_timer_init();
+ 
+ 	perf_register_guest_info_callbacks(&kvm_guest_cbs);
+@@ -8694,6 +8750,8 @@ int kvm_arch_init(void *opaque)
+ 
+ 	return 0;
+ 
++out_mmu_exit:
++	kvm_mmu_module_exit();
+ out_free_percpu:
+ 	free_percpu(user_return_msrs);
+ out_free_x86_emulator_cache:
+@@ -8720,6 +8778,11 @@ void kvm_arch_exit(void)
+ 	irq_work_sync(&pvclock_irq_work);
+ 	cancel_work_sync(&pvclock_gtod_work);
+ #endif
++	if (kvm_asi_index > 0) {
++		asi_unregister_class(kvm_asi_index);
++		kvm_asi_index = 0;
++	}
++
+ 	kvm_x86_ops.hardware_enable = NULL;
+ 	kvm_mmu_module_exit();
+ 	free_percpu(user_return_msrs);
+@@ -11391,11 +11454,26 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 	INIT_DELAYED_WORK(&kvm->arch.kvmclock_sync_work, kvmclock_sync_fn);
+ 
+ 	kvm_apicv_init(kvm);
++
++	if (kvm_asi_index > 0) {
++		ret = asi_init(kvm->mm, kvm_asi_index, &kvm->asi);
++		if (ret)
++			goto error;
++	}
++
+ 	kvm_hv_init_vm(kvm);
+ 	kvm_mmu_init_vm(kvm);
+ 	kvm_xen_init_vm(kvm);
+ 
+-	return static_call(kvm_x86_vm_init)(kvm);
++	ret = static_call(kvm_x86_vm_init)(kvm);
++	if (ret)
++		goto error;
 +
 +	return 0;
-+}
-+
-+#endif
-+
- static unsigned long mem_cgroup_usage(struct mem_cgroup *memcg, bool swap)
- {
- 	unsigned long val;
-@@ -4888,6 +4911,13 @@ static struct cftype mem_cgroup_legacy_files[] = {
- 		.write_u64 = mem_cgroup_hierarchy_write,
- 		.read_u64 = mem_cgroup_hierarchy_read,
- 	},
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+	{
-+		.name = "use_asi",
-+		.write_u64 = mem_cgroup_asi_write,
-+		.read_u64 = mem_cgroup_asi_read,
-+	},
-+#endif
- 	{
- 		.name = "cgroup.event_control",		/* XXX: for compat */
- 		.write = memcg_write_event_control,
++error:
++	kvm_page_track_cleanup(kvm);
++	asi_destroy(kvm->asi);
++	return ret;
+ }
+ 
+ int kvm_arch_post_init_vm(struct kvm *kvm)
+@@ -11549,6 +11627,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
+ 	kvm_page_track_cleanup(kvm);
+ 	kvm_xen_destroy_vm(kvm);
+ 	kvm_hv_destroy_vm(kvm);
++	asi_destroy(kvm->asi);
+ }
+ 
+ static void memslot_rmap_free(struct kvm_memory_slot *slot)
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index c310648cc8f1..9dd63ed21f75 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -38,6 +38,7 @@
+ 
+ #include <asm/kvm_host.h>
+ #include <linux/kvm_dirty_ring.h>
++#include <asm/asi.h>
+ 
+ #ifndef KVM_MAX_VCPU_IDS
+ #define KVM_MAX_VCPU_IDS KVM_MAX_VCPUS
+@@ -551,6 +552,7 @@ struct kvm {
+ 	 */
+ 	struct mutex slots_arch_lock;
+ 	struct mm_struct *mm; /* userspace tied to this vm */
++	struct asi *asi;
+ 	struct kvm_memslots __rcu *memslots[KVM_ADDRESS_SPACE_NUM];
+ 	struct kvm_vcpu *vcpus[KVM_MAX_VCPUS];
+ 
 -- 
 2.35.1.473.g83b2b277ed-goog
 
