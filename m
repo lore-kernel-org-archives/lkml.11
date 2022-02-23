@@ -2,93 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D15ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2C0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240893AbiBWN0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:26:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
+        id S238913AbiBWNcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240703AbiBWN0h (ORCPT
+        with ESMTP id S235189AbiBWNcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:26:37 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C77AB455
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:26:09 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DE78E3FCA2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:26:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645622767;
-        bh=PtdI+8+uPiMKtPcTbYLUdwlTYloxTDVphk9EdUF2zm8=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=FYm3e9fOXdpK2m73LNkXkgZss861nTjQniJjXh/bI5KjAnoy14sgMMYqOVS9tLrhG
-         92LG88gZzkKZp8bAUcKxriEHeC6XLJxhGlfWgE1Hl8yVmubKLsJVhVN49nj1wAGRTr
-         hLDIehrvLrQvy+jQfvLbRAQFoHsi6RCcd0FvZ4KIbBSbWAGHqXFcN9ctW0or3EOgs+
-         rQp3RY3XHCq6NTTGcwz4OHR6/hyJALgWyDAWnuovePXubBochfgaF3G4s3CK0HKMv3
-         MZGQxmMWPOWIFb5kohrtu8WdYAkIrKJmkRYZItvskPf61HkQbT0CP4Kbdflyioo+uR
-         iW/IY1W3XvGfA==
-Received: by mail-ej1-f69.google.com with SMTP id i20-20020a17090671d400b006d0ed9c68c1so3829208ejk.14
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:26:07 -0800 (PST)
+        Wed, 23 Feb 2022 08:32:22 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25139BB83
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id u7so17136346ljk.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:31:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
+        b=DCpZuBYw1K5GBm3Yf8oboPq/eMpixfVzGH8pD4UEALwU6Piq0DHgYQgOt/7CAvI306
+         Dcz50R2TMDksWKMuLwdtBmupzNUlRGkvZEr3wrUGXHDsry2cMM5zBquEuUE/lGQio3cy
+         dQioRFt9XmtopGgUlNHRhYJyo7M9qv/QhTJs7H/sBz6Y+d0QTU8BHf6TQuNWtwwlfHVy
+         CsK3Xgbm2ngEooxg6hRKNJbBTvfjYRUDLlL01JPPYENYx80hxKuFn8POj2bETak/AHLu
+         Za/hbi5Gqnd8nDCavCmWhSt5NPE4zh7m8WDnAJZpqs6lI7TkKUByTA7ZENXTV7ySlrYX
+         jQDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PtdI+8+uPiMKtPcTbYLUdwlTYloxTDVphk9EdUF2zm8=;
-        b=AdYHHRSm86s8FWo3EVxjpqCqz2OYxD+P6d3RPk4N8GPcmFwNspf+KahA0RQj9+h7Nr
-         A9D175k/P4fWOYD+4rsnX4O/SDNxaORHg9vr4zmUrWW/MyxAdSPXl4XbaITReHWA0gh3
-         HnKIe1/kHjBNUv9OR9BMjUhbjWXKahHDgtXcD7J5H8UKkHavkPzkroIqB5Dnut/s9dFe
-         3KDzGZArYeLHvTj4evikXgF/wkKhzbkjTWk6Us6buQLzNWDTnfFG3x8VdpYGTtYPoW8A
-         7vqzolpv2HSgq6PgqhOnD+XjSZCwOIPpnpBXvvGasFv1oAT8OjQaGXaKpQIRHgoQ917J
-         QyIg==
-X-Gm-Message-State: AOAM532+rKamIFtGt8xn7TsS+SxSbHX0N7O7kVks3evI6bkQ2smbGkH8
-        Atf0SyVF+lXgNx2Ge0Y9kRLH6jH/7LOJXuzysAOMKgZEzK2PfHqQ1W8XluYrL116zrnPaz7iIAp
-        VKPpaEYR8QeQupruHsFAth2lqU3lhb23MogzJqMPcNg==
-X-Received: by 2002:a17:906:b04:b0:6bd:bf71:ed08 with SMTP id u4-20020a1709060b0400b006bdbf71ed08mr23405190ejg.585.1645622766589;
-        Wed, 23 Feb 2022 05:26:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxCfMw7qk7j/oxTgQsdqHA7i2FsSbGvByk1qfJ1Smy+/dKx4SJUHcvGGZFuCdaso8N1+cLGBQ==
-X-Received: by 2002:a17:906:b04:b0:6bd:bf71:ed08 with SMTP id u4-20020a1709060b0400b006bdbf71ed08mr23405179ejg.585.1645622766439;
-        Wed, 23 Feb 2022 05:26:06 -0800 (PST)
-Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id o17sm7714109edr.47.2022.02.23.05.26.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 05:26:05 -0800 (PST)
-Message-ID: <b591b26e-1a80-e17d-4525-989b357e97b1@canonical.com>
-Date:   Wed, 23 Feb 2022 14:26:05 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7dnyHmrO36rrHyXARPRiGQlAPqAL/RPhHWzq7NmeXFU=;
+        b=SB3LdakCylx97Wbhs7nUs/h3twsUkv2quY20/nHfImlZm4HyZlPAbnItIAeiCgBBx0
+         JL2UPSSsvvx60rK0OskEUOzahrL7i8wGvA/OXRJfxX4cqUdQCiZBaHzQTy9z3ZayY60T
+         Xpm2cndGeWmFt6S7OnCqnHvGQCiPXONLSKx15YArFRZWG+Z5vPOcvwIp75TClPwQIFx3
+         7/EXakG7iAcbFPJEqj2Hxst266aQHm0H7hZPGDB4AM6Mvs63XURiqH1FRs6y9CJdJwPP
+         4jUkFsb1j+rtBOoWxJzS/Qojtn5S8bTt3gbpce6aDnjTyzzgh7rucPS8CU31uqnHGq+7
+         JqCQ==
+X-Gm-Message-State: AOAM530nsfgeATdh6wWvKq0uGXv9dtgnh2lhmhsaDAXlQL/dzysDaLhy
+        8S+4sSJn5Z7taoz8U0PEU8Dcs5hq7Yl+4dpGCANeQw==
+X-Google-Smtp-Source: ABdhPJwJY+a32PVbCbOr6F7WLpIRa1HJ6cmeP7R7LTqqu3aAVT2hhZelkzr7J95bPvGGBDkYywmSkJE5OgieO0xkm/Q=
+X-Received: by 2002:a05:651c:1509:b0:246:5f82:eed2 with SMTP id
+ e9-20020a05651c150900b002465f82eed2mr1509589ljf.271.1645623113097; Wed, 23
+ Feb 2022 05:31:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: frequency: Add ADMV4420 doc
-Content-Language: en-US
-To:     Cristian Pop <cristian.pop@analog.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     jic23@kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org
-References: <20220223130808.13352-1-cristian.pop@analog.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220223130808.13352-1-cristian.pop@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220125084702.3636253-1-andrew@daynix.com> <20220125084702.3636253-2-andrew@daynix.com>
+ <06a90de0-57ae-9315-dc2c-03cc74b4ae0c@redhat.com> <CABcq3pH7HnH_-nCHcX7eet_ouqocQEptp6A9GCbs3=9guArhPA@mail.gmail.com>
+ <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
+In-Reply-To: <CACGkMEu3biQ+BM29nDu82jP8y+p4iiL4K=GzM6px+yktU5Zqjw@mail.gmail.com>
+From:   Yuri Benditovich <yuri.benditovich@daynix.com>
+Date:   Wed, 23 Feb 2022 15:31:41 +0200
+Message-ID: <CAOEp5OeGNezTasp7zsvpFHGfjkM4bWRbbFY7WEWc7hRYVDSxdA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/5] uapi/linux/if_tun.h: Added new ioctl for tun/tap.
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Andrew Melnichenko <andrew@daynix.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/02/2022 14:08, Cristian Pop wrote:
-> Add device tree bindings for the ADMV4420 K band downconverter.
-> 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> ---
-> Changes in v7:
->  - Fix commit message
+Hi Jason,
+We agree that the same can be done also using the old way, i.e. try to
+set specific offload - if failed, probably it is not supported.
+We think this is a little not scalable and we suggest adding the ioctl
+that will allow us to query allo the supported features in a single
+call.
+We think this will make QEMU code more simple also in future.
+Do I understand correctly that you suggest to skip this new ioctl and
+use the old way of query for this (USO) feature and all future
+extensions?
 
-Please include the tags accumulated in previous reviews.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Thanks
 
 
-Best regards,
-Krzysztof
+On Wed, Feb 23, 2022 at 5:53 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Tue, Feb 22, 2022 at 9:28 PM Andrew Melnichenko <andrew@daynix.com> wr=
+ote:
+> >
+> > Hi all,
+> >
+> > On Wed, Feb 9, 2022 at 6:26 AM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > >
+> > > =E5=9C=A8 2022/1/25 =E4=B8=8B=E5=8D=884:46, Andrew Melnychenko =E5=86=
+=99=E9=81=93:
+> > > > Added TUNGETSUPPORTEDOFFLOADS that should allow
+> > > > to get bits of supported offloads.
+> > >
+> > >
+> > > So we don't use dedicated ioctls in the past, instead, we just probin=
+g
+> > > by checking the return value of TUNSETOFFLOADS.
+> > >
+> > > E.g qemu has the following codes:
+> > >
+> > > int tap_probe_has_ufo(int fd)
+> > > {
+> > >      unsigned offload;
+> > >
+> > >      offload =3D TUN_F_CSUM | TUN_F_UFO;
+> > >
+> > >      if (ioctl(fd, TUNSETOFFLOAD, offload) < 0)
+> > >          return 0;
+> > >
+> > >      return 1;
+> > > }
+> > >
+> > > Any reason we can't keep using that?
+> > >
+> > > Thanks
+> > >
+> >
+> > Well, even in this example. To check the ufo feature, we trying to set =
+it.
+> > What if we don't need to "enable" UFO and/or do not change its state?
+>
+> So at least Qemu doesn't have such a requirement since during the
+> probe the virtual networking backend is not even started.
+>
+> > I think it's a good idea to have the ability to get supported offloads
+> > without changing device behavior.
+>
+> Do you see a real user for this?
+>
+> Btw, we still need to probe this new ioctl anyway.
+>
+> Thanks
+>
+> >
+> > >
+> > > > Added 2 additional offlloads for USO(IPv4 & IPv6).
+> > > > Separate offloads are required for Windows VM guests,
+> > > > g.e. Windows may set USO rx only for IPv4.
+> > > >
+> > > > Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
+> > > > ---
+> > > >   include/uapi/linux/if_tun.h | 3 +++
+> > > >   1 file changed, 3 insertions(+)
+> > > >
+> > > > diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tu=
+n.h
+> > > > index 454ae31b93c7..07680fae6e18 100644
+> > > > --- a/include/uapi/linux/if_tun.h
+> > > > +++ b/include/uapi/linux/if_tun.h
+> > > > @@ -61,6 +61,7 @@
+> > > >   #define TUNSETFILTEREBPF _IOR('T', 225, int)
+> > > >   #define TUNSETCARRIER _IOW('T', 226, int)
+> > > >   #define TUNGETDEVNETNS _IO('T', 227)
+> > > > +#define TUNGETSUPPORTEDOFFLOADS _IOR('T', 228, unsigned int)
+> > > >
+> > > >   /* TUNSETIFF ifr flags */
+> > > >   #define IFF_TUN             0x0001
+> > > > @@ -88,6 +89,8 @@
+> > > >   #define TUN_F_TSO6  0x04    /* I can handle TSO for IPv6 packets =
+*/
+> > > >   #define TUN_F_TSO_ECN       0x08    /* I can handle TSO with ECN =
+bits. */
+> > > >   #define TUN_F_UFO   0x10    /* I can handle UFO packets */
+> > > > +#define TUN_F_USO4   0x20    /* I can handle USO for IPv4 packets =
+*/
+> > > > +#define TUN_F_USO6   0x40    /* I can handle USO for IPv6 packets =
+*/
+> > > >
+> > > >   /* Protocol info prepended to the packets (when IFF_NO_PI is not =
+set) */
+> > > >   #define TUN_PKT_STRIP       0x0001
+> > >
+> >
+>
