@@ -2,70 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F05AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240533AbiBWMx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:53:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S240643AbiBWMym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:54:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiBWMxz (ORCPT
+        with ESMTP id S231700AbiBWMyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:53:55 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2FD91AD0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:53:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645620807; x=1677156807;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=hDKTmx85+is62TviafHoQ6ixrMmVk+VEDH/EMNVBMqA=;
-  b=NAYkFZRDQoiEodLPGT/6uAarOt9+9q+inX/jTg92wchCs7hcrYz2bp7A
-   ajdGlDLGyT6GPnAHaLsW82NtUn88TADqO0hFBNAgaLAJUFBpJRDNTcReg
-   h5pvg5BEO4OBhiFNaGCWt16HhgqWvStp/oFDbbniMw8/VnRXkYDGYptL6
-   M=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 04:53:27 -0800
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:53:27 -0800
-Received: from hu-rbankapu-blr.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 04:53:25 -0800
-From:   Raghu Bankapur <quic_rbankapu@quicinc.com>
-To:     Jaroslav Kysela <perex@perex.cz>, <linux-kernel@vger.kernel.org>,
-        "Takashi Iwai" <tiwai@suse.com>, <alsa-devel@alsa-project.org>
-CC:     Krishna Jha <kkishorj@codeaurora.org>,
-        Raghu Bankapur <quic_rbankapu@quicinc.com>
-Subject: [PATCH V1 0/1]ASoC: compress: propagate the error code from the compress framework
-Date:   Wed, 23 Feb 2022 18:22:49 +0530
-Message-ID: <cover.1645618332.git.quic_rbankapu@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 23 Feb 2022 07:54:40 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CE091AE3;
+        Wed, 23 Feb 2022 04:54:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645620853; x=1677156853;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hh7zR6Pvu7wP8j5WrsKvOxqv9nPHKiPowFIoGx++A9Y=;
+  b=fj+sO2ldKqKwX4UAl8Q2O10LXLjOV6M4dnZe4CkmeGLDuV9jFjg4MdDx
+   ylGJo2FVxR6c5hT5N3mI+1VCE+QHZKNkSA7CFshCFgV2Zwb0qiwhY3LiB
+   wY4JUksVYfA7vRbd5i4TlWB4QjzIxzzTYAaze3uz2DdH5Mvg50FFVyNtI
+   tKv6qxoS6vytCQai662kcg7f/s/s7Vgoa5eUWafiqKYgHjCJ/Q/dDE93e
+   fQkw6/2yUYFFGSYnqQ6+6ZJst20X5JkDwlcZ7SV0TMxbPaW4HltVTS2iq
+   XUu2F3c7T+0+WwRj78TEvEsfRyZoegKQ/CU/M7NWhU8evx4/C+S0lxe4a
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251690720"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="251690720"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:54:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="781871281"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Feb 2022 04:54:08 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id D99DA143; Wed, 23 Feb 2022 14:54:24 +0200 (EET)
+Date:   Wed, 23 Feb 2022 15:54:24 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Rientjes <rientjes@google.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Andi Kleen <ak@linux.intel.com>
+Subject: Re: [PATCH] x86/mm/cpa: Generalize __set_memory_enc_pgtable()
+Message-ID: <20220223125424.ynwfqjejnzx3cdbw@black.fi.intel.com>
+References: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
+ <20220223043528.2093214-1-brijesh.singh@amd.com>
+ <YhYbLDTFLIksB/qp@zn.tnic>
+ <20220223115539.pqk7624xku2qwhlu@black.fi.intel.com>
+ <YhYkz7wMON1o64Ba@zn.tnic>
+ <20220223122508.3nvvz4b7fj2fsr2a@black.fi.intel.com>
+ <YhYqqxaI08sOSPwP@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhYqqxaI08sOSPwP@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Propagate the error code from the compress framework for the timestamp
-query. This error code will be used by the client to handle the
-error case scenarios gracefully.
+On Wed, Feb 23, 2022 at 01:38:03PM +0100, Borislav Petkov wrote:
+> On Wed, Feb 23, 2022 at 03:25:08PM +0300, Kirill A. Shutemov wrote:
+> > So far it is only success or failure. I used int and -EIO as failure.
+> > bool is enough, but I don't see a reason not to use int.
+> 
+> bool it is.
+> 
+> ---
+> From 8855bca859d8768ac04bfcf5b4aeb9cf3c69295a Mon Sep 17 00:00:00 2001
+> From: Brijesh Singh <brijesh.singh@amd.com>
+> Date: Tue, 22 Feb 2022 22:35:28 -0600
+> Subject: [PATCH] x86/mm/cpa: Generalize __set_memory_enc_pgtable()
+> 
+> The kernel provides infrastructure to set or clear the encryption mask
+> from the pages for AMD SEV, but TDX requires few tweaks.
+> 
+> - TDX and SEV have different requirements to the cache and TLB
+>   flushing.
+> 
+> - TDX has own routine to notify VMM about page encryption status change.
+> 
+> Modify __set_memory_enc_pgtable() and make it flexible enough to cover
+> both AMD SEV and Intel TDX. The AMD-specific behavior is isolated in
+> callback under x86_platform_cc. TDX will provide own version of the
 
-This propgated error is used by direct client like Audio HAL through
-IOCTL -SNDRV_COMPRESS_TSTAMP response, further this response is sent
-to upper layer, based on this error audio related usecases related 
-to render position and presentation are handled.
+"under x86_platform.guest"
 
-Raghu Bankapur (1):
-  ASoC: compress: propagate the error code from the compress framework
+> callbacks.
+> 
+>   [ bp: Beat into submission. ]
+> 
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Link: https://lore.kernel.org/r/20220223043528.2093214-1-brijesh.singh@amd.com
 
- sound/core/compress_offload.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Otherwise, LGTM:
+
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+
 
 -- 
-2.17.1
-
+ Kirill A. Shutemov
