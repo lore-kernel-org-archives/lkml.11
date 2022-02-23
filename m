@@ -2,173 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FAFC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243688AbiBWSAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:00:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
+        id S243691AbiBWSAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243662AbiBWR7z (ORCPT
+        with ESMTP id S241675AbiBWSAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:59:55 -0500
-Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0EC3DA45;
-        Wed, 23 Feb 2022 09:59:27 -0800 (PST)
-Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
-        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
-        (envelope-from <luca@lucaceresoli.net>)
-        id 1nMvvB-00039p-JM; Wed, 23 Feb 2022 18:59:25 +0100
-From:   Luca Ceresoli <luca@lucaceresoli.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 4/8] dt-bindings: mfd: add Maxim MAX77714 PMIC
-Date:   Wed, 23 Feb 2022 18:59:04 +0100
-Message-Id: <20220223175908.191618-5-luca@lucaceresoli.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220223175908.191618-1-luca@lucaceresoli.net>
-References: <20220223175908.191618-1-luca@lucaceresoli.net>
+        Wed, 23 Feb 2022 13:00:20 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BB23DDE6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:52 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id o8so2003934pgf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=LCAer00KkugBztOwXCivylUbNMzJc7Lug9BIcrasWZk=;
+        b=fWKw/pqCH7i3OvxQ2Sfu2zQayDG1CYYUMzKUWoTbjMW7AuxFVeB+PXoKoWSCzo6cEO
+         8bF4R0VognFGugw3elUlsF/TFNwIqUOD9ITaKBzov2EQIGCTSWITmZwlgZB+ZYj+mZ/F
+         OaQNeYkSTGiv/bIRGgz31N+RW11dwReDQbVlE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=LCAer00KkugBztOwXCivylUbNMzJc7Lug9BIcrasWZk=;
+        b=1oCW8ZOPLWAzsKe4pazgDgv0VWzyCTLxlSEQRnHruQtYpY4zvTeNoP7FiVjJz1IV6E
+         xfzsaR1NYZfVjyDSD1IdL0A1Uy5fDaaXrZF93fGARmQSA1ltx+tSGj6yDsrZJ/LdgDzZ
+         KrMCh2CWReIbHZEILiO+4gNP/frmE3N+oPTdrejzlIcF+mfNGuj4b0jSpkERkIMWly36
+         D6xKkEsBjxW+XpkJ2ct3KYKKADgy5aP8aLilhVU6EEzGcyvioZpz18gz/vQ2ZJtqWLmf
+         u5Wso4TySN6YhGzcpPhn3JE8+vUIGg4otCS3rl0+ls48boRPXdOiO3MpJbh86VWxtVN5
+         TWIg==
+X-Gm-Message-State: AOAM533+cYXiDST+pBZqme1mIPBied5rYVmMyuDYS24VRTdfmeRcBz0A
+        JjeI9jN4Jop6HgYl/BfCfewTfA==
+X-Google-Smtp-Source: ABdhPJwZfVjFP554LTJFSmFH3mQhWevYai2zzktsPrjBK3HK6ncTrjjdIYFd3X4X4yc+ockpwyKaEw==
+X-Received: by 2002:a63:d808:0:b0:374:2e45:5b54 with SMTP id b8-20020a63d808000000b003742e455b54mr590185pgh.536.1645639192040;
+        Wed, 23 Feb 2022 09:59:52 -0800 (PST)
+Received: from [10.136.13.65] ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id f7sm159985pfj.48.2022.02.23.09.59.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 09:59:51 -0800 (PST)
+Message-ID: <3b2ff726-7ed8-9810-8d06-078f4f1fa4d8@broadcom.com>
+Date:   Wed, 23 Feb 2022 09:59:48 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lucaceresoli.net
-X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/1] misc: bcm-vk: add kconfig for supporting viper
+ chip
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Desmond yan <desmond.yan@broadcom.com>,
+        Olof Johansson <olofj@fb.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+References: <20220218200811.17136-1-desmond.yan@broadcom.com>
+ <YhCdNyRxGYmhx21f@kroah.com>
+ <CAEuuh2_b-xGAux_EmBaNCGcBM7C0-Z8d_q1BBZ+LA0zpkZEunQ@mail.gmail.com>
+ <YhUZqYrvNy05h86j@kroah.com>
+ <534605ef-aeb1-b0a2-2326-be6faba4709c@broadcom.com>
+ <YhXht9ieY8vDuBTS@kroah.com>
+From:   Scott Branden <scott.branden@broadcom.com>
+In-Reply-To: <YhXht9ieY8vDuBTS@kroah.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000007ed33105d8b33b4e"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for the MAX77714 PMIC with GPIO, RTC and watchdog.
+--0000000000007ed33105d8b33b4e
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Hi Greg,
 
----
+On 2022-02-22 23:26, Greg Kroah-Hartman wrote:
+> On Tue, Feb 22, 2022 at 09:14:02PM -0800, Desmond yan wrote:
+>>
+>> Greg,
+>>
+>> Please see inlined.
+>>
+>> On 2/22/22 09:13, Greg Kroah-Hartman wrote:
+>>> A: http://en.wikipedia.org/wiki/Top_post
+>>> Q: Were do I find info about this thing called top-posting?
+>>> A: Because it messes up the order in which people normally read text.
+>>> Q: Why is top-posting such a bad thing?
+>>> A: Top-posting.
+>>> Q: What is the most annoying thing in e-mail?
+>>>
+>>> A: No.
+>>> Q: Should I include quotations after my reply?
+>>>
+>>>
+>>> http://daringfireball.net/2007/07/on_top
+>>>
+>>> On Tue, Feb 22, 2022 at 07:41:04AM -0800, Desmond Yan (APD) wrote:
+>>>> Greg,
+>>>>
+>>>> This is to allow the customer to use their own driver, by default,
+>>>> which is their preferred option.
+>>>
+>>> We do not care about out-of-tree code, and do not add Kconfig options
+>>> just for that, sorry.
+>>>
+>>> Why not just add the out-of-tree driver here to the in-kernel code?
+>>> What is preventing that from happening today?
+>>
+>> Using the bcm_vk driver for viper is only for proof-of-concept, and is not
+>> aimed to be deployed for production.  In parallel, customer is developing
+>> their own production-ready driver and would probably upstream it whenever
+>> the appropriate time comes.
+> 
+> Ok, so let us not add a new config option only for one person working on
+> writing their own driver.  Let's just add the device id as there are
+> more people than just that one person wanting to use their hardware with
+> the existing drivers.
+The bcm_vk driver is the official driver for Valkyrie.  For Viper, the 
+bcm_vk driver is only for proof of concept, testing, and demonstration 
+purposes. For production, the new driver in development will be used.
 
-Changes in v6: none
+To support such configuration, we need to have the Viper pci id 
+configurable and off by default in the bcm_vk driver to allow the new 
+production driver to be developed against the upstream kernel and drivers.
+> 
+> Please resubmit this without the Kconfig change and I will be glad to
+> take it.
+I don't understand what there would be to submit?  The Viper pci id is 
+already upstreamed into the bcm_vk driver.  The sole purpose of this 
+patch is to add the Kconfig option and have it off by default.
+> 
+> thanks,
+> 
+> greg k-h
 
-Changes in v5: none
+Regards,
+Scott
 
-Changes in v4: none
+--0000000000007ed33105d8b33b4e
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-Changes in v3:
- - add 'regulators' node (Krzysztof Kozlowski, Rob Herring)
-
-Changes in v2: none
----
- .../bindings/mfd/maxim,max77714.yaml          | 68 +++++++++++++++++++
- MAINTAINERS                                   |  5 ++
- 2 files changed, 73 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
-
-diff --git a/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml b/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
-new file mode 100644
-index 000000000000..74a6867d3c82
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/maxim,max77714.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MAX77714 PMIC with GPIO, RTC and watchdog from Maxim Integrated.
-+
-+maintainers:
-+  - Luca Ceresoli <luca@lucaceresoli.net>
-+
-+description: |
-+  MAX77714 is a Power Management IC with 4 buck regulators, 9
-+  low-dropout regulators, 8 GPIOs, RTC and watchdog.
-+
-+properties:
-+  compatible:
-+    const: maxim,max77714
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+    description:
-+      The first cell is the IRQ number, the second cell is the trigger type.
-+
-+  regulators:
-+    type: object
-+    additionalProperties: false
-+
-+    patternProperties:
-+      '^(buck[0-3]|ldo[0-8])$':
-+        type: object
-+        unevaluatedProperties: false
-+        $ref: /schemas/regulator/regulator.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-controller
-+  - "#interrupt-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic@1c {
-+            compatible = "maxim,max77714";
-+            reg = <0x1c>;
-+            interrupt-parent = <&gpio2>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
-+
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 777cd6fa2b3d..e112ca549c5d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11720,6 +11720,11 @@ F:	drivers/power/supply/max77650-charger.c
- F:	drivers/regulator/max77650-regulator.c
- F:	include/linux/mfd/max77650.h
- 
-+MAXIM MAX77714 PMIC MFD DRIVER
-+M:	Luca Ceresoli <luca@lucaceresoli.net>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
-+
- MAXIM MAX77802 PMIC REGULATOR DEVICE DRIVER
- M:	Javier Martinez Canillas <javier@dowhile0.org>
- L:	linux-kernel@vger.kernel.org
--- 
-2.25.1
-
+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
+cRe0CRXA7ypOJSgxO/nOOyQoaJxT7CGg1npOeSpPjEuc3fE4xum3l0nvU85hj6MlKZu43hokdBh0
+D0nLyyhEwlR3AC/msdff/UGbM/JR9vk812RP4m/aNWZFJwIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
+BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
+YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
+BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
+MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
+YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
+Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
+HREEHjAcgRpzY290dC5icmFuZGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
+BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUOhjEpl04Sz9dh5MI82E1
+V39lM/owDQYJKoZIhvcNAQELBQADggEBAA7Rlypx/esz/iq1yA4+KW7uwV/aBY344BWcXt6I+SNK
+VwFBgFWfLj5vaEud9TVv2fPSiaHJo0umemOJk+43QD+bsoqmgcFXd21PrOt7Jjs+jjVED9VC5kJq
+S4NNKUkS+BqijJwSegtVygrc/atrIlJbjI21q4qpemUo5fgwqCNm++BmBGTI8yA09vtGSNDRN42k
+lLX9hl3iEj5SBgkQqCbbnoE+ZjjKfqt7ED166WhgyQWNrl39yLcvLj+JRUB3RuvXKZjH0NQEEBII
+wZBDSkyneykLt3CBNIhSCTxKM6OWxVp936ALSa5K9FNy00TeWSpokR6NmzaW8VD/EjTgvqAxggJt
+MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
+VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgx9oXSJpKniO4dS
+Gk8wDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEID8yitDXbQ+EvrVay7fPTgMxRo9n
+NY8ir6IEgk7E4bdOMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
+MDIyMzE3NTk1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
+AwQCATANBgkqhkiG9w0BAQEFAASCAQB7vyoX0uFSbUp1JCe2GbsWlbXqXgQSHDqPCBh3Uoi7luIE
+wT22Z2lBA4C86FAxF7uE7xy0qjEQ5rbD4W+myl25tnBwIXLsvy8Bcv8FWtW8qJ2Ki5qvduUXa8fz
+P1MbbrE8+D2JsEIuaxN3KxX1B7tooouCAoSzO7Brgeg9snJTjhP3c3UhtFhkNe5OSK5b03d+LaP0
+c3pErCiPNY4dqG8m+i1XVaeo/rkRtd/t2TOdm1/BOYKT70lc2EyCpdGnipufrVn/kpMNlUv/xgCl
+PPjgE4x1RvdD6iYQvnEw+icUCyGh0mrrddExpTbGVJu5DOtJqwyl66KK8pL/8n8n27tn
+--0000000000007ed33105d8b33b4e--
