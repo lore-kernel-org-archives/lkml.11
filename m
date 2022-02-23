@@ -2,433 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE787C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 128F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238417AbiBWF24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:28:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
+        id S238426AbiBWF3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:29:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237690AbiBWF0l (ORCPT
+        with ESMTP id S238465AbiBWF1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:26:41 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2836E784
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:08 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d74a0ff060so75807097b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:08 -0800 (PST)
+        Wed, 23 Feb 2022 00:27:20 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB006EB2E
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:33 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d61b4ef6cdso162266877b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Wjvyoa2FJqkBAKFP17bCuJdeRktO4ffR+raoUv+wC04=;
-        b=IuC+day3sN1PmeI3q0+DeqehWlmR6vmu4lqtMz2zTkSs/sLWgZjKSMjbDxjarGYK3w
-         hUZZQKn00coi8l0R0gTq63im2iXgDqy8kS7ZoG/GfBb24X2etuAVLlEbTVnHHQVOpffA
-         7kJw+tCwaYdWlS1krugMDGNM7sJ3OTIDt7ytbn7/z+HK1a8ew2aSceVwKePXDv9f7WZz
-         m0Q/zwZ6fjCsUI3xB5Psf0pqjVkAy2TXCzeSjVt+m4RXqs776AhpaQ80FhrK9Kk/bCDo
-         Sz1kG0HnL9LnI2+RNBaFmgg3coHxCTDPj+PGc/Rc5iXJGNpAzaSB6KONLlzImp2qWQaO
-         osLQ==
+        bh=Dq9qt2AUp1awc/cLmelSzNKRNDnSx+0iG/3BD+f2Pqw=;
+        b=bPNyVJMg6CFD9HMFXRNSQizMrYjSNrjLiLhbm2g1SK1dzDwAFw9IVrAGvhhX45jt5Q
+         MB3m8YKlJbAP43meWzITJhoGXfxoAhkBewEF4x4QZqaowTmjzbchko9N97X/yQbRhrNA
+         ImSjY75jArlh3P4WvJxt6CSq2eFG/pUb6dFuicj5exLngzk9JG3+oOBNZTaiEkVgP1d8
+         VW0rHsRZ6Lp5BNVpEKjEx5KJ5bw8GUJBEAXS5TOsXJl2K77U7oBnknsAPh1rXoSbln87
+         yaf/9ms1aZYCgCW1qLWuFDH6hT7XNDObPyRg/4cz2jm+Z6IkcAJZ7HSdd02kUIZheQ2Z
+         Pwpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Wjvyoa2FJqkBAKFP17bCuJdeRktO4ffR+raoUv+wC04=;
-        b=4Ho6lkXTE1XssdW/JHnW1EtUKYaGKJQyTNIKeB728rnanxQNrKd2040dZmcXbgOKhU
-         V5KCpMKV1FPIye/xIYUZpAh78NJRur9Tad9um5KPsqOuKITkBXrPmpzWnIbiovv2LEKm
-         8nwlqzuc/3Afifb3P6h11SVhCAKn1Z77RXhzCxBgpL2TM/l9T5nNDRQbw+ZeE+G71Er7
-         a1qenSnnDKKZ+pk5k3fiBG/YAKmnFmPKwFclT3cGqD4OHHuo+Vi3ZyRW+HsPHfOBF0/U
-         ShBB5wRFvJXd294IVuLcnao+aGeaHBqecWAzpMkSIp2gMvE1BNnEUwbzU44K9aRZVg7A
-         Wvzg==
-X-Gm-Message-State: AOAM531Yz3aDRvkLbroC7qW9Aa69W1MR9uPW31X0cwuzTImaSJ3HgW2O
-        cIEV49Tjz+Z7xkReSlsWgG5IE4vrohJ94AfcXg4MjYkksJHw3f0FHAl7pr6WqEXJDGY4df3UKIM
-        rv6zQqxlYljefYRfQYeyyUg+A6MCF9kdO+NUbsybaLdBSIw9zPQTCB+fTAOIiDmjE2PLQepna
-X-Google-Smtp-Source: ABdhPJyc5lR4Rjfv+Xgr2/PVDwYzQX3XdlHXcXxiuT59EhJPeYW9yxuIt2bJoEcFUWJJKvKStyvmN4Ecr+Gy
+        bh=Dq9qt2AUp1awc/cLmelSzNKRNDnSx+0iG/3BD+f2Pqw=;
+        b=4c65shb+6fUk60hKnK4VfaGpZI78lZw28WZeLhv9om6W+9S9bjMha2ZmdhR6UCYxNa
+         O6a3zgToB8trFqxJCvnBshBik6dxpK2Kx1xOxHSu4Il11DDmNOMyem2IUI6L0e0WUl1l
+         qCnZlmhygdKY5VcGLZrTesyrkD60tsu13xsSUxkfpdPkWk9RswzdqQIKo8TCw0Jh9CQS
+         +Vfe7wUbCRwCuugGOXNnyLt5kpm5OcGqU8xIsDC5tkL/tGU21HEwz6ZKoilH01v9BRpG
+         VXPgCRdj/aGdIEkZ8qWK6ItxpVmIvyhlV1shQ75Yp0x47yT/BpZgSW2kjT+UUjhYYNPB
+         EGaA==
+X-Gm-Message-State: AOAM531Tyai8WyfQf6KM6ZQfZUw8z2i2rs/dmgHK7RShQXuDmkbpVe+W
+        +oF53nIGkQ+MB8Rbs0LqQWYqWydM1s2cWgS6Ky/Ps4BHU36+iZxJrE869mPETO8W13P6CuNm1Rn
+        lCillZG7UrZ3KgduDSioymb5+2a+aHqnjr/v8VbHv7x5X3Jstt1Z/nYnms4aTXKKznEn1NaUn
+X-Google-Smtp-Source: ABdhPJzaqkidQawY7QCK9X5rVK71lVLf3wgt7MJ0n5efK7otIJAGSETfWRZjLt8X/bYBHlNaQvv9LeMoFDFo
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a0d:e4c2:0:b0:2d4:da21:cc07 with SMTP id
- n185-20020a0de4c2000000b002d4da21cc07mr27147139ywe.16.1645593894760; Tue, 22
- Feb 2022 21:24:54 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:22:07 -0800
+ (user=junaids job=sendgmr) by 2002:a0d:d1c5:0:b0:2ca:287c:6b81 with SMTP id
+ t188-20020a0dd1c5000000b002ca287c6b81mr28230447ywd.38.1645593926233; Tue, 22
+ Feb 2022 21:25:26 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:22:21 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-32-junaids@google.com>
+Message-Id: <20220223052223.1202152-46-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 31/47] mm: asi: Support for non-sensitive SLUB caches
+Subject: [RFC PATCH 45/47] mm: asi: Mapping global nonsensitive areas in asi_global_init
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
-        pjt@google.com, oweisse@google.com, alexandre.chartre@oracle.com,
-        rppt@linux.ibm.com, dave.hansen@linux.intel.com,
-        peterz@infradead.org, tglx@linutronix.de, luto@kernel.org,
-        linux-mm@kvack.org
+Cc:     Ofir Weisse <oweisse@google.com>, kvm@vger.kernel.org,
+        pbonzini@redhat.com, jmattson@google.com, pjt@google.com,
+        alexandre.chartre@oracle.com, rppt@linux.ibm.com,
+        dave.hansen@linux.intel.com, peterz@infradead.org,
+        tglx@linutronix.de, luto@kernel.org, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds support for allocating global and local non-sensitive objects
-using the SLUB allocator. Similar to SLAB, per-process child caches are
-created for locally non-sensitive allocations. This mechanism is based
-on a modified form of the earlier implementation of per-memcg caches.
+From: Ofir Weisse <oweisse@google.com>
 
-Signed-off-by: Junaid Shahid <junaids@google.com>
+There are several areas in memory which we consider non sensitive.
+These areas should be mapped in every ASI domain. We map there areas
+in asi_global_init(). We modified some of the linking scripts to
+ensure these areas are starting and ending on page boundaries.
+
+The areas:
+ - _stext             --> _etext
+ - __init_begin       --> __init_end
+ - __start_rodata     --> __end_rodata
+ - __start_once       --> __end_once
+ - __start___ex_table --> __stop___ex_table
+ - __start_asi_nonsensitive            --> __end_asi_nonsensitive
+ - __start_asi_nonsensitive_readmostly -->
+     __end_asi_nonsensitive_readmostly
+ - __vvar_page --> + PAGE_SIZE
+ - APIC_BASE   --> + PAGE_SIZE
+ - phys_base   --> + PAGE_SIZE
+ - __start___tracepoints_ptrs --> __stop___tracepoints_ptrs
+ - __start___tracepoint_str   --> __stop___tracepoint_str
+ - __per_cpu_asi_start        --> __per_cpu_asi_end (percpu)
+ - irq_stack_backing_store    --> + sizeof(irq_stack_backing_store)
+   (percpu)
+
+The pgd's of the following addresses are cloned, modeled after KPTI:
+ - CPU_ENTRY_AREA_BASE
+ - ESPFIX_BASE_ADDR
+
+Signed-off-by: Ofir Weisse <oweisse@google.com>
 
 
 ---
- include/linux/slub_def.h |   6 ++
- mm/slab.h                |   5 ++
- mm/slab_common.c         |  33 +++++++--
- mm/slub.c                | 140 ++++++++++++++++++++++++++++++++++++++-
- security/Kconfig         |   3 +-
- 5 files changed, 179 insertions(+), 8 deletions(-)
+ arch/x86/kernel/head_64.S         | 12 +++++
+ arch/x86/kernel/vmlinux.lds.S     |  2 +-
+ arch/x86/mm/asi.c                 | 82 +++++++++++++++++++++++++++++++
+ include/asm-generic/vmlinux.lds.h | 13 +++--
+ 4 files changed, 105 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
-index 0fa751b946fa..6e185b61582c 100644
---- a/include/linux/slub_def.h
-+++ b/include/linux/slub_def.h
-@@ -137,6 +137,12 @@ struct kmem_cache {
- 	struct kasan_cache kasan_info;
- #endif
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index d8b3ebd2bb85..3d3874661895 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -574,9 +574,21 @@ SYM_DATA_LOCAL(early_gdt_descr_base,	.quad INIT_PER_CPU_VAR(gdt_page))
+ 
+ 	.align 16
+ /* This must match the first entry in level2_kernel_pgt */
++
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++/* TODO: Find a way to mark .section for phys_base */
++/* Ideally, we want to map phys_base in .data..asi_non_sensitive. That doesn't
++ * seem to work properly. For now, we just make sure phys_base is in it's own
++ * page. */
++	.align PAGE_SIZE
++#endif
+ SYM_DATA(phys_base, .quad 0x0)
+ EXPORT_SYMBOL(phys_base)
  
 +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+	struct kmem_local_cache_info local_cache_info;
-+	/* For propagation, maximum size of a stored attr */
-+	unsigned int max_attr_size;
++	.align PAGE_SIZE
 +#endif
 +
- 	unsigned int useroffset;	/* Usercopy region offset */
- 	unsigned int usersize;		/* Usercopy region size */
+ #include "../../x86/xen/xen-head.S"
  
-diff --git a/mm/slab.h b/mm/slab.h
-index b9e11038be27..8799bcdd2fff 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -216,6 +216,7 @@ int __kmem_cache_shutdown(struct kmem_cache *);
- void __kmem_cache_release(struct kmem_cache *);
- int __kmem_cache_shrink(struct kmem_cache *);
- void slab_kmem_cache_release(struct kmem_cache *);
-+void kmem_cache_shrink_all(struct kmem_cache *s);
+ 	__PAGE_ALIGNED_BSS
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index 3d6dc12d198f..2b3668291785 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -148,8 +148,8 @@ SECTIONS
+ 	} :text =0xcccc
  
- struct seq_file;
- struct file;
-@@ -344,6 +345,7 @@ void restore_page_nonsensitive_metadata(struct page *page,
- }
+ 	/* End of text section, which should occupy whole number of pages */
+-	_etext = .;
+ 	. = ALIGN(PAGE_SIZE);
++	_etext = .;
  
- void set_nonsensitive_cache_params(struct kmem_cache *s);
-+void init_local_cache_info(struct kmem_cache *s, struct kmem_cache *root);
+ 	X86_ALIGN_RODATA_BEGIN
+ 	RO_DATA(PAGE_SIZE)
+diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
+index 04628949e89d..7f2aa1823736 100644
+--- a/arch/x86/mm/asi.c
++++ b/arch/x86/mm/asi.c
+@@ -9,6 +9,7 @@
  
- #else /* CONFIG_ADDRESS_SPACE_ISOLATION */
+ #include <asm/asi.h>
+ #include <asm/pgalloc.h>
++#include <asm/processor.h> /* struct irq_stack */
+ #include <asm/mmu_context.h>
  
-@@ -380,6 +382,9 @@ static inline void restore_page_nonsensitive_metadata(struct page *page,
+ #include "mm_internal.h"
+@@ -17,6 +18,24 @@
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "ASI: " fmt
  
- static inline void set_nonsensitive_cache_params(struct kmem_cache *s) { }
- 
-+static inline
-+void init_local_cache_info(struct kmem_cache *s, struct kmem_cache *root) { }
++#include <linux/extable.h>
++#include <asm-generic/sections.h>
 +
- #endif /* CONFIG_ADDRESS_SPACE_ISOLATION */
++extern struct exception_table_entry __start___ex_table[];
++extern struct exception_table_entry __stop___ex_table[];
++
++extern const char __start_asi_nonsensitive[], __end_asi_nonsensitive[];
++extern const char __start_asi_nonsensitive_readmostly[],
++            __end_asi_nonsensitive_readmostly[];
++extern const char __per_cpu_asi_start[], __per_cpu_asi_end[];
++extern const char *__start___tracepoint_str[];
++extern const char *__stop___tracepoint_str[];
++extern const char *__start___tracepoints_ptrs[];
++extern const char *__stop___tracepoints_ptrs[];
++extern const char __vvar_page[];
++
++DECLARE_PER_CPU_PAGE_ALIGNED(struct irq_stack, irq_stack_backing_store);
++
+ static struct asi_class asi_class[ASI_MAX_NUM] __asi_not_sensitive;
+ static DEFINE_SPINLOCK(asi_class_lock __asi_not_sensitive);
  
- #ifdef CONFIG_MEMCG_KMEM
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index b486b72d6344..efa61b97902a 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -142,7 +142,7 @@ int __kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t nr,
- 
- LIST_HEAD(slab_root_caches);
- 
--static void init_local_cache_info(struct kmem_cache *s, struct kmem_cache *root)
-+void init_local_cache_info(struct kmem_cache *s, struct kmem_cache *root)
+@@ -412,6 +431,7 @@ void asi_unload_module(struct module* module)
+ static int __init asi_global_init(void)
  {
- 	if (root) {
- 		s->local_cache_info.root_cache = root;
-@@ -194,9 +194,6 @@ void set_nonsensitive_cache_params(struct kmem_cache *s)
+ 	uint i, n;
++        int err = 0;
  
- #else
- 
--static inline
--void init_local_cache_info(struct kmem_cache *s, struct kmem_cache *root) { }
--
- static inline void cleanup_local_cache_info(struct kmem_cache *s) { }
- 
- #endif /* CONFIG_ADDRESS_SPACE_ISOLATION */
-@@ -644,6 +641,34 @@ int kmem_cache_shrink(struct kmem_cache *cachep)
- }
- EXPORT_SYMBOL(kmem_cache_shrink);
- 
-+/**
-+ * kmem_cache_shrink_all - shrink a cache and all child caches for root cache
-+ * @s: The cache pointer
-+ */
-+void kmem_cache_shrink_all(struct kmem_cache *s)
-+{
-+	struct kmem_cache *c;
-+
-+	if (!static_asi_enabled() || !is_root_cache(s)) {
-+		kmem_cache_shrink(s);
-+		return;
-+	}
-+
-+	kasan_cache_shrink(s);
-+	__kmem_cache_shrink(s);
-+
-+	/*
-+	 * We have to take the slab_mutex to protect from the child cache list
-+	 * modification.
-+	 */
-+	mutex_lock(&slab_mutex);
-+	for_each_child_cache(c, s) {
-+		kasan_cache_shrink(c);
-+		__kmem_cache_shrink(c);
-+	}
-+	mutex_unlock(&slab_mutex);
-+}
-+
- bool slab_is_available(void)
- {
- 	return slab_state >= UP;
-diff --git a/mm/slub.c b/mm/slub.c
-index abe7db581d68..df0191f8b0e2 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -289,6 +289,21 @@ static void debugfs_slab_add(struct kmem_cache *);
- static inline void debugfs_slab_add(struct kmem_cache *s) { }
- #endif
- 
-+#if defined(CONFIG_SYSFS) && defined(CONFIG_ADDRESS_SPACE_ISOLATION)
-+static void propagate_slab_attrs_from_parent(struct kmem_cache *s);
-+static void propagate_slab_attr_to_children(struct kmem_cache *s,
-+					    struct attribute *attr,
-+					    const char *buf, size_t len);
-+#else
-+static inline void propagate_slab_attrs_from_parent(struct kmem_cache *s) { }
-+
-+static inline
-+void propagate_slab_attr_to_children(struct kmem_cache *s,
-+				     struct attribute *attr,
-+				     const char *buf, size_t len)
-+{ }
-+#endif
-+
- static inline void stat(const struct kmem_cache *s, enum stat_item si)
- {
- #ifdef CONFIG_SLUB_STATS
-@@ -2015,6 +2030,7 @@ static void __free_slab(struct kmem_cache *s, struct page *page)
- 	if (current->reclaim_state)
- 		current->reclaim_state->reclaimed_slab += pages;
- 	unaccount_slab_page(page, order, s);
-+	restore_page_nonsensitive_metadata(page, s);
- 	__free_pages(page, order);
- }
- 
-@@ -4204,6 +4220,8 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
- 		}
- 	}
- 
-+	set_nonsensitive_cache_params(s);
-+
- #if defined(CONFIG_HAVE_CMPXCHG_DOUBLE) && \
-     defined(CONFIG_HAVE_ALIGNED_STRUCT_PAGE)
- 	if (system_has_cmpxchg_double() && (s->flags & SLAB_NO_CMPXCHG) == 0)
-@@ -4797,6 +4815,10 @@ static struct kmem_cache * __init bootstrap(struct kmem_cache *static_cache)
- #endif
- 	}
- 	list_add(&s->list, &slab_caches);
-+	init_local_cache_info(s, NULL);
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+	list_del(&static_cache->root_caches_node);
-+#endif
- 	return s;
- }
- 
-@@ -4863,7 +4885,7 @@ struct kmem_cache *
- __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
- 		   slab_flags_t flags, void (*ctor)(void *))
- {
--	struct kmem_cache *s;
-+	struct kmem_cache *s, *c;
- 
- 	s = find_mergeable(size, align, flags, name, ctor);
- 	if (s) {
-@@ -4876,6 +4898,11 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
- 		s->object_size = max(s->object_size, size);
- 		s->inuse = max(s->inuse, ALIGN(size, sizeof(void *)));
- 
-+		for_each_child_cache(c, s) {
-+			c->object_size = s->object_size;
-+			c->inuse = max(c->inuse, ALIGN(size, sizeof(void *)));
-+		}
-+
- 		if (sysfs_slab_alias(s, name)) {
- 			s->refcount--;
- 			s = NULL;
-@@ -4889,6 +4916,9 @@ int __kmem_cache_create(struct kmem_cache *s, slab_flags_t flags)
- {
- 	int err;
- 
-+	if (!static_asi_enabled())
-+		flags &= ~SLAB_NONSENSITIVE;
-+
- 	err = kmem_cache_open(s, flags);
- 	if (err)
- 		return err;
-@@ -4897,6 +4927,8 @@ int __kmem_cache_create(struct kmem_cache *s, slab_flags_t flags)
- 	if (slab_state <= UP)
+ 	if (!boot_cpu_has(X86_FEATURE_ASI))
  		return 0;
+@@ -436,6 +456,68 @@ static int __init asi_global_init(void)
  
-+	propagate_slab_attrs_from_parent(s);
-+
- 	err = sysfs_slab_add(s);
- 	if (err) {
- 		__kmem_cache_release(s);
-@@ -5619,7 +5651,7 @@ static ssize_t shrink_store(struct kmem_cache *s,
- 			const char *buf, size_t length)
- {
- 	if (buf[0] == '1')
--		kmem_cache_shrink(s);
-+		kmem_cache_shrink_all(s);
- 	else
- 		return -EINVAL;
- 	return length;
-@@ -5829,6 +5861,87 @@ static ssize_t slab_attr_show(struct kobject *kobj,
- 	return err;
- }
+         pcpu_map_asi_reserved_chunk();
  
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+
-+static void propagate_slab_attrs_from_parent(struct kmem_cache *s)
-+{
-+	int i;
-+	char *buffer = NULL;
-+	struct kmem_cache *root_cache;
-+
-+	if (is_root_cache(s))
-+		return;
-+
-+	root_cache = s->local_cache_info.root_cache;
 +
 +	/*
-+	 * This mean this cache had no attribute written. Therefore, no point
-+	 * in copying default values around
++	 * TODO: We need to ensure that all the sections mapped below are
++	 * actually page-aligned by the linker. For now, we temporarily just
++	 * align the start/end addresses here, but that is incorrect as the
++	 * rest of the page could potentially contain sensitive data.
 +	 */
-+	if (!root_cache->max_attr_size)
-+		return;
++#define MAP_SECTION(start, end)                                   \
++        pr_err("%s:%d mapping 0x%lx --> 0x%lx",                   \
++               __FUNCTION__, __LINE__, start, end);               \
++       err = asi_map(ASI_GLOBAL_NONSENSITIVE,                    \
++                     (void*)((unsigned long)(start) & PAGE_MASK),\
++                      PAGE_ALIGN((unsigned long)(end)) -          \
++                     ((unsigned long)(start) & PAGE_MASK));      \
++       BUG_ON(err);
 +
-+	for (i = 0; i < ARRAY_SIZE(slab_attrs); i++) {
-+		char mbuf[64];
-+		char *buf;
-+		struct slab_attribute *attr = to_slab_attr(slab_attrs[i]);
-+		ssize_t len;
++#define MAP_SECTION_PERCPU(start, size)                                  \
++        pr_err("%s:%d mapping PERCPU 0x%lx --> 0x%lx",                   \
++               __FUNCTION__, __LINE__, start, (unsigned long)start+size); \
++       err = asi_map_percpu(ASI_GLOBAL_NONSENSITIVE,                     \
++                     (void*)((unsigned long)(start) & PAGE_MASK),        \
++                      PAGE_ALIGN((unsigned long)(size)));                \
++       BUG_ON(err);
 +
-+		if (!attr || !attr->store || !attr->show)
-+			continue;
++        MAP_SECTION(_stext, _etext);
++        MAP_SECTION(__init_begin, __init_end);
++        MAP_SECTION(__start_rodata, __end_rodata);
++        MAP_SECTION(__start_once, __end_once);
++        MAP_SECTION(__start___ex_table, __stop___ex_table);
++        MAP_SECTION(__start_asi_nonsensitive, __end_asi_nonsensitive);
++        MAP_SECTION(__start_asi_nonsensitive_readmostly,
++                    __end_asi_nonsensitive_readmostly);
++        MAP_SECTION(__vvar_page, __vvar_page + PAGE_SIZE);
++        MAP_SECTION(APIC_BASE, APIC_BASE + PAGE_SIZE);
++        MAP_SECTION(&phys_base, &phys_base + PAGE_SIZE);
 +
-+		/*
-+		 * It is really bad that we have to allocate here, so we will
-+		 * do it only as a fallback. If we actually allocate, though,
-+		 * we can just use the allocated buffer until the end.
-+		 *
-+		 * Most of the slub attributes will tend to be very small in
-+		 * size, but sysfs allows buffers up to a page, so they can
-+		 * theoretically happen.
-+		 */
-+		if (buffer) {
-+			buf = buffer;
-+		} else if (root_cache->max_attr_size < ARRAY_SIZE(mbuf) &&
-+			 !IS_ENABLED(CONFIG_SLUB_STATS)) {
-+			buf = mbuf;
-+		} else {
-+			buffer = (char *)get_zeroed_page(GFP_KERNEL);
-+			if (WARN_ON(!buffer))
-+				continue;
-+			buf = buffer;
-+		}
++       /* TODO: add a build flag to enable disable mapping only when
++        * instrumentation is used */
++        MAP_SECTION(__start___tracepoints_ptrs, __stop___tracepoints_ptrs);
++        MAP_SECTION(__start___tracepoint_str, __stop___tracepoint_str);
 +
-+		len = attr->show(root_cache, buf);
-+		if (len > 0)
-+			attr->store(s, buf, len);
-+	}
++	MAP_SECTION_PERCPU((void*)__per_cpu_asi_start,
++	 		   __per_cpu_asi_end - __per_cpu_asi_start);
 +
-+	if (buffer)
-+		free_page((unsigned long)buffer);
-+}
++	MAP_SECTION_PERCPU(&irq_stack_backing_store,
++			   sizeof(irq_stack_backing_store));
 +
-+static void propagate_slab_attr_to_children(struct kmem_cache *s,
-+					    struct attribute *attr,
-+					    const char *buf, size_t len)
-+{
-+	struct kmem_cache *c;
-+	struct slab_attribute *attribute = to_slab_attr(attr);
++	/* We have to map the stack canary into ASI. This is far from ideal, as
++	* attackers can use L1TF to steal the canary value, and then perhaps
++	* mount some other attack including a buffer overflow. This is a price
++	* we must pay to use ASI.
++	*/
++	MAP_SECTION_PERCPU(&fixed_percpu_data, PAGE_SIZE);
 +
-+	if (static_asi_enabled()) {
-+		mutex_lock(&slab_mutex);
++#define CLONE_INIT_PGD(addr) \
++        asi_clone_pgd(asi_global_nonsensitive_pgd, init_mm.pgd, addr);
 +
-+		if (s->max_attr_size < len)
-+			s->max_attr_size = len;
-+
-+		for_each_child_cache(c, s)
-+			attribute->store(c, buf, len);
-+
-+		mutex_unlock(&slab_mutex);
-+	}
-+}
-+
++        CLONE_INIT_PGD(CPU_ENTRY_AREA_BASE);
++#ifdef CONFIG_X86_ESPFIX64
++        CLONE_INIT_PGD(ESPFIX_BASE_ADDR);
 +#endif
 +
- static ssize_t slab_attr_store(struct kobject *kobj,
- 				struct attribute *attr,
- 				const char *buf, size_t len)
-@@ -5844,6 +5957,27 @@ static ssize_t slab_attr_store(struct kobject *kobj,
- 		return -EIO;
- 
- 	err = attribute->store(s, buf, len);
-+
-+	/*
-+	 * This is a best effort propagation, so this function's return
-+	 * value will be determined by the parent cache only. This is
-+	 * basically because not all attributes will have a well
-+	 * defined semantics for rollbacks - most of the actions will
-+	 * have permanent effects.
-+	 *
-+	 * Returning the error value of any of the children that fail
-+	 * is not 100 % defined, in the sense that users seeing the
-+	 * error code won't be able to know anything about the state of
-+	 * the cache.
-+	 *
-+	 * Only returning the error code for the parent cache at least
-+	 * has well defined semantics. The cache being written to
-+	 * directly either failed or succeeded, in which case we loop
-+	 * through the descendants with best-effort propagation.
-+	 */
-+	if (slab_state >= FULL && err >= 0 && is_root_cache(s))
-+		propagate_slab_attr_to_children(s, attr, buf, len);
-+
- 	return err;
+ 	return 0;
  }
+ subsys_initcall(asi_global_init)
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 0a931aedc285..7152ce3613f5 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -235,8 +235,10 @@
+ #define TRACE_PRINTKS()	 __start___trace_bprintk_fmt = .;      \
+ 			 KEEP(*(__trace_printk_fmt)) /* Trace_printk fmt' pointer */ \
+ 			 __stop___trace_bprintk_fmt = .;
+-#define TRACEPOINT_STR() __start___tracepoint_str = .;	\
++#define TRACEPOINT_STR() . = ALIGN(PAGE_SIZE);          \
++                         __start___tracepoint_str = .;	\
+ 			 KEEP(*(__tracepoint_str)) /* Trace_printk fmt' pointer */ \
++                         . = ALIGN(PAGE_SIZE);          \
+ 			 __stop___tracepoint_str = .;
+ #else
+ #define TRACE_PRINTKS()
+@@ -348,8 +350,10 @@
+ 	MEM_KEEP(init.data*)						\
+ 	MEM_KEEP(exit.data*)						\
+ 	*(.data.unlikely)						\
++	. = ALIGN(PAGE_SIZE);						\
+ 	__start_once = .;						\
+ 	*(.data.once)							\
++	. = ALIGN(PAGE_SIZE);						\
+ 	__end_once = .;							\
+ 	STRUCT_ALIGN();							\
+ 	*(__tracepoints)						\
+@@ -453,9 +457,10 @@
+ 		*(.rodata) *(.rodata.*)					\
+ 		SCHED_DATA						\
+ 		RO_AFTER_INIT_DATA	/* Read only after init */	\
+-		. = ALIGN(8);						\
++                . = ALIGN(PAGE_SIZE);	        			\
+ 		__start___tracepoints_ptrs = .;				\
+ 		KEEP(*(__tracepoints_ptrs)) /* Tracepoints: pointer array */ \
++                . = ALIGN(PAGE_SIZE);	        			\
+ 		__stop___tracepoints_ptrs = .;				\
+ 		*(__tracepoints_strings)/* Tracepoints: strings */	\
+ 	}								\
+@@ -671,11 +676,13 @@
+  */
+ #define EXCEPTION_TABLE(align)						\
+ 	. = ALIGN(align);						\
++        . = ALIGN(PAGE_SIZE);                                           \
+ 	__ex_table : AT(ADDR(__ex_table) - LOAD_OFFSET) {		\
+ 		__start___ex_table = .;					\
+ 		KEEP(*(__ex_table))					\
++                . = ALIGN(PAGE_SIZE);                                   \
+ 		__stop___ex_table = .;					\
+-	}
++	}                                                               \
  
-@@ -5866,7 +6000,7 @@ static struct kset *slab_kset;
- 
- static inline struct kset *cache_kset(struct kmem_cache *s)
- {
--	return slab_kset;
-+	return is_root_cache(s) ? slab_kset : NULL;
- }
- 
- #define ID_STR_LENGTH 64
-diff --git a/security/Kconfig b/security/Kconfig
-index 070a948b5266..a5cfb09352b0 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -68,7 +68,8 @@ config PAGE_TABLE_ISOLATION
- config ADDRESS_SPACE_ISOLATION
- 	bool "Allow code to run with a reduced kernel address space"
- 	default n
--	depends on X86_64 && !UML && SLAB && !NEED_PER_CPU_KM
-+	depends on X86_64 && !UML && !NEED_PER_CPU_KM
-+	depends on SLAB || SLUB
- 	depends on !PARAVIRT
- 	depends on !MEMORY_HOTPLUG
- 	help
+ /*
+  * .BTF
 -- 
 2.35.1.473.g83b2b277ed-goog
 
