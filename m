@@ -2,139 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E43C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243716AbiBWSBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:01:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S243740AbiBWSBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:01:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236233AbiBWSBR (ORCPT
+        with ESMTP id S241790AbiBWSBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:01:17 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D96C3E5EA;
-        Wed, 23 Feb 2022 10:00:49 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:50190)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMvwT-001Zwz-5t; Wed, 23 Feb 2022 11:00:45 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34504 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMvwS-00CTRp-1i; Wed, 23 Feb 2022 11:00:44 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     <linux-api@vger.kernel.org>
-Cc:     Etienne Dechamps <etienne@edechamps.fr>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        <security@kernel.org>, Neil Brown <neilb@cse.unsw.edu.au>,
-        NeilBrown <neilb@suse.de>, "Serge E. Hallyn" <serge@hallyn.com>,
-        Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>
-In-Reply-To: <87zgmi5rhm.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Tue, 22 Feb 2022 18:57:57 -0600")
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
-        <20220215101150.GD21589@blackbody.suse.cz>
-        <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Wed, 23 Feb 2022 12:00:16 -0600
-Message-ID: <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>
+        Wed, 23 Feb 2022 13:01:34 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057DB3E0DB;
+        Wed, 23 Feb 2022 10:00:55 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6D5F5C0004;
+        Wed, 23 Feb 2022 18:00:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645639254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kY1Ql5jNd8+akOYr5MJM/nVmbSk1hVMt1XjyszBBYhg=;
+        b=cxfiBDzVbh20mJFblTgbgSuxY4x1UQqa55dIjZA3KwnE3ugwHGCGW5i7Z7Ta3Cq93by9HE
+        fxlU0Ng8WdMipwMjR5WjIXDUv17//5FECXpN8jH5TfPhCSrSoBEgpKfwRj2t9LVyLmuDvu
+        kDAB8XZzuEZ25ksvEgj9oeomavBtwq4crhCfDGAkQ0wfR52RV7TF+PFpYJr2+h2uOEDa3i
+        Kl8+OEgNIOQLmniGi/oUkjUYQ+cjf1ZZGURQEMvdhLux0Ny/NDS5RBJbwrcgDHBCIcTR1a
+        k1PsYUP9FYxVeXkn+TuG7OpYUlCioSUWQxFQdp8tcgo9Y7PfrhKCgWqyOEc3xA==
+Date:   Wed, 23 Feb 2022 18:59:27 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Enrico Weigelt <info@metux.net>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220223185927.2d272e3a@fixe.home>
+In-Reply-To: <YhZxyluc7gYhmAuh@sirena.org.uk>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+        <20220222173019.2380dcaf@fixe.home>
+        <YhZI1XImMNJgzORb@smile.fi.intel.com>
+        <20220223161150.664aa5e6@fixe.home>
+        <YhZRtads7MGzPEEL@smile.fi.intel.com>
+        <YhZxyluc7gYhmAuh@sirena.org.uk>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nMvwS-00CTRp-1i;;;mid=<87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/9RCjhfluUYzpGOmLuFphN7caHHRxw2iw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: How should rlimits, suid exec, and capabilities interact?
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Le Wed, 23 Feb 2022 17:41:30 +0000,
+Mark Brown <broonie@kernel.org> a =C3=A9crit :
 
-[CC'd the security list because I really don't know who the right people
- are to drag into this discussion]
- 
-While looking at some issues that have cropped up with making it so
-that RLIMIT_NPROC cannot be escaped by creating a user namespace I have
-stumbled upon a very old issue of how rlimits and suid exec interact
-poorly.
+> On Wed, Feb 23, 2022 at 05:24:37PM +0200, Andy Shevchenko wrote:
+> > On Wed, Feb 23, 2022 at 04:11:50PM +0100, Cl=C3=A9ment L=C3=A9ger wrote=
+: =20
+> > > Le Wed, 23 Feb 2022 16:46:45 +0200,
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit : =20
+>=20
+> > > > And here is the problem. We have a few different resource providers
+> > > > (a.k.a. firmware interfaces) which we need to cope with. =20
+>=20
+> > > Understood that but does adding fwnode support means it should work
+> > > as-is with both DT and ACPI ? ACPI code is still in place and only the
+> > > of part was converted. But maybe you expect the fwnode prot to be
+> > > conformant with ACPI. =20
+>=20
+> > Not only me, I believe Mark also was against using pure DT approach on
+> > ACPI enabled platforms. =20
+>=20
+> I'm not 100% clear on the context here (I did dig about a bit in the
+> thread on lore but it looks like there's some extra context here) but in
+> general I don't think there's any enthusiasm for trying to mix different
+> firmware interfaces on a single system.  Certainly in the case of ACPI
+> and DT they have substantial differences in system model and trying to
+> paper over those cracks and integrate the two is a route to trouble.
+> This doesn't look like it's trying to use a DT on an ACPI system though?
 
-This specific saga starts with commit 909cc4ae86f3 ("[PATCH] Fix two
-bugs with process limits (RLIMIT_NPROC)") from
-https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git which
-essentially replaced a capable() check with a an open-coded
-implementation of suser(), for RLIMIT_NPROC.
+Ideally no, but it is a possibility mentionned by Andrew, use DT
+overlays on an ACPI system. This series did not took this way (yet).
+Andrew mentionned that it could potentially be done but judging by your
+comment, i'm not sure you agree with that.
 
-The description from Neil Brown was:
+>=20
+> There's been some discussion on how to handle loadable descriptions for
+> things like FPGA but I don't recall it ever having got anywhere concrete
+> - I could have missed something.  Those are dynamic cases which are more
+> trouble though.  For something that's a PCI card it's not clear that we
+> can't just statically instanitate the devices from kernel code, that was
+> how the MFD subsystem started off although it's now primarily applied to
+> other applications.  That looks to be what's going on here?
 
-   1/ If a setuid process swaps it's real and effective uids and then forks,
-     the fork fails if the new realuid has more processes
-     than the original process was limited to.
-     This is particularly a problem if a user with a process limit
-     (e.g. 256) runs a setuid-root program which does setuid() + fork()
-     (e.g. lprng) while root already has more than 256 process (which
-     is quite possible).
-    
-     The root problem here is that a limit which should be a per-user
-     limit is being implemented as a per-process limit with
-     per-process (e.g. CAP_SYS_RESOURCE) controls.
-     Being a per-user limit, it should be that the root-user can over-ride
-     it, not just some process with CAP_SYS_RESOURCE.
-    
-     This patch adds a test to ignore process limits if the real user is root.
+Yes, in this series, I used the MFD susbsytems with mfd_cells. These
+cells are attached with a swnode. Then, needed subsystems are
+modified to use the fwnode API to be able to use them with
+devices that have a swnode as a primary node.
 
-The test to see if the real user is root was:
-	if (p->real_cred->user != INIT_USER) ...
-which persists to this day in fs/fork.c:copy_process().
+>=20
+> There were separately some issues with people trying to create
+> completely swnode based enumeration mechanisms for things that required
+> totally independent code for handling swnodes which seemed very
+> concerning but it's not clear to me if that's what's going on here.
 
-The practical problem with this test is that it works like nothing else
-in the kernel, and so does not look like what it is.  Saying:
-	if (!uid_eq(p->real_cred->uid, GLOBAL_ROOT_USER)) ...
+The card is described entirely using swnode that in a MFD PCI
+driver, everything is described statically. The "enumeration" is static
+since all the devices are described in the driver and registered using
+mfd_add_device() at probe time. Thus, I don't think it adds an
+enumeration mechanism like you mention but I may be wrong.
 
-would at least be more recognizable.
+>=20
+> > > As I said in the cover-letter, this approach is the only one that I d=
+id
+> > > found acceptable without being tied to some firmware description. If =
+you
+> > > have another more portable approach, I'm ok with that. But this
+> > > solution should ideally work with pinctrl, gpio, clk, reset, phy, i2c,
+> > > i2c-mux without rewriting half of the code. And also allows to easily
+> > > swap the PCIe card to other slots/computer without having to modify t=
+he
+> > > description. =20
+>=20
+> > My proposal is to use overlays that card provides with itself.
+> > These are supported mechanisms by Linux kernel. =20
+>=20
+> We have code for DT overlays in the kernel but it's not generically
+> available.  There's issues with binding onto the platform device tree,
+> though they're less of a problem with something like this where it seems
+> to be a separate card with no cross links.
 
-Really this entire test should be if (!capable(CAP_SYS_RESOURCE) because
-CAP_SYS_RESOURCE is the capability that controls if you are allowed to
-exceed your rlimits.
+Indeed, the card does not have crosslinks with other devices and thus
+it might be a solution to use a device-tree overlay (loaded from the
+filesystem). But  I'm not sure if it's a good idea to do that on
+a ACPI enabled platform.
 
-Which brings us to the practical issues of how all of these things are
-wired together today.
-
-The per-user rlimits are accounted based upon a processes real user, not
-the effective user.  All other permission checks are based upon the
-effective user.  This has the practical effect that uids are swapped as
-above that the processes are charged to root, but use the permissions of
-an ordinary user.
-
-The problems get worse when you realize that suid exec does not reset
-any of the rlimits except for RLIMIT_STACK.
-
-The rlimits that are particularly affected and are per-user are:
-RLIMIT_NPROC, RLIMIT_MSGQUEUE, RLIMIT_SIGPENDING, RLIMIT_MEMLOCK.
-
-But I think failing to reset rlimits during exec has the potential to
-effect any suid exec.
-
-Does anyone have any historical knowledge or sense of how this should
-work?
-
-Right now it feels like we have coded ourselves into a corner and will
-have to risk breaking userspace to get out of it.  AKA I think we need
-a policy of reseting rlimits on suid exec, and I think we need to store
-global rlimits based upon the effective user not the real user.  Those
-changes should allow making capable calls where they belong, and
-removing the much too magic user == INIT_USER test for RLIMIT_NPROC.
-
-Eric
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
