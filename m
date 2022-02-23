@@ -2,79 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54027C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 588BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239764AbiBWLK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
+        id S239775AbiBWLLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiBWLKY (ORCPT
+        with ESMTP id S231288AbiBWLK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 06:10:24 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE178EB60;
-        Wed, 23 Feb 2022 03:09:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645614597; x=1677150597;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MiQ9JVyV1Ee4uRCraDgESdGOmKLVIdnK2qWMWiAcqtw=;
-  b=bclqWglPS50XTO/6zOXh2OfVmHqRi68+XzJ4xMcx3llVNIXJi7nKyEWu
-   jMkCkJiMlMRFV/7GWpcc2UTPo3ymN4Pc/L+iXKmsLhJavvE0PqdVl9WR3
-   lN65VVhxeTVCu9avwP2apyz3LB22WMZQM5sIcJFVLinzs6nbe58ZXLt9V
-   IJBXhV/Xu7LrIeFWs2CpmS2XCbhOfXY41QeDQq0Kz0BoEi7ggR9xVUktQ
-   FL9QlthBXGlEk9o+XSrTGCKxxHdBTM36+IIz2rd2hd2emhc+s8GSp0cwm
-   KrFeciHd/K/GOyC/DhkOCoOu5iQQNyQ55y/NRmpvldt/mfC2qu9fqgXv1
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231913473"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="231913473"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:09:56 -0800
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="706991530"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:09:55 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMpW4-007O4Q-Qv;
-        Wed, 23 Feb 2022 13:09:04 +0200
-Date:   Wed, 23 Feb 2022 13:09:04 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v1 1/1] crypto: cavium/nitrox - don't cast parameter in
- bit operations
-Message-ID: <YhYV0DCYw+YPwVgC@smile.fi.intel.com>
-References: <20220215160641.51683-1-andriy.shevchenko@linux.intel.com>
- <YhWhhPL+M6QWdqzL@gondor.apana.org.au>
+        Wed, 23 Feb 2022 06:10:58 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6523E8EB69;
+        Wed, 23 Feb 2022 03:10:30 -0800 (PST)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K3YC96CtVz9sGN;
+        Wed, 23 Feb 2022 19:07:01 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 23 Feb 2022 19:10:28 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Feb
+ 2022 19:10:27 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
+Date:   Wed, 23 Feb 2022 19:26:01 +0800
+Message-ID: <20220223112601.2902761-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhWhhPL+M6QWdqzL@gondor.apana.org.au>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 02:52:52PM +1200, Herbert Xu wrote:
-> On Tue, Feb 15, 2022 at 06:06:41PM +0200, Andy Shevchenko wrote:
-> >
-> > @@ -122,6 +123,7 @@ void nitrox_pf2vf_mbox_handler(struct nitrox_device *ndev)
-> >  {
-> >  	struct nitrox_vfdev *vfdev;
-> >  	struct pf2vf_work *pfwork;
-> > +	DEFINE_BITMAP(csr, 64);
-> 
-> Perhaps you mean DECLARE_BITMAP?
+blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
+submit_queues through configfs for null_blk), while it might still be
+used from other context(e.g. switch elevator to none):
 
-Yes, sorry. I have missed the build by some reason. I'll send a new version.
+t1					t2
+elevator_switch
+ blk_mq_unquiesce_queue
+  blk_mq_run_hw_queues
+   queue_for_each_hw_ctx
+    // assembly code for hctx = (q)->queue_hw_ctx[i]
+    mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
 
+					__blk_mq_update_nr_hw_queues
+					 blk_mq_realloc_hw_ctxs
+					  hctxs = q->queue_hw_ctx
+					  q->queue_hw_ctx = new_hctxs
+					  kfree(hctxs)
+    movslq %ebx,%rax
+    mov    (%rdx,%rax,8),%rdi ->uaf
+
+This problem was found by code review, and I comfirmed that the concurrent
+scenarios do exist(specifically 'q->queue_hw_ctx' can be changed during
+blk_mq_run_hw_queues), however, the uaf problem hasn't been repoduced yet
+without hacking the kernel.
+
+Sicne the queue is freezed in __blk_mq_update_nr_hw_queues, fix the
+problem by protecting 'queue_hw_ctx' through rcu where it can be accessed
+without grabbing 'q_usage_counter'.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-mq.c         |  8 +++++++-
+ include/linux/blk-mq.h |  2 +-
+ include/linux/blkdev.h | 13 ++++++++++++-
+ 3 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 6c59ffe765fd..79367457d555 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -3955,7 +3955,13 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
+ 		if (hctxs)
+ 			memcpy(new_hctxs, hctxs, q->nr_hw_queues *
+ 			       sizeof(*hctxs));
+-		q->queue_hw_ctx = new_hctxs;
++
++		rcu_assign_pointer(q->queue_hw_ctx, new_hctxs);
++		/*
++		 * Make sure reading the old queue_hw_ctx from other
++		 * context concurrently won't trigger uaf.
++		 */
++		synchronize_rcu();
+ 		kfree(hctxs);
+ 		hctxs = new_hctxs;
+ 	}
+diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
+index d319ffa59354..edcf8ead76c6 100644
+--- a/include/linux/blk-mq.h
++++ b/include/linux/blk-mq.h
+@@ -918,7 +918,7 @@ static inline void *blk_mq_rq_to_pdu(struct request *rq)
+ 
+ #define queue_for_each_hw_ctx(q, hctx, i)				\
+ 	for ((i) = 0; (i) < (q)->nr_hw_queues &&			\
+-	     ({ hctx = (q)->queue_hw_ctx[i]; 1; }); (i)++)
++	     ({ hctx = queue_hctx((q), i); 1; }); (i)++)
+ 
+ #define hctx_for_each_ctx(hctx, ctx, i)					\
+ 	for ((i) = 0; (i) < (hctx)->nr_ctx &&				\
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 3bfc75a2a450..2018a4dd2028 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -354,7 +354,7 @@ struct request_queue {
+ 	unsigned int		queue_depth;
+ 
+ 	/* hw dispatch queues */
+-	struct blk_mq_hw_ctx	**queue_hw_ctx;
++	struct blk_mq_hw_ctx __rcu	**queue_hw_ctx;
+ 	unsigned int		nr_hw_queues;
+ 
+ 	/*
+@@ -622,6 +622,17 @@ static inline bool queue_is_mq(struct request_queue *q)
+ 	return q->mq_ops;
+ }
+ 
++static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
++{
++	struct blk_mq_hw_ctx *hctx;
++
++	rcu_read_lock();
++	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
++	rcu_read_unlock();
++
++	return hctx;
++}
++
+ #ifdef CONFIG_PM
+ static inline enum rpm_status queue_rpm_status(struct request_queue *q)
+ {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.31.1
 
