@@ -2,114 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F737C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1875AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239087AbiBWIyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
+        id S239100AbiBWIzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239090AbiBWIx5 (ORCPT
+        with ESMTP id S237307AbiBWIzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:53:57 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7974D7B55B;
-        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id o8so490004pgf.9;
-        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
-        b=mjbK/Qvyky40bHpb9CMcZeTXTikILi0QdvNGlkl/xfbx4ehMMLyLVLBwG4UAHrjXJC
-         qZ97pFWziKsT8Ay5h4ojKoZyq6NeXAh6ADGWvdRQa2t2iIkkdmV2eHSjj0U7qlbim6Pt
-         FOYoBJP5rOCNKtQOZvrqlHbv5uETayn7kMpKlF8KWDXNKiHmjBGNDZWHjf+DZDKrSyua
-         Lm6AqmUKEXj9hGreOdCtBvtMXNSDrHIgPQrlpdQq/UEKV8bD9T1yuxUEc8zw9Ok2X2Cx
-         N3iRl6WixrLYYwWx9/RAIeCWXNAfflB6skCejDzhXl7Y0nrM4wBCthW0YvQBvuwFhJko
-         ctiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
-        b=zK7TWib1MGdDn8GbDGLRy9sHiG69cgzLpzUsWXSvgPBDUaCYXn/kxj7fZYT2h4qFd/
-         ofaWWLyaXya3vy7Wxrq+Gk+eicoGvJ7fV1JX2WT7MjiVXkVHLimNihIzBEgdjkNyIdvo
-         i+eaQ8vh0c9Rs4N61dLgsqfprHzyFk41Sxi6Zvw7oWNSBsgcvcKrE5/z89nIgc0pvaHV
-         S/eD6P/dV9Jk0qoDsBMXAyBttZeeFfjOqy3rr+qKqKX3XsQc9O4tCgMllgYI/1BYpO9Z
-         orItWqqgtS501u4OaeJ96uo6YQTTqujcCG9O5bwIH/j8H3c5qTQYDvXj1B2+V09woR9G
-         StqA==
-X-Gm-Message-State: AOAM531zDWZAyhVzq3R0ReaDEaxUiGK01fDklDDT+b8ylnWg2xQdEqzm
-        Ln/2fk2zXEY18WLH+HjAQBssuALfPl2Vp9PpnNc=
-X-Google-Smtp-Source: ABdhPJx/R0IJt/LaaJ2AfxqrABa8uf/z9Mb2sxVMk8u3hvcBKdcmjiDWBmzbbR8L5ikg9VGcY06oyQ==
-X-Received: by 2002:a63:5d09:0:b0:372:9a55:bf89 with SMTP id r9-20020a635d09000000b003729a55bf89mr22668044pgb.321.1645606408731;
-        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id ft9sm2043174pjb.4.2022.02.23.00.53.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] libbpf: Simplify the find_elf_sec_sz() function
-Date:   Wed, 23 Feb 2022 16:52:44 +0800
-Message-Id: <20220223085244.3058118-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc2
+        Wed, 23 Feb 2022 03:55:03 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737177B56D;
+        Wed, 23 Feb 2022 00:54:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645606476; x=1677142476;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=0ZZp86S8zQ5HRoamd0As4WUEpt/6C+J08F7o2V0U4gk=;
+  b=EHAK1YAEBfgGW5W16QdkjnT2QadwGdpb73Irr0Xn8aDtd+kv3AuEmt3V
+   40Xsfi88ofknXcx4G6eTcDC5BS/rvoatrMyQNoBC++4yVHBv9RpP6Hztn
+   a7XJx6iW6Sp6LeXTbFFMUmbqcZNde4Lsz35vVTdC1ktXV0jyL2sSA0f8S
+   jL4amqeNPWauqs8gNfZ49ijjAyZ0xDRbpKpGw94pSn9mcOq42Ao46Vuwi
+   3j0zYM/kYFJDRXOk8ZeCsG4R5eWH2IWmo72qaz5luH+HchU4SRLwlJEWO
+   sk/aP59fAL41wM5OQ3hBSE8AXrO1HmoL9rnk1n+4jxM44FSqJXNnFu+I/
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251653875"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="251653875"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 00:54:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="573743475"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2022 00:54:34 -0800
+To:     Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220222134117.34844-1-anssi.hannula@bitwise.fi>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH 1/2] xhci: fix garbage USBSTS being logged in some cases
+Message-ID: <fe7381b1-19bc-3b1e-50f3-0ed5c7c39e5e@linux.intel.com>
+Date:   Wed, 23 Feb 2022 10:56:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220222134117.34844-1-anssi.hannula@bitwise.fi>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The check in the last return statement is unnecessary, we can just return
-the ret variable.
+On 22.2.2022 15.41, Anssi Hannula wrote:
+> xhci_decode_usbsts() is expected to return a zero-terminated string by
+> its only caller, xhci_stop_endpoint_command_watchdog(), which directly
+> logs the return value:
+> 
+>   xhci_warn(xhci, "USBSTS:%s\n", xhci_decode_usbsts(str, usbsts));
+> 
+> However, if no recognized bits are set in usbsts, the function will
+> return without having called any sprintf() and therefore return an
+> untouched non-zero-terminated caller-provided buffer, causing garbage
+> to be output to log.
+> 
+> Fix that by always including the raw value in the output.
+> 
+> Note that before 4843b4b5ec64 ("xhci: fix even more unsafe memory usage
+> in xhci tracing") the result effect in the failure case was different as
+> a static buffer was used here, but the code still worked incorrectly.
+> 
+> Fixes: 9c1aa36efdae ("xhci: Show host status when watchdog triggers and host is assumed dead.")
+> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+> ---
+> 
+> Noticed this while debugging a USB issue. Let me know if you prefer a
+> different fix.
+> 
+>  drivers/usb/host/xhci.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
+> index 8a0026ee9524..ac91647195f6 100644
+> --- a/drivers/usb/host/xhci.h
+> +++ b/drivers/usb/host/xhci.h
+> @@ -2642,6 +2642,7 @@ static inline const char *xhci_decode_usbsts(char *str, u32 usbsts)
+>  		ret += sprintf(str + ret, " CNR");
+>  	if (usbsts & STS_HCE)
+>  		ret += sprintf(str + ret, " HCE");
+> +	ret += sprintf(str + ret, " (0x%08x)", usbsts);
 
-But we can simplify the function further by returning 0 immediately if we
-find the section size and -ENOENT otherwise.
+Thanks, nice catch.
 
-Thus we can also remove the ret variable.
+Maybe this could be the first thing printed out, something like (untested):
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- tools/lib/bpf/libbpf.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7e978feaf822..776b8e034d62 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1374,22 +1374,20 @@ static bool bpf_map_type__is_map_in_map(enum bpf_map_type type)
- 
- static int find_elf_sec_sz(const struct bpf_object *obj, const char *name, __u32 *size)
+@@ -2697,8 +2697,11 @@ static inline const char *xhci_decode_usbsts(char *str, u32 usbsts)
  {
--	int ret = -ENOENT;
- 	Elf_Data *data;
- 	Elf_Scn *scn;
+        int ret = 0;
  
--	*size = 0;
- 	if (!name)
- 		return -EINVAL;
- 
- 	scn = elf_sec_by_name(obj, name);
- 	data = elf_sec_data(obj, scn);
- 	if (data) {
--		ret = 0; /* found it */
- 		*size = data->d_size;
-+		return 0; /* found it */
- 	}
- 
--	return *size ? 0 : ret;
-+	return -ENOENT;
- }
- 
- static int find_elf_var_offset(const struct bpf_object *obj, const char *name, __u32 *off)
--- 
-2.35.0.rc2
++       ret = sprintf(str, " 0x%08x", usbsts);
++
+        if (usbsts == ~(u32)0)
+-               return " 0xffffffff";
++               return str;
++
+
+-Mathias
 
