@@ -2,244 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 174C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7042CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239598AbiBWK3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 05:29:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
+        id S239613AbiBWKgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 05:36:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233965AbiBWK3Q (ORCPT
+        with ESMTP id S233965AbiBWKgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 05:29:16 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0548C7DF;
-        Wed, 23 Feb 2022 02:28:47 -0800 (PST)
-Received: from dggeme762-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K3XH23xk5z9sGb;
-        Wed, 23 Feb 2022 18:25:18 +0800 (CST)
-Received: from linux-suse12sp5.huawei.com (10.67.133.175) by
- dggeme762-chm.china.huawei.com (10.3.19.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Wed, 23 Feb 2022 18:28:43 +0800
-From:   Yan Zhu <zhuyan34@huawei.com>
-To:     <mcgrof@kernel.org>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
-        <keescook@chromium.org>, <kpsingh@kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liucheng32@huawei.com>, <netdev@vger.kernel.org>,
-        <nixiaoming@huawei.com>, <songliubraving@fb.com>,
-        <xiechengliang1@huawei.com>, <yhs@fb.com>, <yzaikin@google.com>,
-        <zengweilin@huawei.com>, <zhuyan34@huawei.com>
-Subject: [PATCH v2 sysctl-next] bpf: move the bpf syscall sysctl table to bpf module
-Date:   Wed, 23 Feb 2022 18:28:08 +0800
-Message-ID: <20220223102808.80846-1-zhuyan34@huawei.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <YhWQ+0qPorcJ/Z8l@bombadil.infradead.org>
-References: <YhWQ+0qPorcJ/Z8l@bombadil.infradead.org>
+        Wed, 23 Feb 2022 05:36:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4C5E674D5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:35:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645612538;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LDFE/AF6OilKvh3iUFfF77vBEgChW2LE7G/cxAjECQA=;
+        b=RNte1gAG5aIKXEtcIOU0zFA3gqOY4v1R1r75NjK6q1xjPaOOCALFdvCNWokXLDVXNbWMK1
+        Pb1eN/gdSmCXZ6vS+dzKkYzuUBdtw9CzxP7T3+TnNTe4m5vPUSMx+VFcLyx49R6Ik/lZh2
+        jtjJDrfaNe5wagi3FGtOR0GQyWKg8MM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-pjvzQh8wPe-GvArkraKxiQ-1; Wed, 23 Feb 2022 05:35:37 -0500
+X-MC-Unique: pjvzQh8wPe-GvArkraKxiQ-1
+Received: by mail-ed1-f72.google.com with SMTP id g5-20020a056402090500b0040f28e1da47so13420032edz.8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:35:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LDFE/AF6OilKvh3iUFfF77vBEgChW2LE7G/cxAjECQA=;
+        b=34kJ0eaBRus/iYJXpjt0uuV56ir7ZZCGmlSJXkWmH1sBCP4F0sJaX+6U4+j3XFQXMl
+         itMJUDsyo+cPU4XNzpcoAVouGhyltmaw9NZWspaspu4cUPN0ycNqHetE8vMoPERJzM6E
+         mE85AGXdWOfmQ0wnWSw95gZFTtxqDPVTGut99rwdc4dDVQNGwRz2XeZv59cxPqhVn+0s
+         sWlBXfY8cj7U1uOhu1s0zFcPBIMTLZfBm/0AylmztsCXK7QOdX1OHZA+/xO2/hGPJncg
+         sFquunH8iXuirI+jZMNwTliYZHPDb24tfaWVcSvJPWKG0t9QbH8WqYcycnMc6A8iyIv4
+         cgmg==
+X-Gm-Message-State: AOAM533Md6BB3lSqPAIEgSYIFXKh88esF4XKO4Yopbobvn68/l04QWve
+        57jOTGtyxrzqBixIU2ihbv3b15WpBiBOJu8TEMtNKocWY8gjbcqlZaCXuLR0gTnPkkvtNdf36yR
+        4Q4B8siXxGdmWSeBbbo4fI63v
+X-Received: by 2002:a50:fe89:0:b0:410:f1f7:4983 with SMTP id d9-20020a50fe89000000b00410f1f74983mr31170061edt.135.1645612536217;
+        Wed, 23 Feb 2022 02:35:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxPgScTaLJhrUGTiHpKOmNfbzSl9lCT3D3psNpt5HqC/tAVtK76GduhrSr5H+1T53k8FJS9qw==
+X-Received: by 2002:a50:fe89:0:b0:410:f1f7:4983 with SMTP id d9-20020a50fe89000000b00410f1f74983mr31170047edt.135.1645612536024;
+        Wed, 23 Feb 2022 02:35:36 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id f22sm11757437edf.95.2022.02.23.02.35.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 02:35:35 -0800 (PST)
+Message-ID: <a5346dfb-2943-ac02-5dc3-59ab25eae17a@redhat.com>
+Date:   Wed, 23 Feb 2022 11:35:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.133.175]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme762-chm.china.huawei.com (10.3.19.108)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [pdx86-platform-drivers-x86:review-hans 40/40] ERROR: modpost:
+ "battery_hook_register" [drivers/platform/x86/lg-laptop.ko] undefined!
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Matan Ziv-Av <matan@svgalib.org>
+Cc:     kbuild-all@lists.01.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+References: <202202231609.ZQpgFUIn-lkp@intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <202202231609.ZQpgFUIn-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aggregating the code of the feature in the code file of the feature
-itself can improve readability and reduce merge conflicts. So move
-the bpf syscall sysctl table to kernel/bpf/syscall.c
+Hi,
 
-Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
+On 2/23/22 09:44, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git review-hans
+> head:   7e45710a8a56896d7af5c5ff4ed7cfb18573791b
+> commit: 7e45710a8a56896d7af5c5ff4ed7cfb18573791b [40/40] lg-laptop: Move setting of battery charge limit to common location
+> config: x86_64-randconfig-r035-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231609.ZQpgFUIn-lkp@intel.com/config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> reproduce (this is a W=1 build):
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?id=7e45710a8a56896d7af5c5ff4ed7cfb18573791b
+>         git remote add pdx86-platform-drivers-x86 https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git
+>         git fetch --no-tags pdx86-platform-drivers-x86 review-hans
+>         git checkout 7e45710a8a56896d7af5c5ff4ed7cfb18573791b
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>, old ones prefixed by <<):
+> 
+>>> ERROR: modpost: "battery_hook_register" [drivers/platform/x86/lg-laptop.ko] undefined!
+>>> ERROR: modpost: "battery_hook_unregister" [drivers/platform/x86/lg-laptop.ko] undefined!
 
----
-v1->v2:
-  1.Added patch branch identifier sysctl-next.
-  2.Re-describe the reason for the patch submission.
----
- kernel/bpf/syscall.c | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- kernel/sysctl.c      | 71 ----------------------------------------------
- 2 files changed, 80 insertions(+), 71 deletions(-)
+Ah yes, config LG_LAPTOP needs a depends on ACPI_BATTERY now.
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 35646db3d950..50f85b47d478 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4888,3 +4888,83 @@ const struct bpf_verifier_ops bpf_syscall_verifier_ops = {
- const struct bpf_prog_ops bpf_syscall_prog_ops = {
- 	.test_run = bpf_prog_test_run_syscall,
- };
-+
-+#ifdef CONFIG_SYSCTL
-+static int bpf_stats_handler(struct ctl_table *table, int write,
-+			     void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct static_key *key = (struct static_key *)table->data;
-+	static int saved_val;
-+	int val, ret;
-+	struct ctl_table tmp = {
-+		.data   = &val,
-+		.maxlen = sizeof(val),
-+		.mode   = table->mode,
-+		.extra1 = SYSCTL_ZERO,
-+		.extra2 = SYSCTL_ONE,
-+	};
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	val = saved_val;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret && val != saved_val) {
-+		if (val)
-+			static_key_slow_inc(key);
-+		else
-+			static_key_slow_dec(key);
-+		saved_val = val;
-+	}
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return ret;
-+}
-+
-+static int bpf_unpriv_handler(struct ctl_table *table, int write,
-+			      void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	int ret, unpriv_enable = *(int *)table->data;
-+	bool locked_state = unpriv_enable == 1;
-+	struct ctl_table tmp = *table;
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	tmp.data = &unpriv_enable;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret) {
-+		if (locked_state && unpriv_enable != 1)
-+			return -EPERM;
-+		*(int *)table->data = unpriv_enable;
-+	}
-+	return ret;
-+}
-+
-+static struct ctl_table bpf_syscall_table[] = {
-+	{
-+		.procname	= "unprivileged_bpf_disabled",
-+		.data		= &sysctl_unprivileged_bpf_disabled,
-+		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
-+		.mode		= 0644,
-+		.proc_handler	= bpf_unpriv_handler,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_TWO,
-+	},
-+	{
-+		.procname	= "bpf_stats_enabled",
-+		.data		= &bpf_stats_enabled_key.key,
-+		.maxlen		= sizeof(bpf_stats_enabled_key),
-+		.mode		= 0644,
-+		.proc_handler	= bpf_stats_handler,
-+	},
-+	{ }
-+};
-+
-+static int __init bpf_syscall_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", bpf_syscall_table);
-+	return 0;
-+}
-+late_initcall(bpf_syscall_sysctl_init);
-+#endif /* CONFIG_SYSCTL */
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index ae5e59396b5d..c64db3755d9c 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -146,59 +146,6 @@ static const int max_extfrag_threshold = 1000;
- 
- #endif /* CONFIG_SYSCTL */
- 
--#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_SYSCTL)
--static int bpf_stats_handler(struct ctl_table *table, int write,
--			     void *buffer, size_t *lenp, loff_t *ppos)
--{
--	struct static_key *key = (struct static_key *)table->data;
--	static int saved_val;
--	int val, ret;
--	struct ctl_table tmp = {
--		.data   = &val,
--		.maxlen = sizeof(val),
--		.mode   = table->mode,
--		.extra1 = SYSCTL_ZERO,
--		.extra2 = SYSCTL_ONE,
--	};
--
--	if (write && !capable(CAP_SYS_ADMIN))
--		return -EPERM;
--
--	mutex_lock(&bpf_stats_enabled_mutex);
--	val = saved_val;
--	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
--	if (write && !ret && val != saved_val) {
--		if (val)
--			static_key_slow_inc(key);
--		else
--			static_key_slow_dec(key);
--		saved_val = val;
--	}
--	mutex_unlock(&bpf_stats_enabled_mutex);
--	return ret;
--}
--
--static int bpf_unpriv_handler(struct ctl_table *table, int write,
--			      void *buffer, size_t *lenp, loff_t *ppos)
--{
--	int ret, unpriv_enable = *(int *)table->data;
--	bool locked_state = unpriv_enable == 1;
--	struct ctl_table tmp = *table;
--
--	if (write && !capable(CAP_SYS_ADMIN))
--		return -EPERM;
--
--	tmp.data = &unpriv_enable;
--	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
--	if (write && !ret) {
--		if (locked_state && unpriv_enable != 1)
--			return -EPERM;
--		*(int *)table->data = unpriv_enable;
--	}
--	return ret;
--}
--#endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
--
- /*
-  * /proc/sys support
-  */
-@@ -2188,24 +2135,6 @@ static struct ctl_table kern_table[] = {
- 		.extra2		= SYSCTL_ONE,
- 	},
- #endif
--#ifdef CONFIG_BPF_SYSCALL
--	{
--		.procname	= "unprivileged_bpf_disabled",
--		.data		= &sysctl_unprivileged_bpf_disabled,
--		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
--		.mode		= 0644,
--		.proc_handler	= bpf_unpriv_handler,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_TWO,
--	},
--	{
--		.procname	= "bpf_stats_enabled",
--		.data		= &bpf_stats_enabled_key.key,
--		.maxlen		= sizeof(bpf_stats_enabled_key),
--		.mode		= 0644,
--		.proc_handler	= bpf_stats_handler,
--	},
--#endif
- #if defined(CONFIG_TREE_RCU)
- 	{
- 		.procname	= "panic_on_rcu_stall",
--- 
-2.12.3
+I've squashed a fix for this into the original commit in my review-hans branch.
+
+Regards,
+
+Hans
 
