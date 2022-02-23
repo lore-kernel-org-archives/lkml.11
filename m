@@ -2,126 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF674C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E954C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242687AbiBWQR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:17:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
+        id S242694AbiBWQSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:18:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236228AbiBWQR4 (ORCPT
+        with ESMTP id S236228AbiBWQSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:17:56 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDD8AC91F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:17:28 -0800 (PST)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 82C19DD;
-        Wed, 23 Feb 2022 17:17:25 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1645633045;
-        bh=atCpG2wGq1bioML62FCnIx+SdqijD2iEfIT0BMG1CJI=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=dgqUuGDMg6knomkd3+jaYVmGmIQ6ndXFWYqLgI1q3F4rwIpkwuPs50/dT7BMvjCuN
-         ZJ9ffkYYybbCwHrLrnCjX+T1bRVhSkZsK2CgS21n6dZ8sDL3OJpRHg/UeyhchvaXHS
-         OK9gbaSFZSMPEiXjcVsaSo1RdJk6nfv+/piZHvwI=
-Content-Type: text/plain; charset="utf-8"
+        Wed, 23 Feb 2022 11:18:03 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679D13B2A7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:17:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645633056; x=1677169056;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kdFETTBddN7EdBnhGYgG52WV2uKpzlnZnEFWwu9QLo0=;
+  b=iavcHd4mHZoGZtmtN4DJ+o7MlpDrFBt0nVZdHriz3o2EgO/vNxnyZl+l
+   n/moscgjFpLMdph9dlD7k7hb5aGvImNxNXOQsp9BuMj/DBKmlxd37zOoc
+   XbywTZmseH5+85anjnmw4u/vGBXdnotgJCbr88YgdRTAIOkRmRiq2lunQ
+   p+5DRSXP9LnVSjFOlC2YH5xWHhoaDXasdpig8DPp9YpX4+4ZGRxTeo8M0
+   361Jb+3tsZkBfGjJA6P+DOdBPvMYG2PtJeF1Pwp/b47BFX3SPcoTW4rYl
+   EC396yi3oCU841W37UboGA3qcJwT+yf1lmams9x1GEXzeFT21HejRHgVF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="251740390"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="251740390"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 08:10:00 -0800
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="548312807"
+Received: from vermaama-mobl.ger.corp.intel.com (HELO [10.252.44.244]) ([10.252.44.244])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 08:09:57 -0800
+Message-ID: <16567e15-2ea5-60cc-74bd-97475b793a57@linux.intel.com>
+Date:   Wed, 23 Feb 2022 18:10:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <Yczy3UYpU2UMFQ6N@pendragon.ideasonboard.com>
-References: <20211225063151.2110878-1-nikita.yoush@cogentembedded.com> <Yczy3UYpU2UMFQ6N@pendragon.ideasonboard.com>
-Subject: Re: [PATCH] drm/bridge_connector: enable HPD by default if supported
-From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Date:   Wed, 23 Feb 2022 16:17:22 +0000
-Message-ID: <164563304251.4066078.10022034509552549983@Monstersaurus>
-User-Agent: alot/0.10
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] ASoC: SOF: pcm: Add compress_ops for SOF platform
+ component driver
+Content-Language: en-US
+To:     Daniel Baluta <daniel.baluta@oss.nxp.com>, broonie@kernel.org
+Cc:     Daniel Baluta <daniel.baluta@nxp.com>, alsa-devel@alsa-project.org,
+        kai.vehmanen@linux.intel.com, linux-kernel@vger.kernel.org,
+        lgirdwood@gmail.com, pierre-louis.bossart@linux.intel.com,
+        ranjani.sridharan@linux.intel.com
+References: <20220223153849.84471-1-daniel.baluta@oss.nxp.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
+In-Reply-To: <20220223153849.84471-1-daniel.baluta@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent, Nikita,
-
-Quoting Laurent Pinchart (2021-12-29 23:44:29)
-> Hi Nikita,
->=20
-> Thank you for the patch.
->=20
-> On Sat, Dec 25, 2021 at 09:31:51AM +0300, Nikita Yushchenko wrote:
-> > Hotplug events reported by bridge drivers over drm_bridge_hpd_notify()
-> > get ignored unless somebody calls drm_bridge_hpd_enable(). When the
-> > connector for the bridge is bridge_connector, such a call is done from
-> > drm_bridge_connector_enable_hpd().
-> >=20
-> > However drm_bridge_connector_enable_hpd() is never called on init paths,
-> > documentation suggests that it is intended for suspend/resume paths.
->=20
-> Hmmmm... I'm in two minds about this. The problem description is
-> correct, but I wonder if HPD should be enabled unconditionally here, or
-> if this should be left to display drivers to control.
-> drivers/gpu/drm/imx/dcss/dcss-kms.c enables HPD manually at init time,
-> other drivers don't.
->=20
-> It feels like this should be under control of the display controller
-> driver, but I can't think of a use case for not enabling HPD at init
-> time. Any second opinion from anyone ?
-
-This patch solves an issue I have where I have recently enabled HPD on
-the SN65DSI86, but without this, I do not get calls to my .hpd_enable or
-.hpd_disable hooks that I have added to the ti_sn_bridge_funcs.
-
-So it needs to be enabled somewhere, and this seems reasonable to me?
-It's not directly related to the display controller - as it's a factor
-of the bridge?
-
-On Falcon-V3U with HPD additions to SN65DSI86:
-Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
 
 
-> > In result, once encoders are switched to bridge_connector,
-> > bridge-detected HPD stops working.
-> >=20
-> > This patch adds a call to that API on init path.
-> >=20
-> > This fixes HDMI HPD with rcar-du + adv7513 case when adv7513 reports HPD
-> > events via interrupts.
-> >=20
-> > Fixes: c24110a8fd09 ("drm: rcar-du: Use drm_bridge_connector_init() hel=
-per")
-> > Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-> > ---
-> >  drivers/gpu/drm/drm_bridge_connector.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/d=
-rm_bridge_connector.c
-> > index 791379816837..4f20137ef21d 100644
-> > --- a/drivers/gpu/drm/drm_bridge_connector.c
-> > +++ b/drivers/gpu/drm/drm_bridge_connector.c
-> > @@ -369,8 +369,10 @@ struct drm_connector *drm_bridge_connector_init(st=
-ruct drm_device *drm,
-> >                                   connector_type, ddc);
-> >       drm_connector_helper_add(connector, &drm_bridge_connector_helper_=
-funcs);
-> > =20
-> > -     if (bridge_connector->bridge_hpd)
-> > +     if (bridge_connector->bridge_hpd) {
-> >               connector->polled =3D DRM_CONNECTOR_POLL_HPD;
-> > +             drm_bridge_connector_enable_hpd(connector);
-> > +     }
-> >       else if (bridge_connector->bridge_detect)
-> >               connector->polled =3D DRM_CONNECTOR_POLL_CONNECT
-> >                                 | DRM_CONNECTOR_POLL_DISCONNECT;
->=20
-> --=20
-> Regards,
->=20
-> Laurent Pinchart
+On 23/02/2022 17:38, Daniel Baluta wrote:
+> From: Daniel Baluta <daniel.baluta@nxp.com>
+> 
+> Now that sof_compressed_ops initial implementation was merged
+> we can enable it in SOF platform component driver.
+
+and fixes the following sparse error:
+sound/soc/sof/compress.c:310:25: error: symbol 'sof_compressed_ops' was
+not declared. Should it be static?
+
+> This partially reverts commit
+> 8a720724589e ("ASoC: SOF: pcm: Remove non existent CONFIG_SND_SOC_SOF_COMPRESS reference")
+
+Back at that time there were _no_ sof_compressed_ops in the tree...
+
+> Reported-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@nxp.com>
+> ---
+>  sound/soc/sof/pcm.c      | 4 ++++
+>  sound/soc/sof/sof-priv.h | 5 +++++
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/sound/soc/sof/pcm.c b/sound/soc/sof/pcm.c
+> index 137f8ed71677..a312ed855f1a 100644
+> --- a/sound/soc/sof/pcm.c
+> +++ b/sound/soc/sof/pcm.c
+> @@ -922,6 +922,10 @@ void snd_sof_new_platform_drv(struct snd_sof_dev *sdev)
+>  	pd->pointer = sof_pcm_pointer;
+>  	pd->ack = sof_pcm_ack;
+>  
+> +#if IS_ENABLED(CONFIG_SND_SOC_SOF_COMPRESS)
+> +	pd->compress_ops = &sof_compressed_ops;
+> +#endif
+> +
+>  	pd->pcm_construct = sof_pcm_new;
+>  	pd->ignore_machine = drv_name;
+>  	pd->be_hw_params_fixup = sof_pcm_dai_link_fixup;
+> diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+> index 2c8e556cd5cc..886787a9997f 100644
+> --- a/sound/soc/sof/sof-priv.h
+> +++ b/sound/soc/sof/sof-priv.h
+> @@ -556,6 +556,11 @@ int snd_sof_debugfs_add_region_item_iomem(struct snd_sof_dev *sdev,
+>  		enum snd_sof_fw_blk_type blk_type, u32 offset, size_t size,
+>  		const char *name, enum sof_debugfs_access_type access_type);
+>  
+> +/*
+> + * Platform specific ops.
+> + */
+> +extern struct snd_compress_ops sof_compressed_ops;
+
+This is not really platform ops?
+
+> +
+>  /*
+>   * DSP Architectures.
+>   */
+
+-- 
+Péter
