@@ -2,281 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 903BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9275AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:04:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239466AbiBWKD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 05:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S239468AbiBWKE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 05:04:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239453AbiBWKD0 (ORCPT
+        with ESMTP id S236443AbiBWKE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 05:03:26 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04048A339;
-        Wed, 23 Feb 2022 02:02:58 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id q23so3935531wra.2;
-        Wed, 23 Feb 2022 02:02:58 -0800 (PST)
+        Wed, 23 Feb 2022 05:04:28 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BCA8A332
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:04:00 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id bn33so23770921ljb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:04:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SqAxPQEsa3A4xyob3zluFv3tjziMIdKJYPYJeW3AAL8=;
-        b=MBhdzcrVPaltuC7QO4FnB3SnkoeVXpFvLTouDASO7IzH2peZCz9lBAMGqOWde8Qh8D
-         kDOHiVkykGHwJ9ODUCowoUI5o8pHBoXYYTm8ATT3j0JUyxrqlLHIERCZnrLli6QX00Ow
-         ARevI9oTrw6Ql0amtIF96nKDvBQ9IRAHmr1mVVGh8IVL6kL5UvvSlCTqbxzYnSEZvw58
-         nc82P9ORs3OhQEn60SVYMaBi5QPQPP2fM2POKJutuOt+Y6q+71UeevbRXTpV3xLjaYIf
-         8XeNS0KGWZbwj0GuBmUdHJ/zi9K2C3BiL7MgnFzPYxm5wMxePOyJmfELVNujZYFKUQLE
-         R4Kw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9g7NR8Bf2LTodprIFu3Y3R5c47jJwfGT/VKE7qfEfOU=;
+        b=bPvs7dR/WY2xOa83Bltq/4jx1D4IkgJcnaWg8NK14qeTYQv4Q0qzsutllQyUbOoG8u
+         X9951KUZuYSihI6Z6Nm9wQggh8/IWaSZa2gf8C9J6CjpLlcSwdm+drLY2x0f9hQMgDvd
+         OJksym0tRHzczmuoJnrPchFiaXFxk1H/qMaJFAfY2hvYRhHxhgeC8jAbLpU6cyYe1TdS
+         rAFicYXAMK9jFBDqVGKrgS31otLD/cHkYLHAafYIug2TFD5aVAVADE5GcPLRAYR5gyao
+         2XmXQWFeucnNK8ei4aCtFAQzqFyEKwfwJ6O2vvZandxvop4iwMrk716kQlz15OTwAcDi
+         0mFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=SqAxPQEsa3A4xyob3zluFv3tjziMIdKJYPYJeW3AAL8=;
-        b=ScmgGOwBvYXoVL39h/ShGnowRZTiOaJY0SwKnxsgOv9b5BbevCrE27kVqxJfIjDj39
-         CMdbXeqrHbXPqjtq2jhcAJd40aRNIXnSUvCs99GefckcDMzyZ6KfzDAMpehh7jJBaLzb
-         /7JXwIHN3qjYqMtVbZzmSwAcv3+hqfPgzzSvHgRbnMKpH34oTh4EyMzXX2ufX9tBkq9O
-         egP31AaZ6bE0LIyIu8EinBkk3wm5jN0ru/VHEaraVZo9jbKW3gUhQ1hqhp2Ik+VH/Bi9
-         y5ghCztTJMdFQXQuXUn5a8NY4UzLAp18fiXC9f8Px2zGxfYREAzYUrqoIomNZ5fvB9WQ
-         Sj2g==
-X-Gm-Message-State: AOAM531G+XWC+70xuJYtzo6TGHQn8+ecdT2QvQcbw8FfrXHJr4dpZxjT
-        Qix7PZUtGjtvZ3/ZI0e11mjzKTxs9q4=
-X-Google-Smtp-Source: ABdhPJyen0Gk7YkQnDQ//DA3TU+euR7cTv4E1ji+jT3VElJm06SuRDFWQiJ5DQuVZ8gyfFYvc+vmfg==
-X-Received: by 2002:a5d:47cc:0:b0:1e8:50e2:94cd with SMTP id o12-20020a5d47cc000000b001e850e294cdmr22222983wrc.34.1645610577241;
-        Wed, 23 Feb 2022 02:02:57 -0800 (PST)
-Received: from localhost.localdomain (host-79-27-0-81.retail.telecomitalia.it. [79.27.0.81])
-        by smtp.gmail.com with ESMTPSA id f14sm5856887wmq.3.2022.02.23.02.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 02:02:56 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-Subject: [PATCH] net/smc: Use a mutex for locking "struct smc_pnettable"
-Date:   Wed, 23 Feb 2022 11:02:52 +0100
-Message-Id: <20220223100252.22562-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=9g7NR8Bf2LTodprIFu3Y3R5c47jJwfGT/VKE7qfEfOU=;
+        b=VCmyW98kTsJvZ+5oHWspaZPt5qoLweq04DNkdBctl4tsAjGCUSNQSm4Tl5rxbb8X0i
+         fWqFrPlpbKcEV4bMETlCcb8N7OV8bfYuZ8EeBGpwj1TvRuWRGV+ITJ2CAzzqwl55avfs
+         +jDPyNLODI9otzaKyXIBMkYposRkoz4xtVtXgQCWWNrAoV0TCZUBqPQ8q7ibbR5vGnP7
+         AWPmxb7L94zuoz7G3u8HPB5qXpqBsWNHMiExyhWifcpxsOdhpAdxO5sMMvgdq5Rfb07v
+         OwBLNA5XmWZUqo/LJcV+PoOnjAvw2oedY5A6/l2cggZs1N9yzLGySCHY9y/5z2JuaV6f
+         0bEw==
+X-Gm-Message-State: AOAM531+wiwyg3yy6KVyxVI0oAtSOPd25MAgO57uK7J1p2GzhNoEQMvk
+        fW5GrckBFOQkanmyKokDTo8JYA==
+X-Google-Smtp-Source: ABdhPJxB8TjcBO/FaZT1B0aMYF/OG4uBXijSS5Vg2R9wh4HlsoechFEJLx9iSxJ4vfPhLfBMIz6CVg==
+X-Received: by 2002:a05:651c:170d:b0:244:df25:db27 with SMTP id be13-20020a05651c170d00b00244df25db27mr20196656ljb.310.1645610638760;
+        Wed, 23 Feb 2022 02:03:58 -0800 (PST)
+Received: from [192.168.43.7] ([94.25.228.217])
+        by smtp.gmail.com with ESMTPSA id v7sm2059543ljd.120.2022.02.23.02.03.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 02:03:58 -0800 (PST)
+Message-ID: <9ff67710-362e-d0d4-2603-0c0ea6d1cce4@linaro.org>
+Date:   Wed, 23 Feb 2022 13:03:56 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] PCI: qcom: Add support for handling MSIs from 8 endpoints
+Content-Language: en-GB
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        lorenzo.pieralisi@arm.com, bhelgaas@google.com
+Cc:     svarbanov@mm-sol.com, bjorn.andersson@linaro.org, robh@kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211214101319.25258-1-manivannan.sadhasivam@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20211214101319.25258-1-manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-smc_pnetid_by_table_ib() uses read_lock() and then it calls smc_pnet_apply_ib()
-which, in turn, calls mutex_lock(&smc_ib_devices.mutex).
+On 14/12/2021 13:13, Manivannan Sadhasivam wrote:
+> The DWC controller used in the Qcom Platforms are capable of addressing the
+> MSIs generated from 8 different endpoints each with 32 vectors (256 in
+> total). Currently the driver is using the default value of addressing the
+> MSIs from 1 endpoint only. Extend it by passing the MAX_MSI_IRQS to the
+> num_vectors field of pcie_port structure.
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-read_lock() disables preemption. Therefore, the code acquires a mutex while in
-atomic context and it leads to a SAC bug.
+Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Fix this bug by replacing the rwlock with a mutex.
+> ---
+>   drivers/pci/controller/dwc/pcie-qcom.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index 1c3d1116bb60..8a4c08d815a5 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -1550,6 +1550,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+>   	pci->dev = dev;
+>   	pci->ops = &dw_pcie_ops;
+>   	pp = &pci->pp;
+> +	pp->num_vectors = MAX_MSI_IRQS;
+>   
+>   	pcie->pci = pci;
+>   
 
-Reported-and-tested-by: syzbot+4f322a6d84e991c38775@syzkaller.appspotmail.com
-Fixes: 64e28b52c7a6 ("net/smc: add pnet table namespace support")
-Confirmed-by: Tony Lu <tonylu@linux.alibaba.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- net/smc/smc_pnet.c | 42 +++++++++++++++++++++---------------------
- net/smc/smc_pnet.h |  2 +-
- 2 files changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 0599246c0376..29f0a559d884 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -113,7 +113,7 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 	pnettable = &sn->pnettable;
- 
- 	/* remove table entry */
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist,
- 				 list) {
- 		if (!pnet_name ||
-@@ -131,7 +131,7 @@ static int smc_pnet_remove_by_pnetid(struct net *net, char *pnet_name)
- 			rc = 0;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	/* if this is not the initial namespace, stop here */
- 	if (net != &init_net)
-@@ -192,7 +192,7 @@ static int smc_pnet_add_by_ndev(struct net_device *ndev)
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && !pnetelem->ndev &&
- 		    !strncmp(pnetelem->eth_name, ndev->name, IFNAMSIZ)) {
-@@ -206,7 +206,7 @@ static int smc_pnet_add_by_ndev(struct net_device *ndev)
- 			break;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -224,7 +224,7 @@ static int smc_pnet_remove_by_ndev(struct net_device *ndev)
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry_safe(pnetelem, tmp_pe, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && pnetelem->ndev == ndev) {
- 			dev_put_track(pnetelem->ndev, &pnetelem->dev_tracker);
-@@ -237,7 +237,7 @@ static int smc_pnet_remove_by_ndev(struct net_device *ndev)
- 			break;
- 		}
- 	}
--	write_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -370,7 +370,7 @@ static int smc_pnet_add_eth(struct smc_pnettable *pnettable, struct net *net,
- 	strncpy(new_pe->eth_name, eth_name, IFNAMSIZ);
- 	rc = -EEXIST;
- 	new_netdev = true;
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_ETH &&
- 		    !strncmp(tmp_pe->eth_name, eth_name, IFNAMSIZ)) {
-@@ -385,9 +385,9 @@ static int smc_pnet_add_eth(struct smc_pnettable *pnettable, struct net *net,
- 					     GFP_ATOMIC);
- 		}
- 		list_add_tail(&new_pe->list, &pnettable->pnetlist);
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 	} else {
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 		kfree(new_pe);
- 		goto out_put;
- 	}
-@@ -448,7 +448,7 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 	new_pe->ib_port = ib_port;
- 
- 	new_ibdev = true;
--	write_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX)) {
-@@ -458,9 +458,9 @@ static int smc_pnet_add_ib(struct smc_pnettable *pnettable, char *ib_name,
- 	}
- 	if (new_ibdev) {
- 		list_add_tail(&new_pe->list, &pnettable->pnetlist);
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 	} else {
--		write_unlock(&pnettable->lock);
-+		mutex_unlock(&pnettable->lock);
- 		kfree(new_pe);
- 	}
- 	return (new_ibdev) ? 0 : -EEXIST;
-@@ -605,7 +605,7 @@ static int _smc_pnet_dump(struct net *net, struct sk_buff *skb, u32 portid,
- 	pnettable = &sn->pnettable;
- 
- 	/* dump pnettable entries */
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(pnetelem, &pnettable->pnetlist, list) {
- 		if (pnetid && !smc_pnet_match(pnetelem->pnet_name, pnetid))
- 			continue;
-@@ -620,7 +620,7 @@ static int _smc_pnet_dump(struct net *net, struct sk_buff *skb, u32 portid,
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return idx;
- }
- 
-@@ -864,7 +864,7 @@ int smc_pnet_net_init(struct net *net)
- 	struct smc_pnetids_ndev *pnetids_ndev = &sn->pnetids_ndev;
- 
- 	INIT_LIST_HEAD(&pnettable->pnetlist);
--	rwlock_init(&pnettable->lock);
-+	mutex_init(&pnettable->lock);
- 	INIT_LIST_HEAD(&pnetids_ndev->list);
- 	rwlock_init(&pnetids_ndev->lock);
- 
-@@ -944,7 +944,7 @@ static int smc_pnet_find_ndev_pnetid_by_table(struct net_device *ndev,
- 	sn = net_generic(net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(pnetelem, &pnettable->pnetlist, list) {
- 		if (pnetelem->type == SMC_PNET_ETH && ndev == pnetelem->ndev) {
- 			/* get pnetid of netdev device */
-@@ -953,7 +953,7 @@ static int smc_pnet_find_ndev_pnetid_by_table(struct net_device *ndev,
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 	return rc;
- }
- 
-@@ -1156,7 +1156,7 @@ int smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port)
- 	sn = net_generic(&init_net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX) &&
-@@ -1166,7 +1166,7 @@ int smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port)
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	return rc;
- }
-@@ -1185,7 +1185,7 @@ int smc_pnetid_by_table_smcd(struct smcd_dev *smcddev)
- 	sn = net_generic(&init_net, smc_net_id);
- 	pnettable = &sn->pnettable;
- 
--	read_lock(&pnettable->lock);
-+	mutex_lock(&pnettable->lock);
- 	list_for_each_entry(tmp_pe, &pnettable->pnetlist, list) {
- 		if (tmp_pe->type == SMC_PNET_IB &&
- 		    !strncmp(tmp_pe->ib_name, ib_name, IB_DEVICE_NAME_MAX)) {
-@@ -1194,7 +1194,7 @@ int smc_pnetid_by_table_smcd(struct smcd_dev *smcddev)
- 			break;
- 		}
- 	}
--	read_unlock(&pnettable->lock);
-+	mutex_unlock(&pnettable->lock);
- 
- 	return rc;
- }
-diff --git a/net/smc/smc_pnet.h b/net/smc/smc_pnet.h
-index 14039272f7e4..80a88eea4949 100644
---- a/net/smc/smc_pnet.h
-+++ b/net/smc/smc_pnet.h
-@@ -29,7 +29,7 @@ struct smc_link_group;
-  * @pnetlist: List of PNETIDs
-  */
- struct smc_pnettable {
--	rwlock_t lock;
-+	struct mutex lock;
- 	struct list_head pnetlist;
- };
- 
 -- 
-2.34.1
-
+With best wishes
+Dmitry
