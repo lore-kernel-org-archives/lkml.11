@@ -2,141 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A8BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664EEC43219
 	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237257AbiBWCcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        id S237333AbiBWCc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237199AbiBWCcR (ORCPT
+        with ESMTP id S237056AbiBWCcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:32:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276B558E5D;
-        Tue, 22 Feb 2022 18:30:21 -0800 (PST)
+        Tue, 22 Feb 2022 21:32:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E999659A53;
+        Tue, 22 Feb 2022 18:30:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 723D9B81E10;
-        Wed, 23 Feb 2022 02:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80311C340F0;
-        Wed, 23 Feb 2022 02:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1164614FF;
+        Wed, 23 Feb 2022 02:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D40C340EB;
+        Wed, 23 Feb 2022 02:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583412;
-        bh=SUYm3KrWmrbIaiLj6N2qj9bIbQJ53sf2Jm7PIRoNyM8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MR65jpYXxy29mSOY4e+qE+zxGzawKEDN9Rv2lvhLGczmwq67Xi3tWXvUuQKKelVz5
-         /buGm8bwh2MG5drwykenZMVuSNNo9L5y81BLXaekXm9/COJyMyhDZvn7dTj4SOLY2E
-         eHS2+aVefPWXHUhEOyO2U2HxgRfJFtTQXniF33uT4kH0xESRWIdWikR0VNoD/kpY+e
-         ivpIzD+nmKbQus9LvqPfpB0KpZ509r0Beo8gFK1iFLn5zgjmJLnZonJV1b9VyB5iW1
-         bVSETRsLwdzTISycXtSZWX7QJqVP4oSGZTXhjCtasdSTnD5mbiWU1m+A4/eSWWAcTw
-         DCt7tNQAvRcXA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        lijo.lazar@amd.com, luben.tuikov@amd.com, kenneth.feng@amd.com,
-        andrey.grodzovsky@amd.com, darren.powell@amd.com, Jack.Gui@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 20/28] drm/amd/pm: correct UMD pstate clocks for Dimgrey Cavefish and Beige Goby
-Date:   Tue, 22 Feb 2022 21:29:21 -0500
-Message-Id: <20220223022929.241127-20-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223022929.241127-1-sashal@kernel.org>
-References: <20220223022929.241127-1-sashal@kernel.org>
+        s=k20201202; t=1645583422;
+        bh=h5iW1xnxYLihq1VYREsa+idqlKZAATRY4MQrqNiQGKE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VptbQJ50VYO1ckFXPf8UodRCgCOzAMPRTDKvgvQIJjjzb+v/B2kF1GqwlAPWtZGYc
+         dvNJDnM3NdMT/GIuYs6FunvztufU4tigXz+lfis3BUsMza8vP9YZgKD10NfEZWJ1Co
+         wTAKq5xm/pSdUELV2jMJy0hjLMc22YsyEHT1pkvPSJ6hc/BI/FnoHZWuyhIOl00C6z
+         ULBARob9XDxoGzMj+sS0YwujjTRwBL/v+thrOq8TH3bXvG2owLvFXM1DS/z5xzX4MX
+         v3sWaAyBFRCMlHEj2jVFVzBccD7rtFiX1TD6MObPsgiA3OUEtzjez+HTIPZGZa71mn
+         w7Ez5L1Scaw4w==
+Date:   Tue, 22 Feb 2022 20:38:16 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 0/6][next] ath6kl: wmi: Replace one-element arrays with
+ flexible-array members
+Message-ID: <cover.1645583264.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+This series aims to replace one-element arrays with flexible-array
+members in multiple structures in drivers/net/wireless/ath/ath6kl/wmi.h
 
-[ Upstream commit 0136f5844b006e2286f873457c3fcba8c45a3735 ]
+There is a regular need in the kernel to provide a way to declare having
+a dynamically sized set of trailing elements in a structure. Kernel code
+should always use “flexible array members”[1] for these cases. The older
+style of one-element or zero-length arrays should no longer be used[2].
 
-Correct the UMD pstate profiling clocks for Dimgrey Cavefish and Beige
-Goby.
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.c   | 26 +++++++++++++++----
- .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.h   |  8 ++++++
- 2 files changed, 29 insertions(+), 5 deletions(-)
+These issues were found with the help of Coccinelle and audited and fixed,
+manually.
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index f89bf49965fcd..20ab937c6450a 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -1278,21 +1278,37 @@ static int sienna_cichlid_populate_umd_state_clk(struct smu_context *smu)
- 				&dpm_context->dpm_tables.soc_table;
- 	struct smu_umd_pstate_table *pstate_table =
- 				&smu->pstate_table;
-+	struct amdgpu_device *adev = smu->adev;
- 
- 	pstate_table->gfxclk_pstate.min = gfx_table->min;
- 	pstate_table->gfxclk_pstate.peak = gfx_table->max;
--	if (gfx_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK)
--		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
- 
- 	pstate_table->uclk_pstate.min = mem_table->min;
- 	pstate_table->uclk_pstate.peak = mem_table->max;
--	if (mem_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK)
--		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
- 
- 	pstate_table->socclk_pstate.min = soc_table->min;
- 	pstate_table->socclk_pstate.peak = soc_table->max;
--	if (soc_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK)
-+
-+	switch (adev->asic_type) {
-+	case CHIP_SIENNA_CICHLID:
-+	case CHIP_NAVY_FLOUNDER:
-+		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
- 		pstate_table->socclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	case CHIP_DIMGREY_CAVEFISH:
-+		pstate_table->gfxclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK;
-+		pstate_table->socclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	case CHIP_BEIGE_GOBY:
-+		pstate_table->gfxclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK;
-+		pstate_table->uclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK;
-+		pstate_table->socclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK;
-+		break;
-+	default:
-+		break;
-+	}
- 
- 	return 0;
- }
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-index 38cd0ece24f6b..42f705c7a36f8 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
-@@ -33,6 +33,14 @@ typedef enum {
- #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK    960
- #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK    1000
- 
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK 1950
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK 960
-+#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK 676
-+
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK 2200
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK 960
-+#define BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK 1000
-+
- extern void sienna_cichlid_set_ppt_funcs(struct smu_context *smu);
- 
- #endif
+[1] https://en.wikipedia.org/wiki/Flexible_array_member
+[2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+
+Link: https://github.com/KSPP/linux/issues/79
+
+Gustavo A. R. Silva (6):
+  ath6kl: wmi: Replace one-element array with flexible-array member in
+    struct wmi_begin_scan_cmd
+  ath6kl: wmi: Replace one-element array with flexible-array member in
+    struct wmi_start_scan_cmd
+  ath6kl: wmi: Replace one-element array with flexible-array  member in
+    struct wmi_channel_list_reply
+  ath6kl: wmi: Replace one-element array with flexible-array  member in
+    struct wmi_connect_event
+  ath6kl: wmi: Replace one-element array with flexible-array  member in
+    struct wmi_disconnect_event
+  ath6kl: wmi: Replace one-element array with flexible-array  member in
+    struct wmi_aplist_event
+
+ drivers/net/wireless/ath/ath6kl/wmi.c | 30 +++++++--------------------
+ drivers/net/wireless/ath/ath6kl/wmi.h | 12 +++++------
+ 2 files changed, 14 insertions(+), 28 deletions(-)
+
 -- 
-2.34.1
+2.27.0
 
