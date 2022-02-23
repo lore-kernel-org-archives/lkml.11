@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78549C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93942C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237658AbiBWCjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:39:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S237727AbiBWCjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:39:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237607AbiBWChQ (ORCPT
+        with ESMTP id S237460AbiBWChZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:37:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF10D5FF3E;
-        Tue, 22 Feb 2022 18:32:35 -0800 (PST)
+        Tue, 22 Feb 2022 21:37:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5170580DC;
+        Tue, 22 Feb 2022 18:32:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2762D61516;
-        Wed, 23 Feb 2022 02:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B7ABC340F8;
-        Wed, 23 Feb 2022 02:31:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67A7E6155B;
+        Wed, 23 Feb 2022 02:32:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB2FEC340F1;
+        Wed, 23 Feb 2022 02:32:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583517;
-        bh=i5VHI7JTDFpPs3+CFF91y+xv8PC264aoBXGF5EYIqL8=;
+        s=k20201202; t=1645583557;
+        bh=UgKQ9cNGkty3xwnvfNTkiGfr/Fg+lnlS4rwHrsaA3To=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XeP2148SqWlbTeDBYMrPb4Mg6SfyCWcSKzH0klsyqls8cAbCS3AQrOrpju+dmF77O
-         QyKhzoLUI1qT8k2TiM76MoengcXyu5PwUZ1B67nXjwmoa2frPJftWgdT3iJv4AwAvZ
-         VAxNuQ4fJtORTAaD/NlniFvLLGKfAU1A7rHLZfPmCCNFJyUSVLmKx/sYyclxJv9kx1
-         upQutZXOhKTI5f9WoGTf/kt8cyfOsTbBtBFoOc+daqoBN+JhRPlAv0nIIy81zVIs9p
-         5iBycSipUscCkFvzqBeUJayMj15YwRkxa+1fpYhKt3fuCofIErSiTvTOJklnhhml3U
-         3KFgNwIio0WIA==
+        b=loFcCf4SQT8wmEYPGiGmgGfc2VdL+WGMRNICqnhf2s/41JwCKutxuTKf4/3ExJWAM
+         Z4anCmj9UI30bUlbvc7vZxdnaqY5BT8O4LRxN2//AaNt4Vex833O8A9YeZu3HeE24M
+         V+jRyC/3qY3CtiLfu90tcs5FPsSicfNKRVp+oagk0mzEA37XTvWB0xSHRcwvM3W/83
+         SWsznHngo6ZAu21C65GbLu5jFAr9YS9ki7HdaC52F7iwAV53LyzaDiGWtLL+HbrDMC
+         B2C4TFq17TNiVHdjFMKq06m7sk8GlBtrVF3DpRsaMUqpQy1ZcUNtjVMzHH4jTiTP0d
+         TZU6JftQScbUg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     JaeMan Park <jaeman@google.com>,
@@ -39,12 +39,12 @@ Cc:     JaeMan Park <jaeman@google.com>,
         Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
         kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/13] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
-Date:   Tue, 22 Feb 2022 21:31:41 -0500
-Message-Id: <20220223023152.242065-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 02/10] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
+Date:   Tue, 22 Feb 2022 21:32:25 -0500
+Message-Id: <20220223023233.242468-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
-References: <20220223023152.242065-1-sashal@kernel.org>
+In-Reply-To: <20220223023233.242468-1-sashal@kernel.org>
+References: <20220223023233.242468-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -77,10 +77,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 9 insertions(+)
 
 diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 6cd9a8b610107..c84ee5ba53812 100644
+index b19d19c4be272..ee1eb14ae8fc9 100644
 --- a/drivers/net/wireless/mac80211_hwsim.c
 +++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2082,6 +2082,15 @@ static void hw_scan_work(struct work_struct *work)
+@@ -2025,6 +2025,15 @@ static void hw_scan_work(struct work_struct *work)
  			if (req->ie_len)
  				skb_put_data(probe, req->ie, req->ie_len);
  
