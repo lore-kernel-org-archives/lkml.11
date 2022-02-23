@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 947D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D43C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241205AbiBWNpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:45:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
+        id S241216AbiBWNpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:45:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241067AbiBWNos (ORCPT
+        with ESMTP id S241086AbiBWNow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:44:48 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6868AC914
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:12 -0800 (PST)
+        Wed, 23 Feb 2022 08:44:52 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80A1AC92C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:15 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BF3872245A;
-        Wed, 23 Feb 2022 14:44:10 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2689822247;
+        Wed, 23 Feb 2022 14:44:14 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645623850;
+        t=1645623854;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NbHvy8hevO/uqaI9Zie2Nd+ZG6Y7RWXmci9VDa4GFEA=;
-        b=dudIoW6kLaY+U43BXBdxaZk9D42nGi2Yi0aTL8+vl+RxymdfTiFPiORJdPyYZ77qZDMo/L
-        mgxPoEIHVldZ3KxkJ/KK9JXz2ewR3IYx8N5rJdeiJ55fE1FcGKc1Aue0bMKqZevqGPjtR1
-        iug1JNSRCJafYUanWqipRhcWtY/qeqc=
+        bh=IYl3MKifzSCwZWqS6/ku6kfSrHMIJbi0hdEtx6Zps4Q=;
+        b=f4uQw8k2do7sbYOn3ZVI0bhMOfRKBUnSrIsgaiHyYYAAOj6cL9VKOY4/3KFx/PcdhrrezF
+        mTf8ya9Yr5uPLNe/jUbpqUuQV4Z5YsVXcQbprNdpfZPiWyD6luiRM8ijSX8HthWTXjX4A0
+        DNC5h/WAjC+RBWeZVQJzXWPbaC18sc4=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 15/32] mtd: spi-nor: xilinx: unify function names
-Date:   Wed, 23 Feb 2022 14:43:41 +0100
-Message-Id: <20220223134358.1914798-16-michael@walle.cc>
+Subject: [PATCH v5 22/32] mtd: spi-nor: xilinx: rename vendor specific functions and defines
+Date:   Wed, 23 Feb 2022 14:43:48 +0100
+Message-Id: <20220223134358.1914798-23-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223134358.1914798-1-michael@walle.cc>
 References: <20220223134358.1914798-1-michael@walle.cc>
@@ -51,75 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid name clashes unify all the function and static object names and
-use one of the following prefixes which should be sufficiently unique:
- - <vendor>_nor_
- - <flash_family>_nor_
- - <flash_part>_
-
-There are no functional changes.
+Drop the generic spi_nor prefix for all the xilinx functions.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/xilinx.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/mtd/spi-nor/xilinx.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 580562bc1e45..07dd11788df5 100644
+index 05c7fe843a7d..ffd5579d45cb 100644
 --- a/drivers/mtd/spi-nor/xilinx.c
 +++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -8,7 +8,7 @@
+@@ -8,9 +8,9 @@
  
  #include "core.h"
  
--static const struct flash_info xilinx_parts[] = {
-+static const struct flash_info xilinx_nor_parts[] = {
- 	/* Xilinx S3AN Internal Flash */
- 	{ "3S50AN", S3AN_INFO(0x1f2200, 64, 264) },
- 	{ "3S200AN", S3AN_INFO(0x1f2400, 256, 264) },
-@@ -26,7 +26,7 @@ static const struct flash_info xilinx_parts[] = {
-  * Addr can safely be unsigned int, the biggest S3AN device is smaller than
-  * 4 MiB.
+-#define SPINOR_OP_XSE		0x50	/* Sector erase */
+-#define SPINOR_OP_XPP		0x82	/* Page program */
+-#define SPINOR_OP_XRDSR		0xd7	/* Read status register */
++#define XILINX_OP_SE		0x50	/* Sector erase */
++#define XILINX_OP_PP		0x82	/* Page program */
++#define XILINX_OP_RDSR		0xd7	/* Read status register */
+ 
+ #define XSR_PAGESIZE		BIT(0)	/* Page size in Po2 or Linear */
+ #define XSR_RDY			BIT(7)	/* Ready */
+@@ -60,20 +60,20 @@ static u32 s3an_nor_convert_addr(struct spi_nor *nor, u32 addr)
+ }
+ 
+ /**
+- * spi_nor_xread_sr() - Read the Status Register on S3AN flashes.
++ * xilinx_nor_read_sr() - Read the Status Register on S3AN flashes.
+  * @nor:	pointer to 'struct spi_nor'.
+  * @sr:		pointer to a DMA-able buffer where the value of the
+  *              Status Register will be written.
+  *
+  * Return: 0 on success, -errno otherwise.
   */
--static u32 s3an_convert_addr(struct spi_nor *nor, u32 addr)
-+static u32 s3an_nor_convert_addr(struct spi_nor *nor, u32 addr)
+-static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
++static int xilinx_nor_read_sr(struct spi_nor *nor, u8 *sr)
  {
- 	u32 page_size = nor->params->page_size;
- 	u32 offset, page;
-@@ -73,25 +73,25 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- 		nor->mtd.erasesize = 8 * page_size;
+ 	int ret;
+ 
+ 	if (nor->spimem) {
+ 		struct spi_mem_op op =
+-			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_XRDSR, 0),
++			SPI_MEM_OP(SPI_MEM_OP_CMD(XILINX_OP_RDSR, 0),
+ 				   SPI_MEM_OP_NO_ADDR,
+ 				   SPI_MEM_OP_NO_DUMMY,
+ 				   SPI_MEM_OP_DATA_IN(1, sr, 0));
+@@ -82,7 +82,7 @@ static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
  	} else {
- 		/* Flash in Default addressing mode */
--		nor->params->convert_addr = s3an_convert_addr;
-+		nor->params->convert_addr = s3an_nor_convert_addr;
- 		nor->mtd.erasesize = nor->info->sector_size;
+-		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_XRDSR, sr,
++		ret = spi_nor_controller_ops_read_reg(nor, XILINX_OP_RDSR, sr,
+ 						      1);
  	}
  
- 	return 0;
+@@ -93,17 +93,17 @@ static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
  }
  
--static void xilinx_late_init(struct spi_nor *nor)
-+static void xilinx_nor_late_init(struct spi_nor *nor)
+ /**
+- * spi_nor_xsr_ready() - Query the Status Register of the S3AN flash to see if
+- * the flash is ready for new commands.
++ * xilinx_nor_sr_ready() - Query the Status Register of the S3AN flash to see
++ * if the flash is ready for new commands.
+  * @nor:	pointer to 'struct spi_nor'.
+  *
+  * Return: 1 if ready, 0 if not ready, -errno on errors.
+  */
+-static int spi_nor_xsr_ready(struct spi_nor *nor)
++static int xilinx_nor_sr_ready(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+-	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
++	ret = xilinx_nor_read_sr(nor, nor->bouncebuf);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -116,12 +116,12 @@ static int xilinx_nor_setup(struct spi_nor *nor,
+ 	u32 page_size;
+ 	int ret;
+ 
+-	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
++	ret = xilinx_nor_read_sr(nor, nor->bouncebuf);
+ 	if (ret)
+ 		return ret;
+ 
+-	nor->erase_opcode = SPINOR_OP_XSE;
+-	nor->program_opcode = SPINOR_OP_XPP;
++	nor->erase_opcode = XILINX_OP_SE;
++	nor->program_opcode = XILINX_OP_PP;
+ 	nor->read_opcode = SPINOR_OP_READ;
+ 	nor->flags |= SNOR_F_NO_OP_CHIP_ERASE;
+ 
+@@ -155,7 +155,7 @@ static int xilinx_nor_setup(struct spi_nor *nor,
+ static void xilinx_nor_late_init(struct spi_nor *nor)
  {
  	nor->params->setup = xilinx_nor_setup;
+-	nor->params->ready = spi_nor_xsr_ready;
++	nor->params->ready = xilinx_nor_sr_ready;
  }
  
--static const struct spi_nor_fixups xilinx_fixups = {
--	.late_init = xilinx_late_init,
-+static const struct spi_nor_fixups xilinx_nor_fixups = {
-+	.late_init = xilinx_nor_late_init,
- };
- 
- const struct spi_nor_manufacturer spi_nor_xilinx = {
- 	.name = "xilinx",
--	.parts = xilinx_parts,
--	.nparts = ARRAY_SIZE(xilinx_parts),
--	.fixups = &xilinx_fixups,
-+	.parts = xilinx_nor_parts,
-+	.nparts = ARRAY_SIZE(xilinx_nor_parts),
-+	.fixups = &xilinx_nor_fixups,
- };
+ static const struct spi_nor_fixups xilinx_nor_fixups = {
 -- 
 2.30.2
 
