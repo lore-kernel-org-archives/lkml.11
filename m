@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 627CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45949C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243665AbiBWR7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:59:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
+        id S243681AbiBWR77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:59:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243650AbiBWR7v (ORCPT
+        with ESMTP id S243660AbiBWR7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:59:51 -0500
+        Wed, 23 Feb 2022 12:59:54 -0500
 Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E044D3E0C6;
-        Wed, 23 Feb 2022 09:59:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D5B3DA7E;
+        Wed, 23 Feb 2022 09:59:26 -0800 (PST)
 Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
         by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
         (envelope-from <luca@lucaceresoli.net>)
-        id 1nMvv6-00039p-Uf; Wed, 23 Feb 2022 18:59:21 +0100
+        id 1nMvv9-00039p-6u; Wed, 23 Feb 2022 18:59:23 +0100
 From:   Luca Ceresoli <luca@lucaceresoli.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
@@ -31,11 +31,10 @@ Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH v6 1/8] rtc: max77686: convert comments to kernel-doc format
-Date:   Wed, 23 Feb 2022 18:59:01 +0100
-Message-Id: <20220223175908.191618-2-luca@lucaceresoli.net>
+        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v6 3/8] rtc: max77686: remove unused code to read in 12-hour mode
+Date:   Wed, 23 Feb 2022 18:59:03 +0100
+Message-Id: <20220223175908.191618-4-luca@lucaceresoli.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223175908.191618-1-luca@lucaceresoli.net>
 References: <20220223175908.191618-1-luca@lucaceresoli.net>
@@ -55,15 +54,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the comments documenting this struct to kernel-doc format for
-standardization and readability.
+The MAX77714 RTC chip is explicitly set to 24-hour mode in
+max77686_rtc_probe() -> max77686_rtc_init_reg() and never changed back to
+12-hour mode. Accordingly info->rtc_24hr_mode is set to 1 in the same place
+and never modified later, so it is de facto a constant. Yet there is code
+to read 12-hour time, which is unreachable.
+
+Remove the unused variable, the unreachable code to manage 12-hour mode and
+the defines that become unused due to the above changes.
 
 Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 
 ---
+
 Changes in v6: none
 
 Changes in v5: none
@@ -72,52 +77,59 @@ Changes in v4: none
 
 Changes in v3: none
 
-Changes in v2: none
+Changes in v2:
+ - remove the now-unused defines too (Alexandre Belloni)
+ - improve the commit message
 ---
- drivers/rtc/rtc-max77686.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/rtc/rtc-max77686.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
 diff --git a/drivers/rtc/rtc-max77686.c b/drivers/rtc/rtc-max77686.c
-index eae7cb9faf1e..bac52cdea97d 100644
+index 7e765207f28e..5c64d08c0732 100644
 --- a/drivers/rtc/rtc-max77686.c
 +++ b/drivers/rtc/rtc-max77686.c
-@@ -61,24 +61,27 @@ enum {
- 	RTC_NR_TIME
+@@ -34,9 +34,6 @@
+ #define RTC_UDR_MASK			BIT(RTC_UDR_SHIFT)
+ #define RTC_RBUDR_SHIFT			4
+ #define RTC_RBUDR_MASK			BIT(RTC_RBUDR_SHIFT)
+-/* RTC Hour register */
+-#define HOUR_PM_SHIFT			6
+-#define HOUR_PM_MASK			BIT(HOUR_PM_SHIFT)
+ /* RTC Alarm Enable */
+ #define ALARM_ENABLE_SHIFT		7
+ #define ALARM_ENABLE_MASK		BIT(ALARM_ENABLE_SHIFT)
+@@ -99,7 +96,6 @@ struct max77686_rtc_info {
+ 
+ 	int rtc_irq;
+ 	int virq;
+-	int rtc_24hr_mode;
  };
  
-+/**
-+ * struct max77686_rtc_driver_data - model-specific configuration
-+ * @delay: Minimum usecs needed for a RTC update
-+ * @mask: Mask used to read RTC registers value
-+ * @map: Registers offset to I2C addresses map
-+ * @alarm_enable_reg: Has a separate alarm enable register?
-+ * @rtc_i2c_addr: I2C address for RTC block
-+ * @rtc_irq_from_platform: RTC interrupt via platform resource
-+ * @alarm_pending_status_reg: Pending alarm status register
-+ * @rtc_irq_chip: RTC IRQ CHIP for regmap
-+ * @regmap_config: regmap configuration for the chip
-+ */
- struct max77686_rtc_driver_data {
--	/* Minimum usecs needed for a RTC update */
- 	unsigned long		delay;
--	/* Mask used to read RTC registers value */
- 	u8			mask;
--	/* Registers offset to I2C addresses map */
- 	const unsigned int	*map;
--	/* Has a separate alarm enable register? */
- 	bool			alarm_enable_reg;
--	/* I2C address for RTC block */
- 	int			rtc_i2c_addr;
--	/* RTC interrupt via platform resource */
- 	bool			rtc_irq_from_platform;
--	/* Pending alarm status register */
- 	int			alarm_pending_status_reg;
--	/* RTC IRQ CHIP for regmap */
- 	const struct regmap_irq_chip *rtc_irq_chip;
--	/* regmap configuration for the chip */
- 	const struct regmap_config *regmap_config;
- };
+ enum MAX77686_RTC_OP {
+@@ -278,13 +274,7 @@ static void max77686_rtc_data_to_tm(u8 *data, struct rtc_time *tm,
  
+ 	tm->tm_sec = data[RTC_SEC] & mask;
+ 	tm->tm_min = data[RTC_MIN] & mask;
+-	if (info->rtc_24hr_mode) {
+-		tm->tm_hour = data[RTC_HOUR] & 0x1f;
+-	} else {
+-		tm->tm_hour = data[RTC_HOUR] & 0x0f;
+-		if (data[RTC_HOUR] & HOUR_PM_MASK)
+-			tm->tm_hour += 12;
+-	}
++	tm->tm_hour = data[RTC_HOUR] & 0x1f;
+ 
+ 	/* Only a single bit is set in data[], so fls() would be equivalent */
+ 	tm->tm_wday = ffs(data[RTC_WEEKDAY] & mask) - 1;
+@@ -662,8 +652,6 @@ static int max77686_rtc_init_reg(struct max77686_rtc_info *info)
+ 	data[0] = (1 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
+ 	data[1] = (0 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
+ 
+-	info->rtc_24hr_mode = 1;
+-
+ 	ret = regmap_bulk_write(info->rtc_regmap,
+ 				info->drv_data->map[REG_RTC_CONTROLM],
+ 				data, ARRAY_SIZE(data));
 -- 
 2.25.1
 
