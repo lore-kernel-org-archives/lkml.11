@@ -2,106 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D08C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EE9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240751AbiBWNN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:13:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
+        id S240766AbiBWNNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238766AbiBWNNX (ORCPT
+        with ESMTP id S240750AbiBWNN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:13:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8DA5FF17;
-        Wed, 23 Feb 2022 05:12:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6478B6117F;
-        Wed, 23 Feb 2022 13:12:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533DEC340F0;
-        Wed, 23 Feb 2022 13:12:53 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="p2uLwLyr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645621971;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yDH6L5SfKXyei5pTTzcAk9yjz7NgT/Zl7Px1eWnwpqQ=;
-        b=p2uLwLyrNMQ8HTaqGPewS3XX209s7oJqJ9miRcoY1DtAZT8hviF4SxAj5On0Im2pbnBr3p
-        qozPAZOFG4amHtvVOWAclMD5HdWA5Oi9z78mYqPXXrH2JsBBaqdcZS4CZ649Pcqn51y//z
-        udUOOwgOLtSyOIgtQw8+TrDExV8xsig=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 57f5dfd0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 23 Feb 2022 13:12:50 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        qemu-devel@nongnu.org, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, adrian@parity.io
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, dwmw@amazon.co.uk,
-        acatan@amazon.com, graf@amazon.com, colmmacc@amazon.com,
-        sblbir@amazon.com, raduweis@amazon.com, jannh@google.com,
-        gregkh@linuxfoundation.org, tytso@mit.edu
-Subject: [PATCH RFC v1 0/2] VM fork detection for RNG
-Date:   Wed, 23 Feb 2022 14:12:29 +0100
-Message-Id: <20220223131231.403386-1-Jason@zx2c4.com>
+        Wed, 23 Feb 2022 08:13:27 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968297BB3;
+        Wed, 23 Feb 2022 05:12:59 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id f14so16595059ioz.1;
+        Wed, 23 Feb 2022 05:12:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kg3NfGTP7xtW+RHtX3nLpmxM0bxqyeSW2sGTGXR6rYI=;
+        b=RLNKdhGnNv/VidZ7E6jD1X2Ny6I19V2Uh7tv3hNVfzXJyf21LiKHJTuoTIoQmAps6U
+         9E3uY7j8/b0pq+FfchlEDotZA6gOjzjPnySe/FSYspGmXbUtu0j09fuV3Kr05c7416Wa
+         60Y+Za3GNbpsRKIn2PlrbP05xoE9wM4mqAWKJYogA0I2zU4xZQIwCgCI1zxSAdLnacYH
+         yYvo9ZZ/i0UxM3/rhHeuvEHVC1ZyJq5cybbD+PiL/EW+zcQjHUt54JcbiUuFMr59AYov
+         VR/HxLMGfWG4M58HJWm0JaDpDKnnX0BDsrnqctQ4o9+txEXQFDK6jBEkzAD3mwLEHQWo
+         VH5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kg3NfGTP7xtW+RHtX3nLpmxM0bxqyeSW2sGTGXR6rYI=;
+        b=ZtiatXTKHph9UDKqrgu7gRZBxF2kyEoXFTbk/DuJ7yU0Xibc61ilNVwDt+9kGNh0Gw
+         dGd1vHh2T1jbHFHudIpi1+eZFNT19xQpI7gGS4S8edjpornEgYS3UX39YoZ8nogcoNnF
+         zShRZUl1Lwhsw+HazS0quBmkBCINtdIhnfXBWXxGxsAkyUSwURzA2cz+7mfNOoR5lgpv
+         8BYXe9HArectSDgF7BD2gdj+Nt/Pn8sJIUX0ima4m2RRGMviElX/HNNah6zofIP+G/bb
+         hWHZIuj7Z2dfTH3kNcaG7ORNoZLTk0uQXrlKI8iVMZw5U6+t0eBY8X/49mDUAhnVUptW
+         RFcA==
+X-Gm-Message-State: AOAM530UHp6nRHYEbYx+XsFdqhpyOVd6GSiwteueR6xbht58nRspzp53
+        lhP6MzfSKnXWK6DNdHwOIMGOfNRi6c4hZOAdXVrHjj67jgY=
+X-Google-Smtp-Source: ABdhPJwKhCMkDe5RRx9nZfDnSzFw1nU5bkD6jEejBb9QamYTZdVRctSZnGusrzpH30dMWL8CXUv114NbWmwrvaGUwaM=
+X-Received: by 2002:a05:6638:1453:b0:308:eafa:41c with SMTP id
+ l19-20020a056638145300b00308eafa041cmr23028637jad.30.1645621978151; Wed, 23
+ Feb 2022 05:12:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220223004801.66602-1-skhan@linuxfoundation.org>
+In-Reply-To: <20220223004801.66602-1-skhan@linuxfoundation.org>
+From:   Helen Mae Koike Fornazier <helen.fornazier@gmail.com>
+Date:   Wed, 23 Feb 2022 10:12:47 -0300
+Message-ID: <CAPW4XYag6r33W2LHie1AYN9UrP0fk5O1S=HUNoAuEknhjBs3pg@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: update media vimc driver maintainers
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Hans Verkuil <hverkuil@xs4all.nl>,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This small series picks up work from Amazon that seems to have stalled
-out later year around this time: listening for the vmgenid ACPI
-notification, and using it to "do something." Last year, that something
-involved a complicated userspace mmap chardev, which seems frought with
-difficulty. This year, I have something much simpler in mind: simply
-using those ACPI notifications to tell the RNG to reinitialize safely,
-so we don't repeat random numbers in cloned, forked, or rolled-back VM
-instances.
+On Tue, Feb 22, 2022 at 9:48 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
+>
+> Based on the dicussion with Hans Verkuil and others in the thread below,
+> vimc is need of a maintainer. I will start maintaining the driver with
+> help from Kieran Bingham as the reviewer.
+>
+> Link: https://lore.kernel.org/linux-media/5d5dee88-9dbf-e4d0-4a91-11ff4ecd82ea@xs4all.nl/
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 
-This series consists of two patches. The first is a rather
-straightforward addition to random.c, which I feel fine about. The
-second patch is the reason this is just an RFC: it's a cleanup of the
-ACPI driver from last year, and I don't really have much experience
-writing, testing, debugging, or maintaining these types of drivers.
-Ideally this thread would yield somebody saying, "I see the intent of
-this; I'm happy to take over ownership of this part." That way, I can
-focus on the RNG part, and whoever steps up for the paravirt ACPI part
-can focus on that.
+Acked-by: Helen Koike <helen@koikeco.de>
 
-As a final note, this series intentionally does _not_ focus on
-notification of these events to userspace or to other kernel consumers.
-Since these VM fork detection events first need to hit the RNG, we can
-later talk about what sorts of notifications or mmap'd counters the RNG
-should be making accessible to elsewhere. But that's a different sort of
-project and ties into a lot of more complicated concerns beyond this
-more basic patchset. So hopefully we can keep the discussion rather
-focused here to this ACPI business.
+Thanks
+Helen
 
-Cc: dwmw@amazon.co.uk
-Cc: acatan@amazon.com
-Cc: graf@amazon.com
-Cc: colmmacc@amazon.com
-Cc: sblbir@amazon.com
-Cc: raduweis@amazon.com
-Cc: jannh@google.com
-Cc: gregkh@linuxfoundation.org
-Cc: tytso@mit.edu
+> ---
+>  MAINTAINERS | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 777cd6fa2b3d..a7b9eccafeb9 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -20383,8 +20383,8 @@ F:      drivers/media/common/videobuf2/*
+>  F:     include/media/videobuf2-*
+>
+>  VIMC VIRTUAL MEDIA CONTROLLER DRIVER
+> -M:     Helen Koike <helen.koike@collabora.com>
+> -R:     Shuah Khan <skhan@linuxfoundation.org>
+> +M:     Shuah Khan <skhan@linuxfoundation.org>
+> +R:     Kieran Bingham <kieran.bingham@ideasonboard.com>
+>  L:     linux-media@vger.kernel.org
+>  S:     Maintained
+>  W:     https://linuxtv.org
+> --
+> 2.32.0
+>
 
-Jason A. Donenfeld (2):
-  random: add mechanism for VM forks to reinitialize crng
-  drivers/virt: add vmgenid driver for reinitializing RNG
-
- drivers/char/random.c  |  58 ++++++++++++++++++
- drivers/virt/Kconfig   |   8 +++
- drivers/virt/Makefile  |   1 +
- drivers/virt/vmgenid.c | 133 +++++++++++++++++++++++++++++++++++++++++
- include/linux/random.h |   1 +
- 5 files changed, 201 insertions(+)
- create mode 100644 drivers/virt/vmgenid.c
 
 -- 
-2.35.1
-
+Helen Koike
