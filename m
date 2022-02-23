@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05960C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04224C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240594AbiBWMtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40246 "EHLO
+        id S240603AbiBWMtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:49:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233079AbiBWMtA (ORCPT
+        with ESMTP id S235138AbiBWMtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 07:49:00 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B074A66C3
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17F6A66C7
         for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:48:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645620512; x=1677156512;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JnOgbhTQn0zJGJFf0Si3A4r7rgf3FSnREvr4CnkwPwo=;
-  b=OlCtPZU95YSP7vOyPlhHP0FEwvHq9JhNKHmMy5h1+LnBX/5QqdFqMH/5
-   Nj6vCA1jHeXEpujo42qzG0yDtAzNkZt3XC+CNO2374d2w/q7cO6ZyVi3k
-   VSnTjaw+TwB+ru2UebfuwZUmLwfEC7X95k5vlIPjOTrPjd4VyvxFDUXFF
-   WS0t+Nc82nZJqNzx4F7d4HD68p7zcYnZ4iNVdP495hT4CdXOWnvgM+hFw
-   9wwi3KSXXKTqVMXJk80bIoJzBDhdjhLu49zo+4xrw51Go9WLCNr4lYwI9
-   Nq5cbE/JgIi3qbrAFu52xFTxPU0dlUv/wQkYpUL6/EiCUeqlUKLYIKzS2
+  bh=KhRnw7ZWAzdpuxFUdrJzBJ/TAtcmDtqlXClYmvJkIls=;
+  b=jTWNkUnj5YBY1zBG5jsJchaeHV9f78KWWkioCtjmgJA8NugLlcbcQarL
+   N+ti9q1Khk3ECdtEVMvcRYSBWA+MR17ZY1fzBNW3IogzzEo1CXcGzaEHE
+   /3hn7b8mIlXz+8+TupncVUkWhXCCpBJXQzS+3HQylfwLW+p4taD9mD+mj
+   8V6i4gHy1DNP6iqBWRfDEHdLlsw60a74EmePHXQlkiPXKKTP/3p5xfvEX
+   vRSz50cF5cySvhPGP9nI/rl/xatlktJ28zDi7wcmsq67dGPXC7B7U5cH7
+   K/AHaVFSW6sDI799hQqx02+ow3r2V1Cl99Q1PzIIy0je8betRMv2MZRt6
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251872995"
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="276572722"
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="251872995"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:32 -0800
+   d="scan'208";a="276572722"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:32 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="628069766"
+   d="scan'208";a="776660020"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nMr4I-0001Po-2W; Wed, 23 Feb 2022 12:48:30 +0000
-Date:   Wed, 23 Feb 2022 20:48:15 +0800
+        id 1nMr4I-0001Ps-4D; Wed, 23 Feb 2022 12:48:30 +0000
+Date:   Wed, 23 Feb 2022 20:48:06 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [chenxing:msc313_mainlining 62/93]
- drivers/irqchip/irq-msc313-pm-wakeup.c:132:9: warning: ignoring return value
- of 'request_irq' declared with attribute 'warn_unused_result'
-Message-ID: <202202232019.xWajHWPV-lkp@intel.com>
+To:     Tom <support@vamrs.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [esmil:visionfive 29/61] drivers/soc/sifive/sifive_l2_cache.c:152:3:
+ error: implicit declaration of function 'writeq'
+Message-ID: <202202232048.az4q1NmG-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,82 +57,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://github.com/linux-chenxing/linux.git msc313_mainlining
-head:   99a396728dcff78ca3eddcbd2085f11eeb8a01b8
-commit: 10f8a601bff9d43fdf11deba38af93f47faa1ea2 [62/93] irqchip: MStar wakeup intc
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202232019.xWajHWPV-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
+tree:   https://github.com/esmil/linux visionfive
+head:   54fad564dc7a117704e99248c3984f907e1867d5
+commit: 49001aee175962e2a2ba2a82b393be62efc341ea [29/61] sifive/sifive_l2_cache: Add sifive_l2_flush64_range function
+config: riscv-randconfig-r011-20220221 (https://download.01.org/0day-ci/archive/20220223/202202232048.az4q1NmG-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/linux-chenxing/linux/commit/10f8a601bff9d43fdf11deba38af93f47faa1ea2
-        git remote add chenxing git://github.com/linux-chenxing/linux.git
-        git fetch --no-tags chenxing msc313_mainlining
-        git checkout 10f8a601bff9d43fdf11deba38af93f47faa1ea2
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/esmil/linux/commit/49001aee175962e2a2ba2a82b393be62efc341ea
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 49001aee175962e2a2ba2a82b393be62efc341ea
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/irqchip/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/soc/sifive/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All error/warnings (new ones prefixed by >>):
 
-   drivers/irqchip/irq-msc313-pm-wakeup.c: In function 'msc313_pm_wakeup_intc_of_init':
->> drivers/irqchip/irq-msc313-pm-wakeup.c:132:9: warning: ignoring return value of 'request_irq' declared with attribute 'warn_unused_result' [-Wunused-result]
-     132 |         request_irq(irq, msc313_pm_wakeup_intc_chainedhandler, IRQF_SHARED,
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     133 |                                 "pmsleep", domain);
-         |                                 ~~~~~~~~~~~~~~~~~~
+>> drivers/soc/sifive/sifive_l2_cache.c:152:3: error: implicit declaration of function 'writeq' [-Werror,-Wimplicit-function-declaration]
+                   writeq(line, l2_base + SIFIVE_L2_FLUSH64);
+                   ^
+>> drivers/soc/sifive/sifive_l2_cache.c:142:19: warning: result of comparison of constant 36507222016 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
+              (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
+              ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
 
 
-vim +132 drivers/irqchip/irq-msc313-pm-wakeup.c
+vim +/writeq +152 drivers/soc/sifive/sifive_l2_cache.c
 
-    97	
-    98	static int __init msc313_pm_wakeup_intc_of_init(struct device_node *node,
-    99					   struct device_node *parent)
-   100	{
-   101		int ret = 0, irq;
-   102		struct regmap *pmsleep;
-   103		struct msc313_sleep_intc *intc;
-   104		struct irq_domain *domain;
-   105	
-   106		irq = of_irq_get(node, 0);
-   107		if (irq <= 0)
-   108			return irq;
-   109	
-   110		pmsleep = syscon_regmap_lookup_by_phandle(node, "mstar,pmsleep");
-   111		if (IS_ERR(pmsleep))
-   112			return PTR_ERR(pmsleep);
-   113	
-   114		intc = kzalloc(sizeof(*intc), GFP_KERNEL);
-   115		if (!intc)
-   116			return -ENOMEM;
-   117	
-   118		intc->mask = regmap_field_alloc(pmsleep, mask_field);
-   119		intc->type = regmap_field_alloc(pmsleep, type_field);
-   120		intc->status = regmap_field_alloc(pmsleep, status_field);
-   121	
-   122		/* The masks survive deep sleep so clear them. */
-   123		regmap_field_write(intc->mask, ~0);
-   124	
-   125		domain = irq_domain_add_linear(node, NUM_IRQ,
-   126				&msc313_pm_wakeup_intc_domain_ops, intc);
-   127		if (!domain) {
-   128			ret = -ENOMEM;
-   129			goto out_free;
-   130		}
-   131	
- > 132		request_irq(irq, msc313_pm_wakeup_intc_chainedhandler, IRQF_SHARED,
-   133					"pmsleep", domain);
-   134	
-   135		return 0;
-   136	
-   137	out_free:
-   138		kfree(intc);
-   139		return ret;
-   140	}
-   141	
+   123	
+   124	#ifdef CONFIG_SIFIVE_L2_FLUSH
+   125	void sifive_l2_flush64_range(unsigned long start, unsigned long len)
+   126	{
+   127		unsigned long line;
+   128	
+   129		if(!l2_base) {
+   130			pr_warn("L2CACHE: base addr invalid, skipping flush\n");
+   131			return;
+   132		}
+   133	
+   134		/* TODO: if (len == 0), skipping flush or going on? */
+   135		if(!len) {
+   136			pr_debug("L2CACHE: flush64 range @ 0x%lx(len:0)\n", start);
+   137			return;
+   138		}
+   139	
+   140		/* make sure the address is in the range */
+   141		if(start < CONFIG_SIFIVE_L2_FLUSH_START ||
+ > 142		   (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
+   143				     CONFIG_SIFIVE_L2_FLUSH_SIZE)) {
+   144			pr_warn("L2CACHE: flush64 out of range: %lx(%lx), skip flush\n",
+   145				start, len);
+   146			return;
+   147		}
+   148	
+   149		mb();	/* sync */
+   150		for (line = start; line < start + len;
+   151		     line += SIFIVE_L2_FLUSH64_LINE_LEN) {
+ > 152			writeq(line, l2_base + SIFIVE_L2_FLUSH64);
+   153			mb();
+   154		}
+   155	}
+   156	EXPORT_SYMBOL_GPL(sifive_l2_flush64_range);
+   157	#endif
+   158	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
