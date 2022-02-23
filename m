@@ -2,173 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B147C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB74C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240215AbiBWL5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
+        id S240227AbiBWL6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:58:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240211AbiBWL5m (ORCPT
+        with ESMTP id S235992AbiBWL6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 06:57:42 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD5B4925D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:57:14 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id fc19so7723240qvb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:57:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sz/TsBK4wrm9NAX8eMKN5KJLVIsMXNpGW7xZZ6AIY/U=;
-        b=kgDfSg1eFSmoCKyv5tAO9ymORcbkmV8Dw9/lGclBVFg0VRGDQJStPALWtmnxhrP3aP
-         ddbDSEbakDsUlrEqAGUpGDur67d3XK9izYYjAQnRoHBgZ9hO83iLbeESWJaxf2GlW7u/
-         RPlURiOP8PuLZveENHVY4cF1U+XawaEh1CCpSakj9AA76dVYVdibVirHNDDp1Zqzt+oF
-         Udnup+p3E/icOfEBQW1pN72XeqyiKW4WD4FjX0XfgJ1OC+Ouj3CH8JCUPy1P7lLLT/ag
-         kBuE0JWFdSOmir86132ruSClPY3McqFKVWIpWGee0yBqrozQnEUtIIXSRRbgF01nzj3r
-         Mj8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sz/TsBK4wrm9NAX8eMKN5KJLVIsMXNpGW7xZZ6AIY/U=;
-        b=CPqlpnUyELFs6voByvUgVgbglUh01LV+lm8/DDOM+p88/wrXKrW2cyDVDBF4/L78z6
-         te/YDobfBL86XTNtDk2020X1zJSNIlH2hLPJ/vy52QQ5cTrX6yGorMTv4PGUcS9MLwxB
-         q7PCpsz3mShxhkhDoOCHJbGWTYuDJi+Z9Vb/6EL96B/VUAXgWlhnMC7wkoFe/3Ckx6dZ
-         4JKKN3zun1QpG8iMeWG0o7FHPyiyQ+vBFK5A78fvy+z4sSHDLEV+yHTlE/xqxqOztBrb
-         o4HoLRtk9gVAlondsfMOokNdeEZSg6lCG5k769CVp6hbpjXQ2ZwQtLClfBuB8oC0XRIz
-         rOYQ==
-X-Gm-Message-State: AOAM533xRb75LKPjJJMct67xvvXpAOO9qFk1+Vw7fg1s5zCMLmfa6FFM
-        GFiyzAE6Rdoik4k0jBuHxBd2Ss4dCJ+yliPIT1xUPw==
-X-Google-Smtp-Source: ABdhPJyd9W7Dm6dao+jkvi5TzRKXnAJlelbOAkvifRbROGVcT9HGdc2jR0RXv3zxEVyUcC712KQkjzTdElakKICXvJg=
-X-Received: by 2002:a05:622a:1206:b0:2de:6fa4:41fb with SMTP id
- y6-20020a05622a120600b002de6fa441fbmr4366794qtx.295.1645617433629; Wed, 23
- Feb 2022 03:57:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20220223114011.219044-1-marijn.suijten@somainline.org>
-In-Reply-To: <20220223114011.219044-1-marijn.suijten@somainline.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 23 Feb 2022 14:57:02 +0300
-Message-ID: <CAA8EJppddv_TV_9t2iw4+cBv_L5_c78rx-QLJqpRRuoD+3S=+A@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/msm/dpu: Bind pingpong block to intf on active
- ctls in cmd encoder
-To:     Marijn Suijten <marijn.suijten@somainline.org>
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Pavel Dubrova <pashadubrova@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Bernard <bernard@vivo.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+        Wed, 23 Feb 2022 06:58:51 -0500
+Received: from re-prd-fep-044.btinternet.com (mailomta28-re.btinternet.com [213.120.69.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D872449682;
+        Wed, 23 Feb 2022 03:58:21 -0800 (PST)
+Received: from re-prd-rgout-005.btmx-prd.synchronoss.net ([10.2.54.8])
+          by re-prd-fep-044.btinternet.com with ESMTP
+          id <20220223115819.YGRE28912.re-prd-fep-044.btinternet.com@re-prd-rgout-005.btmx-prd.synchronoss.net>;
+          Wed, 23 Feb 2022 11:58:19 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1645617499; 
+        bh=xH2HDukqbX5dvbmogMeWYVzR/wGRlgNjqzbmhBv/HvQ=;
+        h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:MIME-Version;
+        b=g2uncVR7olpMgOcyVdKW+/fiTVuoRP/9wbW9bcCzILHBGB7XmsBZg+Som/v8JeulKZIVZ93XdeC4fLZBZ09KT9ycMLFhLIul4h0z+GAqzNap62eqP2XZj0JXN6Lq9hKCOc53oqpzL0vXaTdfLk+5mWPwM+AqYkm/BPoaO1dfulICc6BTdSxixKZw8bbAcJXp0f+5t6dxjhaTt9KqWgJhr77iwR3hfa4reADj7eMAjRr3qgpUi7JOCnj+skWWzK8GMJ0QJCJbpaK4OX+yOdCOnCa9wj/SYdvaJyHPaLqcHY0bFSlLl2CgoyDOgs/hfeazC4sqEQKZVih2faafNIsLtw==
+Authentication-Results: btinternet.com;
+    auth=pass (LOGIN) smtp.auth=richard_c_haines@btinternet.com;
+    bimi=skipped
+X-SNCR-Rigid: 613A912415D7956E
+X-Originating-IP: [109.150.61.96]
+X-OWM-Source-IP: 109.150.61.96 (GB)
+X-OWM-Env-Sender: richard_c_haines@btinternet.com
+X-VadeSecure-score: verdict=clean score=0/300, class=clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrledtgdeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkffuhffvffgjfhgtfggggfesthekredttderjeenucfhrhhomheptfhitghhrghrugcujfgrihhnvghsuceorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomheqnecuggftrfgrthhtvghrnhepjeevteffjeduleetfeeitdfhheekudeutddthfevtefgveelhfegheffheffieeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpfhhigidrshgvtghurhhithihnecukfhppedutdelrdduhedtrdeiuddrleeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehhvghloheplgduledvrdduieekrddurdduleekngdpihhnvghtpedutdelrdduhedtrdeiuddrleeipdhmrghilhhfrhhomheprhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomhdpnhgspghrtghpthhtohepkedprhgtphhtthhopeguvghmihhosggvnhhouhhrsehgmhgrihhlrdgtohhmpdhrtghpthhtohepvghprghrihhssehprghrihhsphhlrggtvgdrohhrghdprhgtphhtthhopehjvghffhhvsehgohhoghhlvgdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhes
+        vhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehprghulhesphgruhhlqdhmohhorhgvrdgtohhmpdhrtghpthhtohepshgvlhhinhhugidqrhgvfhhpohhlihgthiesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhdrshhmrghllhgvhidrfihorhhksehgmhgrihhlrdgtohhm
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-SNCR-hdrdom: btinternet.com
+Received: from [192.168.1.198] (109.150.61.96) by re-prd-rgout-005.btmx-prd.synchronoss.net (5.8.716.04) (authenticated as richard_c_haines@btinternet.com)
+        id 613A912415D7956E; Wed, 23 Feb 2022 11:58:19 +0000
+Message-ID: <20396305e71619dbee4fa3c612925b57f4bb0a4b.camel@btinternet.com>
+Subject: Re: [PATCH V2] security/selinux: Always allow FIOCLEX and FIONCLEX
+From:   Richard Haines <richard_c_haines@btinternet.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        demiobenour@gmail.com, selinux@vger.kernel.org,
+        linux-kernel@vger.kernel.org, selinux-refpolicy@vger.kernel.org,
+        jeffv@google.com
+Date:   Wed, 23 Feb 2022 11:58:19 +0000
+In-Reply-To: <CAHC9VhQnRQFrM-mTzUQ3UsyVp2JYw1wUh=7yrdjH7-QmHKidAg@mail.gmail.com>
+References: <20220221131533.74238-1-richard_c_haines@btinternet.com>
+         <CAHC9VhQnRQFrM-mTzUQ3UsyVp2JYw1wUh=7yrdjH7-QmHKidAg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 at 14:40, Marijn Suijten
-<marijn.suijten@somainline.org> wrote:
->
-> As per the specification of DPU_CTL_ACTIVE_CFG the configuration of
-> active blocks should be proactively specified, and the pingpong block is
-> no different.
->
-> The downstream display driver [1] confirms this by also calling
-> bind_pingpong_blk on CTL_ACTIVE_CFG.  Note that this else-if is always
-> entered, as setup_intf_cfg - unlike this mainline dpu driver that
-> combines both behind the same function pointer - is left NULL in favour
-> of using setup_intf_cfg_v1 when CTL_ACTIVE_CFG is set.
->
-> This solves continuous timeouts on at least the Qualcomm sm6125 SoC:
->
->     [drm:dpu_encoder_frame_done_timeout:2091] [dpu error]enc31 frame done timeout
->     [drm:_dpu_encoder_phys_cmd_handle_ppdone_timeout.isra.0] *ERROR* id:31 pp:0 kickoff timeout 0 cnt 1 koff_cnt 1
->     [drm:dpu_encoder_phys_cmd_prepare_for_kickoff] *ERROR* failed wait_for_idle: id:31 ret:-110 pp:0
->
-> In the same way this pingpong block should also be unbound followed by
-> an interface flush when the encoder is disabled, according to the
-> downstream display driver [2].
->
-> [1]: https://source.codeaurora.org/quic/la/platform/vendor/opensource/display-drivers/tree/msm/sde/sde_encoder_phys_cmd.c?h=LA.UM.9.16.r1-08500-MANNAR.0#n167
-> [2]: https://source.codeaurora.org/quic/la/platform/vendor/opensource/display-drivers/tree/msm/sde/sde_encoder.c?h=LA.UM.9.16.r1-08500-MANNAR.0#n2986
->
-> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+On Tue, 2022-02-22 at 18:28 -0500, Paul Moore wrote:
+> On Mon, Feb 21, 2022 at 8:15 AM Richard Haines
+> <richard_c_haines@btinternet.com> wrote:
+> > 
+> > These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which
+> > SELinux
+> > always allows too.  Furthermore, a failed FIOCLEX could result in a
+> > file
+> > descriptor being leaked to a process that should not have access to
+> > it.
+> > 
+> > As this patch removes access controls, a policy capability needs to
+> > be
+> > enabled in policy to always allow these ioctls.
+> > 
+> > Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
+> > Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
+> > ---
+> > V2 Change: Control via a policy capability. See this thread for
+> > discussion:
+> > https://lore.kernel.org/selinux/CAHC9VhQEPxYP_KU56gAGNHKQaxucY8gSsHiUB42PVgADBAccRQ@mail.gmail.com/T/#t
+> > 
+> > With this patch and the polcap enabled, the selinux-testsuite will
+> > fail:
+> > ioctl/test at line 47 - Will need a fix.
+> > 
+> >  security/selinux/hooks.c                   | 7 +++++++
+> >  security/selinux/include/policycap.h       | 1 +
+> >  security/selinux/include/policycap_names.h | 3 ++-
+> >  security/selinux/include/security.h        | 7 +++++++
+> >  4 files changed, 17 insertions(+), 1 deletion(-)
+> 
+> Thanks Richard for putting together the v2 of this patch.
+> 
+> As far as the test is concerned, it seems like the quick-n-dirty fix
+> is to simply remove the ioctl(FIOCLEX) test in test_noioctl.c; is
+> everyone okay with that?  At least that is what I'm going to do with
+> my local copy that I use to validate the kernel-secnext builds unless
+> someone has a better patch :)
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To fix this I was planning to submit a patch that would change the
+ioctl(FIOCLEX) tests to ioctl(FS_IOC_GETFSLABEL) as that would continue
+to test the xperms.
 
-As we are quite late in the development cycle, I'd delay this into the
-next release, if you don't mind.
+> 
+> > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> > index 5b6895e4f..030c41652 100644
+> > --- a/security/selinux/hooks.c
+> > +++ b/security/selinux/hooks.c
+> > @@ -3745,6 +3745,13 @@ static int selinux_file_ioctl(struct file
+> > *file, unsigned int cmd,
+> >                                             CAP_OPT_NONE, true);
+> >                 break;
+> > 
+> > +       case FIOCLEX:
+> > +       case FIONCLEX:
+> > +               /* Must always succeed if polcap set, else default:
+> > */
+> > +               if (selinux_policycap_ioctl_skip_cloexec())
+> > +                       break;
+> > +               fallthrough;
+> > +
+> 
+> The break/fallthrough looks like it might be a little more fragile
+> than necessary, how about something like this:
+> 
+>   case FIOCLEX:
+>   case FIONCLEX:
+>     if (!selinux_policycap_ioctl_skip_cloexec())
+>       error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
+>       break;
+> 
+> Yes, it does duplicate the default ioctl_has_perm() call, but since
+> we
+> are effectively deprecating this and locking the FIOCLEX/FIONCLEX
+> behavior with this policy capability it seems okay to me (and
+> preferable to relying on the fallthrough).
+> 
+> Thoughts?
 
-> ---
->
-> Changes since v1:
-> - Always unbind the pingpong block in dpu_encoder_phys_cmd_disable,
->   instead of only if this encoder is the master.
->
-> v1: https://lore.kernel.org/lkml/20211222105513.44860-1-marijn.suijten@somainline.org/
->
->  .../drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c  | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
-> index 8e433af7aea4..1be01cbd960e 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
-> @@ -71,6 +71,13 @@ static void _dpu_encoder_phys_cmd_update_intf_cfg(
->         intf_cfg.stream_sel = cmd_enc->stream_sel;
->         intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
->         ctl->ops.setup_intf_cfg(ctl, &intf_cfg);
-> +
-> +       /* setup which pp blk will connect to this intf */
-> +       if (test_bit(DPU_CTL_ACTIVE_CFG, &ctl->caps->features) && phys_enc->hw_intf->ops.bind_pingpong_blk)
-> +               phys_enc->hw_intf->ops.bind_pingpong_blk(
-> +                               phys_enc->hw_intf,
-> +                               true,
-> +                               phys_enc->hw_pp->idx);
->  }
->
->  static void dpu_encoder_phys_cmd_pp_tx_done_irq(void *arg, int irq_idx)
-> @@ -507,6 +514,7 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
->  {
->         struct dpu_encoder_phys_cmd *cmd_enc =
->                 to_dpu_encoder_phys_cmd(phys_enc);
-> +       struct dpu_hw_ctl *ctl;
->
->         if (!phys_enc->hw_pp) {
->                 DPU_ERROR("invalid encoder\n");
-> @@ -523,6 +531,17 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
->
->         if (phys_enc->hw_pp->ops.enable_tearcheck)
->                 phys_enc->hw_pp->ops.enable_tearcheck(phys_enc->hw_pp, false);
-> +
-> +       if (phys_enc->hw_intf->ops.bind_pingpong_blk) {
-> +               phys_enc->hw_intf->ops.bind_pingpong_blk(
-> +                               phys_enc->hw_intf,
-> +                               false,
-> +                               phys_enc->hw_pp->idx);
-> +
-> +               ctl = phys_enc->hw_ctl;
-> +               ctl->ops.update_pending_flush_intf(ctl, phys_enc->intf_idx);
-> +       }
-> +
->         phys_enc->enable_state = DPU_ENC_DISABLED;
->  }
->
->
-> base-commit: 3c30cf91b5ecc7272b3d2942ae0505dd8320b81c
-> --
-> 2.35.1
->
+Yes I did ponder this and in my first attempt I had this before the
+switch():
 
+	/* Must always succeed if polcap set */
+	if (selinux_policycap_ioctl_skip_cloexec() &&
+	    (cmd == FIOCLEX || cmd == FIONCLEX))
+		return 0;
 
--- 
-With best wishes
-Dmitry
+ 	switch (cmd) {
+ 	case FIONREAD:
+ 	case FIBMAP:
+
+but changed to within the switch(), anyway I'm happy to resubmit a
+patch either way.
+
+> 
+
