@@ -2,164 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A582C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236795AbiBWPjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:39:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
+        id S242175AbiBWPjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:39:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235281AbiBWPjg (ORCPT
+        with ESMTP id S242157AbiBWPjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:39:36 -0500
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2070.outbound.protection.outlook.com [40.107.22.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58766BBE34
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:39:08 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DOb4Ol51GDHysKFQrLrcw89mF/4zW+PCK6eNShZ0eEiJVplQD6nmN73+nr9cu43tG57PGlszzqNSIZ5mNHGdTapehpgVLfpoSQjL+qVfatW9G+AjFq9Zs/7dJT3PTcma0lskY5gNZiSS1EB01LxIcTpwIKxu3V6FUX5HnZY7lshFsvg1WrjogVaOjwqvmfveCAZSJcSfqf6r5omcSTOUbgvfjKgutumjh1EUFAR71Rsck14HzZ7a7SLLs6A7BCHE/qbtmbpnqIDazS+ngVDGeFYY/UULdQ3mfqnjWTBgKw0yTbbnVun6kKi/JpbsNMz1LdRJoODUuntfe6yE+cPTzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sF0PXa2b3dhAQvdd1dGdtfmjUethHpEz+amFuKxOReA=;
- b=W30ObyjtKPbdfSCV2ZTnQgd7EyBLmJ1bBPp6oxUlM9QED9CHbGGrbHMh5kBVUwHPUiD8Yezmgx9MJmlCnDhGXatJ9bKn3uILUnSrrVQi7maVLg7cs+PKtsOg9S5VZHM0MjhIPFBw/2sJP90MBW6O6+XMnunTY5k8qCSiK2VebzS+J7WYo7Cmx9EFoon5jn3KCc8H4YXiAjHtdRlVW5swuwhhKremdodG3jhfw+bT8zjf5vVOmHdk9kASzh17qRpKhP2Z4UP7llNnGeRMWsoERxnfb3fMJUE3RjZBaTFajnV8p0EnlLStrs7kHgZJFdGYxN0GDE+fEj/rgz/xFLaNiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sF0PXa2b3dhAQvdd1dGdtfmjUethHpEz+amFuKxOReA=;
- b=hE5MxCvvFpf3tPkjogF4O5S3DGWuBSyECuV/PcSsRN2Qfy7/fe3ZDHDKR83usnVP5LPYjvQR6J/PGHpmLgWIAxAuUt/EHVGIcPQiiYOQUHkkoYZKsDWGGv1Xw2i001KG2Vw3wJt2qtGUv8Puxir3npv66bi2B3R+aBhuRGdUkb4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from VI1PR04MB5151.eurprd04.prod.outlook.com (2603:10a6:803:61::28)
- by DB7PR04MB5131.eurprd04.prod.outlook.com (2603:10a6:10:1c::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Wed, 23 Feb
- 2022 15:39:04 +0000
-Received: from VI1PR04MB5151.eurprd04.prod.outlook.com
- ([fe80::5004:926e:e5b:38c7]) by VI1PR04MB5151.eurprd04.prod.outlook.com
- ([fe80::5004:926e:e5b:38c7%5]) with mapi id 15.20.4951.018; Wed, 23 Feb 2022
- 15:39:04 +0000
-From:   Daniel Baluta <daniel.baluta@oss.nxp.com>
-To:     broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        kai.vehmanen@linux.intel.com, ranjani.sridharan@linux.intel.com,
-        lgirdwood@gmail.com, pierre-louis.bossart@linux.intel.com,
-        peter.ujfalusi@linux.intel.com,
-        Daniel Baluta <daniel.baluta@nxp.com>
-Subject: [PATCH] ASoC: SOF: pcm: Add compress_ops for SOF platform component driver
-Date:   Wed, 23 Feb 2022 17:38:49 +0200
-Message-Id: <20220223153849.84471-1-daniel.baluta@oss.nxp.com>
-X-Mailer: git-send-email 2.27.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0186.eurprd08.prod.outlook.com
- (2603:10a6:800:d2::16) To VI1PR04MB5151.eurprd04.prod.outlook.com
- (2603:10a6:803:61::28)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a1023fe-5ea5-477c-b04c-08d9f6e29f25
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5131:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB7PR04MB5131BF5F241EC74B0A18D6EFB83C9@DB7PR04MB5131.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DPIMQZjz+SiMa4XhMRqfZi4B4Fny6aFlb4HCvQfOZ74lbbB6CotrRvqyMJTajPCcYkDxKX+4dBHV3YtHou5ABYbK/3Bvkq0dg22dn+jygu578PcuLHJvMxPBUylk6o9AsCOvbEj9gqJ3K5G7iQgTxM7hkx3Bg8LuAUEGd3Q/Kikkj3vYNjT6vkuSfQkOCqovYbkzWXzz3wOhEAC3rcisqrvC417neXO5sFLTemQWZ0eFOe3ZqQXCLRP8a38IO/SS9Zhl+41Cfq4VBZ3QY7Ap2LAnYnIHLVrMe9MoWhP69V1+lzSJBWxNYfuMD7Da4474Sz7iJtflu2unjN/wvx3G7dZAS6Wufx1div7aubs47PVFm6jI71Qqv1aSWjLvDINefJt6kJYexqpnWDX/a3e/OfxKUEIRFQnAhd553s21ztXtnWZqwrgDtKTFMv4zp24llse/ITjHJhho0tlbVgy2+U8dr6DnEx3WD4uem7vF1wiaQUF0xhhR9kxc4s1+zBxad79LMHx51/J1FoVRuiDt65RgYg4W3p29fC8Q8Qh5EnE02BGS8iAx8xIOMw93BI8skvChgxmzQN4ob5Fi55jwvhmRrVvW8fbrohwcaTKmI76/qEJEPirL43+LzWyjrwEZUUjMpllFNc/zousM5SFv/w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5151.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(6512007)(1076003)(8936002)(316002)(6506007)(86362001)(6916009)(2616005)(4326008)(66946007)(8676002)(66476007)(66556008)(186003)(52116002)(38100700002)(508600001)(6666004)(6486002)(83380400001)(44832011)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DQ6dwGQFxYFZ7oGEPSGy2OLKTLcV7NIwfXTldBa0t/jLxsiMfVWjI9LEkUJM?=
- =?us-ascii?Q?0PFaEBNQotPvtNTb7zSuWwkbdig9GBaTv1+/Y6cYB+qZwL79PYlAVE966bMz?=
- =?us-ascii?Q?q0XW8ack/smbkMpkFb4bdseWGJYPD3kw2PlZ+5S2XFrqQDbq/fHv44ZgXomU?=
- =?us-ascii?Q?vjpX9fh7ZCFWtaZG66DMbIStJ/ujY6SEgTBJ1VHQRlNYCr4fOnYc8NWqbLuu?=
- =?us-ascii?Q?bGdjdqVcxIUeEdA/mwkbiyQJKpfqldrlnG33jYEF/1v74Edm6uorkaeMVJP/?=
- =?us-ascii?Q?nB03Qj4k3wBdTcUQdAmNsxq2mgspl01tWKSJ9Sp2OiDM4RNpE+GPynk8Lx+S?=
- =?us-ascii?Q?hwf4IYbHatRE595beLVrOPMKTkS5WgcBFe0/PGSAJmgPxkL1klu9F2cU6mlD?=
- =?us-ascii?Q?xv+O56lw559RUF5SypEYlUfFe2cq5DnK3wLt7o0bl3jk5g91q9KWKsRqn2c1?=
- =?us-ascii?Q?DT6Xbnu24L+4pV/6NhmoxtFoEmQGlTpng8Imwua1vpgeB+aEYZVKH4dS/lR9?=
- =?us-ascii?Q?yxWmnMK4UwthWPBhW2Vb+AxMwm/dXfEfZ+0Y5nMv+WtD2Jka1IJ8nDcxzrOa?=
- =?us-ascii?Q?CeWhBoLRxLylRF4W7fwI/cw6UxE5KW70zpYJTK/9EMi+VQJDOA0tozOXgIIz?=
- =?us-ascii?Q?UPfJUev49QX6GTw20olMPHZDE/FnzOh7xxBogF+9OQUSVkmUij9+XN7eJfL4?=
- =?us-ascii?Q?9dLHqyYWNuZ+JasBNwIQZm3VMfagM19Z34AX1pdtoRC3UfG+8fV+LoFRzrUI?=
- =?us-ascii?Q?/rKuvy8h1vajO94LZQ9EDe38I8M3hEf4PfDc2GIGfJQe7DT5HAew165G8TAa?=
- =?us-ascii?Q?D4XvmpeY7X1MPx9Ugnqeo8OnJI88vJqU67BvqIV2DcmdrQC3v3NZ6jwoabvU?=
- =?us-ascii?Q?LyCfy8ALZSmNCngRid9vl3To3RaNdihAw8BcSRo6zBnwQwPZtnvjLt3DFgdm?=
- =?us-ascii?Q?DUPkyFg4XxPa2OwZjdd2T5oS7L0TAUGVXZKUZm6uhZZNrbHJ7H1WVmnwluJQ?=
- =?us-ascii?Q?EsyrfZf9lOtYg3g9YWuXIofVJV9PWQYXU4vR2vr5BUepXiLdP5TL0Jtg8Tka?=
- =?us-ascii?Q?jPBiiIE9+NNcRFw560Ztm1KUfK89+I6AGXe19hfWBmWJRZgg38uyZo8klpf5?=
- =?us-ascii?Q?Z3maGmOwLM6C/oK248sjVKJ599t0gEsCHswYFTGgTvzp+Tf0dTjpmHVpH4Mm?=
- =?us-ascii?Q?1L47zB7m5QSMlFnjfVT4oMAwzQ/qyicuKWKnrFiS+mYUwd2+uZjgCQBj2GaI?=
- =?us-ascii?Q?Eum7V2eWzrG0+wWWTH/0cJspoyKGnCZyh6A8BNCdE9TgpRrYclCDcVtVhcgG?=
- =?us-ascii?Q?uMvZ5SbwrLoe3kq7ZXCgNtBlLxVcxVf6T9wvRPc+3uPv7s3/cKWQIPZNe/CC?=
- =?us-ascii?Q?NJKQMz/LsOfMOnCw7LrZsjmAWXZe2G0urufTnw5tsbXwcvatukc4Q4owb5qA?=
- =?us-ascii?Q?vfNIO5Y7G+ycTf25lL2H9KRYaVh1RLWGUNsg6o05HxuU9uaHSK60MXcpqjN6?=
- =?us-ascii?Q?RbXdmCimxNPP92WJxxVGqqniJiYMDc0eJcEX/nurtD/IbdMqO9C+sv/gpcKJ?=
- =?us-ascii?Q?PjiJdKrUFnRxuceiPyFNK7cS5uYoKXSjqian3FnYt+X+AYI9hofZxoRC5GrI?=
- =?us-ascii?Q?bbtq6F0rf/btSnmbqSAhLW96y+2TFhdddF9x19fkWUUZ89o+m6Vu9hnPu6nf?=
- =?us-ascii?Q?yIITp+ZtfK+V8MXyinF7lmhHyj6tWjTeRvfGepQzws91zKS1?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a1023fe-5ea5-477c-b04c-08d9f6e29f25
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5151.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 15:39:04.5849
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /WWk1GgSu9J8gq1vzzstkutfchq3SjPgcsA1cIogRHbq+kJ8gVqKXyzfbjLxSNSMcVgIzR0HXnQZw9Mlrz5e8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5131
+        Wed, 23 Feb 2022 10:39:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE932BD2C3;
+        Wed, 23 Feb 2022 07:39:11 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NERC6e017992;
+        Wed, 23 Feb 2022 15:38:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=7DQLKUgdnvflrrBNDkKPvx9BLtwQZE03ICcMhF/Lvdw=;
+ b=satumKOykpaXCKFPWAWvXk3vllRUpB0jHgG6wBR2xOYJ1l/bfdatnkvbKj0J2vNw+Kx0
+ ZWOEEek26ilUYYjPw3uP+bdWk8s0TwSIlzA2V8CR0VSo/axSLL2pGoG1XwGeJ9hWC+nP
+ vjwNLYYQrVrDm/M03KZtUPyiTFG76AB8HwQHxGsBnlbJ3pFTgWHql3ZLSpSh+pd6DdbR
+ uVSMIlQNFUolIgpRz9lLotFlBatJqxR9vFr+EpvIEdxc/KWqnqqh28Xkgqq5/Xi4fTLN
+ PUn4B3LxoAB7dPSs8k/tbkzv9n1hVJAeRAjSXKz01XhSWHPJD+pm+bdTXrBaXsXSQ/lx 0A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6ws7ka-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 15:38:49 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NEQv6T000576;
+        Wed, 23 Feb 2022 15:38:48 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6ws7jd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 15:38:48 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NFWYJ2010680;
+        Wed, 23 Feb 2022 15:38:45 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3ear699ku5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 15:38:45 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NFcg9i33816834
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 15:38:42 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 74B66A4065;
+        Wed, 23 Feb 2022 15:38:42 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 44378A4062;
+        Wed, 23 Feb 2022 15:38:40 +0000 (GMT)
+Received: from sig-9-65-80-154.ibm.com (unknown [9.65.80.154])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 15:38:40 +0000 (GMT)
+Message-ID: <5e4a862917785972281bbcb483404da01b71e801.camel@linux.ibm.com>
+Subject: Re: [PATCH v10 26/27] ima: Limit number of policy rules in
+ non-init_ima_ns
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org
+Date:   Wed, 23 Feb 2022 10:38:39 -0500
+In-Reply-To: <20220201203735.164593-27-stefanb@linux.ibm.com>
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+         <20220201203735.164593-27-stefanb@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -_N_LTBSyNxiP_N7uD9o1NSnm0GozV1V
+X-Proofpoint-ORIG-GUID: XQeRhpxmFWWbPSVucT5-uvdNPHlIsebt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_07,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 clxscore=1015 bulkscore=0 adultscore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202230087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Baluta <daniel.baluta@nxp.com>
+On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
+> Limit the number of policy rules one can set in non-init_ima_ns to a
+> hardcoded 1024 rules. If the user attempts to exceed this limit by
+> setting too many additional rules, emit an audit message with the cause
+> 'too-many-rules' and simply ignore the newly added rules.
 
-Now that sof_compressed_ops initial implementation was merged
-we can enable it in SOF platform component driver.
+This paragraph describes 'what' you're doing, not 'why'.  Please prefix
+this paragraph with a short, probably one sentence, reason for the
+change.
+> 
+> Switch the accounting for the memory allocated for IMA policy rules to
+> GFP_KERNEL_ACCOUNT so that cgroups kernel memory accounting takes effect.
 
-This partially reverts commit
-8a720724589e ("ASoC: SOF: pcm: Remove non existent CONFIG_SND_SOC_SOF_COMPRESS reference")
+Does this change affect the existing IMA policy rules for init_ima_ns?
 
-Reported-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@nxp.com>
----
- sound/soc/sof/pcm.c      | 4 ++++
- sound/soc/sof/sof-priv.h | 5 +++++
- 2 files changed, 9 insertions(+)
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> ---
+>  security/integrity/ima/ima_fs.c     | 20 ++++++++++++++------
+>  security/integrity/ima/ima_policy.c | 23 ++++++++++++++++++-----
+>  2 files changed, 32 insertions(+), 11 deletions(-)
+> 
+> diff --git a/security/integrity/ima/ima_fs.c b/security/integrity/ima/ima_fs.c
+> index 58d80884880f..cd102bbd4677 100644
+> --- a/security/integrity/ima/ima_fs.c
+> +++ b/security/integrity/ima/ima_fs.c
+> @@ -410,24 +410,32 @@ static int ima_release_policy(struct inode *inode, struct file *file)
+>  {
+>  	struct ima_namespace *ns = &init_ima_ns;
+>  	const char *cause = ns->valid_policy ? "completed" : "failed";
+> +	int err = 0;
+>  
+>  	if ((file->f_flags & O_ACCMODE) == O_RDONLY)
+>  		return seq_release(inode, file);
+>  
+> -	if (ns->valid_policy && ima_check_policy(ns) < 0) {
+> -		cause = "failed";
+> -		ns->valid_policy = 0;
+> +	if (ns->valid_policy) {
+> +		err = ima_check_policy(ns);
+> +		if (err < 0) {
+> +			if (err == -ENOSPC)
 
-diff --git a/sound/soc/sof/pcm.c b/sound/soc/sof/pcm.c
-index 137f8ed71677..a312ed855f1a 100644
---- a/sound/soc/sof/pcm.c
-+++ b/sound/soc/sof/pcm.c
-@@ -922,6 +922,10 @@ void snd_sof_new_platform_drv(struct snd_sof_dev *sdev)
- 	pd->pointer = sof_pcm_pointer;
- 	pd->ack = sof_pcm_ack;
- 
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_COMPRESS)
-+	pd->compress_ops = &sof_compressed_ops;
-+#endif
-+
- 	pd->pcm_construct = sof_pcm_new;
- 	pd->ignore_machine = drv_name;
- 	pd->be_hw_params_fixup = sof_pcm_dai_link_fixup;
-diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 2c8e556cd5cc..886787a9997f 100644
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -556,6 +556,11 @@ int snd_sof_debugfs_add_region_item_iomem(struct snd_sof_dev *sdev,
- 		enum snd_sof_fw_blk_type blk_type, u32 offset, size_t size,
- 		const char *name, enum sof_debugfs_access_type access_type);
- 
-+/*
-+ * Platform specific ops.
-+ */
-+extern struct snd_compress_ops sof_compressed_ops;
-+
- /*
-  * DSP Architectures.
-  */
+Perhaps "EDQUOT" would be more appropriate.
+
+> +				cause = "too-many-rules";
+> +			else
+> +				cause = "failed";
+> +			ns->valid_policy = 0;
+> +		}
+>  	}
+>  
+>  	pr_info("policy update %s\n", cause);
+> -	integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL, NULL,
+> -			    "policy_update", cause, !ns->valid_policy, 0);
+> +	integrity_audit_message(AUDIT_INTEGRITY_STATUS, NULL, NULL,
+> +				"policy_update", cause, !ns->valid_policy, 0,
+> +				-err);
+
+The 'err' value is already properly set.  No need for the minus sign.
+
+>  
+>  	if (!ns->valid_policy) {
+>  		ima_delete_rules(ns);
+>  		ns->valid_policy = 1;
+>  		clear_bit(IMA_FS_BUSY, &ns->ima_fs_flags);
+> -		return 0;
+> +		return err;
+>  	}
+>  
+>  	ima_update_policy(ns);
+> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
+> index acb4c36e539f..3f84d04f101d 100644
+> --- a/security/integrity/ima/ima_policy.c
+> +++ b/security/integrity/ima/ima_policy.c
+> @@ -305,7 +305,8 @@ static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
+>  		return ERR_PTR(-EINVAL);
+>  	}
+>  
+> -	opt_list = kzalloc(struct_size(opt_list, items, count), GFP_KERNEL);
+> +	opt_list = kzalloc(struct_size(opt_list, items, count),
+> +			   GFP_KERNEL_ACCOUNT);
+>  	if (!opt_list) {
+>  		kfree(src_copy);
+>  		return ERR_PTR(-ENOMEM);
+> @@ -379,7 +380,7 @@ static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_namespace *ns,
+>  	 * Immutable elements are copied over as pointers and data; only
+>  	 * lsm rules can change
+>  	 */
+> -	nentry = kmemdup(entry, sizeof(*nentry), GFP_KERNEL);
+> +	nentry = kmemdup(entry, sizeof(*nentry), GFP_KERNEL_ACCOUNT);
+>  	if (!nentry)
+>  		return NULL;
+>  
+> @@ -826,7 +827,7 @@ static void add_rules(struct ima_namespace *ns,
+>  
+>  		if (policy_rule & IMA_CUSTOM_POLICY) {
+>  			entry = kmemdup(&entries[i], sizeof(*entry),
+> -					GFP_KERNEL);
+> +					GFP_KERNEL_ACCOUNT);
+>  			if (!entry)
+>  				continue;
+>  
+> @@ -863,7 +864,7 @@ static int __init ima_init_arch_policy(struct ima_namespace *ns)
+>  
+>  	ns->arch_policy_entry = kcalloc(arch_entries + 1,
+>  					sizeof(*ns->arch_policy_entry),
+> -					GFP_KERNEL);
+> +					GFP_KERNEL_ACCOUNT);
+>  	if (!ns->arch_policy_entry)
+>  		return 0;
+>  
+> @@ -975,8 +976,20 @@ void __init ima_init_policy(struct ima_namespace *ns)
+>  /* Make sure we have a valid policy, at least containing some rules. */
+>  int ima_check_policy(struct ima_namespace *ns)
+>  {
+> +	struct ima_rule_entry *entry;
+> +	size_t len1 = 0;
+> +	size_t len2 = 0;
+> +
+>  	if (list_empty(&ns->ima_temp_rules))
+>  		return -EINVAL;
+> +	if (ns != &init_ima_ns) {
+> +		list_for_each_entry(entry, &ns->ima_temp_rules, list)
+> +			len1++;
+> +		list_for_each_entry(entry, &ns->ima_policy_rules, list)
+
+Using list_for_each_entry() is fine here, because multiple policy
+updates at the same time are blocked.  Please add a comment.
+
+> +			len2++;
+> +		if (len1 + len2 > 1024)
+
+One variable should be enough.
+
+> +			return -ENOSPC;
+> +	}
+>  	return 0;
+>  }
+>  
+> @@ -1848,7 +1861,7 @@ ssize_t ima_parse_add_rule(struct ima_namespace *ns, char *rule)
+>  	if (*p == '#' || *p == '\0')
+>  		return len;
+>  
+> -	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL_ACCOUNT);
+>  	if (!entry) {
+>  		integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL,
+>  				    NULL, op, "-ENOMEM", -ENOMEM, audit_info);
+
 -- 
-2.27.0
+thanks,
+
+Mimi
 
