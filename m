@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12519C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238324AbiBWF0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:26:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
+        id S238332AbiBWF0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238302AbiBWFZl (ORCPT
+        with ESMTP id S238331AbiBWFZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:25:41 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F0B6C976
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:42 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id s11-20020a255e0b000000b0062277953037so26417513ybb.21
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:42 -0800 (PST)
+        Wed, 23 Feb 2022 00:25:42 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27386D964
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:49 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d74a0ff060so75803747b3.6
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=KctzOijb2lPzQRsVweA+t5lqX+AMon2xx7uJ8sEe3V0=;
-        b=o6x+fXjXHT+YmW/ZEagw0M3GAQliRWz6GkGaqA4u+vbUpzhuqjZg6dpP5meVpt0ROf
-         kKIgOplxmZwcy8fpFEZTWPlgRlLYr6BEMXfWuy6EkVszZL1eiXWI04tPu/Bave36tyh0
-         Pg/rLhImfsoHjz3O2aw8506JPbQ7x/tOlKAxNgPJdEMnSjZ93q2iD4DVERcopQg4JNYp
-         GNKE8XJSp9XzGQ0dIwkM6cgZOM8UkwzVOfAn0JxbE5VvBEVsLLUtWn7Lc0a3H+tJ18Mo
-         xFRsJWo21wVW8cCrGTePkWMS8ReiZ3Pptclz1bJcEt4nXmu0gRlgbulAgKKuDIl4DXV3
-         55IA==
+        bh=migmFG7UQDaW8MeCncNCopIOLc7/KCi4nAx8Y23Kqls=;
+        b=ZIf827+EcfBkAYznkNAzIxjepuJOo5jGJUpKJJAWVlbJLp/v2xx9WndG0Zfv0Y30pp
+         QVoiE4x5/isYQS6r529V5FuPTwvJXepA8/Ig/UwtVbwxtSPhO5eBWW/xZu7GdKR2hwRD
+         noJsJ3Ur8bMBMS1eL71R7PXbr8K1C4T4AmgEfBVK5/+rkrUOvlO+o5qBs5UJm8vfEFH8
+         iWvYMGLx9ZnbGLPu3ZtgRIXCqWDVhmvwLhi1ORJZdwX1PxFlhSsfJbPaCpw4raGaKYCV
+         43iNhXkj/THFgjjQb9mrwbCVq0tdVwLBhSI29IV5lijsBJ9zHJayAmn0j12b9dgg/i30
+         Q+4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=KctzOijb2lPzQRsVweA+t5lqX+AMon2xx7uJ8sEe3V0=;
-        b=DXmmMXw5jOJCPoCEB9rxBqwu3kp9j6xDyFJ0jRZ8IOtYh4U3mikfGLXUDnmYZuqYLq
-         2n5qXSegLN/QwpPFmDJFUQP/EZwwooouSXtNdq9iCGPDfbyhhRGZmwS7lmxktLSW8w4I
-         2CAevgZ5GiFcDRHnuTCjxIluBFN2VX5oFaNS1Al7UqGtuRaI9yxUHrd5rAu2/3HBiaI8
-         VeyMXu7SUrM6ZEMCZk95Ekj7uoo4/bL0XAJ2LQcsnRrjfGJtIav6y/oNy/Xy3X1RTSN0
-         is+OJBo7Gio0po9Nu2gKcduqEMVV3cw2k+6zmBcKOdpY3DufMjwwuTt0xlPXmBoCRT+P
-         XtCw==
-X-Gm-Message-State: AOAM532oANRE+/5WrA2wqMOY+oDtH2k1OABeTfHtGjDVpcSOKZwEy88l
-        kfdxQ89JoTP9WdAseObTIMLRgc2SFBxkBusr1ulO/kTgvhYkdSTFccO9qUipA1QzdcJOIBZyB5/
-        uqxcGodfGVwtzNPJrl7oqQWiNb7uVwM9aNpRBzYhrG5KWzNnDCK/ul8wbcRG8kFsGRxTqtZi3
-X-Google-Smtp-Source: ABdhPJz4jScT7T8fgZ/6SCKV/MEmg4Vf6MpNhLflLFYdfY4h7Ie3CFO275rWWB7jrjHpkdQgBhPjBxZoyl00
+        bh=migmFG7UQDaW8MeCncNCopIOLc7/KCi4nAx8Y23Kqls=;
+        b=tyC8PEAm+nHdFxM9SbddE+nmk4SbGQTtDT7y9ENUnSRRXXPJs6PCbuIAb9OLtbrUR1
+         JkvZy1y1Jz+WzRsmmvLQejtn6WtQDD1Ub+zUrtB73Ro9EPj8UVIt6HcfQ1zLfjQrMYAG
+         r6iYGN1y0y8pCTZp/img5Lk9X9PZF6tRv5xoBhYQwfqARBbYEpOnhnfoppWtOGWRoTIA
+         uCu2z5FoR1JCMOBPT0GAfc/EYsEPm5rihp+thouE7U+3LaCMmwnOHyvqtpytXam+V1xF
+         7AWvibOFH2s/MiDESyesvKIvuyNI6ElYCmvxg25TSYLfxeb4XPIV9LovQYPvSoiJxdpN
+         /tKg==
+X-Gm-Message-State: AOAM533I7XGRq/O6ns+TFI5J6Q/CqbRYi1m53s7hoBdGr9lPTeZRWyty
+        SdwEgo0/orVTVoVjdRUL01ChilgrCUCQb6SJDmxxZaRLRY01r9N0W51pkKu7YCkz5XV8+lFe5Lq
+        AmBJGIrjXHhT347RCfWmUKCT8S9i+0PoiiQc8crV27qw2+TFcTQ8OOvXUBlAvJyvO2HmVrjHc
+X-Google-Smtp-Source: ABdhPJzpSBL0VJdokvTlUTI5d1w3wFKyOwiaPENifHATjNeM+qviCG3MD0z5nH5EeDzE1oVe+ERWkd3RD0Jr
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a25:d90b:0:b0:61d:e8c7:82ff with SMTP id
- q11-20020a25d90b000000b0061de8c782ffmr26287345ybg.171.1645593870304; Tue, 22
- Feb 2022 21:24:30 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:56 -0800
+ (user=junaids job=sendgmr) by 2002:a81:84d5:0:b0:2d1:e85:bf04 with SMTP id
+ u204-20020a8184d5000000b002d10e85bf04mr27926930ywf.465.1645593877093; Tue, 22
+ Feb 2022 21:24:37 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:59 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-21-junaids@google.com>
+Message-Id: <20220223052223.1202152-24-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 20/47] mm: asi: Support for locally non-sensitive vmalloc allocations
+Subject: [RFC PATCH 23/47] mm: asi: Add support for mapping all userspace
+ memory into ASI
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -66,370 +67,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A new flag, VM_LOCAL_NONSENSITIVE is added to designate locally
-non-sensitive vmalloc/vmap areas. When using the __vmalloc /
-__vmalloc_node APIs, if the corresponding GFP flag is specified, the
-VM flag is automatically added. When using the __vmalloc_node_range API,
-either flag can be specified independently. The VM flag will only map
-the vmalloc area as non-sensitive, while the GFP flag will only map the
-underlying direct map area as non-sensitive.
+This adds a new ASI class flag, ASI_MAP_ALL_USERSPACE, which if set,
+would automatically map all userspace addresses into that ASI address
+space. This is achieved by lazily cloning the userspace PGD entries
+during page faults encountered while in that restricted address space.
 
-When using the __vmalloc_node_range API, instead of VMALLOC_START/END,
-VMALLOC_LOCAL_NONSENSITIVE_START/END should be used. This is the range
-that will have different ASI page tables for each process, thereby
-providing the local mapping.
-
-A command line parameter vmalloc_local_nonsensitive_percent is added to
-specify the approximate division between the per-process and global
-vmalloc ranges. Note that regular/sensitive vmalloc/vmap allocations
-are not restricted by this division and can go anywhere in the entire
-vmalloc range. The division only applies to non-sensitive allocations.
-
-Since no attempt is made to balance regular/sensitive allocations across
-the division, it is possible that one of these ranges gets filled up
-by regular allocations, leaving no room for the non-sensitive
-allocations for which that range was designated. But since the vmalloc
-range is fairly large, so hopefully that will not be a problem in
-practice. If that assumption turns out to be incorrect, we could
-implement a more sophisticated scheme.
+When the userspace PGD entry is cleared (e.g. in munmap()), we go
+through all restricted address spaces with the ASI_MAP_ALL_USERSPACE
+flag and clear the corresponding entry in those address spaces as well.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h              |  2 +
- arch/x86/include/asm/page_64.h          |  2 +
- arch/x86/include/asm/pgtable_64_types.h |  7 ++-
- arch/x86/mm/asi.c                       | 57 ++++++++++++++++++
- include/asm-generic/asi.h               |  5 ++
- include/linux/vmalloc.h                 |  6 ++
- mm/vmalloc.c                            | 78 ++++++++++++++++++++-----
- 7 files changed, 142 insertions(+), 15 deletions(-)
+ arch/x86/include/asm/asi.h |  2 +
+ arch/x86/mm/asi.c          | 81 ++++++++++++++++++++++++++++++++++++++
+ include/asm-generic/asi.h  |  7 ++++
+ mm/memory.c                |  2 +
+ 4 files changed, 92 insertions(+)
 
 diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index f11010c0334b..e3cbf6d8801e 100644
+index 2dc465f78bcc..062ccac07fd9 100644
 --- a/arch/x86/include/asm/asi.h
 +++ b/arch/x86/include/asm/asi.h
-@@ -46,6 +46,8 @@ DECLARE_PER_CPU_ALIGNED(struct asi_state, asi_cpu_state);
+@@ -68,6 +68,8 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb);
+ void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len);
+ void asi_sync_mapping(struct asi *asi, void *addr, size_t len);
+ void asi_do_lazy_map(struct asi *asi, size_t addr);
++void asi_clear_user_pgd(struct mm_struct *mm, size_t addr);
++void asi_clear_user_p4d(struct mm_struct *mm, size_t addr);
  
- extern pgd_t asi_global_nonsensitive_pgd[];
- 
-+void asi_vmalloc_init(void);
-+
- int  asi_init_mm_state(struct mm_struct *mm);
- void asi_free_mm_state(struct mm_struct *mm);
- 
-diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page_64.h
-index 2845eca02552..b17574349572 100644
---- a/arch/x86/include/asm/page_64.h
-+++ b/arch/x86/include/asm/page_64.h
-@@ -18,6 +18,8 @@ extern unsigned long vmemmap_base;
- 
- #ifdef CONFIG_ADDRESS_SPACE_ISOLATION
- 
-+extern unsigned long vmalloc_global_nonsensitive_start;
-+extern unsigned long vmalloc_local_nonsensitive_end;
- extern unsigned long asi_local_map_base;
- DECLARE_STATIC_KEY_FALSE(asi_local_map_initialized);
- 
-diff --git a/arch/x86/include/asm/pgtable_64_types.h b/arch/x86/include/asm/pgtable_64_types.h
-index 0fc380ba25b8..06793f7ef1aa 100644
---- a/arch/x86/include/asm/pgtable_64_types.h
-+++ b/arch/x86/include/asm/pgtable_64_types.h
-@@ -142,8 +142,13 @@ extern unsigned int ptrs_per_p4d;
- #define VMALLOC_END		(VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
- 
- #ifdef CONFIG_ADDRESS_SPACE_ISOLATION
--#define VMALLOC_GLOBAL_NONSENSITIVE_START	VMALLOC_START
-+
-+#define VMALLOC_LOCAL_NONSENSITIVE_START	VMALLOC_START
-+#define VMALLOC_LOCAL_NONSENSITIVE_END		vmalloc_local_nonsensitive_end
-+
-+#define VMALLOC_GLOBAL_NONSENSITIVE_START	vmalloc_global_nonsensitive_start
- #define VMALLOC_GLOBAL_NONSENSITIVE_END		VMALLOC_END
-+
- #endif
- 
- #define MODULES_VADDR		(__START_KERNEL_map + KERNEL_IMAGE_SIZE)
+ static inline void asi_init_thread_state(struct thread_struct *thread)
+ {
 diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 3ba0971a318d..91e5ff1224ff 100644
+index ac35323193a3..a3d96be76fa9 100644
 --- a/arch/x86/mm/asi.c
 +++ b/arch/x86/mm/asi.c
-@@ -3,6 +3,7 @@
- #include <linux/init.h>
- #include <linux/memblock.h>
- #include <linux/memcontrol.h>
-+#include <linux/moduleparam.h>
- 
- #include <asm/asi.h>
- #include <asm/pgalloc.h>
-@@ -28,6 +29,17 @@ EXPORT_SYMBOL(asi_local_map_initialized);
- unsigned long asi_local_map_base __ro_after_init;
- EXPORT_SYMBOL(asi_local_map_base);
- 
-+unsigned long vmalloc_global_nonsensitive_start __ro_after_init;
-+EXPORT_SYMBOL(vmalloc_global_nonsensitive_start);
-+
-+unsigned long vmalloc_local_nonsensitive_end __ro_after_init;
-+EXPORT_SYMBOL(vmalloc_local_nonsensitive_end);
-+
-+/* Approximate percent only. Rounded to PGDIR_SIZE boundary. */
-+static uint vmalloc_local_nonsensitive_percent __ro_after_init = 50;
-+core_param(vmalloc_local_nonsensitive_percent,
-+	   vmalloc_local_nonsensitive_percent, uint, 0444);
-+
- int asi_register_class(const char *name, uint flags,
- 		       const struct asi_hooks *ops)
- {
-@@ -307,6 +319,10 @@ int asi_init(struct mm_struct *mm, int asi_index, struct asi **out_asi)
- 		     i++)
- 			set_pgd(asi->pgd + i, mm->asi[0].pgd[i]);
- 
-+		for (i = pgd_index(VMALLOC_LOCAL_NONSENSITIVE_START);
-+		     i <= pgd_index(VMALLOC_LOCAL_NONSENSITIVE_END); i++)
-+			set_pgd(asi->pgd + i, mm->asi[0].pgd[i]);
-+
- 		for (i = pgd_index(VMALLOC_GLOBAL_NONSENSITIVE_START);
- 		     i < PTRS_PER_PGD; i++)
- 			set_pgd(asi->pgd + i, asi_global_nonsensitive_pgd[i]);
-@@ -432,6 +448,10 @@ void asi_free_mm_state(struct mm_struct *mm)
- 			   pgd_index(ASI_LOCAL_MAP +
- 				     PFN_PHYS(max_possible_pfn)) + 1);
- 
-+	asi_free_pgd_range(&mm->asi[0],
-+			   pgd_index(VMALLOC_LOCAL_NONSENSITIVE_START),
-+			   pgd_index(VMALLOC_LOCAL_NONSENSITIVE_END) + 1);
-+
- 	free_page((ulong)mm->asi[0].pgd);
+@@ -702,6 +702,41 @@ static bool is_addr_in_local_nonsensitive_range(size_t addr)
+ 	       addr < VMALLOC_GLOBAL_NONSENSITIVE_START;
  }
  
-@@ -671,3 +691,40 @@ void asi_sync_mapping(struct asi *asi, void *start, size_t len)
- 		for (; addr < end; addr = pgd_addr_end(addr, end))
- 			asi_clone_pgd(asi->pgd, asi->mm->asi[0].pgd, addr);
- }
-+
-+void __init asi_vmalloc_init(void)
++static void asi_clone_user_pgd(struct asi *asi, size_t addr)
 +{
-+	uint start_index = pgd_index(VMALLOC_START);
-+	uint end_index = pgd_index(VMALLOC_END);
-+	uint global_start_index;
++	pgd_t *src = pgd_offset_pgd(asi->mm->pgd, addr);
++	pgd_t *dst = pgd_offset_pgd(asi->pgd, addr);
++	pgdval_t old_src, curr_src;
 +
-+	if (!boot_cpu_has(X86_FEATURE_ASI)) {
-+		vmalloc_global_nonsensitive_start = VMALLOC_START;
-+		vmalloc_local_nonsensitive_end = VMALLOC_END;
++	if (pgd_val(*dst))
 +		return;
-+	}
 +
-+	if (vmalloc_local_nonsensitive_percent == 0) {
-+		vmalloc_local_nonsensitive_percent = 1;
-+		pr_warn("vmalloc_local_nonsensitive_percent must be non-zero");
-+	}
++	VM_BUG_ON(!irqs_disabled());
 +
-+	if (vmalloc_local_nonsensitive_percent >= 100) {
-+		vmalloc_local_nonsensitive_percent = 99;
-+		pr_warn("vmalloc_local_nonsensitive_percent must be less than 100");
-+	}
++	/*
++	 * This synchronizes against the PGD entry getting cleared by
++	 * free_pgd_range(). That path has the following steps:
++	 * 1. pgd_clear
++	 * 2. asi_clear_user_pgd
++	 * 3. Remote TLB Flush
++	 * 4. Free page tables
++	 *
++	 * (3) will be blocked for the duration of this function because the
++	 * IPI will remain pending until interrupts are re-enabled.
++	 *
++	 * The following loop ensures that if we read the PGD value before
++	 * (1) and write it after (2), we will re-read the value and write
++	 * the new updated value.
++	 */
++	curr_src = pgd_val(*src);
++	do {
++		set_pgd(dst, __pgd(curr_src));
++		smp_mb();
++		old_src = curr_src;
++		curr_src = pgd_val(*src);
++	} while (old_src != curr_src);
++}
 +
-+	global_start_index = start_index + (end_index - start_index) *
-+			     vmalloc_local_nonsensitive_percent / 100;
-+	global_start_index = max(global_start_index, start_index + 1);
+ void asi_do_lazy_map(struct asi *asi, size_t addr)
+ {
+ 	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
+@@ -710,6 +745,9 @@ void asi_do_lazy_map(struct asi *asi, size_t addr)
+ 	if ((asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE) &&
+ 	    is_addr_in_local_nonsensitive_range(addr))
+ 		asi_clone_pgd(asi->pgd, asi->mm->asi[0].pgd, addr);
++	else if ((asi->class->flags & ASI_MAP_ALL_USERSPACE) &&
++		 addr < TASK_SIZE_MAX)
++		asi_clone_user_pgd(asi, addr);
+ }
+ 
+ /*
+@@ -766,3 +804,46 @@ void __init asi_vmalloc_init(void)
+ 	VM_BUG_ON(vmalloc_local_nonsensitive_end >= VMALLOC_END);
+ 	VM_BUG_ON(vmalloc_global_nonsensitive_start <= VMALLOC_START);
+ }
 +
-+	vmalloc_global_nonsensitive_start = -(PTRS_PER_PGD - global_start_index)
-+					    * PGDIR_SIZE;
-+	vmalloc_local_nonsensitive_end = vmalloc_global_nonsensitive_start - 1;
++static void __asi_clear_user_pgd(struct mm_struct *mm, size_t addr)
++{
++	uint i;
 +
-+	pr_debug("vmalloc_global_nonsensitive_start = %llx",
-+		 vmalloc_global_nonsensitive_start);
++	if (!static_cpu_has(X86_FEATURE_ASI) || !mm_asi_enabled(mm))
++		return;
 +
-+	VM_BUG_ON(vmalloc_local_nonsensitive_end >= VMALLOC_END);
-+	VM_BUG_ON(vmalloc_global_nonsensitive_start <= VMALLOC_START);
++	/*
++	 * This function is called right after pgd_clear/p4d_clear.
++	 * We need to be sure that the preceding pXd_clear is visible before
++	 * the ASI pgd clears below. Compare with asi_clone_user_pgd().
++	 */
++	smp_mb__before_atomic();
++
++	/*
++	 * We need to ensure that the ASI PGD tables do not get freed from
++	 * under us. We can potentially use RCU to avoid that, but since
++	 * this path is probably not going to be too performance sensitive,
++	 * so we just acquire the lock to block asi_destroy().
++	 */
++	mutex_lock(&mm->asi_init_lock);
++
++	for (i = 1; i < ASI_MAX_NUM; i++)
++		if (mm->asi[i].class &&
++		    (mm->asi[i].class->flags & ASI_MAP_ALL_USERSPACE))
++			set_pgd(pgd_offset_pgd(mm->asi[i].pgd, addr),
++				native_make_pgd(0));
++
++	mutex_unlock(&mm->asi_init_lock);
++}
++
++void asi_clear_user_pgd(struct mm_struct *mm, size_t addr)
++{
++	if (pgtable_l5_enabled())
++		__asi_clear_user_pgd(mm, addr);
++}
++
++void asi_clear_user_p4d(struct mm_struct *mm, size_t addr)
++{
++	if (!pgtable_l5_enabled())
++		__asi_clear_user_pgd(mm, addr);
 +}
 diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index a1c8ebff70e8..7c50d8b64fa4 100644
+index 7c50d8b64fa4..8513d0d7865a 100644
 --- a/include/asm-generic/asi.h
 +++ b/include/asm-generic/asi.h
-@@ -18,6 +18,9 @@
- #define VMALLOC_GLOBAL_NONSENSITIVE_START	VMALLOC_START
- #define VMALLOC_GLOBAL_NONSENSITIVE_END		VMALLOC_END
+@@ -6,6 +6,7 @@
  
-+#define VMALLOC_LOCAL_NONSENSITIVE_START	VMALLOC_START
-+#define VMALLOC_LOCAL_NONSENSITIVE_END		VMALLOC_END
+ /* ASI class flags */
+ #define ASI_MAP_STANDARD_NONSENSITIVE	1
++#define ASI_MAP_ALL_USERSPACE		2
+ 
+ #ifndef CONFIG_ADDRESS_SPACE_ISOLATION
+ 
+@@ -85,6 +86,12 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb) { }
+ static inline
+ void asi_do_lazy_map(struct asi *asi, size_t addr) { }
+ 
++static inline
++void asi_clear_user_pgd(struct mm_struct *mm, size_t addr) { }
 +
- #ifndef _ASSEMBLY_
- 
- struct asi_hooks {};
-@@ -36,6 +39,8 @@ static inline int asi_init_mm_state(struct mm_struct *mm) { return 0; }
- 
- static inline void asi_free_mm_state(struct mm_struct *mm) { }
- 
-+static inline void asi_vmalloc_init(void) { }
++static inline
++void asi_clear_user_p4d(struct mm_struct *mm, size_t addr) { }
 +
  static inline
- int asi_init(struct mm_struct *mm, int asi_index, struct asi **out_asi)
- {
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index 5f85690f27b6..2b4eafc21fa5 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -41,8 +41,10 @@ struct notifier_block;		/* in notifier.h */
+ void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
  
- #ifdef CONFIG_ADDRESS_SPACE_ISOLATION
- #define VM_GLOBAL_NONSENSITIVE	0x00000800	/* Similar to __GFP_GLOBAL_NONSENSITIVE */
-+#define VM_LOCAL_NONSENSITIVE	0x00001000	/* Similar to __GFP_LOCAL_NONSENSITIVE */
- #else
- #define VM_GLOBAL_NONSENSITIVE	0
-+#define VM_LOCAL_NONSENSITIVE	0
- #endif
+diff --git a/mm/memory.c b/mm/memory.c
+index 8f1de811a1dc..667ece86e051 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -296,6 +296,7 @@ static inline void free_pud_range(struct mmu_gather *tlb, p4d_t *p4d,
  
- /* bits [20..32] reserved for arch specific ioremap internals */
-@@ -67,6 +69,10 @@ struct vm_struct {
- 	unsigned int		nr_pages;
- 	phys_addr_t		phys_addr;
- 	const void		*caller;
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+	/* Valid if flags contain VM_*_NONSENSITIVE */
-+	struct asi		*asi;
-+#endif
- };
+ 	pud = pud_offset(p4d, start);
+ 	p4d_clear(p4d);
++	asi_clear_user_p4d(tlb->mm, start);
+ 	pud_free_tlb(tlb, pud, start);
+ 	mm_dec_nr_puds(tlb->mm);
+ }
+@@ -330,6 +331,7 @@ static inline void free_p4d_range(struct mmu_gather *tlb, pgd_t *pgd,
  
- struct vmap_area {
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index f13bfe7e896b..ea94d8a1e2e9 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2391,18 +2391,25 @@ void __init vmalloc_init(void)
- 	 */
- 	vmap_init_free_space();
- 	vmap_initialized = true;
-+
-+	asi_vmalloc_init();
+ 	p4d = p4d_offset(pgd, start);
+ 	pgd_clear(pgd);
++	asi_clear_user_pgd(tlb->mm, start);
+ 	p4d_free_tlb(tlb, p4d, start);
  }
  
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+
- static int asi_map_vm_area(struct vm_struct *area)
- {
- 	if (!static_asi_enabled())
- 		return 0;
- 
- 	if (area->flags & VM_GLOBAL_NONSENSITIVE)
--		return asi_map(ASI_GLOBAL_NONSENSITIVE, area->addr,
--			       get_vm_area_size(area));
-+		area->asi = ASI_GLOBAL_NONSENSITIVE;
-+	else if (area->flags & VM_LOCAL_NONSENSITIVE)
-+		area->asi = ASI_LOCAL_NONSENSITIVE;
-+	else
-+		return 0;
- 
--	return 0;
-+	return asi_map(area->asi, area->addr, get_vm_area_size(area));
- }
- 
- static void asi_unmap_vm_area(struct vm_struct *area)
-@@ -2415,11 +2422,17 @@ static void asi_unmap_vm_area(struct vm_struct *area)
- 	 * the case when the existing flush from try_purge_vmap_area_lazy()
- 	 * and/or vm_unmap_aliases() happens non-lazily.
- 	 */
--	if (area->flags & VM_GLOBAL_NONSENSITIVE)
--		asi_unmap(ASI_GLOBAL_NONSENSITIVE, area->addr,
--			  get_vm_area_size(area), true);
-+	if (area->flags & (VM_GLOBAL_NONSENSITIVE | VM_LOCAL_NONSENSITIVE))
-+		asi_unmap(area->asi, area->addr, get_vm_area_size(area), true);
- }
- 
-+#else
-+
-+static inline int asi_map_vm_area(struct vm_struct *area) { return 0; }
-+static inline void asi_unmap_vm_area(struct vm_struct *area) { }
-+
-+#endif
-+
- static inline void setup_vmalloc_vm_locked(struct vm_struct *vm,
- 	struct vmap_area *va, unsigned long flags, const void *caller)
- {
-@@ -2463,6 +2476,15 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
- 	if (unlikely(!size))
- 		return NULL;
- 
-+	if (static_asi_enabled()) {
-+		VM_BUG_ON((flags & VM_LOCAL_NONSENSITIVE) &&
-+			  !(start >= VMALLOC_LOCAL_NONSENSITIVE_START &&
-+			    end <= VMALLOC_LOCAL_NONSENSITIVE_END));
-+
-+		VM_BUG_ON((flags & VM_GLOBAL_NONSENSITIVE) &&
-+			  start < VMALLOC_GLOBAL_NONSENSITIVE_START);
-+	}
-+
- 	if (flags & VM_IOREMAP)
- 		align = 1ul << clamp_t(int, get_count_order_long(size),
- 				       PAGE_SHIFT, IOREMAP_MAX_ORDER);
-@@ -3073,8 +3095,22 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
- 	if (WARN_ON_ONCE(!size))
- 		return NULL;
- 
--	if (static_asi_enabled() && (vm_flags & VM_GLOBAL_NONSENSITIVE))
--		gfp_mask |= __GFP_ZERO;
-+	if (static_asi_enabled()) {
-+		VM_BUG_ON((vm_flags & (VM_LOCAL_NONSENSITIVE |
-+				       VM_GLOBAL_NONSENSITIVE)) ==
-+			  (VM_LOCAL_NONSENSITIVE | VM_GLOBAL_NONSENSITIVE));
-+
-+		if ((vm_flags & VM_LOCAL_NONSENSITIVE) &&
-+		    !mm_asi_enabled(current->mm)) {
-+			vm_flags &= ~VM_LOCAL_NONSENSITIVE;
-+
-+			if (end == VMALLOC_LOCAL_NONSENSITIVE_END)
-+				end = VMALLOC_END;
-+		}
-+
-+		if (vm_flags & (VM_GLOBAL_NONSENSITIVE | VM_LOCAL_NONSENSITIVE))
-+			gfp_mask |= __GFP_ZERO;
-+	}
- 
- 	if ((size >> PAGE_SHIFT) > totalram_pages()) {
- 		warn_alloc(gfp_mask, NULL,
-@@ -3166,11 +3202,19 @@ void *__vmalloc_node(unsigned long size, unsigned long align,
- 			    gfp_t gfp_mask, int node, const void *caller)
- {
- 	ulong vm_flags = 0;
-+	ulong start = VMALLOC_START, end = VMALLOC_END;
- 
--	if (static_asi_enabled() && (gfp_mask & __GFP_GLOBAL_NONSENSITIVE))
--		vm_flags |= VM_GLOBAL_NONSENSITIVE;
-+	if (static_asi_enabled()) {
-+		if (gfp_mask & __GFP_GLOBAL_NONSENSITIVE) {
-+			vm_flags |= VM_GLOBAL_NONSENSITIVE;
-+			start = VMALLOC_GLOBAL_NONSENSITIVE_START;
-+		} else if (gfp_mask & __GFP_LOCAL_NONSENSITIVE) {
-+			vm_flags |= VM_LOCAL_NONSENSITIVE;
-+			end = VMALLOC_LOCAL_NONSENSITIVE_END;
-+		}
-+	}
- 
--	return __vmalloc_node_range(size, align, VMALLOC_START, VMALLOC_END,
-+	return __vmalloc_node_range(size, align, start, end,
- 				gfp_mask, PAGE_KERNEL, vm_flags, node, caller);
- }
- /*
-@@ -3678,9 +3722,15 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
- 	/* verify parameters and allocate data structures */
- 	BUG_ON(offset_in_page(align) || !is_power_of_2(align));
- 
--	if (static_asi_enabled() && (flags & VM_GLOBAL_NONSENSITIVE)) {
--		vmalloc_start = VMALLOC_GLOBAL_NONSENSITIVE_START;
--		vmalloc_end = VMALLOC_GLOBAL_NONSENSITIVE_END;
-+	if (static_asi_enabled()) {
-+		VM_BUG_ON((flags & (VM_LOCAL_NONSENSITIVE |
-+				    VM_GLOBAL_NONSENSITIVE)) ==
-+			  (VM_LOCAL_NONSENSITIVE | VM_GLOBAL_NONSENSITIVE));
-+
-+		if (flags & VM_GLOBAL_NONSENSITIVE)
-+			vmalloc_start = VMALLOC_GLOBAL_NONSENSITIVE_START;
-+		else if (flags & VM_LOCAL_NONSENSITIVE)
-+			vmalloc_end = VMALLOC_LOCAL_NONSENSITIVE_END;
- 	}
- 
- 	vmalloc_start = ALIGN(vmalloc_start, align);
 -- 
 2.35.1.473.g83b2b277ed-goog
 
