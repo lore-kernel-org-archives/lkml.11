@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7CFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 22:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93455C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 22:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243829AbiBWWb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 17:31:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
+        id S243918AbiBWWbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 17:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiBWWbZ (ORCPT
+        with ESMTP id S243841AbiBWWbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 17:31:25 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2570240A16;
-        Wed, 23 Feb 2022 14:30:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645655457; x=1677191457;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xiuVkpU2Aoy7KyoYrr+wL4tziSAElrqPACskTUdyFZY=;
-  b=TwsmLqbvRIoiTKwvLFabgwug2cYybLnmZlOmsEzW/NAsxj7B8Rwx2+vW
-   ItLxufe1xnqhCsVRbw+CJzoDq9yGAK2BeUTExaCc70A9UxNYrqVGSvyIn
-   xKNRV4KixYOrrqyo0tGK8ZrX5IdCIrDYnyahnchQJUEP5qC1HBrVysNKo
-   LJugWBiVsJjdzz7czOtfk1q8xIA2dkuFtuaDEAi/k0nnTe51X5HIlavsM
-   45915LDRrdNdY2csU8LGLHpMTQ0Slj/7d0BRYyl4ATNA20Swi6RDQ1z8X
-   3tUISuH6XLhfSQ0acxc1j2B0fUWS0lQ8kWiiRYMX6exjvWpnss2fS4lMn
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="249675361"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="249675361"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:30:57 -0800
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="628251199"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 14:30:55 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nN096-007az1-Vh;
-        Thu, 24 Feb 2022 00:30:04 +0200
-Date:   Thu, 24 Feb 2022 00:30:04 +0200
-From:   'Andy Shevchenko' <andriy.shevchenko@linux.intel.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Subject: Re: [PATCH v1 1/1] IB/hfi1: Don't cast parameter in bit operations
-Message-ID: <Yha1bIYZpCWZIowl@smile.fi.intel.com>
-References: <20220223185353.51370-1-andriy.shevchenko@linux.intel.com>
- <e39730af26cc4a4d944fa3205fa17b3c@AcuMS.aculab.com>
+        Wed, 23 Feb 2022 17:31:31 -0500
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4118A4D612
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 14:31:00 -0800 (PST)
+Received: by mail-ua1-x936.google.com with SMTP id c36so2172896uae.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 14:31:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1RPwSA1q9Nzhq0/2Be8zKvMRRcdwuPwwh16qax7HGnE=;
+        b=K0CZpAIDRgzm1DInotHuxQNOJpRDnhpSUF+ctLbt+rxbs0LQZI1S/EJG354MaIhC1p
+         b45wsq4jtpVp8/TYsrR7yb4UHfBZz2cfnUtGlk70ABA3mLXm2hl2NlxJgQMPfc0P8V/B
+         fAw/G1/6B7k4ewpmyD5SJHfM3X1NDpa/y+ufO0W+38RcacUCr/Jaq2gwTigxybnkPr8G
+         k+GmLhgJ03xfxxcsYrsKSdCyoGsHhW5WrYQEbXEAyQ8dKL6rgE9tfk0rxLHuKnqAg2K+
+         mJ72+bba2C/Wp8bcOfZzDa9zKelfx9id1sP9BdY2CnJq66D7nJJyZ5eIZZV3Ta5wjXNH
+         Y5cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1RPwSA1q9Nzhq0/2Be8zKvMRRcdwuPwwh16qax7HGnE=;
+        b=YEl9ERorlXgBdDU0+P4HX+zhiqZW4kx9YjS0PWJo+zLnT/atv4ZmeakjzUYKqqBwee
+         qcKl6jtncXxUshU3tS8VZqiep1tzJjA+GPDdmLAGgK24+b980HiXdV2t/AmiUR2vVjra
+         v3huQ8S7LcIlAej+8uuHrsQrRxMGb87BfQ9QaadDmO3ORI1AoqX1rwZqbqQsWSFg/nBf
+         NR04ebzwpnOksCCgk5uaSLTntQ6Gtvnzvcaz5ceDdFZBf89Cy2swezbQkypz6aqLWfkX
+         Jqf4nKPpAmgjyhCcGE4W91RsB1ffdMb8qO+c5R43lddIkgiGaGRt0i+0dxebXl58ij8H
+         oBDQ==
+X-Gm-Message-State: AOAM530MmN/YeX3ZgWvoxgHdrSxM55QO0iQchHUM9/zeX1PiKD8k4joD
+        PZKBZXEwgCMC6eKe/M0s0OzoanSwiwqqKqn253xoTg==
+X-Google-Smtp-Source: ABdhPJxcYUHzeNXY0S/1ioCWxi5/56MKJyhukDlovTx8UShV5ojlA1UJTSNGHwOPvWyeZntnlGp/VLuoQHMIA6GpB20=
+X-Received: by 2002:ab0:69d0:0:b0:345:72b0:ee12 with SMTP id
+ u16-20020ab069d0000000b0034572b0ee12mr946042uaq.78.1645655459242; Wed, 23 Feb
+ 2022 14:30:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e39730af26cc4a4d944fa3205fa17b3c@AcuMS.aculab.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220219012433.890941-1-pcc@google.com> <7a6afd53-a5c8-1be3-83cc-832596702401@huawei.com>
+ <CANpmjNO=1utdh_52sVWb1rNCDme+hbMJzP9GMfF1xWigmy2WsA@mail.gmail.com>
+In-Reply-To: <CANpmjNO=1utdh_52sVWb1rNCDme+hbMJzP9GMfF1xWigmy2WsA@mail.gmail.com>
+From:   Peter Collingbourne <pcc@google.com>
+Date:   Wed, 23 Feb 2022 14:30:48 -0800
+Message-ID: <CAMn1gO7S++yR4=DjrPZU_POAHP8Pfxaa3P2Cy__Ggu+kN9pqBA@mail.gmail.com>
+Subject: Re: [PATCH] kasan: update function name in comments
+To:     Marco Elver <elver@google.com>
+Cc:     Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 09:44:32PM +0000, David Laight wrote:
-> From: Andy Shevchenko
-> > Sent: 23 February 2022 18:54
-> > 
-> > While in this particular case it would not be a (critical) issue,
-> > the pattern itself is bad and error prone in case somebody blindly
-> > copies to their code.
-> 
-> It is horribly wrong on BE systems.
+ On Mon, Feb 21, 2022 at 3:15 AM Marco Elver <elver@google.com> wrote:
+>
+> On Sat, 19 Feb 2022 at 03:00, Miaohe Lin <linmiaohe@huawei.com> wrote:
+> >
+> > On 2022/2/19 9:24, Peter Collingbourne wrote:
+> > > The function kasan_global_oob was renamed to kasan_global_oob_right,
+> > > but the comments referring to it were not updated. Do so.
+> > >
+> > > Link: https://linux-review.googlesource.com/id/I20faa90126937bbee77d9d44709556c3dd4b40be
+> > > Signed-off-by: Peter Collingbourne <pcc@google.com>
+> > > Fixes: e5f4728767d2 ("kasan: test: add globals left-out-of-bounds test")
+> >
+> > This Fixes tag is unneeded.
+> >
+> > Except the above nit, this patch looks good to me. Thanks.
+> >
+> > Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+>
+> Reviewed-by: Marco Elver <elver@google.com>
+>
+> And yes, the Fixes tag should be removed to not have stable teams do
+> unnecessary work.
 
-You mean the pattern? Yes, it has three issues regarding to endianess and
-potential out of boundary access.
+I thought that Cc: stable@vger.kernel.org controlled whether the patch
+is to be taken to the stable kernel and Fixes: was more of an
+informational tag. At least that's what this seems to say:
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#reviewer-s-statement-of-oversight
 
-...
+> +Cc'ing missing mailing lists (use get_maintainers.pl - in particular,
+> LKML is missing, which should always be Cc'd for archival purposes so
+> that things like b4 can work properly).
 
-> > -	return handled;
-> > +	return IRQ_RETVAL(!bitmap_empty(pending, CCE_NUM_INT_CSRS * 64));
+get_maintainers.pl tends to list a lot of reviewers so I try to filter
+it to only the most important recipients or only use it for
+"important" patches (like the uaccess logging patch). It's also a bit
+broken in my workflow --
+https://lore.kernel.org/all/20210913233435.24585-1-pcc@google.com/
+fixes one of the problems but there are others.
 
-> You really don't want to scan the bitmap again.
+Doesn't b4 scan all the mailing lists? So I'd have imagined it
+wouldn't matter which one you send it to.
 
-Either way it wastes cycles, the outcome depends on the actual distribution of
-the interrupts across the bitmap. If it gathered closer to the beginning of the
-bitmap, my code wins, otherwise the original ones.
-
-> Actually, of the face of it, you could merge the two loops.
-> Provided you clear the status bit before calling the relevant
-> handler I expect it will all work.
-
-True. I will consider that for v2.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Peter
