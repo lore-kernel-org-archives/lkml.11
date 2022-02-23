@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B752AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244937AbiBWXik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 18:38:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S244943AbiBWXin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 18:38:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244886AbiBWXi2 (ORCPT
+        with ESMTP id S244885AbiBWXi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 18:38:28 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F8C5A5A4;
-        Wed, 23 Feb 2022 15:37:58 -0800 (PST)
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814B45A597;
+        Wed, 23 Feb 2022 15:37:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645659478; x=1677195478;
+  t=1645659477; x=1677195477;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2kdOYPCLqgFfKRajMJBjKF0jVs1Vu57J310qUgU6YFU=;
-  b=L7VoxBt6+fHGr4FjmhXjNF3luOFMBPDr0fEq5PEDisHYuj+9nLp2lct2
-   msVjx+aeN+T7FIKQF5Q9f8BkMKkQN6GS/jwyjUYxOLMebPhFsVFt6v9kQ
-   W358zhX3t7+2mgbYskU9Pyk7j/zl+R4cTksLHYaiVvt+nN2ZZMcby/N8u
-   E=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 15:37:58 -0800
+  bh=+MRbB5DRgFvuMH3fvObVcrNFhjluEvf0jPhElKZgs1w=;
+  b=gi+qzBsaFfqENBDMIaAUscS6RffAlP1N+78FKmTntti2oP9hI04z0kZm
+   nC0BJuyWrdq2AnKwfw6F1ogyVgCk3oWqolT8i302cHYrBUff4IcWfd8bH
+   DzYFOU8MqQRerlSboYYwjogmD4f64pamb+LvC1DgNwU5PIUXI8z1GcA8f
+   8=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Feb 2022 15:37:57 -0800
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:57 -0800
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:57 -0800
 Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 15:37:57 -0800
+ 15.2.986.15; Wed, 23 Feb 2022 15:37:56 -0800
 From:   Elliot Berman <quic_eberman@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         <linux-kernel@vger.kernel.org>
@@ -43,9 +43,9 @@ CC:     Elliot Berman <quic_eberman@quicinc.com>,
         Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
         Carl van Schaik <quic_cvanscha@quicinc.com>,
         Andy Gross <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH 07/11] gunyah: msgq: Add Gunyah message queues
-Date:   Wed, 23 Feb 2022 15:37:25 -0800
-Message-ID: <20220223233729.1571114-8-quic_eberman@quicinc.com>
+Subject: [PATCH 05/11] virt: gunyah: Add sysfs nodes
+Date:   Wed, 23 Feb 2022 15:37:23 -0800
+Message-ID: <20220223233729.1571114-6-quic_eberman@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223233729.1571114-1-quic_eberman@quicinc.com>
 References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
@@ -59,437 +59,274 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Gunyah message queues are unidirectional pipelines to communicate
-between 2 virtual machines, but are typically paired to allow
-bidirectional communication. The intended use case is for small control
-messages between 2 VMs, as they support a maximum of 240 bytes.
-
-Message queues can be discovered either by resource manager or on the
-devicetree. To support discovery on the devicetree, client drivers can
-use gh_msgq_platform_host_attach to allocate the tx and rx message
-queues according to
-Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml.
+Add /sys/hypervisor support when detecting that Linux is running in a
+Gunyah environment. Export the version of Gunyah which is reported via
+the hyp_identify hypercall.
 
 Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 ---
- arch/arm64/include/asm/gunyah/hypercall.h |   4 +
- drivers/virt/gunyah/Makefile              |   2 +-
- drivers/virt/gunyah/gunyah_private.h      |   3 +
- drivers/virt/gunyah/msgq.c                | 295 ++++++++++++++++++++++
- drivers/virt/gunyah/sysfs.c               |   9 +
- include/linux/gunyah.h                    |  19 ++
- 6 files changed, 331 insertions(+), 1 deletion(-)
- create mode 100644 drivers/virt/gunyah/msgq.c
+ .../ABI/testing/sysfs-hypervisor-gunyah       |  37 ++++++
+ MAINTAINERS                                   |   2 +
+ arch/arm64/include/asm/gunyah/hypercall.h     |   2 +
+ drivers/virt/Kconfig                          |   2 +
+ drivers/virt/Makefile                         |   1 +
+ drivers/virt/gunyah/Kconfig                   |  13 ++
+ drivers/virt/gunyah/Makefile                  |   4 +
+ drivers/virt/gunyah/sysfs.c                   | 116 ++++++++++++++++++
+ 8 files changed, 177 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-hypervisor-gunyah
+ create mode 100644 drivers/virt/gunyah/Kconfig
+ create mode 100644 drivers/virt/gunyah/Makefile
+ create mode 100644 drivers/virt/gunyah/sysfs.c
 
+diff --git a/Documentation/ABI/testing/sysfs-hypervisor-gunyah b/Documentation/ABI/testing/sysfs-hypervisor-gunyah
+new file mode 100644
+index 000000000000..ebbdd0aead7b
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-hypervisor-gunyah
+@@ -0,0 +1,37 @@
++What:		/sys/hypervisor/type
++Date:		January 2022
++KernelVersion:	5.17
++Contact:	linux-arm-msm@vger.kernel.org
++Description:	If running under Gunyah:
++		Type of hypervisor:
++		"gunyah": Gunyah hypervisor
++
++What:		/sys/hypervisor/features
++Date:		January 2022
++KernelVersion:	5.17
++Contact:	linux-arm-msm@vger.kernel.org
++Description:	If running under Gunyah:
++		Space separated list of features supported by Linux and Gunyah:
++		"cspace": Gunyah devices
++		"doorbell": Sending/receiving virtual interrupts via Gunyah doorbells
++		"message-queue": Sending/receiving messages via Gunyah message queues
++		"vic": Interrupt lending
++		"vpm": Virtual platform management
++		"vcpu": Virtual CPU management
++		"memextent": Memory lending/management
++		"trace": Gunyah hypervisor tracing
++
++
++What:		/sys/hypervisor/version/api
++Date:		April 2020
++KernelVersion:	5.17
++Contact:	linux-arm-msm@vger.kernel.org
++Description:	If running under Gunyah:
++		The Gunyah API version.
++
++What:		/sys/hypervisor/version/variant
++Date:		April 2020
++KernelVersion:	5.17
++Contact:	linux-arm-msm@vger.kernel.org
++Description:	If running under Gunyah:
++		The Gunyah variant (build) version.
+\ No newline at end of file
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 59e7070f726a..10c59c8767ff 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8400,9 +8400,11 @@ M:	Elliot Berman <quic_eberman@quicinc.com>
+ M:	Murali Nalajala <quic_mnalajal@quicinc.com>
+ L:	linux-arm-msm@vger.kernel.org
+ S:	Maintained
++F:	Documentation/ABI/testing/sysfs-hypervisor-gunyah
+ F:	Documentation/devicetree/bindings/gunyah/
+ F:	Documentation/virt/gunyah/
+ F:	arch/arm64/include/asm/gunyah/
++F:	drivers/virt/gunyah/
+ F:	include/linux/gunyah.h
+ 
+ H8/300 ARCHITECTURE
 diff --git a/arch/arm64/include/asm/gunyah/hypercall.h b/arch/arm64/include/asm/gunyah/hypercall.h
-index a8e68ece074e..7c6eb82ecd88 100644
+index 626163500e32..a8e68ece074e 100644
 --- a/arch/arm64/include/asm/gunyah/hypercall.h
 +++ b/arch/arm64/include/asm/gunyah/hypercall.h
-@@ -8,6 +8,10 @@
+@@ -7,6 +7,8 @@
+ 
  #include <linux/types.h>
  
- #define GH_HYPERCALL_HYP_IDENTIFY		0x6000
-+#define GH_HYPERCALL_MSGQ_SEND			0x601B
-+#define GH_HYPERCALL_MSGQ_RECV			0x601C
++#define GH_HYPERCALL_HYP_IDENTIFY		0x6000
 +
-+#define GH_HYPERCALL_MSGQ_SEND_FLAGS_PUSH	BIT(0)
- 
  #define ___gh_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, x, ...) x
  
-diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
-index 3869fb7371df..94dc8e738911 100644
---- a/drivers/virt/gunyah/Makefile
-+++ b/drivers/virt/gunyah/Makefile
-@@ -1,4 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
+ #define __gh_count_args(...)						\
+diff --git a/drivers/virt/Kconfig b/drivers/virt/Kconfig
+index 8061e8ef449f..823663d67a95 100644
+--- a/drivers/virt/Kconfig
++++ b/drivers/virt/Kconfig
+@@ -36,4 +36,6 @@ source "drivers/virt/vboxguest/Kconfig"
+ source "drivers/virt/nitro_enclaves/Kconfig"
  
--gunyah-y += sysfs.o device.o
-+gunyah-y += sysfs.o device.o msgq.o
- obj-$(CONFIG_GUNYAH) += gunyah.o
-\ No newline at end of file
-diff --git a/drivers/virt/gunyah/gunyah_private.h b/drivers/virt/gunyah/gunyah_private.h
-index 5f3832608020..2ade32bd9bdf 100644
---- a/drivers/virt/gunyah/gunyah_private.h
-+++ b/drivers/virt/gunyah/gunyah_private.h
-@@ -9,4 +9,7 @@
- int __init gunyah_bus_init(void);
- void gunyah_bus_exit(void);
- 
-+int __init gh_msgq_init(void);
-+void gh_msgq_exit(void);
+ source "drivers/virt/acrn/Kconfig"
 +
- #endif
-diff --git a/drivers/virt/gunyah/msgq.c b/drivers/virt/gunyah/msgq.c
++source "drivers/virt/gunyah/Kconfig"
+ endif
+diff --git a/drivers/virt/Makefile b/drivers/virt/Makefile
+index 3e272ea60cd9..ca2141b6837e 100644
+--- a/drivers/virt/Makefile
++++ b/drivers/virt/Makefile
+@@ -5,6 +5,7 @@
+ 
+ obj-$(CONFIG_FSL_HV_MANAGER)	+= fsl_hypervisor.o
+ obj-y				+= vboxguest/
++obj-$(CONFIG_GUNYAH)		+= gunyah/
+ 
+ obj-$(CONFIG_NITRO_ENCLAVES)	+= nitro_enclaves/
+ obj-$(CONFIG_ACRN_HSM)		+= acrn/
+diff --git a/drivers/virt/gunyah/Kconfig b/drivers/virt/gunyah/Kconfig
 new file mode 100644
-index 000000000000..1c79b3fff30c
+index 000000000000..e88289963518
 --- /dev/null
-+++ b/drivers/virt/gunyah/msgq.c
-@@ -0,0 +1,295 @@
++++ b/drivers/virt/gunyah/Kconfig
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0-only
++
++config GUNYAH
++	tristate "Gunyah Virtualization drivers"
++	depends on ARM64
++	select SYS_HYPERVISOR
++	help
++	  The Gunyah drivers are the helper interfaces that runs in a guest VM
++	  such as basic inter-VM IPC and signaling mechanism,s and higher level
++	  services such as memory/device sharing, IRQ sharing, and so on.
++
++	  Say Y here to enable the drivers needed to interact in a Gunyah
++	  virtual environment.
+diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
+new file mode 100644
+index 000000000000..0aa086f9149f
+--- /dev/null
++++ b/drivers/virt/gunyah/Makefile
+@@ -0,0 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0-only
++
++gunyah-y += sysfs.o
++obj-$(CONFIG_GUNYAH) += gunyah.o
+\ No newline at end of file
+diff --git a/drivers/virt/gunyah/sysfs.c b/drivers/virt/gunyah/sysfs.c
+new file mode 100644
+index 000000000000..3d22f08360db
+--- /dev/null
++++ b/drivers/virt/gunyah/sysfs.c
+@@ -0,0 +1,116 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 + */
 +
-+#include <linux/platform_device.h>
-+#include <linux/interrupt.h>
++#define pr_fmt(fmt) "gunyah: " fmt
++
++#include <linux/kobject.h>
 +#include <linux/gunyah.h>
 +#include <linux/module.h>
 +#include <linux/printk.h>
 +#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/wait.h>
 +#include <linux/of.h>
 +
 +#include "gunyah_private.h"
 +
-+struct gh_msgq {
-+	bool ready;
-+	wait_queue_head_t wq;
-+	spinlock_t lock;
++#define GH_API_INFO_API_VERSION(x)	(((x) >> 0) & 0x3fff)
++#define GH_API_INFO_BIG_ENDIAN(x)	(((x) >> 14) & 1)
++#define GH_API_INFO_IS_64BIT(x)		(((x) >> 15) & 1)
++#define GH_API_INFO_VARIANT(x)		(((x) >> 56) & 0xff)
++
++#define GH_IDENTIFY_PARTITION_CSPACE(flags)	(((flags)[0] >> 0) & 1)
++#define GH_IDENTIFY_DOORBELL(flags)		(((flags)[0] >> 1) & 1)
++#define GH_IDENTIFY_MSGQUEUE(flags)		(((flags)[0] >> 2) & 1)
++#define GH_IDENTIFY_VIC(flags)			(((flags)[0] >> 3) & 1)
++#define GH_IDENTIFY_VPM(flags)			(((flags)[0] >> 4) & 1)
++#define GH_IDENTIFY_VCPU(flags)			(((flags)[0] >> 5) & 1)
++#define GH_IDENTIFY_MEMEXTENT(flags)		(((flags)[0] >> 6) & 1)
++#define GH_IDENTIFY_TRACE_CTRL(flags)		(((flags)[0] >> 7) & 1)
++
++struct gh_hypercall_hyp_identify_resp {
++	u64 api_info;
++	u64 flags[3];
 +};
 +
-+static irqreturn_t gh_msgq_irq_handler(int irq, void *dev)
++static struct gh_hypercall_hyp_identify_resp gunyah_api;
++
++static ssize_t type_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
 +{
-+	struct gh_msgq *msgq = dev;
-+
-+	spin_lock(&msgq->lock);
-+	msgq->ready = true;
-+	spin_unlock(&msgq->lock);
-+	wake_up_interruptible(&msgq->wq);
-+
-+	return IRQ_HANDLED;
++	return sysfs_emit(buffer, "gunyah\n");
 +}
++static struct kobj_attribute type_attr = __ATTR_RO(type);
 +
-+static int __gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, u64 tx_flags)
++static ssize_t api_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
 +{
-+	unsigned long flags, gh_error;
-+	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
-+	ssize_t ret;
-+	bool ready;
-+
-+	spin_lock_irqsave(&msgq->lock, flags);
-+	arch_gh_hypercall(GH_HYPERCALL_MSGQ_SEND, 5,
-+			  ghdev->capid, size, (uintptr_t)buff, tx_flags, 0,
-+			  gh_error, ready);
-+	switch (gh_error) {
-+	case GH_ERROR_OK:
-+		ret = 0;
-+		msgq->ready = ready;
-+		break;
-+	case GH_ERROR_MSGQUEUE_FULL:
-+		ret = -EAGAIN;
-+		msgq->ready = false;
-+		break;
-+	default:
-+		ret = gh_remap_error(gh_error);
-+		break;
-+	}
-+
-+	spin_unlock_irqrestore(&msgq->lock, flags);
-+
-+	return ret;
++	return sysfs_emit(buffer, "%d\n", (int)GH_API_INFO_API_VERSION(gunyah_api.api_info));
 +}
++static struct kobj_attribute api_attr = __ATTR_RO(api);
 +
-+/**
-+ * gh_msgq_send() - Send a message to the client running on a different VM
-+ * @client: The client descriptor that was obtained via gh_msgq_register()
-+ * @buff: Pointer to the buffer where the received data must be placed
-+ * @buff_size: The size of the buffer space available
-+ * @flags: Optional flags to pass to receive the data. For the list of flags,
-+ *         see linux/gunyah/gh_msgq.h
-+ *
-+ * Returns: The number of bytes copied to buff. <0 if there was an error.
-+ *
-+ * Note: this function may sleep and should not be called from interrupt context
-+ */
-+int gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags)
++static ssize_t variant_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
 +{
-+	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
-+	int ret;
-+	u64 tx_flags = 0;
-+
-+	if (flags & GH_MSGQ_TX_PUSH)
-+		tx_flags |= GH_HYPERCALL_MSGQ_SEND_FLAGS_PUSH;
-+
-+	do {
-+		ret = __gh_msgq_send(ghdev, buff, size, tx_flags);
-+
-+		if (ret == -EAGAIN) {
-+			if (flags & GH_MSGQ_NONBLOCK)
-+				goto out;
-+			if (wait_event_interruptible(msgq->wq, msgq->ready))
-+				ret = -ERESTARTSYS;
-+		}
-+	} while (ret == -EAGAIN);
-+
-+out:
-+	return ret;
++	return sysfs_emit(buffer, "%d\n", (int)GH_API_INFO_VARIANT(gunyah_api.api_info));
 +}
-+EXPORT_SYMBOL_GPL(gh_msgq_send);
++static struct kobj_attribute variant_attr = __ATTR_RO(variant);
 +
-+static ssize_t __gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size)
++static ssize_t features_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
 +{
-+	unsigned long flags, gh_error;
-+	size_t recv_size;
-+	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
-+	ssize_t ret;
-+	bool ready;
-+
-+	spin_lock_irqsave(&msgq->lock, flags);
-+
-+	arch_gh_hypercall(GH_HYPERCALL_MSGQ_RECV, 4,
-+			  ghdev->capid, (uintptr_t)buff, size, 0,
-+			  gh_error, recv_size, ready);
-+	switch (gh_error) {
-+	case GH_ERROR_OK:
-+		ret = recv_size;
-+		msgq->ready = ready;
-+		break;
-+	case GH_ERROR_MSGQUEUE_EMPTY:
-+		ret = -EAGAIN;
-+		msgq->ready = false;
-+		break;
-+	default:
-+		ret = gh_remap_error(gh_error);
-+		break;
-+	}
-+
-+	spin_unlock_irqrestore(&msgq->lock, flags);
-+
-+	return ret;
++	return sysfs_emit(buffer, "\n");
 +}
++static struct kobj_attribute features_attr = __ATTR_RO(features);
 +
-+/**
-+ * gh_msgq_recv() - Receive a message from the client running on a different VM
-+ * @client: The client descriptor that was obtained via gh_msgq_register()
-+ * @buff: Pointer to the buffer where the received data must be placed
-+ * @buff_size: The size of the buffer space available
-+ * @flags: Optional flags to pass to receive the data. For the list of flags,
-+ *         see linux/gunyah/gh_msgq.h
-+ *
-+ * Returns: The number of bytes copied to buff. <0 if there was an error.
-+ *
-+ * Note: this function may sleep and should not be called from interrupt context
-+ */
-+ssize_t gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags)
-+{
-+	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
-+	ssize_t ret;
-+
-+	do {
-+		ret = __gh_msgq_recv(ghdev, buff, size);
-+
-+		if (ret == -EAGAIN) {
-+			if (flags & GH_MSGQ_NONBLOCK)
-+				goto out;
-+			if (wait_event_interruptible(msgq->wq, msgq->ready))
-+				ret = -ERESTARTSYS;
-+		}
-+	} while (ret == -EAGAIN);
-+
-+out:
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(gh_msgq_recv);
-+
-+static int gh_msgq_probe(struct gunyah_device *ghdev)
-+{
-+	struct gh_msgq *msgq;
-+
-+	msgq = devm_kzalloc(&ghdev->dev, sizeof(*msgq), GFP_KERNEL);
-+	ghdev_set_drvdata(ghdev, msgq);
-+
-+	msgq->ready = true; /* Assume we can use the message queue right away */
-+	init_waitqueue_head(&msgq->wq);
-+
-+	return devm_request_irq(&ghdev->dev, ghdev->irq, gh_msgq_irq_handler, 0,
-+				dev_name(&ghdev->dev), msgq);
-+}
-+
-+static struct gunyah_driver gh_msgq_tx_driver = {
-+	.driver = {
-+		.name = "gh_msgq_tx",
-+		.owner = THIS_MODULE,
-+	},
-+	.type = GUNYAH_DEVICE_TYPE_MSGQ_TX,
-+	.probe = gh_msgq_probe,
++static struct attribute *version_attrs[] = {
++	&api_attr.attr,
++	&variant_attr.attr,
++	NULL
 +};
 +
-+static struct gunyah_driver gh_msgq_rx_driver = {
-+	.driver = {
-+		.name = "gh_msgq_rx",
-+		.owner = THIS_MODULE,
-+	},
-+	.type = GUNYAH_DEVICE_TYPE_MSGQ_RX,
-+	.probe = gh_msgq_probe,
++static const struct attribute_group version_group = {
++	.name = "version",
++	.attrs = version_attrs,
 +};
 +
-+static struct gunyah_device *gh_msgq_platform_probe_direction(struct platform_device *pdev,
-+				u8 gh_type, int idx)
-+{
-+	int irq, ret;
-+	u64 capid;
-+	struct device_node *node = pdev->dev.of_node;
-+	struct gunyah_device *ghdev;
-+
-+	irq = platform_get_irq(pdev, idx);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "Failed to get irq%d: %d\n", idx, irq);
-+		return ERR_PTR(irq);
-+	}
-+
-+	ret = of_property_read_u64_index(node, "reg", idx, &capid);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to get capid%d: %d\n", idx, ret);
-+		return ERR_PTR(ret);
-+	}
-+
-+	ghdev = gunyah_device_alloc(&pdev->dev, capid, gh_type);
-+	ghdev->irq = irq;
-+	ret = gunyah_device_add(ghdev);
-+	if (ret) {
-+		kfree(ghdev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return ghdev;
-+}
-+
-+int gh_msgq_platform_host_attach(struct platform_device *pdev, struct gh_msgq_platform_host *host)
-+{
-+	struct gunyah_device *tx_dev = NULL, *rx_dev = NULL;
-+	struct device_node *node = pdev->dev.of_node;
-+	int idx = 0;
-+	bool duplex;
-+
-+	duplex = of_property_read_bool(node, "qcom,is-full-duplex");
-+
-+	if (duplex || of_property_read_bool(node, "qcom,is-sender")) {
-+		tx_dev = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_TX, idx);
-+		if (IS_ERR(tx_dev))
-+			return PTR_ERR(tx_dev);
-+		idx++;
-+	}
-+
-+	if (duplex || of_property_read_bool(node, "qcom,is-receiver")) {
-+		rx_dev = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_RX, idx);
-+		if (IS_ERR(rx_dev)) {
-+			if (!IS_ERR_OR_NULL(tx_dev))
-+				gunyah_device_remove(tx_dev);
-+			return PTR_ERR(rx_dev);
-+		}
-+	}
-+
-+	host->tx = tx_dev;
-+	host->rx = rx_dev;
-+	return 0;
-+}
-+
-+void gh_msgq_platform_host_unattach(struct gh_msgq_platform_host *host)
-+{
-+	if (host->tx) {
-+		gunyah_device_remove(host->tx);
-+		host->tx = NULL;
-+	}
-+	if (host->rx) {
-+		gunyah_device_remove(host->rx);
-+		host->rx = NULL;
-+	}
-+}
-+
-+int __init gh_msgq_init(void)
++static int __init gh_sysfs_register(void)
 +{
 +	int ret;
 +
-+	ret = gunyah_register_driver(&gh_msgq_tx_driver);
++	ret = sysfs_create_file(hypervisor_kobj, &type_attr.attr);
 +	if (ret)
 +		return ret;
 +
-+	ret = gunyah_register_driver(&gh_msgq_rx_driver);
++	ret = sysfs_create_group(hypervisor_kobj, &version_group);
 +	if (ret)
-+		goto err_rx;
++		return ret;
 +
-+	return ret;
-+err_rx:
-+	gunyah_unregister_driver(&gh_msgq_tx_driver);
-+	return ret;
++	return sysfs_create_file(hypervisor_kobj, &features_attr.attr);
 +}
 +
-+void gh_msgq_exit(void)
++static void gh_sysfs_unregister(void)
 +{
-+	gunyah_unregister_driver(&gh_msgq_rx_driver);
-+	gunyah_unregister_driver(&gh_msgq_tx_driver);
++	sysfs_remove_file(hypervisor_kobj, &type_attr.attr);
++	sysfs_remove_group(hypervisor_kobj, &version_group);
 +}
-diff --git a/drivers/virt/gunyah/sysfs.c b/drivers/virt/gunyah/sysfs.c
-index d66e6275fe32..7bf39fe1b6e6 100644
---- a/drivers/virt/gunyah/sysfs.c
-+++ b/drivers/virt/gunyah/sysfs.c
-@@ -59,6 +59,8 @@ static ssize_t features_show(struct kobject *kobj, struct kobj_attribute *attr,
- 
- 	if (GH_IDENTIFY_PARTITION_CSPACE(gunyah_api.flags))
- 		len += sysfs_emit_at(buffer, len, "cspace ");
-+	if (GH_IDENTIFY_MSGQUEUE(gunyah_api.flags))
-+		len += sysfs_emit_at(buffer, len, "message-queue ");
- 
- 	len += sysfs_emit_at(buffer, len, "\n");
- 	return len;
-@@ -118,7 +120,13 @@ static int __init gunyah_init(void)
- 	if (ret)
- 		goto err_sysfs;
- 
-+	ret = gh_msgq_init();
-+	if (ret)
-+		goto err_bus;
 +
- 	return ret;
-+err_bus:
-+	gunyah_bus_exit();
- err_sysfs:
- 	gh_sysfs_unregister();
- 	return ret;
-@@ -127,6 +135,7 @@ module_init(gunyah_init);
- 
- static void __exit gunyah_exit(void)
- {
-+	gh_msgq_exit();
- 	gunyah_bus_exit();
- 	gh_sysfs_unregister();
- }
-diff --git a/include/linux/gunyah.h b/include/linux/gunyah.h
-index f169c78881cb..66c1dba73cc5 100644
---- a/include/linux/gunyah.h
-+++ b/include/linux/gunyah.h
-@@ -10,6 +10,7 @@
- #include <linux/errno.h>
- #include <linux/device.h>
- #include <asm/gunyah/hypercall.h>
-+#include <linux/platform_device.h>
- 
- typedef u64 gh_capid_t;
- 
-@@ -116,4 +117,22 @@ struct gunyah_driver {
- int gunyah_register_driver(struct gunyah_driver *ghdrv);
- void gunyah_unregister_driver(struct gunyah_driver *ghdrv);
- 
-+#define GH_MSGQ_MAX_MSG_SIZE	1024
++static int __init gunyah_init(void)
++{
++	arch_gh_hypercall(GH_HYPERCALL_HYP_IDENTIFY, 0, gunyah_api.api_info,
++		gunyah_api.flags[0], gunyah_api.flags[1], gunyah_api.flags[2]);
 +
-+/* Possible flags to pass for Tx or Rx */
-+#define GH_MSGQ_TX_PUSH		BIT(0)
-+#define GH_MSGQ_NONBLOCK	BIT(32)
++	if (GH_API_INFO_API_VERSION(gunyah_api.api_info) != 1) {
++		pr_warn("Unrecognized gunyah version: %llu. Currently supported: 1\n",
++			GH_API_INFO_API_VERSION(gunyah_api.api_info));
++		return 0;
++	}
 +
-+int gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags);
-+ssize_t gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags);
++	return gh_sysfs_register();
++}
++module_init(gunyah_init);
 +
-+struct gh_msgq_platform_host {
-+	struct gunyah_device *tx;
-+	struct gunyah_device *rx;
-+};
++static void __exit gunyah_exit(void)
++{
++	gh_sysfs_unregister();
++}
++module_exit(gunyah_exit);
 +
-+int gh_msgq_platform_host_attach(struct platform_device *pdev, struct gh_msgq_platform_host *host);
-+void gh_msgq_platform_host_unattach(struct gh_msgq_platform_host *host);
-+
-+
- #endif
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Gunyah Hypervisor Driver");
 -- 
 2.25.1
 
