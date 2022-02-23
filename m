@@ -2,236 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD121C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE59C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240319AbiBWMDj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
+        id S236147AbiBWMDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:03:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240303AbiBWMD2 (ORCPT
+        with ESMTP id S240301AbiBWMD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 07:03:28 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB909A9B4;
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6359AD9B;
         Wed, 23 Feb 2022 04:02:50 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4K3ZRJ23dVz9sSZ;
-        Wed, 23 Feb 2022 13:02:36 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id m9JXzGGU1xor; Wed, 23 Feb 2022 13:02:36 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4K3ZRC29xVz9sSq;
-        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3C1FE8B779;
-        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id UlqdccA2a9jd; Wed, 23 Feb 2022 13:02:31 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.201])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C3A158B77B;
-        Wed, 23 Feb 2022 13:02:30 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21NC2LXX1148191
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 13:02:21 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21NC2LnF1148190;
-        Wed, 23 Feb 2022 13:02:21 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: [PATCH v6 3/6] module: Introduce data_layout
-Date:   Wed, 23 Feb 2022 13:02:13 +0100
-Message-Id: <50797bbf84acd87c490192ae5b8539ee67b71418.1645607143.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1645607143.git.christophe.leroy@csgroup.eu>
-References: <cover.1645607143.git.christophe.leroy@csgroup.eu>
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21NC2OD4012124;
+        Wed, 23 Feb 2022 07:02:46 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3edckssseb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 07:02:46 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21NC2jrE019347
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 23 Feb 2022 07:02:45 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 23 Feb
+ 2022 07:02:44 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 23 Feb 2022 07:02:44 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.126])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21NC2Y1a023695;
+        Wed, 23 Feb 2022 07:02:36 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v6 1/3] dt-bindings: iio: amplifiers: add ada4250 doc
+Date:   Wed, 23 Feb 2022 14:01:10 +0200
+Message-ID: <20220223120112.8067-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1645617734; l=7630; s=20211009; h=from:subject:message-id; bh=SGwB0g/VxOk2Hxo10neUQCGEPvBipCTZ4EgruMPkPX8=; b=3xAwSrf4ThjTcViq5YoqXp4ZAWQSGrAFOmUT3HPpL/SfcClpcVP8uAstD8Hv76DC1Ubxm+5XQBS/ 1fGk8wH7CDUedQC/8UuKOHw3irvOL/Vy2gNlb+pzdEJSj1/8THcD
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 6wK6zHBltNCxB1HUYmjdybjYX_e6gJCN
+X-Proofpoint-GUID: 6wK6zHBltNCxB1HUYmjdybjYX_e6gJCN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_04,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 impostorscore=0 suspectscore=0 clxscore=1011
+ malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0 priorityscore=1501
+ mlxlogscore=781 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202230067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to allow separation of data from text, add another layout,
-called data_layout. For architectures requesting separation of text
-and data, only text will go in core_layout and data will go in
-data_layout.
+Add device tree bindings for the ADA4250 driver.
 
-For architectures which keep text and data together, make data_layout
-an alias of core_layout, that way data_layout can be used for all
-data manipulations, regardless of whether data is in core_layout or
-data_layout.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- kernel/module/internal.h   |  2 ++
- kernel/module/kallsyms.c   | 18 +++++++++---------
- kernel/module/main.c       | 20 ++++++++++++--------
- kernel/module/strict_rwx.c | 10 +++++-----
- 4 files changed, 28 insertions(+), 22 deletions(-)
+changes in v6:
+ - add space before `{` in the amplifier node example
+ .../bindings/iio/amplifiers/adi,ada4250.yaml  | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
 
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 0f3146347256..0aabbf5cbcd1 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -20,6 +20,8 @@
- /* Maximum number of characters written by module_flags() */
- #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
- 
-+#define	data_layout core_layout
+diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+new file mode 100644
+index 000000000000..5277479be382
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+@@ -0,0 +1,50 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- /*
-  * Modules' sections will be aligned on page boundaries
-  * to ensure complete separation of code and data, but
-diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
-index 23034b50f8f5..c56de1686172 100644
---- a/kernel/module/kallsyms.c
-+++ b/kernel/module/kallsyms.c
-@@ -134,12 +134,12 @@ void layout_symtab(struct module *mod, struct load_info *info)
- 	}
- 
- 	/* Append room for core symbols at end of core part. */
--	info->symoffs = ALIGN(mod->core_layout.size, symsect->sh_addralign ?: 1);
--	info->stroffs = mod->core_layout.size = info->symoffs + ndst * sizeof(Elf_Sym);
--	mod->core_layout.size += strtab_size;
--	info->core_typeoffs = mod->core_layout.size;
--	mod->core_layout.size += ndst * sizeof(char);
--	mod->core_layout.size = strict_align(mod->core_layout.size);
-+	info->symoffs = ALIGN(mod->data_layout.size, symsect->sh_addralign ?: 1);
-+	info->stroffs = mod->data_layout.size = info->symoffs + ndst * sizeof(Elf_Sym);
-+	mod->data_layout.size += strtab_size;
-+	info->core_typeoffs = mod->data_layout.size;
-+	mod->data_layout.size += ndst * sizeof(char);
-+	mod->data_layout.size = strict_align(mod->data_layout.size);
- 
- 	/* Put string table section at end of init part of module. */
- 	strsect->sh_flags |= SHF_ALLOC;
-@@ -187,9 +187,9 @@ void add_kallsyms(struct module *mod, const struct load_info *info)
- 	 * Now populate the cut down core kallsyms for after init
- 	 * and set types up while we still have access to sections.
- 	 */
--	mod->core_kallsyms.symtab = dst = mod->core_layout.base + info->symoffs;
--	mod->core_kallsyms.strtab = s = mod->core_layout.base + info->stroffs;
--	mod->core_kallsyms.typetab = mod->core_layout.base + info->core_typeoffs;
-+	mod->core_kallsyms.symtab = dst = mod->data_layout.base + info->symoffs;
-+	mod->core_kallsyms.strtab = s = mod->data_layout.base + info->stroffs;
-+	mod->core_kallsyms.typetab = mod->data_layout.base + info->core_typeoffs;
- 	src = rcu_dereference_sched(mod->kallsyms)->symtab;
- 	for (ndst = i = 0; i < rcu_dereference_sched(mod->kallsyms)->num_symtab; i++) {
- 		rcu_dereference_sched(mod->kallsyms)->typetab[i] = elf_type(src + i, info);
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index a831f51595d7..84db7318ba2b 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -1190,7 +1190,7 @@ static void free_module(struct module *mod)
- 	percpu_modfree(mod);
- 
- 	/* Free lock-classes; relies on the preceding sync_rcu(). */
--	lockdep_free_key_range(mod->core_layout.base, mod->core_layout.size);
-+	lockdep_free_key_range(mod->data_layout.base, mod->data_layout.size);
- 
- 	/* Finally, free the core (containing the module structure) */
- 	module_memfree(mod->core_layout.base);
-@@ -1431,13 +1431,15 @@ static void layout_sections(struct module *mod, struct load_info *info)
- 		for (i = 0; i < info->hdr->e_shnum; ++i) {
- 			Elf_Shdr *s = &info->sechdrs[i];
- 			const char *sname = info->secstrings + s->sh_name;
-+			unsigned int *sizep;
- 
- 			if ((s->sh_flags & masks[m][0]) != masks[m][0]
- 			    || (s->sh_flags & masks[m][1])
- 			    || s->sh_entsize != ~0UL
- 			    || module_init_layout_section(sname))
- 				continue;
--			s->sh_entsize = module_get_offset(mod, &mod->core_layout.size, s, i);
-+			sizep = m ? &mod->data_layout.size : &mod->core_layout.size;
-+			s->sh_entsize = module_get_offset(mod, sizep, s, i);
- 			pr_debug("\t%s\n", sname);
- 		}
- 		switch (m) {
-@@ -1446,15 +1448,15 @@ static void layout_sections(struct module *mod, struct load_info *info)
- 			mod->core_layout.text_size = mod->core_layout.size;
- 			break;
- 		case 1: /* RO: text and ro-data */
--			mod->core_layout.size = strict_align(mod->core_layout.size);
--			mod->core_layout.ro_size = mod->core_layout.size;
-+			mod->data_layout.size = strict_align(mod->data_layout.size);
-+			mod->data_layout.ro_size = mod->data_layout.size;
- 			break;
- 		case 2: /* RO after init */
--			mod->core_layout.size = strict_align(mod->core_layout.size);
--			mod->core_layout.ro_after_init_size = mod->core_layout.size;
-+			mod->data_layout.size = strict_align(mod->data_layout.size);
-+			mod->data_layout.ro_after_init_size = mod->data_layout.size;
- 			break;
- 		case 4: /* whole core */
--			mod->core_layout.size = strict_align(mod->core_layout.size);
-+			mod->data_layout.size = strict_align(mod->data_layout.size);
- 			break;
- 		}
- 	}
-@@ -2134,6 +2136,8 @@ static int move_module(struct module *mod, struct load_info *info)
- 		if (shdr->sh_entsize & INIT_OFFSET_MASK)
- 			dest = mod->init_layout.base
- 				+ (shdr->sh_entsize & ~INIT_OFFSET_MASK);
-+		else if (!(shdr->sh_flags & SHF_EXECINSTR))
-+			dest = mod->data_layout.base + shdr->sh_entsize;
- 		else
- 			dest = mod->core_layout.base + shdr->sh_entsize;
- 
-@@ -2829,7 +2833,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
- 	mutex_unlock(&module_mutex);
-  free_module:
- 	/* Free lock-classes; relies on the preceding sync_rcu() */
--	lockdep_free_key_range(mod->core_layout.base, mod->core_layout.size);
-+	lockdep_free_key_range(mod->data_layout.base, mod->data_layout.size);
- 
- 	module_deallocate(mod, info);
-  free_copy:
-diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
-index f36ea54c1dac..fe3c10891407 100644
---- a/kernel/module/strict_rwx.c
-+++ b/kernel/module/strict_rwx.c
-@@ -101,12 +101,12 @@ void module_enable_ro(const struct module *mod, bool after_init)
- 	set_vm_flush_reset_perms(mod->init_layout.base);
- 	frob_text(&mod->core_layout, set_memory_ro);
- 
--	frob_rodata(&mod->core_layout, set_memory_ro);
-+	frob_rodata(&mod->data_layout, set_memory_ro);
- 	frob_text(&mod->init_layout, set_memory_ro);
- 	frob_rodata(&mod->init_layout, set_memory_ro);
- 
- 	if (after_init)
--		frob_ro_after_init(&mod->core_layout, set_memory_ro);
-+		frob_ro_after_init(&mod->data_layout, set_memory_ro);
- }
- 
- void module_enable_nx(const struct module *mod)
-@@ -114,9 +114,9 @@ void module_enable_nx(const struct module *mod)
- 	if (!IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
- 		return;
- 
--	frob_rodata(&mod->core_layout, set_memory_nx);
--	frob_ro_after_init(&mod->core_layout, set_memory_nx);
--	frob_writable_data(&mod->core_layout, set_memory_nx);
-+	frob_rodata(&mod->data_layout, set_memory_nx);
-+	frob_ro_after_init(&mod->data_layout, set_memory_nx);
-+	frob_writable_data(&mod->data_layout, set_memory_nx);
- 	frob_rodata(&mod->init_layout, set_memory_nx);
- 	frob_writable_data(&mod->init_layout, set_memory_nx);
- }
++title: ADA4250 Programmable Gain Instrumentation Amplifier
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
++
++properties:
++  compatible:
++    enum:
++      - adi,ada4250
++
++  reg:
++    maxItems: 1
++
++  avdd-supply: true
++
++  adi,refbuf-enable:
++    description:
++      Enable internal buffer to drive the reference pin.
++    type: boolean
++
++  spi-max-frequency: true
++
++required:
++  - compatible
++  - reg
++  - avdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      amplifier@0 {
++        compatible = "adi,ada4250";
++        reg = <0>;
++        avdd-supply = <&avdd>;
++      };
++    };
++...
 -- 
-2.34.1
+2.35.1
 
