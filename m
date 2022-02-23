@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65922C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239907AbiBWLdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:33:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
+        id S239918AbiBWLda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:33:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237515AbiBWLdV (ORCPT
+        with ESMTP id S239112AbiBWLdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 06:33:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72F7537BEF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:32:53 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D53D37BC2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:32:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645615972;
+        s=mimecast20190719; t=1645615973;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9zlGa6br0c39oKdANUse/M0gLmRqJHCFXxLHhx7TVM4=;
-        b=aaNKrJgUvZdmoXt2MoHpO/Ru15BPLY8hdmLvqI3QB5lvRV0kFB/pg5Lze8DQnfjLxD+tFE
-        x7RmL4yw6mRccrj/XqFOM47bSK0rpbo7TgFz7FD4oO4iSwxEmCpe9zniY/UH0C2F8rUzb5
-        GAPiguKnIyh+pdcuas/ni8bZ1gzTZvg=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8J0LUKv+K2TGv09wM1r8lu6xSXwGvPQQUKfT1lSG0mk=;
+        b=Cf5dGvM/kKhEcE3SE0RyHMIVPgHx7viyBPTf2U+S+sd0QaiscHcVDmUaj6BYxLcYaCGcFs
+        v9KlGfR3aIjv+OuJH9QT0hVOeD9X8h7//l94vMDAtBtlg+fBRslWCXCL6OkRgAT3cmEDQH
+        6qdaN+VkLuOzcQYzOA7ASAzQzQ63/1A=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-CNeKcLYINQq7yFV3u3g-Ew-1; Wed, 23 Feb 2022 06:32:49 -0500
-X-MC-Unique: CNeKcLYINQq7yFV3u3g-Ew-1
+ us-mta-376-_MIicgExN0egWxn7o6VzRw-1; Wed, 23 Feb 2022 06:32:52 -0500
+X-MC-Unique: _MIicgExN0egWxn7o6VzRw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1773D1091DA2;
-        Wed, 23 Feb 2022 11:32:48 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3657A801AAD;
+        Wed, 23 Feb 2022 11:32:51 +0000 (UTC)
 Received: from MiWiFi-R3L-srv.smartont.net (ovpn-13-167.pek2.redhat.com [10.72.13.167])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 78D54797CE;
-        Wed, 23 Feb 2022 11:32:35 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A34A0797C4;
+        Wed, 23 Feb 2022 11:32:48 +0000 (UTC)
 From:   Baoquan He <bhe@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kexec@lists.infradead.org, dyoung@redhat.com,
         akpm@linux-foundation.org, bhe@redhat.com, x86@kernel.org,
         linux-mm@kvack.org
-Subject: [PATCH v2 0/2] x86/kexec: fix memory leak of elf header buffer
-Date:   Wed, 23 Feb 2022 19:32:23 +0800
-Message-Id: <20220223113225.63106-1-bhe@redhat.com>
+Subject: [PATCH v2 1/2] x86/kexec: fix memory leak of elf header buffer
+Date:   Wed, 23 Feb 2022 19:32:24 +0800
+Message-Id: <20220223113225.63106-2-bhe@redhat.com>
+In-Reply-To: <20220223113225.63106-1-bhe@redhat.com>
+References: <20220223113225.63106-1-bhe@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
@@ -52,31 +55,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory leak is reported by kmemleak detector, has been existing
-for very long time. It casue much memory loss on large machine
-with huge memory hotplug which will trigger kdump kernel reloading
-many times, with kexec_file_load interface.
+This is reported by kmemleak detector:
 
-And in patch 2, clean up is done to remove unneeded
-arch_kexec_kernel_image_load() and rename functions.
+unreferenced object 0xffffc900002a9000 (size 4096):
+  comm "kexec", pid 14950, jiffies 4295110793 (age 373.951s)
+  hex dump (first 32 bytes):
+    7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00  .ELF............
+    04 00 3e 00 01 00 00 00 00 00 00 00 00 00 00 00  ..>.............
+  backtrace:
+    [<0000000016a8ef9f>] __vmalloc_node_range+0x101/0x170
+    [<000000002b66b6c0>] __vmalloc_node+0xb4/0x160
+    [<00000000ad40107d>] crash_prepare_elf64_headers+0x8e/0xcd0
+    [<0000000019afff23>] crash_load_segments+0x260/0x470
+    [<0000000019ebe95c>] bzImage64_load+0x814/0xad0
+    [<0000000093e16b05>] arch_kexec_kernel_image_load+0x1be/0x2a0
+    [<000000009ef2fc88>] kimage_file_alloc_init+0x2ec/0x5a0
+    [<0000000038f5a97a>] __do_sys_kexec_file_load+0x28d/0x530
+    [<0000000087c19992>] do_syscall_64+0x3b/0x90
+    [<0000000066e063a4>] entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-V1 post can be found here:
-https://lore.kernel.org/all/20211029072424.9109-1-bhe@redhat.com/T/#u
+In crash_prepare_elf64_headers(), a buffer is allocated via vmalloc() to
+store elf headers. While it's not freed back to system correctly when
+kdump kernel is reloaded or unloaded. Then memory leak is caused. Fix it
+by introducing x86 specific function arch_kimage_file_post_load_cleanup(),
+and freeing the buffer there.
 
-v1->v2:
- No code change. The v1 post has been acked by Dave Young but not
-merged. In v2, just merging the old patch 1 and 2 as per Dave's concern
-in v1 post.
+And also remove the incorrect elf header buffer freeing code. Before
+calling arch specific kexec_file loading function, the image instance
+has been initialized. So 'image->elf_headers' must be NULL. It doesn't
+make sense to free the elf header buffer in the place.
 
-Baoquan He (2):
-  x86/kexec: fix memory leak of elf header buffer
-  kexec_file: clean up arch_kexec_kernel_image_load
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Acked-by: Dave Young <dyoung@redhat.com>
+---
+ arch/x86/kernel/machine_kexec_64.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
- arch/x86/kernel/machine_kexec_64.c | 23 +++++++++--------------
- include/linux/kexec.h              |  1 -
- kernel/kexec_file.c                |  9 ++-------
- 3 files changed, 11 insertions(+), 22 deletions(-)
-
+diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
+index f5da4a18070a..1f0eb0eed546 100644
+--- a/arch/x86/kernel/machine_kexec_64.c
++++ b/arch/x86/kernel/machine_kexec_64.c
+@@ -374,9 +374,6 @@ void machine_kexec(struct kimage *image)
+ #ifdef CONFIG_KEXEC_FILE
+ void *arch_kexec_kernel_image_load(struct kimage *image)
+ {
+-	vfree(image->elf_headers);
+-	image->elf_headers = NULL;
+-
+ 	if (!image->fops || !image->fops->load)
+ 		return ERR_PTR(-ENOEXEC);
+ 
+@@ -512,6 +509,15 @@ int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
+ 	       (int)ELF64_R_TYPE(rel[i].r_info), value);
+ 	return -ENOEXEC;
+ }
++
++int arch_kimage_file_post_load_cleanup(struct kimage *image)
++{
++	vfree(image->elf_headers);
++	image->elf_headers = NULL;
++	image->elf_headers_sz = 0;
++
++	return kexec_image_post_load_cleanup_default(image);
++}
+ #endif /* CONFIG_KEXEC_FILE */
+ 
+ static int
 -- 
 2.31.1
 
