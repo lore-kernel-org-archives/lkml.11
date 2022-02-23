@@ -2,148 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF51DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239775AbiBWLLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:11:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
+        id S239779AbiBWLM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbiBWLK6 (ORCPT
+        with ESMTP id S229533AbiBWLMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 06:10:58 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6523E8EB69;
-        Wed, 23 Feb 2022 03:10:30 -0800 (PST)
-Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K3YC96CtVz9sGN;
-        Wed, 23 Feb 2022 19:07:01 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
+        Wed, 23 Feb 2022 06:12:23 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458FA60A89;
+        Wed, 23 Feb 2022 03:11:56 -0800 (PST)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K3YHP6pc4zdZWM;
+        Wed, 23 Feb 2022 19:10:41 +0800 (CST)
+Received: from Linux-SUSE12SP5.huawei.com (10.67.132.207) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 23 Feb 2022 19:10:28 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Feb
- 2022 19:10:27 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <axboe@kernel.dk>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
-Date:   Wed, 23 Feb 2022 19:26:01 +0800
-Message-ID: <20220223112601.2902761-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+ 15.1.2308.21; Wed, 23 Feb 2022 19:11:53 +0800
+From:   Wei Xiao <xiaowei66@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <mcgrof@kernel.org>,
+        <keescook@chromium.org>, <yzaikin@google.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <young.liuyang@huawei.com>, <zengweilin@huawei.com>,
+        <nixiaoming@huawei.com>, <xiaowei66@huawei.com>
+Subject: [PATCH v2 sysctl-next] ftrace: move sysctl_ftrace_enabled to ftrace.c
+Date:   Wed, 23 Feb 2022 19:11:53 +0800
+Message-ID: <20220223111153.234411-1-xiaowei66@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
+X-Originating-IP: [10.67.132.207]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
-submit_queues through configfs for null_blk), while it might still be
-used from other context(e.g. switch elevator to none):
+This moves ftrace_enabled to trace/ftrace.c.
 
-t1					t2
-elevator_switch
- blk_mq_unquiesce_queue
-  blk_mq_run_hw_queues
-   queue_for_each_hw_ctx
-    // assembly code for hctx = (q)->queue_hw_ctx[i]
-    mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
+We move sysctls to places where features actually belong to improve
+the readability of the code and reduce the risk of code merge conflicts.
+At the same time, the proc-sysctl maintainers do not want to know what
+sysctl knobs you wish to add for your owner piece of code, we just care
+about the core logic.
 
-					__blk_mq_update_nr_hw_queues
-					 blk_mq_realloc_hw_ctxs
-					  hctxs = q->queue_hw_ctx
-					  q->queue_hw_ctx = new_hctxs
-					  kfree(hctxs)
-    movslq %ebx,%rax
-    mov    (%rdx,%rax,8),%rdi ->uaf
+Signed-off-by: Wei Xiao <xiaowei66@huawei.com>
 
-This problem was found by code review, and I comfirmed that the concurrent
-scenarios do exist(specifically 'q->queue_hw_ctx' can be changed during
-blk_mq_run_hw_queues), however, the uaf problem hasn't been repoduced yet
-without hacking the kernel.
-
-Sicne the queue is freezed in __blk_mq_update_nr_hw_queues, fix the
-problem by protecting 'queue_hw_ctx' through rcu where it can be accessed
-without grabbing 'q_usage_counter'.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- block/blk-mq.c         |  8 +++++++-
- include/linux/blk-mq.h |  2 +-
- include/linux/blkdev.h | 13 ++++++++++++-
- 3 files changed, 20 insertions(+), 3 deletions(-)
+v2:
+Add subject-prefix of sysctl-next and add the explanation to the commit log 
+to help patch review and subsystem maintainers better understand the context/logic 
+behind the migration.
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 6c59ffe765fd..79367457d555 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3955,7 +3955,13 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
- 		if (hctxs)
- 			memcpy(new_hctxs, hctxs, q->nr_hw_queues *
- 			       sizeof(*hctxs));
--		q->queue_hw_ctx = new_hctxs;
-+
-+		rcu_assign_pointer(q->queue_hw_ctx, new_hctxs);
-+		/*
-+		 * Make sure reading the old queue_hw_ctx from other
-+		 * context concurrently won't trigger uaf.
-+		 */
-+		synchronize_rcu();
- 		kfree(hctxs);
- 		hctxs = new_hctxs;
- 	}
-diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
-index d319ffa59354..edcf8ead76c6 100644
---- a/include/linux/blk-mq.h
-+++ b/include/linux/blk-mq.h
-@@ -918,7 +918,7 @@ static inline void *blk_mq_rq_to_pdu(struct request *rq)
+v1: https://lore.kernel.org/lkml/20220223012311.134314-1-xiaowei66@huawei.com/
+1. Lack subject-prefix of sysctl-next to avoid conflicts better.
+2. Lack more informations in the commit log to help patch review better.
+---
+ include/linux/ftrace.h |  3 ---
+ kernel/sysctl.c        |  9 ---------
+ kernel/trace/ftrace.c  | 22 +++++++++++++++++++++-
+ 3 files changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index 9999e29187de..659b2840563a 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -94,9 +94,6 @@ static inline int ftrace_mod_get_kallsym(unsigned int symnum, unsigned long *val
+ #ifdef CONFIG_FUNCTION_TRACER
  
- #define queue_for_each_hw_ctx(q, hctx, i)				\
- 	for ((i) = 0; (i) < (q)->nr_hw_queues &&			\
--	     ({ hctx = (q)->queue_hw_ctx[i]; 1; }); (i)++)
-+	     ({ hctx = queue_hctx((q), i); 1; }); (i)++)
+ extern int ftrace_enabled;
+-extern int
+-ftrace_enable_sysctl(struct ctl_table *table, int write,
+-		     void *buffer, size_t *lenp, loff_t *ppos);
  
- #define hctx_for_each_ctx(hctx, ctx, i)					\
- 	for ((i) = 0; (i) < (hctx)->nr_ctx &&				\
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 3bfc75a2a450..2018a4dd2028 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -354,7 +354,7 @@ struct request_queue {
- 	unsigned int		queue_depth;
+ #ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
  
- 	/* hw dispatch queues */
--	struct blk_mq_hw_ctx	**queue_hw_ctx;
-+	struct blk_mq_hw_ctx __rcu	**queue_hw_ctx;
- 	unsigned int		nr_hw_queues;
- 
- 	/*
-@@ -622,6 +622,17 @@ static inline bool queue_is_mq(struct request_queue *q)
- 	return q->mq_ops;
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 5ae443b2882e..55279ec66b28 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1906,15 +1906,6 @@ static struct ctl_table kern_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
+-#ifdef CONFIG_FUNCTION_TRACER
+-	{
+-		.procname	= "ftrace_enabled",
+-		.data		= &ftrace_enabled,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= ftrace_enable_sysctl,
+-	},
+-#endif
+ #ifdef CONFIG_STACK_TRACER
+ 	{
+ 		.procname	= "stack_tracer_enabled",
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index f9feb197b2da..4a5b4d6996a4 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7846,7 +7846,8 @@ static bool is_permanent_ops_registered(void)
+ 	return false;
  }
  
-+static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
-+{
-+	struct blk_mq_hw_ctx *hctx;
-+
-+	rcu_read_lock();
-+	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
-+	rcu_read_unlock();
-+
-+	return hctx;
-+}
-+
- #ifdef CONFIG_PM
- static inline enum rpm_status queue_rpm_status(struct request_queue *q)
+-int
++#ifdef CONFIG_SYSCTL
++static int
+ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 		     void *buffer, size_t *lenp, loff_t *ppos)
  {
+@@ -7889,3 +7890,22 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 	mutex_unlock(&ftrace_lock);
+ 	return ret;
+ }
++
++static struct ctl_table ftrace_sysctls[] = {
++	{
++		.procname       = "ftrace_enabled",
++		.data           = &ftrace_enabled,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = ftrace_enable_sysctl,
++	},
++	{}
++};
++
++static int __init ftrace_sysctl_init(void)
++{
++	register_sysctl_init("kernel", ftrace_sysctls);
++	return 0;
++}
++late_initcall(ftrace_sysctl_init);
++#endif
 -- 
-2.31.1
+2.19.1
 
