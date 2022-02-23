@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF98C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E9CC4167E
 	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiBWF14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:27:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
+        id S238706AbiBWF2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:28:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238416AbiBWF0x (ORCPT
+        with ESMTP id S238389AbiBWF0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:26:53 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28136BDC2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:21 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d306e372e5so163265267b3.5
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:21 -0800 (PST)
+        Wed, 23 Feb 2022 00:26:51 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6006AA44
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:14 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id g205-20020a2552d6000000b0061e1843b8edso26635752ybb.18
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=KXrCYGgvo83JEgYfSU2xPmsuGvCpoOVuzDhVbsTzD0I=;
-        b=peKSlY/Xr61DvdFpVmXc37FMKYnl+vkSCRtwe1UF1UGbHZ0v3cMEdZbiKKvXTZ5GbO
-         laOcMzhj8sBkgNnt1mc4a0NZR0hCQ3gPAdN/2qIaNw43JOyvktEB0Y0rn3QcamgO9gZ8
-         7DbNXkvTjq6TGSgTmAj628OIdjZHlZYdFsABsewAF21y3xPSWYsHQAWzziaNW39gFRL5
-         yWxZv0skPs5ax5wbHVY8sW6jeIPlZLUx/HQpjPftWbdPu83nt4wFjKis+ce33NEw7HrY
-         03O9DgYBb/75g6K+v8UjyCDA3xzr7E/F2srmJjBiOtEMdOtKjPJnG/mlJ872cZ/zgYG/
-         2wwQ==
+        bh=z2A7zhGCAXM89Mm8qf+swCLr5Dn/epWs5SXVvIpUsek=;
+        b=tRhCbGDitng8H5bHVni9LeLhw+OutL5exoDLV2q/On1vnMgXPuEEjcg+LbKI1cVqrD
+         Vyo7V47FL7/0MDpSopFI7nReIbg7le3SY0oaOVkKdiMGKdDx7pdDSJXZaaKKRg410xu2
+         t4RPD/m0Rz3825891oGpbAo2zhoskX0LmYLk/s6S6UydDxkiw0PDjI+nunjVplgqDwrA
+         +5Jz1StT9q9LpFCspfDpRycEYKD4vtMQDfcSS06Robo3QGT5pJP4suYnnRPaHrjD0ty7
+         l5qUqZO6zEun+3vP4Gykt/1OOPF+J93aOR22CevdnVkqI4Do06KPWQJ6jdbyHleq2VP2
+         sP7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=KXrCYGgvo83JEgYfSU2xPmsuGvCpoOVuzDhVbsTzD0I=;
-        b=HE8Z0sIbmS6vjfT8GYq7DLBAWgCZgIN96fMbU5W9L1iYUerybzh/vOhsxCBYoymJbR
-         kckoquawc01xVoXdDVpUu+vJcY6kV9J03+ub5DUCU5vJVNmPkWJRsBW+hTBKUese/3l3
-         I9e4CH9RLw10HlFHq2S4FTeywMb/Q1vwi/fi7C7zOeWTYo+5lDNf9c7upgXXSJ7fwgU2
-         qr+QOaogHbmOazAOPv2zONE73Uus74glJxk7ANOzxcqR7H4z5r/rUJpSd+7zpNUD5+GG
-         TUMuIcaLQY90Yjw2gWF2G1yadWqce06oimKkdF6uwvg4Bb4T/kub7k1VOZ6ncWHGFD/z
-         6mnQ==
-X-Gm-Message-State: AOAM5307rbX4rfwQaD3XazStNoBIVSzgR+nNBffeVmArwjX0UW/j+z0o
-        aTswlYDLHKmsXbRj2g+pwSXnXEtWLUfQe2QaDP/1EHJSE74e22i8f4v52UyDPQE03IPkhgbELvT
-        LK2eLzxwKruBwmmq2GClkc4R1MIwFgDTAmQmdsHATyYm9Ix+4a9yrtRXx/WyU9sh8zL/jzPqF
-X-Google-Smtp-Source: ABdhPJyZfLfl11T/5CrHmveifdlj9QKZBHoh8PI3AMF6sP4DdsodfKmQ8jHyUSfS7xsGTotzIsjTTydYzCuX
+        bh=z2A7zhGCAXM89Mm8qf+swCLr5Dn/epWs5SXVvIpUsek=;
+        b=kXc4MM+FP9iLh+AtoIdKWczCPVElLVZ3vZGqeGJy95HHm4a3BD4pw99I7twQhPbdQZ
+         eKh5HJFbjli9CeV/ywaXiYq3NEzyI4IdA2m1TBRsKPJBpsltVV/2EOEOYfAhm7XsyBnY
+         1PtYjieCKrBpfoGF+2wFBBBi6u48MW23IV5RtvIevQZOOhpM1ORQbGEE3RYakTPSPzu0
+         EgSgNMeXIye/gOK7Pqf+Y6VSL9//nstYXve3EeA+V/YpGf8GqsPiZ/1wW7E+b3XCYnH2
+         izojfUD6Y7abyRlBi9vBrWH2Q/XX6Vssx7Wnv8fPxvAzH4ds6uwT147HZGiNfaYoPl5Q
+         j6Fw==
+X-Gm-Message-State: AOAM533pBLMtZPO3vmUnh3fLIs/GA3X/PkM+WrbWACC9ezzFgabOTa09
+        Gz0Rgfs4c/WiaH52XJhSqf8Mb6HvTtSVMuctiI0sh6qTuqqv3S6vH7RNdNOej20NCSKHwLLBhqY
+        uuBtGjQ2ZMV4SYKCs0sUhzmTrvQNxK4jMp0z7MH4Hzv0RPX84z0wSEZ/e91/m0IwuLbZXX5lz
+X-Google-Smtp-Source: ABdhPJxQh2hzOmUCmk3wlhtqctWGzojDMn80W5x6yZGJyfVoEE9kdvLHRV4rxoztBsJ+fy5+R2LvtwTwKQ0F
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a81:c607:0:b0:2cb:a34a:355c with SMTP id
- l7-20020a81c607000000b002cba34a355cmr27125747ywi.487.1645593910227; Tue, 22
- Feb 2022 21:25:10 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:22:14 -0800
+ (user=junaids job=sendgmr) by 2002:a0d:eb09:0:b0:2d1:e0df:5104 with SMTP id
+ u9-20020a0deb09000000b002d1e0df5104mr27669944ywe.250.1645593903681; Tue, 22
+ Feb 2022 21:25:03 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:22:11 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-39-junaids@google.com>
+Message-Id: <20220223052223.1202152-36-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 38/47] mm: asi: ASI annotation support for dynamic modules.
+Subject: [RFC PATCH 35/47] mm: asi: asi_exit() on PF, skip handling if address
+ is accessible
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ofir Weisse <oweisse@google.com>, kvm@vger.kernel.org,
@@ -68,271 +69,157 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ofir Weisse <oweisse@google.com>
 
-Adding support for use of ASI static variable annotations in dynamic
-modules:
-- __asi_not_sensitive and
-- __asi_not_sensitive_readmostly
+On a page-fault - do asi_exit(). Then check if now after the exit the
+address is accessible. We do this by refactoring spurious_kernel_fault()
+into two parts:
 
-Per module, we now have the following offsets:
-
-1. asi_section_offset/size - which should be mapped into asi global pool
-2. asi_readmostly_section/size - same as above, for read mostly data;
-3. once_section_offset/size - is considered asi non-sensitive
+1. Verify that the error code value is something that could arise from a
+lazy TLB update.
+2. Walk the page table and verify permissions, which is now called
+is_address_accessible_now(). We also define PTE_PRESENT() and
+PMD_PRESENT() which are suitable for checking userspace pages. For the
+sake of spurious faualts,  pte_present() and pmd_present() are only
+good for kernelspace pages. This is because these macros might return
+true even if the present bit is 0 (only relevant for userspace).
 
 Signed-off-by: Ofir Weisse <oweisse@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h |  3 ++
- arch/x86/mm/asi.c          | 66 ++++++++++++++++++++++++++++++++++++++
- include/asm-generic/asi.h  |  3 ++
- include/linux/module.h     |  9 ++++++
- kernel/module.c            | 58 +++++++++++++++++++++++++++++++++
- 5 files changed, 139 insertions(+)
+ arch/x86/mm/fault.c      | 60 ++++++++++++++++++++++++++++++++++------
+ include/linux/mm_types.h |  3 ++
+ 2 files changed, 55 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index 6dd9c7c8a2b8..d43f6aadffee 100644
---- a/arch/x86/include/asm/asi.h
-+++ b/arch/x86/include/asm/asi.h
-@@ -98,6 +98,9 @@ static inline void asi_init_thread_state(struct thread_struct *thread)
- 	thread->intr_nest_depth = 0;
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 8692eb50f4a5..d08021ba380b 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -982,6 +982,8 @@ static int spurious_kernel_fault_check(unsigned long error_code, pte_t *pte)
+ 	return 1;
  }
  
-+int asi_load_module(struct module* module);
-+void asi_unload_module(struct module* module);
-+
- static inline void asi_set_target_unrestricted(void)
- {
- 	if (static_cpu_has(X86_FEATURE_ASI)) {
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 9b1bd005f343..6c14aa1fc4aa 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -5,6 +5,7 @@
- #include <linux/memcontrol.h>
- #include <linux/moduleparam.h>
- #include <linux/slab.h>
-+#include <linux/module.h>
- 
- #include <asm/asi.h>
- #include <asm/pgalloc.h>
-@@ -308,6 +309,71 @@ static int __init set_asi_param(char *str)
- }
- early_param("asi", set_asi_param);
- 
-+/* asi_load_module() is called from layout_and_allocate() in kernel/module.c
-+ * We map the module and its data in init_mm.asi_pgd[0].
-+*/
-+int asi_load_module(struct module* module)
-+{
-+        int err = 0;
-+
-+        /* Map the cod/text */
-+        err = asi_map(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base,
-+                      module->core_layout.ro_after_init_size );
-+        if (err)
-+                return err;
-+
-+        /* Map global variables annotated as non-sensitive for ASI */
-+        err = asi_map(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.asi_section_offset,
-+                      module->core_layout.asi_section_size );
-+        if (err)
-+                return err;
-+
-+        /* Map global variables annotated as non-sensitive for ASI */
-+        err = asi_map(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.asi_readmostly_section_offset,
-+                      module->core_layout.asi_readmostly_section_size);
-+        if (err)
-+                return err;
-+
-+        /* Map .data.once section as well */
-+        err = asi_map(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.once_section_offset,
-+                      module->core_layout.once_section_size );
-+        if (err)
-+                return err;
-+
-+        return 0;
-+}
-+EXPORT_SYMBOL_GPL(asi_load_module);
-+
-+void asi_unload_module(struct module* module)
-+{
-+        asi_unmap(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base,
-+                      module->core_layout.ro_after_init_size, true);
-+
-+        asi_unmap(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.asi_section_offset,
-+                      module->core_layout.asi_section_size, true);
-+
-+        asi_unmap(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.asi_readmostly_section_offset,
-+                      module->core_layout.asi_readmostly_section_size, true);
-+
-+        asi_unmap(ASI_GLOBAL_NONSENSITIVE,
-+                      module->core_layout.base +
-+                      module->core_layout.once_section_offset,
-+                      module->core_layout.once_section_size, true);
-+
-+}
-+
- static int __init asi_global_init(void)
- {
- 	uint i, n;
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index d9082267a5dd..2763cb1a974c 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -120,6 +120,7 @@ void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
- 
- #define static_asi_enabled() false
- 
-+static inline int asi_load_module(struct module* module) {return 0;}
- 
- /* IMPORTANT: Any modification to the name here should also be applied to
-  * include/asm-generic/vmlinux.lds.h */
-@@ -127,6 +128,8 @@ void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
- #define __asi_not_sensitive
- #define __asi_not_sensitive_readmostly
- 
-+static inline void asi_unload_module(struct module* module) { }
-+
- #endif  /* !_ASSEMBLY_ */
- 
- #endif /* !CONFIG_ADDRESS_SPACE_ISOLATION */
-diff --git a/include/linux/module.h b/include/linux/module.h
-index c9f1200b2312..82267a95f936 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -336,6 +336,15 @@ struct module_layout {
- #ifdef CONFIG_MODULES_TREE_LOOKUP
- 	struct mod_tree_node mtn;
- #endif
-+
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        unsigned int asi_section_offset;
-+        unsigned int asi_section_size;
-+        unsigned int asi_readmostly_section_offset;
-+        unsigned int asi_readmostly_section_size;
-+        unsigned int once_section_offset;
-+        unsigned int once_section_size;
-+#endif
- };
- 
- #ifdef CONFIG_MODULES_TREE_LOOKUP
-diff --git a/kernel/module.c b/kernel/module.c
-index 84a9141a5e15..d363b8a0ee24 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -2159,6 +2159,8 @@ static void free_module(struct module *mod)
- {
- 	trace_module_free(mod);
- 
-+	asi_unload_module(mod);
-+
- 	mod_sysfs_teardown(mod);
- 
- 	/*
-@@ -2416,6 +2418,31 @@ static bool module_init_layout_section(const char *sname)
- 	return module_init_section(sname);
- }
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+static void asi_record_sections_layout(struct module *mod,
-+                                       const char *sname,
-+                                       Elf_Shdr *s)
-+{
-+        if (strstarts(sname, ASI_NON_SENSITIVE_READ_MOSTLY_SECTION_NAME)) {
-+                mod->core_layout.asi_readmostly_section_offset = s->sh_entsize;
-+                mod->core_layout.asi_readmostly_section_size   = s->sh_size;
-+        }
-+        else if (strstarts(sname, ASI_NON_SENSITIVE_SECTION_NAME)) {
-+                mod->core_layout.asi_section_offset = s->sh_entsize;
-+                mod->core_layout.asi_section_size   = s->sh_size;
-+        }
-+        if (strstarts(sname, ".data.once")) {
-+                mod->core_layout.once_section_offset = s->sh_entsize;
-+                mod->core_layout.once_section_size   = s->sh_size;
-+        }
-+}
-+#else
-+static void asi_record_sections_layout(struct module *mod,
-+                                       const char *sname,
-+                                       Elf_Shdr *s)
-+{}
-+#endif
-+
++static int is_address_accessible_now(unsigned long error_code, unsigned long address,
++                              pgd_t *pgd);
  /*
-  * Lay out the SHF_ALLOC sections in a way not dissimilar to how ld
-  * might -- code, read-only data, read-write data, small data.  Tally
-@@ -2453,6 +2480,7 @@ static void layout_sections(struct module *mod, struct load_info *info)
- 			    || module_init_layout_section(sname))
- 				continue;
- 			s->sh_entsize = get_offset(mod, &mod->core_layout.size, s, i);
-+                        asi_record_sections_layout(mod, sname, s);
- 			pr_debug("\t%s\n", sname);
- 		}
- 		switch (m) {
-@@ -3558,6 +3586,25 @@ static bool blacklisted(const char *module_name)
- }
- core_param(module_blacklist, module_blacklist, charp, 0400);
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+static void asi_fix_section_size_and_alignment(struct load_info *info,
-+                                               char *section_to_fix)
-+{
-+	unsigned int ndx = find_sec(info, section_to_fix );
-+	if (!ndx)
-+                return;
-+
-+        info->sechdrs[ndx].sh_addralign = PAGE_SIZE;
-+        info->sechdrs[ndx].sh_size =
-+            ALIGN( info->sechdrs[ndx].sh_size, PAGE_SIZE );
-+}
-+#else
-+static inline void asi_fix_section_size_and_alignment(struct load_info *info,
-+                                               char *section_to_fix)
-+{}
-+#endif
-+
-+
- static struct module *layout_and_allocate(struct load_info *info, int flags)
+  * Handle a spurious fault caused by a stale TLB entry.
+  *
+@@ -1003,15 +1005,13 @@ static int spurious_kernel_fault_check(unsigned long error_code, pte_t *pte)
+  * See Intel Developer's Manual Vol 3 Section 4.10.4.3, bullet 3
+  * (Optional Invalidation).
+  */
++/* A spurious fault is also possible when Address Space Isolation (ASI) is in
++ * use. Specifically, code running withing an ASI domain touched memory outside
++ * the domain. This access causes a page-fault --> asi_exit() */
+ static noinline int
+ spurious_kernel_fault(unsigned long error_code, unsigned long address)
  {
- 	struct module *mod;
-@@ -3600,6 +3647,15 @@ static struct module *layout_and_allocate(struct load_info *info, int flags)
- 	if (ndx)
- 		info->sechdrs[ndx].sh_flags |= SHF_RO_AFTER_INIT;
+ 	pgd_t *pgd;
+-	p4d_t *p4d;
+-	pud_t *pud;
+-	pmd_t *pmd;
+-	pte_t *pte;
+-	int ret;
  
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        /* These are sections we will want to map into an ASI page-table. We
-+         * therefore need these sections to be aligned to a PAGE_SIZE */
-+        asi_fix_section_size_and_alignment(info, ASI_NON_SENSITIVE_SECTION_NAME);
-+        asi_fix_section_size_and_alignment(info,
-+                                           ASI_NON_SENSITIVE_READ_MOSTLY_SECTION_NAME);
-+        asi_fix_section_size_and_alignment(info, ".data.once");
-+#endif
-+
  	/*
- 	 * Determine total sizes, and put offsets in sh_entsize.  For now
- 	 * this is done generically; there doesn't appear to be any
-@@ -4127,6 +4183,8 @@ static int load_module(struct load_info *info, const char __user *uargs,
- 	/* Get rid of temporary copy. */
- 	free_copy(info);
+ 	 * Only writes to RO or instruction fetches from NX may cause
+@@ -1027,6 +1027,37 @@ spurious_kernel_fault(unsigned long error_code, unsigned long address)
+ 		return 0;
  
-+        asi_load_module(mod);
+ 	pgd = init_mm.pgd + pgd_index(address);
++        return is_address_accessible_now(error_code, address, pgd);
++}
++NOKPROBE_SYMBOL(spurious_kernel_fault);
 +
- 	/* Done! */
- 	trace_module_load(mod);
++
++/* Check if an address (kernel or userspace) would cause a page fault if
++ * accessed now.
++ *
++ * For kernel addresses, pte_present and pmd_present are sufficioent. For
++ * userspace, we must use PTE_PRESENT and PMD_PRESENT, which will only check the
++ * present bits.
++ * The existing pmd_present() in arch/x86/include/asm/pgtable.h is misleading.
++ * The PMD page might be in the middle of split_huge_page with present bit
++ * clear, but pmd_present will still return true. We are inteerested in knowing
++ * if the page is accessible to hardware - that is - the present bit is 1. */
++#define PMD_PRESENT(pmd) (pmd_flags(pmd) & _PAGE_PRESENT)
++
++/* pte_present will return true is _PAGE_PROTNONE is 1. We care if the hardware
++ * can actually access the page right now. */
++#define PTE_PRESENT(pte) (pte_flags(pte) & _PAGE_PRESENT)
++
++static noinline int
++is_address_accessible_now(unsigned long error_code, unsigned long address,
++                          pgd_t *pgd)
++{
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++	pte_t *pte;
++        int ret;
++
+ 	if (!pgd_present(*pgd))
+ 		return 0;
  
+@@ -1045,14 +1076,14 @@ spurious_kernel_fault(unsigned long error_code, unsigned long address)
+ 		return spurious_kernel_fault_check(error_code, (pte_t *) pud);
+ 
+ 	pmd = pmd_offset(pud, address);
+-	if (!pmd_present(*pmd))
++	if (!PMD_PRESENT(*pmd))
+ 		return 0;
+ 
+ 	if (pmd_large(*pmd))
+ 		return spurious_kernel_fault_check(error_code, (pte_t *) pmd);
+ 
+ 	pte = pte_offset_kernel(pmd, address);
+-	if (!pte_present(*pte))
++	if (!PTE_PRESENT(*pte))
+ 		return 0;
+ 
+ 	ret = spurious_kernel_fault_check(error_code, pte);
+@@ -1068,7 +1099,6 @@ spurious_kernel_fault(unsigned long error_code, unsigned long address)
+ 
+ 	return ret;
+ }
+-NOKPROBE_SYMBOL(spurious_kernel_fault);
+ 
+ int show_unhandled_signals = 1;
+ 
+@@ -1504,6 +1534,20 @@ DEFINE_IDTENTRY_RAW_ERRORCODE(exc_page_fault)
+ 	 * the fixup on the next page fault.
+ 	 */
+ 	struct asi *asi = asi_get_current();
++        if (asi)
++                asi_exit();
++
++        /* handle_page_fault() might call BUG() if we run it for a kernel
++         * address. This might be the case if we got here due to an ASI fault.
++         * We avoid this case by checking whether the address is now, after a
++         * potential asi_exit(), accessible by hardware. If it is - there's
++         * nothing to do.
++         */
++        if (current && mm_asi_enabled(current->mm)) {
++                pgd_t *pgd = (pgd_t*)__va(read_cr3_pa()) + pgd_index(address);
++                if (is_address_accessible_now(error_code, address, pgd))
++                        return;
++        }
+ 
+ 	prefetchw(&current->mm->mmap_lock);
+ 
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index c3f209720a84..560909e80841 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -707,6 +707,9 @@ extern struct mm_struct init_mm;
+ #ifdef CONFIG_ADDRESS_SPACE_ISOLATION
+ static inline bool mm_asi_enabled(struct mm_struct *mm)
+ {
++        if (!mm)
++                return false;
++
+         return mm->asi_enabled;
+ }
+ #else
 -- 
 2.35.1.473.g83b2b277ed-goog
 
