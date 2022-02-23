@@ -2,115 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B334CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F737C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239083AbiBWIxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:53:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        id S239087AbiBWIyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:54:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiBWIxn (ORCPT
+        with ESMTP id S239090AbiBWIx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:53:43 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CBD65780;
-        Wed, 23 Feb 2022 00:53:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645606396; x=1677142396;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Gf7fLnuz2/+PWrNrtqGk1PKFdI0hQYHsrfCkNF3N2OE=;
-  b=wfa74g05p79C6sjxL3xJ82DiO5q4vDUA2aprhaAcKbq0sipbcQXCuCJV
-   UDz7Xo4806bIa+1v5X9/tdXNYEaROAPRUZR+eXa1ePKaA1OAhubZpKYP1
-   purYunz0Zl500zH4BtKtISVV7cRteONTGkwwVO2JbFmg07PPSdVZXA0pf
-   4FGkpPbi0k0eEValV5eQDH+9khs4ZH2XnSMbHsdodl3G69hkH02q4PDji
-   J9Wj3A3JLktAqqQrDiXRyleiSpmFCVwbkl9PHMh1PmxYFyzpj+t2j0lnW
-   Q8dZXQDI5xIU3dQrtkaQI0OAX9ieIE8SVZC9OaL8lLLUV3hgFTMGwQu4+
-   A==;
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="149703384"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Feb 2022 01:53:14 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 23 Feb 2022 01:53:14 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 23 Feb 2022 01:53:09 -0700
-From:   <conor.dooley@microchip.com>
-To:     <u.kleine-koenig@pengutronix.de>,
-        <krzysztof.kozlowski@canonical.com>
-CC:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <aou@eecs.berkeley.edu>, <atishp@rivosinc.com>, <brgl@bgdev.pl>,
-        <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
-        <devicetree@vger.kernel.org>, <geert@linux-m68k.org>,
-        <ivan.griffin@microchip.com>, <jassisinghbrar@gmail.com>,
-        <lee.jones@linaro.org>, <lewis.hanly@microchip.com>,
-        <linus.walleij@linaro.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <linux-rtc@vger.kernel.org>,
-        <palmer@dabbelt.com>, <palmer@rivosinc.com>,
-        <paul.walmsley@sifive.com>, <robh+dt@kernel.org>,
-        <robh@kernel.org>, <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 05/11] dt-bindings: pwm: add microchip corepwm binding
-Date:   Wed, 23 Feb 2022 08:55:10 +0000
-Message-ID: <20220223085509.3664942-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220223082018.degrftmxpk5uc6xn@pengutronix.de>
-References: <20220223082018.degrftmxpk5uc6xn@pengutronix.de>
+        Wed, 23 Feb 2022 03:53:57 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7974D7B55B;
+        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id o8so490004pgf.9;
+        Wed, 23 Feb 2022 00:53:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
+        b=mjbK/Qvyky40bHpb9CMcZeTXTikILi0QdvNGlkl/xfbx4ehMMLyLVLBwG4UAHrjXJC
+         qZ97pFWziKsT8Ay5h4ojKoZyq6NeXAh6ADGWvdRQa2t2iIkkdmV2eHSjj0U7qlbim6Pt
+         FOYoBJP5rOCNKtQOZvrqlHbv5uETayn7kMpKlF8KWDXNKiHmjBGNDZWHjf+DZDKrSyua
+         Lm6AqmUKEXj9hGreOdCtBvtMXNSDrHIgPQrlpdQq/UEKV8bD9T1yuxUEc8zw9Ok2X2Cx
+         N3iRl6WixrLYYwWx9/RAIeCWXNAfflB6skCejDzhXl7Y0nrM4wBCthW0YvQBvuwFhJko
+         ctiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iDb45oPj0ifDcB8Xoh2dodzalPDAwvLvo6tLmA+1g1A=;
+        b=zK7TWib1MGdDn8GbDGLRy9sHiG69cgzLpzUsWXSvgPBDUaCYXn/kxj7fZYT2h4qFd/
+         ofaWWLyaXya3vy7Wxrq+Gk+eicoGvJ7fV1JX2WT7MjiVXkVHLimNihIzBEgdjkNyIdvo
+         i+eaQ8vh0c9Rs4N61dLgsqfprHzyFk41Sxi6Zvw7oWNSBsgcvcKrE5/z89nIgc0pvaHV
+         S/eD6P/dV9Jk0qoDsBMXAyBttZeeFfjOqy3rr+qKqKX3XsQc9O4tCgMllgYI/1BYpO9Z
+         orItWqqgtS501u4OaeJ96uo6YQTTqujcCG9O5bwIH/j8H3c5qTQYDvXj1B2+V09woR9G
+         StqA==
+X-Gm-Message-State: AOAM531zDWZAyhVzq3R0ReaDEaxUiGK01fDklDDT+b8ylnWg2xQdEqzm
+        Ln/2fk2zXEY18WLH+HjAQBssuALfPl2Vp9PpnNc=
+X-Google-Smtp-Source: ABdhPJx/R0IJt/LaaJ2AfxqrABa8uf/z9Mb2sxVMk8u3hvcBKdcmjiDWBmzbbR8L5ikg9VGcY06oyQ==
+X-Received: by 2002:a63:5d09:0:b0:372:9a55:bf89 with SMTP id r9-20020a635d09000000b003729a55bf89mr22668044pgb.321.1645606408731;
+        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id ft9sm2043174pjb.4.2022.02.23.00.53.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 00:53:28 -0800 (PST)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] libbpf: Simplify the find_elf_sec_sz() function
+Date:   Wed, 23 Feb 2022 16:52:44 +0800
+Message-Id: <20220223085244.3058118-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/02/2022 08:20, Uwe Kleine-König wrote:
-> On Wed, Feb 23, 2022 at 08:12:49AM +0100, Krzysztof Kozlowski wrote:
-> > On 23/02/2022 07:20, Uwe Kleine-König wrote:
-> > > On Mon, Feb 14, 2022 at 01:58:35PM +0000, conor.dooley@microchip.com wrote:
-> > >> From: Conor Dooley <conor.dooley@microchip.com>
-> > >>
-> > >> Add device tree bindings for the Microchip fpga fabric based "core" PWM
-> > >> controller.
-> > >>
-> > >> Reviewed-by: Rob Herring <robh@kernel.org>
-> > >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> > >> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> > > 
-> > > I like it:
-> > > 
-> > > Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> > > 
-> > > nitpick: Put your S-o-b last in the commit log. (This doesn't justify a
-> > > resend IMHO)
-> > 
-> > It should be the opposite - the first. First author signs the patch,
-> > then comes review and finally an ack. Putting SoB at then suggests that
-> > tags were accumulated before sending patch, out of mailing list.
-> 
-> well, or in an earlier revision of this patch as is the case here. One
-> of the ideas of S-o-b is that the order shows the flow of the patch
-> states and if this patch ends in git with:
-> 
-> 	Referred-by: Rob Herring <robh@kernel.org>
-> 	Singed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> 	Backed-by: Palmer Dabbelt <palmer@rivosinc.com>
-> 	Singed-off-by: Peter Maintainer <pm@example.com>
-> 
-> I'd expect that Backed-by was added by Peter, not Conor.
-> (Modified the tags on purpose to not interfere with b4's tag pickup, I
-> guess you humans still get the point.)
+The check in the last return statement is unnecessary, we can just return
+the ret variable.
 
-I had put the acks after the S-o-B for patches I hadn't changed since the ack,
-but I think that may have been a misinterpretation of what was meant by Rob
-when he said tags should be in chronological order. Won't do it this way in
-the future.
+But we can simplify the function further by returning 0 immediately if we
+find the section size and -ENOENT otherwise.
 
-If the remaining patch gets a maintainer ack, the order will be fine I guess
-since it'll be Palmer taking it anyway. If there's a v8, I will fix the order.
+Thus we can also remove the ret variable.
 
-Thanks,
-Conor
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ tools/lib/bpf/libbpf.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7e978feaf822..776b8e034d62 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1374,22 +1374,20 @@ static bool bpf_map_type__is_map_in_map(enum bpf_map_type type)
+ 
+ static int find_elf_sec_sz(const struct bpf_object *obj, const char *name, __u32 *size)
+ {
+-	int ret = -ENOENT;
+ 	Elf_Data *data;
+ 	Elf_Scn *scn;
+ 
+-	*size = 0;
+ 	if (!name)
+ 		return -EINVAL;
+ 
+ 	scn = elf_sec_by_name(obj, name);
+ 	data = elf_sec_data(obj, scn);
+ 	if (data) {
+-		ret = 0; /* found it */
+ 		*size = data->d_size;
++		return 0; /* found it */
+ 	}
+ 
+-	return *size ? 0 : ret;
++	return -ENOENT;
+ }
+ 
+ static int find_elf_var_offset(const struct bpf_object *obj, const char *name, __u32 *off)
+-- 
+2.35.0.rc2
+
