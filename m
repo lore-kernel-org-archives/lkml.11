@@ -2,238 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD72C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D38DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240613AbiBWMtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:49:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        id S240619AbiBWMtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:49:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240495AbiBWMtB (ORCPT
+        with ESMTP id S240593AbiBWMtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 07:49:01 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814EBA66EF;
-        Wed, 23 Feb 2022 04:48:33 -0800 (PST)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5270FA66C3
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:48:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645620513; x=1677156513;
+  t=1645620514; x=1677156514;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Yu6PwEdVjrJZ74LB1ocxQTTeqK53d5t1O9sOf+Ll29Y=;
-  b=MhgIR9sXaOKjWi1jjloPXeBhjjBvJlW7zvllojKpctH/g5x2/ssb5i+S
-   tJZ472+pQ394dgzK6pLAYvIIlKFvRBMq31nN7A6jSBT8MduawTtwlVeoB
-   /ZCtWUllv86bPsmafy5o1dBAxR/cqYBFsQssxx53s2qQKHt60pDEUckXF
-   yGDtLubR2C5j+7MWT3Iva0WCrkrYD5kw4VRjoJ3W6mDXENYX4LQSmDeyg
-   9H1Zp2ogNPqXbxtJjo82lw77bpFx7qeX1gTUAQXHgTZ7oQPbE29fyzuOY
-   o/wO2feRVBxbf6fHe+ljlECJRJEW9wQN1p2SgrrhJmDymPdQpJJI+2/+o
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="252146576"
+  bh=7U3dBXvnvJSXR66MUjtmjBPnFPs6h5fn1DN++jies5w=;
+  b=UdjaNgzP0TcAacOKhtCAkH+nQmnD8qXaqbwO+pXH5/YTckkSPEdGtlY8
+   UkeMtE7XUV0kT16nnaG/O0nd14Ko6od5kdg/vCW7oYt7l1PANdXNrJjc+
+   HAmlGn4elDJeGnPr/bOxydDiZ/5x/fwzRJBCIvikwFf0Ju6Nwm126MEoR
+   Rm9RiLW3ZPZf0w1fbqddGxWhzHuDgDArJTPkg2uJHm8h1CP/NUd8+L3Kr
+   TdC7tMqTGyqAF5nEB29lxJsp6I7yklVY6ix+sZUQwquxz+lYTjsP4NwmE
+   KUmhH6MUX2RiLNxGtVm5ES6I65OwfWsygz+24mKkTTXbBQ9w5vPrZ/dZ6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251689844"
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="252146576"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:33 -0800
+   d="scan'208";a="251689844"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:33 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="532669216"
+   d="scan'208";a="637409614"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nMr4I-0001Pv-4o; Wed, 23 Feb 2022 12:48:30 +0000
-Date:   Wed, 23 Feb 2022 20:47:53 +0800
+        id 1nMr4I-0001Pq-3g; Wed, 23 Feb 2022 12:48:30 +0000
+Date:   Wed, 23 Feb 2022 20:48:10 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "broonie@kernel.org" <broonie@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] arm64: Change elfcore for_each_mte_vma() to use VMA
- iterator
-Message-ID: <202202231935.aUY0YIgf-lkp@intel.com>
-References: <20220223023245.uicyzttakfq3k5zf@revolver>
+To:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     kbuild-all@lists.01.org, Alexander.Deucher@amd.com,
+        Sunil-kumar.Dommati@amd.com, krisman@collabora.com,
+        wtli@nuvoton.com, Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/9] ASoC: amd: vg: fix for pm resume callback sequence
+Message-ID: <202202232021.rBs2qLvB-lkp@intel.com>
+References: <20220223071959.13539-1-Vijendar.Mukunda@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223023245.uicyzttakfq3k5zf@revolver>
+In-Reply-To: <20220223071959.13539-1-Vijendar.Mukunda@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liam,
+Hi Vijendar,
 
-Thank you for the patch! Yet something to improve:
+Thank you for the patch! Perhaps something to improve:
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on next-20220222]
-[cannot apply to linux/master linus/master v5.17-rc5]
+[auto build test WARNING on broonie-sound/for-next]
+[also build test WARNING on v5.17-rc5 next-20220222]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/0day-ci/linux/commits/Liam-Howlett/arm64-Change-elfcore-for_each_mte_vma-to-use-VMA-iterator/20220223-104149
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: arm64-randconfig-r033-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231935.aUY0YIgf-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
+url:    https://github.com/0day-ci/linux/commits/Vijendar-Mukunda/ASoC-amd-vg-fix-for-pm-resume-callback-sequence/20220223-152636
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202232021.rBs2qLvB-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/e416e64fe4e04c43daa48131e564c9f2f64ec333
+        # https://github.com/0day-ci/linux/commit/43c5f728cf59371b29569d941fb2ef2bdc3a279d
         git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Liam-Howlett/arm64-Change-elfcore-for_each_mte_vma-to-use-VMA-iterator/20220223-104149
-        git checkout e416e64fe4e04c43daa48131e564c9f2f64ec333
+        git fetch --no-tags linux-review Vijendar-Mukunda/ASoC-amd-vg-fix-for-pm-resume-callback-sequence/20220223-152636
+        git checkout 43c5f728cf59371b29569d941fb2ef2bdc3a279d
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash sound/soc/amd/vangogh/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_phdrs':
-   arch/arm64/kernel/elfcore.c:68:9: error: implicit declaration of function 'VMA_ITERATOR' [-Werror=implicit-function-declaration]
-      68 |         VMA_ITERATOR(vmi, current->mm, 0);
-         |         ^~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c:68:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
-      68 |         VMA_ITERATOR(vmi, current->mm, 0);
-         |                      ^~~
-         |                      vma
-   arch/arm64/kernel/elfcore.c:68:22: note: each undeclared identifier is reported only once for each function it appears in
-   arch/arm64/kernel/elfcore.c:13:17: error: implicit declaration of function 'for_each_vma'; did you mean 'for_each_cpu'? [-Werror=implicit-function-declaration]
-      13 |                 for_each_vma(vmi, vma)                                  \
-         |                 ^~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c:70:9: note: in expansion of macro 'for_each_mte_vma'
-      70 |         for_each_mte_vma(vmi, vma)
-         |         ^~~~~~~~~~~~~~~~
->> arch/arm64/kernel/elfcore.c:14:25: error: expected ';' before 'if'
-      14 |                         if (vma->vm_flags & VM_MTE)
-         |                         ^~
-   arch/arm64/kernel/elfcore.c:70:9: note: in expansion of macro 'for_each_mte_vma'
-      70 |         for_each_mte_vma(vmi, vma)
-         |         ^~~~~~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
-   arch/arm64/kernel/elfcore.c:79:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
-      79 |         VMA_ITERATOR(vmi, current->mm, 0);
-         |                      ^~~
-         |                      vma
->> arch/arm64/kernel/elfcore.c:14:25: error: expected ';' before 'if'
-      14 |                         if (vma->vm_flags & VM_MTE)
-         |                         ^~
-   arch/arm64/kernel/elfcore.c:81:9: note: in expansion of macro 'for_each_mte_vma'
-      81 |         for_each_mte_vma(vmi, vma) {
-         |         ^~~~~~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_data_size':
-   arch/arm64/kernel/elfcore.c:105:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
-     105 |         VMA_ITERATOR(vmi, current->mm, 0);
-         |                      ^~~
-         |                      vma
->> arch/arm64/kernel/elfcore.c:14:25: error: expected ';' before 'if'
-      14 |                         if (vma->vm_flags & VM_MTE)
-         |                         ^~
-   arch/arm64/kernel/elfcore.c:107:9: note: in expansion of macro 'for_each_mte_vma'
-     107 |         for_each_mte_vma(vmi, vma)
-         |         ^~~~~~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
-   arch/arm64/kernel/elfcore.c:116:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
-     116 |         VMA_ITERATOR(vmi, current->mm, 0);
-         |                      ^~~
-         |                      vma
->> arch/arm64/kernel/elfcore.c:14:25: error: expected ';' before 'if'
-      14 |                         if (vma->vm_flags & VM_MTE)
-         |                         ^~
-   arch/arm64/kernel/elfcore.c:118:9: note: in expansion of macro 'for_each_mte_vma'
-     118 |         for_each_mte_vma(vmi, vma) {
-         |         ^~~~~~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
-   arch/arm64/kernel/elfcore.c:99:1: error: control reaches end of non-void function [-Werror=return-type]
-      99 | }
-         | ^
-   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
-   arch/arm64/kernel/elfcore.c:127:1: error: control reaches end of non-void function [-Werror=return-type]
-     127 | }
-         | ^
-   At top level:
-   arch/arm64/kernel/elfcore.c:25:12: warning: 'mte_dump_tag_range' defined but not used [-Wunused-function]
-      25 | static int mte_dump_tag_range(struct coredump_params *cprm,
-         |            ^~~~~~~~~~~~~~~~~~
-   arch/arm64/kernel/elfcore.c:16:22: warning: 'mte_vma_tag_dump_size' defined but not used [-Wunused-function]
-      16 | static unsigned long mte_vma_tag_dump_size(struct vm_area_struct *vma)
-         |                      ^~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+   sound/soc/amd/vangogh/acp5x-pcm-dma.c: In function 'acp5x_pcm_resume':
+>> sound/soc/amd/vangogh/acp5x-pcm-dma.c:430:20: warning: variable 'frmt_val' set but not used [-Wunused-but-set-variable]
+     430 |  u32 val, reg_val, frmt_val;
+         |                    ^~~~~~~~
+>> sound/soc/amd/vangogh/acp5x-pcm-dma.c:430:11: warning: variable 'reg_val' set but not used [-Wunused-but-set-variable]
+     430 |  u32 val, reg_val, frmt_val;
+         |           ^~~~~~~
 
 
-vim +14 arch/arm64/kernel/elfcore.c
+vim +/frmt_val +430 sound/soc/amd/vangogh/acp5x-pcm-dma.c
 
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  10  
-e416e64fe4e04c Liam Howlett    2022-02-23  11  #define for_each_mte_vma(vmi, vma)					\
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  12  	if (system_supports_mte())					\
-e416e64fe4e04c Liam Howlett    2022-02-23  13  		for_each_vma(vmi, vma)					\
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31 @14  			if (vma->vm_flags & VM_MTE)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  15  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  16  static unsigned long mte_vma_tag_dump_size(struct vm_area_struct *vma)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  17  {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  18  	if (vma->vm_flags & VM_DONTDUMP)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  19  		return 0;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  20  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  21  	return vma_pages(vma) * MTE_PAGE_TAG_STORAGE;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  22  }
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  23  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  24  /* Derived from dump_user_range(); start/end must be page-aligned */
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  25  static int mte_dump_tag_range(struct coredump_params *cprm,
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  26  			      unsigned long start, unsigned long end)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  27  {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  28  	unsigned long addr;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  29  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  30  	for (addr = start; addr < end; addr += PAGE_SIZE) {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  31  		char tags[MTE_PAGE_TAG_STORAGE];
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  32  		struct page *page = get_dump_page(addr);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  33  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  34  		/*
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  35  		 * get_dump_page() returns NULL when encountering an empty
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  36  		 * page table entry that would otherwise have been filled with
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  37  		 * the zero page. Skip the equivalent tag dump which would
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  38  		 * have been all zeros.
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  39  		 */
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  40  		if (!page) {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  41  			dump_skip(cprm, MTE_PAGE_TAG_STORAGE);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  42  			continue;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  43  		}
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  44  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  45  		/*
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  46  		 * Pages mapped in user space as !pte_access_permitted() (e.g.
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  47  		 * PROT_EXEC only) may not have the PG_mte_tagged flag set.
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  48  		 */
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  49  		if (!test_bit(PG_mte_tagged, &page->flags)) {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  50  			put_page(page);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  51  			dump_skip(cprm, MTE_PAGE_TAG_STORAGE);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  52  			continue;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  53  		}
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  54  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  55  		mte_save_page_tags(page_address(page), tags);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  56  		put_page(page);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  57  		if (!dump_emit(cprm, tags, MTE_PAGE_TAG_STORAGE))
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  58  			return 0;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  59  	}
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  60  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  61  	return 1;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  62  }
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  63  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  64  Elf_Half elf_core_extra_phdrs(void)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  65  {
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  66  	struct vm_area_struct *vma;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  67  	int vma_count = 0;
-e416e64fe4e04c Liam Howlett    2022-02-23 @68  	VMA_ITERATOR(vmi, current->mm, 0);
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  69  
-e416e64fe4e04c Liam Howlett    2022-02-23  70  	for_each_mte_vma(vmi, vma)
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  71  		vma_count++;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  72  
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  73  	return vma_count;
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  74  }
-6dd8b1a0b6cb3e Catalin Marinas 2022-01-31  75  
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  425  
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  426  static int __maybe_unused acp5x_pcm_resume(struct device *dev)
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  427  {
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  428  	struct i2s_dev_data *adata;
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  429  	struct i2s_stream_instance *rtd;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21 @430  	u32 val, reg_val, frmt_val;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  431  
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  432  	reg_val = 0;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  433  	frmt_val = 0;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  434  	adata = dev_get_drvdata(dev);
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  435  
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  436  	if (adata->play_stream && adata->play_stream->runtime) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  437  		rtd = adata->play_stream->runtime->private_data;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  438  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  439  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_ITER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  440  		if (adata->tdm_mode == TDM_ENABLE) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  441  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_TXFRMT);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  442  			val = acp_readl(adata->acp5x_base + ACP_HSTDM_ITER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  443  			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_ITER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  444  		}
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  445  	}
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  446  	if (adata->i2ssp_play_stream && adata->i2ssp_play_stream->runtime) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  447  		rtd = adata->i2ssp_play_stream->runtime->private_data;
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  448  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  449  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_ITER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  450  		if (adata->tdm_mode == TDM_ENABLE) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  451  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_TXFRMT);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  452  			val = acp_readl(adata->acp5x_base + ACP_I2STDM_ITER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  453  			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_ITER);
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  454  		}
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  455  	}
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  456  
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  457  	if (adata->capture_stream && adata->capture_stream->runtime) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  458  		rtd = adata->capture_stream->runtime->private_data;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  459  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  460  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_IRER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  461  		if (adata->tdm_mode == TDM_ENABLE) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  462  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_RXFRMT);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  463  			val = acp_readl(adata->acp5x_base + ACP_HSTDM_IRER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  464  			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_IRER);
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  465  		}
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  466  	}
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  467  	if (adata->i2ssp_capture_stream && adata->i2ssp_capture_stream->runtime) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  468  		rtd = adata->i2ssp_capture_stream->runtime->private_data;
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  469  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  470  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_IRER);
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  471  		if (adata->tdm_mode == TDM_ENABLE) {
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  472  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_RXFRMT);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  473  			val = acp_readl(adata->acp5x_base + ACP_I2STDM_IRER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  474  			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_IRER);
+43c5f728cf59371 Vijendar Mukunda 2022-02-23  475  		}
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  476  	}
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  477  	acp_writel(1, adata->acp5x_base + ACP_EXTERNAL_INTR_ENB);
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  478  	return 0;
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  479  }
+361414dc1f07b72 Vijendar Mukunda 2021-07-21  480  
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
