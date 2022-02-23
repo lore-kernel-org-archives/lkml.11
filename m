@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D75D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237783AbiBWClM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:41:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S237795AbiBWClP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237813AbiBWCiG (ORCPT
+        with ESMTP id S237957AbiBWCig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:38:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E3522BF6;
-        Tue, 22 Feb 2022 18:33:06 -0800 (PST)
+        Tue, 22 Feb 2022 21:38:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC0F65423;
+        Tue, 22 Feb 2022 18:33:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B20CB81E0D;
-        Wed, 23 Feb 2022 02:32:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 951FCC340E8;
-        Wed, 23 Feb 2022 02:32:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A0F3614FF;
+        Wed, 23 Feb 2022 02:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D083C340F5;
+        Wed, 23 Feb 2022 02:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583574;
-        bh=94F1j0DiZ7qJpTyWsfI+MmjhV156Q0ciHj/koAEnTgk=;
+        s=k20201202; t=1645583591;
+        bh=2uGSyrZm/lbfmqs0uoxEHOH1brc8mb3+/UaCeclkXOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWLZ2d7oxK+MBn7U0dGpsBzbGxHBUPooNDBcU5CiE0doiwBOjBGYOg7w97/P1L4EE
-         ZTpmXME1TmRTmeCBm7i92NvvdeQ6XG+LCRkSoWhC+AklU5aia0PrXCA0iVXox3vIQU
-         OU/CTri8nABv02cjsJCKEy/Rln8v8EtoSW+Jiey8rIUwfFnICcE6kFArjhse7pWOeq
-         /FSc4sRrZNf1IouKEQW9OJP3MOgfLABKGFHkI+JkF2m6qCdZjWq34bgRCdDYRGyoP3
-         NHUNsZ1iWEQPdTFLTK52BXckprK093euqNGFIEuKr3zJcPOnwsXqD1E1gf3EYs9xgv
-         Oc3hEICWoRngA==
+        b=nC5ZxtQoZlaH+GNNCKD5glT93JAa/xEN6SHszTeK08bh4rrbQsH9rPwJeixqDzUtE
+         VjqkcCALx6jrZDYoCOlxZ9pBgWMEw1jPMBFaerA5Jp2Ok8ksHINSaDIuTAAM9Ax7td
+         rvQ4TYu4iuH4yemimVhuVdfWQfeHOJGPd1e8ddkUC16QFn/RaGWhBvbQmViV0ItcBv
+         X2veyd/3rvDJ9bS2/FBFqdis/IipaBQ+K3x7UIxpGgsnEmWOhqjY+51BZBOfGcvvbD
+         kbApVlECqt51i8djMVuYQji03whJKaja/KD+GzBv7Q3QarFZ/+RpS2NlIOC0f0bmsE
+         WAZpnfvZKJ1zg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Sasha Levin <sashal@kernel.org>,
-        krzysztof.kozlowski@canonical.com, robh@kernel.org,
-        yangyicong@hisilicon.com, semen.protsenko@linaro.org,
-        sven@svenpeter.dev, jie.deng@intel.com, bence98@sch.bme.hu,
-        lukas.bulwahn@gmail.com, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/10] i2c: cadence: allow COMPILE_TEST
-Date:   Tue, 22 Feb 2022 21:32:31 -0500
-Message-Id: <20220223023233.242468-8-sashal@kernel.org>
+Cc:     Ronnie Sahlberg <lsahlber@redhat.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 4.9 5/9] cifs: fix double free race when mount fails in cifs_get_root()
+Date:   Tue, 22 Feb 2022 21:32:56 -0500
+Message-Id: <20220223023300.242616-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023233.242468-1-sashal@kernel.org>
-References: <20220223023233.242468-1-sashal@kernel.org>
+In-Reply-To: <20220223023300.242616-1-sashal@kernel.org>
+References: <20220223023300.242616-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,33 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa@kernel.org>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
+[ Upstream commit 3d6cc9898efdfb062efb74dc18cfc700e082f5d5 ]
 
-Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
-and easier maintenance.
+When cifs_get_root() fails during cifs_smb3_do_mount() we call
+deactivate_locked_super() which eventually will call delayed_free() which
+will free the context.
+In this situation we should not proceed to enter the out: section in
+cifs_smb3_do_mount() and free the same resources a second time.
 
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
+[Thu Feb 10 12:59:06 2022] BUG: KASAN: use-after-free in rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022] Read of size 8 at addr ffff888364f4d110 by task swapper/1/0
+
+[Thu Feb 10 12:59:06 2022] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G           OE     5.17.0-rc3+ #4
+[Thu Feb 10 12:59:06 2022] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.0 12/17/2019
+[Thu Feb 10 12:59:06 2022] Call Trace:
+[Thu Feb 10 12:59:06 2022]  <IRQ>
+[Thu Feb 10 12:59:06 2022]  dump_stack_lvl+0x5d/0x78
+[Thu Feb 10 12:59:06 2022]  print_address_description.constprop.0+0x24/0x150
+[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  kasan_report.cold+0x7d/0x117
+[Thu Feb 10 12:59:06 2022]  ? rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  __asan_load8+0x86/0xa0
+[Thu Feb 10 12:59:06 2022]  rcu_cblist_dequeue+0x32/0x60
+[Thu Feb 10 12:59:06 2022]  rcu_core+0x547/0xca0
+[Thu Feb 10 12:59:06 2022]  ? call_rcu+0x3c0/0x3c0
+[Thu Feb 10 12:59:06 2022]  ? __this_cpu_preempt_check+0x13/0x20
+[Thu Feb 10 12:59:06 2022]  ? lock_is_held_type+0xea/0x140
+[Thu Feb 10 12:59:06 2022]  rcu_core_si+0xe/0x10
+[Thu Feb 10 12:59:06 2022]  __do_softirq+0x1d4/0x67b
+[Thu Feb 10 12:59:06 2022]  __irq_exit_rcu+0x100/0x150
+[Thu Feb 10 12:59:06 2022]  irq_exit_rcu+0xe/0x30
+[Thu Feb 10 12:59:06 2022]  sysvec_hyperv_stimer0+0x9d/0xc0
+...
+[Thu Feb 10 12:59:07 2022] Freed by task 58179:
+[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
+[Thu Feb 10 12:59:07 2022]  kasan_set_track+0x25/0x30
+[Thu Feb 10 12:59:07 2022]  kasan_set_free_info+0x24/0x40
+[Thu Feb 10 12:59:07 2022]  ____kasan_slab_free+0x137/0x170
+[Thu Feb 10 12:59:07 2022]  __kasan_slab_free+0x12/0x20
+[Thu Feb 10 12:59:07 2022]  slab_free_freelist_hook+0xb3/0x1d0
+[Thu Feb 10 12:59:07 2022]  kfree+0xcd/0x520
+[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0x149/0xbe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
+[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
+[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
+[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
+[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
+[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+[Thu Feb 10 12:59:07 2022] Last potentially related work creation:
+[Thu Feb 10 12:59:07 2022]  kasan_save_stack+0x26/0x50
+[Thu Feb 10 12:59:07 2022]  __kasan_record_aux_stack+0xb6/0xc0
+[Thu Feb 10 12:59:07 2022]  kasan_record_aux_stack_noalloc+0xb/0x10
+[Thu Feb 10 12:59:07 2022]  call_rcu+0x76/0x3c0
+[Thu Feb 10 12:59:07 2022]  cifs_umount+0xce/0xe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  cifs_kill_sb+0xc8/0xe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  deactivate_locked_super+0x5d/0xd0
+[Thu Feb 10 12:59:07 2022]  cifs_smb3_do_mount+0xab9/0xbe0 [cifs]
+[Thu Feb 10 12:59:07 2022]  smb3_get_tree+0x1a0/0x2e0 [cifs]
+[Thu Feb 10 12:59:07 2022]  vfs_get_tree+0x52/0x140
+[Thu Feb 10 12:59:07 2022]  path_mount+0x635/0x10c0
+[Thu Feb 10 12:59:07 2022]  __x64_sys_mount+0x1bf/0x210
+[Thu Feb 10 12:59:07 2022]  do_syscall_64+0x5c/0xc0
+[Thu Feb 10 12:59:07 2022]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Reported-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cifs/cifsfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index c457f65136f83..ab9c7f2f1f79b 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -459,7 +459,7 @@ config I2C_BLACKFIN_TWI_CLK_KHZ
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 375ccd209206a..95e4f074b7665 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -746,6 +746,7 @@ cifs_do_mount(struct file_system_type *fs_type,
  
- config I2C_CADENCE
- 	tristate "Cadence I2C Controller"
--	depends on ARCH_ZYNQ || ARM64 || XTENSA
-+	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
- 	help
- 	  Say yes here to select Cadence I2C Host Controller. This controller is
- 	  e.g. used by Xilinx Zynq.
+ out_super:
+ 	deactivate_locked_super(sb);
++	return root;
+ out:
+ 	cifs_cleanup_volume_info(volume_info);
+ 	return root;
 -- 
 2.34.1
 
