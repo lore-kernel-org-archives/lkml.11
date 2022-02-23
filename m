@@ -2,105 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3C4C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242146AbiBWPh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:37:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S242152AbiBWPjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:39:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242043AbiBWPh4 (ORCPT
+        with ESMTP id S235281AbiBWPje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:37:56 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38572BBE0B;
-        Wed, 23 Feb 2022 07:37:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645630648; x=1677166648;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7ONB/aTHqMjYH/OmutKWhupcasaRbDK6GNSZHCYrgIs=;
-  b=MEQumQnXn/kchseS79skJ8C/8UryZIzbBJ2HpjdjH6VRDDuuQa9i8ZWU
-   Xx9hCvjh9wL9nOUCUm02fc6TPhdslylyTvdOAE52DvqqoBqwFp6KH2sQ/
-   xdXRsWbgYyHiix6YTGJThfIYRXmMrH+hSFQbHNojfsoEr3kw2GIBfxpfh
-   63xnBb7rRtbEth7E3aJukrgUDnEvimcT2aLk1FapUKRFgYH3Y0v8Hce6p
-   UlNr/aUnRDcWdhqB72sJgWg++wApv0gDzomyagHM1Lk3zUJbBiwJ1L5QK
-   N53SJSJaV+eLDs212HDyNrHHUVoNpJhjdGtXGMU9xiYJAqU4GiXP+CA4q
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="338427660"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="338427660"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:37:27 -0800
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="628121128"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:37:23 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMtgt-007TeV-Tl;
-        Wed, 23 Feb 2022 17:36:31 +0200
-Date:   Wed, 23 Feb 2022 17:36:31 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Message-ID: <YhZUf6MXUTumYyvF@smile.fi.intel.com>
-References: <20220221162652.103834-11-clement.leger@bootlin.com>
- <YhPSkz8+BIcdb72R@smile.fi.intel.com>
- <20220222142513.026ad98c@fixe.home>
- <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
- <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
- <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
- <4d611fe8-b82a-1709-507a-56be94263688@redhat.com>
- <20220223151436.4798e5ad@fixe.home>
- <YhZRgnPG5Yd8mvc/@lunn.ch>
- <d7c8a9fe-5c9b-2c9d-3731-c735da795bf8@redhat.com>
+        Wed, 23 Feb 2022 10:39:34 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23423BBE21
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:39:06 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id y6so48800198ybc.5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:39:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZtJfBRX+21hIC4X5ueYxlOe21t3bqp0p9D1sl8QaQt8=;
+        b=UBEdQRitCS6H4LdP/Noq8ewRXieRTmDfy1+EbGy3VRDXImdOcQD0fd1sZaNiuoXU7C
+         YyHdTmA5OYonjmBs2S15mD1DORekJseTIg8JWYwX1LC0gr6qr1J+X/iWi9TByaWSfiQL
+         ygA0rpJw8qAtTnJt4n986UpOrSi/KnXdSBUPQc2hNZZgXTEFpFZJaWKoXDtRRR+r7qES
+         uk+5JOM4V84Q1h6vDAGlD0TLm/Ut+mIL3nO/3ArT/vIu1c/mkEo7ZC+TNSEEBvVdMECZ
+         9vZyXttWZVIuVudxP37OyISefa2ez0tdOf9JNxhqM8f5UboEfn20IY3d5VCenTwMHmwt
+         5m1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZtJfBRX+21hIC4X5ueYxlOe21t3bqp0p9D1sl8QaQt8=;
+        b=eLqM0xR9iNwQyCtlv5vbSMM3vkgScdEADdWj+d86raQErMXlLRTKrI5X/yvgqppNZI
+         JSlt9n6h5gRqVIXYgZ3sVOvWoad7gLSmEM/+Kje30GhfRw49ZGAyFCUcgMRG4vpdzRmi
+         i96qdQnA3Quoblq0swBR8/A85D980w7ZBSjSIyzezMy4s1FSw+LhwZHqKPDTDnmp/A29
+         hNwbggodAGM+DiuiFP0RAW1myDggJQxWInkxdgqBk1s4+YR14vU9rYmL6hWgtfQ25Lb0
+         z3fI+EoVpcu/xqY/U/dXdnlJjpLTuufO+C6Jpd5N8BAqtQdhQDtADE47dcCsGug5rvyC
+         S+zA==
+X-Gm-Message-State: AOAM533x68oDG8i+i2laZntTCndl6bSy1jra2RP668QFvzsbNR3nE7m6
+        kbF3M7iAwSZBSFKp4TAt6AjPQuGP1rOIOWE2YMyR6Q==
+X-Google-Smtp-Source: ABdhPJzaoTP2kqxhFgM++hTOOSkKPMNmKMYubdjBie1xtzxCyizuc9FjXlDPvkE4TRYJJ4sZBRAkxtOnJJl+MkY9O8U=
+X-Received: by 2002:a25:2693:0:b0:624:50a8:fee9 with SMTP id
+ m141-20020a252693000000b0062450a8fee9mr277030ybm.348.1645630745172; Wed, 23
+ Feb 2022 07:39:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d7c8a9fe-5c9b-2c9d-3731-c735da795bf8@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220222054025.3412898-1-surenb@google.com> <20220222054025.3412898-3-surenb@google.com>
+ <YhSZhzUYlW6IAQT9@dhcp22.suse.cz> <CAJuCfpELxJ=7uuurKL9oRn1E_=rfL3aN8Duhqvi4Z2c1xHAT2w@mail.gmail.com>
+ <YhX2mkb327KkZR2/@dhcp22.suse.cz> <CAJuCfpE+dpCmA6sRQJBanRP2uJiQHGdoGGjvkhL_GqxRdY9aCg@mail.gmail.com>
+ <YhZS1A9wKQ8Aryin@dhcp22.suse.cz>
+In-Reply-To: <YhZS1A9wKQ8Aryin@dhcp22.suse.cz>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Wed, 23 Feb 2022 07:38:54 -0800
+Message-ID: <CAJuCfpGd2VCa6xm0QRMP8GGk_Jg-nCKTgr9=JGjdwuPyOoX07w@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] mm: fix use-after-free when anon vma name is used
+ after vma is freed
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, ccross@google.com,
+        sumit.semwal@linaro.org, dave.hansen@intel.com,
+        keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 04:27:33PM +0100, Hans de Goede wrote:
-> On 2/23/22 16:23, Andrew Lunn wrote:
-> >> As Russell asked, I'm also really interested if someone has a solution
-> >> to reuse device-tree description (overlays ?) to describe such
-> >> hardware. However, the fact that CONFIG_OF isn't enabled on x86 config
-> >> seems a bit complicated on this side.
-> > 
-> > It does work, intel even used it for one of there tiny x86 SoCs. Maybe
-> > it was Newton?
-> 
-> IIRC those SoCs did not use standard EFI/ACPI though, but rather some
-> other special firmware, I think it was SFI ?  This is not so much about
-> the CPU architecture as it is about the firmware/bootloader <->
-> OS interface.
+On Wed, Feb 23, 2022 at 7:29 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Wed 23-02-22 06:10:54, Suren Baghdasaryan wrote:
+> > On Wed, Feb 23, 2022 at 12:55 AM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Tue 22-02-22 07:43:40, Suren Baghdasaryan wrote:
+> > > > On Tue, Feb 22, 2022 at 12:06 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > > >
+> > > > > On Mon 21-02-22 21:40:25, Suren Baghdasaryan wrote:
+> > > > > > When adjacent vmas are being merged it can result in the vma that was
+> > > > > > originally passed to madvise_update_vma being destroyed.  In the current
+> > > > > > implementation, the name parameter passed to madvise_update_vma points
+> > > > > > directly to vma->anon_name->name and it is used after the call to
+> > > > > > vma_merge.  In the cases when vma_merge merges the original vma and
+> > > > > > destroys it, this will result in use-after-free bug as shown below:
+> > > > > >
+> > > > > > madvise_vma_behavior << passes vma->anon_name->name as name param
+> > > > > >   madvise_update_vma(name)
+> > > > > >     vma_merge
+> > > > > >       __vma_adjust
+> > > > > >         vm_area_free <-- frees the vma
+> > > > > >     replace_vma_anon_name(name) <-- UAF
+> > > > >
+> > > > > This seems to be stale because bare const char pointer is not passed in
+> > > > > the call chain. In fact I am not even sure there is any actual UAF here
+> > > > > after the rework.
+> > > > > Could you be more specific in describing the scenario?
+> > > >
+> > > > Yes, sorry, I need to update the part of the description talking about
+> > > > passing vma->anon_name->name directly.
+> > > > I think UAF is still there, it's just harder to reproduce (admittedly
+> > > > I could not reproduce it with the previous reproducer). The scenario
+> > > > would be when a vma with vma->anon_name->kref == 1 is being merged
+> > > > with another one and freed in the process:
+> > > >
+> > > > madvise_vma_behavior
+> > > >    anon_name = vma_anon_name(vma) <-- does not increase refcount
+> > > >    madvise_update_vma(anon_name)
+> > > >      *prev = vma_merge <-- returns another vma
+> > > >        __vma_adjust
+> > > >          vm_area_free(vma)
+> > > >            free_vma_anon_name
+> > > >              anon_vma_name_put
+> > > >                vma_anon_name_free <-- frees the vma->anon_name
+> > > >      vma = *prev <-- original vma was freed
+> > >
+> > > How come this is not a UAF in the first place?
+> >
+> > Sorry, I got you confused. The original vma that was passed as a
+> > parameter to vma_merge(vma) was freed and vma_merge() returns the area
+> > it was merged with:
+> >
+> >     *prev = vma_merge(vma_a) <-- vma_a is merged with adjacent vma_b,
+> > vma_a is freed and vma_b is returned
+> >     vma = *prev <-- "vma" now points to vma_b
+>
+> OK, I see the problem now. Essentially if we have two adjacent vmas
+> which have the same name but wrapped by two anon_vma_name instances
+> and we merge them together then the first one can be freed along with
+> its anon_vma_name which is still used by replace_anon_vma_name.
+>
+> Thanks for the patience.
 
-I think Andrew refers to Intel SoCs that are using OF. Those so far are
-CE4xxx and SoFIA SoCs.
+Thanks for reviewing! I posted the next version of the patchset at
+https://lore.kernel.org/linux-mm/20220223153613.835563-1-surenb@google.com/
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> --
+> Michal Hocko
+> SUSE Labs
