@@ -2,132 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09027C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D91C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiBWIYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:24:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
+        id S238889AbiBWIZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:25:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237670AbiBWIYb (ORCPT
+        with ESMTP id S231350AbiBWIZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:24:31 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B35A5A0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:24:03 -0800 (PST)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EEAF33FCA4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:24:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645604641;
-        bh=OUH0bTj/LUGqclp4FyWkS6uNhE/OcvDSgnjHRV7vNUM=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-         In-Reply-To:Content-Type;
-        b=JU82KO191cdrgWJg0J+I4iO3K9Gx66UhqZp8+3CY/Sv5aJlcEnS2LUtq384fzfEYt
-         we8C4pXQL6ljFwxrIy7azBYL7MT2oNy061lxsNG7eyvpj1LL2jiZ2gzT5XPqXghtGR
-         RGX5HmpdQhrnEUkjGP7NQEEZe2B3H6SciC7dNix+sii7FkOOZ3+C3JFffagKNud/Lo
-         gr3Qmxm2jeQ07+eboVA8eSiR4uEt9txcbCJMs4JTx+1jXuD9wMQF/KeBLpC6MgxO2g
-         aHsUqyw3uKyL/4kcRjsFkZO4Pg2k0MdZnmlxweK7CRRAmr9JG63oHDF1T11WBA+FKW
-         lYLt9XaKAdpvw==
-Received: by mail-ej1-f70.google.com with SMTP id ky6-20020a170907778600b0068e4bd99fd1so6790456ejc.15
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:24:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OUH0bTj/LUGqclp4FyWkS6uNhE/OcvDSgnjHRV7vNUM=;
-        b=W5s1ElwfZYTzHZITrhnTbizgpNnoJyxbLrjJ2GbZbVoNceJjYGK9lOR3vrHgbuKta4
-         CE9Kx9FnzCd3b6/+ihfuHS+bEpmEZ7trCDIKliLPLfcqUwq4HrtSjJ3mdK2YBOxhdM6v
-         O17dLt/6HtFZFfAZTjvCrFSILpJGc+KJq0HETWF1PuXRUjYe+hXMXpJCi44LVzKyCr3U
-         z6rOe0+NFpHSZ7NEbbDTWZKGBFRb6A36TFg3n4uGJVc7OCz3x+hsign8inh9TUPEpZ00
-         uSoCZaqzrj60S9tVEq00q+C3X/amVj2njD4dnCty9Vig1HR+Ui6cFegLDuC/B5e0aB1l
-         TJRw==
-X-Gm-Message-State: AOAM530/pJbDqoqbYqT5dtXjstd9FuVxlPPrEpupuwgxSyABCTtoG2pb
-        giYGgBwUjHl77zx/aXFLEAYOjPltctBq2y1vab4nJ3rHn0yz8RUgqPIpBA7SkZujpqmfEbK4tZr
-        MkjQFVOZg/8hQ4wb70T9MF3sgVSj8WReb70ZfPRnbBg==
-X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id 9-20020a170906310900b006cc07a18db0mr22106105ejx.266.1645604640501;
-        Wed, 23 Feb 2022 00:24:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzmlOe0uOWGCSaW649hZ3pFA8AEz4z12SvTxoyLOxSd5Mf7R4zHsjAvMUopfEcfA/lfYgjr1A==
-X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id 9-20020a170906310900b006cc07a18db0mr22106094ejx.266.1645604640319;
-        Wed, 23 Feb 2022 00:24:00 -0800 (PST)
-Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id p16sm1162411ejn.33.2022.02.23.00.23.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 00:23:59 -0800 (PST)
-Message-ID: <968cf18e-af5c-0503-79b1-a622938d4e0a@canonical.com>
-Date:   Wed, 23 Feb 2022 09:23:58 +0100
+        Wed, 23 Feb 2022 03:25:01 -0500
+Received: from spam.unicloud.com (eage.unicloud.com [220.194.70.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87C65A5A5;
+        Wed, 23 Feb 2022 00:24:32 -0800 (PST)
+Received: from eage.unicloud.com ([220.194.70.35])
+        by spam.unicloud.com with ESMTP id 21N8Lh1l031001;
+        Wed, 23 Feb 2022 16:21:43 +0800 (GMT-8)
+        (envelope-from luofei@unicloud.com)
+Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
+ (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Wed, 23
+ Feb 2022 16:21:42 +0800
+From:   luofei <luofei@unicloud.com>
+To:     <tony.luck@intel.com>, <bp@alien8.de>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>, <naoya.horiguchi@nec.com>,
+        <akpm@linux-foundation.org>
+CC:     <hpa@zytor.com>, <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>, luofei <luofei@unicloud.com>
+Subject: [PATCH v5 1/2] mm/hwpoison: Avoid the impact of hwpoison_filter() return value on mce handler
+Date:   Wed, 23 Feb 2022 03:21:35 -0500
+Message-ID: <20220223082135.2769649-1-luofei@unicloud.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        'Avri Altman' <avri.altman@wdc.com>,
-        'Rob Herring' <robh+dt@kernel.org>,
-        'Andy Gross' <agross@kernel.org>,
-        'Bjorn Andersson' <bjorn.andersson@linaro.org>,
-        'Wei Xu' <xuwei5@hisilicon.com>, 'Nishanth Menon' <nm@ti.com>,
-        'Vignesh Raghavendra' <vigneshr@ti.com>,
-        'Tero Kristo' <kristo@kernel.org>,
-        "'James E.J. Bottomley'" <jejb@linux.ibm.com>,
-        "'Martin K. Petersen'" <martin.petersen@oracle.com>,
-        'Jan Kotas' <jank@cadence.com>, 'Li Wei' <liwei213@huawei.com>,
-        'Stanley Chu' <stanley.chu@mediatek.com>,
-        'Yaniv Gardi' <ygardi@codeaurora.org>,
-        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
- <CGME20220222150007epcas5p22f05e6c8e80a5ad18a9528cd0ead865d@epcas5p2.samsung.com>
- <20220222145854.358646-10-krzysztof.kozlowski@canonical.com>
- <0c8b01d8280b$868abc20$93a03460$@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <0c8b01d8280b$868abc20$93a03460$@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.10.1.7]
+X-ClientProxiedBy: zgys-ex-mb08.Unicloud.com (10.10.0.14) To
+ zgys-ex-mb09.Unicloud.com (10.10.0.24)
+X-DNSRBL: 
+X-MAIL: spam.unicloud.com 21N8Lh1l031001
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/2022 17:44, Alim Akhtar wrote:
-> Hi Krzysztof
-> 
->> -----Original Message-----
->> From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
->> Sent: Tuesday, February 22, 2022 8:29 PM
->> To: Alim Akhtar <alim.akhtar@samsung.com>; Avri Altman
->> <avri.altman@wdc.com>; Rob Herring <robh+dt@kernel.org>; Krzysztof
->> Kozlowski <krzysztof.kozlowski@canonical.com>; Andy Gross
->> <agross@kernel.org>; Bjorn Andersson <bjorn.andersson@linaro.org>; Wei
->> Xu <xuwei5@hisilicon.com>; Nishanth Menon <nm@ti.com>; Vignesh
->> Raghavendra <vigneshr@ti.com>; Tero Kristo <kristo@kernel.org>; James E.J.
->> Bottomley <jejb@linux.ibm.com>; Martin K. Petersen
->> <martin.petersen@oracle.com>; Jan Kotas <jank@cadence.com>; Li Wei
->> <liwei213@huawei.com>; Stanley Chu <stanley.chu@mediatek.com>; Yaniv
->> Gardi <ygardi@codeaurora.org>; linux-scsi@vger.kernel.org;
->> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
->> msm@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-samsung-
->> soc@vger.kernel.org; linux-mediatek@lists.infradead.org
->> Subject: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
->>
->> The 'freq-table-hz' is not correct in DT schema, because '-hz' suffix
-> defines
->> uint32 type, not an array.  Therefore deprecate 'freq-table-hz'
->> and use 'freq-table' instead.
->>
-> May be once all the dts change migrate to using 'freq-table', just remove
-> 'freq-table-hz' from driver.
+When the hwpoison page meets the filter conditions, it should
+not be regarded as successful memory_failure() processing for
+mce handler, but should return a distinct value, otherwise
+mce handler regards the error page has been identified and
+isolated, which may lead to calling set_mce_nospec() to change
+page attribute, etc.
 
-At some point in the future 'freq-table-hz' parsing could be removed,
-but now you have both old and new DTS, so it should stay. Also for DTB
-compatibility.
+Here memory_failure() return -EOPNOTSUPP to indicate that the
+error event is filtered, mce handler should not take any action
+for this situation and hwpoison injector should treat as correct.
 
+Signed-off-by: luofei <luofei@unicloud.com>
+---
+ arch/x86/kernel/cpu/mce/core.c | 8 +++++---
+ drivers/base/memory.c          | 2 ++
+ mm/hwpoison-inject.c           | 3 ++-
+ mm/madvise.c                   | 2 ++
+ mm/memory-failure.c            | 9 +++++++--
+ 5 files changed, 18 insertions(+), 6 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 728f3b36ce2d..f4b56904db8a 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1332,10 +1332,12 @@ static void kill_me_maybe(struct callback_head *cb)
+ 
+ 	/*
+ 	 * -EHWPOISON from memory_failure() means that it already sent SIGBUS
+-	 * to the current process with the proper error info, so no need to
+-	 * send SIGBUS here again.
++	 * to the current process with the proper error info,
++	 * -EOPNOTSUPP means hwpoison_filter() filtered the error event,
++	 *
++	 * In both cases, no further processing is required.
+ 	 */
+-	if (ret == -EHWPOISON)
++	if (ret == -EHWPOISON || ret == -EOPNOTSUPP)
+ 		return;
+ 
+ 	pr_err("Memory error not recovered");
+diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+index 365cd4a7f239..abf407e45467 100644
+--- a/drivers/base/memory.c
++++ b/drivers/base/memory.c
+@@ -555,6 +555,8 @@ static ssize_t hard_offline_page_store(struct device *dev,
+ 		return -EINVAL;
+ 	pfn >>= PAGE_SHIFT;
+ 	ret = memory_failure(pfn, 0);
++	if (ret == -EOPNOTSUPP)
++		ret = 0;
+ 	return ret ? ret : count;
+ }
+ 
+diff --git a/mm/hwpoison-inject.c b/mm/hwpoison-inject.c
+index aff4d27ec235..a1d6fc3c78b9 100644
+--- a/mm/hwpoison-inject.c
++++ b/mm/hwpoison-inject.c
+@@ -48,7 +48,8 @@ static int hwpoison_inject(void *data, u64 val)
+ 
+ inject:
+ 	pr_info("Injecting memory failure at pfn %#lx\n", pfn);
+-	return memory_failure(pfn, 0);
++	err = memory_failure(pfn, 0);
++	return (err == -EOPNOTSUPP) ? 0 : err;
+ }
+ 
+ static int hwpoison_unpoison(void *data, u64 val)
+diff --git a/mm/madvise.c b/mm/madvise.c
+index ae35d72627ef..e7cb7a0751d6 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1096,6 +1096,8 @@ static int madvise_inject_error(int behavior,
+ 			pr_info("Injecting memory failure for pfn %#lx at process virtual address %#lx\n",
+ 				 pfn, start);
+ 			ret = memory_failure(pfn, MF_COUNT_INCREASED);
++			if (ret == -EOPNOTSUPP)
++				ret = 0;
+ 		}
+ 
+ 		if (ret)
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 662afe7b514f..7e16d31df0f3 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1528,7 +1528,7 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
+ 				if (TestClearPageHWPoison(head))
+ 					num_poisoned_pages_dec();
+ 				unlock_page(head);
+-				return 0;
++				return -EOPNOTSUPP;
+ 			}
+ 			unlock_page(head);
+ 			res = MF_FAILED;
+@@ -1615,7 +1615,7 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+ 		goto out;
+ 
+ 	if (hwpoison_filter(page)) {
+-		rc = 0;
++		rc = -EOPNOTSUPP;
+ 		goto unlock;
+ 	}
+ 
+@@ -1688,6 +1688,10 @@ static DEFINE_MUTEX(mf_mutex);
+  *
+  * Must run in process context (e.g. a work queue) with interrupts
+  * enabled and no spinlocks hold.
++ *
++ * Return: 0 for successfully handled the memory error,
++ *         -EOPNOTSUPP for memory_filter() filtered the error event,
++ *         < 0(except -EOPNOTSUPP) on failure.
+  */
+ int memory_failure(unsigned long pfn, int flags)
+ {
+@@ -1843,6 +1847,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 			num_poisoned_pages_dec();
+ 		unlock_page(p);
+ 		put_page(p);
++		res = -EOPNOTSUPP;
+ 		goto unlock_mutex;
+ 	}
+ 
+-- 
+2.27.0
+
