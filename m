@@ -2,117 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E04C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:45:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242982AbiBWQp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:45:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        id S242985AbiBWQqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:46:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237792AbiBWQpx (ORCPT
+        with ESMTP id S237792AbiBWQp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:45:53 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3920F8EB5F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:45:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=OZnbt00zUnS8m67NiJ13USs9kJgohLQZFhnBYLNvjWA=; b=t1hv85IizsOcqi6ScA1osGJdhK
-        C6T3qQUf4HaqeHhLFp0kdn1ZhElva1yJ37TUA70l21Xfxoj2OCyr4OyoZ8jwvaooeUzIcBH0Z3rc9
-        aoxZfCuHWwjZGoBx9soiJXVHsNEIgQCt/w4O0fij7MtB+vszov3WveCOCXXeEsMXet7T+TWahh3wV
-        15thF9YS0I8dkpfQ0jNZtMFC7YnqUQR+SpjLyw7X4pXat596haEGKgzBj/1NgOUUwKR0vizkQa1I5
-        KhR6dZD1S4rvd2XsLrkq8iyf+vyfS4eLvUEyaEhxofPZ0/i35bVrpDGhmscA0bvUWrnAfhE2tq6Vl
-        GRanFDog==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMulL-003vdN-GX; Wed, 23 Feb 2022 16:45:11 +0000
-Date:   Wed, 23 Feb 2022 16:45:11 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 00/71] Introducing the Maple Tree
-Message-ID: <YhZklyIzNWK9eUO3@casper.infradead.org>
-References: <20220215143728.3810954-1-Liam.Howlett@oracle.com>
- <20220216114700.f9473d88144dc59fc4d764fb@linux-foundation.org>
- <Yg1dgkrrImvQ1GXM@casper.infradead.org>
- <20220223163509.GH4423@techsingularity.net>
+        Wed, 23 Feb 2022 11:45:59 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA186E79E;
+        Wed, 23 Feb 2022 08:45:31 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 0A1B42112A;
+        Wed, 23 Feb 2022 16:45:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645634730; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JPPWVGtnil4K6Tjn5q/0MYJifKz3OsctSeTvcUnXcQg=;
+        b=KGSjCcLpqs56NloxYQBnFF4buJfplFV7HLG3wgJg2os9R0mmgwlJT3aith27h3HTYlMnmW
+        MjgRpbbZS8x7/RECI8QJ4Ca4dVECRB7ykK5Uj0s0PcPZ3r6KEDMfHPSHQgdQMm/duYFDii
+        HlNBpz0BHg2PKAKYKi8yLRq1YvuBV3Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645634730;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JPPWVGtnil4K6Tjn5q/0MYJifKz3OsctSeTvcUnXcQg=;
+        b=ucZBTGhjOU6YvUy75e7MOpjlgoxMJXIwlbRs08mSF4RoxNUFoMK7X7a5fZF5cZUzA+djL4
+        G10dC+QfGhWIHTDw==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4B95AA3B8D;
+        Wed, 23 Feb 2022 16:45:29 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 17:45:28 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
+        Helge Deller <deller@gmx.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Simon Trimmer <simont@opensource.cirrus.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rob Herring <robh@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Herrmann <dh.herrmann@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz
+Subject: Re: [PATCH v3] simplefb: Enable boot time VESA graphic mode
+ selection.
+Message-ID: <20220223164528.GE3113@kunlun.suse.cz>
+References: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
+ <20220218160436.23211-1-msuchanek@suse.de>
+ <33b80f9c-d54a-5471-a58b-7a783a7a9e5b@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223163509.GH4423@techsingularity.net>
+In-Reply-To: <33b80f9c-d54a-5471-a58b-7a783a7a9e5b@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 04:35:09PM +0000, Mel Gorman wrote:
-> On Wed, Feb 16, 2022 at 08:24:34PM +0000, Matthew Wilcox wrote:
-> > On Wed, Feb 16, 2022 at 11:47:00AM -0800, Andrew Morton wrote:
-> > > On Tue, 15 Feb 2022 14:37:44 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
-> > > 
-> > > > The maple tree is an RCU-safe range based B-tree designed to use modern
-> > > > processor cache efficiently.  There are a number of places in the kernel
-> > > > that a non-overlapping range-based tree would be beneficial, especially
-> > > > one with a simple interface.  The first user that is covered in this
-> > > > patch set is the vm_area_struct, where three data structures are
-> > > > replaced by the maple tree: the augmented rbtree, the vma cache, and the
-> > > > linked list of VMAs in the mm_struct.  The long term goal is to reduce
-> > > > or remove the mmap_sem contention.
-> > > 
-> > > Has a path been chosen which gets us from here to significant reduction
-> > > in mmap_lock overhead?
-> > > 
-> > > If so, what's the plan and what must be done?
-> > 
-> > I would say there are still competing ideas for how that is to be done.
-> > 
-> > First, the Maple Tree is independent (to a certain extent) of all the
-> > approaches to reducing mmap_lock overhead.  It's a better data structure
-> > for VMA lookup than the rbtree.  Set against that, it has higher overhead
-> > for modifications.  That means that benchmarks which primarily measure
-> > modification overhead see worse performance.  We believe this is not
-> > representative of real workloads, and indeed we see ~parity on workloads
-> > like git and make -jN.
+On Wed, Feb 23, 2022 at 05:34:50PM +0100, Javier Martinez Canillas wrote:
+> Hello Michal,
 > 
-> I'm way behind and only got around to looking at SPF properly today. Maple
-> is working its way up my list and I need to gather new data but I did
-> have old data queued from a time when I thought I would get around to
-> maple tree soon.  The big result that stood was was brk performance from
-> will-it-scale but for processes specifically
+> On 2/18/22 17:04, Michal Suchanek wrote:
+> > Since switch to simplefb/simpledrm VESA graphic modes are no longer
+> > available with legacy BIOS.
+> 
+> Maybe you can mention that is the "vga=" kernel command line parameter
+> since that may be more evident to people reading the commit message ?
 
-Yup, we know about the brk1 regression.  It's a really unrealistic
-benchmark, which is why we added brk2.  To quote the commit message:
+Yes, I suppose that could be added.
 
-    Linux has this horrendously complicated anon_vma structure that you don't
-    care about, but the upshot is that after calling fork(), each process
-    that calls brk() gets a _new_ VMA created.  That is, after calling brk()
-    the first time, the process address space looks like this:
+> > The x86 realmode boot code enables the VESA graphic modes when option
+> > FB_BOOT_VESA_SUPPORT is enabled.
+> > 
+> > To enable use of VESA modes with simplefb in legacy BIOS boot mode drop
+> 
+> I think you meant "VESA modes with the sysfb driver" ? or something like
+> that since otherwise it seems that you meant to use it with the simplefb
+> (drivers/video/fbdev/simplefb.c) fbdev driver, which doesn't support the
+> "vga=" param as far as I understand (it just uses whatever was setup).
 
-    557777fab000-557777ff0000 rw-p 00000000 00:00 0                          [heap]
-    557777ff0000-557777ff1000 rw-p 00000000 00:00 0                          [heap]
+And the vga= is whatever was set up by the realmode code. And the config
+option for realmode code to do that is selected by vesafb and not
+simplefb so it does not wotk for simplefb/simpledrm/whatewer when efifib
+is not built into the kernel.
 
-    so what brk1 is actually testing is how long it takes to create & destroy
-    a new VMA.  This does not match what most programs do -- most will call
-    exec() which resets the anon_vma structures and starts each program off
-    with its own heap.  And if you do have a multi-process program which
-    uses brk(), chances are it doesn't just oscillate betwee zero and one
-    extra pages of heap compared to its parent.
+> The name sysfb_simplefb is really horrible, because it is too confusing
+> and probably we should change it at some point...
+> 
+> Patch itself looks good to me though.
+> 
+> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
 
-    A better test starts out by allocating one page on the heap and then
-    throbs between one and two pages instead of throbbing between zero and
-    one page.  That means we're actually testing expanding and contracting
-    the heap instead of creating and destroying a new heap.
+Thanks
 
-    For realism, I wanted to add actually accessing the memory in the new
-    heap, but that doesn't work for the threaded case -- another thread
-    might remove the memory you just allocated while you're allocating it.
-    Threaded programs give each thread its own heap anyway, so this is
-    kind of a pointless syscall to ask about its threaded scalability.
-    
-    Anyway, here's brk2.c.  It is not very different from brk1.c, but the
-    performance results are quite different (actually worse by about 10-15%).
-
+Michal
