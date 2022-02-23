@@ -2,95 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0656C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 04:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5577AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236780AbiBWE5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 23:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
+        id S230206AbiBWFAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiBWE5N (ORCPT
+        with ESMTP id S229456AbiBWFAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 23:57:13 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D3A483BB
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:56:46 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id j5so6040936qvs.13
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:56:46 -0800 (PST)
+        Wed, 23 Feb 2022 00:00:46 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDB060CC3;
+        Tue, 22 Feb 2022 21:00:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GRsWtuYPVtPE9giQevMBeF9cuFJK/NvIt7pyCSw7hDs=;
-        b=khJDE2iVvaglQeQ9LXMCz6SMrTJJkiLvNqBliBXOjiVSkmbE0fh9SqGgEBmv3MVW1Y
-         zJJY6OdkCBe7oKFRmakwPUdhMOfv7G/BzUnyjG3tn1OLARgoW9m00aIBwZ2LqItgUSFZ
-         wl8MwBHbk8fVAdFqRX4ZogseAeQ6+Je/QNn5Eclr/RELyXfhWWgGSmYgIFEK7kbY7gLV
-         1x8sbmoI1QZcm5x5ms9Y7+dW2Hz7KHiqVLwfYwC/XTRIMLv4VgDiZG87nixRmf7YoJ8o
-         b7qOo5QwXazdfDJzCBHJI0CUYiCdFD3FlF6temGs6Hs/rlQjzqQGn2EEuolGfWoIEhsd
-         Sa8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GRsWtuYPVtPE9giQevMBeF9cuFJK/NvIt7pyCSw7hDs=;
-        b=C0rjMcdZFyu/Ifr5/hRz7nf/3EUFAYqEJ+c8S9mUPrsoK1LQj4pxHuUspD79e/oP7J
-         Rpl+TiDO1Uk+bwBewqxXikX61lAtRXXUlJuhSrLW+JfUxlFPOWecoknJMSKLJnI4xE6b
-         /IhDbclEGFCm7nfbJmtse4xk2EdELSOCcwFNNc4xrSm9+tE0KwUMVfdlnav0aHekp1aw
-         /YSEFp1ikC+u11qFlYCm+euUbjFzbGZ9srykd0Pk57j6UFYLT2cEkJEQNVfgdzNpniLW
-         OTYtSBj02oy6QiLhOBnri6ETJtZ0jKjdxupnXHvBy/6tNiSPeIjiyUVELFi69myupiy+
-         NrQw==
-X-Gm-Message-State: AOAM532J8W/VIuIpONKlMKjPEnD/MMuPYRd5mmIhWU49EEMNz+wV53tG
-        b1yuS+HJn3A65r0AhAET1I8r1n8+BoU=
-X-Google-Smtp-Source: ABdhPJwnF6BD9X6na/b400ybzxEnuRIEgmqgiA2Yc0f2crveMrPvg8r4nJnufal5GsBBQE4eQnFQGA==
-X-Received: by 2002:ad4:5aef:0:b0:42c:3b31:86bf with SMTP id c15-20020ad45aef000000b0042c3b3186bfmr22102689qvh.72.1645592205740;
-        Tue, 22 Feb 2022 20:56:45 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 15sm398444qtz.89.2022.02.22.20.56.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 20:56:44 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     ebiederm@xmission.com
-Cc:     akpm@linux-foundation.org, balbir@linux.vnet.ibm.com,
-        bsingharora@gmail.com, cgel.zte@gmail.com,
-        containers@lists.linux.dev, deng.changcheng@zte.com.cn,
-        linux-kernel@vger.kernel.org, xu.xin16@zte.com.cn
-Subject: Re: [PATCH resend] kernel: Make taskstats available via genetlink per namespace
-Date:   Wed, 23 Feb 2022 04:56:39 +0000
-Message-Id: <20220223045639.1932955-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <87v8x678ph.fsf@email.froward.int.ebiederm.org>
-References: <87v8x678ph.fsf@email.froward.int.ebiederm.org>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645592419; x=1677128419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XE2uJRgDNx1OqsKYkWTFHuk32gD01FUaPfvkpmgVI78=;
+  b=ggDz6njMq/Fiid8b+k1K8Wd8trrkLHt/aiVxU1imIrk3cx/y+VSTIygV
+   2ng7E1WyxAIU8Yd2VZD8ed6bgzHFVzuDdhSuGOv99vbEs8Hq1pY/YVUxW
+   FaB+VLs6uspL8sAWCr4erX4hYV2xUok4Z5PKt+82J0gYI8KoPg/4c7lSJ
+   A=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Feb 2022 21:00:19 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:00:18 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 22 Feb 2022 21:00:17 -0800
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 22 Feb 2022 21:00:14 -0800
+Date:   Wed, 23 Feb 2022 10:30:10 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Daehwan Jung <dh10.jung@samsung.com>
+CC:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: usb: gadget: rndis: add spinlock for rndis response list
+Message-ID: <20220223050010.GA20891@hu-pkondeti-hyd.qualcomm.com>
+References: <CGME20220222053200epcas2p4eddfc8f1083a9d998456164259004b36@epcas2p4.samsung.com>
+ <1645507768-77687-1-git-send-email-dh10.jung@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1645507768-77687-1-git-send-email-dh10.jung@samsung.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> -sh-4.4# ./getdelays -d -p 186 -v
->> print delayacct stats ON
->> debug on
->> Error getting family id, errno 0
->>
->> As more and more applications are deployed in containers like Docker,
->> it is necessary to support getdelays to be used in net namespace.
->> Taskstats is safe for use per namespace as genetlink checks the
->> capability of namespace message by netlink_ns_capable().
->>
->> Make taskstats available via genetlink per namespace.
->
-> Let me add a polite nack to this patch.
+On Tue, Feb 22, 2022 at 02:29:28PM +0900, Daehwan Jung wrote:
+> There's no lock for rndis response list. It could cause list corruption
+> if there're two different list_add at the same time like below.
+> It's better to add in rndis_add_response / rndis_free_response
+> / rndis_get_next_response to prevent any race condition on response list.
+> 
+> [  361.894299] [1:   irq/191-dwc3:16979] list_add corruption.
+> next->prev should be prev (ffffff80651764d0),
+> but was ffffff883dc36f80. (next=ffffff80651764d0).
+> 
+> [  361.904380] [1:   irq/191-dwc3:16979] Call trace:
+> [  361.904391] [1:   irq/191-dwc3:16979]  __list_add_valid+0x74/0x90
+> [  361.904401] [1:   irq/191-dwc3:16979]  rndis_msg_parser+0x168/0x8c0
+> [  361.904409] [1:   irq/191-dwc3:16979]  rndis_command_complete+0x24/0x84
+> [  361.904417] [1:   irq/191-dwc3:16979]  usb_gadget_giveback_request+0x20/0xe4
+> [  361.904426] [1:   irq/191-dwc3:16979]  dwc3_gadget_giveback+0x44/0x60
+> [  361.904434] [1:   irq/191-dwc3:16979]  dwc3_ep0_complete_data+0x1e8/0x3a0
+> [  361.904442] [1:   irq/191-dwc3:16979]  dwc3_ep0_interrupt+0x29c/0x3dc
+> [  361.904450] [1:   irq/191-dwc3:16979]  dwc3_process_event_entry+0x78/0x6cc
+> [  361.904457] [1:   irq/191-dwc3:16979]  dwc3_process_event_buf+0xa0/0x1ec
+> [  361.904465] [1:   irq/191-dwc3:16979]  dwc3_thread_interrupt+0x34/0x5c
+> 
 
-> Taskstats is completely senseless in a network namespace.  There is no
-> translation of identifiers into the context of the receiver of the
-> message.
+This is just one context. what about the other contexts? Interested to see the
+different contexts under which this list is being manipulated. From the
+f_rndis perspective, this  list is touched from setup and disconnect
+callbacks. so are those two contexts not serialized from the UDC? not saying
+we don't need lock, but would be good to record that information in the change
+log.
 
-The interface of taskstats is genetlink that is sensible in net namsespace.
+> Fixes: f6281af9d62e ("usb: gadget: rndis: use list_for_each_entry_safe")
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
+> ---
+>  drivers/usb/gadget/function/rndis.c | 8 ++++++++
+>  drivers/usb/gadget/function/rndis.h | 1 +
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/drivers/usb/gadget/function/rndis.c b/drivers/usb/gadget/function/rndis.c
+> index 431d5a7..79fd994 100644
+> --- a/drivers/usb/gadget/function/rndis.c
+> +++ b/drivers/usb/gadget/function/rndis.c
+> @@ -919,6 +919,7 @@ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
+>  	params->resp_avail = resp_avail;
+>  	params->v = v;
+>  	INIT_LIST_HEAD(&params->resp_queue);
+> +	spin_lock_init(&params->resp_lock);
+>  	pr_debug("%s: configNr = %d\n", __func__, i);
+>  
+>  	return params;
+> @@ -1012,12 +1013,14 @@ void rndis_free_response(struct rndis_params *params, u8 *buf)
+>  {
+>  	rndis_resp_t *r, *n;
+>  
+> +	spin_lock(&params->resp_lock);
+>  	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
+>  		if (r->buf == buf) {
+>  			list_del(&r->list);
+>  			kfree(r);
+>  		}
+>  	}
+> +	spin_unlock(&params->resp_lock);
+>  }
+>  EXPORT_SYMBOL_GPL(rndis_free_response);
 
-> To make this work requires updating the taskstats code to do something
-> sensible when in a pid namespace, as well as when in a network
-> namespace.
+Are you sure that this lock is not acquired from any interrupt context from
+other contexts? Also would it be true for all UDC? some UDC may call setup
+from hadirq context and disconnect in process context etc or vice versa. we
+don't want to acquire lock without disabling interrupts in that case.
 
-Yes. Taskstats already does convert the input process ID into the task in the
-correspoding pid namsespace. Do you mean to add some check of current user's
-capability like SYS_ADMIN or else?
+Thanks,
+Pavan
