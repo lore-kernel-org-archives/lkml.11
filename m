@@ -2,136 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C663C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25083C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242076AbiBWPaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:30:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S242071AbiBWPb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:31:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242073AbiBWPaJ (ORCPT
+        with ESMTP id S232424AbiBWPbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:30:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C364D74DDE
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:29:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645630181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lDvsZLGMcy42Kz83/SKdUVLKGuw2EB/u2DP8NSmc4HU=;
-        b=P8oARu0hJ3H75CfI7bownX32KRYMcMmJdbrSXZE3QYIGtmuk5L+m946wFlfuvB2eNZHEGj
-        bHA79wBhmG/7QUxGlWuWovR0BSySNBkMR4BclbjQy3ADrvMsjLVr/mk6pCGQuTJGUHFQjN
-        YGHcPBa48fYM+Kv/qHJr1OK+DF5DBsc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-112-_ftGpdz6NIqOzdWzTM9_eg-1; Wed, 23 Feb 2022 10:29:39 -0500
-X-MC-Unique: _ftGpdz6NIqOzdWzTM9_eg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5D847804311;
-        Wed, 23 Feb 2022 15:29:38 +0000 (UTC)
-Received: from lorien.usersys.redhat.com (unknown [10.22.10.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 570791077CB9;
-        Wed, 23 Feb 2022 15:28:43 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 10:28:41 -0500
-From:   Phil Auld <pauld@redhat.com>
-To:     Carlos Bilbao <carlos.bilbao@amd.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, mingo@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kernel/sched: Update schedstats when migrating threads
-Message-ID: <YhZSqd+d03oWUPP6@lorien.usersys.redhat.com>
-References: <20220126152222.5429-1-carlos.bilbao@amd.com>
- <YhYKL4hxx4TNKHGD@hirez.programming.kicks-ass.net>
- <aac8f860-c01f-bda0-9f1b-029b234213c2@amd.com>
-MIME-Version: 1.0
+        Wed, 23 Feb 2022 10:31:55 -0500
+X-Greylist: delayed 313 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 07:31:26 PST
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6DFF657AB;
+        Wed, 23 Feb 2022 07:31:26 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21NFRJFj001983;
+        Wed, 23 Feb 2022 09:27:19 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21NFRJU4001982;
+        Wed, 23 Feb 2022 09:27:19 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 23 Feb 2022 09:27:19 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     mpe@ellerman.id.au, Arnd Bergmann <arnd@arndb.de>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 3/3] powerpc: lib: sstep: fix build errors
+Message-ID: <20220223152719.GF614@gate.crashing.org>
+References: <20220223135820.2252470-1-anders.roxell@linaro.org> <20220223135820.2252470-3-anders.roxell@linaro.org>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aac8f860-c01f-bda0-9f1b-029b234213c2@amd.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+In-Reply-To: <20220223135820.2252470-3-anders.roxell@linaro.org>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 09:14:45AM -0600 Carlos Bilbao wrote:
-> On 2/23/2022 4:19 AM, Peter Zijlstra wrote:
-> > On Wed, Jan 26, 2022 at 09:22:23AM -0600, Carlos Bilbao wrote:
-> >> The kernel manages per-task scheduler statistics or schedstats. Such
-> >> counters should be reinitialized when the thread is migrated to a
-> >> different core rq, except for the values recording number of migrations.
-> > 
-> > I'm confused, why should we reset schedstats on migrate? I'm thinking
-> > this breaks per-task, since tasks tend to bounce around quite a lot.
-> > 
+On Wed, Feb 23, 2022 at 02:58:20PM +0100, Anders Roxell wrote:
+> Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+> 2.37.90.20220207) the following build error shows up:
 > 
-> Thanks for your comments, Peter. 
+> {standard input}: Assembler messages:
+> {standard input}:10576: Error: unrecognized opcode: `stbcx.'
+> {standard input}:10680: Error: unrecognized opcode: `lharx'
+> {standard input}:10694: Error: unrecognized opcode: `lbarx'
 > 
-> Looking at the documentation of schedstats I see that most values are 
-> actually linked to the particular CPU: time spent on the cpu, timeslices 
-> run on this cpu, number of times _something_ was called when the cpu was 
-> idle, and so forth. Those values lose their meaning after migration and we 
-> should reinitialize their counters. However, reviewing sched_statistics I 
-> identify two fields that we should definitely keep increasing even after 
-> migration (nr_migrations_cold, nr_forced_migrations).
->
-
-The documentation is a little off. I think it should say "any cpu" instead
-of "this cpu".  If you reset these per task counters (time on cpu, number
-of timeslices etc) on every migration then they become meaningless (and
-useless).
-
-
-Cheers,
-Phil
-
-> So this patch will have to be upgraded if there's some other value(s) in
-> schedstats that we do not want to reinitialize either.
+> Rework to add assembler directives [1] around the instruction.  The
+> problem with this might be that we can trick a power6 into
+> single-stepping through an stbcx. for instance, and it will execute that
+> in kernel mode.
 > 
-> >> Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
-> >> ---
-> >>  kernel/sched/core.c | 10 +++++++++-
-> >>  1 file changed, 9 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> >> index fe53e510e711..d64c2a290176 100644
-> >> --- a/kernel/sched/core.c
-> >> +++ b/kernel/sched/core.c
-> >> @@ -8757,6 +8757,7 @@ bool sched_smp_initialized __read_mostly;
-> >>  int migrate_task_to(struct task_struct *p, int target_cpu)
-> >>  {
-> >>  	struct migration_arg arg = { p, target_cpu };
-> >> +	uint64_t forced_migrations, migrations_cold;
-> >>  	int curr_cpu = task_cpu(p);
-> >>  
-> >>  	if (curr_cpu == target_cpu)
-> >> @@ -8765,7 +8766,14 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
-> >>  	if (!cpumask_test_cpu(target_cpu, p->cpus_ptr))
-> >>  		return -EINVAL;
-> >>  
-> >> -	/* TODO: This is not properly updating schedstats */
-> >> +	if (schedstat_enabled()) {
-> >> +		forced_migrations = schedstat_val(p->stats.nr_forced_migrations);
-> >> +		migrations_cold = schedstat_val(p->stats.nr_migrations_cold);
-> >> +		memset(&p->stats, 0, sizeof(p->stats));
-> >> +		schedstat_set(p->stats.nr_forced_migrations, forced_migrations);
-> >> +		schedstat_set(p->stats.nr_migrations_cold, migrations_cold);
-> >> +		schedstat_inc(p->stats.nr_migrations_cold);
-> >> +	}
-> >>  
-> >>  	trace_sched_move_numa(p, curr_cpu, target_cpu);
-> >>  	return stop_one_cpu(curr_cpu, migration_cpu_stop, &arg);
-> >> -- 
-> >> 2.27.0
-> >>
-> 
-> Thanks,
-> Carlos
-> 
+> [1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
 
--- 
+Wow, no wonder you think you need quotes after reading that.  I'll try
+to get that fixed.
 
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+
+
+Segher
