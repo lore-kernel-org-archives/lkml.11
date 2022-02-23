@@ -2,85 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F65C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239002AbiBWIjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:39:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
+        id S239010AbiBWIkL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:40:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiBWIjh (ORCPT
+        with ESMTP id S237787AbiBWIkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:39:37 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 425254CD4A;
-        Wed, 23 Feb 2022 00:39:10 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0CAF1ED1;
-        Wed, 23 Feb 2022 00:39:10 -0800 (PST)
-Received: from [10.57.9.184] (unknown [10.57.9.184])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 14F233F5A1;
-        Wed, 23 Feb 2022 00:39:07 -0800 (PST)
-Message-ID: <ae28b0be-5b71-d53e-31ee-49d4d01a0910@arm.com>
-Date:   Wed, 23 Feb 2022 08:39:06 +0000
+        Wed, 23 Feb 2022 03:40:09 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750F3527D3;
+        Wed, 23 Feb 2022 00:39:41 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K3Tvl57GLzcnQt;
+        Wed, 23 Feb 2022 16:38:27 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 23 Feb 2022 16:39:39 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 23 Feb
+ 2022 16:39:39 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <tchornyi@marvell.com>,
+        <yevhen.orlov@plvision.eu>
+Subject: [PATCH net-next 1/2] net: marvell: prestera: Fix return value check in prestera_fib_node_find()
+Date:   Wed, 23 Feb 2022 16:49:53 +0800
+Message-ID: <20220223084954.1771075-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [[PATCH v2 1/2] dt-bindings: opp: Add 'opp-microwatt' entry in
- the OPP
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
-        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-References: <20220222140746.12293-1-lukasz.luba@arm.com>
- <20220222140746.12293-2-lukasz.luba@arm.com>
- <20220223055006.zlcwco7oducggxjw@vireshk-i7>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220223055006.zlcwco7oducggxjw@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+rhashtable_lookup_fast() returns NULL pointer not ERR_PTR(), so
+it can return fib_node directly in prestera_fib_node_find().
 
+Fixes: 16de3db1208a ("net: marvell: prestera: add hardware router objects accounting for lpm")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/marvell/prestera/prestera_router_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 2/23/22 05:50, Viresh Kumar wrote:
-> On 22-02-22, 14:07, Lukasz Luba wrote:
->> Add new entry for the OPP which provides information about power
->> expressed in micro-Watts. It is useful for the Energy Model framework.
->>
->> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
->> ---
->>   Documentation/devicetree/bindings/opp/opp-v2-base.yaml | 7 +++++++
->>   1 file changed, 7 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
->> index 15a76bcd6d42..3f07a279ed2a 100644
->> --- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
->> +++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
->> @@ -93,6 +93,13 @@ patternProperties:
->>           minItems: 1
->>           maxItems: 8   # Should be enough regulators
->>   
->> +      opp-microwatt:
->> +        description:
->> +          Power for the OPP
->> +
->> +          A value representing power for the OPP in micro-Watts.
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +
-> 
-> I was expecting a much larger change here. Look at how opp-microvolt and
-> opp-microamp is defined in this file.
-> 
-> Should this value be made per-supply/regulator, just like voltage/current ?
-> 
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_router_hw.c
+index d62adb970dd5..5b0cf3be9a9e 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_router_hw.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_router_hw.c
+@@ -239,7 +239,7 @@ prestera_fib_node_find(struct prestera_switch *sw, struct prestera_fib_key *key)
+ 
+ 	fib_node = rhashtable_lookup_fast(&sw->router->fib_ht, key,
+ 					  __prestera_fib_ht_params);
+-	return IS_ERR(fib_node) ? NULL : fib_node;
++	return fib_node;
+ }
+ 
+ static void __prestera_fib_node_destruct(struct prestera_switch *sw,
+-- 
+2.25.1
 
-For the EM we need only one value. If there would be some other users
-of this field in future we might add the multiple power values support.
-Currently there is no need I would say, unless it's a hard requirement
-to be aligned with opp-microvolt.
