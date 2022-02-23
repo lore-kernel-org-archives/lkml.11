@@ -2,52 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E79A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiBWDdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 22:33:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
+        id S237382AbiBWDhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 22:37:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237922AbiBWDcw (ORCPT
+        with ESMTP id S234607AbiBWDhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 22:32:52 -0500
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12F9527CF;
-        Tue, 22 Feb 2022 19:32:25 -0800 (PST)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nMiNj-0006w0-0P; Wed, 23 Feb 2022 14:32:00 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 23 Feb 2022 15:31:58 +1200
-Date:   Wed, 23 Feb 2022 15:31:58 +1200
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, colin.king@intel.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] crypto: x86/des3 - Remove unused inline function
- des3_ede_enc_blk_3way()
-Message-ID: <YhWqrmlpJzglvOns@gondor.apana.org.au>
-References: <20220216114521.20092-1-yuehaibing@huawei.com>
+        Tue, 22 Feb 2022 22:37:43 -0500
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D5513EB9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:37:15 -0800 (PST)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2d625082ae2so196720347b3.1
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:37:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x/iZxI5gJtmmVE2EU9ERKSSqKXLjBqX4XWhFsi12fm4=;
+        b=iMqGMltcaywF4JIrOBiSfBrO1ZiTpm42kZ8q96IXPD5P8wyMFaebGsFazuGUrLW8/M
+         saOIHcsTHJlWkpFpUC6TbGA3KpXDYMQZm0eKYNi8Cmc0lEjYhTvC4/QLjpIVxgiIgYFH
+         6d5BR6Wkf9oa82BMhVEKs8uf98U5ebixJldT0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x/iZxI5gJtmmVE2EU9ERKSSqKXLjBqX4XWhFsi12fm4=;
+        b=sndflnTRmCB3HJM2SJmX7W9Nv2rmorCaYdvFrA899Tlt82R8ltg5dvCa4RLyw9dQdI
+         zETVj6YjD7fAiXDdN8K77eZc9e50h1SwfexjYBcL6vpYPHAUmX2SGtAHwky9IQc8BnVc
+         E3X6GqPZ2tWAPWPFm1AQiclYg2k8K6J9zTPZRxY0LCBDJa9gOIg3KznQXgE93f3qV7fR
+         i2Yvy/Ega/Oqof4EZB4EVHn4FJf6556ge+NcDr9vH/Gkt29bEDSZLQobprdvJFSLlUoW
+         FsPG5XYJWNjkKIFKOK6o6mPutBvquET+ev0bGbG2nPbv5tf4hp3DlrMIFg5PHW41w1AI
+         Nfyg==
+X-Gm-Message-State: AOAM532U5p4i9R6l2TwVjV/olynNX5Ee8ubiSmiIaCmOjyrcDRXfle61
+        s50C54kUOk58aBbZRPRkPejL8a6YNynSdEUUd56r
+X-Google-Smtp-Source: ABdhPJwqkv4mz6cACdKoD4/liTLQr04AC/Mb4V7+BAD2dA4iqOmCk161chEgGlKc//pVQVvyiNh6L9G7xcUCR8QN460=
+X-Received: by 2002:a81:844c:0:b0:2d6:920b:f959 with SMTP id
+ u73-20020a81844c000000b002d6920bf959mr26893176ywf.443.1645587434737; Tue, 22
+ Feb 2022 19:37:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220216114521.20092-1-yuehaibing@huawei.com>
+References: <20220201082227.361967-1-apatel@ventanamicro.com> <20220201082227.361967-7-apatel@ventanamicro.com>
+In-Reply-To: <20220201082227.361967-7-apatel@ventanamicro.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 22 Feb 2022 19:37:04 -0800
+Message-ID: <CAOnJCUJ_13oZqLhmcwO4tx+OsnL1YdR-y_FyNAmd=_+9rGAFLw@mail.gmail.com>
+Subject: Re: [PATCH 6/6] RISC-V: KVM: Implement SBI HSM suspend call
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        KVM General <kvm@vger.kernel.org>,
+        kvm-riscv@lists.infradead.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 07:45:21PM +0800, YueHaibing wrote:
-> This is unused after commit 768db5fee3bb ("crypto: x86/des - drop CTR mode implementation")
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+On Tue, Feb 1, 2022 at 12:24 AM Anup Patel <apatel@ventanamicro.com> wrote:
+>
+> The SBI v0.3 specification extends SBI HSM extension by adding SBI HSM
+> suspend call and related HART states. This patch extends the KVM RISC-V
+> HSM implementation to provide KVM guest a minimal SBI HSM suspend call
+> which is equivalent to a WFI instruction.
+>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > ---
->  arch/x86/crypto/des3_ede_glue.c | 8 --------
->  1 file changed, 8 deletions(-)
+>  arch/riscv/kvm/vcpu_sbi_hsm.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/arch/riscv/kvm/vcpu_sbi_hsm.c b/arch/riscv/kvm/vcpu_sbi_hsm.c
+> index 1ac4b2e8e4ec..239dec0a628a 100644
+> --- a/arch/riscv/kvm/vcpu_sbi_hsm.c
+> +++ b/arch/riscv/kvm/vcpu_sbi_hsm.c
+> @@ -61,6 +61,8 @@ static int kvm_sbi_hsm_vcpu_get_status(struct kvm_vcpu *vcpu)
+>                 return -EINVAL;
+>         if (!target_vcpu->arch.power_off)
+>                 return SBI_HSM_STATE_STARTED;
+> +       else if (vcpu->stat.generic.blocking)
+> +               return SBI_HSM_STATE_SUSPENDED;
+>         else
+>                 return SBI_HSM_STATE_STOPPED;
+>  }
+> @@ -91,6 +93,18 @@ static int kvm_sbi_ext_hsm_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
+>                         ret = 0;
+>                 }
+>                 break;
+> +       case SBI_EXT_HSM_HART_SUSPEND:
+> +               switch (cp->a0) {
+> +               case SBI_HSM_SUSPEND_RET_DEFAULT:
+> +                       kvm_riscv_vcpu_wfi(vcpu);
+> +                       break;
+> +               case SBI_HSM_SUSPEND_NON_RET_DEFAULT:
+> +                       ret = -EOPNOTSUPP;
+> +                       break;
+> +               default:
+> +                       ret = -EINVAL;
+> +               }
+> +               break;
+>         default:
+>                 ret = -EOPNOTSUPP;
+>         }
+> --
+> 2.25.1
+>
 
-Patch applied.  Thanks.
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Regards,
+Atish
