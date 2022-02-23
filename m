@@ -2,180 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 076DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237665AbiBWDC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 22:02:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        id S237716AbiBWDDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 22:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233935AbiBWDCr (ORCPT
+        with ESMTP id S237802AbiBWDCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 22:02:47 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9984198A
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:02:20 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id v186so45286277ybg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:02:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m3dhHi9t8HBjtBlHg2OtAeNoMJdDzLs31EyU7LsN2Xo=;
-        b=YkhxkNc1YtwscsTW86DVOSr9MuvVovvaRIQhTfomX0gsLgtKjkM2QEdVmQ2N3ZWTpg
-         YCaaaijoQZsOPxYSC33IovBSRfFWapVKkgsCuYVEF8jre0tGThGtCCryN2MDNTNQ9qxM
-         ZXe2Y0+zI1NLB6d4v6tDAK3CbjNJJtD3A/OwQkHa8G3AvqIHBXFssOEXjNJVRkNXOW8I
-         IUG+wTH6awpg9Ecej60wlLM5NvukbQGh3CyCSboGE//onpkTEQF6YrthfTah6tjBs0t5
-         pjVR3gjA695MnDaYtgnI+GWBlCDrf3ohf/auzYmPalpbGfJWoM7ms6NuO13hux5jDlIw
-         0hvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m3dhHi9t8HBjtBlHg2OtAeNoMJdDzLs31EyU7LsN2Xo=;
-        b=7t/+QFpCEN5xSHii6a1Qw3sxPsWm0lcJ6+KoKfzJqtGeLqbBqVIqUOcICSQCI5XAW1
-         nyvFwqrYSOTW45KAt52oL06AlQ1/EA2xCR1lInteBgWaVBT14rzNbSrsxu/qXzdJ9Uif
-         cOne2H3BTbVxPHH+hhkbxiGvFcL3AslPwpqR8m56Vw4eruGONAGLyMAGFA0lhknSw8It
-         wbxXcdG/dNWYfSHhlO1uMHo9PSHTJzJ1fgzJfZeXF3q+8FOUxscHQNBkiR+I5/6QjYsh
-         6C+jTQcj4y2gguydu2lcoTlFZt6l5bC37ldxm5WtlaS4qnOpmYqdIL8CY+S2PihsVEAt
-         IhzQ==
-X-Gm-Message-State: AOAM533FNW+iQBxbYlPk9OxMKI7AbrhejIkK7PXgTjiqy7QUUddzXz4M
-        uaoVQelyeM3jNjXRfpGXUkiBz60VEkmkf7wZnHhx/Q==
-X-Google-Smtp-Source: ABdhPJyrRtAgfBrnIRae0Z5tJg6jdr50fW+RSI2quI4+iL7VhCHvyOFfeexPvlHR6geAie0W3sT9W7CH8Ob/QjY+oUM=
-X-Received: by 2002:a25:da47:0:b0:61d:9af4:c834 with SMTP id
- n68-20020a25da47000000b0061d9af4c834mr26964665ybf.441.1645585339250; Tue, 22
- Feb 2022 19:02:19 -0800 (PST)
+        Tue, 22 Feb 2022 22:02:54 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5A84198A;
+        Tue, 22 Feb 2022 19:02:27 -0800 (PST)
+X-UUID: 1a2888e752254ea49520e8cd9de0fda5-20220223
+X-UUID: 1a2888e752254ea49520e8cd9de0fda5-20220223
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 504627890; Wed, 23 Feb 2022 11:02:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 23 Feb 2022 11:02:19 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Feb 2022 11:02:19 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <jassisinghbrar@gmail.com>, <robh+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <yongqiang.niu@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH 1/2] dt-bindings: mailbox: add definition for mt8186
+Date:   Wed, 23 Feb 2022 11:01:37 +0800
+Message-ID: <20220223030138.13939-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
+References: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-References: <20220222054025.3412898-1-surenb@google.com> <20220222054025.3412898-2-surenb@google.com>
- <YhSqDvSTN7nbz4C9@dhcp22.suse.cz> <CAJuCfpHr78By6p5sMhJZ3UohKXXSeA7Dxm_q-OA4y6KYL0L_pQ@mail.gmail.com>
-In-Reply-To: <CAJuCfpHr78By6p5sMhJZ3UohKXXSeA7Dxm_q-OA4y6KYL0L_pQ@mail.gmail.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Tue, 22 Feb 2022 19:02:08 -0800
-Message-ID: <CAJuCfpFkwZAw-qcD6E5SchHNXf8MmzyWtuWaHOpFhid3m5bg8A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm: prevent vm_area_struct::anon_name refcount saturation
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     akpm@linux-foundation.org, ccross@google.com,
-        sumit.semwal@linaro.org, dave.hansen@intel.com,
-        keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 7:56 AM Suren Baghdasaryan <surenb@google.com> wrote:
->
-> On Tue, Feb 22, 2022 at 1:17 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Mon 21-02-22 21:40:24, Suren Baghdasaryan wrote:
-> > > A deep process chain with many vmas could grow really high.
-> >
-> > This would really benefit from some numbers. With default
-> > sysctl_max_map_count (64k) and default pid_max (32k) the INT_MAX could
-> > be theoretically reached but I find it impractical because not all vmas
-> > can be anonymous same as all available pids can be consumed for a
-> > theoretical attack (if my counting is proper).
-> > On the other hand any non-default configuration with any of the values
-> > increased could hit this theoretically.
->
-> re: This would really benefit from some numbers
-> Should I just add the details you provided above into the description?
-> Would that suffice?
+Add definition of compatible and dt-binding header for mt8186.
 
-Hmm. According to the defaults you posted, with max number of
-processes being 32k and max number of vmas per process 64k, the max
-number of vmas in the system is 2147450880. That's 32767 less than
-REFCOUNT_MAX=INT_MAX (2147483647) and 1073774592 less than
-REFCOUNT_SATURATED (3221225472). So with those defaults we should
-never hit these limits. Are we adding this protection for systems that
-set non-default higher limits or am I miscalculating something?
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+---
+ Documentation/devicetree/bindings/mailbox/mtk-gce.txt | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
->
-> >
-> > > kref
-> > > refcounting interface used in anon_vma_name structure will detect
-> > > a counter overflow when it reaches REFCOUNT_SATURATED value but will
-> > > only generate a warning about broken refcounting.
-> > > To ensure anon_vma_name refcount does not overflow, stop anon_vma_name
-> > > sharing when the refcount reaches INT_MAX, which still leaves INT_MAX/2
-> > > values before the counter reaches REFCOUNT_SATURATED. This should provide
-> > > enough headroom for raising the refcounts temporarily.
-> > >
-> > > Suggested-by: Michal Hocko <mhocko@suse.com>
-> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > > ---
-> > >  include/linux/mm_inline.h | 18 ++++++++++++++----
-> > >  mm/madvise.c              |  3 +--
-> > >  2 files changed, 15 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
-> > > index 70b619442d56..b189e2638843 100644
-> > > --- a/include/linux/mm_inline.h
-> > > +++ b/include/linux/mm_inline.h
-> > > @@ -156,15 +156,25 @@ static inline void anon_vma_name_get(struct anon_vma_name *anon_name)
-> > >
-> > >  extern void anon_vma_name_put(struct anon_vma_name *anon_name);
-> > >
-> > > +static inline
-> > > +struct anon_vma_name *anon_vma_name_reuse(struct anon_vma_name *anon_name)
-> > > +{
-> > > +     /* Prevent anon_name refcount saturation early on */
-> > > +     if (kref_read(&anon_name->kref) < INT_MAX) {
-> >
-> > REFCOUNT_MAX seems to be defined by the kref framework.
->
-> Ah, indeed. I missed that. Will change to use it.
->
-> >
-> > Other than that looks good to me.
->
-> Thanks for the review!
->
-> >
-> > > +             anon_vma_name_get(anon_name);
-> > > +             return anon_name;
-> > > +
-> > > +     }
-> > > +     return anon_vma_name_alloc(anon_name->name);
-> > > +}
-> > > +
-> > >  static inline void dup_vma_anon_name(struct vm_area_struct *orig_vma,
-> > >                                    struct vm_area_struct *new_vma)
-> > >  {
-> > >       struct anon_vma_name *anon_name = vma_anon_name(orig_vma);
-> > >
-> > > -     if (anon_name) {
-> > > -             anon_vma_name_get(anon_name);
-> > > -             new_vma->anon_name = anon_name;
-> > > -     }
-> > > +     if (anon_name)
-> > > +             new_vma->anon_name = anon_vma_name_reuse(anon_name);
-> > >  }
-> > >
-> > >  static inline void free_vma_anon_name(struct vm_area_struct *vma)
-> > > diff --git a/mm/madvise.c b/mm/madvise.c
-> > > index f81d62d8ce9b..a395884aeecb 100644
-> > > --- a/mm/madvise.c
-> > > +++ b/mm/madvise.c
-> > > @@ -122,8 +122,7 @@ static int replace_vma_anon_name(struct vm_area_struct *vma,
-> > >       if (anon_vma_name_eq(orig_name, anon_name))
-> > >               return 0;
-> > >
-> > > -     anon_vma_name_get(anon_name);
-> > > -     vma->anon_name = anon_name;
-> > > +     vma->anon_name = anon_vma_name_reuse(anon_name);
-> > >       anon_vma_name_put(orig_name);
-> > >
-> > >       return 0;
-> > > --
-> > > 2.35.1.473.g83b2b277ed-goog
-> >
-> > --
-> > Michal Hocko
-> > SUSE Labs
+diff --git a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
+index 98fe37e8b17b..c2aeba63bd47 100644
+--- a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
++++ b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
+@@ -10,7 +10,8 @@ mailbox.txt for generic information about mailbox device-tree bindings.
+ 
+ Required properties:
+ - compatible: can be "mediatek,mt8173-gce", "mediatek,mt8183-gce",
+-  "mediatek,mt8192-gce", "mediatek,mt8195-gce" or "mediatek,mt6779-gce".
++  "mediatek,mt8186-gce", "mediatek,mt8192-gce", "mediatek,mt8195-gce" or
++  "mediatek,mt6779-gce".
+ - reg: Address range of the GCE unit
+ - interrupts: The interrupt signal from the GCE block
+ - clock: Clocks according to the common clock binding
+@@ -40,8 +41,9 @@ Optional properties for a client mutex node:
+   defined in 'dt-bindings/gce/<chip>-gce.h'.
+ 
+ Some vaules of properties are defined in 'dt-bindings/gce/mt8173-gce.h',
+-'dt-bindings/gce/mt8183-gce.h', 'dt-bindings/gce/mt8192-gce.h',
+-'dt-bindings/gce/mt8195-gce.h' or 'dt-bindings/gce/mt6779-gce.h'.
++'dt-bindings/gce/mt8183-gce.h', 'dt-bindings/gce/mt8186-gce.h'
++'dt-bindings/gce/mt8192-gce.h', 'dt-bindings/gce/mt8195-gce.h' or
++'dt-bindings/gce/mt6779-gce.h'.
+ Such as sub-system ids, thread priority, event ids.
+ 
+ Example:
+-- 
+2.18.0
+
