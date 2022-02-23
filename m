@@ -2,56 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 633AEC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237382AbiBWChd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:37:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
+        id S235340AbiBWChg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:37:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237219AbiBWCgC (ORCPT
+        with ESMTP id S237549AbiBWChE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:36:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EA046653;
-        Tue, 22 Feb 2022 18:32:10 -0800 (PST)
+        Tue, 22 Feb 2022 21:37:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B476C5620F;
+        Tue, 22 Feb 2022 18:32:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 220F261558;
-        Wed, 23 Feb 2022 02:32:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C989C340E8;
-        Wed, 23 Feb 2022 02:32:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 598B5B81E01;
+        Wed, 23 Feb 2022 02:32:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10825C36AE2;
+        Wed, 23 Feb 2022 02:32:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583523;
-        bh=sf9844s4+RfBNvu17v2FMF1O0UV5AKN1+qYmWBy8O38=;
+        s=k20201202; t=1645583538;
+        bh=eqQ5mlfAkZYCCNiNrLISO3rHbCORuzSEnZRATE9OR0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uvw/F2SWHo75wbD2pVvScOJfR4q3D83TEHsdltx6SUg00uo/3DPO31y1nFpvsOuwB
-         /UbzLvWKYv2pEd6hcW/0Fpk0QqfunMs8C27W9e883JmhEmqwzRXBv/0pWmNUIdZQ+9
-         sK3P8JdbB+IsMzAxjPxJsuP8F6hgUqHGq82lQGnzBqdiL+Ii7+2o3EcHIHLKCdfzqy
-         V+ZxMAuf/quzlcGRVuxmLMqtjcb3G5dQJ3jFLEb805SmWlkqkqfG6jJZLd+UPk7zUh
-         +jJilb4w5Ozce1wpEHpdDzzq4WR4oJUr5/lyOP30Xlvc/Vo23RujTLxeylKf6FV0Gz
-         aE3PpZyvaDlXA==
+        b=VxDu/FKfii0DBTlJWxznj7LnYUQbL7pZwRwOKPXMJVDZEy11Qf8u2294xC6cMsYvY
+         Bdh/yN5+MH/3DdiKsOeT9Ze9vFOoxO27czPTokizPO3GiHZ8BnF8eKPrjqu+Z8eqc+
+         Jlpq9l5K94/Ed0PQrVKwIjEKXmqtJEYPkQzhKDav09/9iQLKyIwB10AXexxGzPQ8LK
+         3xxW+2ehtNG+sr4H+AD85TKcxLrgCiYgUjNspskI6G7FVL1CrzE9NDKWTAMxVO/Vci
+         tcg6foIT4cZqycgo6pdZ2yOHWhYd8xEol3LsVqaIm7QPmRRIWHObqjuSS6+L1rZVIn
+         3h2LdtxqBzPUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 04/13] ASoC: rt5668: do not block workqueue if card is unbound
-Date:   Tue, 22 Feb 2022 21:31:43 -0500
-Message-Id: <20220223023152.242065-4-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/13] selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
+Date:   Tue, 22 Feb 2022 21:31:48 -0500
+Message-Id: <20220223023152.242065-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
 References: <20220223023152.242065-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,60 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit a6d78661dc903d90a327892bbc34268f3a5f4b9c ]
+[ Upstream commit 6fec1ab67f8d60704cc7de64abcfd389ab131542 ]
 
-The current rt5668_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+The PREEMPT_RT patchset does not use do_softirq() function thus trying
+to filter for do_softirq fails for such kernel:
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
+  echo do_softirq
+  ftracetest: 81: echo: echo: I/O error
 
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
+Choose some other visible function for the test.  The function does not
+have to be actually executed during the test, because it is only testing
+filter API interface.
 
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-2-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5668.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5668.c b/sound/soc/codecs/rt5668.c
-index 3c19d03f2446b..a78503f24aa8a 100644
---- a/sound/soc/codecs/rt5668.c
-+++ b/sound/soc/codecs/rt5668.c
-@@ -1025,11 +1025,13 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5668_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+index 68e7a48f5828e..412e5c1f13ca6 100644
+--- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
++++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+@@ -33,7 +33,7 @@ do_reset
  
--	while (!rt5668->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5668->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5668->component || !rt5668->component->card ||
-+	    !rt5668->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
+ FILTER=set_ftrace_filter
+ FUNC1="schedule"
+-FUNC2="do_softirq"
++FUNC2="scheduler_tick"
  
- 	mutex_lock(&rt5668->calibrate_mutex);
+ ALL_FUNCS="#### all functions enabled ####"
  
 -- 
 2.34.1
