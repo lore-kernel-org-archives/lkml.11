@@ -2,105 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2019EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239697AbiBWKoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 05:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54878 "EHLO
+        id S239723AbiBWKrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 05:47:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239598AbiBWKoP (ORCPT
+        with ESMTP id S239702AbiBWKrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 05:44:15 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AC058E7D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:43:48 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id 75so19537536pgb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:43:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=izF6/BOlFRf0GfvXEkyLgXWuNg7Bc9Mpe7Dcz3gCT68=;
-        b=chEEFmEPoDo1VPyqjA70d68X5C0NptFBYwl6Fv98rSsbuKhE52Mm+kdu7Y0K1UC9s/
-         gWvQYWdgPqCLZ3Y9s9DYNIq7MB5k0G+LHybr0m/C66JhLpYnLIz7WN3PLXZzaGVTzBBu
-         x15MYb5DoaJ+qKOCionM/Eui/pQVJwfiAEs5dN43wwvz7q98oYNbeQecYKUqECKepIYc
-         f/KzPBSLD7bw8oJmh7/Xtu6Wnof8hjcjnmmjvw2woSk11pTbR50yfBT/HJH6H5lSfFCa
-         05a/mcUYQjJLNlki0D9QPXdX/hcGm0jKahKEiay9QhyYQkyUomG7wS21+M7kgJZZJYBF
-         VJXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=izF6/BOlFRf0GfvXEkyLgXWuNg7Bc9Mpe7Dcz3gCT68=;
-        b=Q/inwAJaeUwJK+WYifXfw4pTV12yCHthobxdIxn63xKhMoBWAycbFSh92WS31wrs9Y
-         jQ9Y0PYllrKk5LBuPx796oUvv1Yx3Ao3NrtALxYrJ0ec4M9vMQhSlDvlLdt4zJP5PlA+
-         r1xa3i7bvVhj6HISKFC5gfWr+S0LM8kVt7TAojfnNFqd0mfi01dB9zZwGnIcANmP09Jn
-         1csFpE+Pjd4px8rTeFOR5niFLwstEryjjeP7hTiGk604KTSNSOn5u55Oht/CAA+ohftJ
-         VTNAthulILJAmJXqBM3KnVYuQwuNpqkIxqAdi9aRjb+l1ru54PO0ZC6LQavg43wIwWsV
-         A1FA==
-X-Gm-Message-State: AOAM533cfgM4bA6ip9q46A1vKbIOijajUgPrmXGRd2wUfOY3a+SU2aPI
-        mBnhA3a8nB0VA8vc1k45nfo=
-X-Google-Smtp-Source: ABdhPJysu9zb0UfI2rxfNbgv89NTLiU+G0srjigNHQKvLWHK3KsehgF7WzK+S2uETXCc1AcZNxngbA==
-X-Received: by 2002:a63:e604:0:b0:373:8aca:846e with SMTP id g4-20020a63e604000000b003738aca846emr23003518pgh.406.1645613027806;
-        Wed, 23 Feb 2022 02:43:47 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::754? ([2404:f801:9000:1a:efea::754])
-        by smtp.gmail.com with ESMTPSA id ms7sm2494784pjb.56.2022.02.23.02.43.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 02:43:47 -0800 (PST)
-Message-ID: <bcdbd534-a077-3bb3-3d37-c9eb2a048854@gmail.com>
-Date:   Wed, 23 Feb 2022 18:43:40 +0800
+        Wed, 23 Feb 2022 05:47:41 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A465A082;
+        Wed, 23 Feb 2022 02:47:13 -0800 (PST)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21N7j1I6022524;
+        Wed, 23 Feb 2022 11:46:51 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=g5cIGSQtNpUVPRLqm3DZCyx3XoXCarlJubY2NLyvtxs=;
+ b=sTg4NpGyMlza/KSk5m5jlpN01FvxR8SbwEpwfyIKwCpx7bQxEaWvrtADvvmq54sE7Cim
+ FtKtaNFOcuWfdp8pAhFbi6djXudPsMfDKboxc6YyzjtwtH1E9GF1QEiQ8ApqV/H1SSRq
+ gZTvI9W/DszKa4zKQm0ZHnGsCVFwt8w+zgmoqSEVMasx/JIuZucFKVvgOne6Dp5fF/O5
+ 9fVbwAQ+nelcWOh7TbbdgR87/Mf4on2bycba9/3p2IcxK5dEgN7qvV+hpfm7TYyIOaYm
+ cHJw+h4g1MXHw6vkYnat9N5IhchK03DYfz1REdmwPi8LtqM/e2KkLdKbQ47oLjVK/R2I uA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3edgte16a6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 11:46:51 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B8FDF100034;
+        Wed, 23 Feb 2022 11:46:49 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B147321E660;
+        Wed, 23 Feb 2022 11:46:49 +0100 (CET)
+Received: from [10.211.4.186] (10.75.127.50) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 23 Feb
+ 2022 11:46:48 +0100
+Message-ID: <903027b2-46b7-4dd4-0baa-5d66c424fe9c@foss.st.com>
+Date:   Wed, 23 Feb 2022 11:46:47 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 1/4] x86/hyperv: Add missing ARCH_HAS_CC_PLATFORM
- dependency
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dmaengine: stm32-mdma: check the channel availability
+ (secure or not)
 Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Wei Liu <wei.liu@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, dave.hansen@intel.com, luto@kernel.org,
-        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
-        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        david@redhat.com, hpa@zytor.com, jmattson@google.com,
-        seanjc@google.com, thomas.lendacky@amd.com, brijesh.singh@amd.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>
-References: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
- <20220222185740.26228-2-kirill.shutemov@linux.intel.com>
- <YhVCoveTwsDZXE5G@zn.tnic> <4769a3c0-449b-184a-5c61-a0e155f9c5b4@gmail.com>
- <YhYPPHKZFsGzaI2U@zn.tnic>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <YhYPPHKZFsGzaI2U@zn.tnic>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Vinod Koul <vkoul@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <dmaengine@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220117100300.14150-1-amelie.delaunay@foss.st.com>
+From:   Amelie DELAUNAY <amelie.delaunay@foss.st.com>
+In-Reply-To: <20220117100300.14150-1-amelie.delaunay@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_03,2022-02-23_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+Kind reminder.
 
-On 2/23/2022 6:41 PM, Borislav Petkov wrote:
-> On Wed, Feb 23, 2022 at 03:04:41PM +0800, Tianyu Lan wrote:
->>        Current Hyper-V Isolation VM requires AMD_MEM_ENCRYPT option which
+Regards,
+Amelie
+
+On 1/17/22 11:03, Amelie Delaunay wrote:
+> STM32_MDMA_CCR bit[8] is used to enable Secure Mode (SM). If this bit is
+> set, it means that all the channel registers are write-protected. So the
+> channel is not available for Linux use.
 > 
-> Where is that isolation VM option? Out of tree?
+> Add stm32_mdma_filter_fn() callback filter and give it to
+> __dma_request_chan (instead of dma_get_any_slave_channel()), to exclude the
+> channel if it is marked Secure.
 > 
-> Because
+> Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+> ---
+>   drivers/dma/stm32-mdma.c | 21 ++++++++++++++++++++-
+>   1 file changed, 20 insertions(+), 1 deletion(-)
 > 
-> $ git grep AMD_MEM_ENCRYPT | grep Kconfig
-> arch/x86/Kconfig:1540:config AMD_MEM_ENCRYPT
-> arch/x86/Kconfig:1553:config AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
-> arch/x86/Kconfig:1555:  depends on AMD_MEM_ENCRYPT
-> 
-> and those ain't it.
-
-Hyper-V code check cpuid during runtime and there is no Hyper-V
-isolation VM option.
-
-
+> diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
+> index 6f57ff0e7b37..95e5831e490a 100644
+> --- a/drivers/dma/stm32-mdma.c
+> +++ b/drivers/dma/stm32-mdma.c
+> @@ -73,6 +73,7 @@
+>   #define STM32_MDMA_CCR_WEX		BIT(14)
+>   #define STM32_MDMA_CCR_HEX		BIT(13)
+>   #define STM32_MDMA_CCR_BEX		BIT(12)
+> +#define STM32_MDMA_CCR_SM		BIT(8)
+>   #define STM32_MDMA_CCR_PL_MASK		GENMASK(7, 6)
+>   #define STM32_MDMA_CCR_PL(n)		FIELD_PREP(STM32_MDMA_CCR_PL_MASK, (n))
+>   #define STM32_MDMA_CCR_TCIE		BIT(5)
+> @@ -248,6 +249,7 @@ struct stm32_mdma_device {
+>   	u32 nr_channels;
+>   	u32 nr_requests;
+>   	u32 nr_ahb_addr_masks;
+> +	u32 chan_reserved;
+>   	struct stm32_mdma_chan chan[STM32_MDMA_MAX_CHANNELS];
+>   	u32 ahb_addr_masks[];
+>   };
+> @@ -1456,10 +1458,23 @@ static void stm32_mdma_free_chan_resources(struct dma_chan *c)
+>   	chan->desc_pool = NULL;
+>   }
+>   
+> +static bool stm32_mdma_filter_fn(struct dma_chan *c, void *fn_param)
+> +{
+> +	struct stm32_mdma_chan *chan = to_stm32_mdma_chan(c);
+> +	struct stm32_mdma_device *dmadev = stm32_mdma_get_dev(chan);
+> +
+> +	/* Check if chan is marked Secure */
+> +	if (dmadev->chan_reserved & BIT(chan->id))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+>   static struct dma_chan *stm32_mdma_of_xlate(struct of_phandle_args *dma_spec,
+>   					    struct of_dma *ofdma)
+>   {
+>   	struct stm32_mdma_device *dmadev = ofdma->of_dma_data;
+> +	dma_cap_mask_t mask = dmadev->ddev.cap_mask;
+>   	struct stm32_mdma_chan *chan;
+>   	struct dma_chan *c;
+>   	struct stm32_mdma_chan_config config;
+> @@ -1485,7 +1500,7 @@ static struct dma_chan *stm32_mdma_of_xlate(struct of_phandle_args *dma_spec,
+>   		return NULL;
+>   	}
+>   
+> -	c = dma_get_any_slave_channel(&dmadev->ddev);
+> +	c = __dma_request_channel(&mask, stm32_mdma_filter_fn, &config, ofdma->of_node);
+>   	if (!c) {
+>   		dev_err(mdma2dev(dmadev), "No more channels available\n");
+>   		return NULL;
+> @@ -1615,6 +1630,10 @@ static int stm32_mdma_probe(struct platform_device *pdev)
+>   	for (i = 0; i < dmadev->nr_channels; i++) {
+>   		chan = &dmadev->chan[i];
+>   		chan->id = i;
+> +
+> +		if (stm32_mdma_read(dmadev, STM32_MDMA_CCR(i)) & STM32_MDMA_CCR_SM)
+> +			dmadev->chan_reserved |= BIT(i);
+> +
+>   		chan->vchan.desc_free = stm32_mdma_desc_free;
+>   		vchan_init(&chan->vchan, dd);
+>   	}
