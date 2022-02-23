@@ -2,116 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46751C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A3CC43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237323AbiBWCeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:34:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        id S237346AbiBWCeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:34:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237233AbiBWCcl (ORCPT
+        with ESMTP id S237234AbiBWCcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 21:32:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9DA5A5B8;
-        Tue, 22 Feb 2022 18:30:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E6C5AEDC;
+        Tue, 22 Feb 2022 18:30:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51324B81E15;
-        Wed, 23 Feb 2022 02:30:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 563D1C340F1;
-        Wed, 23 Feb 2022 02:30:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFCDBB81E18;
+        Wed, 23 Feb 2022 02:30:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14FE2C340F6;
+        Wed, 23 Feb 2022 02:30:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583437;
-        bh=5J/lYOlg+fnmxcJ6RZWQwnyehKvMIl8d1ncoQiQ9fcw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l5XjhmXsJFytYXELA4i2ZwCcGg+xyPVOUOmnnsbNJQ341mu1a0oVQivPUKHALanHC
-         mpVNPFyLG4OiYCzy8Nf3m8am4Xm+5NCM/Y32QDMo02QsTh5ygKLaJdZK3iv5ikJl9h
-         68RSNY4/+tfWZ2IIoOCbVxU2a/wdr35rKdHztRXsPeGgTtxP9YwbtKTlEOyHQgE3v2
-         AzS4tXqV3OeSgLE69yzpYmRC7sOdujBNcVhxVF3b9zpsqm5fl04oGy1E4D+xwmD+nw
-         L05CUHVP7AjL5m7TchcP9uU4Cd0vgWHFVvYh3dmGPnxiJI1Ez3IOSwl2JZd2FEOk+r
-         Jt36jNXVXUPpw==
-Date:   Tue, 22 Feb 2022 20:38:31 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH 1/6][next] ath6kl: wmi: Replace one-element array with
- flexible-array member in struct wmi_begin_scan_cmd
-Message-ID: <af3e7cf6101586a6de9710d8f1302763aa7c6396.1645583264.git.gustavoars@kernel.org>
-References: <cover.1645583264.git.gustavoars@kernel.org>
+        s=k20201202; t=1645583426;
+        bh=iiiU8DN3ENwStLSi/sYPdqOZyIuha6jES6Cbw9b1hww=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ibsFWho/8JI5E2vtC2uDQqBl4xWg8w2hUgo/jlZnZR/oqb1sqMRaqKscfR9c/Cq1e
+         a4f9JVR+XOEp0FUeZYTszTsXDeFj8QC9QPYBBBpB/X3AeURqjxW/z1z+LHBF20rWGH
+         llxSQOnxRqaUu7QfBukPb8LRmItab3+uj85pZTsJ/P0NPcw+Ger9DVV+EPGCCqF7zt
+         RzGl0bFrMAgGGxPMPq4/OsGVEWGzBhFsMcSUx5dz5DHt47nrPEnY1GMx0nxKHNFrZE
+         59aAZ4QJe8y0iTle2DlnEaFwHQWlrd0BuQaRARLH8KSqsLRF8M5ElUKEh+G5Ju2nPE
+         IH/62CmiGiX0A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@canonical.com, yangyicong@hisilicon.com,
+        semen.protsenko@linaro.org, robh@kernel.org,
+        geert+renesas@glider.be, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
+        linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 24/28] i2c: imx: allow COMPILE_TEST
+Date:   Tue, 22 Feb 2022 21:29:25 -0500
+Message-Id: <20220223022929.241127-24-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220223022929.241127-1-sashal@kernel.org>
+References: <20220223022929.241127-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1645583264.git.gustavoars@kernel.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace one-element array with flexible-array member in struct
-wmi_begin_scan_cmd. Also, make use of the struct_size() helper.
+From: Wolfram Sang <wsa@kernel.org>
 
-This issue was found with the help of Coccinelle and audited and fixed,
-manually.
+[ Upstream commit 2ce4462f2724d1b3cedccea441c6d18bb360629a ]
 
-Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-Link: https://github.com/KSPP/linux/issues/79
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
+
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath6kl/wmi.c | 9 ++-------
- drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
-index bd1ef6334997..e1c950014f3e 100644
---- a/drivers/net/wireless/ath/ath6kl/wmi.c
-+++ b/drivers/net/wireless/ath/ath6kl/wmi.c
-@@ -2008,7 +2008,7 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
- 	struct ieee80211_supported_band *sband;
- 	struct sk_buff *skb;
- 	struct wmi_begin_scan_cmd *sc;
--	s8 size, *supp_rates;
-+	s8 *supp_rates;
- 	int i, band, ret;
- 	struct ath6kl *ar = wmi->parent_dev;
- 	int num_rates;
-@@ -2023,18 +2023,13 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
- 						num_chan, ch_list);
- 	}
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 652b754a66db0..f76aaf9559365 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -677,7 +677,7 @@ config I2C_IMG
  
--	size = sizeof(struct wmi_begin_scan_cmd);
--
- 	if ((scan_type != WMI_LONG_SCAN) && (scan_type != WMI_SHORT_SCAN))
- 		return -EINVAL;
- 
- 	if (num_chan > WMI_MAX_CHANNELS)
- 		return -EINVAL;
- 
--	if (num_chan)
--		size += sizeof(u16) * (num_chan - 1);
--
--	skb = ath6kl_wmi_get_new_buf(size);
-+	skb = ath6kl_wmi_get_new_buf(struct_size(sc, ch_list, num_chan));
- 	if (!skb)
- 		return -ENOMEM;
- 
-diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
-index 784940ba4c90..322539ed9c12 100644
---- a/drivers/net/wireless/ath/ath6kl/wmi.h
-+++ b/drivers/net/wireless/ath/ath6kl/wmi.h
-@@ -863,7 +863,7 @@ struct wmi_begin_scan_cmd {
- 	u8 num_ch;
- 
- 	/* channels in Mhz */
--	__le16 ch_list[1];
-+	__le16 ch_list[];
- } __packed;
- 
- /* wmi_start_scan_cmd is to be deprecated. Use
+ config I2C_IMX
+ 	tristate "IMX I2C interface"
+-	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE
++	depends on ARCH_MXC || ARCH_LAYERSCAPE || COLDFIRE || COMPILE_TEST
+ 	select I2C_SLAVE
+ 	help
+ 	  Say Y here if you want to use the IIC bus controller on
 -- 
-2.27.0
+2.34.1
 
