@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C65AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFCDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241097AbiBWNpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:45:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
+        id S241138AbiBWNpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241037AbiBWNoi (ORCPT
+        with ESMTP id S241038AbiBWNoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 08:44:38 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43B9AC904
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906C8AC902
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:10 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C0E5622441;
-        Wed, 23 Feb 2022 14:44:07 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D73A22244F;
+        Wed, 23 Feb 2022 14:44:08 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645623847;
+        t=1645623849;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nvEr6G9dficcmukv0DH8TkWOS6x8eCo7LKw8so44zF4=;
-        b=EO7EOA146pRg5W7/rayg5kVRI48qM77sk7J7J/+sR7k+uBuBxh+pmaWYZaFs63YonwC/dY
-        y2qTJRXG049fg8B5A8e1tVS9SDwF7xVeEnlsP/YbYLOdER/jLCzFpetrbgUAnnAOGariTt
-        ZlsdbajSWZ/kZr8XlgKCc1bpQwIAOzc=
+        bh=2K+vGEHJzHmcPcjSMsyw/2Iai2nusSM6WwW3dzCQoWw=;
+        b=uw/MjrF97k7UNMlScc9NpL9cwK8PEcAqfEuAxOpmHO8WBCz+Gg3RVzgYCsJRpcqlTZvxbn
+        orcC48OTHsDoBoD9x8/Lwt1wwN4L79z4q04TKrwdgENxrqdkTLifdCcYNol8m5YrlgYMWe
+        gFA2hheUE4tqKqQ+iokzLC70dXIZIt0=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 09/32] mtd: spi-nor: issi: unify function names
-Date:   Wed, 23 Feb 2022 14:43:35 +0100
-Message-Id: <20220223134358.1914798-10-michael@walle.cc>
+Subject: [PATCH v5 11/32] mtd: spi-nor: micron-st: unify function names
+Date:   Wed, 23 Feb 2022 14:43:37 +0100
+Message-Id: <20220223134358.1914798-12-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223134358.1914798-1-michael@walle.cc>
 References: <20220223134358.1914798-1-michael@walle.cc>
@@ -62,44 +62,106 @@ There are no functional changes.
 Signed-off-by: Michael Walle <michael@walle.cc>
 Acked-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/issi.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/mtd/spi-nor/micron-st.c | 34 ++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/mtd/spi-nor/issi.c b/drivers/mtd/spi-nor/issi.c
-index 23629b919ade..c012bc2486e1 100644
---- a/drivers/mtd/spi-nor/issi.c
-+++ b/drivers/mtd/spi-nor/issi.c
-@@ -29,7 +29,7 @@ static const struct spi_nor_fixups is25lp256_fixups = {
- 	.post_bfpt = is25lp256_post_bfpt_fixups,
- };
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index bb95b1aabf74..7a68f2ad3ea1 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -17,7 +17,7 @@
+ #define SPINOR_MT_OCT_DTR	0xe7	/* Enable Octal DTR. */
+ #define SPINOR_MT_EXSPI		0xff	/* Enable Extended SPI (default) */
  
--static const struct flash_info issi_parts[] = {
-+static const struct flash_info issi_nor_parts[] = {
- 	/* ISSI */
- 	{ "is25cd512",  INFO(0x7f9d20, 0, 32 * 1024,   2)
- 		NO_SFDP_FLAGS(SECT_4K) },
-@@ -69,18 +69,18 @@ static const struct flash_info issi_parts[] = {
- 		NO_SFDP_FLAGS(SECT_4K) },
- };
- 
--static void issi_default_init(struct spi_nor *nor)
-+static void issi_nor_default_init(struct spi_nor *nor)
+-static int spi_nor_micron_octal_dtr_enable(struct spi_nor *nor, bool enable)
++static int micron_st_nor_octal_dtr_enable(struct spi_nor *nor, bool enable)
  {
- 	nor->params->quad_enable = spi_nor_sr1_bit6_quad_enable;
+ 	struct spi_mem_op op;
+ 	u8 *buf = nor->bouncebuf;
+@@ -102,7 +102,7 @@ static int spi_nor_micron_octal_dtr_enable(struct spi_nor *nor, bool enable)
+ 
+ static void mt35xu512aba_default_init(struct spi_nor *nor)
+ {
+-	nor->params->octal_dtr_enable = spi_nor_micron_octal_dtr_enable;
++	nor->params->octal_dtr_enable = micron_st_nor_octal_dtr_enable;
  }
  
- static const struct spi_nor_fixups issi_fixups = {
--	.default_init = issi_default_init,
-+	.default_init = issi_nor_default_init,
+ static void mt35xu512aba_post_sfdp_fixup(struct spi_nor *nor)
+@@ -130,7 +130,7 @@ static const struct spi_nor_fixups mt35xu512aba_fixups = {
+ 	.post_sfdp = mt35xu512aba_post_sfdp_fixup,
  };
  
- const struct spi_nor_manufacturer spi_nor_issi = {
- 	.name = "issi",
--	.parts = issi_parts,
--	.nparts = ARRAY_SIZE(issi_parts),
-+	.parts = issi_nor_parts,
-+	.nparts = ARRAY_SIZE(issi_nor_parts),
- 	.fixups = &issi_fixups,
+-static const struct flash_info micron_parts[] = {
++static const struct flash_info micron_nor_parts[] = {
+ 	{ "mt35xu512aba", INFO(0x2c5b1a, 0, 128 * 1024, 512)
+ 		FLAGS(USE_FSR)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_OCTAL_READ |
+@@ -143,7 +143,7 @@ static const struct flash_info micron_parts[] = {
+ 		FIXUP_FLAGS(SPI_NOR_4B_OPCODES) },
+ };
+ 
+-static const struct flash_info st_parts[] = {
++static const struct flash_info st_nor_parts[] = {
+ 	{ "n25q016a",	 INFO(0x20bb15, 0, 64 * 1024,   32)
+ 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ) },
+ 	{ "n25q032",	 INFO(0x20ba16, 0, 64 * 1024,   64)
+@@ -250,15 +250,15 @@ static const struct flash_info st_parts[] = {
+ };
+ 
+ /**
+- * st_micron_set_4byte_addr_mode() - Set 4-byte address mode for ST and Micron
+- * flashes.
++ * micron_st_nor_set_4byte_addr_mode() - Set 4-byte address mode for ST and
++ * Micron flashes.
+  * @nor:	pointer to 'struct spi_nor'.
+  * @enable:	true to enter the 4-byte address mode, false to exit the 4-byte
+  *		address mode.
+  *
+  * Return: 0 on success, -errno otherwise.
+  */
+-static int st_micron_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
++static int micron_st_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+ {
+ 	int ret;
+ 
+@@ -273,28 +273,28 @@ static int st_micron_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
+ 	return spi_nor_write_disable(nor);
+ }
+ 
+-static void micron_st_default_init(struct spi_nor *nor)
++static void micron_st_nor_default_init(struct spi_nor *nor)
+ {
+ 	nor->flags |= SNOR_F_HAS_LOCK;
+ 	nor->flags &= ~SNOR_F_HAS_16BIT_SR;
+ 	nor->params->quad_enable = NULL;
+-	nor->params->set_4byte_addr_mode = st_micron_set_4byte_addr_mode;
++	nor->params->set_4byte_addr_mode = micron_st_nor_set_4byte_addr_mode;
+ }
+ 
+-static const struct spi_nor_fixups micron_st_fixups = {
+-	.default_init = micron_st_default_init,
++static const struct spi_nor_fixups micron_st_nor_fixups = {
++	.default_init = micron_st_nor_default_init,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_micron = {
+ 	.name = "micron",
+-	.parts = micron_parts,
+-	.nparts = ARRAY_SIZE(micron_parts),
+-	.fixups = &micron_st_fixups,
++	.parts = micron_nor_parts,
++	.nparts = ARRAY_SIZE(micron_nor_parts),
++	.fixups = &micron_st_nor_fixups,
+ };
+ 
+ const struct spi_nor_manufacturer spi_nor_st = {
+ 	.name = "st",
+-	.parts = st_parts,
+-	.nparts = ARRAY_SIZE(st_parts),
+-	.fixups = &micron_st_fixups,
++	.parts = st_nor_parts,
++	.nparts = ARRAY_SIZE(st_nor_parts),
++	.fixups = &micron_st_nor_fixups,
  };
 -- 
 2.30.2
