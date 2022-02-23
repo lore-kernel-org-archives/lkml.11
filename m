@@ -2,169 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244066AbiBWS4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:56:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
+        id S244069AbiBWS5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:57:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238686AbiBWS4t (ORCPT
+        with ESMTP id S244070AbiBWS5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:56:49 -0500
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 10D083FBC4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 10:56:19 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1645642580; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=bJ3PTMa5ITK1zBs3UQ1rqQGE3Uh9+XtlEAte3v0fLh0=; b=GT3bzIgpIJGwbYIups/XWCMChW/xedoj7nBJCJ6EKCs1Cj0BrPDMHyAMa0b6IPab8X1ovKna
- M0bDPVdVz8MNeinBBYcNlAtN/FAJeEJh4bw222KlYdGPRT7a6CQFK1ZYv7BxTMLaIEoDfTCa
- b6HC3tVttjOEJ0INth5DladTHZU=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 62168352f59adaaa8ea27743 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 23 Feb 2022 18:56:18
- GMT
-Sender: tdas=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 640D0C43617; Wed, 23 Feb 2022 18:56:18 +0000 (UTC)
-Received: from hu-tdas-hyd.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: tdas)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 92A13C4338F;
-        Wed, 23 Feb 2022 18:56:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 92A13C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Taniya Das <tdas@codeaurora.org>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        =?UTF-8?q?Michael=20Turquette=20=C2=A0?= <mturquette@baylibre.com>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Taniya Das <tdas@codeaurora.org>
-Subject: [v2 1/2] clk: qcom: gdsc: Add support to update GDSC transition delay
-Date:   Thu, 24 Feb 2022 00:26:05 +0530
-Message-Id: <20220223185606.3941-1-tdas@codeaurora.org>
-X-Mailer: git-send-email 2.17.1
+        Wed, 23 Feb 2022 13:57:02 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D250338AD
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 10:56:33 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id z15so10489163pfe.7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 10:56:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=WO10LZXV2/UIWFExeWc5y4Axog2LtDZPkQsLOSvWfIQ=;
+        b=D8TkVS0SFNlR75Wec0ztTxmXYaKBMsKoUqb/Nhs2hNUiK/oaDz71s6bWwqHwBV1Wjz
+         cslgksXqAs492hjk4W5fOe6HJmIx2jOGr42dklLADLnuAj6O7rlxzR4je1EbsPrOP8wk
+         weGsjLeFnSuR/7vT+UaNHlsfv8241RQA0ZB5g3tenBZ3jhcHWHEPO1lvjP6HPgoGmptr
+         iscT1tlwsb64dhL/wSDAaCJ/0x3uLXRTToo1xd1dpg2OSIUJMis8ITDrAWCTvY2C72SG
+         xThZMVdYqHwxBZkQnHbX5lJxFn9v35CY9ZtkqKIMMIPzO/6GSf6aJeMr/VWZ4lkhrzKF
+         +BNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=WO10LZXV2/UIWFExeWc5y4Axog2LtDZPkQsLOSvWfIQ=;
+        b=tnx9hqtQbeZFejEKta4pYejGphaDe1TU/E5K6VeYdUiteErihu/+VLWrEurlQcMvzX
+         Qul3kIDf4bvRL2oty++eFFjcB0u/BIeD4w9/gHB43MiyWQjLl5OZui1F57OKhxPwE3sO
+         ZXwlAktU+MP/KLJWyUyQ1ZMgynX3KVuuR70sN9fYMNEfWZx8asDrWuZDbyyrZOYuMVxa
+         t11agQ0X7iujWDo6Yj6ILC6zi1vWNV6bMfZqGQu7FkBT6NS2cND0p7U5rR2UqvXfPZk2
+         R+xF2CB8OntL/Y/Kjc2s1YY/MYgTuUPupsYzfB6NW0nYdc7YKc6F6eiDcSqBZrkmrj28
+         hW9w==
+X-Gm-Message-State: AOAM532gBStfYfKp9jHdAu7zbu4paMN19MUABTl3g/qDk4CMI2EPsAO8
+        KpEv/OcNC/Fp+yNV5TPzKKfq7WjF4qfzXw==
+X-Google-Smtp-Source: ABdhPJxWzseRIGwjKlr0g3XO7WPLxpsY657PyUA0i4zsqM9a8QWHzQK5Zdw5cIoRSvIs8eDmqn0I2g==
+X-Received: by 2002:a63:31ce:0:b0:34e:4052:1bce with SMTP id x197-20020a6331ce000000b0034e40521bcemr735240pgx.459.1645642592668;
+        Wed, 23 Feb 2022 10:56:32 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id i11sm231887pgs.58.2022.02.23.10.56.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 10:56:31 -0800 (PST)
+Date:   Wed, 23 Feb 2022 18:56:28 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Like Xu <like.xu.linux@gmail.com>
+Subject: Re: [PATCH] KVM: x86: Fix pointer mistmatch warning when patching
+ RET0 static calls
+Message-ID: <YhaDXDfLBQtkmbtV@google.com>
+References: <20220223162355.3174907-1-seanjc@google.com>
+ <YhZuk8eA6rsDuJkd@dev-arch.archlinux-ax161>
+ <YhZ16cMMcHQIvS9d@google.com>
+ <YhZ5Q8DNoGGWUBLh@dev-arch.archlinux-ax161>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YhZ5Q8DNoGGWUBLh@dev-arch.archlinux-ax161>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GDSCs have multiple transition delays which are used for the GDSC FSM
-states. Older targets/designs required these values to be updated from
-gdsc code to certain default values for the FSM state to work as
-expected. But on the newer targets/designs the values updated from the
-GDSC driver can hamper the FSM state to not work as expected.
+On Wed, Feb 23, 2022, Nathan Chancellor wrote:
+> On Wed, Feb 23, 2022 at 05:59:05PM +0000, Sean Christopherson wrote:
+> > On Wed, Feb 23, 2022, Nathan Chancellor wrote:
+> > > Hi Sean,
+> > > 
+> > > On Wed, Feb 23, 2022 at 04:23:55PM +0000, Sean Christopherson wrote:
+> > > > Cast kvm_x86_ops.func to 'void *' when updating KVM static calls that are
+> > > > conditionally patched to __static_call_return0().  clang complains about
+> > > > using mismatching pointers in the ternary operator, which breaks the
+> > > > build when compiling with CONFIG_KVM_WERROR=y.
+> > > > 
+> > > >   >> arch/x86/include/asm/kvm-x86-ops.h:82:1: warning: pointer type mismatch
+> > > >   ('bool (*)(struct kvm_vcpu *)' and 'void *') [-Wpointer-type-mismatch]
+> > > > 
+> > > > Fixes: 5be2226f417d ("KVM: x86: allow defining return-0 static calls")
+> > > > Reported-by: Like Xu <like.xu.linux@gmail.com>
+> > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > > 
+> > > Thank you for the patch! Is this a bug in clang?
+> > 
+> > IMO, no.  I think it's completely reasonable for the compiler to complain that KVM
+> > is generating two different pointer types out of a ternary operator.
+> > 
+> > clang is somewhat inconsistent, though it may be deliberate.  clang doesn't complain
+> > about implicitly casting a 'void *' to another data type, e.g. this complies clean,
+> > where "data" is a 'void *'
+> > 
+> > 	struct kvm_vcpu *x = vcpu ? : data;
+> 
+> Right, I would assume this is deliberate. I think warning in this case
+> might be quite noisy, as the kernel implicitly converts 'void *' to
+> typed pointers for certain function pointer callbacks (although this
+> particular case is probably pretty rare).
 
-On SC7180 we observe black screens because the gdsc is being
-enabled/disabled very rapidly and the GDSC FSM state does not work as
-expected. This is due to the fact that the GDSC reset value is being
-updated from SW.
+Aha!  Looks like clang's behavior is correct, assuming a function is not considered
+an "object".  From C99 "6.5.15 Conditional operator":
 
-Thus add support to update the transition delay from the clock
-controller gdscs as required.
+  One of the following shall hold for the second and third operands:
+    — both operands have arithmetic type;
+    — both operands have the same structure or union type;
+    — both operands have void type;
+    — both operands are pointers to qualified or unqualified versions of compatible types;
+    — one operand is a pointer and the other is a null pointer constant; or
+    — one operand is a pointer to an object or incomplete type and the other is a pointer to a
+      qualified or unqualified version of void.
 
-Fixes: 45dd0e55317cc ("clk: qcom: Add support for GDSCs)
-Signed-off-by: Taniya Das <tdas@codeaurora.org>
----
-[v2]
-   * Add 3 transition delays and update the default values in case of
-     non-zero value.
-   * Update the delays from mdss gdsc in the corresponding display clock
-     controllers.
-
- drivers/clk/qcom/gdsc.c | 26 +++++++++++++++++++++-----
- drivers/clk/qcom/gdsc.h |  8 +++++++-
- 2 files changed, 28 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
-index 7e1dd8ccfa38..44520efc6c72 100644
---- a/drivers/clk/qcom/gdsc.c
-+++ b/drivers/clk/qcom/gdsc.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2015, 2017-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
-  */
-
- #include <linux/bitops.h>
-@@ -35,9 +35,14 @@
- #define CFG_GDSCR_OFFSET		0x4
-
- /* Wait 2^n CXO cycles between all states. Here, n=2 (4 cycles). */
--#define EN_REST_WAIT_VAL	(0x2 << 20)
--#define EN_FEW_WAIT_VAL		(0x8 << 16)
--#define CLK_DIS_WAIT_VAL	(0x2 << 12)
-+#define EN_REST_WAIT_VAL	0x2
-+#define EN_FEW_WAIT_VAL		0x8
-+#define CLK_DIS_WAIT_VAL	0x2
-+
-+/* Transition delay shifts */
-+#define EN_REST_WAIT_SHIFT	20
-+#define EN_FEW_WAIT_SHIFT	16
-+#define CLK_DIS_WAIT_SHIFT	12
-
- #define RETAIN_MEM		BIT(14)
- #define RETAIN_PERIPH		BIT(13)
-@@ -380,7 +385,18 @@ static int gdsc_init(struct gdsc *sc)
- 	 */
- 	mask = HW_CONTROL_MASK | SW_OVERRIDE_MASK |
- 	       EN_REST_WAIT_MASK | EN_FEW_WAIT_MASK | CLK_DIS_WAIT_MASK;
--	val = EN_REST_WAIT_VAL | EN_FEW_WAIT_VAL | CLK_DIS_WAIT_VAL;
-+
-+	if (!sc->en_rest_wait_val)
-+		sc->en_rest_wait_val = EN_REST_WAIT_VAL;
-+	if (!sc->en_few_wait_val)
-+		sc->en_few_wait_val = EN_FEW_WAIT_VAL;
-+	if (!sc->clk_dis_wait_val)
-+		sc->clk_dis_wait_val = CLK_DIS_WAIT_VAL;
-+
-+	val = sc->en_rest_wait_val << EN_REST_WAIT_SHIFT |
-+		sc->en_few_wait_val << EN_FEW_WAIT_SHIFT |
-+		sc->clk_dis_wait_val << CLK_DIS_WAIT_SHIFT;
-+
- 	ret = regmap_update_bits(sc->regmap, sc->gdscr, mask, val);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/clk/qcom/gdsc.h b/drivers/clk/qcom/gdsc.h
-index d7cc4c21a9d4..ad313d7210bd 100644
---- a/drivers/clk/qcom/gdsc.h
-+++ b/drivers/clk/qcom/gdsc.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- * Copyright (c) 2015, 2017-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
-  */
-
- #ifndef __QCOM_GDSC_H__
-@@ -22,6 +22,9 @@ struct reset_controller_dev;
-  * @cxcs: offsets of branch registers to toggle mem/periph bits in
-  * @cxc_count: number of @cxcs
-  * @pwrsts: Possible powerdomain power states
-+ * @en_rest_wait_val: transition delay value for receiving enr ack signal
-+ * @en_few_wait_val: transition delay value for receiving enf ack signal
-+ * @clk_dis_wait_val: transition delay value for halting clock
-  * @resets: ids of resets associated with this gdsc
-  * @reset_count: number of @resets
-  * @rcdev: reset controller
-@@ -36,6 +39,9 @@ struct gdsc {
- 	unsigned int			clamp_io_ctrl;
- 	unsigned int			*cxcs;
- 	unsigned int			cxc_count;
-+	unsigned int			en_rest_wait_val;
-+	unsigned int			en_few_wait_val;
-+	unsigned int			clk_dis_wait_val;
- 	const u8			pwrsts;
- /* Powerdomain allowable state bitfields */
- #define PWRSTS_OFF		BIT(0)
---
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
-of the Code Aurora Forum, hosted by the  Linux Foundation.
-
+That last case would explain why clang warns about a function pointer but not a
+object pointer when the third operand is a 'void *'.
