@@ -2,122 +2,340 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82396C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C21EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239883AbiBWLcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:32:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
+        id S239880AbiBWLca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:32:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239846AbiBWLcE (ORCPT
+        with ESMTP id S239846AbiBWLc1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 06:32:04 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AD3DFF4;
-        Wed, 23 Feb 2022 03:31:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645615895; x=1677151895;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0zm8wIULsN4Dyhom0z7elKrKoBwJYW9qnpSEEw2q5Wk=;
-  b=kog0pOB+nM8reYobUTlNS5hEPr9EMXMc5hqqtRTBdJSePP5+42ZRC+xJ
-   Vv3aE1ws2ZvDtIZp6lms0hkqlYXpQ/wwciq3r39/giuhoPxb8aWxJ6brd
-   YfTyz0UcfIWNVXVO5MFnondma+ZoY5haECBCm2BfkSYNC9S9q3tyQcAqm
-   Q5QNZGwt9NdTsXnp6Q0phHI3HxrGZUFY/yPQnG8TtOyyyISquRPfY8LD2
-   6GTKN/SxaMyVxoRDKqYWF25dl2hR0l8P270NORYqpmFdarFHne/TKhnf2
-   rxZW4is9aKdHb2PfiAuCLpH6jFqD+f58s6hKmYWnmcXkxNhAJaHDXx+R9
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="250769476"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="250769476"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:31:35 -0800
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="637389174"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 03:31:33 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMpqx-007OOM-0K;
-        Wed, 23 Feb 2022 13:30:39 +0200
-Date:   Wed, 23 Feb 2022 13:30:38 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     shruthi.sanil@intel.com, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, mgross@linux.intel.com,
-        srikanth.thokala@intel.com, lakshmi.bai.raja.subramanian@intel.com,
-        mallikarjunappa.sangannavar@intel.com
-Subject: Re: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel Keem
- Bay SoC Timer
-Message-ID: <YhYa3tlTEcLct2xu@smile.fi.intel.com>
-References: <20220222095654.9097-1-shruthi.sanil@intel.com>
- <20220222095654.9097-2-shruthi.sanil@intel.com>
- <YhVuJaf3AJ1c6TpT@robh.at.kernel.org>
+        Wed, 23 Feb 2022 06:32:27 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D052BB38;
+        Wed, 23 Feb 2022 03:31:59 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BE0D71EC0529;
+        Wed, 23 Feb 2022 12:31:53 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645615914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=vRub8upnFVgTuk1CuLQ7RycyBOT/S3x02567AirM60Y=;
+        b=bHo4xk4Bmr79VIea9IqgozdD0mALSViHVN39ZTluSS9L+EhT8GJnWJa7fNgYCPI+/nxqo/
+        XVICSy/1IMDusAS6w++XgNwem7xf7N8f9+uK5dk+z6pi13NUZM0tyFWwKA9uANMl5lKD26
+        Zht1Nm1H5LhQvnKzgXaItk1zMGC4s24=
+Date:   Wed, 23 Feb 2022 12:31:56 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Rientjes <rientjes@google.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>
+Subject: Re: [PATCH] x86/mm/cpa: Generalize __set_memory_enc_pgtable()
+Message-ID: <YhYbLDTFLIksB/qp@zn.tnic>
+References: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
+ <20220223043528.2093214-1-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YhVuJaf3AJ1c6TpT@robh.at.kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220223043528.2093214-1-brijesh.singh@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 05:13:41PM -0600, Rob Herring wrote:
-> On Tue, Feb 22, 2022 at 03:26:53PM +0530, shruthi.sanil@intel.com wrote:
-> > From: Shruthi Sanil <shruthi.sanil@intel.com>
-> > 
-> > Add Device Tree bindings for the Timer IP, which can be used as
-> > clocksource and clockevent device in the Intel Keem Bay SoC.
+On Tue, Feb 22, 2022 at 10:35:28PM -0600, Brijesh Singh wrote:
+> Depends on Krill's CC cleanup
+> https://lore.kernel.org/all/20220222185740.26228-1-kirill.shutemov@linux.intel.com/
 
-...
+I've massaged it into what it should be, see below.
 
-> > +    soc {
-> > +        #address-cells = <0x2>;
-> > +        #size-cells = <0x2>;
-> > +
-> > +        gpt@20331000 {
-> > +            compatible = "intel,keembay-gpt-creg", "simple-mfd";
-> 
-> It looks like you are splitting things based on Linux implementation
-> details. Does this h/w block have different combinations of timers and
-> counters? If not, then you don't need the child nodes at all. There's
-> plenty of h/w blocks that get used as both a clocksource and clockevent.
-> 
-> Maybe I already raised this, but assume I don't remember and this patch
-> needs to address any questions I already asked.
+The BUG_ON() is gone because we don't do BUG_ONs - if you had used
+checkpatch, it would've told you. So I've added noops like that x86_init
+stuff is usually done.
 
-I dunno if I mentioned that hardware seems to have 5 or so devices behind
-the block, so ideally it should be one device node that represents the global
-register spaces and several children nodes.
+Anyway, Kirill, your turn. Is the below enough for TDX?
 
-However, I am not familiar with the established practices in DT world, but
-above seems to me the right thing to do since it describes the hardware as
-is (without any linuxisms).
+---
+From daa6fb150e495511c699820bce925d89e55e96d4 Mon Sep 17 00:00:00 2001
+From: Brijesh Singh <brijesh.singh@amd.com>
+Date: Tue, 22 Feb 2022 22:35:28 -0600
+Subject: [PATCH] x86/mm/cpa: Generalize __set_memory_enc_pgtable()
 
-> > +            reg = <0x0 0x20331000 0x0 0xc>;
-> > +            ranges = <0x0 0x0 0x20330000 0xF0>;
-> > +            #address-cells = <0x1>;
-> > +            #size-cells = <0x1>;
-> > +
-> > +            counter@e8 {
-> > +                compatible = "intel,keembay-counter";
-> > +                reg = <0xe8 0x8>;
-> > +                clocks = <&scmi_clk KEEM_BAY_A53_TIM>;
-> > +            };
-> > +
-> > +            timer@30 {
-> > +                compatible = "intel,keembay-timer";
-> > +                reg = <0x30 0xc>;
-> > +                interrupts = <GIC_SPI 0x5 IRQ_TYPE_LEVEL_HIGH>;
-> > +                clocks = <&scmi_clk KEEM_BAY_A53_TIM>;
-> > +            };
-> > +        };
-> > +    };
+The kernel provides infrastructure to set or clear the encryption mask
+from the pages for AMD SEV, but TDX requires few tweaks.
+
+- TDX and SEV have different requirements to the cache and TLB
+  flushing.
+
+- TDX has own routine to notify VMM about page encryption status change.
+
+Modify __set_memory_enc_pgtable() and make it flexible enough to cover
+both AMD SEV and Intel TDX. The AMD-specific behavior is isolated in
+callback under x86_platform_cc. TDX will provide own version of the
+callbacks.
+
+  [ bp: Beat into submission. ]
+
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220223043528.2093214-1-brijesh.singh@amd.com
+---
+ arch/x86/include/asm/set_memory.h |  1 -
+ arch/x86/include/asm/x86_init.h   | 16 +++++++
+ arch/x86/kernel/x86_init.c        | 16 ++++++-
+ arch/x86/mm/mem_encrypt_amd.c     | 71 +++++++++++++++++++++----------
+ arch/x86/mm/pat/set_memory.c      | 18 ++++----
+ 5 files changed, 88 insertions(+), 34 deletions(-)
+
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index ff0f2d90338a..ce8dd215f5b3 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -84,7 +84,6 @@ int set_pages_rw(struct page *page, int numpages);
+ int set_direct_map_invalid_noflush(struct page *page);
+ int set_direct_map_default_noflush(struct page *page);
+ bool kernel_page_present(struct page *page);
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
+ 
+ extern int kernel_set_to_readonly;
+ 
+diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+index 22b7412c08f6..dfdcd3152f8d 100644
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -141,6 +141,21 @@ struct x86_init_acpi {
+ 	void (*reduced_hw_early_init)(void);
+ };
+ 
++/**
++ * struct x86_guest - Functions used by misc guest incarnations like SEV, TDX, etc.
++ *
++ * @enc_status_change_prepare	Notify HV before the encryption status of a range is changed
++ * @enc_status_change_finish	Notify HV after the encryption status of a range is changed
++ * @enc_tlb_flush_required	Returns true if a TLB flush is needed before changing page encryption status
++ * @enc_cache_flush_required	Returns true if a cache flush is needed before changing page encryption status
++ */
++struct x86_guest {
++	void (*enc_status_change_prepare)(unsigned long vaddr, int npages, bool enc);
++	void (*enc_status_change_finish)(unsigned long vaddr, int npages, bool enc);
++	bool (*enc_tlb_flush_required)(bool enc);
++	bool (*enc_cache_flush_required)(void);
++};
++
+ /**
+  * struct x86_init_ops - functions for platform specific setup
+  *
+@@ -287,6 +302,7 @@ struct x86_platform_ops {
+ 	struct x86_legacy_features legacy;
+ 	void (*set_legacy_features)(void);
+ 	struct x86_hyper_runtime hyper;
++	struct x86_guest guest;
+ };
+ 
+ struct x86_apic_ops {
+diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+index 7d20c1d34a3c..bb57410dde2d 100644
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -129,6 +129,11 @@ struct x86_cpuinit_ops x86_cpuinit = {
+ 
+ static void default_nmi_init(void) { };
+ 
++static void enc_status_change_prepare_noop(unsigned long vaddr, int npages, bool enc) { }
++static void enc_status_change_finish_noop(unsigned long vaddr, int npages, bool enc) { }
++static bool enc_tlb_flush_required_noop(bool enc) { return false; }
++static bool enc_cache_flush_required_noop(void) { return false; }
++
+ struct x86_platform_ops x86_platform __ro_after_init = {
+ 	.calibrate_cpu			= native_calibrate_cpu_early,
+ 	.calibrate_tsc			= native_calibrate_tsc,
+@@ -138,9 +143,16 @@ struct x86_platform_ops x86_platform __ro_after_init = {
+ 	.is_untracked_pat_range		= is_ISA_range,
+ 	.nmi_init			= default_nmi_init,
+ 	.get_nmi_reason			= default_get_nmi_reason,
+-	.save_sched_clock_state 	= tsc_save_sched_clock_state,
+-	.restore_sched_clock_state 	= tsc_restore_sched_clock_state,
++	.save_sched_clock_state		= tsc_save_sched_clock_state,
++	.restore_sched_clock_state	= tsc_restore_sched_clock_state,
+ 	.hyper.pin_vcpu			= x86_op_int_noop,
++
++	.guest = {
++		.enc_status_change_prepare = enc_status_change_prepare_noop,
++		.enc_status_change_finish  = enc_status_change_finish_noop,
++		.enc_tlb_flush_required	   = enc_tlb_flush_required_noop,
++		.enc_cache_flush_required  = enc_cache_flush_required_noop,
++	},
+ };
+ 
+ EXPORT_SYMBOL_GPL(x86_platform);
+diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
+index 2b2d018ea345..4c57c8988f37 100644
+--- a/arch/x86/mm/mem_encrypt_amd.c
++++ b/arch/x86/mm/mem_encrypt_amd.c
+@@ -177,25 +177,6 @@ void __init sme_map_bootdata(char *real_mode_data)
+ 	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, true);
+ }
+ 
+-void __init sme_early_init(void)
+-{
+-	unsigned int i;
+-
+-	if (!sme_me_mask)
+-		return;
+-
+-	early_pmd_flags = __sme_set(early_pmd_flags);
+-
+-	__supported_pte_mask = __sme_set(__supported_pte_mask);
+-
+-	/* Update the protection map with memory encryption mask */
+-	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
+-		protection_map[i] = pgprot_encrypted(protection_map[i]);
+-
+-	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+-		swiotlb_force = SWIOTLB_FORCE;
+-}
+-
+ void __init sev_setup_arch(void)
+ {
+ 	phys_addr_t total_mem = memblock_phys_mem_size();
+@@ -256,7 +237,17 @@ static unsigned long pg_level_to_pfn(int level, pte_t *kpte, pgprot_t *ret_prot)
+ 	return pfn;
+ }
+ 
+-void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
++static bool amd_enc_tlb_flush_required(bool enc)
++{
++	return true;
++}
++
++static bool amd_enc_cache_flush_required(void)
++{
++	return !cpu_feature_enabled(X86_FEATURE_SME_COHERENT);
++}
++
++static void enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
+ {
+ #ifdef CONFIG_PARAVIRT
+ 	unsigned long sz = npages << PAGE_SHIFT;
+@@ -287,6 +278,18 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
+ #endif
+ }
+ 
++static void amd_enc_status_change_prepare(unsigned long vaddr, int npages, bool enc)
++{
++}
++
++static void amd_enc_status_change_finish(unsigned long vaddr, int npages, bool enc)
++{
++	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
++		return;
++
++	enc_dec_hypercall(vaddr, npages, enc);
++}
++
+ static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
+ {
+ 	pgprot_t old_prot, new_prot;
+@@ -392,7 +395,7 @@ static int __init early_set_memory_enc_dec(unsigned long vaddr,
+ 
+ 	ret = 0;
+ 
+-	notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
++	early_set_mem_enc_dec_hypercall(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
+ out:
+ 	__flush_tlb_all();
+ 	return ret;
+@@ -410,7 +413,31 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
+ 
+ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
+ {
+-	notify_range_enc_status_changed(vaddr, npages, enc);
++	enc_dec_hypercall(vaddr, npages, enc);
++}
++
++void __init sme_early_init(void)
++{
++	unsigned int i;
++
++	if (!sme_me_mask)
++		return;
++
++	early_pmd_flags = __sme_set(early_pmd_flags);
++
++	__supported_pte_mask = __sme_set(__supported_pte_mask);
++
++	/* Update the protection map with memory encryption mask */
++	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
++		protection_map[i] = pgprot_encrypted(protection_map[i]);
++
++	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
++		swiotlb_force = SWIOTLB_FORCE;
++
++	x86_platform.guest.enc_status_change_prepare = amd_enc_status_change_prepare;
++	x86_platform.guest.enc_status_change_finish  = amd_enc_status_change_finish;
++	x86_platform.guest.enc_tlb_flush_required    = amd_enc_tlb_flush_required;
++	x86_platform.guest.enc_cache_flush_required  = amd_enc_cache_flush_required;
+ }
+ 
+ void __init mem_encrypt_free_decrypted_mem(void)
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index af77dbfd143c..92c26828265c 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -2008,10 +2008,12 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	kmap_flush_unused();
+ 	vm_unmap_aliases();
+ 
+-	/*
+-	 * Before changing the encryption attribute, we need to flush caches.
+-	 */
+-	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
++	/* Flush the caches as needed before changing the encryption attribute. */
++	if (x86_platform.guest.enc_tlb_flush_required(enc))
++		cpa_flush(&cpa, x86_platform.guest.enc_cache_flush_required());
++
++	/* Notify hypervisor that we are about to set/clr encryption attribute. */
++	x86_platform.guest.enc_status_change_prepare(addr, numpages, enc);
+ 
+ 	ret = __change_page_attr_set_clr(&cpa, 1);
+ 
+@@ -2024,11 +2026,9 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	 */
+ 	cpa_flush(&cpa, 0);
+ 
+-	/*
+-	 * Notify hypervisor that a given memory range is mapped encrypted
+-	 * or decrypted.
+-	 */
+-	notify_range_enc_status_changed(addr, numpages, enc);
++	/* Notify hypervisor that we have successfully set/clr encryption attribute. */
++	if (!ret)
++		x86_platform.guest.enc_status_change_finish(addr, numpages, enc);
+ 
+ 	return ret;
+ }
+-- 
+2.29.2
+
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
