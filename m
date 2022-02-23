@@ -2,172 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F308C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04958C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242839AbiBWQf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:35:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        id S242845AbiBWQfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:35:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242819AbiBWQfW (ORCPT
+        with ESMTP id S242831AbiBWQfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:35:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A829250E0F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:34:54 -0800 (PST)
+        Wed, 23 Feb 2022 11:35:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82889527D1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:34:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645634093;
+        s=mimecast20190719; t=1645634095;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3lqn0tIphQCzoUYCoDMphawJdNppPNWOgdtGkax2nDU=;
-        b=aF4lowHKa8ZCX3HXG9TX0Djguo45+Nwg8D41Rp8BlGUWTOzUwjOcAvWjbq3bODgNtGs4ZM
-        jP1TG4QivJ5JiNqQ+CimnBpuiRF4Sm1Jly7hm1XkkQ2ZG+OWcn96dlPOCXIkbEJlfH0Ig0
-        dz+DJXmBlrfaqzbe+1aTzbUsmKbq7Fk=
+        bh=clONYmZ5X2qlfrfzJXRhqvS1L3/caQ4kzeJBK6mGohk=;
+        b=ercBwKn+MFV+8vGY1W14XWigiUxu3lmI55faiI5FSDPo/OBqeFHtVzp+AEl2MfahEbsauw
+        yqThiG67o+oR5AfU+Y7Vyl9DZrmbYRoBTQAmhkZwK7W+bGgG7KE0BU45RGL/B6y8eJw/v4
+        bcGWHzuUuHKkZdy1FQZJpinOs/Ci5Rg=
 Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
  [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-xXpnpVZjPA-8XU6MLuTmCg-1; Wed, 23 Feb 2022 11:34:51 -0500
-X-MC-Unique: xXpnpVZjPA-8XU6MLuTmCg-1
-Received: by mail-wm1-f69.google.com with SMTP id 187-20020a1c19c4000000b0037cc0d56524so1350407wmz.2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:34:51 -0800 (PST)
+ us-mta-416-Mqk6tT2xOxaaGomKIQfxTw-1; Wed, 23 Feb 2022 11:34:54 -0500
+X-MC-Unique: Mqk6tT2xOxaaGomKIQfxTw-1
+Received: by mail-wm1-f69.google.com with SMTP id az39-20020a05600c602700b00380e48f5994so1221361wmb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:34:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3lqn0tIphQCzoUYCoDMphawJdNppPNWOgdtGkax2nDU=;
-        b=NmuhNQJor+8uBuZsz3LryarW0wPg7fe5jf4hw2FgPyJA9OZc2Onvuavsm+WgmrMGj3
-         aQC/Wr6DduslZiMqi5FLrxQx1aFkqSXpgOaOp/g6T55m3Vk8+ZsZUQQ6cxONLFGTFTRo
-         avT79qbENLkGR6gNnmcTLxLOeBgrUfuNlV67Bg2J1RlC6DmD1F5SyI3SJlw8uhQRZ6bm
-         9tRV5UCwWHLn/PGH18EbYj3NAgGJGJOxC5xL+03Aju3rowdw73Bgc6ASXKNZ1NJ95WS9
-         EOdZMnFxl7Oqd1GvEYQIsQTszOXwekuIL9L7M9cGwLAKY9SmTggCcyuLwKLMq2Gp8lkl
-         zpuQ==
-X-Gm-Message-State: AOAM530yTdzWxNuOagpfKFb3ExGc7MUvtkH0ws4oDSK2h2E/cE7xWHIX
-        rcvcqMLmJdIOvU74TyzkwaUDS8Go51cTPLBJcFsGT8BtKpVys8hhZuuLDFiQvnGc08d5VXsjdbz
-        FCWL6uL8oF1wuaKEakdCOe8JT
-X-Received: by 2002:adf:9141:0:b0:1e3:1379:4cc6 with SMTP id j59-20020adf9141000000b001e313794cc6mr326544wrj.249.1645634090687;
-        Wed, 23 Feb 2022 08:34:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzZ/k/Z9rXlko1fffkDNVbpa2o61BCYEPxiqEWZYB8KjyivPwlJr0kock4OVQ/OLM6ThVyT8w==
-X-Received: by 2002:adf:9141:0:b0:1e3:1379:4cc6 with SMTP id j59-20020adf9141000000b001e313794cc6mr326532wrj.249.1645634090461;
-        Wed, 23 Feb 2022 08:34:50 -0800 (PST)
-Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id b10sm72357wrd.8.2022.02.23.08.34.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 08:34:50 -0800 (PST)
-Date:   Wed, 23 Feb 2022 17:34:48 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
- device from smaller to bigger
-Message-ID: <20220223163448.GB19531@debian.home>
-References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
- <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
- <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
- <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
- <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
- <20220222103733.GA3203@debian.home>
- <20220222152815.1056ca24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220223112618.GA19531@debian.home>
- <20220223071736.1cb2cf3e@hermes.local>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=clONYmZ5X2qlfrfzJXRhqvS1L3/caQ4kzeJBK6mGohk=;
+        b=SDlInbwZyV1sBz4Ll2AlJDvMIo1k/Aok0RBA1MiJUemNbc2Lz3MCnxvQd+j7JfSO4Q
+         3i382yVmdI2b/fyYzEZoJfThGqHrO7K3IBNdrLI1H6OQXxNTeeOC1HBEXY2AjQIDpRiv
+         1y+nfWlt8OiJFIWy6e+C5Zq/FuWbVA8WEtq6GLot2cvUFIU3BWnBkUR7uDvf1WQ87L4r
+         3gYltxRtEnrS5bVw3FWS/qq4zN3rmqsD1roysUQTzLE7eldjn4/TcDTxnBF1kZApyPRW
+         ckHOT4huCYCbb2tDhsDBtiEZuvbZ+wssqr+zs9wyHA1UGgDb6I2wulpxWMaUTqLejiji
+         Dfjw==
+X-Gm-Message-State: AOAM53077EGCY9EqvNISfr7QfqFQg1QHLWmLAvyIYuw0frU6oJRunTJV
+        kFHPXl5uiSjOJDOajIykY2ONTXv/XTu/l20ohDUdLJ01TNW948b4da7LWzjAqfRAlq0ZdhJ6wgB
+        MfBSCVRUGDNn3EnSzxvFFwawA
+X-Received: by 2002:adf:e544:0:b0:1ed:b6d5:d26b with SMTP id z4-20020adfe544000000b001edb6d5d26bmr327968wrm.634.1645634093126;
+        Wed, 23 Feb 2022 08:34:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyBzj3eVsLKn39DYPTvyzPcJE9MCfAnVshf1YYTW2KZMiRN8LC5w3bIaIsgJsQ3ygOVbXPktQ==
+X-Received: by 2002:adf:e544:0:b0:1ed:b6d5:d26b with SMTP id z4-20020adfe544000000b001edb6d5d26bmr327942wrm.634.1645634092830;
+        Wed, 23 Feb 2022 08:34:52 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id a1sm40095wrf.42.2022.02.23.08.34.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 08:34:52 -0800 (PST)
+Message-ID: <33b80f9c-d54a-5471-a58b-7a783a7a9e5b@redhat.com>
+Date:   Wed, 23 Feb 2022 17:34:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223071736.1cb2cf3e@hermes.local>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] simplefb: Enable boot time VESA graphic mode
+ selection.
+Content-Language: en-US
+To:     Michal Suchanek <msuchanek@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
+        Helge Deller <deller@gmx.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Simon Trimmer <simont@opensource.cirrus.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rob Herring <robh@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Herrmann <dh.herrmann@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz
+References: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
+ <20220218160436.23211-1-msuchanek@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220218160436.23211-1-msuchanek@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 07:17:36AM -0800, Stephen Hemminger wrote:
-> On Wed, 23 Feb 2022 12:26:18 +0100
-> Guillaume Nault <gnault@redhat.com> wrote:
-> 
-> > On Tue, Feb 22, 2022 at 03:28:15PM -0800, Jakub Kicinski wrote:
-> > > On Tue, 22 Feb 2022 11:37:33 +0100 Guillaume Nault wrote:  
-> > > > What about an explicit option:
-> > > > 
-> > > >   ip link add link eth1 dev eth1.100 type vlan id 100 follow-parent-mtu
-> > > > 
-> > > > 
-> > > > Or for something more future proof, an option that can accept several
-> > > > policies:
-> > > > 
-> > > >   mtu-update <reduce-only,follow,...>
-> > > > 
-> > > >       reduce-only (default):
-> > > >         update vlan's MTU only if the new MTU is smaller than the
-> > > >         current one (current behaviour).
-> > > > 
-> > > >       follow:
-> > > >         always follow the MTU of the parent device.
-> > > > 
-> > > > Then if anyone wants more complex policies:
-> > > > 
-> > > >       follow-if-not-modified:
-> > > >         follow the MTU of the parent device as long as the VLAN's MTU
-> > > >         was not manually changed. Otherwise only adjust the VLAN's MTU
-> > > >         when the parent's one is set to a smaller value.
-> > > > 
-> > > >       follow-if-not-modified-but-not-quite:
-> > > >         like follow-if-not-modified but revert back to the VLAN's
-> > > >         last manually modified MTU, if any, whenever possible (that is,
-> > > >         when the parent device's MTU is set back to a higher value).
-> > > >         That probably requires the possibility to dump the last
-> > > >         modified MTU, so the administrator can anticipate the
-> > > >         consequences of modifying the parent device.
-> > > > 
-> > > >      yet-another-policy (because people have a lot of imagination):
-> > > >        for example, keep the MTU 4 bytes lower than the parent device,
-> > > >        to account for VLAN overhead.
-> > > > 
-> > > > Of course feel free to suggest better names and policies :).
-> > > > 
-> > > > This way, we can keep the current behaviour and avoid unexpected
-> > > > heuristics that are difficult to explain (and even more difficult for
-> > > > network admins to figure out on their own).  
-> > > 
-> > > My $0.02 would be that if we want to make changes that require new uAPI
-> > > we should do it across uppers.  
-> > 
-> > Do you mean something like:
-> > 
-> >   ip link set dev eth0 vlan-mtu-policy <policy-name>
-> > 
-> > that'd affect all existing (and future) vlans of eth0?
-> > 
-> > Then I think that for non-ethernet devices, we should reject this
-> > option and skip it when dumping config. But yes, that's another
-> > possibility.
-> > 
-> > I personnaly don't really mind, as long as we keep a clear behaviour.
-> > 
-> > What I'd really like to avoid is something like:
-> >   - By default it behaves this way.
-> >   - If you modified the MTU it behaves in another way
-> >   - But if you modified the MTU but later restored the
-> >     original MTU, then you're back to the default behaviour
-> >     (or not?), unless the MTU of the upper device was also
-> >     changed meanwhile, in which case ... to be continued ...
-> >   - BTW, you might not be able to tell how the VLAN's MTU is going to
-> >     behave by simply looking at its configuration, because that also
-> >     depends on past configurations.
-> >   - Well, and if your kernel is older than xxx, then you always get the
-> >     default behaviour.
-> >   - ... and we might modify the heuristics again in the future to
-> >     accomodate with situations or use cases we failed to consider.
-> > 
-> 
-> In general these kind of policy choices are done via sysctl knobs.
-> They aren't done at netlink/ip link level.
+Hello Michal,
 
-I don't really mind if the configuration is per vlan, per upper device
-or per netns, as long as we keep a clear behaviour by default.
+On 2/18/22 17:04, Michal Suchanek wrote:
+> Since switch to simplefb/simpledrm VESA graphic modes are no longer
+> available with legacy BIOS.
+>
+
+Maybe you can mention that is the "vga=" kernel command line parameter
+since that may be more evident to people reading the commit message ?
+ 
+> The x86 realmode boot code enables the VESA graphic modes when option
+> FB_BOOT_VESA_SUPPORT is enabled.
+> 
+> To enable use of VESA modes with simplefb in legacy BIOS boot mode drop
+
+I think you meant "VESA modes with the sysfb driver" ? or something like
+that since otherwise it seems that you meant to use it with the simplefb
+(drivers/video/fbdev/simplefb.c) fbdev driver, which doesn't support the
+"vga=" param as far as I understand (it just uses whatever was setup).
+
+The name sysfb_simplefb is really horrible, because it is too confusing
+and probably we should change it at some point...
+
+Patch itself looks good to me though.
+
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
