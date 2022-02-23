@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1969BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A67C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237763AbiBWCrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S237252AbiBWCxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237579AbiBWCrR (ORCPT
+        with ESMTP id S233116AbiBWCxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:47:17 -0500
+        Tue, 22 Feb 2022 21:53:23 -0500
 Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3925B5F4FF;
-        Tue, 22 Feb 2022 18:45:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FFC506CE;
+        Tue, 22 Feb 2022 18:52:56 -0800 (PST)
 Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
         by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nMheF-000602-EC; Wed, 23 Feb 2022 13:45:00 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 23 Feb 2022 14:44:59 +1200
-Date:   Wed, 23 Feb 2022 14:44:59 +1200
+        id 1nMhls-00069Q-Cg; Wed, 23 Feb 2022 13:52:53 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 23 Feb 2022 14:52:52 +1200
+Date:   Wed, 23 Feb 2022 14:52:52 +1200
 From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH] crypto: rockchip: ECB does not need IV
-Message-ID: <YhWfq9CAdo73gka5@gondor.apana.org.au>
-References: <20220211121617.3393068-1-clabbe@baylibre.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v1 1/1] crypto: cavium/nitrox - don't cast parameter in
+ bit operations
+Message-ID: <YhWhhPL+M6QWdqzL@gondor.apana.org.au>
+References: <20220215160641.51683-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211121617.3393068-1-clabbe@baylibre.com>
+In-Reply-To: <20220215160641.51683-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 12:16:17PM +0000, Corentin Labbe wrote:
-> When loading rockchip crypto module, testmgr complains that ivsize of ecb-des3-ede-rk
-> is not the same than generic implementation.
-> In fact ECB does not use an IV.
-> 
-> Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
->  drivers/crypto/rockchip/rk3288_crypto_skcipher.c | 1 -
->  1 file changed, 1 deletion(-)
+On Tue, Feb 15, 2022 at 06:06:41PM +0200, Andy Shevchenko wrote:
+>
+> @@ -122,6 +123,7 @@ void nitrox_pf2vf_mbox_handler(struct nitrox_device *ndev)
+>  {
+>  	struct nitrox_vfdev *vfdev;
+>  	struct pf2vf_work *pfwork;
+> +	DEFINE_BITMAP(csr, 64);
 
-Patch applied.  Thanks.
+Perhaps you mean DECLARE_BITMAP?
+
+Thanks,
 -- 
 Email: Herbert Xu <herbert@gondor.apana.org.au>
 Home Page: http://gondor.apana.org.au/~herbert/
