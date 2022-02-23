@@ -2,105 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B43C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E330C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236353AbiBWDS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 22:18:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
+        id S237058AbiBWDTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 22:19:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbiBWDSy (ORCPT
+        with ESMTP id S231871AbiBWDTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 22:18:54 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9956289A7
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645586307; x=1677122307;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pMOybF75Y1QlUx30byGPwtyd2n2/N3cIhsbFeWxL8sM=;
-  b=FM+cW7MIt4BZxs8025Q5OvgorEGj8nHD61mcYoh4EqSLf7zz7MkSJN7e
-   +gL3nWUcYJIwyDBtNtF3+Yg2kC7DvCeHOIaQXrunYKB/ERds9JKa5TjtQ
-   GR+2sF27VQywH4JnGFZXlnywX81+RDb73c0DgQ0qQ65ftSF4u6dC4FTgw
-   wU+mtBpveZRU4aW0adQMV7Vuu2oWvMRNN3mK+2gg8sNp8Wwxel94tMXZO
-   iNuh1WLtDrCjsrOjTVT3nakzfgrehlKpanRDjRwAlTbClAol5ajNaHDpN
-   Hp5npw7NgZGLIYzrAnBhFIxirq5eJGsw0UGLBCqrn6utMkH1jVEmKhcxy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="235382950"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="235382950"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 19:18:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="508258109"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 Feb 2022 19:18:13 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMiAP-0000vA-1P; Wed, 23 Feb 2022 03:18:13 +0000
-Date:   Wed, 23 Feb 2022 11:17:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Prike Liang <Prike.Liang@amd.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Lijo Lazar <Lijo.Lazar@amd.com>
-Subject: [agd5f:drm-next 115/146]
- drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:526:5: warning: no previous
- prototype for function '__smu_get_enabled_features'
-Message-ID: <202202231120.Noceeeac-lkp@intel.com>
+        Tue, 22 Feb 2022 22:19:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1110E33E86
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:19:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645586358;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o10+oL16B6fHkAqAM1KRvbz+KhlX2puJg4tawglVFis=;
+        b=X+X0TE6YVdT0Ka5v9UGhuT+L/KqzK2qaug3ic9THrguALHvD60jmpAQduemcWQ0LAmSD76
+        P77zVPb66iVBL3Bx8vbHksW2Vt/PYmMQQuyrE/mgqCsoFVu0kotrs9E+aqI36Rk27Rkt50
+        w4zwVlBWGeIzk7uEkKFyI5S0y7zd23U=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-zTaXhI0gNVCAwGqvANVyZg-1; Tue, 22 Feb 2022 22:19:16 -0500
+X-MC-Unique: zTaXhI0gNVCAwGqvANVyZg-1
+Received: by mail-lf1-f69.google.com with SMTP id j11-20020a19f50b000000b00443304eab91so3043142lfb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:19:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=o10+oL16B6fHkAqAM1KRvbz+KhlX2puJg4tawglVFis=;
+        b=b7seu0rNncMhAXKBweo3CxpftuUMkIrIQAVgoI48bxmvVhz+LXDxG2CU4NqXRa4wrP
+         mxjU7scE10ZtOLipEYnsR0i4Y16Xgcz0NOpShdM3Vir5HWTRb9/e3sAiaxa1NbSHaCdL
+         mLCgCIt5Hd8YM/1pS0zcVRKfhRImKSyfz3VCMVM48zxyr59/wxy203Q4wUWumD6tznLv
+         6qciGw0Rc0W4OKoxoUeIYt8zKNFzukLvXInIwMjub1ajMuUV4Xi63KjNuItcB5g22pXK
+         L3ajJ96arqf1DT4OGI+vB6c9unhHRK0tbypj3kzjzDixCPW/3NtS8UdTTjmpE3NwPCME
+         Lssw==
+X-Gm-Message-State: AOAM533t+9QmkBz7vxQdG3HCHlreJnm2A/munqKrgzo/ByffsMXYiuI5
+        dHKvi+ABqRJ8Ysn4DZq4ouls3tvFZYgzPeFpwQwsILqijRoChjz36IrgnRBnJjoKisPqM+OzKWv
+        uAl/mqdPYMqoJl1+x/MnTSKNlWBAS+n7q7wnzHwmq
+X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id s7-20020a056512314700b00443323d179dmr19712249lfi.98.1645586354933;
+        Tue, 22 Feb 2022 19:19:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzC+VckbRDPD22Vw3cVRNOnTu5Dv3fTch6szAQ3aD8AdD7ESb4+dCSn4ACFp0ue/sa1Fe1eo+0wiUKb44UQGJA=
+X-Received: by 2002:a05:6512:3147:b0:443:323d:179d with SMTP id
+ s7-20020a056512314700b00443323d179dmr19712239lfi.98.1645586354760; Tue, 22
+ Feb 2022 19:19:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211108081324.14204-1-jasowang@redhat.com>
+In-Reply-To: <20211108081324.14204-1-jasowang@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 23 Feb 2022 11:19:03 +0800
+Message-ID: <CACGkMEucnZPt_dhaSXCegeFE0gs=dSDfv7CJSq4HCW_4a4XfGg@mail.gmail.com>
+Subject: Re: [PATCH] virtio_ring: aovid reading flag from the descriptor ring
+To:     mst <mst@redhat.com>, jasowang <jasowang@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   b4779e5b8346b52e25e8be6b077d7db67f14644a
-commit: f141e251474d673f75e8c16dbdabeb4da3939d7e [115/146] drm/amd/pm: validate SMU feature enable message for getting feature enabled mask
-config: arm-randconfig-r035-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231120.Noceeeac-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout f141e251474d673f75e8c16dbdabeb4da3939d7e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/ drivers/gpu/drm/amd/pm/swsmu/
+On Mon, Nov 8, 2021 at 4:13 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+> Commit 72b5e8958738 ("virtio-ring: store DMA metadata in desc_extra
+> for split virtqueue") tries to make it possible for the driver to not
+> read from the descriptor ring to prevent the device from corrupting
+> the descriptor ring. But it still read the descriptor flag from the
+> descriptor ring during buffer detach.
+>
+> This patch fixes by always store the descriptor flag no matter whether
+> DMA API is used and then we can avoid reading descriptor flag from the
+> descriptor ring. This eliminates the possibly of unexpected next
+> descriptor caused by the wrong flag (e.g the next flag).
+>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Michael, any comment for this?
 
-All warnings (new ones prefixed by >>):
+Thanks
 
->> drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:526:5: warning: no previous prototype for function '__smu_get_enabled_features' [-Wmissing-prototypes]
-   int __smu_get_enabled_features(struct smu_context *smu,
-       ^
-   drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c:526:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int __smu_get_enabled_features(struct smu_context *smu,
-   ^
-   static 
-   1 warning generated.
+> ---
+>  drivers/virtio/virtio_ring.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 00f64f2f8b72..28734f4e57d3 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -583,7 +583,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+>         }
+>         /* Last one doesn't continue. */
+>         desc[prev].flags &= cpu_to_virtio16(_vq->vdev, ~VRING_DESC_F_NEXT);
+> -       if (!indirect && vq->use_dma_api)
+> +       if (!indirect)
+>                 vq->split.desc_extra[prev & (vq->split.vring.num - 1)].flags &=
+>                         ~VRING_DESC_F_NEXT;
+>
+> @@ -713,7 +713,7 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
+>         /* Put back on free list: unmap first-level descriptors and find end */
+>         i = head;
+>
+> -       while (vq->split.vring.desc[i].flags & nextflag) {
+> +       while (vq->split.desc_extra[i].flags & nextflag) {
+>                 vring_unmap_one_split(vq, i);
+>                 i = vq->split.desc_extra[i].next;
+>                 vq->vq.num_free++;
+> --
+> 2.25.1
+>
 
-
-vim +/__smu_get_enabled_features +526 drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu_cmn.c
-
-   525	
- > 526	int __smu_get_enabled_features(struct smu_context *smu,
-   527				       uint64_t *enabled_features)
-   528	{
-   529		return smu_cmn_call_asic_func(get_enabled_mask, smu, enabled_features);
-   530	}
-   531	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
