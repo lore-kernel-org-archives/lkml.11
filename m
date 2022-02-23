@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54426C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B00C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244845AbiBWXgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 18:36:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
+        id S244851AbiBWXhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 18:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244837AbiBWXgM (ORCPT
+        with ESMTP id S244412AbiBWXhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 18:36:12 -0500
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A4359A7D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 15:35:44 -0800 (PST)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2d07ae0b1c0so7331747b3.2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 15:35:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=thOSbRDXMSWEe7zpjS3HEOJEuojyPix5lNBQyOalrFA=;
-        b=kXBeL+3UeKaErZtrfUujSN7sJ2H6imMH32gDw3JIIT7a6J2nKg52sY05pBNozH2tcH
-         jNQc5H3uZVqcxtdZ6S9aLrlGiB0O5WsBJaiyU5DBHUE1zk4LxcBaY1Pw11zdheqK1tnK
-         rQ4wSRtNvn7DdrOW/O6iUOTTXxFkkNelw9GlQ+gMRlVUoFw28/dNbpSVwVo4spgp7K6c
-         PcoKUTacLMbjSWCm6QUn2l4FtyNj9Bc3sacWKkKiCdn/kHe6numf+Kc5XkqtpJTxGZHs
-         WWCRQTZ42wnejb6xmmebnXq4J+4LXI5ieknHlzxVzLJ+ieJPtq7m7m1IDAGDyK6LwSrz
-         QJ7A==
+        Wed, 23 Feb 2022 18:37:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BBBB5A099
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 15:37:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645659427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T4uZUFplVlE5Y8frdrAqmVb5e+dpaoHXAN39OVRnAh4=;
+        b=HfvT7Km9xEzosgW97guxKGspVDkjt76JZH5i66eL0dZz+5SAiA89HX/SFfSMixfdbkUm9/
+        R7JL5Qr89KYMQccOueAEwl2IQj2VVwk1PkhhUBlSmq4bS+8bM/H7kC18jbKblhgpge/qDb
+        9aWlteAKioJ7b1PZ3bjUdTgWo2Q00V0=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-562-NN3u76mAOmK4T-hsAZw3cw-1; Wed, 23 Feb 2022 18:37:06 -0500
+X-MC-Unique: NN3u76mAOmK4T-hsAZw3cw-1
+Received: by mail-oi1-f198.google.com with SMTP id be8-20020a056808218800b002d5425fab8cso354165oib.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 15:37:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=thOSbRDXMSWEe7zpjS3HEOJEuojyPix5lNBQyOalrFA=;
-        b=x5uYQOp6xe7yIt1yRZILGY9jUDN7E7/OWkBl9hNFiwohpUwRyMTe5A9wdxPULFo0W8
-         jETV19GeFIZBNxKeBkVOHHhCgz3u+FYYPtBbEZBiejyd08sSRvZOBn9pw6hkphZm5UzU
-         I+9Ilre9dhwIn2BsCICS1oA4SLYKc/B1ZCqHSS+Aj6avQuU5+NaEo9ZPKpvx08uDT3lz
-         k7WBYZvprzJkQej1XedUoJ3LPC5jsnEa1MijhEtzOms23qDBcY7W4e/k80+27A30spxe
-         I19Spn/WpVZ68+U5fOjBDpRMnt0d2KUKkPV0MWP3iva6S2HqOZ/bqtZ0f7jycgcArtKF
-         1aFw==
-X-Gm-Message-State: AOAM530lZUx+bCBVGqKUbD+a0vdyQHAwTROAVHmf8839rzsrvvb7ZkYU
-        2rG39mjwt1m1Ax3bMcuEf0RAL2Qmj/5vAZrEZ2LJVQ==
-X-Google-Smtp-Source: ABdhPJwbVPd7qT77NHlk8V4oWlEXIgmOyfJu7gQ03AREf4rQdIni83XRcufA5aZlf62+GYl8OF6Af0CHpB+Ne4lTEg0=
-X-Received: by 2002:a81:1a49:0:b0:2d7:fc73:dab2 with SMTP id
- a70-20020a811a49000000b002d7fc73dab2mr9323ywa.316.1645659343393; Wed, 23 Feb
- 2022 15:35:43 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=T4uZUFplVlE5Y8frdrAqmVb5e+dpaoHXAN39OVRnAh4=;
+        b=IQsNfOMAT5bpg/NhlHcaFlI+ZDMSK30xLjDCsDKqdxefaIgsWVRwu2/MxzHuHlN/CW
+         YyiI6/ZpqXulJx6xMayqBILEbHL85gwMk21BikLcVAgMG6QBXmacfNKVCRG3k5OHoNpV
+         FJvifZREiKN7aufCeUb9+NG9+ToKU2PLHY+JB6KSmvi8HDm6WvitiV9JgBw6l+DTjSsc
+         K+LZwDuQW484vHXQyaOpQIu1+bDhNuOo8F4zkLHsZL9+Y/CVvbT0fM/EE4AoiiRYntsi
+         /ahS/IGy+ihbSCjT0qM+HQnqwdi5ga3Sd6rvX8aFhm8gUqN3eku+SZgq30fc3Y9jhB28
+         4i4g==
+X-Gm-Message-State: AOAM53227HZmGaDGEdCyGyjam5L0PkH9eUUYmEqwSYbr6FxjcrSEfxIY
+        /fR0EtgOL3FdLXsCjtRFGjaCL8qoTEEjM8qkFMWhJjn5+G1uXsgKlKm4eyyl5eH9tU8ZamawY0n
+        anV3coCwD6Xv/EHyiPRFwJJbM
+X-Received: by 2002:a9d:7016:0:b0:5af:157b:685 with SMTP id k22-20020a9d7016000000b005af157b0685mr10032otj.16.1645659425852;
+        Wed, 23 Feb 2022 15:37:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxofdQSoSC1/kDx6fUUcLtOCsSdUzQ0Bk8PapztMnNq1yES+yHaSrNxhft1rMXuy1CFcMCgtg==
+X-Received: by 2002:a9d:7016:0:b0:5af:157b:685 with SMTP id k22-20020a9d7016000000b005af157b0685mr10026otj.16.1645659425637;
+        Wed, 23 Feb 2022 15:37:05 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id q73sm422469ooq.33.2022.02.23.15.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 15:37:05 -0800 (PST)
+Date:   Wed, 23 Feb 2022 16:37:03 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <jgg@nvidia.com>,
+        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>
+Subject: Re: [PATCH v5 5/8] hisi_acc_vfio_pci: Restrict access to VF dev
+ BAR2 migration region
+Message-ID: <20220223163703.20690b29.alex.williamson@redhat.com>
+In-Reply-To: <20220221114043.2030-6-shameerali.kolothum.thodi@huawei.com>
+References: <20220221114043.2030-1-shameerali.kolothum.thodi@huawei.com>
+        <20220221114043.2030-6-shameerali.kolothum.thodi@huawei.com>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <20220219012433.890941-1-pcc@google.com> <7a6afd53-a5c8-1be3-83cc-832596702401@huawei.com>
- <CANpmjNO=1utdh_52sVWb1rNCDme+hbMJzP9GMfF1xWigmy2WsA@mail.gmail.com> <CAMn1gO7S++yR4=DjrPZU_POAHP8Pfxaa3P2Cy__Ggu+kN9pqBA@mail.gmail.com>
-In-Reply-To: <CAMn1gO7S++yR4=DjrPZU_POAHP8Pfxaa3P2Cy__Ggu+kN9pqBA@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 24 Feb 2022 00:35:32 +0100
-Message-ID: <CANpmjNMyuQh-G0kLOdoFWXyhw31PJsjXgbv7Qy+774v8iq9NWw@mail.gmail.com>
-Subject: Re: [PATCH] kasan: update function name in comments
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 at 23:31, Peter Collingbourne <pcc@google.com> wrote:
-[...]
-> > > > Link: https://linux-review.googlesource.com/id/I20faa90126937bbee77d9d44709556c3dd4b40be
-> > > > Signed-off-by: Peter Collingbourne <pcc@google.com>
-> > > > Fixes: e5f4728767d2 ("kasan: test: add globals left-out-of-bounds test")
-> > >
-> > > This Fixes tag is unneeded.
-> > >
-> > > Except the above nit, this patch looks good to me. Thanks.
-> > >
-> > > Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-> >
-> > Reviewed-by: Marco Elver <elver@google.com>
-> >
-> > And yes, the Fixes tag should be removed to not have stable teams do
-> > unnecessary work.
->
-> I thought that Cc: stable@vger.kernel.org controlled whether the patch
-> is to be taken to the stable kernel and Fixes: was more of an
-> informational tag. At least that's what this seems to say:
-> https://www.kernel.org/doc/html/latest/process/submitting-patches.html#reviewer-s-statement-of-oversight
+On Mon, 21 Feb 2022 11:40:40 +0000
+Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+>  
+> +static const struct vfio_device_ops hisi_acc_vfio_pci_migrn_ops = {
+> +	.name = "hisi-acc-vfio-pci",
 
-These days patches that just have a Fixes tag (and no Cc: stable) will
-be auto-picked in many (most?) cases (by empirical observation).
+Use a different name from the ops below?  Thanks,
 
-I think there were also tree-specific variances of this policy, but am
-not sure anymore. What is the latest policy?
+Alex
 
-> > +Cc'ing missing mailing lists (use get_maintainers.pl - in particular,
-> > LKML is missing, which should always be Cc'd for archival purposes so
-> > that things like b4 can work properly).
->
-> get_maintainers.pl tends to list a lot of reviewers so I try to filter
-> it to only the most important recipients or only use it for
-> "important" patches (like the uaccess logging patch). It's also a bit
-> broken in my workflow --
-> https://lore.kernel.org/all/20210913233435.24585-1-pcc@google.com/
-> fixes one of the problems but there are others.
+> +	.open_device = hisi_acc_vfio_pci_open_device,
+> +	.close_device = vfio_pci_core_close_device,
+> +	.ioctl = hisi_acc_vfio_pci_ioctl,
+> +	.device_feature = vfio_pci_core_ioctl_feature,
+> +	.read = hisi_acc_vfio_pci_read,
+> +	.write = hisi_acc_vfio_pci_write,
+> +	.mmap = hisi_acc_vfio_pci_mmap,
+> +	.request = vfio_pci_core_request,
+> +	.match = vfio_pci_core_match,
+> +};
+> +
+>  static const struct vfio_device_ops hisi_acc_vfio_pci_ops = {
+>  	.name = "hisi-acc-vfio-pci",
+>  	.open_device = hisi_acc_vfio_pci_open_device,
 
-That's fair. It just seemed that something went wrong given
-kasan-dev@googlegroups.com wasn't Cc'd. FWIW, syzbot uses
-'get_maintainer.pl --git-min-percent=20' which is a bit less
-aggressive with Cc'ing folks not mentioned explicitly in MAINTAINERS.
-
-> Doesn't b4 scan all the mailing lists? So I'd have imagined it
-> wouldn't matter which one you send it to.
-
-Those under lore.kernel.org or lists.linux.dev. Seems linux-mm does
-get redirected to lore: https://lore.kernel.org/linux-mm/ -- It's not
-entirely obvious which are lore managed and which aren't (obviously
-things like kasan-dev@googlegroups.com aren't).
