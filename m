@@ -2,198 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD66C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21845C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242386AbiBWPqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
+        id S242398AbiBWPqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240701AbiBWPqb (ORCPT
+        with ESMTP id S233481AbiBWPqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 10:46:31 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5999C114B;
-        Wed, 23 Feb 2022 07:46:03 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id j22so14229181wrb.13;
-        Wed, 23 Feb 2022 07:46:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iSfHBOu4v5+uNUdMQr8U/N7yggvNFIAnsnuq86CDDN8=;
-        b=fbSjZORrBhhHrOCnk7S6YM3Zgzp9jGKaOTrH8ZsFi5jfiwjUcFu0MuHrtjOPxu+gs7
-         Y+mCisYdpElaLEUtLaAjsRd7peyj017FJk05vLUo8er05hHuNjVK1YKynFp4YRqwEUuR
-         1fmvddyZjGTXvLzE0MGil9SQG/CYtr6b34brfpE+xAS5Vwuu17htp9yTLmD/crR2nLSM
-         IiB8DsDCctlx0FzteoDu8FzHbhR7cAmK0HOEG11kRS10z8F/wzxEqlWWhHxFZeUQnvn1
-         gDqTQ5DoJrtjLe94YeNpNhK+uTWC+VEdRrgNYVMGcP7vWXQz1SOtOZjVtGDTKJXn/C7Y
-         O3tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iSfHBOu4v5+uNUdMQr8U/N7yggvNFIAnsnuq86CDDN8=;
-        b=JAfwy/J3ryIOZoJ5u2bIm1m1b2oMdzJPdMcolJ+pDQrJkWOIO2KxDEYDIaia1fVuzy
-         EijlZmktd2AZIE4/52wke2FoMujxv/rVdyokKkopkstZrvLFejdch/x43z7a9/X2V63h
-         0YJDdpJFmIZ3PEk7ay5XIGSWAye+gbIYrHU/ZHzrH5XgI1P3AMhsAEp9ikkM5TJ9mN05
-         AtM4DjY7fjTTlh1DRrZ1RGJYznl8rBAVUgCaq+466KRE6+RCZMGa33O/Q6jhH0RT+A6Y
-         7oUZIcXreT+cD3KN2pOMB4Ql3+oKXNNURHnC0YKqBm3n9pe+wSpC0agjY/AGQswSjWcU
-         kkoQ==
-X-Gm-Message-State: AOAM530nDqd1T4aBqrEBwAH51LHxH56pFzxQQr7qU4XwjtleyhhV+00P
-        3wKLhnIBlSQXR5kwgzZyZwu9coFmCUaPoaCQlZBuWMOeH8w=
-X-Google-Smtp-Source: ABdhPJyosEjfWY4mjWeCmJhqIR2Tgf0/QybyKJGd2Qa9zYQaZY/M3wuO912/5weuamaNpFuLr3U9YbFz3d8lNVyzudc=
-X-Received: by 2002:a05:6000:1a8b:b0:1ea:bc4:e52e with SMTP id
- f11-20020a0560001a8b00b001ea0bc4e52emr176951wry.574.1645631162104; Wed, 23
- Feb 2022 07:46:02 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A77EC1151;
+        Wed, 23 Feb 2022 07:46:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC4EF61849;
+        Wed, 23 Feb 2022 15:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FF4BC340E7;
+        Wed, 23 Feb 2022 15:46:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645631163;
+        bh=5y8GBuKQ8Eu0KbdCimROfrUbByVtDNDNH0UD13FuHhA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Hg2LUP6Xzp4UdLri5evbkORuqJUfg0B6m8UBZKoDct2qzjZLv5InivSv3xRJDNilK
+         oTLsrVECQ34vJWpeuCYJSWzbA6vOuYXwdkX22kU28o14s+tDHYQKi0F4Lv4IK/EuPF
+         5oF3LjltFoulBk6wuk80Qjc+vksqZeUBGSpqpnvvzilv4ynDdycFinojz0xqy6Dv4x
+         UtmzYJsJt6/ekTv+z+HQfSuSsiGkqB+nWboyaf9O0R2d8fBh0KeJDXXOv/rT+Efz9u
+         tdIxVFq9smYfi7axYfU+/eIm1Cyw0psR1C0g5fJH+MEi0/H6HY1LNpzgdy/6jrHfV1
+         MDB5fo1yohihw==
+Date:   Wed, 23 Feb 2022 16:46:39 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 19/32] x86/sgx: Support adding of pages to an
+ initialized enclave
+Message-ID: <YhZW38aVILsrK4Jo@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <fcbde9c3e67289eaff9cd8b34989919629fe823c.1644274683.git.reinette.chatre@intel.com>
+ <YhDbGfzGWQ5RtwTU@iki.fi>
+ <YhDb/QRYMa4+xsyv@iki.fi>
+ <YhKLNqgPNNLS7JyN@iki.fi>
+ <80f3d7b9-e3d5-b2c0-7707-710bf6f5081e@intel.com>
 MIME-Version: 1.0
-References: <20220219183310.557435-1-robdclark@gmail.com> <6f1225ea-d889-9cf8-3a3d-181e319bd453@linaro.org>
-In-Reply-To: <6f1225ea-d889-9cf8-3a3d-181e319bd453@linaro.org>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Wed, 23 Feb 2022 07:46:21 -0800
-Message-ID: <CAF6AEGut-75ri+U=B2eBtNeYQu5ECKPmk51b2_pCgu91uKy1ow@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/gpu: Fix crash on devices without devfreq support
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <80f3d7b9-e3d5-b2c0-7707-710bf6f5081e@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 7:11 PM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On 19/02/2022 21:33, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > Avoid going down devfreq paths on devices where devfreq is not
-> > initialized.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> > Reported-by: Anders Roxell <anders.roxell@linaro.org>
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> >   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 31 +++++++++++++++++++++------
-> >   1 file changed, 25 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > index 9bf319be11f6..26a3669a97b3 100644
-> > --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > @@ -83,12 +83,17 @@ static struct devfreq_dev_profile msm_devfreq_profile = {
-> >   static void msm_devfreq_boost_work(struct kthread_work *work);
-> >   static void msm_devfreq_idle_work(struct kthread_work *work);
-> >
-> > +static bool has_devfreq(struct msm_gpu *gpu)
-> > +{
-> > +     return !!gpu->funcs->gpu_busy;
->
-> I see that devfreq init will be skipped if gpu_busy is NULL.
-> Can we use gpu->devfreq instead of this condition?
+On Tue, Feb 22, 2022 at 11:19:11AM -0800, Reinette Chatre wrote:
+> Hi Jarkko,
+> 
+> On 2/20/2022 10:40 AM, Jarkko Sakkinen wrote:
+> ...
+>  
+> > Do you know if it is possible to do EAUG, EMODPR and the do a single
+> > EACCEPT for both? Just looking at pseudo-code, it looked doable but
+> > I need to check this.
+> > 
+> > I.e. EAUG has this
+> > 
+> > EPCM(DS:RCX).BLOCKED := 0;
+> > EPCM(DS:RCX).PENDING := 1;
+> > EPCM(DS:RCX).MODIFIED := 0;
+> > EPCM(DS:RCX).PR := 0;
+> > (* associate the EPCPAGE with the SECS by storing the SECS identifier of DS:TMP_SECS *)
+> > Update EPCM(DS:RCX) SECS identifier to reference DS:TMP_SECS identifier;
+> > (* Set EPCM valid fields *)
+> > EPCM(DS:RCX).VALID := 1;
+> > 
+> > And EMODPR only checks .VALID.
+> 
+> After that check there is also:
+> IF (EPCM(DS:RCX).PENDING is not 0 or (EPCM(DS:RCX).MODIFIED is not 0) )
+>     THEN
+>         RFLAGS.ZF := 1;
+>         RAX := SGX_PAGE_NOT_MODIFIABLE;
+>         GOTO DONE;
+> FI;
+> 
+> Attempting the SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS ioctl() on a recently
+> added page (EAUG) that has not yet been EACCEPTed is thus expected to fail
+> with errno of EFAULT (indicating ENCLS[EMODPR] failure) and the returned
+> structure's result field set to 20 (SGX_PAGE_NOT_MODIFIABLE).
+> 
+> I confirmed this behavior by modifying the "augment" kselftest test by adding
+> a SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS call between the new memory access and
+> the EACCEPT.
 
-We could, but then we couldn't also use the same has_devfreq() helper
-in msm_devfreq_init().  I thought it was clearer to use the same
-helper everywhere.
+Thank you, also Mark confirmed this.
 
-> I noticed that you have replaced some of gpu->devfreq checks with
-> has_devreq() calls. Is there any difference?
-
-It amounts to the same thing because if you don't have gpu_busy, then
-devfreq is never initialized.  I just thought it clearer to use the
-same check in all places.
-
-BR,
--R
-
-> > +}
-> > +
-> >   void msm_devfreq_init(struct msm_gpu *gpu)
-> >   {
-> >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> >       /* We need target support to do devfreq */
-> > -     if (!gpu->funcs->gpu_busy)
-> > +     if (!has_devfreq(gpu))
-> >               return;
-> >
-> >       dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
-> > @@ -149,6 +154,9 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> >   {
-> >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > +     if (!has_devfreq(gpu))
-> > +             return;
-> > +
-> >       devfreq_cooling_unregister(gpu->cooling);
-> >       dev_pm_qos_remove_request(&df->boost_freq);
-> >       dev_pm_qos_remove_request(&df->idle_freq);
-> > @@ -156,16 +164,24 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> >
-> >   void msm_devfreq_resume(struct msm_gpu *gpu)
-> >   {
-> > -     gpu->devfreq.busy_cycles = 0;
-> > -     gpu->devfreq.time = ktime_get();
-> > +     struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > -     devfreq_resume_device(gpu->devfreq.devfreq);
-> > +     if (!has_devfreq(gpu))
-> > +             return;
-> > +
-> > +     df->busy_cycles = 0;
-> > +     df->time = ktime_get();
-> > +
-> > +     devfreq_resume_device(df->devfreq);
-> >   }
-> >
-> >   void msm_devfreq_suspend(struct msm_gpu *gpu)
-> >   {
-> >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > +     if (!has_devfreq(gpu))
-> > +             return;
-> > +
-> >       devfreq_suspend_device(df->devfreq);
-> >
-> >       cancel_idle_work(df);
-> > @@ -185,6 +201,9 @@ void msm_devfreq_boost(struct msm_gpu *gpu, unsigned factor)
-> >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >       uint64_t freq;
-> >
-> > +     if (!has_devfreq(gpu))
-> > +             return;
-> > +
-> >       freq = get_freq(gpu);
-> >       freq *= factor;
-> >
-> > @@ -207,7 +226,7 @@ void msm_devfreq_active(struct msm_gpu *gpu)
-> >       struct devfreq_dev_status status;
-> >       unsigned int idle_time;
-> >
-> > -     if (!df->devfreq)
-> > +     if (!has_devfreq(gpu))
-> >               return;
-> >
-> >       /*
-> > @@ -253,7 +272,7 @@ void msm_devfreq_idle(struct msm_gpu *gpu)
-> >   {
-> >       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > -     if (!df->devfreq)
-> > +     if (!has_devfreq(gpu))
-> >               return;
-> >
-> >       msm_hrtimer_queue_work(&df->idle_work, ms_to_ktime(1),
->
->
-> --
-> With best wishes
-> Dmitry
+BR, Jarkko
