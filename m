@@ -2,189 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F228FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8762FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237583AbiBWM7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        id S239202AbiBWNAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240714AbiBWM5y (ORCPT
+        with ESMTP id S238400AbiBWNAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:57:54 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F8E094
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:19 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id e13so901267plh.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Gpyd4vP7EgbsF/QazldQl0vAIMM6wCSjCpTQL1+8JT0=;
-        b=E7V2nNWC+ebjB9OizOIDqcJ2x3xgHFzfgiXjJr0YRjP3kTrq96iaiKBZgb5Rm4X3EN
-         Pd1am9duErfEAzbCmSx6GPhkF/wOey1bLlYOcFy3iEzJhRyhSXFAbSk5qm4C4KY7fAZq
-         t2TMDuWRZMjJE6+VwbOPLG7LHh9WmoX5R3PNVRS/MrJskCHz51cL+fNZgWpH0GHbQAYv
-         el1PzdOJO3UIcaGqNmOIphcffgw2JDQbhax52uO/5+IfD8/5HBwBFERuX2q252M2Zc/Y
-         WVNePkii7LexIgRlSs9PWW4VSfDw9p04LbmeOV3iT0f1G6P7jTmPf0EHoWfAb6Dqf6Yo
-         WRlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Gpyd4vP7EgbsF/QazldQl0vAIMM6wCSjCpTQL1+8JT0=;
-        b=xN9P+bNunvmFYM4oG9rwnVkkrLlnQLTzV8E/Q/xlqrVaD4NOX9IUb66pnWcMiqbEiM
-         cIAqaNXC5+w41t69NKNwziCOcsTBSmapwo26VQWZsV3ysbA8nCcApb3gSqliF4ygX/FD
-         H4fK/qvnhmyVvBeu49tM28NCm1wbfdDFdkdhTk8kSnGhQ9vPp749l1ghxJnaxcPgTZyq
-         /R3kL5L1xUUQV+aEbpEWE4Q3Bnha7E8giIeUGyVk/p8EjsY9PwZPNYDfRPcAjsPtIJCN
-         SPE+NRwRT2LdjOyt+ELoGiloNdO/zvjczfoecUOAkwfZ+Ang+s/E02T5TJmVHSVN6K7d
-         /p2A==
-X-Gm-Message-State: AOAM533DVFqgDrA5sqv0T3tYJ69t+YXoI84wglRc5I9WgwCl+Aqg4GUm
-        fc+jLlf4kLKLroDi/IqdXtGKKw==
-X-Google-Smtp-Source: ABdhPJx6n9/CeWhHPrqJMfspDzJDPCGI1x0rvizUiWRysgrWf99/an1PBiJeX235MOAA0OC8/dgMPQ==
-X-Received: by 2002:a17:902:db04:b0:14c:f43b:e9df with SMTP id m4-20020a170902db0400b0014cf43be9dfmr27648150plx.76.1645621038420;
-        Wed, 23 Feb 2022 04:57:18 -0800 (PST)
-Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id z23sm22136243pfj.87.2022.02.23.04.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 04:57:17 -0800 (PST)
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shawn Guo <shawn.guo@linaro.org>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 2/3] dt-bindings: interrupt-controller: Add Qualcomm MPM support
-Date:   Wed, 23 Feb 2022 20:55:35 +0800
-Message-Id: <20220223125536.230224-3-shawn.guo@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220223125536.230224-1-shawn.guo@linaro.org>
-References: <20220223125536.230224-1-shawn.guo@linaro.org>
+        Wed, 23 Feb 2022 08:00:01 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3596B6549C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645621173; x=1677157173;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=EdwXpwxeqUH7Cq2Ae1obglVV8LjCsQ3JhjCcS4UhTeo=;
+  b=AfPFac9uxphUsmJ8ocT0fOocb+7bmqYt9OUIW1YnP0rouj703ZVEZOLx
+   SKoGfGM+qaIO33KwaPPGRcccEkhB66gsGibCjc6b5m2NN1ttja0O+Tgsn
+   AodS36KLd4hqiqEnkKucFdiyNiM/asiYW+OoyH4Eo3HgVfAq7dXcrXP5r
+   K0fry0d3TToXVJJay7PZ5ylRFfVIPInTDca8Y8r3aaNLeZ2DJ4+7kTxHv
+   7pgCC6/a4HduKfWLyEpIKDyOsHR7hinlvILnR0ll0qStU9xzVwxcY+fph
+   w4Srp6k7PAjxzvNKV2NSEglsEufC+nPslht7jlY3nQWbm+VUR+9nZlMd0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251874501"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="251874501"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:59:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="543306233"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Feb 2022 04:59:31 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMrEw-0001S1-Ip; Wed, 23 Feb 2022 12:59:30 +0000
+Date:   Wed, 23 Feb 2022 20:58:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nathan Huckleberry <nhuck@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Eric Biggers <ebiggers@google.com>
+Subject: [ebiggers:crypto-pending 7/7]
+ arch/arm64/crypto/polyval-ce-glue.c:355:33: warning: unused variable
+ 'polyval_cpu_feature'
+Message-ID: <202202232016.TAxtXYiJ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It adds DT binding support for Qualcomm MPM interrupt controller.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git crypto-pending
+head:   a46b8b65de5ca0c5dbe41a5682ec5a9c66ec8f48
+commit: a46b8b65de5ca0c5dbe41a5682ec5a9c66ec8f48 [7/7] crypto: arm64/polyval: Add PMULL accelerated implementation of POLYVAL
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202232016.TAxtXYiJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git/commit/?id=a46b8b65de5ca0c5dbe41a5682ec5a9c66ec8f48
+        git remote add ebiggers https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git
+        git fetch --no-tags ebiggers crypto-pending
+        git checkout a46b8b65de5ca0c5dbe41a5682ec5a9c66ec8f48
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/crypto/ arch/arm64/kvm/hyp/nvhe/
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm64/crypto/polyval-ce-glue.c:355:33: warning: unused variable 'polyval_cpu_feature' [-Wunused-const-variable]
+   static const struct cpu_feature polyval_cpu_feature[] = {
+                                   ^
+   1 warning generated.
+
+
+vim +/polyval_cpu_feature +355 arch/arm64/crypto/polyval-ce-glue.c
+
+   354	
+ > 355	static const struct cpu_feature polyval_cpu_feature[] = {
+   356		{ cpu_feature(PMULL) }, { }
+   357	};
+   358	MODULE_DEVICE_TABLE(cpu, polyval_cpu_feature);
+   359	
+
 ---
- .../interrupt-controller/qcom,mpm.yaml        | 96 +++++++++++++++++++
- 1 file changed, 96 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
-
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml b/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
-new file mode 100644
-index 000000000000..509d20c091af
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
-@@ -0,0 +1,96 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/qcom,mpm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcom MPM Interrupt Controller
-+
-+maintainers:
-+  - Shawn Guo <shawn.guo@linaro.org>
-+
-+description:
-+  Qualcomm Technologies Inc. SoCs based on the RPM architecture have a
-+  MSM Power Manager (MPM) that is in always-on domain. In addition to managing
-+  resources during sleep, the hardware also has an interrupt controller that
-+  monitors the interrupts when the system is asleep, wakes up the APSS when
-+  one of these interrupts occur and replays it to GIC interrupt controller
-+  after GIC becomes operational.
-+
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: qcom,mpm
-+
-+  reg:
-+    maxItems: 1
-+    description:
-+      Specifies the base address and size of vMPM registers in RPM MSG RAM.
-+
-+  interrupts:
-+    maxItems: 1
-+    description:
-+      Specify the IRQ used by RPM to wakeup APSS.
-+
-+  mboxes:
-+    maxItems: 1
-+    description:
-+      Specify the mailbox used to notify RPM for writing vMPM registers.
-+
-+  interrupt-controller: true
-+
-+  '#interrupt-cells':
-+    const: 2
-+    description:
-+      The first cell is the MPM pin number for the interrupt, and the second
-+      is the trigger type.
-+
-+  qcom,mpm-pin-count:
-+    description:
-+      Specify the total MPM pin count that a SoC supports.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  qcom,mpm-pin-map:
-+    description:
-+      A set of MPM pin numbers and the corresponding GIC SPIs.
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    items:
-+      items:
-+        - description: MPM pin number
-+        - description: GIC SPI number for the MPM pin
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - mboxes
-+  - interrupt-controller
-+  - '#interrupt-cells'
-+  - qcom,mpm-pin-count
-+  - qcom,mpm-pin-map
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    mpm: interrupt-controller@45f01b8 {
-+        compatible = "qcom,mpm";
-+        interrupts = <GIC_SPI 197 IRQ_TYPE_EDGE_RISING>;
-+        reg = <0x45f01b8 0x1000>;
-+        mboxes = <&apcs_glb 1>;
-+        interrupt-controller;
-+        #interrupt-cells = <2>;
-+        interrupt-parent = <&intc>;
-+        qcom,mpm-pin-count = <96>;
-+        qcom,mpm-pin-map = <2 275>,
-+                           <5 296>,
-+                           <12 422>,
-+                           <24 79>,
-+                           <86 183>,
-+                           <90 260>,
-+                           <91 260>;
-+    };
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
