@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 633AEC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiBWChg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:37:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S237593AbiBWChh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:37:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237549AbiBWChE (ORCPT
+        with ESMTP id S237396AbiBWChP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:37:04 -0500
+        Tue, 22 Feb 2022 21:37:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B476C5620F;
-        Tue, 22 Feb 2022 18:32:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D735AEC2;
+        Tue, 22 Feb 2022 18:32:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 598B5B81E01;
-        Wed, 23 Feb 2022 02:32:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10825C36AE2;
-        Wed, 23 Feb 2022 02:32:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA624B81E1B;
+        Wed, 23 Feb 2022 02:32:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9565C340E8;
+        Wed, 23 Feb 2022 02:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583538;
-        bh=eqQ5mlfAkZYCCNiNrLISO3rHbCORuzSEnZRATE9OR0A=;
+        s=k20201202; t=1645583547;
+        bh=jLKMO32rA0KjtQgvheUPI/dFWNoxa++1fZrLUNzJ5aw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VxDu/FKfii0DBTlJWxznj7LnYUQbL7pZwRwOKPXMJVDZEy11Qf8u2294xC6cMsYvY
-         Bdh/yN5+MH/3DdiKsOeT9Ze9vFOoxO27czPTokizPO3GiHZ8BnF8eKPrjqu+Z8eqc+
-         Jlpq9l5K94/Ed0PQrVKwIjEKXmqtJEYPkQzhKDav09/9iQLKyIwB10AXexxGzPQ8LK
-         3xxW+2ehtNG+sr4H+AD85TKcxLrgCiYgUjNspskI6G7FVL1CrzE9NDKWTAMxVO/Vci
-         tcg6foIT4cZqycgo6pdZ2yOHWhYd8xEol3LsVqaIm7QPmRRIWHObqjuSS6+L1rZVIn
-         3h2LdtxqBzPUQ==
+        b=hYXiR/NeApJrlGKQK1p269aPZPEdB504CDp0pP97TYZDCeEXGsgjv6RJqvolNhUyu
+         QTY0w73NCW6lVYzCTobj6K0VD3+UbmpAiHURHw9xekhVL3hAtxUQqqSBgtdVRym7ov
+         KNZgSwrESh33ru8SqB9Q4hVWvynaaYQg7Ca9/pD4JP3sQj4ZSNY5VIWjmQoVPBnpRM
+         Nwpm6ObIFdyB+oiqvtUTNGQxLre9LY58ZRGQwwBWpk4vZlXPn7u3v7A5SWjRyeMxPl
+         HbgnQxVtJ25KgH/FQSAHb9OLuFElcTKzXp8lqvwuFBJaPudb0AmWTQWxMkSpA9n0Re
+         HOmlW21Ov2VPg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 09/13] selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
-Date:   Tue, 22 Feb 2022 21:31:48 -0500
-Message-Id: <20220223023152.242065-9-sashal@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@canonical.com, robh@kernel.org,
+        semen.protsenko@linaro.org, yangyicong@hisilicon.com,
+        geert+renesas@glider.be, jie.deng@intel.com, sven@svenpeter.dev,
+        bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
+        linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/13] i2c: cadence: allow COMPILE_TEST
+Date:   Tue, 22 Feb 2022 21:31:50 -0500
+Message-Id: <20220223023152.242065-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
 References: <20220223023152.242065-1-sashal@kernel.org>
@@ -54,43 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit 6fec1ab67f8d60704cc7de64abcfd389ab131542 ]
+[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
 
-The PREEMPT_RT patchset does not use do_softirq() function thus trying
-to filter for do_softirq fails for such kernel:
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-  echo do_softirq
-  ftracetest: 81: echo: echo: I/O error
-
-Choose some other visible function for the test.  The function does not
-have to be actually executed during the test, because it is only testing
-filter API interface.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
+ drivers/i2c/busses/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-index 68e7a48f5828e..412e5c1f13ca6 100644
---- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-+++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-@@ -33,7 +33,7 @@ do_reset
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 017aec34a238d..3a2f85d811f75 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -445,7 +445,7 @@ config I2C_BRCMSTB
  
- FILTER=set_ftrace_filter
- FUNC1="schedule"
--FUNC2="do_softirq"
-+FUNC2="scheduler_tick"
- 
- ALL_FUNCS="#### all functions enabled ####"
- 
+ config I2C_CADENCE
+ 	tristate "Cadence I2C Controller"
+-	depends on ARCH_ZYNQ || ARM64 || XTENSA
++	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
+ 	help
+ 	  Say yes here to select Cadence I2C Host Controller. This controller is
+ 	  e.g. used by Xilinx Zynq.
 -- 
 2.34.1
 
