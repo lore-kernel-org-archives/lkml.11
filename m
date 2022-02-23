@@ -2,121 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4437EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F23C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237488AbiBWCgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
+        id S237493AbiBWCgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:36:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbiBWCc5 (ORCPT
+        with ESMTP id S237335AbiBWCc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 21:32:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C7658391;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA73A5838B;
         Tue, 22 Feb 2022 18:30:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A534B81E0C;
-        Wed, 23 Feb 2022 02:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25FFC340F5;
-        Wed, 23 Feb 2022 02:30:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30C81B81E0D;
+        Wed, 23 Feb 2022 02:30:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40669C340F1;
+        Wed, 23 Feb 2022 02:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583448;
-        bh=S8+fvjACVMr0G7mDmqfilSIpGPjj3mkokKpLMNa4BWg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5lZgQJJ7Y/NfUylfo5HdiA9/oIcQY0V+lW9s2NsYFzx8WQLMUjClgb0s+Owh4ei0
-         XlDOE2G0wyvVllzCatWyMkogtgOEkJZK1v7gsApggfL7yKHQRqZ/WmTVBNoIHJ2fMP
-         UBlGJuYId1lK/dtDQlnGpAXUcUscoE7chXjPxd3Bp7uMcLYBYFNK2xwP1i32TtYm8R
-         yJJhYOGR7j9/CA1P2PeaGkJWz/PKRJSQ8f6EOxtg5ylzXwFOBsrKTdnJBmhB8xV8pk
-         LtR07Q1eRbKLn29LD54pBF7K59ORq0ywl9RWLl6tqGaBiVhK4BopT4YWVdoEToz4a3
-         Wut3nlO/P19dA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Barta <oliver.barta@aptiv.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com
-Subject: [PATCH AUTOSEL 5.10 06/18] regulator: core: fix false positive in regulator_late_cleanup()
-Date:   Tue, 22 Feb 2022 21:30:23 -0500
-Message-Id: <20220223023035.241551-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
-References: <20220223023035.241551-1-sashal@kernel.org>
+        s=k20201202; t=1645583447;
+        bh=84NzthgNnggRukjxvstPsXLf6qk4EW6yOe7lHrtHxx0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TWv0ro/9xn6xSlMZJgb4RV1cw3oqjLzuCs6xkxP9G/AvZ7cHpd42u+8dGcuJQ1oDF
+         Vx78JVqr0lNfeSew2fveDUP+7d29/zLve+3tEcqzoS/hFnX/j1vqm5756VmLxMUhXB
+         mzZjAFuUEcqAFVj9I7QRNSSH+hfdxqGOKlbnY4enCBg07/QZEuee3fUQO0X7vsLtfT
+         uPYq1k0mNK95F0G9oLPPFSiV153zxjY5pF16rKBANM/ZvzWb6pI9pY4HQgiFl4mer0
+         PEowR1PrAX852KxMR9wmV9zFhhKNhY5/93BNkWW/KhJ0Dhdko7DnqGGY2fntZiZk6B
+         6ERGLGdcgPy1A==
+Date:   Tue, 22 Feb 2022 20:38:41 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 2/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_start_scan_cmd
+Message-ID: <c7fcd70b571aecc08393a1a5ad96c0f5f35eeb15.1645583264.git.gustavoars@kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1645583264.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Barta <oliver.barta@aptiv.com>
+Replace one-element array with flexible-array member in struct
+wmi_start_scan_cmd. Also, make use of the struct_size() helper.
 
-[ Upstream commit 4e2a354e3775870ca823f1fb29bbbffbe11059a6 ]
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
 
-The check done by regulator_late_cleanup() to detect whether a regulator
-is on was inconsistent with the check done by _regulator_is_enabled().
-While _regulator_is_enabled() takes the enable GPIO into account,
-regulator_late_cleanup() was not doing that.
-
-This resulted in a false positive, e.g. when a GPIO-controlled fixed
-regulator was used, which was not enabled at boot time, e.g.
-
-reg_disp_1v2: reg_disp_1v2 {
-	compatible = "regulator-fixed";
-	regulator-name = "display_1v2";
-	regulator-min-microvolt = <1200000>;
-	regulator-max-microvolt = <1200000>;
-	gpio = <&tlmm 148 0>;
-	enable-active-high;
-};
-
-Such regulator doesn't have an is_enabled() operation. Nevertheless
-it's state can be determined based on the enable GPIO. The check in
-regulator_late_cleanup() wrongly assumed that the regulator is on and
-tried to disable it.
-
-Signed-off-by: Oliver Barta <oliver.barta@aptiv.com>
-Link: https://lore.kernel.org/r/20220208084645.8686-1-oliver.barta@aptiv.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/regulator/core.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/net/wireless/ath/ath6kl/wmi.c | 8 +-------
+ drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 043b5f63b94a1..2c48e55c4104e 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -5862,9 +5862,8 @@ core_initcall(regulator_init);
- static int regulator_late_cleanup(struct device *dev, void *data)
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+index e1c950014f3e..bdfc057c5a82 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.c
++++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+@@ -1959,21 +1959,15 @@ static int ath6kl_wmi_startscan_cmd(struct wmi *wmi, u8 if_idx,
  {
- 	struct regulator_dev *rdev = dev_to_rdev(dev);
--	const struct regulator_ops *ops = rdev->desc->ops;
- 	struct regulation_constraints *c = rdev->constraints;
--	int enabled, ret;
-+	int ret;
+ 	struct sk_buff *skb;
+ 	struct wmi_start_scan_cmd *sc;
+-	s8 size;
+ 	int i, ret;
  
- 	if (c && c->always_on)
- 		return 0;
-@@ -5877,14 +5876,8 @@ static int regulator_late_cleanup(struct device *dev, void *data)
- 	if (rdev->use_count)
- 		goto unlock;
- 
--	/* If we can't read the status assume it's always on. */
--	if (ops->is_enabled)
--		enabled = ops->is_enabled(rdev);
--	else
--		enabled = 1;
+-	size = sizeof(struct wmi_start_scan_cmd);
 -
--	/* But if reading the status failed, assume that it's off. */
--	if (enabled <= 0)
-+	/* If reading the status failed, assume that it's off. */
-+	if (_regulator_is_enabled(rdev) <= 0)
- 		goto unlock;
+ 	if ((scan_type != WMI_LONG_SCAN) && (scan_type != WMI_SHORT_SCAN))
+ 		return -EINVAL;
  
- 	if (have_full_constraints()) {
+ 	if (num_chan > WMI_MAX_CHANNELS)
+ 		return -EINVAL;
+ 
+-	if (num_chan)
+-		size += sizeof(u16) * (num_chan - 1);
+-
+-	skb = ath6kl_wmi_get_new_buf(size);
++	skb = ath6kl_wmi_get_new_buf(struct_size(sc, ch_list, num_chan));
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+index 322539ed9c12..9e168752bec2 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.h
++++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+@@ -889,7 +889,7 @@ struct wmi_start_scan_cmd {
+ 	u8 num_ch;
+ 
+ 	/* channels in Mhz */
+-	__le16 ch_list[1];
++	__le16 ch_list[];
+ } __packed;
+ 
+ /*
 -- 
-2.34.1
+2.27.0
 
