@@ -2,130 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 509C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiBWRNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
+        id S243298AbiBWROS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:14:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243301AbiBWRM4 (ORCPT
+        with ESMTP id S238693AbiBWROP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:12:56 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6954E216;
-        Wed, 23 Feb 2022 09:12:28 -0800 (PST)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NGNPZu008842;
-        Wed, 23 Feb 2022 17:12:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=i7a7ev+TSToZOoDITIyGq1Q0Jh67k8rK12gkyQZVitk=;
- b=qfiB00L18eYwIJ4dcgp+nVidsxXO/jALnC0A8yOv/5dyzQWPvIWjXpl8pmd9Eam0UkMZ
- 8uFyft8YsV/bliVgyhJmJ6CVIOAKzFNZK6Bhdd5lI1ND48/ceIDOzW62+TH9ARgv80f0
- dwY/Yq3YUfEm+9lY9kkPlISwJK+YSNd0tngx6uUqFMP1yjIsXqnWn0O4EKULIQ+IzNuG
- CbnRy5at002RxYp45gbf8eap5faqh29N8lKdkqfE9XyKPXCWbCDOgGeXNxBwppM/jk+i
- ocZjs7H6zGCehwXkXBFUBO5p2WtCzZMq58IbEbxGG7UVXzmHhrKIDZJo0aaB7y7oqX2T eA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edkxg092j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:12:14 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NGvX71002924;
-        Wed, 23 Feb 2022 17:12:14 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edkxg091f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:12:14 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NH6lnw028313;
-        Wed, 23 Feb 2022 17:12:11 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma02fra.de.ibm.com with ESMTP id 3ear69a3xy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:12:11 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NHC8QY29884898
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 17:12:08 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EBF2F11C050;
-        Wed, 23 Feb 2022 17:12:07 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 998A211C04A;
-        Wed, 23 Feb 2022 17:12:05 +0000 (GMT)
-Received: from sig-9-65-80-154.ibm.com (unknown [9.65.80.154])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 17:12:05 +0000 (GMT)
-Message-ID: <6e5d6ab590f18e6ee57c9e6e4bb805c8c223259a.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 24/27] ima: Introduce securityfs file to activate an
- IMA namespace
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Wed, 23 Feb 2022 12:12:05 -0500
-In-Reply-To: <9262a630-1f3e-0f58-110d-abfebe8274af@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-25-stefanb@linux.ibm.com>
-         <9a720bf5928151a0cbc7994ee498a1c3ca779c56.camel@linux.ibm.com>
-         <9262a630-1f3e-0f58-110d-abfebe8274af@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: JJc5mqF_CaUs9S4-s0Iyrx8pandaGvzg
-X-Proofpoint-ORIG-GUID: wrjrOCkyqYYz1iMH06UsjUEM94jqL-on
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_08,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 phishscore=0 priorityscore=1501 mlxscore=0 clxscore=1015
- suspectscore=0 spamscore=0 mlxlogscore=999 bulkscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230097
+        Wed, 23 Feb 2022 12:14:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7934F33A;
+        Wed, 23 Feb 2022 09:13:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 280C6B82116;
+        Wed, 23 Feb 2022 17:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF1CFC340E7;
+        Wed, 23 Feb 2022 17:13:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645636424;
+        bh=Iuzpx3eqNgHmcbEjMXJ+Gh2uRHsMErcCOx9NX8k4XKA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:From;
+        b=B1IyE4COZCZ918sC6snIEXlQ37FWTy+lbsQm8/muHoyWU51r7G2vlkgwMfeeNkkJo
+         LvuUWwWIgzsv0xOKdaQyFEZ5T9cwz0p3p2UmWne4sZvuIY1cz7nOzlDmpLM68zgaJf
+         wXjsKpjrJaOJ0wTGW2ySYzcG2B1OZ4C41Rnt773LWclbltXWyufpzh5CuyF29C8Ly4
+         o4J2yRRP3b26m03bY+MlZ4y/Ns+5CMzG0cMBTodUAdptqggAuoPAV1RFipqqHELUCq
+         v36YZRyzZKCJFamHLx+pcHWrmQOGNduvvo3l8sf8PSfT/8Y3ARBlwxl1MSbald+nmN
+         R+VI6B8pEJxAA==
+From:   SeongJae Park <sj@kernel.org>
+To:     SeongJae Park <sj@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, akpm@linux-foundation.org,
+        corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
+        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/12] mm/damon: Implement a minimal stub for sysfs-based DAMON interface
+Date:   Wed, 23 Feb 2022 17:13:41 +0000
+Message-Id: <20220223171341.29010-1-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220223164513.23089-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 12:08 -0500, Stefan Berger wrote:
-> On 2/23/22 08:54, Mimi Zohar wrote:
-> > On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
-> >
-> >>   int ima_fs_ns_init(struct user_namespace *user_ns, struct dentry *root)
-> >>   {
-> >>   	struct ima_namespace *ns = ima_ns_from_user_ns(user_ns);
-> >> @@ -531,6 +596,12 @@ int ima_fs_ns_init(struct user_namespace *user_ns, struct dentry *root)
-> >>   		}
-> >>   	}
-> >>   
-> >> +	if (ns != &init_ima_ns) {
-> >> +		ret = ima_fs_add_ns_files(ima_dir);
-> >> +		if (ret)
-> >> +			goto out;
-> >> +	}
-> >> +
-> > In all other cases, the securityfs files are directly created in
-> > ima_fs_ns_init().   What is different about "active" that a new
-> > function is defined?
+On Wed, 23 Feb 2022 16:45:13 +0000 SeongJae Park <sj@kernel.org> wrote:
+
+> On Wed, 23 Feb 2022 17:09:38 +0100 Greg KH <gregkh@linuxfoundation.org> wrote:
 > 
+> > On Wed, Feb 23, 2022 at 03:20:42PM +0000, SeongJae Park wrote:
+> > > +static struct kobj_attribute damon_sysfs_ul_range_min_attr =
+> > > +		__ATTR(min, 0600, damon_sysfs_ul_range_min_show,
+> > > +				damon_sysfs_ul_range_min_store);
+> > > +
+> > > +static struct kobj_attribute damon_sysfs_ul_range_max_attr =
+> > > +		__ATTR(max, 0600, damon_sysfs_ul_range_max_show,
+> > > +				damon_sysfs_ul_range_max_store);
+> > 
+> > Can you use __ATTR_RW_MODE() instead here and elsewhere?
 > 
-> It was meant as a function to create namespace-specific files, if more 
-> were to come along.  I can move the code from ima_fs_add_ns_files() into 
-> this function if you want.
+> Sure, I will, in the next revision.
 
-Perhaps defer defining a new function until that happens.
+After thinking once more, I realized that it might not so simple.  First of
+all, there are two files having same name in different directories
+(kdamonds/<N>/pid and targets/<N>/pid).  The files work differently, so I need
+to use different _show/_store callbacks for them but __ATTR_RW_MODE() wouldn't
+support the case.
 
-thanks,
+Secondly, I'd like to keep the file names short because the meaning of the
+files can easily inferred from the hierarchy, but want to keep the _show/_store
+callback names to have prefixes that allows us easily know their meaning and
+usage even though it makes the name a little bit longer because I don't want to
+have too much source files for DAMON sysfs interface.
 
-Mimi
+Am I missing some of your point?
 
+
+Thanks,
+SJ
+
+[...]
