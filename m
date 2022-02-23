@@ -2,148 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFE4C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0CA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbiBWFA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:00:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36092 "EHLO
+        id S236003AbiBWFB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:01:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiBWFAz (ORCPT
+        with ESMTP id S232067AbiBWFBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:00:55 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7C060CCD;
-        Tue, 22 Feb 2022 21:00:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645592428; x=1677128428;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6FLKm6fp0tyd6+4vW4Mst9f8YW1kXerksPWJZQnchhs=;
-  b=mkTRIgGfVowajtjZcwokhZm+kAsW6+MX/JpI+IPNvyifD3UxqLqLipgZ
-   79wlQ55GRGMnPdC7/eTEz3QOPTqrkSU70iwOhnLRshpNPnGoC9by/1l+a
-   8k5ChUQz7myoLs0rNZQb4wszb25j4NdMQeGJrroK+MeFGg/xg2mHjtsKd
-   9DyYPe4rM5eNheFBitL/YgkVeC86ySHgzhQk1NTbRA/LhwczW56KDfsnz
-   6utJDtw7dFOoz0txYWNobIgkvEmw861Pc2Ysu4h+dF+VpVMvzULF8FV3Z
-   pvHVbn2eD2hrdcE8gHMWDClEgXwebdRqmKVAgqCvCUdZzNaKKGqMW2aEz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="338320951"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="338320951"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:00:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="639175040"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 22 Feb 2022 21:00:16 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMjl9-0000zj-DA; Wed, 23 Feb 2022 05:00:15 +0000
-Date:   Wed, 23 Feb 2022 12:59:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] Input: add Imagis touchscreen driver
-Message-ID: <202202231213.Vj9yo4tW-lkp@intel.com>
-References: <20220222203414.8656-3-markuss.broks@gmail.com>
+        Wed, 23 Feb 2022 00:01:24 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A5E60CC6;
+        Tue, 22 Feb 2022 21:00:57 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id 75so18882093pgb.4;
+        Tue, 22 Feb 2022 21:00:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+/xBpqUkq7Y4V5ZVo51HPFC+VaILtpPPrho3sQ/Rr5U=;
+        b=AQ2cTFfDP2y5u6aJ5Mqh4CGVId6ETkHF4zTVAQx+7GFy40wv3St3cLZWNURPUvjUky
+         CBFQvJXoO2ZOVgkBqQT0Qq8qy18T3ROX4Lv6Eqm7P8YkQXWamXWsmRIvklv6IwVbHhcB
+         S48E+8RGh1IPI0kQ6tqDiGld2AxZIPLeVKngadC6H4KKssNPO50lMsMosaKVloXk75HB
+         iMEAGqG+LT57UyCcf6uozsn7auUdvfwV1JgSm3pGzCMHSgC6pkXpKZwmCqaQq7bgKsi6
+         IemqcGqg1IhW4BNKTM0ZSBYqofvl+mkr/q6h1jdfAS9BRrAM+Mo+adk7l/eRn/400FWF
+         3RjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+/xBpqUkq7Y4V5ZVo51HPFC+VaILtpPPrho3sQ/Rr5U=;
+        b=f5FYwYeI7M8Z6dnlV95j8amqS9x9PkLvWE60ENSFRHeQCsMrNsH6c02Ntbi9Da/vN9
+         iMIsZ93IUAOzGnYarg5btQpnyBkyn8bsmz0nSVid7QNhcHTbi3wgP2pZDgpQw3oVGEnL
+         uXXSk0MMI+lf9bZRFqtrgg9rtjQB59VmxDVrtIcyexgwyXqPDH7S8gO7EQk3+e+AFlw/
+         DbGUfU3aORVI39bqoiKQI9UknmOHzmzZZdu8lDK+LWxa1FCk/GtKELCUXJRZL+Pw9DW/
+         uTARjRITCwalVvwjl6TZv8oFsHx5cvrMjNj2ZHg4Q9R+yJHwzdVyPw8Ul+ELek1Kt7WC
+         +QLw==
+X-Gm-Message-State: AOAM5325Jlx4/UmU2Esv64eGQwadz76+Ee9LK9XBTyz5HqZWSs/ZqdWB
+        0v8wjJ3/OOdgU1PaL4nqPM3nEv8SdgU=
+X-Google-Smtp-Source: ABdhPJweMG52IbjOfNhR38qdSBhdYUX7z4Nl6HrCWGL1SHIiw6TRiSyNTudqcnVR8CliWcF6uU+SAw==
+X-Received: by 2002:a62:84d3:0:b0:4e1:b5c:1dd4 with SMTP id k202-20020a6284d3000000b004e10b5c1dd4mr27912170pfd.20.1645592457211;
+        Tue, 22 Feb 2022 21:00:57 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id y14sm17849414pfm.219.2022.02.22.21.00.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 21:00:56 -0800 (PST)
+Message-ID: <1675a52d-a270-d768-5ccc-35b1e82e56d2@gmail.com>
+Date:   Tue, 22 Feb 2022 21:00:54 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222203414.8656-3-markuss.broks@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 3/3] drivers/net/ftgmac100: fix DHCP potential failure
+ with systemd
+Content-Language: en-US
+To:     Heyi Guo <guoheyi@linux.alibaba.com>, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dylan Hung <dylan_hung@aspeedtech.com>, netdev@vger.kernel.org
+References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
+ <20220223031436.124858-4-guoheyi@linux.alibaba.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220223031436.124858-4-guoheyi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Markuss,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on dtor-input/next]
-[also build test WARNING on linux/master robh/for-next linus/master v5.17-rc5 next-20220222]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Markuss-Broks/Add-support-for-Imagis-touchscreens/20220223-043645
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202231213.Vj9yo4tW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/bc77ee5e0d7309edca7d65925c6afa05334b0b01
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Markuss-Broks/Add-support-for-Imagis-touchscreens/20220223-043645
-        git checkout bc77ee5e0d7309edca7d65925c6afa05334b0b01
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/input/touchscreen/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/input/touchscreen/imagis.c:300:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (input_device_enabled(ts->input_dev))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/imagis.c:305:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/input/touchscreen/imagis.c:300:2: note: remove the 'if' if its condition is always true
-           if (input_device_enabled(ts->input_dev))
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/imagis.c:296:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   drivers/input/touchscreen/imagis.c:316:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (input_device_enabled(ts->input_dev))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/imagis.c:321:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/input/touchscreen/imagis.c:316:2: note: remove the 'if' if its condition is always true
-           if (input_device_enabled(ts->input_dev))
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/imagis.c:312:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   2 warnings generated.
 
 
-vim +300 drivers/input/touchscreen/imagis.c
+On 2/22/2022 7:14 PM, Heyi Guo wrote:
+> DHCP failures were observed with systemd 247.6. The issue could be
+> reproduced by rebooting Aspeed 2600 and then running ifconfig ethX
+> down/up.
+> 
+> It is caused by below procedures in the driver:
+> 
+> 1. ftgmac100_open() enables net interface and call phy_start()
+> 2. When PHY is link up, it calls netif_carrier_on() and then
+> adjust_link callback
+> 3. ftgmac100_adjust_link() will schedule the reset task
+> 4. ftgmac100_reset_task() will then reset the MAC in another schedule
+> 
+> After step 2, systemd will be notified to send DHCP discover packet,
+> while the packet might be corrupted by MAC reset operation in step 4.
+> 
+> Call ftgmac100_reset() directly instead of scheduling task to fix the
+> issue.
+> 
+> Signed-off-by: Heyi Guo <guoheyi@linux.alibaba.com>
+> ---
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Joel Stanley <joel@jms.id.au>
+> Cc: Guangbin Huang <huangguangbin2@huawei.com>
+> Cc: Hao Chen <chenhao288@hisilicon.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Dylan Hung <dylan_hung@aspeedtech.com>
+> Cc: netdev@vger.kernel.org
+> 
+> 
+> ---
+>   drivers/net/ethernet/faraday/ftgmac100.c | 13 +++++++++++--
+>   1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index c1deb6e5d26c5..d5356db7539a4 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -1402,8 +1402,17 @@ static void ftgmac100_adjust_link(struct net_device *netdev)
+>   	/* Disable all interrupts */
+>   	iowrite32(0, priv->base + FTGMAC100_OFFSET_IER);
+>   
+> -	/* Reset the adapter asynchronously */
+> -	schedule_work(&priv->reset_task);
+> +	/* Release phy lock to allow ftgmac100_reset to aquire it, keeping lock
 
-   291	
-   292	static int __maybe_unused imagis_suspend(struct device *dev)
-   293	{
-   294		struct i2c_client *client = to_i2c_client(dev);
-   295		struct imagis_ts *ts = i2c_get_clientdata(client);
-   296		int ret;
-   297	
-   298		mutex_lock(&ts->input_dev->mutex);
-   299	
- > 300		if (input_device_enabled(ts->input_dev))
-   301			ret = imagis_stop(ts);
-   302	
-   303		mutex_unlock(&ts->input_dev->mutex);
-   304	
-   305		return ret;
-   306	}
-   307	
+typo: acquire
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +	 * order consistent to prevent dead lock.
+> +	 */
+> +	if (netdev->phydev)
+> +		mutex_unlock(&netdev->phydev->lock);
+> +
+> +	ftgmac100_reset(priv);
+> +
+> +	if (netdev->phydev)
+> +		mutex_lock(&netdev->phydev->lock);
+
+Do you really need to perform a full MAC reset whenever the link goes up 
+or down? Instead cannot you just extract the maccr configuration which 
+adjusts the speed and be done with it?
+
+What kind of Ethernet MAC design is this seriously.
+-- 
+Florian
