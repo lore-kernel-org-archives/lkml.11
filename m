@@ -2,135 +2,376 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE59C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4315AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiBWMDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:03:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S238528AbiBWMDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240301AbiBWMD2 (ORCPT
+        with ESMTP id S240315AbiBWMD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 07:03:28 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6359AD9B;
-        Wed, 23 Feb 2022 04:02:50 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21NC2OD4012124;
-        Wed, 23 Feb 2022 07:02:46 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3edckssseb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 07:02:46 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21NC2jrE019347
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 07:02:45 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 23 Feb
- 2022 07:02:44 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 23 Feb 2022 07:02:44 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.126])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21NC2Y1a023695;
-        Wed, 23 Feb 2022 07:02:36 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v6 1/3] dt-bindings: iio: amplifiers: add ada4250 doc
-Date:   Wed, 23 Feb 2022 14:01:10 +0200
-Message-ID: <20220223120112.8067-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D49789BADF;
+        Wed, 23 Feb 2022 04:02:53 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K3ZRK30bWz9sSq;
+        Wed, 23 Feb 2022 13:02:37 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id MIdAyq5rmbFq; Wed, 23 Feb 2022 13:02:37 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K3ZRC2bzsz9sSr;
+        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4A4ED8B77A;
+        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id G6uKEhDENLLF; Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.201])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id C74BB8B77D;
+        Wed, 23 Feb 2022 13:02:30 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21NC2Mgv1148195
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 13:02:22 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21NC2LQE1148194;
+        Wed, 23 Feb 2022 13:02:21 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH v6 4/6] module: Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+Date:   Wed, 23 Feb 2022 13:02:14 +0100
+Message-Id: <eafe67f9a1ed9d93e89dff3cdb5d72845015ca25.1645607143.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645607143.git.christophe.leroy@csgroup.eu>
+References: <cover.1645607143.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: 6wK6zHBltNCxB1HUYmjdybjYX_e6gJCN
-X-Proofpoint-GUID: 6wK6zHBltNCxB1HUYmjdybjYX_e6gJCN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_04,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 adultscore=0 impostorscore=0 suspectscore=0 clxscore=1011
- malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0 priorityscore=1501
- mlxlogscore=781 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230067
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645617734; l=10818; s=20211009; h=from:subject:message-id; bh=ua4yghsJcnWod1SRFk39n4jnCVKFwyIXV5nTBerLwdc=; b=nN3xjrxme7kxD3xtne2y9rzZth1BJKyJZZIRRUsjW6T+cDPownfKvnrG04Odwz37nIaocSyzhY+C leSRMfTiCjhhaT69HSjY5wJeOYbmQTSs/Zo8WZ8X/FKvUVu7bDcf
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the ADA4250 driver.
+Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC to allow architectures
+to request having modules data in vmalloc area instead of module area.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+This is required on powerpc book3s/32 in order to set data non
+executable, because it is not possible to set executability on page
+basis, this is done per 256 Mbytes segments. The module area has exec
+right, vmalloc area has noexec.
+
+This can also be useful on other powerpc/32 in order to maximize the
+chance of code being close enough to kernel core to avoid branch
+trampolines.
+
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
-changes in v6:
- - add space before `{` in the amplifier node example
- .../bindings/iio/amplifiers/adi,ada4250.yaml  | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+ arch/Kconfig                |  6 ++++
+ include/linux/module.h      |  8 +++++
+ kernel/debug/kdb/kdb_main.c | 10 +++++--
+ kernel/module/internal.h    |  3 ++
+ kernel/module/main.c        | 58 +++++++++++++++++++++++++++++++++++--
+ kernel/module/procfs.c      |  8 +++--
+ kernel/module/strict_rwx.c  |  1 +
+ kernel/module/tree_lookup.c |  8 +++++
+ 8 files changed, 96 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-new file mode 100644
-index 000000000000..5277479be382
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 678a80713b21..b5d1f2c19c27 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -882,6 +882,12 @@ config MODULES_USE_ELF_REL
+ 	  Modules only use ELF REL relocations.  Modules with ELF RELA
+ 	  relocations will give an error.
+ 
++config ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	bool
++	help
++	  For architectures like powerpc/32 which have constraints on module
++	  allocation and need to allocate module data outside of module area.
 +
-+title: ADA4250 Programmable Gain Instrumentation Amplifier
+ config HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 	bool
+ 	help
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 7ec9715de7dc..134c1df04b14 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -422,6 +422,9 @@ struct module {
+ 	/* Core layout: rbtree is accessed frequently, so keep together. */
+ 	struct module_layout core_layout __module_layout_align;
+ 	struct module_layout init_layout;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	struct module_layout data_layout;
++#endif
+ 
+ 	/* Arch-specific module values */
+ 	struct mod_arch_specific arch;
+@@ -569,6 +572,11 @@ bool is_module_text_address(unsigned long addr);
+ static inline bool within_module_core(unsigned long addr,
+ 				      const struct module *mod)
+ {
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	if ((unsigned long)mod->data_layout.base <= addr &&
++	    addr < (unsigned long)mod->data_layout.base + mod->data_layout.size)
++		return true;
++#endif
+ 	return (unsigned long)mod->core_layout.base <= addr &&
+ 	       addr < (unsigned long)mod->core_layout.base + mod->core_layout.size;
+ }
+diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+index 5369bf45c5d4..94de2889a062 100644
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -2027,8 +2027,11 @@ static int kdb_lsmod(int argc, const char **argv)
+ 		if (mod->state == MODULE_STATE_UNFORMED)
+ 			continue;
+ 
+-		kdb_printf("%-20s%8u  0x%px ", mod->name,
+-			   mod->core_layout.size, (void *)mod);
++		kdb_printf("%-20s%8u", mod->name, mod->core_layout.size);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++		kdb_printf("/%8u", mod->data_layout.size);
++#endif
++		kdb_printf("  0x%px ", (void *)mod);
+ #ifdef CONFIG_MODULE_UNLOAD
+ 		kdb_printf("%4d ", module_refcount(mod));
+ #endif
+@@ -2039,6 +2042,9 @@ static int kdb_lsmod(int argc, const char **argv)
+ 		else
+ 			kdb_printf(" (Live)");
+ 		kdb_printf(" 0x%px", mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++		kdb_printf("/0x%px", mod->data_layout.base);
++#endif
+ 
+ #ifdef CONFIG_MODULE_UNLOAD
+ 		{
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index 0aabbf5cbcd1..3e23bef5884d 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -20,7 +20,9 @@
+ /* Maximum number of characters written by module_flags() */
+ #define MODULE_FLAGS_BUF_SIZE (TAINT_FLAGS_COUNT + 4)
+ 
++#ifndef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+ #define	data_layout core_layout
++#endif
+ 
+ /*
+  * Modules' sections will be aligned on page boundaries
+@@ -154,6 +156,7 @@ struct mod_tree_root {
+ };
+ 
+ extern struct mod_tree_root mod_tree;
++extern struct mod_tree_root mod_data_tree;
+ 
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
+ void mod_tree_insert(struct module *mod);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 84db7318ba2b..cf236e964cf6 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -78,6 +78,12 @@ struct mod_tree_root mod_tree __cacheline_aligned = {
+ 	.addr_min = -1UL,
+ };
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++struct mod_tree_root mod_data_tree __cacheline_aligned = {
++	.addr_min = -1UL,
++};
++#endif
 +
-+maintainers:
-+  - Antoniu Miclaus <antoniu.miclaus@analog.com>
+ #define module_addr_min mod_tree.addr_min
+ #define module_addr_max mod_tree.addr_max
+ 
+@@ -107,6 +113,9 @@ static void mod_update_bounds(struct module *mod)
+ 	__mod_update_bounds(mod->core_layout.base, mod->core_layout.size, &mod_tree);
+ 	if (mod->init_layout.size)
+ 		__mod_update_bounds(mod->init_layout.base, mod->init_layout.size, &mod_tree);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	__mod_update_bounds(mod->data_layout.base, mod->data_layout.size, &mod_data_tree);
++#endif
+ }
+ 
+ static void module_assert_mutex_or_preempt(void)
+@@ -940,6 +949,17 @@ static ssize_t show_coresize(struct module_attribute *mattr,
+ static struct module_attribute modinfo_coresize =
+ 	__ATTR(coresize, 0444, show_coresize, NULL);
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++static ssize_t show_datasize(struct module_attribute *mattr,
++			     struct module_kobject *mk, char *buffer)
++{
++	return sprintf(buffer, "%u\n", mk->mod->data_layout.size);
++}
 +
-+description: |
-+  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
++static struct module_attribute modinfo_datasize =
++	__ATTR(datasize, 0444, show_datasize, NULL);
++#endif
 +
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ada4250
+ static ssize_t show_initsize(struct module_attribute *mattr,
+ 			     struct module_kobject *mk, char *buffer)
+ {
+@@ -968,6 +988,9 @@ struct module_attribute *modinfo_attrs[] = {
+ 	&modinfo_srcversion,
+ 	&modinfo_initstate,
+ 	&modinfo_coresize,
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	&modinfo_datasize,
++#endif
+ 	&modinfo_initsize,
+ 	&modinfo_taint,
+ #ifdef CONFIG_MODULE_UNLOAD
+@@ -1194,6 +1217,9 @@ static void free_module(struct module *mod)
+ 
+ 	/* Finally, free the core (containing the module structure) */
+ 	module_memfree(mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	vfree(mod->data_layout.base);
++#endif
+ }
+ 
+ void *__symbol_get(const char *symbol)
+@@ -2124,6 +2150,24 @@ static int move_module(struct module *mod, struct load_info *info)
+ 	} else
+ 		mod->init_layout.base = NULL;
+ 
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	/* Do the allocs. */
++	ptr = vmalloc(mod->data_layout.size);
++	/*
++	 * The pointer to this block is stored in the module structure
++	 * which is inside the block. Just mark it as not being a
++	 * leak.
++	 */
++	kmemleak_not_leak(ptr);
++	if (!ptr) {
++		module_memfree(mod->core_layout.base);
++		module_memfree(mod->init_layout.base);
++		return -ENOMEM;
++	}
 +
-+  reg:
-+    maxItems: 1
++	memset(ptr, 0, mod->data_layout.size);
++	mod->data_layout.base = ptr;
++#endif
+ 	/* Transfer each section which specifies SHF_ALLOC */
+ 	pr_debug("final section addresses:\n");
+ 	for (i = 0; i < info->hdr->e_shnum; i++) {
+@@ -2299,6 +2343,9 @@ static void module_deallocate(struct module *mod, struct load_info *info)
+ 	module_arch_freeing_init(mod);
+ 	module_memfree(mod->init_layout.base);
+ 	module_memfree(mod->core_layout.base);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	vfree(mod->data_layout.base);
++#endif
+ }
+ 
+ int __weak module_finalize(const Elf_Ehdr *hdr,
+@@ -3015,13 +3062,20 @@ bool is_module_address(unsigned long addr)
+ struct module *__module_address(unsigned long addr)
+ {
+ 	struct module *mod;
++	struct mod_tree_root *tree;
+ 
+-	if (addr < module_addr_min || addr > module_addr_max)
++	if (addr >= mod_tree.addr_min && addr <= mod_tree.addr_max)
++		tree = &mod_tree;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	else if (addr >= mod_data_tree.addr_min && addr <= mod_data_tree.addr_max)
++		tree = &mod_data_tree;
++#endif
++	else
+ 		return NULL;
+ 
+ 	module_assert_mutex_or_preempt();
+ 
+-	mod = mod_find(addr, &mod_tree);
++	mod = mod_find(addr, tree);
+ 	if (mod) {
+ 		BUG_ON(!within_module(addr, mod));
+ 		if (mod->state == MODULE_STATE_UNFORMED)
+diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
+index 2717e130788e..9a8f4f0f6329 100644
+--- a/kernel/module/procfs.c
++++ b/kernel/module/procfs.c
+@@ -67,13 +67,17 @@ static int m_show(struct seq_file *m, void *p)
+ 	struct module *mod = list_entry(p, struct module, list);
+ 	char buf[MODULE_FLAGS_BUF_SIZE];
+ 	void *value;
++	unsigned int size;
+ 
+ 	/* We always ignore unformed modules. */
+ 	if (mod->state == MODULE_STATE_UNFORMED)
+ 		return 0;
+ 
+-	seq_printf(m, "%s %u",
+-		   mod->name, mod->init_layout.size + mod->core_layout.size);
++	size = mod->init_layout.size + mod->core_layout.size;
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	size += mod->data_layout.size;
++#endif
++	seq_printf(m, "%s %u", mod->name, size);
+ 	print_unload_info(m, mod);
+ 
+ 	/* Informative for users. */
+diff --git a/kernel/module/strict_rwx.c b/kernel/module/strict_rwx.c
+index fe3c10891407..14fbea66f12f 100644
+--- a/kernel/module/strict_rwx.c
++++ b/kernel/module/strict_rwx.c
+@@ -75,6 +75,7 @@ bool module_check_misalignment(const struct module *mod)
+ 		return false;
+ 
+ 	return layout_check_misalignment(&mod->core_layout) ||
++	       layout_check_misalignment(&mod->data_layout) ||
+ 	       layout_check_misalignment(&mod->init_layout);
+ }
+ 
+diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
+index 995fe68059db..8ec5cfd60496 100644
+--- a/kernel/module/tree_lookup.c
++++ b/kernel/module/tree_lookup.c
+@@ -83,6 +83,11 @@ void mod_tree_insert(struct module *mod)
+ 	__mod_tree_insert(&mod->core_layout.mtn, &mod_tree);
+ 	if (mod->init_layout.size)
+ 		__mod_tree_insert(&mod->init_layout.mtn, &mod_tree);
 +
-+  avdd-supply: true
-+
-+  adi,refbuf-enable:
-+    description:
-+      Enable internal buffer to drive the reference pin.
-+    type: boolean
-+
-+  spi-max-frequency: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      amplifier@0 {
-+        compatible = "adi,ada4250";
-+        reg = <0>;
-+        avdd-supply = <&avdd>;
-+      };
-+    };
-+...
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	mod->data_layout.mtn.mod = mod;
++	__mod_tree_insert(&mod->data_layout.mtn, &mod_data_tree);
++#endif
+ }
+ 
+ void mod_tree_remove_init(struct module *mod)
+@@ -95,6 +100,9 @@ void mod_tree_remove(struct module *mod)
+ {
+ 	__mod_tree_remove(&mod->core_layout.mtn, &mod_tree);
+ 	mod_tree_remove_init(mod);
++#ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
++	__mod_tree_remove(&mod->data_layout.mtn, &mod_data_tree);
++#endif
+ }
+ 
+ struct module *mod_find(unsigned long addr, struct mod_tree_root *tree)
 -- 
-2.35.1
+2.34.1
 
