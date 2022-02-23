@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244955AbiBWXit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 18:38:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S244960AbiBWXiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 18:38:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244881AbiBWXi2 (ORCPT
+        with ESMTP id S244875AbiBWXi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 18:38:28 -0500
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A5E5A09B;
-        Wed, 23 Feb 2022 15:37:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D075A5B5;
+        Wed, 23 Feb 2022 15:37:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645659476; x=1677195476;
+  t=1645659479; x=1677195479;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wJO28cZ5d4onrWSSPwvwkejj4FA3oYjfcxSdxHBpzKY=;
-  b=S+ys3OdwOMfnpBk52oM1FUhMEENXpOvn3mR2D/DpC0BaxxAwPrKvgOvd
-   W0k9fXRGthrd9D+aXDRdQ5TICawPPCmjfYxm8MCReEK00rmddWLCNK8nN
-   X5eU5GB7Cav0ujZH8GmtAGs8aQCS6KWRFhmL9L0yofjOZ3pAhruFoUzwF
-   c=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 15:37:56 -0800
+  bh=SUtFhxETXDaiGCtcN5VjrfvX86YbCrloV5EQK2dGRjo=;
+  b=lsrJ7Mwo0SrUH7h8he7GvubBLFa/vzVU6VhuUyLZ8WjR09VpKK5RL2RI
+   iDbtWOUuXa1aXS2QONYBEdjmjxvUApFeTaOKNW6m/Zv9xvbfnuZkhREOX
+   dhXCG/BmKGComfNSoRqhqi8+xeXoNCh1YsRld+hLtvzVBhBUQh9ooq+X1
+   A=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 15:37:59 -0800
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:56 -0800
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:59 -0800
 Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 15:37:55 -0800
+ 15.2.986.15; Wed, 23 Feb 2022 15:37:58 -0800
 From:   Elliot Berman <quic_eberman@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         <linux-kernel@vger.kernel.org>
@@ -43,9 +43,9 @@ CC:     Elliot Berman <quic_eberman@quicinc.com>,
         Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
         Carl van Schaik <quic_cvanscha@quicinc.com>,
         Andy Gross <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH 04/11] gunyah: Common types and error codes for Gunyah hypercalls
-Date:   Wed, 23 Feb 2022 15:37:22 -0800
-Message-ID: <20220223233729.1571114-5-quic_eberman@quicinc.com>
+Subject: [PATCH 10/11] gunyah: rsc_mgr: Add RPC for console services
+Date:   Wed, 23 Feb 2022 15:37:28 -0800
+Message-ID: <20220223233729.1571114-11-quic_eberman@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223233729.1571114-1-quic_eberman@quicinc.com>
 References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
@@ -59,108 +59,228 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add architecture-independent standard error codes, types, and macros for
-Gunyah hypercalls.
+Gunyah resource manager defines a simple API for virtual machine log
+sharing with the console service. A VM's own log can be opened by using
+GH_VMID_SELF. Another VM's log can be accessed via its VMID. Once
+opened, characters can be written to the log with a write command.
+Characters are received with resource manager notifications (using ID
+GH_RM_NOTIF_VM_CONSOLE_CHARS).
+
+These high level rpc calls are kept in
+drivers/virt/gunyah/rsc_mgr_rpc.c. Future RPC calls, e.g. to launch a VM
+will also be maintained in this file.
 
 Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 ---
- MAINTAINERS            |  1 +
- include/linux/gunyah.h | 74 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 75 insertions(+)
- create mode 100644 include/linux/gunyah.h
+ drivers/virt/gunyah/Makefile      |   4 +-
+ drivers/virt/gunyah/rsc_mgr.h     |  19 +++++
+ drivers/virt/gunyah/rsc_mgr_rpc.c | 129 ++++++++++++++++++++++++++++++
+ include/linux/gunyah_rsc_mgr.h    |  15 ++++
+ 4 files changed, 165 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/virt/gunyah/rsc_mgr_rpc.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7e6a8488fa3e..59e7070f726a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8403,6 +8403,7 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/gunyah/
- F:	Documentation/virt/gunyah/
- F:	arch/arm64/include/asm/gunyah/
-+F:	include/linux/gunyah.h
+diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
+index 86655bca8944..b3f15c052297 100644
+--- a/drivers/virt/gunyah/Makefile
++++ b/drivers/virt/gunyah/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
  
- H8/300 ARCHITECTURE
- M:	Yoshinori Sato <ysato@users.sourceforge.jp>
-diff --git a/include/linux/gunyah.h b/include/linux/gunyah.h
+ gunyah-y += sysfs.o device.o msgq.o
+-gunyah-y += rsc_mgr.o
+-obj-$(CONFIG_GUNYAH) += gunyah.o
+\ No newline at end of file
++gunyah-y += rsc_mgr.o rsc_mgr_rpc.o
++obj-$(CONFIG_GUNYAH) += gunyah.o
+diff --git a/drivers/virt/gunyah/rsc_mgr.h b/drivers/virt/gunyah/rsc_mgr.h
+index e4f2499267bf..8cbc04b9938e 100644
+--- a/drivers/virt/gunyah/rsc_mgr.h
++++ b/drivers/virt/gunyah/rsc_mgr.h
+@@ -28,6 +28,25 @@
+ #define GH_RM_ERROR_IRQ_INUSE		0x10
+ #define GH_RM_ERROR_IRQ_RELEASED	0x11
+ 
++/* Message IDs: VM Services */
++#define GH_RM_RPC_VM_CONSOLE_OPEN_ID		0x56000081
++#define GH_RM_RPC_VM_CONSOLE_CLOSE_ID		0x56000082
++#define GH_RM_RPC_VM_CONSOLE_WRITE_ID		0x56000083
++#define GH_RM_RPC_VM_CONSOLE_FLUSH_ID		0x56000084
++
++/* Call: CONSOLE_OPEN, CONSOLE_CLOSE, CONSOLE_FLUSH */
++struct gh_vm_console_common_req {
++	gh_vmid_t vmid;
++	u16 reserved0;
++} __packed;
++
++/* Call: CONSOLE_WRITE */
++struct gh_vm_console_write_req {
++	gh_vmid_t vmid;
++	u16 num_bytes;
++	u8 data[0];
++} __packed;
++
+ int gh_rm_call(u32 message_id, void *req_buff, size_t req_buff_size,
+ 		void **resp_buf, size_t *resp_buff_size);
+ 
+diff --git a/drivers/virt/gunyah/rsc_mgr_rpc.c b/drivers/virt/gunyah/rsc_mgr_rpc.c
 new file mode 100644
-index 000000000000..8743bf4978e2
+index 000000000000..23e0febc1567
 --- /dev/null
-+++ b/include/linux/gunyah.h
-@@ -0,0 +1,74 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
++++ b/drivers/virt/gunyah/rsc_mgr_rpc.c
+@@ -0,0 +1,129 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 + */
 +
-+#ifndef _GUNYAH_H
-+#define _GUNYAH_H
++#define pr_fmt(fmt) "gh_rsc_mgr: " fmt
 +
++/* Contains the high level interface used by other drivers (or RM driver itself) */
++#include <linux/slab.h>
 +#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <asm/gunyah/hypercall.h>
++#include <linux/printk.h>
++#include <linux/gunyah_rsc_mgr.h>
 +
-+typedef u64 gh_capid_t;
++#include "rsc_mgr.h"
 +
-+/* Common Gunyah macros */
-+#define GH_CAPID_INVAL	U64_MAX
-+
-+#define GH_ERROR_OK			0
-+#define GH_ERROR_UNIMPLEMENTED		-1
-+
-+#define GH_ERROR_ARG_INVAL		1
-+#define GH_ERROR_ARG_SIZE		2
-+#define GH_ERROR_ARG_ALIGN		3
-+
-+#define GH_ERROR_NOMEM			10
-+
-+#define GH_ERROR_ADDR_OVFL		20
-+#define GH_ERROR_ADDR_UNFL		21
-+#define GH_ERROR_ADDR_INVAL		22
-+
-+#define GH_ERROR_DENIED			30
-+#define GH_ERROR_BUSY			31
-+#define GH_ERROR_IDLE			32
-+
-+#define GH_ERROR_IRQ_BOUND		40
-+#define GH_ERROR_IRQ_UNBOUND		41
-+
-+#define GH_ERROR_CSPACE_CAP_NULL	50
-+#define GH_ERROR_CSPACE_CAP_REVOKED	51
-+#define GH_ERROR_CSPACE_WRONG_OBJ_TYPE	52
-+#define GH_ERROR_CSPACE_INSUF_RIGHTS	53
-+#define GH_ERROR_CSPACE_FULL		54
-+
-+#define GH_ERROR_MSGQUEUE_EMPTY		60
-+#define GH_ERROR_MSGQUEUE_FULL		61
-+
-+static inline int gh_remap_error(int gh_error)
++/**
++ * gh_rm_console_open: Open a console with a VM
++ * @vmid: VMID of the other vmid whose console to open. If VMID is GH_VMID_SELF, the
++ *        console associated with this VM is opened.
++ */
++int gh_rm_console_open(gh_vmid_t vmid)
 +{
-+	switch (gh_error) {
-+	case GH_ERROR_OK:
-+		return 0;
-+	case GH_ERROR_NOMEM:
-+		return -ENOMEM;
-+	case GH_ERROR_DENIED:
-+	case GH_ERROR_CSPACE_CAP_NULL:
-+	case GH_ERROR_CSPACE_CAP_REVOKED:
-+	case GH_ERROR_CSPACE_WRONG_OBJ_TYPE:
-+	case GH_ERROR_CSPACE_INSUF_RIGHTS:
-+	case GH_ERROR_CSPACE_FULL:
-+		return -EACCES;
-+	case GH_ERROR_BUSY:
-+	case GH_ERROR_IDLE:
-+		return -EBUSY;
-+	case GH_ERROR_IRQ_BOUND:
-+	case GH_ERROR_IRQ_UNBOUND:
-+	case GH_ERROR_MSGQUEUE_FULL:
-+	case GH_ERROR_MSGQUEUE_EMPTY:
-+		return -EPERM;
-+	default:
-+		return -EINVAL;
-+	}
-+}
++	void *resp;
++	struct gh_vm_console_common_req req_payload = {0};
++	size_t resp_size;
++	int ret;
 +
-+#endif
++	req_payload.vmid = vmid;
++
++	ret = gh_rm_call(GH_RM_RPC_VM_CONSOLE_OPEN_ID,
++			  &req_payload, sizeof(req_payload),
++			  &resp, &resp_size);
++	kfree(resp);
++
++	if (!ret && resp_size)
++		pr_warn("Received unexpected payload for CONSOLE_OPEN: %lu\n", resp_size);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_rm_console_open);
++
++/**
++ * gh_rm_console_close: Close a console with a VM
++ * @vmid: The vmid of the vm whose console to close.
++ */
++int gh_rm_console_close(gh_vmid_t vmid)
++{
++	void *resp;
++	struct gh_vm_console_common_req req_payload = {0};
++	size_t resp_size;
++	int ret;
++
++	req_payload.vmid = vmid;
++
++	ret = gh_rm_call(GH_RM_RPC_VM_CONSOLE_CLOSE_ID,
++			  &req_payload, sizeof(req_payload),
++			  &resp, &resp_size);
++	kfree(resp);
++
++	if (!ret && resp_size)
++		pr_warn("Received unexpected payload for CONSOLE_CLOSE: %lu\n", resp_size);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_rm_console_close);
++
++/**
++ * gh_rm_console_write: Write to a VM's console
++ * @vmid: The vmid of the vm whose console to write to.
++ * @buf: Buffer to write to the VM's console
++ * @size: Size of the buffer
++ */
++int gh_rm_console_write(gh_vmid_t vmid, const char *buf, size_t size)
++{
++	void *resp;
++	struct gh_vm_console_write_req *req_payload;
++	size_t resp_size;
++	int ret = 0;
++	size_t req_payload_size = sizeof(*req_payload) + size;
++
++	if (size < 1 || size > (U32_MAX - sizeof(*req_payload)))
++		return -EINVAL;
++
++	req_payload = kzalloc(req_payload_size, GFP_KERNEL);
++
++	if (!req_payload)
++		return -ENOMEM;
++
++	req_payload->vmid = vmid;
++	req_payload->num_bytes = size;
++	memcpy(req_payload->data, buf, size);
++
++	ret = gh_rm_call(GH_RM_RPC_VM_CONSOLE_WRITE_ID,
++		   req_payload, req_payload_size,
++		   &resp, &resp_size);
++	kfree(req_payload);
++	kfree(resp);
++
++	if (!ret && resp_size)
++		pr_warn("Received unexpected payload for CONSOLE_WRITE: %lu\n", resp_size);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_rm_console_write);
++
++/**
++ * gh_rm_console_flush: Flush a console with a VM
++ * @vmid: The vmid of the vm whose console to flush
++ */
++int gh_rm_console_flush(gh_vmid_t vmid)
++{
++	void *resp;
++	struct gh_vm_console_common_req req_payload = {0};
++	size_t resp_size;
++	int ret;
++
++	req_payload.vmid = vmid;
++
++	ret = gh_rm_call(GH_RM_RPC_VM_CONSOLE_FLUSH_ID,
++			  &req_payload, sizeof(req_payload),
++			  &resp, &resp_size);
++	kfree(resp);
++
++	if (!ret && resp_size)
++		pr_warn("Received unexpected payload for CONSOLE_FLUSH: %lu\n", resp_size);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_rm_console_flush);
+diff --git a/include/linux/gunyah_rsc_mgr.h b/include/linux/gunyah_rsc_mgr.h
+index 015bd851e1a3..035bbf601e1f 100644
+--- a/include/linux/gunyah_rsc_mgr.h
++++ b/include/linux/gunyah_rsc_mgr.h
+@@ -26,4 +26,19 @@ struct gh_rm_notification {
+ int gh_rm_register_notifier(struct notifier_block *nb);
+ int gh_rm_unregister_notifier(struct notifier_block *nb);
+ 
++/* Notification type Message IDs */
++#define GH_RM_NOTIF_VM_CONSOLE_CHARS	0X56100080
++
++struct gh_rm_notif_vm_console_chars {
++	gh_vmid_t vmid;
++	u16 num_bytes;
++	u8 bytes[0];
++} __packed;
++
++/* RPC Calls */
++int gh_rm_console_open(gh_vmid_t vmid);
++int gh_rm_console_close(gh_vmid_t vmid);
++int gh_rm_console_write(gh_vmid_t vmid, const char *buf, size_t size);
++int gh_rm_console_flush(gh_vmid_t vmid);
++
+ #endif
 -- 
 2.25.1
 
