@@ -2,164 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D38DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C19C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240619AbiBWMtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:49:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S240600AbiBWMtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:49:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240593AbiBWMtB (ORCPT
+        with ESMTP id S240606AbiBWMtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:49:01 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5270FA66C3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:48:34 -0800 (PST)
+        Wed, 23 Feb 2022 07:49:05 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40047A8891;
+        Wed, 23 Feb 2022 04:48:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645620514; x=1677156514;
+  t=1645620517; x=1677156517;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=7U3dBXvnvJSXR66MUjtmjBPnFPs6h5fn1DN++jies5w=;
-  b=UdjaNgzP0TcAacOKhtCAkH+nQmnD8qXaqbwO+pXH5/YTckkSPEdGtlY8
-   UkeMtE7XUV0kT16nnaG/O0nd14Ko6od5kdg/vCW7oYt7l1PANdXNrJjc+
-   HAmlGn4elDJeGnPr/bOxydDiZ/5x/fwzRJBCIvikwFf0Ju6Nwm126MEoR
-   Rm9RiLW3ZPZf0w1fbqddGxWhzHuDgDArJTPkg2uJHm8h1CP/NUd8+L3Kr
-   TdC7tMqTGyqAF5nEB29lxJsp6I7yklVY6ix+sZUQwquxz+lYTjsP4NwmE
-   KUmhH6MUX2RiLNxGtVm5ES6I65OwfWsygz+24mKkTTXbBQ9w5vPrZ/dZ6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251689844"
+  bh=SeCtxrXr47ee1ECiebJOHKwJcw5JwFiRtxOV0liAsAM=;
+  b=bCZmVIckcTvorv5HlejCowrneY4kG6IossE8NkrXzu1UfiNhi1cA4a+Q
+   xPHYYCEbKURyOrZaMo3zeQIwMFRKNfKoMwxJSx8BoKShuYC9DC4Jecz/e
+   Jso9hce7via17zitv2xXH9QYsZrW1xuEkvHe+CoirgmfNQZhw7nZ17JIM
+   d3Gm0iIc3FzEKwqdA5ni+euCQKDtXxIx/j8h9UmKYywfTihHlmVGWpLzr
+   f6FNNeftd0lBN8bo/fVglligjUFAll5+5OHzKUk711INN3ILKRUXvkBis
+   ZRbwAD3CXx2uqZDEG7W4PII8PtR2bOSSPrIsusa7210EAVN0eexwyzLjW
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="249537081"
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="251689844"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:33 -0800
+   d="scan'208";a="249537081"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:48:37 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="637409614"
+   d="scan'208";a="683884207"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 04:48:30 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nMr4I-0001Pq-3g; Wed, 23 Feb 2022 12:48:30 +0000
-Date:   Wed, 23 Feb 2022 20:48:10 +0800
+        id 1nMr4I-0001Q5-6I; Wed, 23 Feb 2022 12:48:30 +0000
+Date:   Wed, 23 Feb 2022 20:47:27 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>, broonie@kernel.org,
-        alsa-devel@alsa-project.org
-Cc:     kbuild-all@lists.01.org, Alexander.Deucher@amd.com,
-        Sunil-kumar.Dommati@amd.com, krisman@collabora.com,
-        wtli@nuvoton.com, Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/9] ASoC: amd: vg: fix for pm resume callback sequence
-Message-ID: <202202232021.rBs2qLvB-lkp@intel.com>
-References: <20220223071959.13539-1-Vijendar.Mukunda@amd.com>
+To:     Sui Jingfeng <15330273260@189.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <error27@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v10 3/4] drm/lsdc: add drm driver for loongson display
+ controller
+Message-ID: <202202231909.8x2nM3si-lkp@intel.com>
+References: <20220220145554.117854-4-15330273260@189.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223071959.13539-1-Vijendar.Mukunda@amd.com>
+In-Reply-To: <20220220145554.117854-4-15330273260@189.cn>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vijendar,
+Hi Sui,
 
-Thank you for the patch! Perhaps something to improve:
+Thank you for the patch! Yet something to improve:
 
-[auto build test WARNING on broonie-sound/for-next]
-[also build test WARNING on v5.17-rc5 next-20220222]
+[auto build test ERROR on drm/drm-next]
+[also build test ERROR on robh/for-next v5.17-rc5 next-20220222]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/0day-ci/linux/commits/Vijendar-Mukunda/ASoC-amd-vg-fix-for-pm-resume-callback-sequence/20220223-152636
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202232021.rBs2qLvB-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+url:    https://github.com/0day-ci/linux/commits/Sui-Jingfeng/drm-lsdc-add-drm-driver-for-loongson-display-controller/20220220-225801
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: riscv-randconfig-r012-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231909.8x2nM3si-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
 reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/43c5f728cf59371b29569d941fb2ef2bdc3a279d
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/0day-ci/linux/commit/3891cda03ed77e66fafaf7cfe075042e13f20173
         git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Vijendar-Mukunda/ASoC-amd-vg-fix-for-pm-resume-callback-sequence/20220223-152636
-        git checkout 43c5f728cf59371b29569d941fb2ef2bdc3a279d
+        git fetch --no-tags linux-review Sui-Jingfeng/drm-lsdc-add-drm-driver-for-loongson-display-controller/20220220-225801
+        git checkout 3891cda03ed77e66fafaf7cfe075042e13f20173
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash sound/soc/amd/vangogh/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   sound/soc/amd/vangogh/acp5x-pcm-dma.c: In function 'acp5x_pcm_resume':
->> sound/soc/amd/vangogh/acp5x-pcm-dma.c:430:20: warning: variable 'frmt_val' set but not used [-Wunused-but-set-variable]
-     430 |  u32 val, reg_val, frmt_val;
-         |                    ^~~~~~~~
->> sound/soc/amd/vangogh/acp5x-pcm-dma.c:430:11: warning: variable 'reg_val' set but not used [-Wunused-but-set-variable]
-     430 |  u32 val, reg_val, frmt_val;
-         |           ^~~~~~~
-
-
-vim +/frmt_val +430 sound/soc/amd/vangogh/acp5x-pcm-dma.c
-
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  425  
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  426  static int __maybe_unused acp5x_pcm_resume(struct device *dev)
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  427  {
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  428  	struct i2s_dev_data *adata;
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  429  	struct i2s_stream_instance *rtd;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21 @430  	u32 val, reg_val, frmt_val;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  431  
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  432  	reg_val = 0;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  433  	frmt_val = 0;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  434  	adata = dev_get_drvdata(dev);
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  435  
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  436  	if (adata->play_stream && adata->play_stream->runtime) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  437  		rtd = adata->play_stream->runtime->private_data;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  438  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  439  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_ITER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  440  		if (adata->tdm_mode == TDM_ENABLE) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  441  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_TXFRMT);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  442  			val = acp_readl(adata->acp5x_base + ACP_HSTDM_ITER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  443  			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_ITER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  444  		}
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  445  	}
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  446  	if (adata->i2ssp_play_stream && adata->i2ssp_play_stream->runtime) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  447  		rtd = adata->i2ssp_play_stream->runtime->private_data;
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  448  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  449  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_ITER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  450  		if (adata->tdm_mode == TDM_ENABLE) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  451  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_TXFRMT);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  452  			val = acp_readl(adata->acp5x_base + ACP_I2STDM_ITER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  453  			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_ITER);
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  454  		}
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  455  	}
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  456  
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  457  	if (adata->capture_stream && adata->capture_stream->runtime) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  458  		rtd = adata->capture_stream->runtime->private_data;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  459  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  460  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_IRER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  461  		if (adata->tdm_mode == TDM_ENABLE) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  462  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_RXFRMT);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  463  			val = acp_readl(adata->acp5x_base + ACP_HSTDM_IRER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  464  			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_IRER);
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  465  		}
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  466  	}
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  467  	if (adata->i2ssp_capture_stream && adata->i2ssp_capture_stream->runtime) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  468  		rtd = adata->i2ssp_capture_stream->runtime->private_data;
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  469  		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  470  		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_IRER);
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  471  		if (adata->tdm_mode == TDM_ENABLE) {
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  472  			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_RXFRMT);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  473  			val = acp_readl(adata->acp5x_base + ACP_I2STDM_IRER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  474  			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_IRER);
-43c5f728cf59371 Vijendar Mukunda 2022-02-23  475  		}
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  476  	}
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  477  	acp_writel(1, adata->acp5x_base + ACP_EXTERNAL_INTR_ENB);
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  478  	return 0;
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  479  }
-361414dc1f07b72 Vijendar Mukunda 2021-07-21  480  
+>> ld.lld: error: undefined symbol: ttm_bo_init
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_create) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_bo_put
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_put) in archive drivers/built-in.a
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_object_free) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_tt_init
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(bo_driver_ttm_tt_create) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_tt_fini
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(bo_driver_ttm_tt_destroy) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_bo_move_memcpy
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(bo_driver_move) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_bo_vunmap
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_bo_driver_move_notify) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: drm_gem_ttm_print_info
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_object_funcs) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: drm_gem_ttm_mmap
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_object_funcs) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_bo_eviction_valuable
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(bo_driver) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: drm_gem_ttm_dumb_map_offset
+   >>> referenced by lsdc_drv.c
+   >>> gpu/drm/lsdc/lsdc_drv.o:(lsdc_vram_driver_stub) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: ttm_bo_move_to_lru_tail
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_pin) in archive drivers/built-in.a
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_unpin) in archive drivers/built-in.a
+   >>> referenced by drm_gem_vram_helper.c
+   >>> gpu/drm/drm_gem_vram_helper.o:(drm_gem_vram_vmap) in archive drivers/built-in.a
+   >>> referenced 1 more times
+..
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
