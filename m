@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3777FC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FAFC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243674AbiBWR76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
+        id S243688AbiBWSAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243629AbiBWR7v (ORCPT
+        with ESMTP id S243662AbiBWR7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:59:51 -0500
+        Wed, 23 Feb 2022 12:59:55 -0500
 Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21203DA45;
-        Wed, 23 Feb 2022 09:59:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0EC3DA45;
+        Wed, 23 Feb 2022 09:59:27 -0800 (PST)
 Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
         by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
         (envelope-from <luca@lucaceresoli.net>)
-        id 1nMvv8-00039p-1V; Wed, 23 Feb 2022 18:59:22 +0100
+        id 1nMvvB-00039p-JM; Wed, 23 Feb 2022 18:59:25 +0100
 From:   Luca Ceresoli <luca@lucaceresoli.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
@@ -31,10 +31,11 @@ Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: [PATCH v6 2/8] rtc: max77686: rename day-of-month defines
-Date:   Wed, 23 Feb 2022 18:59:02 +0100
-Message-Id: <20220223175908.191618-3-luca@lucaceresoli.net>
+        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v6 4/8] dt-bindings: mfd: add Maxim MAX77714 PMIC
+Date:   Wed, 23 Feb 2022 18:59:04 +0100
+Message-Id: <20220223175908.191618-5-luca@lucaceresoli.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223175908.191618-1-luca@lucaceresoli.net>
 References: <20220223175908.191618-1-luca@lucaceresoli.net>
@@ -54,12 +55,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RTC_DATE and REG_RTC_DATE are used for the registers holding the day of
-month. Rename these constants to mean what they mean.
+Add bindings for the MAX77714 PMIC with GPIO, RTC and watchdog.
 
 Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+
 ---
 
 Changes in v6: none
@@ -68,121 +69,106 @@ Changes in v5: none
 
 Changes in v4: none
 
-Changes in v3: none
+Changes in v3:
+ - add 'regulators' node (Krzysztof Kozlowski, Rob Herring)
 
-Changes in v2:
- - fix drivers/mfd/max77686.c build failure due to missing rename
-   (Reported-by: kernel test robot <lkp@intel.com>)
+Changes in v2: none
 ---
- drivers/mfd/max77686.c               |  2 +-
- drivers/rtc/rtc-max77686.c           | 16 ++++++++--------
- include/linux/mfd/max77686-private.h |  4 ++--
- 3 files changed, 11 insertions(+), 11 deletions(-)
+ .../bindings/mfd/maxim,max77714.yaml          | 68 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 73 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
 
-diff --git a/drivers/mfd/max77686.c b/drivers/mfd/max77686.c
-index f9e12ab2bc75..2ac64277fb84 100644
---- a/drivers/mfd/max77686.c
-+++ b/drivers/mfd/max77686.c
-@@ -87,7 +87,7 @@ static bool max77802_rtc_is_volatile_reg(struct device *dev, unsigned int reg)
- 		reg == MAX77802_RTC_WEEKDAY ||
- 		reg == MAX77802_RTC_MONTH ||
- 		reg == MAX77802_RTC_YEAR ||
--		reg == MAX77802_RTC_DATE);
-+		reg == MAX77802_RTC_MONTHDAY);
- }
+diff --git a/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml b/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
+new file mode 100644
+index 000000000000..74a6867d3c82
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/maxim,max77714.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MAX77714 PMIC with GPIO, RTC and watchdog from Maxim Integrated.
++
++maintainers:
++  - Luca Ceresoli <luca@lucaceresoli.net>
++
++description: |
++  MAX77714 is a Power Management IC with 4 buck regulators, 9
++  low-dropout regulators, 8 GPIOs, RTC and watchdog.
++
++properties:
++  compatible:
++    const: maxim,max77714
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-controller: true
++
++  "#interrupt-cells":
++    const: 2
++    description:
++      The first cell is the IRQ number, the second cell is the trigger type.
++
++  regulators:
++    type: object
++    additionalProperties: false
++
++    patternProperties:
++      '^(buck[0-3]|ldo[0-8])$':
++        type: object
++        unevaluatedProperties: false
++        $ref: /schemas/regulator/regulator.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-controller
++  - "#interrupt-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pmic@1c {
++            compatible = "maxim,max77714";
++            reg = <0x1c>;
++            interrupt-parent = <&gpio2>;
++            interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
++
++            interrupt-controller;
++            #interrupt-cells = <2>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 777cd6fa2b3d..e112ca549c5d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11720,6 +11720,11 @@ F:	drivers/power/supply/max77650-charger.c
+ F:	drivers/regulator/max77650-regulator.c
+ F:	include/linux/mfd/max77650.h
  
- static bool max77802_is_volatile_reg(struct device *dev, unsigned int reg)
-diff --git a/drivers/rtc/rtc-max77686.c b/drivers/rtc/rtc-max77686.c
-index bac52cdea97d..7e765207f28e 100644
---- a/drivers/rtc/rtc-max77686.c
-+++ b/drivers/rtc/rtc-max77686.c
-@@ -57,7 +57,7 @@ enum {
- 	RTC_WEEKDAY,
- 	RTC_MONTH,
- 	RTC_YEAR,
--	RTC_DATE,
-+	RTC_MONTHDAY,
- 	RTC_NR_TIME
- };
- 
-@@ -119,7 +119,7 @@ enum max77686_rtc_reg_offset {
- 	REG_RTC_WEEKDAY,
- 	REG_RTC_MONTH,
- 	REG_RTC_YEAR,
--	REG_RTC_DATE,
-+	REG_RTC_MONTHDAY,
- 	REG_ALARM1_SEC,
- 	REG_ALARM1_MIN,
- 	REG_ALARM1_HOUR,
-@@ -150,7 +150,7 @@ static const unsigned int max77686_map[REG_RTC_END] = {
- 	[REG_RTC_WEEKDAY]    = MAX77686_RTC_WEEKDAY,
- 	[REG_RTC_MONTH]      = MAX77686_RTC_MONTH,
- 	[REG_RTC_YEAR]       = MAX77686_RTC_YEAR,
--	[REG_RTC_DATE]       = MAX77686_RTC_DATE,
-+	[REG_RTC_MONTHDAY]   = MAX77686_RTC_MONTHDAY,
- 	[REG_ALARM1_SEC]     = MAX77686_ALARM1_SEC,
- 	[REG_ALARM1_MIN]     = MAX77686_ALARM1_MIN,
- 	[REG_ALARM1_HOUR]    = MAX77686_ALARM1_HOUR,
-@@ -233,7 +233,7 @@ static const unsigned int max77802_map[REG_RTC_END] = {
- 	[REG_RTC_WEEKDAY]    = MAX77802_RTC_WEEKDAY,
- 	[REG_RTC_MONTH]      = MAX77802_RTC_MONTH,
- 	[REG_RTC_YEAR]       = MAX77802_RTC_YEAR,
--	[REG_RTC_DATE]       = MAX77802_RTC_DATE,
-+	[REG_RTC_MONTHDAY]   = MAX77802_RTC_MONTHDAY,
- 	[REG_ALARM1_SEC]     = MAX77802_ALARM1_SEC,
- 	[REG_ALARM1_MIN]     = MAX77802_ALARM1_MIN,
- 	[REG_ALARM1_HOUR]    = MAX77802_ALARM1_HOUR,
-@@ -288,7 +288,7 @@ static void max77686_rtc_data_to_tm(u8 *data, struct rtc_time *tm,
- 
- 	/* Only a single bit is set in data[], so fls() would be equivalent */
- 	tm->tm_wday = ffs(data[RTC_WEEKDAY] & mask) - 1;
--	tm->tm_mday = data[RTC_DATE] & 0x1f;
-+	tm->tm_mday = data[RTC_MONTHDAY] & 0x1f;
- 	tm->tm_mon = (data[RTC_MONTH] & 0x0f) - 1;
- 	tm->tm_year = data[RTC_YEAR] & mask;
- 	tm->tm_yday = 0;
-@@ -309,7 +309,7 @@ static int max77686_rtc_tm_to_data(struct rtc_time *tm, u8 *data,
- 	data[RTC_MIN] = tm->tm_min;
- 	data[RTC_HOUR] = tm->tm_hour;
- 	data[RTC_WEEKDAY] = 1 << tm->tm_wday;
--	data[RTC_DATE] = tm->tm_mday;
-+	data[RTC_MONTHDAY] = tm->tm_mday;
- 	data[RTC_MONTH] = tm->tm_mon + 1;
- 
- 	if (info->drv_data->alarm_enable_reg) {
-@@ -565,8 +565,8 @@ static int max77686_rtc_start_alarm(struct max77686_rtc_info *info)
- 			data[RTC_MONTH] |= (1 << ALARM_ENABLE_SHIFT);
- 		if (data[RTC_YEAR] & info->drv_data->mask)
- 			data[RTC_YEAR] |= (1 << ALARM_ENABLE_SHIFT);
--		if (data[RTC_DATE] & 0x1f)
--			data[RTC_DATE] |= (1 << ALARM_ENABLE_SHIFT);
-+		if (data[RTC_MONTHDAY] & 0x1f)
-+			data[RTC_MONTHDAY] |= (1 << ALARM_ENABLE_SHIFT);
- 
- 		ret = regmap_bulk_write(info->rtc_regmap, map[REG_ALARM1_SEC],
- 					data, ARRAY_SIZE(data));
-diff --git a/include/linux/mfd/max77686-private.h b/include/linux/mfd/max77686-private.h
-index b1482b3cf353..3acceeedbaba 100644
---- a/include/linux/mfd/max77686-private.h
-+++ b/include/linux/mfd/max77686-private.h
-@@ -152,7 +152,7 @@ enum max77686_rtc_reg {
- 	MAX77686_RTC_WEEKDAY		= 0x0A,
- 	MAX77686_RTC_MONTH		= 0x0B,
- 	MAX77686_RTC_YEAR		= 0x0C,
--	MAX77686_RTC_DATE		= 0x0D,
-+	MAX77686_RTC_MONTHDAY		= 0x0D,
- 	MAX77686_ALARM1_SEC		= 0x0E,
- 	MAX77686_ALARM1_MIN		= 0x0F,
- 	MAX77686_ALARM1_HOUR		= 0x10,
-@@ -352,7 +352,7 @@ enum max77802_rtc_reg {
- 	MAX77802_RTC_WEEKDAY		= 0xCA,
- 	MAX77802_RTC_MONTH		= 0xCB,
- 	MAX77802_RTC_YEAR		= 0xCC,
--	MAX77802_RTC_DATE		= 0xCD,
-+	MAX77802_RTC_MONTHDAY		= 0xCD,
- 	MAX77802_RTC_AE1		= 0xCE,
- 	MAX77802_ALARM1_SEC		= 0xCF,
- 	MAX77802_ALARM1_MIN		= 0xD0,
++MAXIM MAX77714 PMIC MFD DRIVER
++M:	Luca Ceresoli <luca@lucaceresoli.net>
++S:	Maintained
++F:	Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
++
+ MAXIM MAX77802 PMIC REGULATOR DEVICE DRIVER
+ M:	Javier Martinez Canillas <javier@dowhile0.org>
+ L:	linux-kernel@vger.kernel.org
 -- 
 2.25.1
 
