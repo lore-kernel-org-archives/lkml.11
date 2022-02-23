@@ -2,182 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C338C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FCFC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240263AbiBWMDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:03:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S240266AbiBWMDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:03:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240139AbiBWMCz (ORCPT
+        with ESMTP id S240267AbiBWMDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:02:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C65D985B3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:02:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645617747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rxw0Z+reGZb0g3ZpKzxxXhVmrLWhbn6dM0h9967n9S4=;
-        b=Y6pdqY7cuOtczfvBkwSEM6srAvve0XTst7PAvyaSJ2Nj33vvCygqXvVvFtz6S/3gAGLn95
-        yaHRqV7cmrEN9299Px6+lUwGLucNMwu02+BGlYeSHbPXTKqE0jJsM55ZcAb+w8T1AWENt/
-        zXnmXMwCv4ZG9fMTDepaVBd3DKIVNc8=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-508-Xr3OtOoOPF-aoGvlaA4PRw-1; Wed, 23 Feb 2022 07:02:26 -0500
-X-MC-Unique: Xr3OtOoOPF-aoGvlaA4PRw-1
-Received: by mail-ej1-f70.google.com with SMTP id gn20-20020a1709070d1400b006cf1fcb4c8dso7029852ejc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:02:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Rxw0Z+reGZb0g3ZpKzxxXhVmrLWhbn6dM0h9967n9S4=;
-        b=VyXd2QwZ3bU2nqKnZCplXTyduyiZ6DWGC0i0zTWjt7I1ckCmiDoQNweqVVNMSXWSCa
-         RlRnvroXwYynyOQn8URB2/sYyTxC64Or8OriUKpPb1jLSJeRLX994UTgGARDBv+FeNan
-         +VSHAD7OINGkrFjQUB+/WcnrPZWBi8k3d56FpfarwIDoc/WKvzLsR2VbDCtYofxMTzNt
-         k9T/qpTFnyFqaLyPTE3lFK1ZgCsY57InQR85AnZx9DvT/NTAHVgGInVa7boMq52+iYoU
-         OgE0wIBTFLUflB/yqWXXug+RZaDZhwzcUBQGQZdRzwITNHZKQOaKa3k+2Z1LKGw7750W
-         6nOQ==
-X-Gm-Message-State: AOAM533pt3KVBpXPebIbTK4kewY6boZQMYuckeOGtdAE166crnMBgqDB
-        LBagyQN9DOfd1kGu/2LHxy5b+atXtFBqyFiMGiTStd5MV+A46O8xiKMHkrjmxIh60PlHT9fQj7t
-        mlqxPWbtx53b+XtL5VvzqOsjp
-X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr31879379edt.246.1645617744686;
-        Wed, 23 Feb 2022 04:02:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzfeaFDjsJwitSmeTHc7QM+d+toZyNkK8DQVMWIsAnMGqcK0Rpdfv174Ak9wkYZNTh4U2N2nQ==
-X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr31879344edt.246.1645617744435;
-        Wed, 23 Feb 2022 04:02:24 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id e15sm3312059ejk.3.2022.02.23.04.02.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 04:02:24 -0800 (PST)
-Message-ID: <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
-Date:   Wed, 23 Feb 2022 13:02:23 +0100
+        Wed, 23 Feb 2022 07:03:01 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EAC99ED9;
+        Wed, 23 Feb 2022 04:02:33 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4K3ZRC1BTJz9sSm;
+        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id MQQeifkscaiX; Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4K3ZRC0BxJz9sSZ;
+        Wed, 23 Feb 2022 13:02:31 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EC4838B77E;
+        Wed, 23 Feb 2022 13:02:30 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id ceDBNvG5e-Zo; Wed, 23 Feb 2022 13:02:30 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.7.201])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 646108B763;
+        Wed, 23 Feb 2022 13:02:30 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21NC2LJL1148183
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 13:02:21 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21NC2LgI1148176;
+        Wed, 23 Feb 2022 13:02:21 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Aaron Tomlin <atomlin@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kgdb-bugreport@lists.sourceforge.net, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-modules@vger.kernel.org,
+        Aaron Tomlin <atomlin@atomlin.com>
+Subject: [PATCH v6 1/6] module: Always have struct mod_tree_root
+Date:   Wed, 23 Feb 2022 13:02:11 +0100
+Message-Id: <c79d6178a96245e5ff6e7b9e75e067dec7de8f4d.1645607143.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1645607143.git.christophe.leroy@csgroup.eu>
+References: <cover.1645607143.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-11-clement.leger@bootlin.com>
- <YhPSkz8+BIcdb72R@smile.fi.intel.com> <20220222142513.026ad98c@fixe.home>
- <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1645617734; l=1943; s=20211009; h=from:subject:message-id; bh=rL9BbR0Vuko4WRBzQFmQdRuSxsE8/lm7k9tqySSgYZk=; b=OIxX2OikSXw/4nJCjbBV9MFp637S3wjOVl9+TyhFVdUbLpSANdBrX/S480ZDiV7LqNk0SLARauhc Cy0aO/4HBSBR/ifQV/OFH32ToJMCvwrXjMnqIAHlRTbkkcmTRkMI
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+In order to separate text and data, we need to setup
+two rb trees.
 
-On 2/23/22 12:22, Andy Shevchenko wrote:
-> On Tue, Feb 22, 2022 at 02:25:13PM +0100, Clément Léger wrote:
->> Le Mon, 21 Feb 2022 19:57:39 +0200,
->> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
->>
->>> On Mon, Feb 21, 2022 at 05:26:52PM +0100, Clément Léger wrote:
->>>> Add support to retrieve a i2c bus in sfp with a fwnode. This support
->>>> is using the fwnode API which also works with device-tree and ACPI.
->>>> For this purpose, the device-tree and ACPI code handling the i2c
->>>> adapter retrieval was factorized with the new code. This also allows
->>>> i2c devices using a software_node description to be used by sfp code.  
->>>
->>> If I'm not mistaken this patch can even go separately right now, since all used
->>> APIs are already available.
->>
->> This patches uses fwnode_find_i2c_adapter_by_node() which is introduced
->> by "i2c: fwnode: add fwnode_find_i2c_adapter_by_node()" but they can
->> probably be contributed both in a separate series.
-> 
-> I summon Hans into the discussion since I remember he recently refactored
-> a bit I2C (ACPI/fwnode) APIs. Also he might have an idea about entire big
-> picture approach with this series based on his ACPI experience.
+This means that struct mod_tree_root is required even without
+MODULES_TREE_LOOKUP.
 
-If I understand this series correctly then this is about a PCI-E card
-which has an I2C controller on the card and behind that I2C-controller
-there are a couple if I2C muxes + I2C clients.
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Aaron Tomlin <atomlin@atomlin.com>
+---
+ kernel/module/internal.h | 4 +++-
+ kernel/module/main.c     | 5 -----
+ 2 files changed, 3 insertions(+), 6 deletions(-)
 
-And the goal of the series is to describe those I2C muxes + I2C clients
-with software nodes so that the existing I2C enumeration code can be
-used (after porting the existing I2C enumeration code from OF functions
-to generic fwnode functions).
-
-Did I understand this bit correctly? I believe that a lot of the
-discussion here is caused by the initial problem / hw-setup this
-series tries to address / support is not described very well ?
-
-Assuming I did understand the above correctly. One alternative would be
-to simply manually instantiate the I2C muxes + clients using
-i2c_new_client_device(). But I'm not sure if i2c_new_client_device()
-will work for the muxes without adding some software_nodes which
-brings us back to something like this patch-set.
-
-In general I believe that porting things away from OF specific parsing
-to the generic fwnode APIs is a good thing.
-
-Making device_get_match_data() for devices with only a software fwnode
-use of_device_id matching feels a bit weird. But it also makes sense
-since that requires just adding a compatible string to the software
-fwnode properties which is easy and it allows re-uses existing
-matching code in the drivers.
-
-I understand various people falling over this weirdness but AFAICT
-the alternative would be adding some special swnode_id type + matching
-code for devices where the primary fwnode is a software fwnode, which
-would just be a whole bunch of extra code ending up with something
-similar.
-
-So re-using of_device_id-s for matching of devices where the primary
-fwnode is a software fwnode seems like a good idea. *But* this all
-needs to be explained in the commit message a lot better. It really
-needs to be spelled out that this is:
-
-a) Only for matching devices where the primary fwnode is a software fwnode 
-
-b) Really has nothing to do with of/dt but of_device_id matching is
-   used here to avoid having to introduce a new matching mechanism just
-   for devices where the primary fwnode is a software fwnode
-
-c) That introducing a new software fwnode matching mechanism would be
-   a bad idea since this will require adding new swnode_match tables
-   to many drivers, where as re-using of_device_id will make drivers
-   which already have an of_match_table just work.
-
-And this should be spelled out in both the commit message as well
-as in some documentation / kdoc comments. Because although a useful
-trick, reusing the of_match_id-s is also confusing which I believe
-is what has led to a lot of the discussion on this patch-set so far.
-
-Note the above all relies on my interpretation of this patch set,
-which may be wrong, since as said the patch-set does seem to be
-lacking when it comes to documentation / motivation of the patches.
-
-Regards,
-
-Hans
-
+diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+index cbc268af23ae..ac64e53ac5e3 100644
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -143,15 +143,17 @@ static inline void module_decompress_cleanup(struct load_info *info)
+ }
+ #endif
+ 
+-#ifdef CONFIG_MODULES_TREE_LOOKUP
+ struct mod_tree_root {
++#ifdef CONFIG_MODULES_TREE_LOOKUP
+ 	struct latch_tree_root root;
++#endif
+ 	unsigned long addr_min;
+ 	unsigned long addr_max;
+ };
+ 
+ extern struct mod_tree_root mod_tree;
+ 
++#ifdef CONFIG_MODULES_TREE_LOOKUP
+ void mod_tree_insert(struct module *mod);
+ void mod_tree_remove_init(struct module *mod);
+ void mod_tree_remove(struct module *mod);
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 6e3a6b4efd21..3832a71cdacb 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -74,7 +74,6 @@ static void do_free_init(struct work_struct *w);
+ static DECLARE_WORK(init_free_wq, do_free_init);
+ static LLIST_HEAD(init_free_list);
+ 
+-#ifdef CONFIG_MODULES_TREE_LOOKUP
+ struct mod_tree_root mod_tree __cacheline_aligned = {
+ 	.addr_min = -1UL,
+ };
+@@ -82,10 +81,6 @@ struct mod_tree_root mod_tree __cacheline_aligned = {
+ #define module_addr_min mod_tree.addr_min
+ #define module_addr_max mod_tree.addr_max
+ 
+-#else /* !CONFIG_MODULES_TREE_LOOKUP */
+-static unsigned long module_addr_min = -1UL, module_addr_max;
+-#endif /* CONFIG_MODULES_TREE_LOOKUP */
+-
+ struct symsearch {
+ 	const struct kernel_symbol *start, *stop;
+ 	const s32 *crcs;
+-- 
+2.34.1
 
