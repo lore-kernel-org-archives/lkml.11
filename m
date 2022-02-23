@@ -2,206 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C43C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242298AbiBWPm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:42:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
+        id S242265AbiBWPnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:43:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241099AbiBWPmR (ORCPT
+        with ESMTP id S242341AbiBWPnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:42:17 -0500
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363852D1E5;
-        Wed, 23 Feb 2022 07:41:41 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 34AD75802FD;
-        Wed, 23 Feb 2022 10:41:38 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 23 Feb 2022 10:41:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=M2/b5MIE6bQJByA3Vh9tC6cYzTZFNeBiNnMth2
-        KLMVo=; b=Bnv7woDYcd7mmSSfipVO5la+dn+WX97gG+qYFku5RwmJ0b+uz29gKk
-        W/2lgSs3Ox46zW5BJNzdu9QnQWAlaLv9ZEUY0uScxAuhSrTdfl0gsZRpbn1AcuYR
-        rp4ogfiwhwIy7fX4XzhoNXVUe1eeXWt2U9LEcNfLrDCarGqOdsOMaBwLKq6lc07C
-        TkJ7jeBpIQyorDeqGZ0InOnN44owKvZhafYZamH9gD/VG9LHBpIY8KrmyNlKXmeU
-        eCiGVRY7pmgpwMCiDx8x4QwOzvl7/1CU5o57TZXUXTmaZH8/duxrLhtRBf3tyn49
-        j2w6NdoCyh5lxb0a9vrXxRjbWQl/WwkQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=M2/b5MIE6bQJByA3V
-        h9tC6cYzTZFNeBiNnMth2KLMVo=; b=QV9Juy7QQSjZuVHHhURF+1JcKbpnwuM2L
-        VBX0qBqM9COq6G8JtlBAGoYKPbuEo+hs+LLmqfg83f1gF0NFFEBeGu+vJf1DmY8O
-        RkOddVQ2IlNLls2Oj3ZkY6djaPU4zSBcDqnY6Z/0iUIHZy49MsCds/ZL33u9ch/v
-        XetHOyJnIKeMMcKumKLPnQssQ+uO+DjUdMMOt4QblQzlekvmXrX7Cdw2zhJBzdDN
-        jc0jXWr9dqAXKhvw3sk/mR4XmLh8trrHmi9ogmq8oIbzZSMIhdSgCAyKh2oBolEm
-        4kYXV2zaSg26RpZYRA1icgL6iyLDAVcbbQrBkYREWdhapRc3V6SVw==
-X-ME-Sender: <xms:sFUWYm-GEEjdbSALW-ne4zr0sLOEzsXQtkNn_Zyd5wc69QchaF-seA>
-    <xme:sFUWYmsTGwCa4aj1bgfQeK6Cx2WlsgGywYi7Yg_ErHCOtJxzNXhtdN_z_Nh5HhqYF
-    OHdd9nQg-pDWF5Imfw>
-X-ME-Received: <xmr:sFUWYsC-_QYnAVMxuCBJ1m-eY9bXN7V78hbuLSoOd0TrLUfjscuc6K4DsF-X7mzly28hBjWUH6uJLxKEMMSh9bEaiPH4okiUoU0G8Q0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledtgdejkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeduvdduhfekkeehgffftefflefgffdtheffudffgeevteffheeuiedvvdejvdfg
-    veenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
-    igihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:sFUWYucjTpHs6Qn-MDTcCWWmXKBaJcOi8k7atOJd8k3NlTCjoAZtcQ>
-    <xmx:sFUWYrOXvrls4gJweUQTNaIcB_4eu8l17ekbpWVprS4CJ_ltn8bFIg>
-    <xmx:sFUWYokFXOZhIiRJnnF2QEvDa3gLV_16w0kxGw56zZN4sFSw0cYyug>
-    <xmx:slUWYucAa7gT1-vE7e0qdSDMi9pH5PrgDoV3u88A1vtFcOMsjvpvWg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Feb 2022 10:41:36 -0500 (EST)
-Date:   Wed, 23 Feb 2022 16:41:34 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Sui Jingfeng <15330273260@189.cn>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v10 3/4] drm/lsdc: add drm driver for loongson display
- controller
-Message-ID: <20220223154134.y7slxu3jaje2jtwr@houat>
-References: <20220220145554.117854-1-15330273260@189.cn>
- <20220220145554.117854-4-15330273260@189.cn>
- <20220222082747.66otrkc4zwvhem7w@houat>
- <54ea69d7-2fac-74dc-2ef6-843a666cff85@189.cn>
- <20220223143912.m727fie3vtdkvklo@houat>
- <0d4a75c4-78bb-4aed-0fa8-88e9cc165896@189.cn>
+        Wed, 23 Feb 2022 10:43:00 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF93927CC4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:42:32 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id o8so1510607pgf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:42:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5eKMkbn3vkPpm7UY1+T/n4u23dYrThYK2hTdMcTSqbk=;
+        b=iQzHOuBdRTgUUwt6x2XL6c8dfG05Yq2gL7QStu4+rU71gTwZCdVG62tkmnrcJ/f8dH
+         zQcDF4w85f82eNBReN8+eMUSdqm5waegLQY0IJNLiNjN36p+1FuyVSmEaSe7kUixtrVV
+         VB1yF9AAN0VGCT3TMx+zfqBN2hQ1DdRRM7EcMByLGE+QkDfDbbN2X8+o+i4np2ejbMbL
+         Znzp7xrygfK0NJmiU89eEIQGozNaVvTJUs6eEHx/+tBNY7jg4mQrXTTQU4EmoCMkCRYP
+         htRsgSUx6DkOhgpD32eQl1emvmhW19tNmjDmqL+Js+IARGf+990k4VCkK+vyZfmRlbTy
+         k5mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5eKMkbn3vkPpm7UY1+T/n4u23dYrThYK2hTdMcTSqbk=;
+        b=adLhJwe6SPh6fhHLxuuL6ieN/V8qT/nF31ekp0W1yKl5cbgb7q5SXC8I5aaih1JQQl
+         mUdLy/k6w0ZHDVOR3RkGH2LAH8GAK/D8nZECCCPn8rvoUt4S0WzPib5Z8p6+6wbMy1dx
+         PLVvP4VbxOICCbOj/7luG2inZspAUVA25TF1/xKnHlCQDLvMoagmPfrtcjIDj7AbxHWq
+         A2BPOvXTC4Riqm1VATe5q9+2TQCwXI5JNIJwfy/LEyYEfdOKrUNK5S83JHWPZrjZyO3l
+         PzDCmmL/ebmUslshrz3uHjAT0ZxiGFh8zEOfbVAe+49yIhd8lD9NHzoCZXwwXdsRFZof
+         IzCA==
+X-Gm-Message-State: AOAM533lLUXEzy80igqD1r+x5v6cubulvYv2DVoa7dXdWF7T27vH/qm1
+        FzX/o6ZQoDNqGtPg62z9lyIMNFP27wktmQ==
+X-Google-Smtp-Source: ABdhPJwC6BFJXKTBBXCtBd1U+4hyOlzH0X/agA3nwjmP1Umj4h9d1LMS/fMMYwwkm2ORUHx4O6X1YA==
+X-Received: by 2002:a62:fb0d:0:b0:4f1:a584:71f with SMTP id x13-20020a62fb0d000000b004f1a584071fmr10767700pfm.2.1645630951771;
+        Wed, 23 Feb 2022 07:42:31 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s24sm24789695pgq.51.2022.02.23.07.42.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 07:42:31 -0800 (PST)
+Date:   Wed, 23 Feb 2022 15:42:27 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH v2 05/18] KVM: x86/mmu: use struct kvm_mmu_root_info for
+ mmu->root
+Message-ID: <YhZV4yFw5dk3N5o7@google.com>
+References: <20220217210340.312449-1-pbonzini@redhat.com>
+ <20220217210340.312449-6-pbonzini@redhat.com>
+ <cb338203d9abf040fc1b68763ce60369cc8342a6.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uwizgizeraqcnone"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0d4a75c4-78bb-4aed-0fa8-88e9cc165896@189.cn>
+In-Reply-To: <cb338203d9abf040fc1b68763ce60369cc8342a6.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Feb 23, 2022, Maxim Levitsky wrote:
+> On Thu, 2022-02-17 at 16:03 -0500, Paolo Bonzini wrote:
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index b912eef5dc1a..c0d7256e3a78 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -762,7 +762,7 @@ bool kvm_inject_emulated_page_fault(struct kvm_vcpu *vcpu,
+> >  	if ((fault->error_code & PFERR_PRESENT_MASK) &&
+> >  	    !(fault->error_code & PFERR_RSVD_MASK))
+> >  		kvm_mmu_invalidate_gva(vcpu, fault_mmu, fault->address,
+> > -				       fault_mmu->root_hpa);
+> > +				       fault_mmu->root.hpa);
+> >  
+> >  	fault_mmu->inject_page_fault(vcpu, fault);
+> >  	return fault->nested_page_fault;
+> 
+> 
+> As a follow up to this patch I suggest that we should also rename pgd to just 'gpa'.
 
---uwizgizeraqcnone
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hmm, I prefer 'pgd' over 'gpa' because it provides a hint/reminder that the field
+is unused for TDP.  It also pairs with e.g. kvm_mmu_new_pgd(), though I suppose we
+could rename those to something else too.
 
-On Wed, Feb 23, 2022 at 11:14:12PM +0800, Sui Jingfeng wrote:
->=20
-> On 2022/2/23 22:39, Maxime Ripard wrote:
-> > On Tue, Feb 22, 2022 at 10:46:35PM +0800, Sui Jingfeng wrote:
-> > > On 2022/2/22 16:27, Maxime Ripard wrote:
-> > > > > +	if (!of_device_is_available(output)) {
-> > > > > +		of_node_put(output);
-> > > > > +		drm_info(ddev, "connector%d is not available\n", index);
-> > > > > +		return NULL;
-> > > > > +	}
-> > > > > +
-> > > > > +	disp_tims_np =3D of_get_child_by_name(output, "display-timings"=
-);
-> > > > > +	if (disp_tims_np) {
-> > > > > +		lsdc_get_display_timings_from_dtb(output, &lconn->disp_tim);
-> > > > > +		lconn->has_disp_tim =3D true;
-> > > > > +		of_node_put(disp_tims_np);
-> > > > > +		drm_info(ddev, "Found display timings provided by connector%d\=
-n", index);
-> > > > > +	}
-> > > > > +
-> > > > > +	connector_type =3D lsdc_get_connector_type(ddev, output, index);
-> > > > > +
-> > > > > +	if (output) {
-> > > > > +		of_node_put(output);
-> > > > > +		output =3D NULL;
-> > > > > +	}
-> > > > > +
-> > > > > +DT_SKIPED:
-> > > > > +
-> > > > > +	/* Only create the i2c channel if display timing is not provide=
-d */
-> > > > > +	if (!lconn->has_disp_tim) {
-> > > > > +		const struct lsdc_chip_desc * const desc =3D ldev->desc;
-> > > > > +
-> > > > > +		if (desc->have_builtin_i2c)
-> > > > > +			lconn->ddc =3D lsdc_create_i2c_chan(ddev, index);
-> > > > > +		else
-> > > > > +			lconn->ddc =3D lsdc_get_i2c_adapter(ddev, index);
-> > > > This looks weird: the connector bindings have a property to store t=
-he
-> > > > i2c controller connected to the DDC lines, so you should use that
-> > > > instead.
-> > > >=20
-> > > This is not=A0 weird,=A0 ast, mgag200, hibmc do the same thing.
-> > And none of them have DT support.
-> >=20
-> > Maxime
->=20
-> You are wrong, ast driver have dt support. See ast_detect_config_mode() in
-> drm/ast/ast_main.c
->=20
-> static void ast_detect_config_mode(struct drm_device *dev, u32 *scu_rev)
-> {
-> =A0=A0 =A0struct device_node *np =3D dev->dev->of_node;
-> =A0=A0 =A0struct ast_private *ast =3D to_ast_private(dev);
-> =A0=A0 =A0struct pci_dev *pdev =3D to_pci_dev(dev->dev);
-> =A0=A0 =A0uint32_t data, jregd0, jregd1;
->=20
-> =A0=A0 =A0/* Defaults */
-> =A0=A0 =A0ast->config_mode =3D ast_use_defaults;
-> =A0=A0 =A0*scu_rev =3D 0xffffffff;
->=20
-> =A0=A0 =A0/* Check if we have device-tree properties */
-> =A0=A0 =A0if (np && !of_property_read_u32(np, "aspeed,scu-revision-id",
-> =A0=A0 =A0=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 scu_rev)) {
-> =A0=A0 =A0=A0=A0=A0 /* We do, disable P2A access */
-> =A0=A0 =A0=A0=A0=A0 ast->config_mode =3D ast_use_dt;
-> =A0=A0 =A0=A0=A0=A0 drm_info(dev, "Using device-tree for configuration\n"=
-);
-> =A0=A0 =A0=A0=A0=A0 return;
-> =A0=A0 =A0}
->=20
-> =A0....
->=20
-> }
+> This also brings a question, what pgd acronym actually means? 
+> I guess paging guest directory?
 
-It doesn't seem to probe from the DT though. It uses 4 properties, and
-none of them are documented. It's still a widely different case than
-your driver that uses the connector binding, and therefore has access to
-the ddc bus there.
-
-Maxime
-
---uwizgizeraqcnone
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYhZVrQAKCRDj7w1vZxhR
-xS48AQCiz86aru05sqZwXNd++y8Km72yvxlQbVk5ANA9UCjlYAD+KYiiiZuOLSqM
-9g3/jplVDK9jJSxClRqmlsO5loCq/QI=
-=H2N/
------END PGP SIGNATURE-----
-
---uwizgizeraqcnone--
+Page Global Directory, borrowed from the kernel's arch-agnostic paging terminology.
