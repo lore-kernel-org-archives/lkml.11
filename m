@@ -2,211 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 053BDC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238841AbiBWH4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:56:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        id S238844AbiBWH41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:56:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238821AbiBWH4J (ORCPT
+        with ESMTP id S238847AbiBWH4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:56:09 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B725B65156
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:55:42 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id l8so17915060pls.7
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:55:42 -0800 (PST)
+        Wed, 23 Feb 2022 02:56:22 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23D56D4FE;
+        Tue, 22 Feb 2022 23:55:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=45JlznYV8wk7xzGv1ZTp3w27P+Mtc49R+loIGdcFvZU=;
-        b=1lczeAJwMH+l1Qox/69jWR11DW2NEebE1vf559Pc8qjyRdfobs/DpDH87fccPifd8d
-         z2uHx4GJdfH9VwtBQWX0q2RMzwZH63Nf97fT6Vl/sJB2uQJ81OQen3d4OZJJtHe3G/99
-         wlaOgwbFT7C547bYiSw8x8bSNLAqdpYLwhWthcFz/IeJyV8+6FLSyEkOT66/ZLN7UkMa
-         DR3mKTC0kjETCUGU/haTaXYa0GDCx94rpEiIzeuuzWd3ySsdUfK1kkK58CBb2PkgdR4D
-         uyaYmsDjKR2QsDaPldaKK9Iri5uI4UaPH1AAgZc1qhVlZ7nHfF2YEweKSMV8JOA7B+6x
-         ji8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=45JlznYV8wk7xzGv1ZTp3w27P+Mtc49R+loIGdcFvZU=;
-        b=czj/SeLk+Xdy/2RqUxDE8Czrft7G8YuWrq1ZlFBCGvmumLDqEbKdUom3LK7UeGEF6r
-         nScNaqRWRVcJrlz0X/PubWtfLtv671XUpR4LiIkD7KKVucKimHDeCWSqE4krffwsgenD
-         UJVw1Jn16MWZXXYhSgw7v2kjonPJl3VqEVCHWBYcL+HI8J3Noo78JJ3CiKAhEVguPl3r
-         DtA8/89flxH8cIolKqeZa/lP/C1KFM2lLXacd/M2nLs+PtEy9JNJPS4lJexwS+ba3rfX
-         c3OTsHngLdZM00n/WiG/51WVu+zoJlGOHfv7TTmzOvQR8lst7g18jg2UvfmqSfuod5nr
-         5aQg==
-X-Gm-Message-State: AOAM5328tYkRej83k9/fz98hmIn61wCVtNCq0tIF3/+mNIQYEapeF2jw
-        7WnVGScQ12r8CVT61nXY3P8+Rw==
-X-Google-Smtp-Source: ABdhPJwHaDtl0n4+YX7Vi3JBjCx5/EDgt44N5EsxLexHLjX8LUf2LkmoUCQzQYk7sOjAFypQfqq9Sg==
-X-Received: by 2002:a17:902:e743:b0:14f:c274:cc2a with SMTP id p3-20020a170902e74300b0014fc274cc2amr11411722plf.70.1645602942223;
-        Tue, 22 Feb 2022 23:55:42 -0800 (PST)
-Received: from [10.255.215.56] ([139.177.225.242])
-        by smtp.gmail.com with ESMTPSA id m37sm2788359pgb.59.2022.02.22.23.55.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Feb 2022 23:55:41 -0800 (PST)
-Message-ID: <ad3de853-35a7-0fc5-2ac8-4f54fee89cf5@bytedance.com>
-Date:   Wed, 23 Feb 2022 15:55:35 +0800
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645602950; x=1677138950;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=elaRBp/5pEPy0MetfuR9go5lvutr02ilJVWywY+SjUI=;
+  b=pOfcARJD7SDe5hIc5bcLnr5oDQWgoUPkBRkNfzKIxHRr/XZCAOnokJrg
+   z3L3HAssO8fFwd2NxqmJqpstMkpkokNgZIAb0+WKPJoLTw+pSWDE950vu
+   m6Ils6bh4klQMWiPDN9el3Gy4NscGZOWT+L1bfH+eBvFH0ldlZ+8Oln4L
+   Q=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Feb 2022 23:55:50 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 23:55:49 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 22 Feb 2022 23:55:49 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 22 Feb 2022 23:55:43 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v9 0/7] Add pin control support for lpass sc7280
+Date:   Wed, 23 Feb 2022 13:25:25 +0530
+Message-ID: <1645602932-6659-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [External] Re: [PATCH] arm64/ftrace: Make function graph use
- ftrace directly
-Content-Language: en-US
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     rostedt@goodmis.org, mingo@redhat.com, catalin.marinas@arm.com,
-        will@kernel.org, broonie@kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220222130049.81284-1-zhouchengming@bytedance.com>
- <YhUHRIDaLqhAz0SV@lakrids>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YhUHRIDaLqhAz0SV@lakrids>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/2/22 11:54 下午, Mark Rutland wrote:
-> On Tue, Feb 22, 2022 at 09:00:49PM +0800, Chengming Zhou wrote:
->> As we do in commit 0c0593b45c9b ("x86/ftrace: Make function graph
->> use ftrace directly"), we don't need special hook for graph tracer,
->> but instead we use graph_ops:func function to install return_hooker.
->>
->> Since commit 3b23e4991fb6 ("arm64: implement ftrace with regs") add
->> implementation for FTRACE_WITH_REGS on arm64, we can easily adopt
->> the same optimization on arm64.
-> 
-> This is a nice cleanup/refactoring, but I don't think this is an
-> optimization as such; we're still doing the same work, just in
-> marginally different place. So I'd suggest s/optimization/cleanup/ here.
-> 
-> It's probably worth noting that this *only* changes the FTRACE_WITH_REGS
-> implementation, and the mcount-based implementation is unaffected by
-> this patch.
-> 
+This patch series is to split lpass variant common pin control
+functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
 
-Agree, I will change the commit message in the next version.
+Changes Since V8:
+    -- Remove redundant headers included in v8.
+Changes Since V7:
+    -- Update optional clock voting with conditional check.
+    -- Add const to lpi_pinctrl_variant_data structure.
+    -- Update required headers and remove redundant.
+    -- Change EXPORT_SYMBOL to EXPORT_SYMBOL_GPL
+    -- Fix typo errors.
+Changes Since V6:
+    -- Update conditional clock voting to optional clock voting.
+    -- Update Kconfig depends on field with select.
+    -- Fix typo errors. 
+Changes Since V5:
+    -- Create new patch by updating macro name to lpi specific.
+    -- Create new patch by updating lpi pin group structure with core group_desc structure.
+    -- Fix typo errors.
+    -- Sort macros in the make file and configuration file.
+Changes Since V4:
+    -- Update commit message and description of the chip specific extraction patch.
+    -- Sort macros in kconfig and makefile.
+    -- Update optional clock voting to conditional clock voting.
+    -- Fix typo errors.
+    -- Move to quicinc domain email id's.
+Changes Since V3:
+    -- Update separate Kconfig fields for sm8250 and sc7280.
+    -- Update module license and description.
+    -- Move static variables to corresponding .c files from header file.
 
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->> ---
->>  arch/arm64/include/asm/ftrace.h  |  7 +++++++
->>  arch/arm64/kernel/entry-ftrace.S |  6 ------
->>  arch/arm64/kernel/ftrace.c       | 21 +++++++++++++++++++++
->>  3 files changed, 28 insertions(+), 6 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
->> index 1494cfa8639b..dbc45a4157fa 100644
->> --- a/arch/arm64/include/asm/ftrace.h
->> +++ b/arch/arm64/include/asm/ftrace.h
->> @@ -80,8 +80,15 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
->>  
->>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
->>  struct dyn_ftrace;
->> +struct ftrace_ops;
->> +struct ftrace_regs;
->> +
->>  int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
->>  #define ftrace_init_nop ftrace_init_nop
->> +
->> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
->> +		       struct ftrace_ops *op, struct ftrace_regs *fregs);
->> +#define ftrace_graph_func ftrace_graph_func
->>  #endif
->>  
->>  #define ftrace_return_address(n) return_address(n)
->> diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
->> index e535480a4069..eb4a69b1f84d 100644
->> --- a/arch/arm64/kernel/entry-ftrace.S
->> +++ b/arch/arm64/kernel/entry-ftrace.S
->> @@ -97,12 +97,6 @@ SYM_CODE_START(ftrace_common)
->>  SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
->>  	bl	ftrace_stub
->>  
->> -#ifdef CONFIG_FUNCTION_GRAPH_TRACER
->> -SYM_INNER_LABEL(ftrace_graph_call, SYM_L_GLOBAL) // ftrace_graph_caller();
->> -	nop				// If enabled, this will be replaced
->> -					// "b ftrace_graph_caller"
->> -#endif
->> -
-> 
-> You should also be able to delete the FTRACE_WITH_REGS implementation of
-> ftrace_graph_caller since that's now unused.
-> 
-> Having that in the diff would also make it easier to compare to the
-> logic in ftrace_graph_func().
-> 
+Changes Since V2:
+    -- Add new dt-bindings for sc7280 lpi driver.
+    -- Make clock voting change as separate patch.
+    -- Split existing pincontrol driver and make common functions 
+       as part of separate file.
+    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
+		
+Changes Since V1:
+    -- Make lpi pinctrl variant data structure as constant
+    -- Add appropriate commit message
+    -- Change signedoff by sequence.
 
-Yes, will do.
+Srinivasa Rao Mandadapu (7):
+  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
+  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
+  pinctrl: qcom: Update macro name to LPI specific
+  pinctrl: qcom: Update lpi pin group structure
+  pinctrl: qcom: Extract chip specific LPASS LPI code
+  pinctrl: qcom: Add SC7280 lpass pin configuration
+  pinctrl: qcom: Update clock voting as optional
 
->>  /*
->>   * At the callsite x0-x8 and x19-x30 were live. Any C code will have preserved
->>   * x19-x29 per the AAPCS, and we created frame records upon entry, so we need
->> diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
->> index 4506c4a90ac1..1b5da231b1de 100644
->> --- a/arch/arm64/kernel/ftrace.c
->> +++ b/arch/arm64/kernel/ftrace.c
->> @@ -268,6 +268,26 @@ void prepare_ftrace_return(unsigned long self_addr, unsigned long *parent,
->>  }
->>  
->>  #ifdef CONFIG_DYNAMIC_FTRACE
->> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
->> +int ftrace_enable_ftrace_graph_caller(void)
->> +{
->> +	return 0;
->> +}
->> +
->> +int ftrace_disable_ftrace_graph_caller(void)
->> +{
->> +	return 0;
->> +}
-> 
-> It's a shame the core code doesn't provide this if we provide an
-> implementation of ftrace_graph_func.
-> 
+Tested this on SM8250 MTP with WSA and WCD codecs.
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-Maybe I can provide these weak version functions in the ftrace core code
-with an additional patch.
+ .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 -----------
+ .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++++
+ .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++++
+ drivers/pinctrl/qcom/Kconfig                       |  16 ++
+ drivers/pinctrl/qcom/Makefile                      |   2 +
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 255 ++-------------------
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 +++++++
+ drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 168 ++++++++++++++
+ drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 165 +++++++++++++
+ 9 files changed, 703 insertions(+), 370 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
 
->> +
->> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
->> +		       struct ftrace_ops *op, struct ftrace_regs *fregs)
->> +{
->> +	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
->> +	unsigned long *parent = (unsigned long *)&procedure_link_pointer(regs);
->> +
->> +	prepare_ftrace_return(ip, parent, frame_pointer(regs));
->> +}
-> 
-> Other than my comments above, this looks about right, but I'd like to
-> give this some testing before I give any tags.
-> 
-> Could you respin this with the FTRACE_WITH_REGS ftrace_graph_caller asm
-> removed?
-> 
-> Thanks,
-> Mark.
-> 
-Of course, will do.
+-- 
+2.7.4
 
-Thanks!
-
->> +#else
->>  /*
->>   * Turn on/off the call to ftrace_graph_caller() in ftrace_caller()
->>   * depending on @enable.
->> @@ -297,5 +317,6 @@ int ftrace_disable_ftrace_graph_caller(void)
->>  {
->>  	return ftrace_modify_graph_caller(false);
->>  }
->> +#endif /* CONFIG_DYNAMIC_FTRACE_WITH_REGS */
->>  #endif /* CONFIG_DYNAMIC_FTRACE */
->>  #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
->> -- 
->> 2.20.1
->>
