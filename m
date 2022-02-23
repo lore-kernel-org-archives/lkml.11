@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D903EC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B752AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244127AbiBWXih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 18:38:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
+        id S244937AbiBWXik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 18:38:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244878AbiBWXi1 (ORCPT
+        with ESMTP id S244886AbiBWXi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 18:38:27 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E0A5A589;
-        Wed, 23 Feb 2022 15:37:56 -0800 (PST)
+        Wed, 23 Feb 2022 18:38:28 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F8C5A5A4;
+        Wed, 23 Feb 2022 15:37:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645659476; x=1677195476;
+  t=1645659478; x=1677195478;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+MKLa2yx3nWTCH8/dR6dYi3DXpTMspvp8pf1dvGQZKQ=;
-  b=BxT4wK+FRMFIICKFGVQQTIT9V2dermF6KI2W939JQZ/uU1GHSAoKXMow
-   gBWu/gcBP7yxpvr9pXF7+wZQxqC3/raDURV5AitTNTbgpmK+hW7srEWKi
-   63iNYhtMdDpCjW/grMeTzN2dH7SoiCQQdw7sY7U14hih4HDTxc0DkRL1m
-   8=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Feb 2022 15:37:55 -0800
+  bh=2kdOYPCLqgFfKRajMJBjKF0jVs1Vu57J310qUgU6YFU=;
+  b=L7VoxBt6+fHGr4FjmhXjNF3luOFMBPDr0fEq5PEDisHYuj+9nLp2lct2
+   msVjx+aeN+T7FIKQF5Q9f8BkMKkQN6GS/jwyjUYxOLMebPhFsVFt6v9kQ
+   W358zhX3t7+2mgbYskU9Pyk7j/zl+R4cTksLHYaiVvt+nN2ZZMcby/N8u
+   E=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 15:37:58 -0800
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:55 -0800
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:57 -0800
 Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 15:37:54 -0800
+ 15.2.986.15; Wed, 23 Feb 2022 15:37:57 -0800
 From:   Elliot Berman <quic_eberman@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>
+        <linux-kernel@vger.kernel.org>
 CC:     Elliot Berman <quic_eberman@quicinc.com>,
         Trilok Soni <quic_tsoni@quicinc.com>,
         Murali Nalajala <quic_mnalajala@quicinc.com>,
         Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
         Carl van Schaik <quic_cvanscha@quicinc.com>,
         Andy Gross <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH 02/11] dt-bindings: Add binding for gunyah hypervisor
-Date:   Wed, 23 Feb 2022 15:37:20 -0800
-Message-ID: <20220223233729.1571114-3-quic_eberman@quicinc.com>
+Subject: [PATCH 07/11] gunyah: msgq: Add Gunyah message queues
+Date:   Wed, 23 Feb 2022 15:37:25 -0800
+Message-ID: <20220223233729.1571114-8-quic_eberman@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223233729.1571114-1-quic_eberman@quicinc.com>
 References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
@@ -60,268 +59,437 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When Linux is booted as a guest under the Gunyah hypervisor, Gunyah
-applies a devicetree overlay describing the virtual platform
-configuration of the guest VM, such as the message queue capability IDs
-for communicating with the Resource Manager. Add the DT bindings that
-Gunyah adheres for the hypervisor node and message queues.
+Gunyah message queues are unidirectional pipelines to communicate
+between 2 virtual machines, but are typically paired to allow
+bidirectional communication. The intended use case is for small control
+messages between 2 VMs, as they support a maximum of 240 bytes.
+
+Message queues can be discovered either by resource manager or on the
+devicetree. To support discovery on the devicetree, client drivers can
+use gh_msgq_platform_host_attach to allocate the tx and rx message
+queues according to
+Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml.
 
 Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 ---
- .../bindings/gunyah/message-queue.yml         | 100 ++++++++++++++
- .../bindings/gunyah/qcom,hypervisor.yml       | 122 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- 3 files changed, 223 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gunyah/message-queue.yml
- create mode 100644 Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml
+ arch/arm64/include/asm/gunyah/hypercall.h |   4 +
+ drivers/virt/gunyah/Makefile              |   2 +-
+ drivers/virt/gunyah/gunyah_private.h      |   3 +
+ drivers/virt/gunyah/msgq.c                | 295 ++++++++++++++++++++++
+ drivers/virt/gunyah/sysfs.c               |   9 +
+ include/linux/gunyah.h                    |  19 ++
+ 6 files changed, 331 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/virt/gunyah/msgq.c
 
-diff --git a/Documentation/devicetree/bindings/gunyah/message-queue.yml b/Documentation/devicetree/bindings/gunyah/message-queue.yml
-new file mode 100644
-index 000000000000..1a96d3de2a19
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gunyah/message-queue.yml
-@@ -0,0 +1,100 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gunyah/qcom,hypervisor.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Gunyah message queue
-+
-+maintainers:
-+   - Murali Nalajala <quic_mnalajal@quicinc.com>
-+   - Elliot Berman <quic_eberman@quicinc.com>
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: qcom,gunyah-message-queue
-+      - const: qcom,gunyah-capability
-+  peer:
-+    description: VMID of the VM on the other end of message queue
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+  allOf:
-+    - if:
-+        anyOf:
-+          - properties:
-+              qcom,is-sender: true
-+          - properties:
-+              qcom,is-full-duplex: true
-+      then:
-+        properties:
-+          qcom,tx-message-size:
-+            description: Maximum size in bytes of a message which can be sent by this queue
-+            $ref: /schemas/types.yaml#/definitions/int32
-+          qcom,tx-queue-depth:
-+            description: Depth of transmit queue for messages sent by this queue
-+            $ref: /schemas/types.yaml#/definitions/int32
-+    - if:
-+        anyOf:
-+          - properties:
-+              qcom,is-receiver: true
-+          - properties:
-+              qcom,is-full-duplex: true
-+      then:
-+        properties:
-+          qcom,rx-message-size:
-+            description: Maximum size in bytes of a message which can be received by this queue
-+            $ref: /schemas/types.yaml#/definitions/int32
-+          qcom,rx-queue-depth:
-+            description: Depth of transmit queue for messages received by this queue
-+            $ref: /schemas/types.yaml#/definitions/int32
-+    - if:
-+        anyOf:
-+          - properties:
-+              qcom,is-receiver: true
-+          - properties:
-+              qcom,is-sender: true
-+      then:
-+        properties:
-+          reg:
-+            description: Hypervisor capability ID of the message queue
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            minItems: 1
-+            maxItems: 1
-+          interrupts:
-+            minItems: 1
-+            maxItems: 1
-+    - if:
-+        properties:
-+          qcom,is-full-duplex: true
-+      then:
-+        properties:
-+          reg:
-+            description:
-+              Hypervisor capability IDs of the message queue
-+              The first is tx side, the second is rx side
-+            $ref: /schemas/types.yaml#/definitions/uint32
-+            minItems: 2
-+            maxItems: 2
-+          interrupts:
-+            description: The first is tx interrupt, second is rx interrupt
-+            minItems: 2
-+            maxItems: 2
-+  required:
-+    - compatible
-+    - reg
-+    - interrupts
-+
-+
-+examples:
-+  - |
-+    display-msgq-pair@abbf0da3c3c965cc {
-+      compatible = "qcom,gunyah-message-queue", "qcom,gunyah-capability";
-+      interrupts = <GIC_SPI 3 IRQ_TYPE_EDGE_RISING>, /* TX full IRQ */
-+                    <GIC_SPI 4 IRQ_TYPE_EDGE_RISING>; /* RX empty IRQ */
-+      reg = <0x00000000 0x00000000>, <0x00000000 0x00000001>; /* TX, RX cap ids */
-+      qcom,is-full-duplex;
-+      qcom,tx-queue-depth = <8>;
-+      qcom,tx-message-size = <0xf0>;
-+      qcom,rx-queue-depth = <8>;
-+      qcom,rx-message-size = <0xf0>;
-+    };
-\ No newline at end of file
-diff --git a/Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml b/Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml
-new file mode 100644
-index 000000000000..f637d51c52f0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml
-@@ -0,0 +1,122 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gunyah/qcom,hypervisor.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Hypervisor node to define virtual devices and other services provided by a Gunyah hypervisor
-+       to this virtual machine.
-+
-+maintainers:
-+   - Murali Nalajala <quic_mnalajal@quicinc.com>
-+   - Elliot Berman <quic_eberman@quicinc.com>
-+
-+description: |+
-+  On systems which support devicetree, Gunyah generates and overlays a deviceetree overlay which
-+  describes the basic configuration of the hypervisor. Virtual machines use this information for
-+  initial discovery that they are running as a Gunyah guest VM.
-+  See also: https://github.com/quic/gunyah-resource-manager/blob/develop/src/vm_creation/dto_construct.c
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - const: qcom,gunyah-hypervisor-1.0
-+          - const: qcom,gunyah-hypervisor
-+
-+  "#address-cells":
-+    description: Number of cells needed to represent 64-bit capability IDs.
-+    const: 2
-+  "#size-cells":
-+    description: must be 0, because capability IDs are not memory address
-+                  ranges and do not have a size.
-+    const: 0
-+
-+  qcom,gunyah-vm:
-+    type: object
-+    description:
-+      The VM Identification is a virtual node that conveys to the VM information
-+      about this virtual machine in the context of the hypervisor-based system
-+    properties:
-+      compatible:
-+        oneOf:
-+          - items:
-+            - const: qcom,gunyah-vm-id-1.0
-+            - const: qcom,gunyah-vm-id
-+      qcom,vendor:
-+        $ref: /schemas/types.yaml#/definitions/string
-+        description: Vendor of the Virtual Machine, e.g. Qualcomm
-+      qcom,vmid:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: contains the VMID of this VM as a 32-bit value
-+      qcom,owner-vmid:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: Contains the hypervisor VMID of the VM's owner. The owner
-+                     is the VM that allocated and created the VM. VMs directly
-+                     managed by the resource manager, such as the primary VM do
-+                     not have an owner.
-+    required:
-+      - compatible
-+      - qcom,vmid
-+      - qcom,owner-vmid
-+
-+patternProperties:
-+  "^qcom,resource-manager-rpc(@.*)?":
-+    type: object
-+    description:
-+      Resource Manager node which is required to communicate to Resource
-+      Manager VM using Gunyah Message Queues.
-+    allOf: "message-queue.yml#"
-+
-+    properties:
-+      compatible:
-+        oneOf:
-+          items:
-+            - const: qcom,resource-manager-1-0
-+            - const: qcom,resource-manager
-+      qcom,console-dev:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description: if set, the resource-manger will accept console logs from the VM
-+      qcom,free-irq-start:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description: Set on ARM systems which use a GIC. First VIRQ number which is free
-+                     for virtual interrupt use.
-+    required:
-+      - qcom,is-full-duplex
-+
-+
-+required:
-+- compatible
-+- "#address-cells"
-+- "#size-cells"
-+
-+examples:
-+  - |
-+    hypervisor {
-+        #address-cells = <2>;
-+        #size-cells = <0>;
-+        compatible = "qcom,gunyah-hypervisor-1.0", "qcom,gunyah-hypervisor", "simple-bus";
-+        name = "hypervisor";
-+
-+        qcom,gunyah-vm {
-+            compatible = "qcom,gunyah-vm-id-1.0", "qcom,gunyah-vm-id";
-+            qcom,vendor = "Qualcomm Technologies, Inc.";
-+            qcom,vmid = <45>;
-+            qcom,owner-vmid = <3>;
-+        };
-+
-+        qcom,resource-manager-rpc@0000000000000001 {
-+            compatible = "qcom,resource-manager-1-0", "qcom,resource-manager",
-+                          "qcom,gunyah-message-queue", "qcom,gunyah-capability";
-+            interrupts = <GIC_SPI 3 IRQ_TYPE_EDGE_RISING>, /* TX full IRQ */
-+                         <GIC_SPI 4 IRQ_TYPE_EDGE_RISING>; /* RX empty IRQ */
-+            reg = <0x00000000 0x00000000>, <0x00000000 0x00000001>;
-+                  /* TX, RX cap ids */
-+            qcom,is-full-duplex;
-+            qcom,free-irq-start = <0>;
-+            qcom,tx-queue-depth = <8>;
-+            qcom,tx-message-size = <0xf0>;
-+            qcom,rx-queue-depth = <8>;
-+            qcom,rx-message-size = <0xf0>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index bed175adc4c3..6a918f653eac 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8400,6 +8400,7 @@ M:	Elliot Berman <quic_eberman@quicinc.com>
- M:	Murali Nalajala <quic_mnalajal@quicinc.com>
- L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
-+F:	Documentation/devicetree/bindings/gunyah/
- F:	Documentation/virt/gunyah/
+diff --git a/arch/arm64/include/asm/gunyah/hypercall.h b/arch/arm64/include/asm/gunyah/hypercall.h
+index a8e68ece074e..7c6eb82ecd88 100644
+--- a/arch/arm64/include/asm/gunyah/hypercall.h
++++ b/arch/arm64/include/asm/gunyah/hypercall.h
+@@ -8,6 +8,10 @@
+ #include <linux/types.h>
  
- H8/300 ARCHITECTURE
+ #define GH_HYPERCALL_HYP_IDENTIFY		0x6000
++#define GH_HYPERCALL_MSGQ_SEND			0x601B
++#define GH_HYPERCALL_MSGQ_RECV			0x601C
++
++#define GH_HYPERCALL_MSGQ_SEND_FLAGS_PUSH	BIT(0)
+ 
+ #define ___gh_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, x, ...) x
+ 
+diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
+index 3869fb7371df..94dc8e738911 100644
+--- a/drivers/virt/gunyah/Makefile
++++ b/drivers/virt/gunyah/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+-gunyah-y += sysfs.o device.o
++gunyah-y += sysfs.o device.o msgq.o
+ obj-$(CONFIG_GUNYAH) += gunyah.o
+\ No newline at end of file
+diff --git a/drivers/virt/gunyah/gunyah_private.h b/drivers/virt/gunyah/gunyah_private.h
+index 5f3832608020..2ade32bd9bdf 100644
+--- a/drivers/virt/gunyah/gunyah_private.h
++++ b/drivers/virt/gunyah/gunyah_private.h
+@@ -9,4 +9,7 @@
+ int __init gunyah_bus_init(void);
+ void gunyah_bus_exit(void);
+ 
++int __init gh_msgq_init(void);
++void gh_msgq_exit(void);
++
+ #endif
+diff --git a/drivers/virt/gunyah/msgq.c b/drivers/virt/gunyah/msgq.c
+new file mode 100644
+index 000000000000..1c79b3fff30c
+--- /dev/null
++++ b/drivers/virt/gunyah/msgq.c
+@@ -0,0 +1,295 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++#include <linux/platform_device.h>
++#include <linux/interrupt.h>
++#include <linux/gunyah.h>
++#include <linux/module.h>
++#include <linux/printk.h>
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <linux/wait.h>
++#include <linux/of.h>
++
++#include "gunyah_private.h"
++
++struct gh_msgq {
++	bool ready;
++	wait_queue_head_t wq;
++	spinlock_t lock;
++};
++
++static irqreturn_t gh_msgq_irq_handler(int irq, void *dev)
++{
++	struct gh_msgq *msgq = dev;
++
++	spin_lock(&msgq->lock);
++	msgq->ready = true;
++	spin_unlock(&msgq->lock);
++	wake_up_interruptible(&msgq->wq);
++
++	return IRQ_HANDLED;
++}
++
++static int __gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, u64 tx_flags)
++{
++	unsigned long flags, gh_error;
++	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
++	ssize_t ret;
++	bool ready;
++
++	spin_lock_irqsave(&msgq->lock, flags);
++	arch_gh_hypercall(GH_HYPERCALL_MSGQ_SEND, 5,
++			  ghdev->capid, size, (uintptr_t)buff, tx_flags, 0,
++			  gh_error, ready);
++	switch (gh_error) {
++	case GH_ERROR_OK:
++		ret = 0;
++		msgq->ready = ready;
++		break;
++	case GH_ERROR_MSGQUEUE_FULL:
++		ret = -EAGAIN;
++		msgq->ready = false;
++		break;
++	default:
++		ret = gh_remap_error(gh_error);
++		break;
++	}
++
++	spin_unlock_irqrestore(&msgq->lock, flags);
++
++	return ret;
++}
++
++/**
++ * gh_msgq_send() - Send a message to the client running on a different VM
++ * @client: The client descriptor that was obtained via gh_msgq_register()
++ * @buff: Pointer to the buffer where the received data must be placed
++ * @buff_size: The size of the buffer space available
++ * @flags: Optional flags to pass to receive the data. For the list of flags,
++ *         see linux/gunyah/gh_msgq.h
++ *
++ * Returns: The number of bytes copied to buff. <0 if there was an error.
++ *
++ * Note: this function may sleep and should not be called from interrupt context
++ */
++int gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags)
++{
++	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
++	int ret;
++	u64 tx_flags = 0;
++
++	if (flags & GH_MSGQ_TX_PUSH)
++		tx_flags |= GH_HYPERCALL_MSGQ_SEND_FLAGS_PUSH;
++
++	do {
++		ret = __gh_msgq_send(ghdev, buff, size, tx_flags);
++
++		if (ret == -EAGAIN) {
++			if (flags & GH_MSGQ_NONBLOCK)
++				goto out;
++			if (wait_event_interruptible(msgq->wq, msgq->ready))
++				ret = -ERESTARTSYS;
++		}
++	} while (ret == -EAGAIN);
++
++out:
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_msgq_send);
++
++static ssize_t __gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size)
++{
++	unsigned long flags, gh_error;
++	size_t recv_size;
++	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
++	ssize_t ret;
++	bool ready;
++
++	spin_lock_irqsave(&msgq->lock, flags);
++
++	arch_gh_hypercall(GH_HYPERCALL_MSGQ_RECV, 4,
++			  ghdev->capid, (uintptr_t)buff, size, 0,
++			  gh_error, recv_size, ready);
++	switch (gh_error) {
++	case GH_ERROR_OK:
++		ret = recv_size;
++		msgq->ready = ready;
++		break;
++	case GH_ERROR_MSGQUEUE_EMPTY:
++		ret = -EAGAIN;
++		msgq->ready = false;
++		break;
++	default:
++		ret = gh_remap_error(gh_error);
++		break;
++	}
++
++	spin_unlock_irqrestore(&msgq->lock, flags);
++
++	return ret;
++}
++
++/**
++ * gh_msgq_recv() - Receive a message from the client running on a different VM
++ * @client: The client descriptor that was obtained via gh_msgq_register()
++ * @buff: Pointer to the buffer where the received data must be placed
++ * @buff_size: The size of the buffer space available
++ * @flags: Optional flags to pass to receive the data. For the list of flags,
++ *         see linux/gunyah/gh_msgq.h
++ *
++ * Returns: The number of bytes copied to buff. <0 if there was an error.
++ *
++ * Note: this function may sleep and should not be called from interrupt context
++ */
++ssize_t gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags)
++{
++	struct gh_msgq *msgq = ghdev_get_drvdata(ghdev);
++	ssize_t ret;
++
++	do {
++		ret = __gh_msgq_recv(ghdev, buff, size);
++
++		if (ret == -EAGAIN) {
++			if (flags & GH_MSGQ_NONBLOCK)
++				goto out;
++			if (wait_event_interruptible(msgq->wq, msgq->ready))
++				ret = -ERESTARTSYS;
++		}
++	} while (ret == -EAGAIN);
++
++out:
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gh_msgq_recv);
++
++static int gh_msgq_probe(struct gunyah_device *ghdev)
++{
++	struct gh_msgq *msgq;
++
++	msgq = devm_kzalloc(&ghdev->dev, sizeof(*msgq), GFP_KERNEL);
++	ghdev_set_drvdata(ghdev, msgq);
++
++	msgq->ready = true; /* Assume we can use the message queue right away */
++	init_waitqueue_head(&msgq->wq);
++
++	return devm_request_irq(&ghdev->dev, ghdev->irq, gh_msgq_irq_handler, 0,
++				dev_name(&ghdev->dev), msgq);
++}
++
++static struct gunyah_driver gh_msgq_tx_driver = {
++	.driver = {
++		.name = "gh_msgq_tx",
++		.owner = THIS_MODULE,
++	},
++	.type = GUNYAH_DEVICE_TYPE_MSGQ_TX,
++	.probe = gh_msgq_probe,
++};
++
++static struct gunyah_driver gh_msgq_rx_driver = {
++	.driver = {
++		.name = "gh_msgq_rx",
++		.owner = THIS_MODULE,
++	},
++	.type = GUNYAH_DEVICE_TYPE_MSGQ_RX,
++	.probe = gh_msgq_probe,
++};
++
++static struct gunyah_device *gh_msgq_platform_probe_direction(struct platform_device *pdev,
++				u8 gh_type, int idx)
++{
++	int irq, ret;
++	u64 capid;
++	struct device_node *node = pdev->dev.of_node;
++	struct gunyah_device *ghdev;
++
++	irq = platform_get_irq(pdev, idx);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "Failed to get irq%d: %d\n", idx, irq);
++		return ERR_PTR(irq);
++	}
++
++	ret = of_property_read_u64_index(node, "reg", idx, &capid);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to get capid%d: %d\n", idx, ret);
++		return ERR_PTR(ret);
++	}
++
++	ghdev = gunyah_device_alloc(&pdev->dev, capid, gh_type);
++	ghdev->irq = irq;
++	ret = gunyah_device_add(ghdev);
++	if (ret) {
++		kfree(ghdev);
++		return ERR_PTR(ret);
++	}
++
++	return ghdev;
++}
++
++int gh_msgq_platform_host_attach(struct platform_device *pdev, struct gh_msgq_platform_host *host)
++{
++	struct gunyah_device *tx_dev = NULL, *rx_dev = NULL;
++	struct device_node *node = pdev->dev.of_node;
++	int idx = 0;
++	bool duplex;
++
++	duplex = of_property_read_bool(node, "qcom,is-full-duplex");
++
++	if (duplex || of_property_read_bool(node, "qcom,is-sender")) {
++		tx_dev = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_TX, idx);
++		if (IS_ERR(tx_dev))
++			return PTR_ERR(tx_dev);
++		idx++;
++	}
++
++	if (duplex || of_property_read_bool(node, "qcom,is-receiver")) {
++		rx_dev = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_RX, idx);
++		if (IS_ERR(rx_dev)) {
++			if (!IS_ERR_OR_NULL(tx_dev))
++				gunyah_device_remove(tx_dev);
++			return PTR_ERR(rx_dev);
++		}
++	}
++
++	host->tx = tx_dev;
++	host->rx = rx_dev;
++	return 0;
++}
++
++void gh_msgq_platform_host_unattach(struct gh_msgq_platform_host *host)
++{
++	if (host->tx) {
++		gunyah_device_remove(host->tx);
++		host->tx = NULL;
++	}
++	if (host->rx) {
++		gunyah_device_remove(host->rx);
++		host->rx = NULL;
++	}
++}
++
++int __init gh_msgq_init(void)
++{
++	int ret;
++
++	ret = gunyah_register_driver(&gh_msgq_tx_driver);
++	if (ret)
++		return ret;
++
++	ret = gunyah_register_driver(&gh_msgq_rx_driver);
++	if (ret)
++		goto err_rx;
++
++	return ret;
++err_rx:
++	gunyah_unregister_driver(&gh_msgq_tx_driver);
++	return ret;
++}
++
++void gh_msgq_exit(void)
++{
++	gunyah_unregister_driver(&gh_msgq_rx_driver);
++	gunyah_unregister_driver(&gh_msgq_tx_driver);
++}
+diff --git a/drivers/virt/gunyah/sysfs.c b/drivers/virt/gunyah/sysfs.c
+index d66e6275fe32..7bf39fe1b6e6 100644
+--- a/drivers/virt/gunyah/sysfs.c
++++ b/drivers/virt/gunyah/sysfs.c
+@@ -59,6 +59,8 @@ static ssize_t features_show(struct kobject *kobj, struct kobj_attribute *attr,
+ 
+ 	if (GH_IDENTIFY_PARTITION_CSPACE(gunyah_api.flags))
+ 		len += sysfs_emit_at(buffer, len, "cspace ");
++	if (GH_IDENTIFY_MSGQUEUE(gunyah_api.flags))
++		len += sysfs_emit_at(buffer, len, "message-queue ");
+ 
+ 	len += sysfs_emit_at(buffer, len, "\n");
+ 	return len;
+@@ -118,7 +120,13 @@ static int __init gunyah_init(void)
+ 	if (ret)
+ 		goto err_sysfs;
+ 
++	ret = gh_msgq_init();
++	if (ret)
++		goto err_bus;
++
+ 	return ret;
++err_bus:
++	gunyah_bus_exit();
+ err_sysfs:
+ 	gh_sysfs_unregister();
+ 	return ret;
+@@ -127,6 +135,7 @@ module_init(gunyah_init);
+ 
+ static void __exit gunyah_exit(void)
+ {
++	gh_msgq_exit();
+ 	gunyah_bus_exit();
+ 	gh_sysfs_unregister();
+ }
+diff --git a/include/linux/gunyah.h b/include/linux/gunyah.h
+index f169c78881cb..66c1dba73cc5 100644
+--- a/include/linux/gunyah.h
++++ b/include/linux/gunyah.h
+@@ -10,6 +10,7 @@
+ #include <linux/errno.h>
+ #include <linux/device.h>
+ #include <asm/gunyah/hypercall.h>
++#include <linux/platform_device.h>
+ 
+ typedef u64 gh_capid_t;
+ 
+@@ -116,4 +117,22 @@ struct gunyah_driver {
+ int gunyah_register_driver(struct gunyah_driver *ghdrv);
+ void gunyah_unregister_driver(struct gunyah_driver *ghdrv);
+ 
++#define GH_MSGQ_MAX_MSG_SIZE	1024
++
++/* Possible flags to pass for Tx or Rx */
++#define GH_MSGQ_TX_PUSH		BIT(0)
++#define GH_MSGQ_NONBLOCK	BIT(32)
++
++int gh_msgq_send(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags);
++ssize_t gh_msgq_recv(struct gunyah_device *ghdev, void *buff, size_t size, unsigned long flags);
++
++struct gh_msgq_platform_host {
++	struct gunyah_device *tx;
++	struct gunyah_device *rx;
++};
++
++int gh_msgq_platform_host_attach(struct platform_device *pdev, struct gh_msgq_platform_host *host);
++void gh_msgq_platform_host_unattach(struct gh_msgq_platform_host *host);
++
++
+ #endif
 -- 
 2.25.1
 
