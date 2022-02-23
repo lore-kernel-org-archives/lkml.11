@@ -2,128 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7754C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D951C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242626AbiBWQJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:09:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37646 "EHLO
+        id S242639AbiBWQJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:09:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242617AbiBWQJB (ORCPT
+        with ESMTP id S242041AbiBWQJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:09:01 -0500
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C51B7173;
-        Wed, 23 Feb 2022 08:08:33 -0800 (PST)
-Received: by mail-oi1-f172.google.com with SMTP id x193so18861862oix.0;
-        Wed, 23 Feb 2022 08:08:33 -0800 (PST)
+        Wed, 23 Feb 2022 11:09:30 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E316C249F;
+        Wed, 23 Feb 2022 08:09:01 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id x5so44857460edd.11;
+        Wed, 23 Feb 2022 08:09:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZyZRbXUmNhOeC2PbqfcoC4tf9cHQR1dNU7NBuU/qb9k=;
+        b=AWiaWyGsWe9eDbFoRVqklvwEiIlJiCMTsLVqBy7gKYDTSOTSXZ62tbEiFGtlwRl/W8
+         uJg6aW+VVk4BzQ6ZRYq9bnWRkr45Xi35j+sUx/xrVKHkYuGBr8If7hxtyweYJxAwuR8v
+         ys6Sk1L8DRQpZae5fYcmo75wG890PgFwBtPOfDTALzLTrZUa+g43hK5Fk5I9CYjP8f9h
+         B0oG29nOsKb7QmZ536lo2qlTTEQN5+cSda1jGpeo08NJSStbWUMfCOrZHheP594Ow9VY
+         MniS9nOUyJ9n0uhrXtIvwKRKUVPgpE3BwRVr86gWxvom41lxyhF12xdU+sOk6vSEdxAG
+         UQBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=VlLFX4EqJjMes8RQHVfh/XZ71GjRDL6L1TFesEM7wzE=;
-        b=U9Iq+jpKmAgE6T1X8+9vDb6hjAy3KHE9oilTJfE1alCPZJKvsKb9/yXmNAqp61hoDt
-         FPOxhqrrIKVz+0aQ6Xh+9hkUedbWmjhmlbFuVVLBVen406wUB/9ye7vQPRy/mtnKhTRW
-         c7eb72DtKfyWRnYquwUSybtboPOkGFjxx5ycJg3R2pYYUx5BhMxnXJVWfzZQ0VsTxPfa
-         9gyg9bOb98mii7sKjLnWr3FEutNpNeBAZ25xmaNXpnBa/fxbcLeBk/NTC3WwiFXcXMCd
-         Q0jKJuRtBoNwqEsaXzfLSz+tMYoS1C8o9Wfh55RHvIFaXIjo95zVvihyOzEvP3KyuZd4
-         JyJg==
-X-Gm-Message-State: AOAM533h/37sj60twFQTPXYO4bWbXX13Sb/JQfbSc3Cgl/D6BCBRqn62
-        zZOVTWwD5L9vxgDnlIlaqw==
-X-Google-Smtp-Source: ABdhPJwJKDQ6JefrLm3QtPQRxB642eYP2C3FBUp8cNjO1ona+VQ8wvG7WgEvKHU/GtcuAWfkCx9uoA==
-X-Received: by 2002:a05:6808:2101:b0:2d4:2b3a:9acb with SMTP id r1-20020a056808210100b002d42b3a9acbmr4960666oiw.231.1645632513102;
-        Wed, 23 Feb 2022 08:08:33 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bc16sm10542255oib.26.2022.02.23.08.08.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZyZRbXUmNhOeC2PbqfcoC4tf9cHQR1dNU7NBuU/qb9k=;
+        b=I2Z91HoZzpJOngzI8HOZdu038u4rGCpC4diW9Obj4vqXsqWEJMlqbev57ugJdKqYDG
+         PhE065DK0n3otigZjfZ8YAVyYgXXcpd9Ogn7sPOGOSnbcXhYYQ/QiOTrgvlUFTyn4sdd
+         oMVgstH4fBhGCyMPOC7WsH2mNPMAER3yhcb1A/V5njTeEdr0PreB6+ltiY9/e1gDsks3
+         yc2ppv5WbyO/ZZIrLA5yw9zENRlVArF/Yyg1c36t+d4H5cDAkbhbetxJLkCzu1QK3bXl
+         1dHakI2ckRrPTrAtWxC/Is5rgWnoFqAWgWJB4Ooz28JteJ+gaDxb4RHUBYtuUkZJXZ9g
+         KsgA==
+X-Gm-Message-State: AOAM532mL+JThCJappYQEpYUC4k6wBKC3Bayneo17jjyqRr2/3ZEt1xN
+        /sbSRceLPueyCuo3VVG7y3C3KbeHwbEicUvh
+X-Google-Smtp-Source: ABdhPJxaogQCfFn/TmyftzshXaeheo/8/ijlWBOdflnWtsny2/OMWrpxYUujGL6iYBsKbra7mVgUxg==
+X-Received: by 2002:a50:f61c:0:b0:413:3b58:32af with SMTP id c28-20020a50f61c000000b004133b5832afmr113530edn.49.1645632539897;
+        Wed, 23 Feb 2022 08:08:59 -0800 (PST)
+Received: from nergzd-desktop.localdomain ([62.122.67.26])
+        by smtp.gmail.com with ESMTPSA id x7sm52005edr.12.2022.02.23.08.08.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 08:08:32 -0800 (PST)
-Received: (nullmailer pid 1021548 invoked by uid 1000);
-        Wed, 23 Feb 2022 16:08:31 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org,
+        Wed, 23 Feb 2022 08:08:58 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-phy@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>
-In-Reply-To: <20220223044213.3776600-1-bjorn.andersson@linaro.org>
-References: <20220223044213.3776600-1-bjorn.andersson@linaro.org>
-Subject: Re: [PATCH 1/2] dt-bindings: phy: qcom,qmp: add sc8180x and sc8280xp ufs compatibles
-Date:   Wed, 23 Feb 2022 10:08:31 -0600
-Message-Id: <1645632511.468790.1021547.nullmailer@robh.at.kernel.org>
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v7 0/2] Add support for Imagis touchscreens
+Date:   Wed, 23 Feb 2022 18:07:39 +0200
+Message-Id: <20220223160749.37001-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 20:42:12 -0800, Bjorn Andersson wrote:
-> Add compatible for the UFS PHY found in the Qualcomm SC8280XP platform
-> and document the required clocks for this and the SC8180X UFS PHY.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+Add support for Imagis touchscreens, used on various mobile
+devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+v2: rebase on top of the correct tree
+v3:
+- prefix all defines as IST3038C
+- use two tabs for all defines
+- add missing <linux/regulator/consumer.h> header
+- drop ADDR_LEN and DATA_LEN defines; use sizeof(reg_be) instead
+- use __be32 type for reg_be
+- add a comment about i2c read not being successful on first try
+- use "ret" instead of "res" in read_reg function
+- don't use the internal __cpu_to_be32 function, use cpu_to_be32 instead
+- use "error" instead of "ret" in interrupt handler
+- pass the slot state directly, without ternary operator
+- drop the dev_err in init_input_dev function
+- reorder the functions in _probe so that the chipid command is read as fast 
+as possible
+- don't use imagis_start in probe
+- initialize the irq after the chip is powered
+- save the return value in imagis_resume
+- drop WIDTH_MAJOR since only TOUCH_MAJOR is reported
+- the "chip detected" message is now dev_dbg
+- reorder headers so they are in alphabetic order
+- use GENMASK to generate masks for getting the X and Y coordinates and touch area
+- drop *_pressure from device tree bindings since the driver doesn't
+support reporting pressure
+- fix the typo with i2c address in device treee bindings (48 instead of 50)
+- add IRQF_NO_AUTOEN flag to avoid unbalanced irq enable
+v4:
+- alphabetically order MAINTAINERS entry
+- alphabetically order Kconfig and Makefile
+- drop the error message in init_regulators
+- disable regulators on probe error
+- drop IRQF_TRIGGER_FALLING
+- @ is not optional (device tree bindings)
+- don't use items for compatible
+- add maxItems property to reg, drop the comment
+v5:
+- compatible enum is not an item of the list, drop "-"
+v6:
+- add _MS suffix to the delay define, drop the comment
+- change the reason for retry comment
+- add imagis_power_off and imagis_power_on functions to turn regulators
+on and off
+- use imagis_power_on/off in imagis_start and imagis_stop as well as in probe function
+- use error instead of ret in calls to functions which only return 0 or -errno
+- include linux/bits.h
+- proper indentation in Kconfig
+- drop the dev_dbg chip id message
+- MODULE_DEVICE_TABLE(of, ...);
+- no extra tabs in i2c_driver struct
+- save the return value in imagis_suspend
+v7:
+- initialize ret with 0 in _suspend and _resume (kernel test robot)
+- use a separate ret_be variable to avoid casting to __be32 (kernel test robot)
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml:284:1: [error] syntax error: found character '\t' that cannot start any token (syntax)
+Markuss Broks (2):
+  dt-bindings: input/touchscreen: bindings for Imagis
+  Input: add Imagis touchscreen driver
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/phy/qcom,qmp-phy.example.dts'
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-extract-example", line 46, in <module>
-    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
-    node = self.composer.get_single_node()
-  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
-  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 773, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 850, in _ruamel_yaml.CParser._compose_sequence_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 773, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 852, in _ruamel_yaml.CParser._compose_sequence_node
-  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
-ruamel.yaml.scanner.ScannerError: while scanning a plain scalar
-  in "<unicode string>", line 283, column 17
-found a tab character that violates indentation
-  in "<unicode string>", line 284, column 1
-make[1]: *** [Documentation/devicetree/bindings/Makefile:25: Documentation/devicetree/bindings/phy/qcom,qmp-phy.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml:  while scanning a plain scalar
-  in "<unicode string>", line 283, column 17
-found a tab character that violates indentation
-  in "<unicode string>", line 284, column 1
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml: ignoring, error parsing file
-make: *** [Makefile:1398: dt_binding_check] Error 2
+ .../input/touchscreen/imagis,ist3038c.yaml    |  78 +++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   6 +
+ drivers/input/touchscreen/Kconfig             |  10 +
+ drivers/input/touchscreen/Makefile            |   1 +
+ drivers/input/touchscreen/imagis.c            | 329 ++++++++++++++++++
+ 6 files changed, 426 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+ create mode 100644 drivers/input/touchscreen/imagis.c
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1596499
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+-- 
+2.35.0
 
