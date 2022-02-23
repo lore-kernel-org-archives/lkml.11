@@ -2,128 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F12C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242860AbiBWQft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:35:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
+        id S242872AbiBWQgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:36:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241768AbiBWQfq (ORCPT
+        with ESMTP id S242859AbiBWQgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:35:46 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D386B53B4B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:35:18 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id ev16-20020a17090aead000b001bc3835fea8so3334115pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:35:18 -0800 (PST)
+        Wed, 23 Feb 2022 11:36:01 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BDC55BCF;
+        Wed, 23 Feb 2022 08:35:33 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id f8so20496986pgc.8;
+        Wed, 23 Feb 2022 08:35:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PvSxjAkCTzHrnUJ0VH9JVo6LzgFiDVwgoKiwOiM2FoE=;
-        b=lIs9bWeQZCbVcF0ZizI997m5HtjcGLwofO/q2rO50UhL2K3rqPXTmaaK8+hPGnStlK
-         q0uM9I0AHFvbcVjS9NV0PVxbJ2oX2Dy9tIg/WyZAfQWBlPrACWk9PxTR5y2yk4VmL8IB
-         cqLE3fvXs01qOtV9upS+bV7gb2+cx4ePjwXpU=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=oH1ou976HmXhvnLbgu7IxgeGoD4+eYCbPOT2XRjgKEM=;
+        b=jlsREVy8R49OrDspMhQiqfPgjB0/PK5psEoO54u0TavB4obO/MKWx6aTTR76F0Kr+h
+         oet2VkFZ756FkA/XakrGIVvYz1lATkQe5DtwJjrufsNlmY4vwnfEyn0s4vLnC4LzEFDw
+         cjyeF5YJcss6GxXzdqMbN+RTDKW4UAzYNHbRylGJ/MX4bEqHs/uSDAVRyzNsEt7je4Qb
+         Qc37ysfzIf9jmIyAOGV8lkZe+LMRGaXh/a1qgwlz8qcSeoe90jz3gxZlj16f9Kjcqtq0
+         eEMQj7PS8RDojDDxR7SnM4pTqUcZGybjjVOw22Iuand6EJhIcPdD9y9u686eB/CB63AQ
+         TUVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PvSxjAkCTzHrnUJ0VH9JVo6LzgFiDVwgoKiwOiM2FoE=;
-        b=BVXvkCrcZxFqERyPs9+i0iQJl7MtDwgqXt9x7dMKGZxkXBI4XLMrddX0G4ZLGD1nki
-         E0Y2PoJqjG7ao6TJ+WE3tVhpFC91s4YX8vkMBPyQt8QEIYki6KS/NpI/sbZG3UfogKcz
-         V7jUVKqZ8DOQMogNa2AHiYOAkciSZMFlZVSXaxaLkwXuHRbDQxn+DRw9AyrXEkNtwhPp
-         ausXvOPgVaoxCYY3ZEBoFE7GeNodOauRoDlCBfTPyxeZcup/R3Xs3ejFlyFjxYL0VPC5
-         3KM+I4Z9XXH0shVHNRdLR9RYcmMDrgtHDbsSvlgPRL3u8rsW9lvKldVXx9LtJsqiTHrA
-         sJbA==
-X-Gm-Message-State: AOAM533uDGw6VeBpTUERluXCxG8k15J5JAAB81ts6TP20Yd2dgIp0hZi
-        tcNin9ed/3KHqIcoTnTW/4jBVA==
-X-Google-Smtp-Source: ABdhPJw5Jtbh9mv51qXwl2WJLO7oZUgpK7z+r3Jzsv2rFjApW+UyaQUhwslZQu6FcU65TL6jQei4TQ==
-X-Received: by 2002:a17:902:a406:b0:14d:61ba:8bcc with SMTP id p6-20020a170902a40600b0014d61ba8bccmr575575plq.36.1645634118294;
-        Wed, 23 Feb 2022 08:35:18 -0800 (PST)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:fbbe:971a:f60f:11e1])
-        by smtp.gmail.com with ESMTPSA id g20sm4219pfj.64.2022.02.23.08.35.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oH1ou976HmXhvnLbgu7IxgeGoD4+eYCbPOT2XRjgKEM=;
+        b=oPv9jfmNTbsiC5TRnGXud2sZpw8FHXXC/l6KmweNGgV/MOPF0nO8sUjBY9OJ8s+BHY
+         GbPWqzXmGqZA4HX8gGBFppM7708/r4pt1IakevNvirv6/V9RXpnxfEZOHPKynCgAT9e4
+         pzXQIfG+Uq+x+qFUzovqJzZR0qV7UF1qzHzsZEANsaO8nMJ3xPjbVHoco0/i+T5Gmc7P
+         L3uBgNkev4B25F4N+QMDGIckHwk5Ug3diLurinFroMSKxU+p6c6/nTBO6K6RXKtCsaKV
+         DkPDl23r8o+xMFg0T+2A1y0RXKU2S/KFpuXNCq9bByZNG+M4wjJcFH6muoDqb1ULK24X
+         5u1g==
+X-Gm-Message-State: AOAM532OTRiye33WnL3vcT3Rm6Vc0smxm5FkJ85cq+IQIiA5boIUW+Zg
+        5NUGrPyZDRPfh/wyjviYF8GQJKa3/O7ox/I3
+X-Google-Smtp-Source: ABdhPJyKVIuMD+OERPktA5c9elzcOl+QUNj4Ucx2PRwK8DxnElZ6xWssEcbRHGUnRzhlPHJOPnC83g==
+X-Received: by 2002:a05:6a00:24ca:b0:4e1:cb76:32da with SMTP id d10-20020a056a0024ca00b004e1cb7632damr538969pfv.81.1645634132533;
+        Wed, 23 Feb 2022 08:35:32 -0800 (PST)
+Received: from localhost.localdomain ([27.7.190.133])
+        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm3455106pjh.25.2022.02.23.08.35.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 08:35:18 -0800 (PST)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: [PATCH] PM: runtime: Have devm_pm_runtime_enable() handle pm_runtime_dont_use_autosuspend()
-Date:   Wed, 23 Feb 2022 08:34:48 -0800
-Message-Id: <20220223083441.1.I925ce9fa12992a58caed6b297e0171d214866fe7@changeid>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 23 Feb 2022 08:35:32 -0800 (PST)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
+        sst@poczta.fm, robh+dt@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/7] iio: potentiometer: Add support for DS3502
+Date:   Wed, 23 Feb 2022 22:05:18 +0530
+Message-Id: <20220223163525.13399-1-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PM Runtime docs say:
-  Drivers in ->remove() callback should undo the runtime PM changes done
-  in ->probe(). Usually this means calling pm_runtime_disable(),
-  pm_runtime_dont_use_autosuspend() etc.
+Add dt-bindings and support for Maxim DS3502 into existing ds1803 driver.
+DS3502 is a 7 bit Nonvolatile Digital Potentiometer.
 
-From grepping code, it's clear that many people aren't aware of the
-need to call pm_runtime_dont_use_autosuspend().
+Changes since v4:
+1. Included property.h header which has device_get_match_data()
+   function prototype.
+2. Removed blank space in tag block of the commit message.
+3. Style changes for ds1803_cfg structure.
 
-When brainstorming solutions, one idea that came up was to leverage
-the new-ish devm_pm_runtime_enable() function. The idea here is that:
-* When the devm action is called we know that the driver is being
-  removed. It's the perfect time to undo the use_autosuspend.
-* The code of pm_runtime_dont_use_autosuspend() already handles the
-  case of being called when autosuspend wasn't enabled.
+Changes since v3:
+1. Dropped the chip type switch statement in read_raw function.
+2. Added device specific read function pointer in their structure.
+3. Added two separate functions to read values from two different types
+   of devices.
 
-Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+Changes since v2:
+1. Addressed Andy Shevchenko comments.
+2. Adding device name in Kconfig file.
+3. Spliting up of patch into 3 patches.
+4. Adding channel info into ds1803_cfg in separate patch.
+5. Dropping the use of enum in firmware data instead using previous
+   pointer method for accessing device specific data.
+6. Separate patch for using firmware provided data instead of 
+   id->driver_data.
+7. Adding DS3502 support in separate patch.
 
- drivers/base/power/runtime.c | 5 +++++
- include/linux/pm_runtime.h   | 4 ++++
- 2 files changed, 9 insertions(+)
+Changes since v1:
+1. Fixes the alignment to match the open parenthesis in separate patch.
+2. Adding available functionality for ds1803 driver in separate patch.
+3. Moving maxim_potentiometer members into ds1803_cfg structure.
+4. Droping of the INFO_ENABLE channel type.
+5. Firmware entry with data is used instead of id->driver_data to
+   to retrieve the chip specific data.
 
-diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-index 2f3cce17219b..d4059e6ffeae 100644
---- a/drivers/base/power/runtime.c
-+++ b/drivers/base/power/runtime.c
-@@ -1476,11 +1476,16 @@ EXPORT_SYMBOL_GPL(pm_runtime_enable);
- 
- static void pm_runtime_disable_action(void *data)
- {
-+	pm_runtime_dont_use_autosuspend(data);
- 	pm_runtime_disable(data);
- }
- 
- /**
-  * devm_pm_runtime_enable - devres-enabled version of pm_runtime_enable.
-+ *
-+ * NOTE: this will also handle calling pm_runtime_dont_use_autosuspend() for
-+ * you at driver exit time if needed.
-+ *
-  * @dev: Device to handle.
-  */
- int devm_pm_runtime_enable(struct device *dev)
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index 9f09601c465a..2bff6a10095d 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -567,6 +567,10 @@ static inline void pm_runtime_disable(struct device *dev)
-  * Allow the runtime PM autosuspend mechanism to be used for @dev whenever
-  * requested (or "autosuspend" will be handled as direct runtime-suspend for
-  * it).
-+ *
-+ * NOTE: It's important to undo this with pm_runtime_dont_use_autosuspend()
-+ * at driver exit time unless your driver initially enabled pm_runtime
-+ * with devm_pm_runtime_enable() (which handles it for you).
-  */
- static inline void pm_runtime_use_autosuspend(struct device *dev)
- {
+Jagath Jog J (7):
+  iio: potentiometer: Alignment to match the open parenthesis
+  iio: potentiometer: Add available functionality
+  iio: potentiometer: Add channel information in device data
+  iio: potentiometer: Change to firmware provided data
+  iio: potentiometer: Add device specific read_raw function
+  iio: potentiometer: Add support for Maxim DS3502
+  dt-bindings: iio: potentiometer: Add Maxim DS3502 in trivial-devices
+
+ .../devicetree/bindings/trivial-devices.yaml  |   2 +
+ drivers/iio/potentiometer/Kconfig             |   6 +-
+ drivers/iio/potentiometer/ds1803.c            | 170 ++++++++++++++----
+ 3 files changed, 138 insertions(+), 40 deletions(-)
+
 -- 
-2.35.1.473.g83b2b277ed-goog
+2.17.1
 
