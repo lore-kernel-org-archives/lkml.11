@@ -2,52 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ECAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7645BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237205AbiBWCfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:35:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        id S237452AbiBWCfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:35:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237668AbiBWCdU (ORCPT
+        with ESMTP id S237688AbiBWCdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:33:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72737CF0;
+        Tue, 22 Feb 2022 21:33:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25ECBA4;
         Tue, 22 Feb 2022 18:31:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 481DC6152A;
-        Wed, 23 Feb 2022 02:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697A4C340F0;
-        Wed, 23 Feb 2022 02:31:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D068661558;
+        Wed, 23 Feb 2022 02:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97BFC340F1;
+        Wed, 23 Feb 2022 02:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583470;
-        bh=C61B4YqZLuPfUtAJA5XNOFg/InlbWVrwKeMTqahBgjI=;
+        s=k20201202; t=1645583490;
+        bh=S685cRqpnTKwPhd6Y+2lTRRBg99X0zoYvQMqbsI5vmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loscU46DXj5H2qNzjpa599QzYNMxlsYLfmYMvhMlPy/Fsv5cSZ7vJXnTs7BsER4Pq
-         Xg5gciM6mUxQR1Oqw3Ka8U0vnkg7fvS3a1NWQaQ4CUHlpBSzQiDIsYQ8lHGNKEmbKe
-         UAt2OYiDbnUroagS/MKZzok5WnhDlZL/dsVtpfPg4cDOTOe3Zo9fTzYRN9DKzJqhaz
-         Mz7yYDRNEZoyBnElEJu/Kgg4rCwDKxdf/7Xiu/ZZMHLcuo2tNEviuIHyrGGESNZUzt
-         y6WHF0BfhioDrsq1mnqEF/uCo/Uybj6VOlJsgkh9DxTmE1cicMUsChdnF9ttpt++DZ
-         80L1OXFCBnMQg==
+        b=Cboao/pjhUzXHuscSZ0Mhige1yYFP1WfCcrrXGs/qd0YnsB4tf2ksqipX0L25XdgX
+         gUb2rpOZ8wR5Qbij4WoWf/JDj1rx0v3b5KiLOGYxNsD5BBCDgKMHkyKEIKzguZavhn
+         o7aZoPvM/AE2n/vtKnzjoXUFeGwn+jG1nlDogsXplGO1ZuHaoFV/XBn/eLgtPU+aWl
+         zY2opeY7qHnimmyXzbHUskv98AA+TMYDuPyuiHrcRx2DkY22XvKTLHViYamNeCctPu
+         fDCZYNuOBKSptDkFXw53bI+Fy8eckpcj2HmAHhd+2QYiTNT9A9A67Xe1gLuIXT9gAo
+         AohHT/5P9yxew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Sasha Levin <sashal@kernel.org>,
-        krzysztof.kozlowski@canonical.com, yangyicong@hisilicon.com,
-        semen.protsenko@linaro.org, robh@kernel.org, bence98@sch.bme.hu,
-        sven@svenpeter.dev, jie.deng@intel.com, lukas.bulwahn@gmail.com,
-        linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 15/18] i2c: cadence: allow COMPILE_TEST
-Date:   Tue, 22 Feb 2022 21:30:32 -0500
-Message-Id: <20220223023035.241551-15-sashal@kernel.org>
+Cc:     Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Shuming Fan <shumingf@realtek.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 05/13] ASoC: rt5682: do not block workqueue if card is unbound
+Date:   Tue, 22 Feb 2022 21:31:09 -0500
+Message-Id: <20220223023118.241815-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
-References: <20220223023035.241551-1-sashal@kernel.org>
+In-Reply-To: <20220223023118.241815-1-sashal@kernel.org>
+References: <20220223023118.241815-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,33 +59,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wolfram Sang <wsa@kernel.org>
+From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 
-[ Upstream commit 0b0dcb3882c8f08bdeafa03adb4487e104d26050 ]
+[ Upstream commit 4c33de0673ced9c7c37b3bbd9bfe0fda72340b2a ]
 
-Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
-and easier maintenance.
+The current rt5682_jack_detect_handler() assumes the component
+and card will always show up and implements an infinite usleep
+loop waiting for them to show up.
 
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
+This does not hold true if a codec interrupt (or other
+event) occurs when the card is unbound. The codec driver's
+remove  or shutdown functions cannot cancel the workqueue due
+to the wait loop. As a result, code can either end up blocking
+the workqueue, or hit a kernel oops when the card is freed.
+
+Fix the issue by rescheduling the jack detect handler in
+case the card is not ready. In case card never shows up,
+the shutdown/remove/suspend calls can now cancel the detect
+task.
+
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Shuming Fan <shumingf@realtek.com>
+Link: https://lore.kernel.org/r/20220207153000.3452802-3-kai.vehmanen@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/rt5682.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 7e693dcbdd196..d5fc8ec025020 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -488,7 +488,7 @@ config I2C_BRCMSTB
+diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
+index 05e883a65d7a7..a8cf4c7451304 100644
+--- a/sound/soc/codecs/rt5682.c
++++ b/sound/soc/codecs/rt5682.c
+@@ -1052,11 +1052,13 @@ static void rt5682_jack_detect_handler(struct work_struct *work)
+ 		container_of(work, struct rt5682_priv, jack_detect_work.work);
+ 	int val, btn_type;
  
- config I2C_CADENCE
- 	tristate "Cadence I2C Controller"
--	depends on ARCH_ZYNQ || ARM64 || XTENSA
-+	depends on ARCH_ZYNQ || ARM64 || XTENSA || COMPILE_TEST
- 	help
- 	  Say yes here to select Cadence I2C Host Controller. This controller is
- 	  e.g. used by Xilinx Zynq.
+-	while (!rt5682->component)
+-		usleep_range(10000, 15000);
+-
+-	while (!rt5682->component->card->instantiated)
+-		usleep_range(10000, 15000);
++	if (!rt5682->component || !rt5682->component->card ||
++	    !rt5682->component->card->instantiated) {
++		/* card not yet ready, try later */
++		mod_delayed_work(system_power_efficient_wq,
++				 &rt5682->jack_detect_work, msecs_to_jiffies(15));
++		return;
++	}
+ 
+ 	mutex_lock(&rt5682->calibrate_mutex);
+ 
 -- 
 2.34.1
 
