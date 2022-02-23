@@ -2,110 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241001AbiBWNmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        id S241015AbiBWNnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241002AbiBWNlL (ORCPT
+        with ESMTP id S229670AbiBWNnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:41:11 -0500
+        Wed, 23 Feb 2022 08:43:04 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1403FAC05F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:40:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 048777E08F
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:42:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645623643;
+        s=mimecast20190719; t=1645623756;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rdW/Vnhl8SCwM1k5GnCkUAynoacHPuSD7Amvkwo2DqI=;
-        b=gJc7hVW+mKtJI/Dsba37eiTrYQqhF19IYTP7htsxhrP0xzVBtk4mBa+qU2NIuGnz6qE/2J
-        DonXBuCt9BzWeVh4EfUxO979ROHFW6PaI+SELW3L9+dV1UJK38QHtZTh05ktjLJ8A2O0Ys
-        G80wxuuZZO0idXd+ellcZyNQ8Pgakxk=
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Z++z615jXAAePBIqvESiase4V80fEvIdc7JMOuX9Z2g=;
+        b=YQcWpaiZI9WvgpsAlhE6dYcGoLqzeDcaEJmYsf2dcBHt5tk6O8yo/3dw+dWXlKsWip8rPN
+        7LSzILC3E4pIEeP+R4qBFHjhhrgu2VEto201Q/FfLVhFSkkWJqrMqWLS5Au8z8t4Y+iRkb
+        pf+4JmTsHCN+E88/IHYlEYlfW6MZvXE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-253-D6l8P-rjOD-hiXsIZlGJFg-1; Wed, 23 Feb 2022 08:40:39 -0500
-X-MC-Unique: D6l8P-rjOD-hiXsIZlGJFg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-567-iy9RvXRjMnuPsHiTd2rhyw-1; Wed, 23 Feb 2022 08:42:32 -0500
+X-MC-Unique: iy9RvXRjMnuPsHiTd2rhyw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8DDAE801AAD;
-        Wed, 23 Feb 2022 13:40:38 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E926784978;
-        Wed, 23 Feb 2022 13:40:31 +0000 (UTC)
-Message-ID: <c337d280825c1e95d9181ab8aeb505a0b074c8d1.camel@redhat.com>
-Subject: Re: [PATCH v2 01/18] KVM: x86: host-initiated EFER.LME write
- affects the MMU
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com, stable@vger.kernel.org
-Date:   Wed, 23 Feb 2022 15:40:30 +0200
-In-Reply-To: <20220217210340.312449-2-pbonzini@redhat.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
-         <20220217210340.312449-2-pbonzini@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C4476FC85;
+        Wed, 23 Feb 2022 13:42:31 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.195.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CA8FB27BC4;
+        Wed, 23 Feb 2022 13:42:30 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>, patches@opensource.cirrus.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] mfd: arizona-spi: Split Windows ACPI init code into its own function
+Date:   Wed, 23 Feb 2022 14:42:21 +0100
+Message-Id: <20220223134222.730886-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 16:03 -0500, Paolo Bonzini wrote:
-> While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and therefore
-> EFER.NX is the only bit that can affect the MMU role.  However, set_efer accepts
-> a host-initiated change to EFER.LME even with CR0.PG=1.  In that case, the
-> MMU has to be reset.
-> 
-> Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu.h | 1 +
->  arch/x86/kvm/x86.c | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-> index 51faa2c76ca5..a5a50cfeffff 100644
-> --- a/arch/x86/kvm/mmu.h
-> +++ b/arch/x86/kvm/mmu.h
-> @@ -48,6 +48,7 @@
->  			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
->  
->  #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-> +#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
->  
->  static __always_inline u64 rsvd_bits(int s, int e)
->  {
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index d3da64106685..99a58c25f5c2 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -1647,7 +1647,7 @@ static int set_efer(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->  	}
->  
->  	/* Update reserved bits */
-> -	if ((efer ^ old_efer) & EFER_NX)
-> +	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
->  		kvm_mmu_reset_context(vcpu);
->  
->  	return 0;
+x86/ACPI boards with an arizona WM5102 codec ship with either Windows or
+Android as factory installed OS.
 
-It makes sense.
+The ACPI fwnode describing the codec differs depending on the factory OS,
+and the current arizona_spi_acpi_probe() function is tailored for use
+with the Windows board ACPI tables.
 
-I am just curios, is there a report of failure
-due to this issue? I can imagine something like this breaking
-nested migration of 32 bit guests and such and/or smm and such.
+Split out the Windows board ACPI tables specific bits into a new
+arizona_spi_acpi_windows_probe() function in preparation for also
+adding support for the Android board ACPI tables.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/mfd/arizona-spi.c | 52 ++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 20 deletions(-)
 
-Best regards,
-	Maxim Levitsky
+diff --git a/drivers/mfd/arizona-spi.c b/drivers/mfd/arizona-spi.c
+index 9fe06dda3782..238355542ab1 100644
+--- a/drivers/mfd/arizona-spi.c
++++ b/drivers/mfd/arizona-spi.c
+@@ -43,31 +43,13 @@ static const struct gpiod_lookup arizona_soc_gpios[] = {
+ 	{ "arizona", 4, "wlf,micd-pol", 0, GPIO_ACTIVE_LOW },
+ };
+ 
+-/*
+- * The AOSP 3.5 mm Headset: Accessory Specification gives the following values:
+- * Function A Play/Pause:           0 ohm
+- * Function D Voice assistant:    135 ohm
+- * Function B Volume Up           240 ohm
+- * Function C Volume Down         470 ohm
+- * Minimum Mic DC resistance     1000 ohm
+- * Minimum Ear speaker impedance   16 ohm
+- * Note the first max value below must be less then the min. speaker impedance,
+- * to allow CTIA/OMTP detection to work. The other max values are the closest
+- * value from extcon-arizona.c:arizona_micd_levels halfway 2 button resistances.
+- */
+-static const struct arizona_micd_range arizona_micd_aosp_ranges[] = {
+-	{ .max =  11, .key = KEY_PLAYPAUSE },
+-	{ .max = 186, .key = KEY_VOICECOMMAND },
+-	{ .max = 348, .key = KEY_VOLUMEUP },
+-	{ .max = 752, .key = KEY_VOLUMEDOWN },
+-};
+-
+ static void arizona_spi_acpi_remove_lookup(void *lookup)
+ {
+ 	gpiod_remove_lookup_table(lookup);
+ }
+ 
+-static int arizona_spi_acpi_probe(struct arizona *arizona)
++/* For ACPI tables from boards which ship with Windows as factory OS */
++static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
+ {
+ 	struct gpiod_lookup_table *lookup;
+ 	acpi_status status;
+@@ -96,6 +78,36 @@ static int arizona_spi_acpi_probe(struct arizona *arizona)
+ 	if (ACPI_FAILURE(status))
+ 		dev_warn(arizona->dev, "Failed to enable 32KHz clk ACPI error %d\n", status);
+ 
++	return 0;
++}
++
++/*
++ * The AOSP 3.5 mm Headset: Accessory Specification gives the following values:
++ * Function A Play/Pause:           0 ohm
++ * Function D Voice assistant:    135 ohm
++ * Function B Volume Up           240 ohm
++ * Function C Volume Down         470 ohm
++ * Minimum Mic DC resistance     1000 ohm
++ * Minimum Ear speaker impedance   16 ohm
++ * Note the first max value below must be less then the min. speaker impedance,
++ * to allow CTIA/OMTP detection to work. The other max values are the closest
++ * value from extcon-arizona.c:arizona_micd_levels halfway 2 button resistances.
++ */
++static const struct arizona_micd_range arizona_micd_aosp_ranges[] = {
++	{ .max =  11, .key = KEY_PLAYPAUSE },
++	{ .max = 186, .key = KEY_VOICECOMMAND },
++	{ .max = 348, .key = KEY_VOLUMEUP },
++	{ .max = 752, .key = KEY_VOLUMEDOWN },
++};
++
++static int arizona_spi_acpi_probe(struct arizona *arizona)
++{
++	int ret;
++
++	ret = arizona_spi_acpi_windows_probe(arizona);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * Some DSDTs wrongly declare the IRQ trigger-type as IRQF_TRIGGER_FALLING
+ 	 * The IRQ line will stay low when a new IRQ event happens between reading
+-- 
+2.35.1
 
