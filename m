@@ -2,120 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CD8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C74C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbiBWP2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:28:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38450 "EHLO
+        id S242045AbiBWP2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:28:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232586AbiBWP2G (ORCPT
+        with ESMTP id S232586AbiBWP2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:28:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36FA859A57
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:27:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645630057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 23 Feb 2022 10:28:22 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27256593BC;
+        Wed, 23 Feb 2022 07:27:55 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id D097A21637;
+        Wed, 23 Feb 2022 15:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645630073;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=kH8WIN2Y5/0MeVxcsZQrx8+wnwcyD8nghWH8KM7iDsA=;
-        b=LfNSe/pAhnvlWBYSh+R2TLxrxjK4o2/+KFyPHcTrn6yO4SR0ABvvHiKr1+y73t95GWgHFH
-        oXIl0aYRKQeeVTvWJ/59LhuU7xOgBKMDQZcABQ+PSw+xjlLZPvJVm6ibw1pb52frksknpI
-        GvKhnp0DYYtagEidnpUQ45Re7haWMLA=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-423-NGdx5aGhPeeDMV3ing9WMg-1; Wed, 23 Feb 2022 10:27:36 -0500
-X-MC-Unique: NGdx5aGhPeeDMV3ing9WMg-1
-Received: by mail-ej1-f71.google.com with SMTP id qa30-20020a170907869e00b006cee5e080easo7195674ejc.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:27:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kH8WIN2Y5/0MeVxcsZQrx8+wnwcyD8nghWH8KM7iDsA=;
-        b=CwvMiaYyLf5T3b0Iizzlbv/DVK2vkapCK45CvEMzL6e/2waL4uFcEDB5Um8AQFvvic
-         Pj/WTlg1x0SzsMsQb61K53hNh+FEba5TOm93xvk8bCncgo5vvkLIVXPwnPfZXoU4yWYN
-         /Id03gtWis4OIU7CDnf4SsaJNwyK1JY2VunqAKvVc/9jvjMzOwSRh2K3Kk2AlV3EkYKG
-         Of6KJgAeq8GDJJ/+XzG0bsHh6A/I+mFxq2Y3vYaMDkK+S9RkB6SRSthMCR5gOefUtSeB
-         4koTBy1PZKcNVsIL/rglSww8ZA4JC+t3cp3qL3RWrFsnzBPNzF6W90DzZ46BwhfeEr2d
-         kmXQ==
-X-Gm-Message-State: AOAM532XlsxmdPYXgkMWcdJrtjnTMqQBOsaY/q+MaZ/av1lISB53ZgU2
-        FfQeOw2fbEFALh3vhqprPx9uxLNjpkAfHZ8B2Ai1ppiHp0rWUabgJgUKO2sl0wBN9kFuJjlTx8Y
-        A3NM1OC8YMa4W17UKS3yMKO0D
-X-Received: by 2002:a17:906:b052:b0:6ce:88a5:e42a with SMTP id bj18-20020a170906b05200b006ce88a5e42amr192699ejb.237.1645630055141;
-        Wed, 23 Feb 2022 07:27:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz57LXSr95exnXVUq8ZiXc7mHpA+5ceGpA7rB1clicZS90nENA1DfPGFMyeysD3j/UErNATAw==
-X-Received: by 2002:a17:906:b052:b0:6ce:88a5:e42a with SMTP id bj18-20020a170906b05200b006ce88a5e42amr192678ejb.237.1645630054986;
-        Wed, 23 Feb 2022 07:27:34 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id c11sm12486585edx.42.2022.02.23.07.27.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 07:27:34 -0800 (PST)
-Message-ID: <d7c8a9fe-5c9b-2c9d-3731-c735da795bf8@redhat.com>
-Date:   Wed, 23 Feb 2022 16:27:33 +0100
+        bh=3FUhPQarNWrhGr4m2gNeysZcuzjEBU8QonfmZqFkhwg=;
+        b=Gwx4JXhqNYI+8pCgbWW5r6+eUYyL9vqm2RRPkC7EMCHlmj5rplJGjMI0Z3oomsH96JlZMX
+        Ftjo93oJcMmZN9WVx9ZREiwTpwMPJRrrA33JknO94BqsEJi90rdvITSZUWd2LewXxsOkgq
+        GYqQMTQ0GTEaYRoizFVFlAzZ02xdSsk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645630073;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3FUhPQarNWrhGr4m2gNeysZcuzjEBU8QonfmZqFkhwg=;
+        b=2/L9RvuUBNywcU0Y+N+TaZUkAOiL2ZjWGKn7MAHm5CUmDDnO0r8sO45ce62PSJMojqBeZ1
+        5TbJbuQcQy65DoAA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id C4741A3B87;
+        Wed, 23 Feb 2022 15:27:53 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 45407DA7F7; Wed, 23 Feb 2022 16:24:05 +0100 (CET)
+Date:   Wed, 23 Feb 2022 16:24:05 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v3] btrfs: add fs state details to error messages.
+Message-ID: <20220223152405.GO12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-11-clement.leger@bootlin.com>
- <YhPSkz8+BIcdb72R@smile.fi.intel.com> <20220222142513.026ad98c@fixe.home>
- <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
- <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
- <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
- <4d611fe8-b82a-1709-507a-56be94263688@redhat.com>
- <20220223151436.4798e5ad@fixe.home> <YhZRgnPG5Yd8mvc/@lunn.ch>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YhZRgnPG5Yd8mvc/@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Feb 22, 2022 at 03:42:28PM -0500, Sweet Tea Dorminy wrote:
+> --- a/fs/btrfs/super.c
+> +++ b/fs/btrfs/super.c
+> @@ -66,6 +66,46 @@ static struct file_system_type btrfs_root_fs_type;
+>  
+>  static int btrfs_remount(struct super_block *sb, int *flags, char *data);
+>  
+> +#define STATE_STRING_PREFACE ": state "
+> +#define STATE_STRING_BUF_LEN \
+> +	(sizeof(STATE_STRING_PREFACE) + BTRFS_FS_STATE_COUNT)
+> +
+> +/* Characters to print to indicate error conditions. RO is not an error. */
+> +static const char * const fs_state_strings[] = {
+> +	[BTRFS_FS_STATE_ERROR]			= "E",
+> +	[BTRFS_FS_STATE_REMOUNTING]		= "M",
+> +	[BTRFS_FS_STATE_RO]			= NULL,
+> +	[BTRFS_FS_STATE_TRANS_ABORTED]		= "A",
+> +	[BTRFS_FS_STATE_DEV_REPLACING]		= "P",
+> +	[BTRFS_FS_STATE_DUMMY_FS_INFO]		= NULL,
+> +	[BTRFS_FS_STATE_NO_CSUMS]		= NULL,
+> +	[BTRFS_FS_STATE_LOG_CLEANUP_ERROR]	= "L",
 
-On 2/23/22 16:23, Andrew Lunn wrote:
->> As Russell asked, I'm also really interested if someone has a solution
->> to reuse device-tree description (overlays ?) to describe such
->> hardware. However, the fact that CONFIG_OF isn't enabled on x86 config
->> seems a bit complicated on this side.
-> 
-> It does work, intel even used it for one of there tiny x86 SoCs. Maybe
-> it was Newton?
+Yeah that's the idea with the table, but I think you don't need to use
+strings, it should be sufficient to use chars, and 0 works for the empty
+ones.  The way you did it consumes more memory and has indirection with
+the pointers to the actual single letter strings.
 
-IIRC those SoCs did not use standard EFI/ACPI though, but rather some
-other special firmware, I think it was SFI ?  This is not so much about
-the CPU architecture as it is about the firmware/bootloader <->
-OS interface.
-
-Note I'm not saying this can not be done with EFI/ACPI systems, but
-I think it has never been tried.
-
-Regards,
-
-Hans
-
+I'm not sure if we want the non-error states like remounting or
+replacing, but actually why not, even if it's a transient state it's
+another piece of information that could be useful eventually.
