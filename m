@@ -2,143 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA53EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDCBC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236522AbiBWA6h convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 19:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
+        id S236524AbiBWA7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 19:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235001AbiBWA6g (ORCPT
+        with ESMTP id S232062AbiBWA7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 19:58:36 -0500
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0789B9FD4;
-        Tue, 22 Feb 2022 16:58:08 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:48142)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMfyn-0077eS-9r; Tue, 22 Feb 2022 17:58:05 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:53636 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMfyl-00GFL8-3J; Tue, 22 Feb 2022 17:58:04 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Etienne Dechamps <etienne@edechamps.fr>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
-        <20220215101150.GD21589@blackbody.suse.cz>
-Date:   Tue, 22 Feb 2022 18:57:57 -0600
-In-Reply-To: <20220215101150.GD21589@blackbody.suse.cz> ("Michal
- =?utf-8?Q?Koutn=C3=BD=22's?=
-        message of "Tue, 15 Feb 2022 11:11:50 +0100")
-Message-ID: <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 22 Feb 2022 19:59:05 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148ED27B21;
+        Tue, 22 Feb 2022 16:58:39 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id o24so36715178wro.3;
+        Tue, 22 Feb 2022 16:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yyPaBl5xkEft4MC1ElCsdVx+YIi4gPbjLrN+4aUtU3I=;
+        b=lFocHm1ll8kbn256FMHTLkXa/aUbph/pSMXOho9y1i63M6UMe3mLCVD8E1ISilUUxh
+         JEKRDjItmJrQy7u/Cyx0QR2BPGSHKk4y3R9JUQCIbnwWoF7fO2ON5vrboOPLUMb3aqEt
+         c879lK7D3joD4EQm8Xvbk0TKiwRDtueL0VjCaQL38S4avuAzwo0fpLpiUVcKM8Cgg/mC
+         rHqsuFlDc447Ik4MbGV6ys1fxiV9QoGv5V2MIpwonh7k0KQIkbMKUqPRfdrumANqjupd
+         7UP7Tyq6qnt0vmzeuI0H3kEoVV7oPbcev+A9uoUBkBGAzS6SBVIsfR9sWbLPYSiZlu9r
+         3e7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yyPaBl5xkEft4MC1ElCsdVx+YIi4gPbjLrN+4aUtU3I=;
+        b=GZ7UWFW78+hAuHz67x2zVchg7EIkImUVx+sJziaselrL5FRuGchKELWLFUwM2ff0ho
+         CD+W+/90kxVTQ3c9cP/XXNpgc/rSbWpcnEwg6p9vehLbYFMS04M6iP878Yj0iEgsczN9
+         S2+nR9/NPm1s2/n9GUPzwyG07/LmTW03zqrPDCD3Vzel0ht1EjxEtK2G4YMHTnziaP+K
+         fe6IpPR6TuqpHxYc7jTB4tgKNeJSrnWlwaPUrjQ9R415V1xu0N4wOLPVL3C8CXDWYaIm
+         FWeVd/4xp5buU5FDkGMV390q0LlpbJrbgdExzb0PakO0vqpX/w+mE8LC3fHqBCYyqhso
+         Lj1A==
+X-Gm-Message-State: AOAM531rp+m64FXjU0MaZILx5NX/og0QYCePJKRLij4NzR3JZm9aS5dj
+        T8KJpAZ5Qlkp1LP9nZCsTMi6YIgEzrQIx+73OWM=
+X-Google-Smtp-Source: ABdhPJwJ3XDhDTwhrKJ8MvO+0QY+LlMY8p4dDQtV3Sq9hef5slGj+W0Wl7psN4DOKKetT0K5SdSycUY/8I1NpJIWgCE=
+X-Received: by 2002:adf:f68d:0:b0:1e1:db49:a721 with SMTP id
+ v13-20020adff68d000000b001e1db49a721mr21586110wrp.297.1645577917576; Tue, 22
+ Feb 2022 16:58:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nMfyl-00GFL8-3J;;;mid=<87zgmi5rhm.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18iPGCO4B276Z3GxX9JVuKlbTclCHijZRQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RFC PATCH 0/6] RLIMIT_NPROC in ucounts fixups
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <1645454462-27867-1-git-send-email-quic_akhilpo@quicinc.com> <20220221201039.2.I9436e0e300f76b2e6c34136a0b902e8cfd73e0d6@changeid>
+In-Reply-To: <20220221201039.2.I9436e0e300f76b2e6c34136a0b902e8cfd73e0d6@changeid>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Tue, 22 Feb 2022 16:58:56 -0800
+Message-ID: <CAF6AEGuVZaOdUUf8ccokTQdAXMdW3oVYNx3ae9ShBoh8ibXVOw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] drm/msm/adreno: Generate name from chipid for 7c3
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
+        <devicetree@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michal Koutný <mkoutny@suse.com> writes:
-
-> On Sat, Feb 12, 2022 at 03:32:30PM +0000, Etienne Dechamps <etienne@edechamps.fr> wrote:
->> I'm not sure I understand everything that's going on in this thread but it
->> does seem very relevant. You guys might want to double-check the behavior in
->> the particular scenario described there. I'm mostly sending this to make
->> sure everything is cross-linked.
+On Mon, Feb 21, 2022 at 6:41 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
 >
-> Thanks for the report with strace.
+> Use a gpu name which is sprintf'ed from the chipid for 7c3 gpu instead of
+> hardcoding one. This helps to avoid code churn in case of a gpu rename.
 >
-> AFAICT, it's caused by setresuid() after unshare(), i.e. all root's
-> tasks are (wrongly) compared against the lowered RLIMIT_NPROC.
+> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> ---
 >
-> This is tackled by my RFC patch 2/6 [1] or Eric's variant but 3/8
-> (equivalent fix for this case but I haven't run that build).
+>  drivers/gpu/drm/msm/adreno/adreno_device.c |  1 -
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c    | 14 ++++++++++++--
+>  2 files changed, 12 insertions(+), 3 deletions(-)
 >
-> Michal
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+> index fb26193..89cfd84 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+> @@ -318,7 +318,6 @@ static const struct adreno_info gpulist[] = {
+>                 .hwcg = a660_hwcg,
+>         }, {
+>                 .rev = ADRENO_REV(6, 3, 5, ANY_ID),
+> -               .name = "Adreno 7c Gen 3",
+>                 .fw = {
+>                         [ADRENO_FW_SQE] = "a660_sqe.fw",
+>                         [ADRENO_FW_GMU] = "a660_gmu.bin",
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> index f33cfa4..158bbf7 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> @@ -929,12 +929,22 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+>         struct adreno_platform_config *config = dev->platform_data;
+>         struct msm_gpu_config adreno_gpu_config  = { 0 };
+>         struct msm_gpu *gpu = &adreno_gpu->base;
+> +       struct adreno_rev *rev = &config->rev;
+> +       const char *gpu_name;
+> +       static char name[8];
+
+I think 8 is not always enough.. but maybe just use devm_kasprintf()
+to keep it simpler?
+
+BR,
+-R
+
 >
-> [1] I could run your test (LimitNPROC=1 actually) against kernel with my
-> patches and the service starts.
-
-
-So I looked into this and our previous patchsets (but not my final one)
-did resolve this.
-
-What fixed it and what is needed to fix this is not enforcing
-RLIMIT_NPROC when the user who creates the user namespace is INIT_USER.
-
-AKA something like the patch below.  It is a regression so if at all
-possible it needs to be fixed, and it is certainly possible.
-
-The patch below feels right at first glance, but I am not convinced that
-testing cred->user or cred->ucounts is the proper test so I am going to
-sleep on this a little bit.
-
-I did want everyone to know I looked into this and I am going to ensure
-this gets fixed.
-
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 17d8a8c85e3b..532ce5cbf851 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -2027,7 +2027,7 @@ static __latent_entropy struct task_struct *copy_process(
- 
- 	retval = -EAGAIN;
- 	if (is_ucounts_overlimit(task_ucounts(p), UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC))) {
--		if (p->real_cred->user != INIT_USER &&
-+		if (p->real_cred->ucounts != &init_ucounts &&
- 		    !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
- 			goto bad_fork_cleanup_count;
- 	}
-diff --git a/kernel/sys.c b/kernel/sys.c
-index 97dc9e5d6bf9..7b5d74a7845c 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -490,7 +490,7 @@ static void flag_nproc_exceeded(struct cred *new)
- 	 * failure to the execve() stage.
- 	 */
- 	if (is_ucounts_overlimit(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) &&
--			new->user != INIT_USER)
-+			new->ucounts != &init_ucounts)
- 		current->flags |= PF_NPROC_EXCEEDED;
- 	else
- 		current->flags &= ~PF_NPROC_EXCEEDED;
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 6b2e3ca7ee99..925fb3579ef3 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -123,6 +123,8 @@ int create_user_ns(struct cred *new)
- 		ns->ucount_max[i] = INT_MAX;
- 	}
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
-+	if (new->ucounts == &init_ucounts)
-+		set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, RLIM_INFINITY);
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
-
-
-
-
-
+>         adreno_gpu->funcs = funcs;
+>         adreno_gpu->info = adreno_info(config->rev);
+>         adreno_gpu->gmem = adreno_gpu->info->gmem;
+>         adreno_gpu->revn = adreno_gpu->info->revn;
+> -       adreno_gpu->rev = config->rev;
+> +       adreno_gpu->rev = *rev;
+> +
+> +       gpu_name = adreno_gpu->info->name;
+> +       if (!gpu_name) {
+> +               sprintf(name, "%d.%d.%d.%d", rev->core, rev->major, rev->minor,
+> +                               rev->patchid);
+> +               gpu_name = name;
+> +       }
+>
+>         adreno_gpu_config.ioname = "kgsl_3d0_reg_memory";
+>
+> @@ -948,7 +958,7 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+>         pm_runtime_enable(dev);
+>
+>         return msm_gpu_init(drm, pdev, &adreno_gpu->base, &funcs->base,
+> -                       adreno_gpu->info->name, &adreno_gpu_config);
+> +                       gpu_name, &adreno_gpu_config);
+>  }
+>
+>  void adreno_gpu_cleanup(struct adreno_gpu *adreno_gpu)
+> --
+> 2.7.4
+>
