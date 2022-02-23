@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 890A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 185B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238345AbiBWF1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        id S238371AbiBWF1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:27:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238361AbiBWF0i (ORCPT
+        with ESMTP id S238353AbiBWF0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:26:38 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD876D876
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:04 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id s133-20020a252c8b000000b0062112290d0bso26613831ybs.23
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:04 -0800 (PST)
+        Wed, 23 Feb 2022 00:26:21 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9D76CA51
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:01 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6994a6942so160472707b3.17
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=vK4stcDcFWOmnS7XFdl48O2PCgqnR6b+h+9UyqGSKHo=;
-        b=WeE4/kJf1JBwoHaoRE1hNnNZMWwTToI7DEJHTID7WIxYsRDDOQgqC+1Tt7v7oX0Gpi
-         ZmRLZAZ2vDdsuIDB2S8uWUw1YsFiIl0loYVOvIAhqXAjeeol/TFwLp8ORGxcWp10Znnv
-         Fm89xpJAHuDIyCGkiR6qSwg/Ed2RYqbaYiZbeHx1AcGw15lQM8m5E4AwvqrpiEZ4xaWB
-         fo5SYVGmwmAcFx/4QD/6NyE3+JjhT+8OXDlEZf2AotxVIkqYFj/Rh40KkPJ8CI4n5jQK
-         7ZdRdvip/O5Och4s64bR2f4QDQ48Fke+i6WKvHWJfT9D9ayGbTZXm6UK8dYn9Je6DvRz
-         f9cA==
+        bh=ht+B2vhllT9TUcS9YCbehkBKQfQF+JUOyLFYYS9ZTII=;
+        b=X4LjelXhHrsgUAmOKDupgWtkMo3qDIfheiClzbfmM97+mtJS0Ry/l7ad7kEFvNmAMO
+         ru8xaZ7F2Wij3ltuM/YwpEuAwo9u28wNABujo/9gA7WhQcealUnUhGS4exGNNI00mM/h
+         QXyufTreNJLTmpGLik/8e62TY2RamcG4YVt1a9kq7jRUpJ5gpqeZZz9Udb++OBULoX7j
+         8m+I6tqS0xRBkRNDUPy1xvHpGNE8YXXtkcOVcVJNJbGCsF4uJmSxV3FYbdH5JUcqjBWM
+         ug6RC3+13tjcavk58yKUhJSjRMK2SZqloPpTOfJuLf4aHFrFV1j6/rXU3Dwv5NYwIvsx
+         Wd6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=vK4stcDcFWOmnS7XFdl48O2PCgqnR6b+h+9UyqGSKHo=;
-        b=zNBt5ICpIYD9jEFiol0rWYMMUfm58V2elVb0wcV0FAe+iZ9sjCQM2KalkxdLklBDlt
-         ORmqSGnRQl8vxUHtEyhqtS69fHz00vxK0L0TLm3OQ12io0UX769G5SqbAART3TrC+rJj
-         Q9vqfIKPZRjzyOKPPyUlBJMHqkjj9SShegdvX2fjmSLgeQEA3B7AuKCqEu5nWla12On0
-         NAKvLMHLfNZykDyLlDSFxfT1scWUQo68R5UVp52WdtRRSsIKt7jWPrbbQU8E+rCYjkp0
-         U/Qg/NcKahrQtlvpNJXVg4I7+VJ/dpiQVLq6qa7s2dYAzTpK8VrdQgCROhzmYNawZOfZ
-         LSPA==
-X-Gm-Message-State: AOAM531Iq9mnIb0y4mazO+xwYpKFpXJICYr3J3tt5W/+KFVTv47wHvwL
-        PRvBYUsGvMoX5Wbg/MqNXAY225+LaoFZCvS1pDMdq5mT1kJy8Yaq5ZPEus7+Bk8M/Vvm2ZGh2E9
-        m5Zqp5Y6jVXRyYJoaxgh8YDl5DvPMEEwgBpwkt8XnferGn2q8JL7NgswCp7ZpOifF2ZV+EIga
-X-Google-Smtp-Source: ABdhPJyP9PANVGMHQ1NQcOMu/RGh/MDmkswDGY7BrfXZ28lpcuzIVCL0D2Bn/aYlOJdsoN0ZdyV9/jnSWe04
+        bh=ht+B2vhllT9TUcS9YCbehkBKQfQF+JUOyLFYYS9ZTII=;
+        b=o7BRIep38gAX10paYtEb/fLl2/NVIkdge8VFKdIs3xjrjzsoXgNIo5sIDKmPDut+EQ
+         x6oOeJHIzU+MT2rgrozBCGYCWpwF+VWVbBXR6T1JXSy8lSili5awbtjZFLLyYoZz1/7J
+         hz3DbeJflP0792bAqOIJsdULV00/9rOZ6bkJM/W5hcfk3+sE/nCRbTVTZ863bZEumPsf
+         huc/4MH/MIaF20nDVhjRcW7ZjS09W5nL99V6l7TH8LshwWTfF6/mcd8EXhN3l/N8//th
+         vFn/CTvWYcDmr+C9mjH0bXlSEStHPljdTtAHg2Ssfd+TrxHhcdsEsXINDmO+zWwA3kfM
+         /aTw==
+X-Gm-Message-State: AOAM530lT1pFXoPaqr8QIPxMEH9pWVh1bqgPpxSvCrD2lOGRdxVsclEl
+        GY1017Yzvqk3wia9FwH0zVDbcw7Kp5/cdov5d6TKKuIGUB71XM0JJnwebov1U7UqFpuCI32d+tZ
+        kPFElp0CAkXbI5y80WGC7eAfRgfZILeRdAq1hm77LHBOfg8O36eZG4Sdm1UkkkiGzUkBEc4Bm
+X-Google-Smtp-Source: ABdhPJzjFJlAylJJF1esEWWn/fBYg6FPQgSZQ8x6J/wS+NLWdoHP+2b1OSKZqRs0ZEPrSWXIKV7/9dmH6JQ/
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a05:6902:543:b0:61d:c152:bd19 with SMTP id
- z3-20020a056902054300b0061dc152bd19mr27379968ybs.377.1645593892611; Tue, 22
- Feb 2022 21:24:52 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:22:06 -0800
+ (user=junaids job=sendgmr) by 2002:a25:6b4d:0:b0:624:7295:42ee with SMTP id
+ o13-20020a256b4d000000b00624729542eemr15381999ybm.290.1645593888119; Tue, 22
+ Feb 2022 21:24:48 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:22:04 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-31-junaids@google.com>
+Message-Id: <20220223052223.1202152-29-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 30/47] mm: asi: Add API for mapping userspace address ranges
+Subject: [RFC PATCH 28/47] mm: asi: Avoid TLB flush IPIs to CPUs not in ASI context
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -66,441 +66,540 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-asi_map_user()/asi_unmap_user() can be used to map userspace address
-ranges for ASI classes that do not specify ASI_MAP_ALL_USERSPACE.
-In addition, another structure, asi_pgtbl_pool, allows for
-pre-allocating a set of pages to avoid having to allocate memory
-for page tables within asi_map_user(), which makes it easier to use
-that function while holding locks.
+Most CPUs will not be running in a restricted ASI address space at any
+given time. So when we need to do an ASI TLB flush, we can skip those
+CPUs and let them do a flush at the time of the next ASI Enter.
+
+Furthermore, for flushes related to local non-sensitive memory, we can
+restrict the CPU set even further to those CPUs that have that specific
+mm_struct loaded.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h |  19 +++
- arch/x86/mm/asi.c          | 252 ++++++++++++++++++++++++++++++++++---
- include/asm-generic/asi.h  |  21 ++++
- include/linux/mm_types.h   |   2 +-
- 4 files changed, 275 insertions(+), 19 deletions(-)
+ arch/x86/include/asm/asi.h      |   9 +-
+ arch/x86/include/asm/tlbflush.h |  47 +++----
+ arch/x86/mm/asi.c               |  73 +++++++++--
+ arch/x86/mm/tlb.c               | 209 ++++++++++++++++++++++++++++++--
+ 4 files changed, 282 insertions(+), 56 deletions(-)
 
 diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index 35421356584b..bdb2f70d4f85 100644
+index 1a77917c79c7..35421356584b 100644
 --- a/arch/x86/include/asm/asi.h
 +++ b/arch/x86/include/asm/asi.h
-@@ -44,6 +44,12 @@ struct asi {
- 	atomic64_t *tlb_gen;
- 	atomic64_t __tlb_gen;
+@@ -41,6 +41,8 @@ struct asi {
+ 	struct asi_class *class;
+ 	struct mm_struct *mm;
+ 	u16 pcid_index;
++	atomic64_t *tlb_gen;
++	atomic64_t __tlb_gen;
  	int64_t asi_ref_count;
-+	rwlock_t user_map_lock;
-+};
-+
-+struct asi_pgtbl_pool {
-+	struct page *pgtbl_list;
-+	uint count;
  };
  
- DECLARE_PER_CPU_ALIGNED(struct asi_state, asi_cpu_state);
-@@ -74,6 +80,19 @@ void asi_do_lazy_map(struct asi *asi, size_t addr);
- void asi_clear_user_pgd(struct mm_struct *mm, size_t addr);
- void asi_clear_user_p4d(struct mm_struct *mm, size_t addr);
+@@ -138,11 +140,16 @@ static inline int asi_intr_nest_depth(void)
+ 	return current->thread.intr_nest_depth;
+ }
  
-+int  asi_map_user(struct asi *asi, void *addr, size_t len,
-+		  struct asi_pgtbl_pool *pool,
-+		  size_t allowed_start, size_t allowed_end);
-+void asi_unmap_user(struct asi *asi, void *va, size_t len);
-+int  asi_fill_pgtbl_pool(struct asi_pgtbl_pool *pool, uint count, gfp_t flags);
-+void asi_clear_pgtbl_pool(struct asi_pgtbl_pool *pool);
++void asi_get_latest_tlb_gens(struct asi *asi, u64 *latest_local_tlb_gen,
++			     u64 *latest_global_tlb_gen);
 +
-+static inline void asi_init_pgtbl_pool(struct asi_pgtbl_pool *pool)
-+{
-+	pool->pgtbl_list = NULL;
-+	pool->count = 0;
-+}
+ #define INIT_MM_ASI(init_mm)						\
+ 	.asi = {							\
+ 		[0] = {							\
+ 			.pgd = asi_global_nonsensitive_pgd,		\
+-			.mm = &init_mm					\
++			.mm = &init_mm,					\
++			.__tlb_gen = ATOMIC64_INIT(1),			\
++			.tlb_gen = &init_mm.asi[0].__tlb_gen		\
+ 		}							\
+ 	},
+ 
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
+index 295bebdb4395..85315d1d2d70 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -63,7 +63,8 @@ static inline void cr4_clear_bits(unsigned long mask)
+ #ifdef CONFIG_ADDRESS_SPACE_ISOLATION
+ 
+ struct asi_tlb_context {
+-	bool flush_pending;
++	u64 local_tlb_gen;
++	u64 global_tlb_gen;
+ };
+ 
+ #endif
+@@ -223,6 +224,20 @@ struct flush_tlb_info {
+ 	unsigned int		initiating_cpu;
+ 	u8			stride_shift;
+ 	u8			freed_tables;
 +
- static inline void asi_init_thread_state(struct thread_struct *thread)
- {
- 	thread->intr_nest_depth = 0;
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	/*
++	 * We can't use the mm pointer above, as there can be some cases where
++	 * the mm is already freed. Of course, a flush wouldn't be necessary
++	 * in that case, and we would know that when we compare the context ID.
++	 *
++	 * If U64_MAX, then a global flush would be done.
++	 */
++	u64			mm_context_id;
++
++	/* If non-zero, flush only the ASI instance with this PCID index. */
++	u16			asi_pcid_index;
++#endif
+ };
+ 
+ void flush_tlb_local(void);
+@@ -281,36 +296,6 @@ unsigned long build_cr3_pcid(pgd_t *pgd, u16 pcid, bool noflush);
+ u16 kern_pcid(u16 asid);
+ u16 asi_pcid(struct asi *asi, u16 asid);
+ 
+-#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
+-
+-static inline bool *__asi_tlb_flush_pending(struct asi *asi)
+-{
+-	struct tlb_state *tlb_state;
+-	struct tlb_context *tlb_context;
+-
+-	tlb_state = this_cpu_ptr(&cpu_tlbstate);
+-	tlb_context = &tlb_state->ctxs[tlb_state->loaded_mm_asid];
+-	return &tlb_context->asi_context[asi->pcid_index].flush_pending;
+-}
+-
+-static inline bool asi_get_and_clear_tlb_flush_pending(struct asi *asi)
+-{
+-	bool *tlb_flush_pending_ptr = __asi_tlb_flush_pending(asi);
+-	bool tlb_flush_pending = READ_ONCE(*tlb_flush_pending_ptr);
+-
+-	if (tlb_flush_pending)
+-		WRITE_ONCE(*tlb_flush_pending_ptr, false);
+-
+-	return tlb_flush_pending;
+-}
+-
+-static inline void asi_clear_pending_tlb_flush(struct asi *asi)
+-{
+-	WRITE_ONCE(*__asi_tlb_flush_pending(asi), false);
+-}
+-
+-#endif /* CONFIG_ADDRESS_SPACE_ISOLATION */
+-
+ #endif /* !MODULE */
+ 
+ #endif /* _ASM_X86_TLBFLUSH_H */
 diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 29c74b6d4262..9b1bd005f343 100644
+index 17b8e6e60312..29c74b6d4262 100644
 --- a/arch/x86/mm/asi.c
 +++ b/arch/x86/mm/asi.c
-@@ -86,6 +86,55 @@ void asi_unregister_class(int index)
- }
- EXPORT_SYMBOL_GPL(asi_unregister_class);
+@@ -355,6 +355,11 @@ int asi_init(struct mm_struct *mm, int asi_index, struct asi **out_asi)
+ 		for (i = pgd_index(VMALLOC_GLOBAL_NONSENSITIVE_START);
+ 		     i < PTRS_PER_PGD; i++)
+ 			set_pgd(asi->pgd + i, asi_global_nonsensitive_pgd[i]);
++
++		asi->tlb_gen = &mm->asi[0].__tlb_gen;
++	} else {
++		asi->tlb_gen = &asi->__tlb_gen;
++		atomic64_set(asi->tlb_gen, 1);
+ 	}
  
-+static ulong get_pgtbl_from_pool(struct asi_pgtbl_pool *pool)
+ exit_unlock:
+@@ -384,11 +389,26 @@ void asi_destroy(struct asi *asi)
+ }
+ EXPORT_SYMBOL_GPL(asi_destroy);
+ 
++void asi_get_latest_tlb_gens(struct asi *asi, u64 *latest_local_tlb_gen,
++			     u64 *latest_global_tlb_gen)
 +{
-+	struct page *pgtbl;
++	if (likely(asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE))
++		*latest_global_tlb_gen =
++			atomic64_read(ASI_GLOBAL_NONSENSITIVE->tlb_gen);
++	else
++		*latest_global_tlb_gen = 0;
 +
-+	if (pool->count == 0)
-+		return 0;
-+
-+	pgtbl = pool->pgtbl_list;
-+	pool->pgtbl_list = pgtbl->asi_pgtbl_pool_next;
-+	pgtbl->asi_pgtbl_pool_next = NULL;
-+	pool->count--;
-+
-+	return (ulong)page_address(pgtbl);
++	*latest_local_tlb_gen = atomic64_read(asi->tlb_gen);
 +}
 +
-+static void return_pgtbl_to_pool(struct asi_pgtbl_pool *pool, ulong virt)
-+{
-+	struct page *pgtbl = virt_to_page(virt);
+ void __asi_enter(void)
+ {
+ 	u64 asi_cr3;
+ 	u16 pcid;
+ 	bool need_flush = false;
++	u64 latest_local_tlb_gen, latest_global_tlb_gen;
++	struct tlb_state *tlb_state;
++	struct asi_tlb_context *tlb_context;
+ 	struct asi *target = this_cpu_read(asi_cpu_state.target_asi);
+ 
+ 	VM_BUG_ON(preemptible());
+@@ -397,17 +417,35 @@ void __asi_enter(void)
+ 	if (!target || target == this_cpu_read(asi_cpu_state.curr_asi))
+ 		return;
+ 
+-	VM_BUG_ON(this_cpu_read(cpu_tlbstate.loaded_mm) ==
+-		  LOADED_MM_SWITCHING);
++	tlb_state = this_cpu_ptr(&cpu_tlbstate);
++	VM_BUG_ON(tlb_state->loaded_mm == LOADED_MM_SWITCHING);
+ 
+ 	this_cpu_write(asi_cpu_state.curr_asi, target);
+ 
+-	if (static_cpu_has(X86_FEATURE_PCID))
+-		need_flush = asi_get_and_clear_tlb_flush_pending(target);
++	if (static_cpu_has(X86_FEATURE_PCID)) {
++		/*
++		 * curr_asi write has to happen before the asi->tlb_gen reads
++		 * below.
++		 *
++		 * See comments in asi_flush_tlb_range().
++		 */
++		smp_mb();
 +
-+	pgtbl->asi_pgtbl_pool_next = pool->pgtbl_list;
-+	pool->pgtbl_list = pgtbl;
-+	pool->count++;
-+}
++		asi_get_latest_tlb_gens(target, &latest_local_tlb_gen,
++					&latest_global_tlb_gen);
 +
-+int asi_fill_pgtbl_pool(struct asi_pgtbl_pool *pool, uint count, gfp_t flags)
-+{
-+	if (!static_cpu_has(X86_FEATURE_ASI))
-+		return 0;
++		tlb_context = &tlb_state->ctxs[tlb_state->loaded_mm_asid]
++					.asi_context[target->pcid_index];
 +
-+	while (pool->count < count) {
-+		ulong pgtbl = get_zeroed_page(flags);
-+
-+		if (!pgtbl)
-+			return -ENOMEM;
-+
-+		return_pgtbl_to_pool(pool, pgtbl);
++		if (READ_ONCE(tlb_context->local_tlb_gen) < latest_local_tlb_gen
++		    || READ_ONCE(tlb_context->global_tlb_gen) <
++		       latest_global_tlb_gen)
++			need_flush = true;
++	}
+ 
+ 	/*
+ 	 * It is possible that we may get a TLB flush IPI after
+-	 * already reading need_flush, in which case we won't do the
++	 * already calculating need_flush, in which case we won't do the
+ 	 * flush below. However, in that case the interrupt epilog
+ 	 * will also call __asi_enter(), which will do the flush.
+ 	 */
+@@ -416,6 +454,23 @@ void __asi_enter(void)
+ 	asi_cr3 = build_cr3_pcid(target->pgd, pcid, !need_flush);
+ 	write_cr3(asi_cr3);
+ 
++	if (static_cpu_has(X86_FEATURE_PCID)) {
++		/*
++		 * There is a small possibility that an interrupt happened
++		 * after the read of the latest_*_tlb_gen above and when
++		 * that interrupt did an asi_enter() upon return, it read
++		 * an even higher latest_*_tlb_gen and already updated the
++		 * tlb_context->*tlb_gen accordingly. In that case, the
++		 * following will move back the tlb_context->*tlb_gen. That
++		 * isn't ideal, but it should not cause any correctness issues.
++		 * We may just end up doing an unnecessary TLB flush on the next
++		 * asi_enter(). If we really needed to avoid that, we could
++		 * just do a cmpxchg, but it is likely not necessary.
++		 */
++		WRITE_ONCE(tlb_context->local_tlb_gen, latest_local_tlb_gen);
++		WRITE_ONCE(tlb_context->global_tlb_gen, latest_global_tlb_gen);
 +	}
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(asi_fill_pgtbl_pool);
-+
-+void asi_clear_pgtbl_pool(struct asi_pgtbl_pool *pool)
-+{
-+	while (pool->count > 0)
-+		free_page(get_pgtbl_from_pool(pool));
-+}
-+EXPORT_SYMBOL_GPL(asi_clear_pgtbl_pool);
-+
- static void asi_clone_pgd(pgd_t *dst_table, pgd_t *src_table, size_t addr)
- {
- 	pgd_t *src = pgd_offset_pgd(src_table, addr);
-@@ -110,10 +159,12 @@ static void asi_clone_pgd(pgd_t *dst_table, pgd_t *src_table, size_t addr)
- #define DEFINE_ASI_PGTBL_ALLOC(base, level)				\
- static level##_t * asi_##level##_alloc(struct asi *asi,			\
- 				       base##_t *base, ulong addr,	\
--				       gfp_t flags)			\
-+				       gfp_t flags,			\
-+				       struct asi_pgtbl_pool *pool)	\
- {									\
- 	if (unlikely(base##_none(*base))) {				\
--		ulong pgtbl = get_zeroed_page(flags);			\
-+		ulong pgtbl = pool ? get_pgtbl_from_pool(pool)		\
-+				   : get_zeroed_page(flags);		\
- 		phys_addr_t pgtbl_pa;					\
- 									\
- 		if (pgtbl == 0)						\
-@@ -127,7 +178,10 @@ static level##_t * asi_##level##_alloc(struct asi *asi,			\
- 			mm_inc_nr_##level##s(asi->mm);			\
- 		} else {						\
- 			paravirt_release_##level(PHYS_PFN(pgtbl_pa));	\
--			free_page(pgtbl);				\
-+			if (pool)					\
-+				return_pgtbl_to_pool(pool, pgtbl);	\
-+			else						\
-+				free_page(pgtbl);			\
- 		}							\
- 									\
- 		/* NOP on native. PV call on Xen. */			\
-@@ -336,6 +390,7 @@ int asi_init(struct mm_struct *mm, int asi_index, struct asi **out_asi)
- 	asi->class = &asi_class[asi_index];
- 	asi->mm = mm;
- 	asi->pcid_index = asi_index;
-+	rwlock_init(&asi->user_map_lock);
+ 	if (target->class->ops.post_asi_enter)
+ 		target->class->ops.post_asi_enter();
+ }
+@@ -504,6 +559,8 @@ int asi_init_mm_state(struct mm_struct *mm)
+ 	if (!mm->asi_enabled)
+ 		return 0;
  
- 	if (asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE) {
- 		uint i;
-@@ -650,11 +705,6 @@ static bool follow_physaddr(struct mm_struct *mm, size_t virt,
- /*
-  * Map the given range into the ASI page tables. The source of the mapping
-  * is the regular unrestricted page tables.
-- * Can be used to map any kernel memory.
-- *
-- * The caller MUST ensure that the source mapping will not change during this
-- * function. For dynamic kernel memory, this is generally ensured by mapping
-- * the memory within the allocator.
-  *
-  * If the source mapping is a large page and the range being mapped spans the
-  * entire large page, then it will be mapped as a large page in the ASI page
-@@ -664,19 +714,17 @@ static bool follow_physaddr(struct mm_struct *mm, size_t virt,
-  * destination page, but that should be ok for now, as usually in such cases,
-  * the range would consist of a small-ish number of pages.
-  */
--int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
-+int __asi_map(struct asi *asi, size_t start, size_t end, gfp_t gfp_flags,
-+	      struct asi_pgtbl_pool *pool,
-+	      size_t allowed_start, size_t allowed_end)
- {
- 	size_t virt;
--	size_t start = (size_t)addr;
--	size_t end = start + len;
- 	size_t page_size;
++	mm->asi[0].tlb_gen = &mm->asi[0].__tlb_gen;
++	atomic64_set(mm->asi[0].tlb_gen, 1);
+ 	mm->asi[0].mm = mm;
+ 	mm->asi[0].pgd = (pgd_t *)__get_free_page(GFP_PGTABLE_USER);
+ 	if (!mm->asi[0].pgd)
+@@ -718,12 +775,6 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb)
+ 		asi_flush_tlb_range(asi, addr, len);
+ }
  
--	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
--		return 0;
+-void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len)
+-{
+-	/* Later patches will do a more optimized flush. */
+-	flush_tlb_kernel_range((ulong)addr, (ulong)addr + len);
+-}
 -
- 	VM_BUG_ON(start & ~PAGE_MASK);
--	VM_BUG_ON(len & ~PAGE_MASK);
--	VM_BUG_ON(start < TASK_SIZE_MAX);
-+	VM_BUG_ON(end & ~PAGE_MASK);
-+	VM_BUG_ON(end > allowed_end);
-+	VM_BUG_ON(start < allowed_start);
- 
- 	gfp_flags &= GFP_RECLAIM_MASK;
- 
-@@ -702,14 +750,15 @@ int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
- 				continue;				       \
- 			}						       \
- 									       \
--			level = asi_##level##_alloc(asi, base, virt, gfp_flags);\
-+			level = asi_##level##_alloc(asi, base, virt,	       \
-+						    gfp_flags, pool);	       \
- 			if (!level)					       \
- 				return -ENOMEM;				       \
- 									       \
- 			if (page_size >= LEVEL##_SIZE &&		       \
- 			    (level##_none(*level) || level##_leaf(*level)) &&  \
- 			    is_page_within_range(virt, LEVEL##_SIZE,	       \
--						 start, end)) {		       \
-+						 allowed_start, allowed_end)) {\
- 				page_size = LEVEL##_SIZE;		       \
- 				phys &= LEVEL##_MASK;			       \
- 									       \
-@@ -737,6 +786,26 @@ int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
- 	return 0;
- }
- 
-+/*
-+ * Maps the given kernel address range into the ASI page tables.
-+ *
-+ * The caller MUST ensure that the source mapping will not change during this
-+ * function. For dynamic kernel memory, this is generally ensured by mapping
-+ * the memory within the allocator.
-+ */
-+int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
-+{
-+	size_t start = (size_t)addr;
-+	size_t end = start + len;
-+
-+	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
-+		return 0;
-+
-+	VM_BUG_ON(start < TASK_SIZE_MAX);
-+
-+	return __asi_map(asi, start, end, gfp_flags, NULL, start, end);
-+}
-+
- int asi_map(struct asi *asi, void *addr, size_t len)
+ void *asi_va(unsigned long pa)
  {
- 	return asi_map_gfp(asi, addr, len, GFP_KERNEL);
-@@ -935,3 +1004,150 @@ void asi_clear_user_p4d(struct mm_struct *mm, size_t addr)
- 	if (!pgtable_l5_enabled())
- 		__asi_clear_user_pgd(mm, addr);
+ 	struct page *page = pfn_to_page(PHYS_PFN(pa));
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 5c9681df3a16..2a442335501f 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -31,6 +31,8 @@
+ # define __flush_tlb_multi(msk, info)	native_flush_tlb_multi(msk, info)
+ #endif
+ 
++STATIC_NOPV void native_flush_tlb_global(void);
++
+ /*
+  *	TLB flushing, formerly SMP-only
+  *		c/o Linus Torvalds.
+@@ -173,7 +175,6 @@ static void invalidate_kern_pcid(void)
+ 
+ static void invalidate_asi_pcid(struct asi *asi, u16 asid)
+ {
+-	uint i;
+ 	struct asi_tlb_context *asi_tlb_context;
+ 
+ 	if (!static_cpu_has(X86_FEATURE_ASI) ||
+@@ -183,21 +184,30 @@ static void invalidate_asi_pcid(struct asi *asi, u16 asid)
+ 	asi_tlb_context = this_cpu_ptr(cpu_tlbstate.ctxs[asid].asi_context);
+ 
+ 	if (asi)
+-		asi_tlb_context[asi->pcid_index].flush_pending = true;
++		asi_tlb_context[asi->pcid_index] =
++					(struct asi_tlb_context) { 0 };
+ 	else
+-		for (i = 1; i < ASI_MAX_NUM; i++)
+-			asi_tlb_context[i].flush_pending = true;
++		memset(asi_tlb_context, 0,
++		       sizeof(struct asi_tlb_context) * ASI_MAX_NUM);
  }
+ 
+ static void flush_asi_pcid(struct asi *asi)
+ {
+ 	u16 asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
+-	/*
+-	 * The flag should be cleared before the INVPCID, to avoid clearing it
+-	 * in case an interrupt/exception sets it again after the INVPCID.
+-	 */
+-	asi_clear_pending_tlb_flush(asi);
++	struct asi_tlb_context *tlb_context = this_cpu_ptr(
++		&cpu_tlbstate.ctxs[asid].asi_context[asi->pcid_index]);
++	u64 latest_local_tlb_gen = atomic64_read(asi->tlb_gen);
++	u64 latest_global_tlb_gen = atomic64_read(
++					ASI_GLOBAL_NONSENSITIVE->tlb_gen);
 +
-+/*
-+ * Maps the given userspace address range into the ASI page tables.
-+ *
-+ * The caller MUST ensure that the source mapping will not change during this
-+ * function e.g. by synchronizing via MMU notifiers or acquiring the
-+ * appropriate locks.
-+ */
-+int asi_map_user(struct asi *asi, void *addr, size_t len,
-+		 struct asi_pgtbl_pool *pool,
-+		 size_t allowed_start, size_t allowed_end)
+ 	invpcid_flush_single_context(asi_pcid(asi, asid));
++
++	/*
++	 * This could sometimes move the *_tlb_gen backwards. See comments
++	 * in __asi_enter().
++	 */
++	WRITE_ONCE(tlb_context->local_tlb_gen, latest_local_tlb_gen);
++	WRITE_ONCE(tlb_context->global_tlb_gen, latest_global_tlb_gen);
+ }
+ 
+ static void __flush_tlb_one_asi(struct asi *asi, u16 asid, size_t addr)
+@@ -1050,7 +1060,7 @@ static DEFINE_PER_CPU(unsigned int, flush_tlb_info_idx);
+ static struct flush_tlb_info *get_flush_tlb_info(struct mm_struct *mm,
+ 			unsigned long start, unsigned long end,
+ 			unsigned int stride_shift, bool freed_tables,
+-			u64 new_tlb_gen)
++			u64 new_tlb_gen, u64 mm_ctx_id, u16 asi_pcid_index)
+ {
+ 	struct flush_tlb_info *info = this_cpu_ptr(&flush_tlb_info);
+ 
+@@ -1071,6 +1081,11 @@ static struct flush_tlb_info *get_flush_tlb_info(struct mm_struct *mm,
+ 	info->new_tlb_gen	= new_tlb_gen;
+ 	info->initiating_cpu	= smp_processor_id();
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	info->mm_context_id	= mm_ctx_id;
++	info->asi_pcid_index	= asi_pcid_index;
++#endif
++
+ 	return info;
+ }
+ 
+@@ -1104,7 +1119,7 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
+ 	new_tlb_gen = inc_mm_tlb_gen(mm);
+ 
+ 	info = get_flush_tlb_info(mm, start, end, stride_shift, freed_tables,
+-				  new_tlb_gen);
++				  new_tlb_gen, 0, 0);
+ 
+ 	/*
+ 	 * flush_tlb_multi() is not optimized for the common case in which only
+@@ -1157,7 +1172,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+ 		struct flush_tlb_info *info;
+ 
+ 		preempt_disable();
+-		info = get_flush_tlb_info(NULL, start, end, 0, false, 0);
++		info = get_flush_tlb_info(NULL, start, end, 0, false, 0, 0, 0);
+ 
+ 		on_each_cpu(do_kernel_range_flush, info, 1);
+ 
+@@ -1166,6 +1181,174 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+ 	}
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++
++static inline void invlpg_range(size_t start, size_t end, size_t stride)
 +{
-+	int err;
-+	size_t start = (size_t)addr;
-+	size_t end = start + len;
++	size_t addr;
 +
-+	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
-+		return 0;
-+
-+	VM_BUG_ON(end > TASK_SIZE_MAX);
-+
-+	read_lock(&asi->user_map_lock);
-+	err = __asi_map(asi, start, end, GFP_NOWAIT, pool,
-+			allowed_start, allowed_end);
-+	read_unlock(&asi->user_map_lock);
-+
-+	return err;
++	for (addr = start; addr < end; addr += stride)
++		invlpg(addr);
 +}
-+EXPORT_SYMBOL_GPL(asi_map_user);
 +
-+static bool
-+asi_unmap_free_pte_range(struct asi_pgtbl_pool *pgtbls_to_free,
-+			 pte_t *pte, size_t addr, size_t end)
++static bool asi_needs_tlb_flush(struct asi *asi, struct flush_tlb_info *info)
 +{
-+	do {
-+		pte_clear(NULL, addr, pte);
-+	} while (pte++, addr += PAGE_SIZE, addr != end);
++	if (!asi ||
++	    (info->mm_context_id != U64_MAX &&
++	     info->mm_context_id != asi->mm->context.ctx_id) ||
++	    (info->asi_pcid_index && info->asi_pcid_index != asi->pcid_index))
++		return false;
++
++	if (unlikely(!(asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE)) &&
++	    (info->mm_context_id == U64_MAX || !info->asi_pcid_index))
++		return false;
 +
 +	return true;
 +}
 +
-+#define DEFINE_ASI_UNMAP_FREE_RANGE(level, LEVEL, next_level, NEXT_LVL_SIZE)   \
-+static bool								       \
-+asi_unmap_free_##level##_range(struct asi_pgtbl_pool *pgtbls_to_free,	       \
-+			       level##_t *level, size_t addr, size_t end)      \
-+{									       \
-+	bool unmapped = false;						       \
-+	size_t next;							       \
-+									       \
-+	do {								       \
-+		next = level##_addr_end(addr, end);			       \
-+		if (level##_none(*level))				       \
-+			continue;					       \
-+									       \
-+		if (IS_ALIGNED(addr, LEVEL##_SIZE) &&			       \
-+		    IS_ALIGNED(next, LEVEL##_SIZE)) {			       \
-+			if (!level##_large(*level)) {			       \
-+				ulong pgtbl = level##_page_vaddr(*level);      \
-+				struct page *page = virt_to_page(pgtbl);       \
-+									       \
-+				page->private = PG_LEVEL_##NEXT_LVL_SIZE;      \
-+				return_pgtbl_to_pool(pgtbls_to_free, pgtbl);   \
-+			}						       \
-+			level##_clear(level);				       \
-+			unmapped = true;				       \
-+		} else {						       \
-+			/*						       \
-+			 * At this time, we don't have a case where we need to \
-+			 * unmap a subset of a huge page. But that could arise \
-+			 * in the future. In that case, we'll need to split    \
-+			 * the huge mapping here.			       \
-+			 */						       \
-+			if (WARN_ON(level##_large(*level)))		       \
-+				continue;				       \
-+									       \
-+			unmapped |= asi_unmap_free_##next_level##_range(       \
-+					pgtbls_to_free,			       \
-+					next_level##_offset(level, addr),      \
-+					addr, next);			       \
-+		}							       \
-+	} while (level++, addr = next, addr != end);			       \
-+									       \
-+	return unmapped;						       \
++static void __flush_asi_tlb_all(struct asi *asi)
++{
++	if (static_cpu_has(X86_FEATURE_INVPCID_SINGLE)) {
++		flush_asi_pcid(asi);
++		return;
++	}
++
++	/* See comments in native_flush_tlb_local() */
++	if (unlikely(!asi_is_target_unrestricted()) &&
++	    asi_intr_nest_depth() == 0) {
++		native_flush_tlb_global();
++		return;
++	}
++
++	/* Let the next ASI Enter do the flush */
++	asi_exit();
 +}
 +
-+DEFINE_ASI_UNMAP_FREE_RANGE(pmd, PMD, pte, 4K)
-+DEFINE_ASI_UNMAP_FREE_RANGE(pud, PUD, pmd, 2M)
-+DEFINE_ASI_UNMAP_FREE_RANGE(p4d, P4D, pud, 1G)
-+DEFINE_ASI_UNMAP_FREE_RANGE(pgd, PGDIR, p4d, 512G)
-+
-+static bool asi_unmap_and_free_range(struct asi_pgtbl_pool *pgtbls_to_free,
-+				     struct asi *asi, size_t addr, size_t end)
++static void do_asi_tlb_flush(void *data)
 +{
-+	size_t next;
-+	bool unmapped = false;
-+	pgd_t *pgd = pgd_offset_pgd(asi->pgd, addr);
++	struct flush_tlb_info *info = data;
++	struct tlb_state *tlb_state = this_cpu_ptr(&cpu_tlbstate);
++	struct asi_tlb_context *tlb_context;
++	struct asi *asi = asi_get_current();
++	u64 latest_local_tlb_gen, latest_global_tlb_gen;
++	u64 curr_local_tlb_gen, curr_global_tlb_gen;
++	u64 new_local_tlb_gen, new_global_tlb_gen;
++	bool do_flush_all;
 +
-+	BUILD_BUG_ON((void *)&((struct page *)NULL)->private ==
-+		     (void *)&((struct page *)NULL)->asi_pgtbl_pool_next);
++	count_vm_tlb_event(NR_TLB_REMOTE_FLUSH_RECEIVED);
 +
-+	if (pgtable_l5_enabled())
-+		return asi_unmap_free_pgd_range(pgtbls_to_free, pgd, addr, end);
-+
-+	do {
-+		next = pgd_addr_end(addr, end);
-+		unmapped |= asi_unmap_free_p4d_range(pgtbls_to_free,
-+						     p4d_offset(pgd, addr),
-+						     addr, next);
-+	} while (pgd++, addr = next, addr != end);
-+
-+	return unmapped;
-+}
-+
-+void asi_unmap_user(struct asi *asi, void *addr, size_t len)
-+{
-+	static void (*const free_pgtbl_at_level[])(struct asi *, size_t) = {
-+		NULL,
-+		asi_free_pte,
-+		asi_free_pmd,
-+		asi_free_pud,
-+		asi_free_p4d
-+	};
-+
-+	struct asi_pgtbl_pool pgtbls_to_free = { 0 };
-+	size_t start = (size_t)addr;
-+	size_t end = start + len;
-+	bool unmapped;
-+
-+	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
++	if (!asi_needs_tlb_flush(asi, info))
 +		return;
 +
-+	write_lock(&asi->user_map_lock);
-+	unmapped = asi_unmap_and_free_range(&pgtbls_to_free, asi, start, end);
-+	write_unlock(&asi->user_map_lock);
++	do_flush_all = info->end - info->start >
++		       (tlb_single_page_flush_ceiling << PAGE_SHIFT);
 +
-+	if (unmapped)
-+		asi_flush_tlb_range(asi, addr, len);
++	if (!static_cpu_has(X86_FEATURE_PCID)) {
++		if (do_flush_all)
++			__flush_asi_tlb_all(asi);
++		else
++			invlpg_range(info->start, info->end, PAGE_SIZE);
++		return;
++	}
 +
-+	while (pgtbls_to_free.count > 0) {
-+		size_t pgtbl = get_pgtbl_from_pool(&pgtbls_to_free);
-+		struct page *page = virt_to_page(pgtbl);
++	tlb_context = &tlb_state->ctxs[tlb_state->loaded_mm_asid]
++				.asi_context[asi->pcid_index];
 +
-+		VM_BUG_ON(page->private >= PG_LEVEL_NUM);
-+		free_pgtbl_at_level[page->private](asi, pgtbl);
++	asi_get_latest_tlb_gens(asi, &latest_local_tlb_gen,
++				&latest_global_tlb_gen);
++
++	curr_local_tlb_gen = READ_ONCE(tlb_context->local_tlb_gen);
++	curr_global_tlb_gen = READ_ONCE(tlb_context->global_tlb_gen);
++
++	if (info->mm_context_id == U64_MAX) {
++		new_global_tlb_gen = info->new_tlb_gen;
++		new_local_tlb_gen = curr_local_tlb_gen;
++	} else {
++		new_local_tlb_gen = info->new_tlb_gen;
++		new_global_tlb_gen = curr_global_tlb_gen;
++	}
++
++	/* Somebody already did a full flush */
++	if (new_local_tlb_gen <= curr_local_tlb_gen &&
++	    new_global_tlb_gen <= curr_global_tlb_gen)
++		return;
++
++	/*
++	 * If we can't bring the TLB up-to-date with a range flush, then do a
++	 * full flush anyway.
++	 */
++	if (do_flush_all || !(new_local_tlb_gen == latest_local_tlb_gen &&
++			      new_global_tlb_gen == latest_global_tlb_gen &&
++			      new_local_tlb_gen <= curr_local_tlb_gen + 1 &&
++			      new_global_tlb_gen <= curr_global_tlb_gen + 1)) {
++		__flush_asi_tlb_all(asi);
++		return;
++	}
++
++	invlpg_range(info->start, info->end, PAGE_SIZE);
++
++	/*
++	 * If we are still in ASI context, then all the INVLPGs flushed the
++	 * ASI PCID and so we can update the tlb_gens.
++	 */
++	if (asi_get_current() == asi) {
++		WRITE_ONCE(tlb_context->local_tlb_gen, new_local_tlb_gen);
++		WRITE_ONCE(tlb_context->global_tlb_gen, new_global_tlb_gen);
 +	}
 +}
-+EXPORT_SYMBOL_GPL(asi_unmap_user);
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index 8513d0d7865a..fffb323d2a00 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -26,6 +26,7 @@
- 
- struct asi_hooks {};
- struct asi {};
-+struct asi_pgtbl_pool {};
- 
- static inline
- int asi_register_class(const char *name, uint flags,
-@@ -92,6 +93,26 @@ void asi_clear_user_pgd(struct mm_struct *mm, size_t addr) { }
- static inline
- void asi_clear_user_p4d(struct mm_struct *mm, size_t addr) { }
- 
-+static inline
-+int asi_map_user(struct asi *asi, void *addr, size_t len,
-+		 struct asi_pgtbl_pool *pool,
-+		 size_t allowed_start, size_t allowed_end)
++
++static bool is_asi_active_on_cpu(int cpu, void *info)
 +{
-+	return 0;
++	return per_cpu(asi_cpu_state.curr_asi, cpu);
 +}
 +
-+static inline void asi_unmap_user(struct asi *asi, void *va, size_t len) { }
-+
-+static inline
-+int asi_fill_pgtbl_pool(struct asi_pgtbl_pool *pool, uint count, gfp_t flags)
++void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len)
 +{
-+	return 0;
++	size_t start = (size_t)addr;
++	size_t end = start + len;
++	struct flush_tlb_info *info;
++	u64 mm_context_id;
++	const cpumask_t *cpu_mask;
++	u64 new_tlb_gen = 0;
++
++	if (!static_cpu_has(X86_FEATURE_ASI))
++		return;
++
++	if (static_cpu_has(X86_FEATURE_PCID)) {
++		new_tlb_gen = atomic64_inc_return(asi->tlb_gen);
++
++		/*
++		 * The increment of tlb_gen must happen before the curr_asi
++		 * reads in is_asi_active_on_cpu(). That ensures that if another
++		 * CPU is in asi_enter() and happens to write to curr_asi after
++		 * is_asi_active_on_cpu() read it, it will see the updated
++		 * tlb_gen and perform a flush during the TLB switch.
++		 */
++		smp_mb__after_atomic();
++	}
++
++	preempt_disable();
++
++	if (asi == ASI_GLOBAL_NONSENSITIVE) {
++		mm_context_id = U64_MAX;
++		cpu_mask = cpu_online_mask;
++	} else {
++		mm_context_id = asi->mm->context.ctx_id;
++		cpu_mask = mm_cpumask(asi->mm);
++	}
++
++	info = get_flush_tlb_info(NULL, start, end, 0, false, new_tlb_gen,
++				  mm_context_id, asi->pcid_index);
++
++	on_each_cpu_cond_mask(is_asi_active_on_cpu, do_asi_tlb_flush, info,
++			      true, cpu_mask);
++
++	put_flush_tlb_info();
++	preempt_enable();
 +}
 +
-+static inline void asi_clear_pgtbl_pool(struct asi_pgtbl_pool *pool) { }
++#endif
 +
-+static inline void asi_init_pgtbl_pool(struct asi_pgtbl_pool *pool) { }
-+
- static inline
- void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
+ /*
+  * This can be used from process context to figure out what the value of
+  * CR3 is without needing to do a (slow) __read_cr3().
+@@ -1415,7 +1598,7 @@ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
  
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 7d38229ca85c..c3f209720a84 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -198,7 +198,7 @@ struct page {
- 			/* Links the pages_to_free_async list */
- 			struct llist_node async_free_node;
+ 	int cpu = get_cpu();
  
--			unsigned long _asi_pad_1;
-+			struct page *asi_pgtbl_pool_next;
- 			u64 asi_tlb_gen;
- 
- 			union {
+-	info = get_flush_tlb_info(NULL, 0, TLB_FLUSH_ALL, 0, false, 0);
++	info = get_flush_tlb_info(NULL, 0, TLB_FLUSH_ALL, 0, false, 0, 0, 0);
+ 	/*
+ 	 * flush_tlb_multi() is not optimized for the common case in which only
+ 	 * a local TLB flush is needed. Optimize this use-case by calling
 -- 
 2.35.1.473.g83b2b277ed-goog
 
