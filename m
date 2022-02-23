@@ -2,70 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E851C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A27C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243524AbiBWRuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        id S243532AbiBWRuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:50:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbiBWRuM (ORCPT
+        with ESMTP id S243526AbiBWRuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:50:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74090E3E;
-        Wed, 23 Feb 2022 09:49:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21E4CB8212B;
-        Wed, 23 Feb 2022 17:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A07C340E7;
-        Wed, 23 Feb 2022 17:49:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645638581;
-        bh=H8P7Ks4m+SZ3IXEDDRjp8V4gV6GaxlZWg9rscesZaI0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=OUI9vbYbdyvJYhQd9X5itZVtsvizQ8HCbWnRE7l/48uRx0ClJ28gpnVDn/7OfLLtJ
-         sQ7s0uduwdSsijrECv3qc6EAS/cBxVD1k29vcTRJD0gBBYF2KqJqQY1nZr4anGAAEf
-         PVfLIoPAMEkjXTPmMGLFjwljNowy4li/zNGEZVs+xik6v2MTvmCsVip0ioefTQ7ysb
-         EMZGBfK1xUxCHWMyapKICQfXHXgFP2ULHYv/QoKIAda4UQRj5Dy8zvIGEtyc5dwIm6
-         Io51SayGo94VxxSMNuQbOCcy/OQqjQ1sIYR1MzMD8SA2zrT3pAIRLhV6H9cqKWWF9S
-         xCXayvRpu8BRg==
-Date:   Wed, 23 Feb 2022 11:49:40 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
-        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: Re: [PATCH v7 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit()
- callback
-Message-ID: <20220223174940.GA140379@bhelgaas>
+        Wed, 23 Feb 2022 12:50:19 -0500
+X-Greylist: delayed 1231 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 09:49:51 PST
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.47.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E71E3E
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:49:51 -0800 (PST)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 525BA35E7D
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:20 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id MvS4nXCuW9AGSMvS4n9mmq; Wed, 23 Feb 2022 11:29:20 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:33714 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nMvS3-001vhR-RG; Wed, 23 Feb 2022 11:29:19 -0600
+Message-ID: <155ef2c4-84c6-ace7-5676-9fc96554539b@kernel.org>
+Date:   Wed, 23 Feb 2022 18:29:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644992463-14467-7-git-send-email-hongxing.zhu@nxp.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/1] rtla: Fix systme -> system typo on man page
+Content-Language: en-US
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <YhZsZxqk+IaFxorj@kernel.org>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <YhZsZxqk+IaFxorj@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nMvS3-001vhR-RG
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:33714
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 1
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 02:21:01PM +0800, Richard Zhu wrote:
-> When link is never came up in the link training after host_init.
-> The clocks and power supplies usage counter balance should be handled
-> properly on some DWC platforms (for example, i.MX PCIe).
->
-> Add a new host_exit() callback into dw_pcie_host_ops, then it could be
-> invoked to handle the unbalance issue in the error handling after
-> host_init() function when link is down.
+On 2/23/22 18:18, Arnaldo Carvalho de Melo wrote:
+> Fixes: 496082df01bb08a4 ("rtla: Add rtla osnoise man page")
+> Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-Possible rewording, not sure if it captures everything you want:
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-  When the link never comes up after ->host_init(), some drivers,
-  especially those that don't support hotplug, want to turn off clocks
-  and power supplies.
-
-  Add a new ->host_exit() callback in dw_pcie_host_ops so these
-  drivers can clean up if ->host_init() fails.
+-- Daniel
