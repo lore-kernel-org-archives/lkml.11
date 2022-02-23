@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238164AbiBWFYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:24:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        id S238168AbiBWFYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:24:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238134AbiBWFYb (ORCPT
+        with ESMTP id S237992AbiBWFYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:24:31 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281776A03A
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:01 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id r14-20020a5b018e000000b00624f6f97bf4so306331ybl.12
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:01 -0800 (PST)
+        Wed, 23 Feb 2022 00:24:24 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF6A69CFE
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:23:57 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id b12-20020a056902030c00b0061d720e274aso26585917ybs.20
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:23:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=4OZ+JPmRPuew/8tnwetStHaUs2Nh17IXa7mxxiAMwj8=;
-        b=kb4u7VjrnfodFdsXodDcDOsogb6ps0VFuoU2Ch/2lXixZ/HfftZw3kdktGLZNqJaaS
-         sS3He2L5FPw70IJb8AKJo1NDhJWYKpPBXq/OhYV1okDxsl0mvsUmyEav/HUJeog/Gj9y
-         Q5Dc8pVb07blL49n409GgYRDrcKVQVQRVFNARfm5uMsXWp3Yd02cr7kkTrGmuAR1Xu1E
-         sxdm0LFpj5VhSie+6tVTejQjNAf6nTCGVLsZ8GtzBSgzjYfKnMkFSPkXEgjwcV5k4Zwo
-         pwZnNuNgZRjJww5tQ8PUPFXrFLOBqqQa1ttWIBXg8Sv/mjjUaM/rS2VlzHPfgRo69Xqa
-         n3Jg==
+        bh=LI1Qxw8YovJHKPYFPYoCf4datmDsbayp3z46DL8Kp8Q=;
+        b=U7xDPHt7nJyB2GTAgVc+5mVNa5D9AiEIkeTSJpYyuShkSe5G+Xo37Cmu4z2S0ODbd3
+         Wm5Eeq8cvy6TNvAv3A7bWuNv++i7NTg2KMLHM/m4eHjfRoQqwVJ2y/Yi5MDF7xrDbsQI
+         j5wRAvkCT4cYk3Bc/Ve5H0pU1FD7r6VuCExamGfvXcE67Mlg9W1l1RFlwTf48DP0g9j8
+         zrQbvmaWMqoIe6J4oo0xoCcquiVzfC7OAHWIqYk7V7cZwcAdfqwpYM8UaM/ZPk1iYlJM
+         o8gS8/KkwFxTjJeXBM9VLMqxRp+ccKcT56QtTvv+HXupkPEETHBW4Z+e7zRt00MQFKUT
+         ixgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=4OZ+JPmRPuew/8tnwetStHaUs2Nh17IXa7mxxiAMwj8=;
-        b=mjX82iQqchgPbCci/bK9CiospSmNe82b7JRe3rb03GtbKNmIQlSeo0qlirWbRRJcmY
-         joAaKScWO3DrxUM23Dr3PbinaG/G9ku31KqDB3bE4ew9UCCwar57HuTDr00lv+K0Vwls
-         //2micSrQBKebvRvVWXa9iwNT1Pb+vA8EZgg2JS4mzhH+0TgCl7tjAa31DHiSu1+RbVu
-         HLyHt6esgwwTFH59gGO2lOOjuUM2aX6Yi5GUu+ICKqaTu3DsD57l45EtHyKNQ+3Y1NLT
-         23DPnYE30astfi9rlisrb1EIXdfWZtwydLIcNcWtX0Irwp7afdr8OlIE8iQ1mthG7Rwg
-         nLYA==
-X-Gm-Message-State: AOAM530JUhBN1hXwxfNuEamv5GSS5ohEY0a9r+4ACwr1qaXv8NsNSVut
-        iNQjMGDedmVw0SH7J8/zhY0Rv7NE7UUfXOJsNWsph3fmK2S4snWQwdSqR72eoj/j5dDim6rllXK
-        sbdOXHlMmXhNgNPmiKSy/3yejfnYh8CJaJdg/3ZTuhshsiBH4yjstDm64Yn0n37+9VnzrM3XV
-X-Google-Smtp-Source: ABdhPJznarXNTwMlwRo1R3Ew9ob69h2spGBZggFbqvzN1k2HjtUx3qHkoNOb8UlGcjxUj887oMmqSttakWi9
+        bh=LI1Qxw8YovJHKPYFPYoCf4datmDsbayp3z46DL8Kp8Q=;
+        b=MYd/DEBU0YO7vo0i+L0cMWECEq1OYVjT0ex6drnvqUgfKVVz5OufSMngCnRq+hiIyC
+         kMr2JzcvbPiJdSHwrFb7FTuCKMJKUUHea6fVanekTLhGk4WgZ4pi+hNYgPHloAaNIze5
+         s8a5mz8MWPgayUuZu56vAzsFkP4lOfqyWMfLEoSNpMhLD65xzAxtTw2rI2ZTCNsGZi5H
+         8qDx6LPazxnbqqoswHlGA7RnwhaCXTF1kOGE93trVYm++TXrKPT7Qc6KH5BZjQo6+NBF
+         i9wVgKbUp/9O80C26xG3SWaOBZb9zmZ5mma+jAFfiHxTM/JXLHxIJpuBfULZR+/5qeSG
+         ILgQ==
+X-Gm-Message-State: AOAM532S/NYfm+3MKn4iL4tX6Y09xnfdobV3VA9M6lAi1K4Kz58eGCNn
+        zxel16wvmund7HOfEEcVIObXgSEHWtgutxFDo7AzqvoZkQvf6qWo24qRel39eSsysg4GJr369X9
+        QtASa+Gyc0gylMAK8apiEHBt9Esd8tDki/ku2eQ1tlMyo4ryseufQOn8LklFzNIPm9Z67PLKN
+X-Google-Smtp-Source: ABdhPJxfznelYhWgkiOo62fJh4kZWSbldwDVUL5AZ4s809e7D3FsyXFvg8XSNCQZyLZ5Vxg+VGGrfUoGnpy5
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a0d:eb09:0:b0:2d1:e0df:5104 with SMTP id
- u9-20020a0deb09000000b002d1e0df5104mr27667696ywe.250.1645593841036; Tue, 22
- Feb 2022 21:24:01 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:43 -0800
+ (user=junaids job=sendgmr) by 2002:a81:5cc3:0:b0:2d0:a2d0:9c0e with SMTP id
+ q186-20020a815cc3000000b002d0a2d09c0emr27666033ywb.270.1645593836836; Tue, 22
+ Feb 2022 21:23:56 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:41 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-8-junaids@google.com>
+Message-Id: <20220223052223.1202152-6-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 07/47] mm: asi: Functions to map/unmap a memory range into
- ASI page tables
+Subject: [RFC PATCH 05/47] mm: asi: Make __get_current_cr3_fast() ASI-aware
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -67,427 +66,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two functions, asi_map() and asi_map_gfp(), are added to allow mapping
-memory into ASI page tables. The mapping will be identical to the one
-for the same virtual address in the unrestricted page tables. This is
-necessary to allow switching between the page tables at any arbitrary
-point in the kernel.
-
-Another function, asi_unmap() is added to allow unmapping memory mapped
-via asi_map*
+When ASI is active, __get_current_cr3_fast() adjusts the returned CR3
+value accordingly to reflect the actual ASI CR3.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h |   5 +
- arch/x86/mm/asi.c          | 196 +++++++++++++++++++++++++++++++++++++
- include/asm-generic/asi.h  |  19 ++++
- mm/internal.h              |   3 +
- mm/vmalloc.c               |  60 +++++++-----
- 5 files changed, 261 insertions(+), 22 deletions(-)
+ arch/x86/include/asm/asi.h |  7 +++++++
+ arch/x86/mm/tlb.c          | 20 ++++++++++++++++++--
+ 2 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index 95557211dabd..521b40d1864b 100644
+index 7702332c62e8..95557211dabd 100644
 --- a/arch/x86/include/asm/asi.h
 +++ b/arch/x86/include/asm/asi.h
-@@ -53,6 +53,11 @@ void asi_destroy(struct asi *asi);
- void asi_enter(struct asi *asi);
- void asi_exit(void);
- 
-+int  asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags);
-+int  asi_map(struct asi *asi, void *addr, size_t len);
-+void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb);
-+void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len);
-+
- static inline void asi_init_thread_state(struct thread_struct *thread)
- {
- 	thread->intr_nest_depth = 0;
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 40d772b2e2a8..84d220cbdcfc 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -6,6 +6,8 @@
- #include <asm/pgalloc.h>
- #include <asm/mmu_context.h>
- 
-+#include "../../../mm/internal.h"
-+
- #undef pr_fmt
- #define pr_fmt(fmt)     "ASI: " fmt
- 
-@@ -287,3 +289,197 @@ void asi_init_mm_state(struct mm_struct *mm)
- {
- 	memset(mm->asi, 0, sizeof(mm->asi));
- }
-+
-+static bool is_page_within_range(size_t addr, size_t page_size,
-+				 size_t range_start, size_t range_end)
-+{
-+	size_t page_start, page_end, page_mask;
-+
-+	page_mask = ~(page_size - 1);
-+	page_start = addr & page_mask;
-+	page_end = page_start + page_size;
-+
-+	return page_start >= range_start && page_end <= range_end;
-+}
-+
-+static bool follow_physaddr(struct mm_struct *mm, size_t virt,
-+			    phys_addr_t *phys, size_t *page_size, ulong *flags)
-+{
-+	pgd_t *pgd;
-+	p4d_t *p4d;
-+	pud_t *pud;
-+	pmd_t *pmd;
-+	pte_t *pte;
-+
-+#define follow_addr_at_level(base, level, LEVEL)			\
-+	do {								\
-+		*page_size = LEVEL##_SIZE;				\
-+		level = level##_offset(base, virt);			\
-+		if (!level##_present(*level))				\
-+			return false;					\
-+									\
-+		if (level##_large(*level)) {				\
-+			*phys = PFN_PHYS(level##_pfn(*level)) |		\
-+				(virt & ~LEVEL##_MASK);			\
-+			*flags = level##_flags(*level);			\
-+			return true;					\
-+		}							\
-+	} while (false)
-+
-+	follow_addr_at_level(mm, pgd, PGDIR);
-+	follow_addr_at_level(pgd, p4d, P4D);
-+	follow_addr_at_level(p4d, pud, PUD);
-+	follow_addr_at_level(pud, pmd, PMD);
-+
-+	*page_size = PAGE_SIZE;
-+	pte = pte_offset_map(pmd, virt);
-+	if (!pte)
-+		return false;
-+
-+	if (!pte_present(*pte)) {
-+		pte_unmap(pte);
-+		return false;
-+	}
-+
-+	*phys = PFN_PHYS(pte_pfn(*pte)) | (virt & ~PAGE_MASK);
-+	*flags = pte_flags(*pte);
-+
-+	pte_unmap(pte);
-+	return true;
-+
-+#undef follow_addr_at_level
-+}
-+
-+/*
-+ * Map the given range into the ASI page tables. The source of the mapping
-+ * is the regular unrestricted page tables.
-+ * Can be used to map any kernel memory.
-+ *
-+ * The caller MUST ensure that the source mapping will not change during this
-+ * function. For dynamic kernel memory, this is generally ensured by mapping
-+ * the memory within the allocator.
-+ *
-+ * If the source mapping is a large page and the range being mapped spans the
-+ * entire large page, then it will be mapped as a large page in the ASI page
-+ * tables too. If the range does not span the entire huge page, then it will
-+ * be mapped as smaller pages. In that case, the implementation is slightly
-+ * inefficient, as it will walk the source page tables again for each small
-+ * destination page, but that should be ok for now, as usually in such cases,
-+ * the range would consist of a small-ish number of pages.
-+ */
-+int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
-+{
-+	size_t virt;
-+	size_t start = (size_t)addr;
-+	size_t end = start + len;
-+	size_t page_size;
-+
-+	if (!static_cpu_has(X86_FEATURE_ASI))
-+		return 0;
-+
-+	VM_BUG_ON(start & ~PAGE_MASK);
-+	VM_BUG_ON(len & ~PAGE_MASK);
-+	VM_BUG_ON(start < TASK_SIZE_MAX);
-+
-+	gfp_flags &= GFP_RECLAIM_MASK;
-+
-+	if (asi->mm != &init_mm)
-+		gfp_flags |= __GFP_ACCOUNT;
-+
-+	for (virt = start; virt < end; virt = ALIGN(virt + 1, page_size)) {
-+		pgd_t *pgd;
-+		p4d_t *p4d;
-+		pud_t *pud;
-+		pmd_t *pmd;
-+		pte_t *pte;
-+		phys_addr_t phys;
-+		ulong flags;
-+
-+		if (!follow_physaddr(asi->mm, virt, &phys, &page_size, &flags))
-+			continue;
-+
-+#define MAP_AT_LEVEL(base, BASE, level, LEVEL) {			       \
-+			if (base##_large(*base)) {			       \
-+				VM_BUG_ON(PHYS_PFN(phys & BASE##_MASK) !=      \
-+					  base##_pfn(*base));		       \
-+				continue;				       \
-+			}						       \
-+									       \
-+			level = asi_##level##_alloc(asi, base, virt, gfp_flags);\
-+			if (!level)					       \
-+				return -ENOMEM;				       \
-+									       \
-+			if (page_size >= LEVEL##_SIZE &&		       \
-+			    (level##_none(*level) || level##_leaf(*level)) &&  \
-+			    is_page_within_range(virt, LEVEL##_SIZE,	       \
-+						 start, end)) {		       \
-+				page_size = LEVEL##_SIZE;		       \
-+				phys &= LEVEL##_MASK;			       \
-+									       \
-+				if (level##_none(*level))		       \
-+					set_##level(level,		       \
-+						    __##level(phys | flags));  \
-+				else					       \
-+					VM_BUG_ON(level##_pfn(*level) !=       \
-+						  PHYS_PFN(phys));	       \
-+				continue;				       \
-+			}						       \
-+		}
-+
-+		pgd = pgd_offset_pgd(asi->pgd, virt);
-+
-+		MAP_AT_LEVEL(pgd, PGDIR, p4d, P4D);
-+		MAP_AT_LEVEL(p4d, P4D, pud, PUD);
-+		MAP_AT_LEVEL(pud, PUD, pmd, PMD);
-+		MAP_AT_LEVEL(pmd, PMD, pte, PAGE);
-+
-+		VM_BUG_ON(true); /* Should never reach here. */
-+#undef MAP_AT_LEVEL
-+	}
-+
-+	return 0;
-+}
-+
-+int asi_map(struct asi *asi, void *addr, size_t len)
-+{
-+	return asi_map_gfp(asi, addr, len, GFP_KERNEL);
-+}
-+
-+/*
-+ * Unmap a kernel address range previously mapped into the ASI page tables.
-+ * The caller must ensure appropriate TLB flushing.
-+ *
-+ * The area being unmapped must be a whole previously mapped region (or regions)
-+ * Unmapping a partial subset of a previously mapped region is not supported.
-+ * That will work, but may end up unmapping more than what was asked for, if
-+ * the mapping contained huge pages.
-+ *
-+ * Note that higher order direct map allocations are allowed to be partially
-+ * freed. If it turns out that that actually happens for any of the
-+ * non-sensitive allocations, then the above limitation may be a problem. For
-+ * now, vunmap_pgd_range() will emit a warning if this situation is detected.
-+ */
-+void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb)
-+{
-+	size_t start = (size_t)addr;
-+	size_t end = start + len;
-+	pgtbl_mod_mask mask = 0;
-+
-+	if (!static_cpu_has(X86_FEATURE_ASI) || !len)
-+		return;
-+
-+	VM_BUG_ON(start & ~PAGE_MASK);
-+	VM_BUG_ON(len & ~PAGE_MASK);
-+	VM_BUG_ON(start < TASK_SIZE_MAX);
-+
-+	vunmap_pgd_range(asi->pgd, start, end, &mask, false);
-+
-+	if (flush_tlb)
-+		asi_flush_tlb_range(asi, addr, len);
-+}
-+
-+void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len)
-+{
-+	/* Later patches will do a more optimized flush. */
-+	flush_tlb_kernel_range((ulong)addr, (ulong)addr + len);
-+}
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index dae1403ee1d0..7da91cbe075d 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -2,6 +2,8 @@
- #ifndef __ASM_GENERIC_ASI_H
- #define __ASM_GENERIC_ASI_H
- 
-+#include <linux/types.h>
-+
- /* ASI class flags */
- #define ASI_MAP_STANDARD_NONSENSITIVE	1
- 
-@@ -44,6 +46,23 @@ static inline struct asi *asi_get_target(void) { return NULL; }
- 
- static inline struct asi *asi_get_current(void) { return NULL; }
- 
-+static inline
-+int asi_map_gfp(struct asi *asi, void *addr, size_t len, gfp_t gfp_flags)
-+{
-+	return 0;
-+}
-+
-+static inline int asi_map(struct asi *asi, void *addr, size_t len)
-+{
-+	return 0;
-+}
-+
-+static inline
-+void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb) { }
-+
-+static inline
-+void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
-+
- #define static_asi_enabled() false
- 
- #endif  /* !_ASSEMBLY_ */
-diff --git a/mm/internal.h b/mm/internal.h
-index 3b79a5c9427a..ae8799d86dd3 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -79,6 +79,9 @@ void unmap_page_range(struct mmu_gather *tlb,
- 			     unsigned long addr, unsigned long end,
- 			     struct zap_details *details);
- 
-+void vunmap_pgd_range(pgd_t *pgd_table, unsigned long addr, unsigned long end,
-+		      pgtbl_mod_mask *mask, bool sleepable);
-+
- void do_page_cache_ra(struct readahead_control *, unsigned long nr_to_read,
- 		unsigned long lookahead_size);
- void force_page_cache_ra(struct readahead_control *, unsigned long nr);
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index d2a00ad4e1dd..f2ef719f1cba 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -336,7 +336,7 @@ static void vunmap_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
+@@ -112,6 +112,11 @@ static inline void asi_intr_exit(void)
+ 	}
  }
  
- static void vunmap_pmd_range(pud_t *pud, unsigned long addr, unsigned long end,
--			     pgtbl_mod_mask *mask)
-+			     pgtbl_mod_mask *mask, bool sleepable)
- {
- 	pmd_t *pmd;
- 	unsigned long next;
-@@ -350,18 +350,22 @@ static void vunmap_pmd_range(pud_t *pud, unsigned long addr, unsigned long end,
- 		if (cleared || pmd_bad(*pmd))
- 			*mask |= PGTBL_PMD_MODIFIED;
- 
--		if (cleared)
-+		if (cleared) {
-+			WARN_ON(addr & ~PMD_MASK);
-+			WARN_ON(next & ~PMD_MASK);
- 			continue;
-+		}
- 		if (pmd_none_or_clear_bad(pmd))
- 			continue;
- 		vunmap_pte_range(pmd, addr, next, mask);
- 
--		cond_resched();
-+		if (sleepable)
-+			cond_resched();
- 	} while (pmd++, addr = next, addr != end);
- }
- 
- static void vunmap_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
--			     pgtbl_mod_mask *mask)
-+			     pgtbl_mod_mask *mask, bool sleepable)
- {
- 	pud_t *pud;
- 	unsigned long next;
-@@ -375,16 +379,19 @@ static void vunmap_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
- 		if (cleared || pud_bad(*pud))
- 			*mask |= PGTBL_PUD_MODIFIED;
- 
--		if (cleared)
-+		if (cleared) {
-+			WARN_ON(addr & ~PUD_MASK);
-+			WARN_ON(next & ~PUD_MASK);
- 			continue;
-+		}
- 		if (pud_none_or_clear_bad(pud))
- 			continue;
--		vunmap_pmd_range(pud, addr, next, mask);
-+		vunmap_pmd_range(pud, addr, next, mask, sleepable);
- 	} while (pud++, addr = next, addr != end);
- }
- 
- static void vunmap_p4d_range(pgd_t *pgd, unsigned long addr, unsigned long end,
--			     pgtbl_mod_mask *mask)
-+			     pgtbl_mod_mask *mask, bool sleepable)
- {
- 	p4d_t *p4d;
- 	unsigned long next;
-@@ -398,14 +405,35 @@ static void vunmap_p4d_range(pgd_t *pgd, unsigned long addr, unsigned long end,
- 		if (cleared || p4d_bad(*p4d))
- 			*mask |= PGTBL_P4D_MODIFIED;
- 
--		if (cleared)
-+		if (cleared) {
-+			WARN_ON(addr & ~P4D_MASK);
-+			WARN_ON(next & ~P4D_MASK);
- 			continue;
-+		}
- 		if (p4d_none_or_clear_bad(p4d))
- 			continue;
--		vunmap_pud_range(p4d, addr, next, mask);
-+		vunmap_pud_range(p4d, addr, next, mask, sleepable);
- 	} while (p4d++, addr = next, addr != end);
- }
- 
-+void vunmap_pgd_range(pgd_t *pgd_table, unsigned long addr, unsigned long end,
-+		      pgtbl_mod_mask *mask, bool sleepable)
++static inline pgd_t *asi_pgd(struct asi *asi)
 +{
-+	unsigned long next;
-+	pgd_t *pgd = pgd_offset_pgd(pgd_table, addr);
-+
-+	BUG_ON(addr >= end);
-+
-+	do {
-+		next = pgd_addr_end(addr, end);
-+		if (pgd_bad(*pgd))
-+			*mask |= PGTBL_PGD_MODIFIED;
-+		if (pgd_none_or_clear_bad(pgd))
-+			continue;
-+		vunmap_p4d_range(pgd, addr, next, mask, sleepable);
-+	} while (pgd++, addr = next, addr != end);
++	return asi->pgd;
 +}
 +
- /*
-  * vunmap_range_noflush is similar to vunmap_range, but does not
-  * flush caches or TLBs.
-@@ -420,21 +448,9 @@ static void vunmap_p4d_range(pgd_t *pgd, unsigned long addr, unsigned long end,
+ #else	/* CONFIG_ADDRESS_SPACE_ISOLATION */
+ 
+ static inline void asi_intr_enter(void) { }
+@@ -120,6 +125,8 @@ static inline void asi_intr_exit(void) { }
+ 
+ static inline void asi_init_thread_state(struct thread_struct *thread) { }
+ 
++static inline pgd_t *asi_pgd(struct asi *asi) { return NULL; }
++
+ #endif	/* CONFIG_ADDRESS_SPACE_ISOLATION */
+ 
+ #endif
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 88d9298720dc..25bee959d1d3 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -17,6 +17,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/apic.h>
+ #include <asm/perf_event.h>
++#include <asm/asi.h>
+ 
+ #include "mm_internal.h"
+ 
+@@ -1073,12 +1074,27 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
   */
- void vunmap_range_noflush(unsigned long start, unsigned long end)
+ unsigned long __get_current_cr3_fast(void)
  {
--	unsigned long next;
--	pgd_t *pgd;
--	unsigned long addr = start;
- 	pgtbl_mod_mask mask = 0;
+-	unsigned long cr3 = build_cr3(this_cpu_read(cpu_tlbstate.loaded_mm)->pgd,
+-		this_cpu_read(cpu_tlbstate.loaded_mm_asid));
++	unsigned long cr3;
++	pgd_t *pgd;
++	u16 asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
++	struct asi *asi = asi_get_current();
++
++	if (asi)
++		pgd = asi_pgd(asi);
++	else
++		pgd = this_cpu_read(cpu_tlbstate.loaded_mm)->pgd;
++
++	cr3 = build_cr3(pgd, asid);
  
--	BUG_ON(addr >= end);
--	pgd = pgd_offset_k(addr);
--	do {
--		next = pgd_addr_end(addr, end);
--		if (pgd_bad(*pgd))
--			mask |= PGTBL_PGD_MODIFIED;
--		if (pgd_none_or_clear_bad(pgd))
--			continue;
--		vunmap_p4d_range(pgd, addr, next, &mask);
--	} while (pgd++, addr = next, addr != end);
-+	vunmap_pgd_range(init_mm.pgd, start, end, &mask, true);
+ 	/* For now, be very restrictive about when this can be called. */
+ 	VM_WARN_ON(in_nmi() || preemptible());
  
- 	if (mask & ARCH_PAGE_TABLE_SYNC_MASK)
- 		arch_sync_kernel_mappings(start, end);
++	/*
++	 * CR3 is unstable if the target ASI is unrestricted
++	 * and a restricted ASI is currently loaded.
++	 */
++	VM_WARN_ON_ONCE(asi && asi_is_target_unrestricted());
++
+ 	VM_BUG_ON(cr3 != __read_cr3());
+ 	return cr3;
+ }
 -- 
 2.35.1.473.g83b2b277ed-goog
 
