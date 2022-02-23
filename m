@@ -2,111 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 06:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238110AbiBWGAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 01:00:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        id S238153AbiBWGBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 01:01:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232274AbiBWGAP (ORCPT
+        with ESMTP id S233319AbiBWGBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 01:00:15 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA92D3B00C;
-        Tue, 22 Feb 2022 21:59:48 -0800 (PST)
+        Wed, 23 Feb 2022 01:01:46 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B793B014
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 22:01:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645595988; x=1677131988;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NIratgGYOhkpACukr35jSYKDkM0v76qmlkK/PhGjAS8=;
-  b=XVBj3nLxznNDiHi4XIYkTH+HXpjHe5z+3Xah9hLcrbQA84PEqeE6wCqm
-   bNyCLWvpBeB/iGhMqvcLUwcnSYIflSVOZV7D9WiYKZufoUbKusRQ9PV5l
-   WIIMXU6pu2jlMnLt8LtSS4dWt5EpdmCWpzCfla/LPrz9f26ZeQrMMVt+S
-   wd9zhSaU9c1yUlmttEtsTa3iRfNodAIwxr6domBz/2rMzhDtsRonYORpj
-   uXyNLXSIWRFOIO/jQui7/xjp68DNvdbncz19FMQIEg1Ouk2jO6Qiwo5pG
-   iw3idhSdJvzmYSx1f86vAbULVgv752vMJNKXWbsV7+dpAtVSQ4pgRUNI+
+  t=1645596079; x=1677132079;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TUBO1g97m00F453/0UQ/chaM7fEojgQjviugcJ4xIjQ=;
+  b=HKCFeu5ZodotaI3FxvM4nW5Cgz6bvNmNJ+cK1cYslFA/xKTXSwVI6Mji
+   LVkr+TX8BnHS3oqrjShGRWLDgEb4JHloUaxj/XWFf7zgQcDMo5lFo0YgZ
+   x19DMBqMnsHot2v/JznWd2uNFLPmWkql/gozZtyKjMjuf4zRSxfXB9r3I
+   +KoWm7mn23/iDwZEe9yqscOxYtq/v/EnyUV7j2OV9o0Vq3IVuBL0XmbR6
+   bvnlDhUKP9y1k3VG8pi9u0T+QxuT009HwsNgrfI2iJlJqTJTia4syTvyC
+   opW2ZM7XQceKkGZkVud9qJFrHXPS1fuB/WWQQGF2ZyhKOXO/VRi93iJKR
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="235401098"
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="315119954"
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="235401098"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:59:48 -0800
+   d="scan'208";a="315119954"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 22:01:19 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="491071664"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:59:42 -0800
-Date:   Wed, 23 Feb 2022 14:10:38 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v5 7/8] KVM: VMX: Update PID-pointer table entry when
- APIC ID is changed
-Message-ID: <20220223061037.GA21263@gao-cwp>
-References: <640e82f3-489d-60af-1d31-25096bef1a46@amd.com>
- <4eee5de5-ab76-7094-17aa-adc552032ba0@intel.com>
- <aa86022c-2816-4155-8d77-f4faf6018255@amd.com>
- <aa7db6d2-8463-2517-95ce-c0bba22e80d4@intel.com>
- <d058f7464084cadc183bd9dbf02c7f525bb9f902.camel@redhat.com>
- <20220110074523.GA18434@gao-cwp>
- <1ff69ed503faa4c5df3ad1b5abe8979d570ef2b8.camel@redhat.com>
- <YeClaZWM1cM+WLjH@google.com>
- <YfsSjvnoQcfzdo68@google.com>
- <Yfw5ddGNOnDqxMLs@google.com>
+   d="scan'208";a="706908731"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 22 Feb 2022 22:01:17 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMkiD-00013A-9P; Wed, 23 Feb 2022 06:01:17 +0000
+Date:   Wed, 23 Feb 2022 14:01:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:crng/random/jd/vmgenid 44/44]
+ include/linux/kern_levels.h:5:18: warning: format '%llx' expects argument of
+ type 'long long unsigned int', but argument 2 has type 'phys_addr_t' {aka
+ 'unsigned int'}
+Message-ID: <202202231308.bUuKfhGx-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yfw5ddGNOnDqxMLs@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 03, 2022 at 08:22:13PM +0000, Sean Christopherson wrote:
->i.e. ACPI_NUMA gets priority and thus amd_numa_init() will never be reached if
->the NUMA topology is enumerated in the ACPI tables.  Furthermore, the VMM would
->have to actually emulate an old AMD northbridge, which is also extremely unlikely.
->
->The odds of breaking a guest are further diminised given that KVM doesn't emulate
->the xAPIC ID => x2APIC ID hilarity on AMD CPUs and no one has complained.
->
->So, rather than tie this to IPI virtualization, I think we should either make
->the xAPIC ID read-only across the board,
+tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vmgenid
+head:   a3909de4c661c33b84a77a66395bb27d10abb1ff
+commit: a3909de4c661c33b84a77a66395bb27d10abb1ff [44/44] drivers/virt: use VM generation ID to reseed RNG
+config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220223/202202231308.bUuKfhGx-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/a3909de4c661c33b84a77a66395bb27d10abb1ff
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block crng/random/jd/vmgenid
+        git checkout a3909de4c661c33b84a77a66395bb27d10abb1ff
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/virt/
 
-We will go this way and defer the introduction of "xapic_id_writable" to the
-emergence of the "crazy" use case.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Levitsky, we plan to revise your patch 13 "[PATCH RESEND 13/30] KVM: x86: lapic:
-don't allow to change APIC ID when apic acceleration is enabled" to make xAPIC
-ID read-only regardless of APICv/AVIC and include it into IPI virtualization
-series (to eliminate the dependency on your AVIC series). Is it fine with you?
-And does this patch 13 depend on other patches in your fixes?
+All warnings (new ones prefixed by >>):
 
->or if we want to hedge in case someone
->has a crazy use case, make the xAPIC ID read-only by default, add a module param
->to let userspace opt-in to a writable xAPIC ID, and report x2APIC and APICv as
->unsupported if the xAPIC ID is writable.  E.g. rougly this, plus your AVIC patches
->if we want to hedge.
+   In file included from include/linux/kernel.h:29,
+                    from arch/x86/include/asm/percpu.h:27,
+                    from arch/x86/include/asm/current.h:6,
+                    from include/linux/mutex.h:14,
+                    from include/linux/kernfs.h:11,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/of.h:17,
+                    from include/linux/irqdomain.h:35,
+                    from include/linux/acpi.h:13,
+                    from drivers/virt/vmgenid.c:12:
+   drivers/virt/vmgenid.c: In function 'vmgenid_acpi_map':
+>> include/linux/kern_levels.h:5:18: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 2 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH "\001"  /* ASCII Start Of Header */
+         |                  ^~~~~~
+   include/linux/printk.h:418:11: note: in definition of macro 'printk_index_wrap'
+     418 |   _p_func(_fmt, ##__VA_ARGS__);    \
+         |           ^~~~
+   include/linux/printk.h:489:2: note: in expansion of macro 'printk'
+     489 |  printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |  ^~~~~~
+   include/linux/kern_levels.h:11:18: note: in expansion of macro 'KERN_SOH'
+      11 | #define KERN_ERR KERN_SOH "3" /* error conditions */
+         |                  ^~~~~~~~
+   include/linux/printk.h:489:9: note: in expansion of macro 'KERN_ERR'
+     489 |  printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~~~
+   drivers/virt/vmgenid.c:53:3: note: in expansion of macro 'pr_err'
+      53 |   pr_err("failed to map memory at 0x%llx, size %zu\n",
+         |   ^~~~~~
+   drivers/virt/vmgenid.c:53:40: note: format string is defined here
+      53 |   pr_err("failed to map memory at 0x%llx, size %zu\n",
+         |                                     ~~~^
+         |                                        |
+         |                                        long long unsigned int
+         |                                     %x
+
+
+vim +5 include/linux/kern_levels.h
+
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
+
+:::::: The code at line 5 was first introduced by commit
+:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
+
+:::::: TO: Joe Perches <joe@perches.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
