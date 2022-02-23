@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB65C35276
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241956AbiBWPWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:22:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
+        id S241973AbiBWPWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241918AbiBWPWC (ORCPT
+        with ESMTP id S241920AbiBWPWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:22:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07961A9A58;
-        Wed, 23 Feb 2022 07:21:28 -0800 (PST)
+        Wed, 23 Feb 2022 10:22:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B36ACF;
+        Wed, 23 Feb 2022 07:21:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8804FB82079;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D40C9B8207B;
+        Wed, 23 Feb 2022 15:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9606FC340FC;
         Wed, 23 Feb 2022 15:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53529C340F3;
-        Wed, 23 Feb 2022 15:21:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645629685;
-        bh=SXlY2rIQIfyC12oX9CrfTYaNsYomBJuHE1ab+YEdV8k=;
+        s=k20201202; t=1645629687;
+        bh=ZGMpJwl2wn458uReV1jkJhAfqxpRPeF4jgkB4IQOVlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kcXuKn1U33dff9QrdG+AL7dr9ScHVWHn00MiqiYxmJ58KCiC/id2/0qIQ0ClUXA48
-         h8wBVmzOfl29mAvYaMYDaBxh+boa0sUjvzB/84CaD9gTOa5BeMDZ6PHwDnobXkb/wq
-         1nsYXyGooAJLTDvdl4qzaxLXITQzN+jgWoao7IXxkz61lFCqxDc31gQYB0ZpXU7fXm
-         qH4LUjYdjAhUsdMhmd+J1J3PhA+7ooO5Zx6iubYEAyT0gv4nWhGMOiHDw2FKDqhw5e
-         r/VQBZmhV3FXqsKTBY5kSOGsdEx3k9jxlfVHXZSkh9ftOUGGFDmi7ewP3Btk+jjvPV
-         AC0gzzddzw03Q==
+        b=bQ04KSteGlVPPBiAKYH+TmAtI1qYK2xtXYZaXaUS4ALnn1iGb9QPxVa8Sb6kJ2dyt
+         UnaoiU+GG2RzURlgLcUSJta9sotP/5Pped60oPlQ4UdqW/5o8cKo9gTOJRh1DPfw3W
+         VqyXP96ztAFp18RkFGVhGdQZCbXCJcsBFw/8IBmFKal7d0pDkN93tztf4BJLiFDZOI
+         SVoOiOwGONV2gftjOc55Bx7g+ZFf90vXEnGVTGiOLLYANl/GI+QQu3fWGZE5YIY7On
+         xMxaKpxQedZncWQf47rEGfDVKMZ8XrFB/N5MsXrpHfQZojV43v+l6QQ3bprTUjv1ma
+         egnQnfh42lIXw==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
         xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
         linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 04/12] mm/damon/sysfs: Link DAMON for virtual address spaces monitoring
-Date:   Wed, 23 Feb 2022 15:20:43 +0000
-Message-Id: <20220223152051.22936-5-sj@kernel.org>
+Subject: [PATCH 06/12] mm/damon/sysfs: Support DAMON-based Operation Schemes
+Date:   Wed, 23 Feb 2022 15:20:45 +0000
+Message-Id: <20220223152051.22936-7-sj@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220223152051.22936-1-sj@kernel.org>
 References: <20220223152051.22936-1-sj@kernel.org>
@@ -51,309 +51,518 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit links the DAMON sysfs interface to DAMON so that users can
-control DAMON via the interface.  In detail, this commit makes writing
-'on' to 'state' file constructs DAMON contexts based on values that
-users have written to relevant sysfs files and start the context.  It
-supports only virtual address spaces monitoring at the moment, though.
+This commit makes DAMON sysfs interface supports the DAMON-based
+operation schemes (DAMOS) feature.  Specifically, this commit adds
+'schemes' directory under each context direcotry, and makes kdamond
+'state' file writing respects the contents in the directory.
 
-The files hierarchy of DAMON sysfs interface after this commit is shown
-below.  In the below figure, parents-children relations are represented
-with indentations, each directory is having ``/`` suffix, and files in
-each directory are separated by comma (",").
+Note that this commit doesn't support all features of DAMOS but only the
+target access pattern and action feature.  Supports for quotas,
+prioritization, watermarks will follow.
+
+As a result, the files hierarchy becomes as below:
 
     /sys/kernel/mm/damon/admin
     │ kdamonds/nr
     │ │ 0/state,pid
     │ │ │ contexts/nr
     │ │ │ │ 0/operations
-    │ │ │ │ │ monitoring_attrs/
-    │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
+    │ │ │ │ │ monitoring_attrs/intervals/sample_us,aggr_us,update_us
     │ │ │ │ │ │ nr_regions/min,max
     │ │ │ │ │ targets/nr
     │ │ │ │ │ │ 0/pid
+    │ │ │ │ │ │ │ regions/nr
+    │ │ │ │ │ │ │ │ 0/start,end
+    │ │ │ │ │ │ │ │ ...
+    │ │ │ │ │ │ ...
+    │ │ │ │ │ schemes/nr    <- NEW DIRECTORY
+    │ │ │ │ │ │ 0/action
+    │ │ │ │ │ │ │ access_pattern/
+    │ │ │ │ │ │ │ │ sz/min,max
+    │ │ │ │ │ │ │ │ nr_accesses/min,max
+    │ │ │ │ │ │ │ │ age/min,max
     │ │ │ │ │ │ ...
     │ │ │ │ ...
     │ │ ...
 
-The usage is straightforward.  Writing a number ('N') to each 'nr' file
-makes directories named '0' to 'N-1'.  Users can construct DAMON
-contexts by writing proper values to the files in the straightforward
-manner and start each kdamond by writing 'on' to 'kdamonds/<N>/state'.
-
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- mm/damon/sysfs.c | 220 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 217 insertions(+), 3 deletions(-)
+ mm/damon/sysfs.c | 418 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 418 insertions(+)
 
 diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
-index e8087ffd924c..be0bc5e745cf 100644
+index c9ad3808077e..2350a637e662 100644
 --- a/mm/damon/sysfs.c
 +++ b/mm/damon/sysfs.c
-@@ -775,6 +775,7 @@ static struct kobj_type damon_sysfs_contexts_ktype = {
- struct damon_sysfs_kdamond {
- 	struct kobject kobj;
- 	struct damon_sysfs_contexts *contexts;
-+	struct damon_ctx *damon_ctx;
+@@ -115,6 +115,349 @@ static struct kobj_type damon_sysfs_ul_range_ktype = {
+ 	.default_groups = damon_sysfs_ul_range_groups,
  };
  
- static struct damon_sysfs_kdamond *damon_sysfs_kdamond_alloc(void)
-@@ -809,26 +810,217 @@ static void damon_sysfs_kdamond_rm_dirs(struct damon_sysfs_kdamond *kdamond)
- 	kobject_put(&kdamond->contexts->kobj);
++/*
++ * access_pattern directory
++ */
++
++struct damon_sysfs_access_pattern {
++	struct kobject kobj;
++	struct damon_sysfs_ul_range *sz;
++	struct damon_sysfs_ul_range *nr_accesses;
++	struct damon_sysfs_ul_range *age;
++};
++
++static
++struct damon_sysfs_access_pattern *damon_sysfs_access_pattern_alloc(void)
++{
++	struct damon_sysfs_access_pattern *access_pattern =
++		kmalloc(sizeof(*access_pattern), GFP_KERNEL);
++
++	if (!access_pattern)
++		return NULL;
++	access_pattern->kobj = (struct kobject){};
++	return access_pattern;
++}
++
++static int damon_sysfs_access_pattern_add_range_dir(
++		struct damon_sysfs_access_pattern *access_pattern,
++		struct damon_sysfs_ul_range **range_dir_ptr,
++		char *name)
++{
++	struct damon_sysfs_ul_range *range = damon_sysfs_ul_range_alloc(0, 0);
++	int err;
++
++	if (!range)
++		return -ENOMEM;
++	err = kobject_init_and_add(&range->kobj, &damon_sysfs_ul_range_ktype,
++			&access_pattern->kobj, name);
++	if (err)
++		kobject_put(&range->kobj);
++	else
++		*range_dir_ptr = range;
++	return err;
++}
++
++static int damon_sysfs_access_pattern_add_dirs(
++		struct damon_sysfs_access_pattern *access_pattern)
++{
++	int err;
++
++	err = damon_sysfs_access_pattern_add_range_dir(access_pattern,
++			&access_pattern->sz, "sz");
++	if (err)
++		goto put_sz_out;
++
++	err = damon_sysfs_access_pattern_add_range_dir(access_pattern,
++			&access_pattern->nr_accesses, "nr_accesses");
++	if (err)
++		goto put_nr_accesses_sz_out;
++
++	err = damon_sysfs_access_pattern_add_range_dir(access_pattern,
++			&access_pattern->age, "age");
++	if (err)
++		goto put_age_nr_accesses_sz_out;
++	return 0;
++
++put_age_nr_accesses_sz_out:
++	kobject_put(&access_pattern->age->kobj);
++	access_pattern->age = NULL;
++put_nr_accesses_sz_out:
++	kobject_put(&access_pattern->nr_accesses->kobj);
++	access_pattern->nr_accesses = NULL;
++put_sz_out:
++	kobject_put(&access_pattern->sz->kobj);
++	access_pattern->sz = NULL;
++	return err;
++}
++
++static void damon_sysfs_access_pattern_rm_dirs(
++		struct damon_sysfs_access_pattern *access_pattern)
++{
++	kobject_put(&access_pattern->sz->kobj);
++	kobject_put(&access_pattern->nr_accesses->kobj);
++	kobject_put(&access_pattern->age->kobj);
++}
++
++static void damon_sysfs_access_pattern_release(struct kobject *kobj)
++{
++	kfree(container_of(kobj, struct damon_sysfs_access_pattern, kobj));
++}
++
++static struct attribute *damon_sysfs_access_pattern_attrs[] = {
++	NULL,
++};
++ATTRIBUTE_GROUPS(damon_sysfs_access_pattern);
++
++static struct kobj_type damon_sysfs_access_pattern_ktype = {
++	.release = damon_sysfs_access_pattern_release,
++	.sysfs_ops = &kobj_sysfs_ops,
++	.default_groups = damon_sysfs_access_pattern_groups,
++};
++
++/*
++ * scheme directory
++ */
++
++struct damon_sysfs_scheme {
++	struct kobject kobj;
++	enum damos_action action;
++	struct damon_sysfs_access_pattern *access_pattern;
++};
++
++/* This should match with enum damos_action */
++static const char * const damon_sysfs_damos_action_strs[] = {
++	"willneed",
++	"cold",
++	"pageout",
++	"hugepage",
++	"nohugepage",
++	"stat",
++};
++
++static struct damon_sysfs_scheme *damon_sysfs_scheme_alloc(
++		enum damos_action action)
++{
++	struct damon_sysfs_scheme *scheme = kmalloc(sizeof(*scheme),
++				GFP_KERNEL);
++
++	if (!scheme)
++		return NULL;
++	scheme->kobj = (struct kobject){};
++	scheme->action = action;
++	return scheme;
++}
++
++static int damon_sysfs_scheme_set_access_pattern(
++		struct damon_sysfs_scheme *scheme)
++{
++	struct damon_sysfs_access_pattern *access_pattern;
++	int err;
++
++	access_pattern = damon_sysfs_access_pattern_alloc();
++	if (!access_pattern)
++		return -ENOMEM;
++	err = kobject_init_and_add(&access_pattern->kobj,
++			&damon_sysfs_access_pattern_ktype, &scheme->kobj,
++			"access_pattern");
++	if (err)
++		goto out;
++	err = damon_sysfs_access_pattern_add_dirs(access_pattern);
++	if (err)
++		goto out;
++	scheme->access_pattern = access_pattern;
++	return 0;
++
++out:
++	kobject_put(&access_pattern->kobj);
++	return err;
++}
++
++static int damon_sysfs_scheme_add_dirs(struct damon_sysfs_scheme *scheme)
++{
++	int err;
++
++	err = damon_sysfs_scheme_set_access_pattern(scheme);
++	if (err)
++		return err;
++	return 0;
++}
++
++static void damon_sysfs_scheme_rm_dirs(struct damon_sysfs_scheme *scheme)
++{
++	damon_sysfs_access_pattern_rm_dirs(scheme->access_pattern);
++	kobject_put(&scheme->access_pattern->kobj);
++}
++
++static ssize_t damon_sysfs_scheme_action_show(struct kobject *kobj,
++		struct kobj_attribute *attr, char *buf)
++{
++	struct damon_sysfs_scheme *scheme = container_of(kobj,
++			struct damon_sysfs_scheme, kobj);
++
++	return sysfs_emit(buf, "%s\n",
++			damon_sysfs_damos_action_strs[scheme->action]);
++}
++
++static ssize_t damon_sysfs_scheme_action_store(struct kobject *kobj,
++		struct kobj_attribute *attr, const char *buf, size_t count)
++{
++	struct damon_sysfs_scheme *scheme = container_of(kobj,
++			struct damon_sysfs_scheme, kobj);
++	enum damos_action action;
++
++	for (action = 0; action < NR_DAMOS_ACTIONS; action++) {
++		if (sysfs_streq(buf, damon_sysfs_damos_action_strs[action])) {
++			scheme->action = action;
++			return count;
++		}
++	}
++	return -EINVAL;
++}
++
++static void damon_sysfs_scheme_release(struct kobject *kobj)
++{
++	kfree(container_of(kobj, struct damon_sysfs_scheme, kobj));
++}
++
++static struct kobj_attribute damon_sysfs_scheme_action_attr = __ATTR(
++		action, 0600, damon_sysfs_scheme_action_show,
++		damon_sysfs_scheme_action_store);
++
++
++static struct attribute *damon_sysfs_scheme_attrs[] = {
++	&damon_sysfs_scheme_action_attr.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(damon_sysfs_scheme);
++
++static struct kobj_type damon_sysfs_scheme_ktype = {
++	.release = damon_sysfs_scheme_release,
++	.sysfs_ops = &kobj_sysfs_ops,
++	.default_groups = damon_sysfs_scheme_groups,
++};
++
++/*
++ * schemes directory
++ */
++
++struct damon_sysfs_schemes {
++	struct kobject kobj;
++	struct damon_sysfs_scheme **schemes_arr;
++	int nr;
++};
++
++static struct damon_sysfs_schemes *damon_sysfs_schemes_alloc(void)
++{
++	return kzalloc(sizeof(struct damon_sysfs_schemes), GFP_KERNEL);
++}
++
++static void damon_sysfs_schemes_rm_dirs(struct damon_sysfs_schemes *schemes)
++{
++	struct damon_sysfs_scheme **schemes_arr = schemes->schemes_arr;
++	int i;
++
++	for (i = 0; i < schemes->nr; i++) {
++		damon_sysfs_scheme_rm_dirs(schemes_arr[i]);
++		kobject_put(&schemes_arr[i]->kobj);
++	}
++	schemes->nr = 0;
++	kfree(schemes_arr);
++	schemes->schemes_arr = NULL;
++}
++
++static int damon_sysfs_schemes_add_dirs(struct damon_sysfs_schemes *schemes,
++		int nr_schemes)
++{
++	struct damon_sysfs_scheme **schemes_arr, *scheme;
++	int err, i;
++
++	damon_sysfs_schemes_rm_dirs(schemes);
++	if (!nr_schemes)
++		return 0;
++
++	schemes_arr = kmalloc_array(nr_schemes, sizeof(*schemes_arr),
++			GFP_KERNEL | __GFP_NOWARN);
++	if (!schemes_arr)
++		return -ENOMEM;
++	schemes->schemes_arr = schemes_arr;
++
++	for (i = 0; i < nr_schemes; i++) {
++		scheme = damon_sysfs_scheme_alloc(DAMOS_STAT);
++		if (!scheme) {
++			damon_sysfs_schemes_rm_dirs(schemes);
++			return -ENOMEM;
++		}
++
++		err = kobject_init_and_add(&scheme->kobj,
++				&damon_sysfs_scheme_ktype, &schemes->kobj,
++				"%d", i);
++		if (err)
++			goto out;
++		err = damon_sysfs_scheme_add_dirs(scheme);
++		if (err)
++			goto out;
++
++		schemes_arr[i] = scheme;
++		schemes->nr++;
++	}
++	return 0;
++
++out:
++	damon_sysfs_schemes_rm_dirs(schemes);
++	kobject_put(&scheme->kobj);
++	return err;
++}
++
++static ssize_t damon_sysfs_schemes_nr_show(struct kobject *kobj,
++		struct kobj_attribute *attr, char *buf)
++{
++	struct damon_sysfs_schemes *schemes = container_of(kobj,
++			struct damon_sysfs_schemes, kobj);
++
++	return sysfs_emit(buf, "%d\n", schemes->nr);
++}
++
++static ssize_t damon_sysfs_schemes_nr_store(struct kobject *kobj,
++		struct kobj_attribute *attr, const char *buf, size_t count)
++{
++	struct damon_sysfs_schemes *schemes = container_of(kobj,
++			struct damon_sysfs_schemes, kobj);
++	int nr, err = kstrtoint(buf, 0, &nr);
++
++	if (err)
++		return err;
++	if (nr < 0)
++		return -EINVAL;
++
++	if (!mutex_trylock(&damon_sysfs_lock))
++		return -EBUSY;
++	err = damon_sysfs_schemes_add_dirs(schemes, nr);
++	mutex_unlock(&damon_sysfs_lock);
++	if (err)
++		return err;
++	return count;
++}
++
++static void damon_sysfs_schemes_release(struct kobject *kobj)
++{
++	kfree(container_of(kobj, struct damon_sysfs_schemes, kobj));
++}
++
++static struct kobj_attribute damon_sysfs_schemes_nr_attr = __ATTR(nr, 0600,
++		damon_sysfs_schemes_nr_show, damon_sysfs_schemes_nr_store);
++
++static struct attribute *damon_sysfs_schemes_attrs[] = {
++	&damon_sysfs_schemes_nr_attr.attr,
++	NULL,
++};
++ATTRIBUTE_GROUPS(damon_sysfs_schemes);
++
++static struct kobj_type damon_sysfs_schemes_ktype = {
++	.release = damon_sysfs_schemes_release,
++	.sysfs_ops = &kobj_sysfs_ops,
++	.default_groups = damon_sysfs_schemes_groups,
++};
++
+ /*
+  * init region directory
+  */
+@@ -756,6 +1099,7 @@ struct damon_sysfs_context {
+ 	enum damon_ops_id ops_id;
+ 	struct damon_sysfs_attrs *attrs;
+ 	struct damon_sysfs_targets *targets;
++	struct damon_sysfs_schemes *schemes;
+ };
+ 
+ static struct damon_sysfs_context *damon_sysfs_context_alloc(
+@@ -810,6 +1154,23 @@ static int damon_sysfs_context_set_targets(struct damon_sysfs_context *context)
+ 	return 0;
  }
  
-+static bool damon_sysfs_ctx_running(struct damon_ctx *ctx)
++static int damon_sysfs_context_set_schemes(struct damon_sysfs_context *context)
 +{
-+	bool running;
++	struct damon_sysfs_schemes *schemes = damon_sysfs_schemes_alloc();
++	int err;
 +
-+	mutex_lock(&ctx->kdamond_lock);
-+	running = ctx->kdamond != NULL;
-+	mutex_unlock(&ctx->kdamond_lock);
-+	return running;
-+}
-+
- static ssize_t damon_sysfs_kdamond_state_show(struct kobject *kobj,
- 		struct kobj_attribute *attr, char *buf)
- {
--	return sysfs_emit(buf, "off\n");
-+	struct damon_sysfs_kdamond *kdamond = container_of(kobj,
-+			struct damon_sysfs_kdamond, kobj);
-+	struct damon_ctx *ctx = kdamond->damon_ctx;
-+	bool running;
-+
-+	if (!ctx)
-+		running = false;
-+	else
-+		running = damon_sysfs_ctx_running(ctx);
-+
-+	return sysfs_emit(buf, "%s\n", running ? "on" : "off");
-+}
-+
-+static int damon_sysfs_set_attrs(struct damon_ctx *ctx,
-+		struct damon_sysfs_attrs *sys_attrs)
-+{
-+	struct damon_sysfs_intervals *sys_intervals = sys_attrs->intervals;
-+	struct damon_sysfs_ul_range *sys_nr_regions =
-+		sys_attrs->nr_regions_range;
-+
-+	return damon_set_attrs(ctx, sys_intervals->sample_us,
-+			sys_intervals->aggr_us, sys_intervals->update_us,
-+			sys_nr_regions->min, sys_nr_regions->max);
-+}
-+
-+static void damon_sysfs_destroy_targets(struct damon_ctx *ctx)
-+{
-+	struct damon_target *t, *next;
-+
-+	damon_for_each_target_safe(t, next, ctx) {
-+		if (ctx->ops.id == DAMON_OPS_VADDR)
-+			put_pid(t->pid);
-+		damon_destroy_target(t);
++	if (!schemes)
++		return -ENOMEM;
++	err = kobject_init_and_add(&schemes->kobj, &damon_sysfs_schemes_ktype,
++			&context->kobj, "schemes");
++	if (err) {
++		kobject_put(&schemes->kobj);
++		return err;
 +	}
++	context->schemes = schemes;
++	return 0;
 +}
 +
-+static int damon_sysfs_set_targets(struct damon_ctx *ctx,
-+		struct damon_sysfs_targets *sysfs_targets)
+ static int damon_sysfs_context_add_dirs(struct damon_sysfs_context *context)
+ {
+ 	int err;
+@@ -822,8 +1183,14 @@ static int damon_sysfs_context_add_dirs(struct damon_sysfs_context *context)
+ 	if (err)
+ 		goto put_attrs_out;
+ 
++	err = damon_sysfs_context_set_schemes(context);
++	if (err)
++		goto put_targets_attrs_out;
+ 	return 0;
+ 
++put_targets_attrs_out:
++	kobject_put(&context->targets->kobj);
++	context->targets = NULL;
+ put_attrs_out:
+ 	kobject_put(&context->attrs->kobj);
+ 	context->attrs = NULL;
+@@ -836,6 +1203,8 @@ static void damon_sysfs_context_rm_dirs(struct damon_sysfs_context *context)
+ 	kobject_put(&context->attrs->kobj);
+ 	damon_sysfs_targets_rm_dirs(context->targets);
+ 	kobject_put(&context->targets->kobj);
++	damon_sysfs_schemes_rm_dirs(context->schemes);
++	kobject_put(&context->schemes->kobj);
+ }
+ 
+ static ssize_t damon_sysfs_context_operations_show(struct kobject *kobj,
+@@ -1159,6 +1528,52 @@ static int damon_sysfs_set_targets(struct damon_ctx *ctx,
+ 	return 0;
+ }
+ 
++static struct damos *damon_sysfs_mk_scheme(
++		struct damon_sysfs_scheme *sysfs_scheme)
++{
++	struct damon_sysfs_access_pattern *pattern =
++		sysfs_scheme->access_pattern;
++	struct damos_quota quota = {
++		.ms = 0,
++		.sz = 0,
++		.reset_interval = 0,
++		.weight_sz = 1000,
++		.weight_nr_accesses = 1000,
++		.weight_age = 1000,
++	};
++	struct damos_watermarks wmarks = {
++		.metric = DAMOS_WMARK_NONE,
++		.interval = 0,
++		.high = 0,
++		.mid = 0,
++		.low = 0,
++	};
++
++	return damon_new_scheme(pattern->sz->min, pattern->sz->max,
++			pattern->nr_accesses->min, pattern->nr_accesses->max,
++			pattern->age->min, pattern->age->max,
++			sysfs_scheme->action, &quota, &wmarks);
++}
++
++static int damon_sysfs_set_schemes(struct damon_ctx *ctx,
++		struct damon_sysfs_schemes *sysfs_schemes)
 +{
 +	int i;
 +
-+	for (i = 0; i < sysfs_targets->nr; i++) {
-+		struct damon_sysfs_target *sys_target =
-+			sysfs_targets->targets_arr[i];
-+		struct damon_target *t = damon_new_target();
++	for (i = 0; i < sysfs_schemes->nr; i++) {
++		struct damos *scheme, *next;
 +
-+		if (!t) {
-+			damon_sysfs_destroy_targets(ctx);
++		scheme = damon_sysfs_mk_scheme(sysfs_schemes->schemes_arr[i]);
++		if (!scheme) {
++			damon_for_each_scheme_safe(scheme, next, ctx)
++				damon_destroy_scheme(scheme);
 +			return -ENOMEM;
 +		}
-+		if (ctx->ops.id == DAMON_OPS_VADDR) {
-+			t->pid = find_get_pid(sys_target->pid);
-+			if (!t->pid) {
-+				damon_sysfs_destroy_targets(ctx);
-+				return -EINVAL;
-+			}
-+		}
-+		damon_add_target(ctx, t);
++		damon_add_scheme(ctx, scheme);
 +	}
 +	return 0;
 +}
 +
-+static void damon_sysfs_before_terminate(struct damon_ctx *ctx)
-+{
-+	struct damon_target *t, *next;
-+
-+	if (ctx->ops.id != DAMON_OPS_VADDR)
-+		return;
-+
-+	mutex_lock(&ctx->kdamond_lock);
-+	damon_for_each_target_safe(t, next, ctx) {
-+		put_pid(t->pid);
-+		damon_destroy_target(t);
-+	}
-+	mutex_unlock(&ctx->kdamond_lock);
-+}
-+
-+static struct damon_ctx *damon_sysfs_build_ctx(
-+		struct damon_sysfs_context *sys_ctx)
-+{
-+	struct damon_ctx *ctx = damon_new_ctx();
-+	int err;
-+
-+	if (!ctx)
-+		return ERR_PTR(-ENOMEM);
-+
-+	err = damon_select_ops(ctx, sys_ctx->ops_id);
+ static void damon_sysfs_before_terminate(struct damon_ctx *ctx)
+ {
+ 	struct damon_target *t, *next;
+@@ -1190,6 +1605,9 @@ static struct damon_ctx *damon_sysfs_build_ctx(
+ 	if (err)
+ 		goto out;
+ 	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
 +	if (err)
 +		goto out;
-+	err = damon_sysfs_set_attrs(ctx, sys_ctx->attrs);
-+	if (err)
-+		goto out;
-+	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
-+	if (err)
-+		goto out;
-+
-+	ctx->callback.before_terminate = damon_sysfs_before_terminate;
-+	return ctx;
-+
-+out:
-+	damon_destroy_ctx(ctx);
-+	return ERR_PTR(err);
-+}
-+
-+static int damon_sysfs_turn_damon_on(struct damon_sysfs_kdamond *kdamond)
-+{
-+	struct damon_ctx *ctx;
-+	int err;
-+
-+	if (kdamond->damon_ctx &&
-+			damon_sysfs_ctx_running(kdamond->damon_ctx))
-+		return -EBUSY;
-+	/* TODO: support multiple contexts per kdamond */
-+	if (kdamond->contexts->nr != 1)
-+		return -EINVAL;
-+
-+	if (kdamond->damon_ctx)
-+		damon_destroy_ctx(kdamond->damon_ctx);
-+	kdamond->damon_ctx = NULL;
-+
-+	ctx = damon_sysfs_build_ctx(kdamond->contexts->contexts_arr[0]);
-+	if (IS_ERR(ctx))
-+		return PTR_ERR(ctx);
-+	err = damon_start(&ctx, 1, false);
-+	if (err) {
-+		damon_destroy_ctx(ctx);
-+		return err;
-+	}
-+	kdamond->damon_ctx = ctx;
-+	return err;
-+}
-+
-+static int damon_sysfs_turn_damon_off(struct damon_sysfs_kdamond *kdamond)
-+{
-+	if (!kdamond->damon_ctx)
-+		return -EINVAL;
-+	return damon_stop(&kdamond->damon_ctx, 1);
-+	/*
-+	 * To allow users show final monitoring results of already turned-off
-+	 * DAMON, we free kdamond->damon_ctx in next
-+	 * damon_sysfs_turn_damon_on(), or kdamonds_nr_store()
-+	 */
- }
++	err = damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
+ 	if (err)
+ 		goto out;
  
- static ssize_t damon_sysfs_kdamond_state_store(struct kobject *kobj,
- 		struct kobj_attribute *attr, const char *buf, size_t count)
- {
--	return count;
-+	struct damon_sysfs_kdamond *kdamond = container_of(kobj,
-+			struct damon_sysfs_kdamond, kobj);
-+	ssize_t ret;
-+
-+	if (!mutex_trylock(&damon_sysfs_lock))
-+		return -EBUSY;
-+	if (sysfs_streq(buf, "on"))
-+		ret = damon_sysfs_turn_damon_on(kdamond);
-+	else if (sysfs_streq(buf, "off"))
-+		ret = damon_sysfs_turn_damon_off(kdamond);
-+	else
-+		ret = -EINVAL;
-+	mutex_unlock(&damon_sysfs_lock);
-+	if (!ret)
-+		ret = count;
-+	return ret;
- }
- 
- static ssize_t damon_sysfs_kdamond_pid_show(struct kobject *kobj,
- 		struct kobj_attribute *attr, char *buf)
- {
--	return sysfs_emit(buf, "-1\n");
-+	struct damon_sysfs_kdamond *kdamond = container_of(kobj,
-+			struct damon_sysfs_kdamond, kobj);
-+	struct damon_ctx *ctx;
-+	int pid;
-+
-+	if (!mutex_trylock(&damon_sysfs_lock))
-+		return -EBUSY;
-+	ctx = kdamond->damon_ctx;
-+	if (!ctx) {
-+		pid = -1;
-+		goto out;
-+	}
-+	mutex_lock(&ctx->kdamond_lock);
-+	if (!ctx->kdamond)
-+		pid = -1;
-+	else
-+		pid = ctx->kdamond->pid;
-+	mutex_unlock(&ctx->kdamond_lock);
-+out:
-+	mutex_unlock(&damon_sysfs_lock);
-+	return sysfs_emit(buf, "%d\n", pid);
- }
- 
- static void damon_sysfs_kdamond_release(struct kobject *kobj)
- {
-+	struct damon_sysfs_kdamond *kdamond = container_of(kobj,
-+			struct damon_sysfs_kdamond, kobj);
-+
-+	if (kdamond->damon_ctx)
-+		damon_destroy_ctx(kdamond->damon_ctx);
- 	kfree(container_of(kobj, struct damon_sysfs_kdamond, kobj));
- }
- 
-@@ -881,12 +1073,34 @@ static void damon_sysfs_kdamonds_rm_dirs(struct damon_sysfs_kdamonds *kdamonds)
- 	kdamonds->kdamonds_arr = NULL;
- }
- 
-+static int damon_sysfs_nr_running_ctxs(struct damon_sysfs_kdamond **kdamonds,
-+		int nr_kdamonds)
-+{
-+	int nr_running_ctxs = 0;
-+	int i;
-+
-+	for (i = 0; i < nr_kdamonds; i++) {
-+		struct damon_ctx *ctx = kdamonds[i]->damon_ctx;
-+
-+		if (!ctx)
-+			continue;
-+		mutex_lock(&ctx->kdamond_lock);
-+		if (ctx->kdamond)
-+			nr_running_ctxs++;
-+		mutex_unlock(&ctx->kdamond_lock);
-+	}
-+	return nr_running_ctxs;
-+}
-+
- static int damon_sysfs_kdamonds_add_dirs(struct damon_sysfs_kdamonds *kdamonds,
- 		int nr_kdamonds)
- {
- 	struct damon_sysfs_kdamond **kdamonds_arr, *kdamond;
- 	int err, i;
- 
-+	if (damon_sysfs_nr_running_ctxs(kdamonds->kdamonds_arr, kdamonds->nr))
-+		return -EBUSY;
-+
- 	damon_sysfs_kdamonds_rm_dirs(kdamonds);
- 	if (!nr_kdamonds)
- 		return 0;
 -- 
 2.17.1
 
