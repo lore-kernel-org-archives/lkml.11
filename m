@@ -2,223 +2,372 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E06C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243691AbiBWSAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:00:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S243702AbiBWSA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:00:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241675AbiBWSAU (ORCPT
+        with ESMTP id S243689AbiBWSAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:00:20 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BB23DDE6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:52 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id o8so2003934pgf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to;
-        bh=LCAer00KkugBztOwXCivylUbNMzJc7Lug9BIcrasWZk=;
-        b=fWKw/pqCH7i3OvxQ2Sfu2zQayDG1CYYUMzKUWoTbjMW7AuxFVeB+PXoKoWSCzo6cEO
-         8bF4R0VognFGugw3elUlsF/TFNwIqUOD9ITaKBzov2EQIGCTSWITmZwlgZB+ZYj+mZ/F
-         OaQNeYkSTGiv/bIRGgz31N+RW11dwReDQbVlE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to;
-        bh=LCAer00KkugBztOwXCivylUbNMzJc7Lug9BIcrasWZk=;
-        b=1oCW8ZOPLWAzsKe4pazgDgv0VWzyCTLxlSEQRnHruQtYpY4zvTeNoP7FiVjJz1IV6E
-         xfzsaR1NYZfVjyDSD1IdL0A1Uy5fDaaXrZF93fGARmQSA1ltx+tSGj6yDsrZJ/LdgDzZ
-         KrMCh2CWReIbHZEILiO+4gNP/frmE3N+oPTdrejzlIcF+mfNGuj4b0jSpkERkIMWly36
-         D6xKkEsBjxW+XpkJ2ct3KYKKADgy5aP8aLilhVU6EEzGcyvioZpz18gz/vQ2ZJtqWLmf
-         u5Wso4TySN6YhGzcpPhn3JE8+vUIGg4otCS3rl0+ls48boRPXdOiO3MpJbh86VWxtVN5
-         TWIg==
-X-Gm-Message-State: AOAM533+cYXiDST+pBZqme1mIPBied5rYVmMyuDYS24VRTdfmeRcBz0A
-        JjeI9jN4Jop6HgYl/BfCfewTfA==
-X-Google-Smtp-Source: ABdhPJwZfVjFP554LTJFSmFH3mQhWevYai2zzktsPrjBK3HK6ncTrjjdIYFd3X4X4yc+ockpwyKaEw==
-X-Received: by 2002:a63:d808:0:b0:374:2e45:5b54 with SMTP id b8-20020a63d808000000b003742e455b54mr590185pgh.536.1645639192040;
-        Wed, 23 Feb 2022 09:59:52 -0800 (PST)
-Received: from [10.136.13.65] ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id f7sm159985pfj.48.2022.02.23.09.59.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 09:59:51 -0800 (PST)
-Message-ID: <3b2ff726-7ed8-9810-8d06-078f4f1fa4d8@broadcom.com>
-Date:   Wed, 23 Feb 2022 09:59:48 -0800
+        Wed, 23 Feb 2022 13:00:23 -0500
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F8F3ED24;
+        Wed, 23 Feb 2022 09:59:54 -0800 (PST)
+Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nMvvc-00039p-PA; Wed, 23 Feb 2022 18:59:52 +0100
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v6 5/8] mfd: max77714: Add driver for Maxim MAX77714 PMIC
+Date:   Wed, 23 Feb 2022 18:59:05 +0100
+Message-Id: <20220223175908.191618-6-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220223175908.191618-1-luca@lucaceresoli.net>
+References: <20220223175908.191618-1-luca@lucaceresoli.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 1/1] misc: bcm-vk: add kconfig for supporting viper
- chip
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Desmond yan <desmond.yan@broadcom.com>,
-        Olof Johansson <olofj@fb.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
-References: <20220218200811.17136-1-desmond.yan@broadcom.com>
- <YhCdNyRxGYmhx21f@kroah.com>
- <CAEuuh2_b-xGAux_EmBaNCGcBM7C0-Z8d_q1BBZ+LA0zpkZEunQ@mail.gmail.com>
- <YhUZqYrvNy05h86j@kroah.com>
- <534605ef-aeb1-b0a2-2326-be6faba4709c@broadcom.com>
- <YhXht9ieY8vDuBTS@kroah.com>
-From:   Scott Branden <scott.branden@broadcom.com>
-In-Reply-To: <YhXht9ieY8vDuBTS@kroah.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000007ed33105d8b33b4e"
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000007ed33105d8b33b4e
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Add a simple driver for the Maxim MAX77714 PMIC, supporting RTC and
+watchdog only.
 
-Hi Greg,
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-On 2022-02-22 23:26, Greg Kroah-Hartman wrote:
-> On Tue, Feb 22, 2022 at 09:14:02PM -0800, Desmond yan wrote:
->>
->> Greg,
->>
->> Please see inlined.
->>
->> On 2/22/22 09:13, Greg Kroah-Hartman wrote:
->>> A: http://en.wikipedia.org/wiki/Top_post
->>> Q: Were do I find info about this thing called top-posting?
->>> A: Because it messes up the order in which people normally read text.
->>> Q: Why is top-posting such a bad thing?
->>> A: Top-posting.
->>> Q: What is the most annoying thing in e-mail?
->>>
->>> A: No.
->>> Q: Should I include quotations after my reply?
->>>
->>>
->>> http://daringfireball.net/2007/07/on_top
->>>
->>> On Tue, Feb 22, 2022 at 07:41:04AM -0800, Desmond Yan (APD) wrote:
->>>> Greg,
->>>>
->>>> This is to allow the customer to use their own driver, by default,
->>>> which is their preferred option.
->>>
->>> We do not care about out-of-tree code, and do not add Kconfig options
->>> just for that, sorry.
->>>
->>> Why not just add the out-of-tree driver here to the in-kernel code?
->>> What is preventing that from happening today?
->>
->> Using the bcm_vk driver for viper is only for proof-of-concept, and is not
->> aimed to be deployed for production.  In parallel, customer is developing
->> their own production-ready driver and would probably upstream it whenever
->> the appropriate time comes.
-> 
-> Ok, so let us not add a new config option only for one person working on
-> writing their own driver.  Let's just add the device id as there are
-> more people than just that one person wanting to use their hardware with
-> the existing drivers.
-The bcm_vk driver is the official driver for Valkyrie.  For Viper, the 
-bcm_vk driver is only for proof of concept, testing, and demonstration 
-purposes. For production, the new driver in development will be used.
+---
 
-To support such configuration, we need to have the Viper pci id 
-configurable and off by default in the bcm_vk driver to allow the new 
-production driver to be developed against the upstream kernel and drivers.
-> 
-> Please resubmit this without the Kconfig change and I will be glad to
-> take it.
-I don't understand what there would be to submit?  The Viper pci id is 
-already upstreamed into the bcm_vk driver.  The sole purpose of this 
-patch is to add the Kconfig option and have it off by default.
-> 
-> thanks,
-> 
-> greg k-h
+Changes in v6:
+ - describe as "Core driver", not "MFD driver" (Lee Jones)
+ - Update copyright year
 
-Regards,
-Scott
+Changes in v5: none
 
---0000000000007ed33105d8b33b4e
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+Changes in v4: none
 
-MIIQcAYJKoZIhvcNAQcCoIIQYTCCEF0CAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3HMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBU8wggQ3oAMCAQICDH2hdImkqeI7h1IaTzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDA5MDJaFw0yMjA5MjIxNDMxMTRaMIGQ
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xFjAUBgNVBAMTDVNjb3R0IEJyYW5kZW4xKTAnBgkqhkiG9w0B
-CQEWGnNjb3R0LmJyYW5kZW5AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-CgKCAQEAtKitgySOPXrCfmgJJ/6N4Bq2PYQ9C7pbBbEOgcLdGZyOHK9MJW3fcf8NXplv3OfFCQzp
-rm9QWjKvH806lCzDhSKgAg+vro9Alv6BTl7wBdSVpgFsV/Tl+kbDfeBxjE/AwOW+WNGIPJLH4WCo
-MMkaRzH4Lg/8h9DnzxR46++4CqLY4KQQ151a+4Ojb/u/YlVGYlZa/jmTEgk3It8dzv54hZ/UoZg1
-cRe0CRXA7ypOJSgxO/nOOyQoaJxT7CGg1npOeSpPjEuc3fE4xum3l0nvU85hj6MlKZu43hokdBh0
-D0nLyyhEwlR3AC/msdff/UGbM/JR9vk812RP4m/aNWZFJwIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRpzY290dC5icmFuZGVuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUOhjEpl04Sz9dh5MI82E1
-V39lM/owDQYJKoZIhvcNAQELBQADggEBAA7Rlypx/esz/iq1yA4+KW7uwV/aBY344BWcXt6I+SNK
-VwFBgFWfLj5vaEud9TVv2fPSiaHJo0umemOJk+43QD+bsoqmgcFXd21PrOt7Jjs+jjVED9VC5kJq
-S4NNKUkS+BqijJwSegtVygrc/atrIlJbjI21q4qpemUo5fgwqCNm++BmBGTI8yA09vtGSNDRN42k
-lLX9hl3iEj5SBgkQqCbbnoE+ZjjKfqt7ED166WhgyQWNrl39yLcvLj+JRUB3RuvXKZjH0NQEEBII
-wZBDSkyneykLt3CBNIhSCTxKM6OWxVp936ALSa5K9FNy00TeWSpokR6NmzaW8VD/EjTgvqAxggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgx9oXSJpKniO4dS
-Gk8wDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEID8yitDXbQ+EvrVay7fPTgMxRo9n
-NY8ir6IEgk7E4bdOMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDIyMzE3NTk1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQB7vyoX0uFSbUp1JCe2GbsWlbXqXgQSHDqPCBh3Uoi7luIE
-wT22Z2lBA4C86FAxF7uE7xy0qjEQ5rbD4W+myl25tnBwIXLsvy8Bcv8FWtW8qJ2Ki5qvduUXa8fz
-P1MbbrE8+D2JsEIuaxN3KxX1B7tooouCAoSzO7Brgeg9snJTjhP3c3UhtFhkNe5OSK5b03d+LaP0
-c3pErCiPNY4dqG8m+i1XVaeo/rkRtd/t2TOdm1/BOYKT70lc2EyCpdGnipufrVn/kpMNlUv/xgCl
-PPjgE4x1RvdD6iYQvnEw+icUCyGh0mrrddExpTbGVJu5DOtJqwyl66KK8pL/8n8n27tn
---0000000000007ed33105d8b33b4e--
+Changes in v3:
+ - Suggested by Lee Jones:
+   - move struct mfd_cell to top of file
+   - remove struct max77714 and its kmalloc, not used after probe
+   - reword error messages
+   - add "/* pF */" onto the end of the load_cap line
+
+Changes in v2:
+ - fix "watchdog" word in heading comment (Guenter Roeck)
+ - move struct max77714 to .c file (Krzysztof Kozlowski)
+ - change include guard format (Krzysztof Kozlowski)
+ - allow building as a module (Krzysztof Kozlowski)
+ - remove of_match_ptr usage (Krzysztof Kozlowski / lkp)
+   (Reported-by: kernel test robot <lkp@intel.com>)
+---
+ MAINTAINERS                  |   2 +
+ drivers/mfd/Kconfig          |  14 ++++
+ drivers/mfd/Makefile         |   1 +
+ drivers/mfd/max77714.c       | 152 +++++++++++++++++++++++++++++++++++
+ include/linux/mfd/max77714.h |  60 ++++++++++++++
+ 5 files changed, 229 insertions(+)
+ create mode 100644 drivers/mfd/max77714.c
+ create mode 100644 include/linux/mfd/max77714.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e112ca549c5d..7c3abb2778cb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11724,6 +11724,8 @@ MAXIM MAX77714 PMIC MFD DRIVER
+ M:	Luca Ceresoli <luca@lucaceresoli.net>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
++F:	drivers/mfd/max77714.c
++F:	include/linux/mfd/max77714.h
+ 
+ MAXIM MAX77802 PMIC REGULATOR DEVICE DRIVER
+ M:	Javier Martinez Canillas <javier@dowhile0.org>
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index ba0b3eb131f1..036ddf68c814 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -849,6 +849,20 @@ config MFD_MAX77693
+ 	  additional drivers must be enabled in order to use the functionality
+ 	  of the device.
+ 
++config MFD_MAX77714
++	tristate "Maxim Semiconductor MAX77714 PMIC Support"
++	depends on I2C
++	depends on OF || COMPILE_TEST
++	select MFD_CORE
++	select REGMAP_I2C
++	help
++	  Say yes here to add support for Maxim Semiconductor MAX77714.
++	  This is a Power Management IC with 4 buck regulators, 9
++	  low-dropout regulators, 8 GPIOs, RTC, watchdog etc. This driver
++	  provides common support for accessing the device; additional
++	  drivers must be enabled in order to use each functionality of the
++	  device.
++
+ config MFD_MAX77843
+ 	bool "Maxim Semiconductor MAX77843 PMIC Support"
+ 	depends on I2C=y
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index df1ecc4a4c95..eea70cb9f9b9 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -162,6 +162,7 @@ obj-$(CONFIG_MFD_MAX77620)	+= max77620.o
+ obj-$(CONFIG_MFD_MAX77650)	+= max77650.o
+ obj-$(CONFIG_MFD_MAX77686)	+= max77686.o
+ obj-$(CONFIG_MFD_MAX77693)	+= max77693.o
++obj-$(CONFIG_MFD_MAX77714)	+= max77714.o
+ obj-$(CONFIG_MFD_MAX77843)	+= max77843.o
+ obj-$(CONFIG_MFD_MAX8907)	+= max8907.o
+ max8925-objs			:= max8925-core.o max8925-i2c.o
+diff --git a/drivers/mfd/max77714.c b/drivers/mfd/max77714.c
+new file mode 100644
+index 000000000000..d1e4247800d2
+--- /dev/null
++++ b/drivers/mfd/max77714.c
+@@ -0,0 +1,152 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Maxim MAX77714 Core Driver
++ *
++ * Copyright (C) 2022 Luca Ceresoli
++ * Author: Luca Ceresoli <luca@lucaceresoli.net>
++ */
++
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/max77714.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/regmap.h>
++
++static const struct mfd_cell max77714_cells[] = {
++	{ .name = "max77714-watchdog" },
++	{ .name = "max77714-rtc" },
++};
++
++static const struct regmap_range max77714_readable_ranges[] = {
++	regmap_reg_range(MAX77714_INT_TOP,     MAX77714_INT_TOP),
++	regmap_reg_range(MAX77714_INT_TOPM,    MAX77714_INT_TOPM),
++	regmap_reg_range(MAX77714_32K_STATUS,  MAX77714_32K_CONFIG),
++	regmap_reg_range(MAX77714_CNFG_GLBL2,  MAX77714_CNFG2_ONOFF),
++};
++
++static const struct regmap_range max77714_writable_ranges[] = {
++	regmap_reg_range(MAX77714_INT_TOPM,    MAX77714_INT_TOPM),
++	regmap_reg_range(MAX77714_32K_CONFIG,  MAX77714_32K_CONFIG),
++	regmap_reg_range(MAX77714_CNFG_GLBL2,  MAX77714_CNFG2_ONOFF),
++};
++
++static const struct regmap_access_table max77714_readable_table = {
++	.yes_ranges = max77714_readable_ranges,
++	.n_yes_ranges = ARRAY_SIZE(max77714_readable_ranges),
++};
++
++static const struct regmap_access_table max77714_writable_table = {
++	.yes_ranges = max77714_writable_ranges,
++	.n_yes_ranges = ARRAY_SIZE(max77714_writable_ranges),
++};
++
++static const struct regmap_config max77714_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = MAX77714_CNFG2_ONOFF,
++	.rd_table = &max77714_readable_table,
++	.wr_table = &max77714_writable_table,
++};
++
++static const struct regmap_irq max77714_top_irqs[] = {
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_ONOFF,   0, MAX77714_INT_TOP_ONOFF),
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_RTC,     0, MAX77714_INT_TOP_RTC),
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_GPIO,    0, MAX77714_INT_TOP_GPIO),
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_LDO,     0, MAX77714_INT_TOP_LDO),
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_SD,      0, MAX77714_INT_TOP_SD),
++	REGMAP_IRQ_REG(MAX77714_IRQ_TOP_GLBL,    0, MAX77714_INT_TOP_GLBL),
++};
++
++static const struct regmap_irq_chip max77714_irq_chip = {
++	.name			= "max77714-pmic",
++	.status_base		= MAX77714_INT_TOP,
++	.mask_base		= MAX77714_INT_TOPM,
++	.num_regs		= 1,
++	.irqs			= max77714_top_irqs,
++	.num_irqs		= ARRAY_SIZE(max77714_top_irqs),
++};
++
++/*
++ * MAX77714 initially uses the internal, low precision oscillator. Enable
++ * the external oscillator by setting the XOSC_RETRY bit. If the external
++ * oscillator is not OK (probably not installed) this has no effect.
++ */
++static int max77714_setup_xosc(struct device *dev, struct regmap *regmap)
++{
++	/* Internal Crystal Load Capacitance, indexed by value of 32KLOAD bits */
++	static const unsigned int load_cap[4] = {0, 10, 12, 22}; /* pF */
++	unsigned int load_cap_idx;
++	unsigned int status;
++	int err;
++
++	err = regmap_update_bits(regmap, MAX77714_32K_CONFIG,
++				 MAX77714_32K_CONFIG_XOSC_RETRY,
++				 MAX77714_32K_CONFIG_XOSC_RETRY);
++	if (err)
++		return dev_err_probe(dev, err, "Failed to configure the external oscillator\n");
++
++	err = regmap_read(regmap, MAX77714_32K_STATUS, &status);
++	if (err)
++		return dev_err_probe(dev, err, "Failed to read external oscillator status\n");
++
++	load_cap_idx = (status >> MAX77714_32K_STATUS_32KLOAD_SHF)
++		& MAX77714_32K_STATUS_32KLOAD_MSK;
++
++	dev_info(dev, "Using %s oscillator, %d pF load cap\n",
++		 status & MAX77714_32K_STATUS_32KSOURCE ? "internal" : "external",
++		 load_cap[load_cap_idx]);
++
++	return 0;
++}
++
++static int max77714_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;
++	struct regmap *regmap;
++	struct regmap_irq_chip_data *irq_data;
++	int err;
++
++	regmap = devm_regmap_init_i2c(client, &max77714_regmap_config);
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap),
++				     "Failed to initialise regmap\n");
++
++	err = max77714_setup_xosc(dev, regmap);
++	if (err)
++		return err;
++
++	err = devm_regmap_add_irq_chip(dev, regmap, client->irq,
++				       IRQF_ONESHOT | IRQF_SHARED, 0,
++				       &max77714_irq_chip, &irq_data);
++	if (err)
++		return dev_err_probe(dev, err, "Failed to add PMIC IRQ chip\n");
++
++	err =  devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
++				    max77714_cells, ARRAY_SIZE(max77714_cells),
++				    NULL, 0, NULL);
++	if (err)
++		return dev_err_probe(dev, err, "Failed to register child devices\n");
++
++	return 0;
++}
++
++static const struct of_device_id max77714_dt_match[] = {
++	{ .compatible = "maxim,max77714" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, max77714_dt_match);
++
++static struct i2c_driver max77714_driver = {
++	.driver = {
++		.name = "max77714",
++		.of_match_table = max77714_dt_match,
++	},
++	.probe_new = max77714_probe,
++};
++module_i2c_driver(max77714_driver);
++
++MODULE_DESCRIPTION("Maxim MAX77714 MFD core driver");
++MODULE_AUTHOR("Luca Ceresoli <luca@lucaceresoli.net>");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/max77714.h b/include/linux/mfd/max77714.h
+new file mode 100644
+index 000000000000..a970dc455426
+--- /dev/null
++++ b/include/linux/mfd/max77714.h
+@@ -0,0 +1,60 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Maxim MAX77714 Register and data structures definition.
++ *
++ * Copyright (C) 2022 Luca Ceresoli
++ * Author: Luca Ceresoli <luca@lucaceresoli.net>
++ */
++
++#ifndef __LINUX_MFD_MAX77714_H_
++#define __LINUX_MFD_MAX77714_H_
++
++#include <linux/bits.h>
++
++#define MAX77714_INT_TOP	0x00
++#define MAX77714_INT_TOPM	0x07 /* Datasheet says "read only", but it is RW */
++
++#define MAX77714_INT_TOP_ONOFF		BIT(1)
++#define MAX77714_INT_TOP_RTC		BIT(3)
++#define MAX77714_INT_TOP_GPIO		BIT(4)
++#define MAX77714_INT_TOP_LDO		BIT(5)
++#define MAX77714_INT_TOP_SD		BIT(6)
++#define MAX77714_INT_TOP_GLBL		BIT(7)
++
++#define MAX77714_32K_STATUS	0x30
++#define MAX77714_32K_STATUS_SIOSCOK	BIT(5)
++#define MAX77714_32K_STATUS_XOSCOK	BIT(4)
++#define MAX77714_32K_STATUS_32KSOURCE	BIT(3)
++#define MAX77714_32K_STATUS_32KLOAD_MSK	0x3
++#define MAX77714_32K_STATUS_32KLOAD_SHF	1
++#define MAX77714_32K_STATUS_CRYSTAL_CFG	BIT(0)
++
++#define MAX77714_32K_CONFIG	0x31
++#define MAX77714_32K_CONFIG_XOSC_RETRY	BIT(4)
++
++#define MAX77714_CNFG_GLBL2	0x91
++#define MAX77714_WDTEN			BIT(2)
++#define MAX77714_WDTSLPC		BIT(3)
++#define MAX77714_TWD_MASK		0x3
++#define MAX77714_TWD_2s			0x0
++#define MAX77714_TWD_16s		0x1
++#define MAX77714_TWD_64s		0x2
++#define MAX77714_TWD_128s		0x3
++
++#define MAX77714_CNFG_GLBL3	0x92
++#define MAX77714_WDTC			BIT(0)
++
++#define MAX77714_CNFG2_ONOFF	0x94
++#define MAX77714_WD_RST_WK		BIT(5)
++
++/* Interrupts */
++enum {
++	MAX77714_IRQ_TOP_ONOFF,
++	MAX77714_IRQ_TOP_RTC,		/* Real-time clock */
++	MAX77714_IRQ_TOP_GPIO,		/* GPIOs */
++	MAX77714_IRQ_TOP_LDO,		/* Low-dropout regulators */
++	MAX77714_IRQ_TOP_SD,		/* Step-down regulators */
++	MAX77714_IRQ_TOP_GLBL,		/* "Global resources": Low-Battery, overtemp... */
++};
++
++#endif /* __LINUX_MFD_MAX77714_H_ */
+-- 
+2.25.1
+
