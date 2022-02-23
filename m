@@ -2,128 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EBAC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242596AbiBWQEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:04:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S242601AbiBWQIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:08:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242589AbiBWQEO (ORCPT
+        with ESMTP id S242609AbiBWQHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:04:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4107AC1149;
-        Wed, 23 Feb 2022 08:03:46 -0800 (PST)
+        Wed, 23 Feb 2022 11:07:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EFC42EDC;
+        Wed, 23 Feb 2022 08:07:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02341B81E07;
-        Wed, 23 Feb 2022 16:03:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0674DC340E7;
-        Wed, 23 Feb 2022 16:03:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49ED161926;
+        Wed, 23 Feb 2022 16:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2564BC340E7;
+        Wed, 23 Feb 2022 16:07:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645632223;
-        bh=jWeqBXnmhv/yp6ESTH9OA8NuBmEWEyuUdhFPVPzAZGc=;
+        s=korg; t=1645632443;
+        bh=Z34PCtXMMsF3CAqfeAJGNk1FOL8QxYRwGsxHBin6cUQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hdc0lrA5dZRtIeA1RbNiQdoue/GFBd1uExyV5sEiImDGn9g8/0gnRnDq0hvxi4n2r
-         v9O0f1M7TmK0c8lx+ozjSuDDz9e8c1PY0MtvWUMMlDY8fxkcE+//9igW8MESSZn74/
-         uRYM/PUkLjQMaLa4jGCskJB1lUymU+lOib7KSWxA=
-Date:   Wed, 23 Feb 2022 17:03:40 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
-        rafael@kernel.org, David Airlie <airlied@linux.ie>,
-        linux-pci@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        iommu@lists.linux-foundation.org,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in
- bus_type
-Message-ID: <YhZa3D5Xwv5oZm7L@kroah.com>
-References: <1acb8748-8d44-688d-2380-f39ec820776f@arm.com>
- <20220222151632.GB10061@nvidia.com>
- <3d4c3bf1-fed6-f640-dc20-36d667de7461@arm.com>
- <20220222235353.GF10061@nvidia.com>
- <171bec90-5ea6-b35b-f027-1b5e961f5ddf@linux.intel.com>
- <880a269d-d39d-bab3-8d19-b493e874ec99@arm.com>
- <20220223134627.GO10061@nvidia.com>
- <YhY/a9wTjmYXsuwt@kroah.com>
- <20220223140901.GP10061@nvidia.com>
- <20220223143011.GQ10061@nvidia.com>
+        b=SBQId/o0oYtkOWz3frKGtl9gGu+5eSCVVPDH/2mihwFhxIqZtvNqC6Ua/gknPlXCC
+         6SUeq4kggreTtuMHRtYXcCULyv5O4jnl7IkrqgaL5cz3JNpUtKDLX3EOGIH8KK1Xj6
+         h/rTbu1lze8+A+ZQQbjPSZMd+LVVJh4JviM0Afl8=
+Date:   Wed, 23 Feb 2022 17:07:20 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     SeongJae Park <sj@kernel.org>
+Cc:     akpm@linux-foundation.org, corbet@lwn.net,
+        skhan@linuxfoundation.org, rientjes@google.com,
+        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/12] Introduce DAMON sysfs interface
+Message-ID: <YhZbuCcK8rW1rA6Z@kroah.com>
+References: <20220223152051.22936-1-sj@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220223143011.GQ10061@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220223152051.22936-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:30:11AM -0400, Jason Gunthorpe wrote:
-> On Wed, Feb 23, 2022 at 10:09:01AM -0400, Jason Gunthorpe wrote:
-> > On Wed, Feb 23, 2022 at 03:06:35PM +0100, Greg Kroah-Hartman wrote:
-> > > On Wed, Feb 23, 2022 at 09:46:27AM -0400, Jason Gunthorpe wrote:
-> > > > On Wed, Feb 23, 2022 at 01:04:00PM +0000, Robin Murphy wrote:
-> > > > 
-> > > > > 1 - tmp->driver is non-NULL because tmp is already bound.
-> > > > >   1.a - If tmp->driver->driver_managed_dma == 0, the group must currently be
-> > > > > DMA-API-owned as a whole. Regardless of what driver dev has unbound from,
-> > > > > its removal does not release someone else's DMA API (co-)ownership.
-> > > > 
-> > > > This is an uncommon locking pattern, but it does work. It relies on
-> > > > the mutex being an effective synchronization barrier for an unlocked
-> > > > store:
-> > > > 
-> > > > 				      WRITE_ONCE(dev->driver, NULL)
-> > > 
-> > > Only the driver core should be messing with the dev->driver pointer as
-> > > when it does so, it already has the proper locks held.  Do I need to
-> > > move that to a "private" location so that nothing outside of the driver
-> > > core can mess with it?
-> > 
-> > It would be nice, I've seen a abuse and mislocking of it in drivers
+On Wed, Feb 23, 2022 at 03:20:39PM +0000, SeongJae Park wrote:
+> Chages from Previous Version (RFC)
+> ==================================
 > 
-> Though to be clear, what Robin is describing is still keeping the
-> dev->driver stores in dd.c, just reading it in a lockless way from
-> other modules.
+> Compared to the RFC version of this patchset
+> (https://lore.kernel.org/linux-mm/20220217161938.8874-1-sj@kernel.org/), this
+> version contains below changes.
+> 
+> - Implement all DAMON debugfs interface providing features
+> - Writeup documents
+> - Add more selftests
+> 
+> Introduction
+> ============
+> 
+> DAMON's debugfs-based user interface (DAMON_DBGFS) served very well, so far.
+> However, it unnecessarily depends on debugfs, while DAMON is not aimed to be
+> used for only debugging.  Also, the interface receives multiple values via one
+> file.  For example, schemes file receives 18 values.  As a result, it is
+> inefficient, hard to be used, and difficult to be extended.  Especially,
+> keeping backward compatibility of user space tools is getting only challenging.
+> It would be better to implement another reliable and flexible interface and
+> deprecate DAMON_DBGFS in long term.
+> 
+> For the reason, this patchset introduces a sysfs-based new user interface of
+> DAMON.  The idea of the new interface is, using directory hierarchies and
+> having one dedicated file for each value.  For a short example, users can do
+> the virtual address monitoring via the interface as below:
+> 
+>     # cd /sys/kernel/mm/damon/admin/
+>     # echo 1 > kdamonds/nr
+>     # echo 1 > kdamonds/0/contexts/nr
+>     # echo vaddr > kdamonds/0/contexts/0/operations
+>     # echo 1 > kdamonds/0/contexts/0/targets/nr
+>     # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid
+>     # echo on > kdamonds/0/state
+> 
+> A brief representation of the files hierarchy of DAMON sysfs interface is as
+> below.  Childs are represented with indentation, directories are having '/'
+> suffix, and files in each directory are separated by comma.
+> 
+>     /sys/kernel/mm/damon/admin
+>     │ kdamonds/nr
+>     │ │ 0/state,pid
+>     │ │ │ contexts/nr
+>     │ │ │ │ 0/operations
+>     │ │ │ │ │ monitoring_attrs/
+>     │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
+>     │ │ │ │ │ │ nr_regions/min,max
+>     │ │ │ │ │ targets/nr
+>     │ │ │ │ │ │ 0/pid
+>     │ │ │ │ │ │ │ regions/nr
+>     │ │ │ │ │ │ │ │ 0/start,end
+>     │ │ │ │ │ │ │ │ ...
+>     │ │ │ │ │ │ ...
+>     │ │ │ │ │ schemes/nr
+>     │ │ │ │ │ 0/action
+>     │ │ │ │ │ │ access_pattern/
+>     │ │ │ │ │ │ │ sz/min,max
+>     │ │ │ │ │ │ │ nr_accesses/min,max
+>     │ │ │ │ │ │ │ age/min,max
+>     │ │ │ │ │ │ quotas/ms,sz,reset_interval_ms
+>     │ │ │ │ │ │ │ weights/sz,nr_accesses,age
+>     │ │ │ │ │ │ watermarks/metric,interval_us,high,mid,low
+>     │ │ │ │ │ │ stats/nr_tried,sz_tried,nr_applied,sz_applied,qt_exceeds
+>     │ │ │ │ │ ...
+>     │ │ ...
+> 
+> Detailed usage of the files will be described in the final Documentation patch
+> of this patchset.
+> 
+> Main Difference Between DAMON_DBGFS and DAMON_SYSFS
+> ---------------------------------------------------
+> 
+> At the moment, DAMON_DBGFS and DAMON_SYSFS provides same features.  One
+> important difference between them is their exclusiveness.  DAMON_DBGFS works in
+> an exclusive manner, so that no DAMON worker thread (kdamond) in the system can
+> run concurrently and interfere somehow.  For the reason, DAMON_DBGFS asks users
+> to construct all monitoring contexts and start them at once.  It's not a big
+> problem but makes the operation a little bit complex and unflexible.
+> 
+> For more flexible usage, DAMON_SYSFS moves the responsibility of preventing any
+> possible interference to the admins and work in a non-exclusive manner.  That
+> is, users can configure and start contexts one by one.  Note that DAMON
+> respects both exclusive groups and non-exclusive groups of contexts, in a
+> manner similar to that of reader-writer locks.  That is, if any exclusive
+> monitoring contexts (e.g., contexts that started via DAMON_DBGFS) are running,
+> DAMON_SYSFS does not start new contexts, and vice versa.
+> 
+> Future Plan of DAMON_DBGFS Deprecation
+> ======================================
+> 
+> Once this patchset is merged, DAMON_DBGFS development will be frozen.  That is,
+> we will maintain it to work as is now so that no users will be break.  But, it
+> will not be extended to provide any new feature of DAMON.  The support will be
+> continued only until next LTS release.  After that, we will drop DAMON_DBGFS.
+> 
+> User-space Tooling Compatibility
+> --------------------------------
+> 
+> As DAMON_SYSFS provides all features of DAMON_DBGFS, all user space tooling can
+> move to DAMON_SYSFS.  As we will continue supporting DAMON_DBGFS until next LTS
+> kernel release, user space tools would have enough time to move to DAMON_SYSFS.
+> 
+> The official user space tool, damo[1], is already supporting both DAMON_SYSFS
+> and DAMON_DBGFS.  Both correctness tests[2] and performance tests[3] of DAMON
+> using DAMON_SYSFS also passed.
+> 
+> [1] https://github.com/awslabs/damo
+> [2] https://github.com/awslabs/damon-tests/tree/master/corr
+> [3] https://github.com/awslabs/damon-tests/tree/master/perf
+> 
+> Complete Git Tree
+> =================
+> 
+> You can get the complete git tree from
+> https://git.kernel.org/sj/h/damon/sysfs/patches/v1.
+> 
+> Sequence of Patches
+> ===================
+> 
+> First two patches (patches 1-2) make core changes for DAMON_SYSFS.  The first
+> one (patch 1) allows non-exclusive DAMON contexts so that DAMON_SYSFS can work
+> in non-exclusive mode, while the second one (patch 2) adds size of DAMON enum
+> types so that DAMON API users can safely iterate the enums.
+> 
+> Third patch (patch 3) implements basic sysfs stub for virtual address spaces
+> monitoring.  Note that this implements only sysfs files and DAMON is not
+> linked.  Fourth patch (patch 4) links the DAMON_SYSFS to DAMON so that users
+> can control DAMON using the sysfs files.
+> 
+> Following six patches (patches 5-10) implements other DAMON features that
+> DAMON_DBGFS supports one by one (physical address space monitoring, DAMON-based
+> operation schemes, schemes quotas, schemes prioritization weights, schemes
+> watermarks, and schemes stats).
+> 
+> Following patch (patch 11) adds a simple selftest for DAMON_SYSFS, and the
+> final one (patch 12) documents DAMON_SYSFS.
+> 
+> SeongJae Park (12):
+>   mm/damon/core: Allow non-exclusive DAMON start/stop
+>   mm/damon/core: Add number of each enum type values
+>   mm/damon: Implement a minimal stub for sysfs-based DAMON interface
+>   mm/damon/sysfs: Link DAMON for virtual address spaces monitoring
+>   mm/damon/sysfs: Support physical address space monitoring
+>   mm/damon/sysfs: Support DAMON-based Operation Schemes
+>   mm/damon/sysfs: Support DAMOS quotas
+>   mm/damon/sysfs: Support schemes prioritization weights
+>   mm/damon/sysfs: Support DAMOS watermarks
+>   mm/damon/sysfs: Support DAMOS stats
+>   selftests/damon: Add a test for DAMON sysfs interface
+>   Docs/admin-guide/mm/damon/usage: Document DAMON sysfs interface
+> 
+>  Documentation/admin-guide/mm/damon/usage.rst |  349 ++-
+>  include/linux/damon.h                        |    6 +-
+>  mm/damon/Kconfig                             |    7 +
+>  mm/damon/Makefile                            |    1 +
+>  mm/damon/core.c                              |   23 +-
+>  mm/damon/dbgfs.c                             |    2 +-
+>  mm/damon/reclaim.c                           |    2 +-
+>  mm/damon/sysfs.c                             | 2684 ++++++++++++++++++
+>  tools/testing/selftests/damon/Makefile       |    1 +
+>  tools/testing/selftests/damon/sysfs.sh       |  306 ++
+>  10 files changed, 3364 insertions(+), 17 deletions(-)
+>  create mode 100644 mm/damon/sysfs.c
+>  create mode 100755 tools/testing/selftests/damon/sysfs.sh
 
-"other modules" should never care if a device has a driver bound to it
-because instantly after the check happens, it can change so what ever
-logic it wanted to do with that knowledge is gone.
+sysfs files need to be documented in Documentation/ABI/ which is where
+our tools look for them (have you run scripts/get_abi.pl with your code
+in the kernel?)
 
-Unless the bus lock is held that the device is on, but that should be
-only accessable from within the driver core as it controls that type of
-stuff, not any random other part of the kernel.
-
-And in looking at this, ick, there are loads of places in the kernel
-that are thinking that this pointer being set to something actually
-means something.  Sometimes it does, but lots of places, it doesn't as
-it can change.
-
-In a semi-related incident right now, we currently have a syzbot failure
-in the usb gadget code where it was manipulating the ->driver pointer
-directly and other parts of the kernel are crashing.  See
-https://lore.kernel.org/r/PH0PR11MB58805E3C4CF7D4C41D49BFCFDA3C9@PH0PR11MB5880.namprd11.prod.outlook.com
-for the thread.
-
-I'll poke at this as a background task to try to clean up over time.
+Please fix this up to use that format so we can then verify that you are
+using sysfs correctly.
 
 thanks,
 
