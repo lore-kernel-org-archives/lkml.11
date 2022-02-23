@@ -2,119 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13610C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237382AbiBWDhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 22:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S237669AbiBWDie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 22:38:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbiBWDhn (ORCPT
+        with ESMTP id S237374AbiBWDib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 22:37:43 -0500
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D5513EB9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:37:15 -0800 (PST)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2d625082ae2so196720347b3.1
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:37:15 -0800 (PST)
+        Tue, 22 Feb 2022 22:38:31 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9686238DB0
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:38:04 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id w2so1873532pfu.11
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:38:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x/iZxI5gJtmmVE2EU9ERKSSqKXLjBqX4XWhFsi12fm4=;
-        b=iMqGMltcaywF4JIrOBiSfBrO1ZiTpm42kZ8q96IXPD5P8wyMFaebGsFazuGUrLW8/M
-         saOIHcsTHJlWkpFpUC6TbGA3KpXDYMQZm0eKYNi8Cmc0lEjYhTvC4/QLjpIVxgiIgYFH
-         6d5BR6Wkf9oa82BMhVEKs8uf98U5ebixJldT0=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ss9CQrenCYzdH6jACZIdZ+kxt5gNMEdsRLw6I3i9fX0=;
+        b=iy5enKrskamRDHG9md1KL6LdriZXhQfHRz/GSD8J/gcEaKfg3eHtAZosqmJVbebNId
+         B3SG5KNQpBqbrZijZHaYWVzA9ZjJHP0a4PtFEDVLcX4qo+CRoxYoX8CIaUkOl1Byf14W
+         7qeYfHpaaFVT1DV9tDvQH0xLnFRFzfDz6hKOVmXJvO7PNkOg0ywF127KhDe8MTHgdPiJ
+         fBOUn0tEzk1N0nfN+TWk1AmtxT4R0C4+lme4mNf29A5yTT2tn+qb8kKax5jHek6hclPI
+         Nug5OjJ3YCmoLKpKJ4/gmcR59pMun3cLZVyewnkYcwmM6av3TWwQDPB34svSObTtEnwg
+         Xz1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x/iZxI5gJtmmVE2EU9ERKSSqKXLjBqX4XWhFsi12fm4=;
-        b=sndflnTRmCB3HJM2SJmX7W9Nv2rmorCaYdvFrA899Tlt82R8ltg5dvCa4RLyw9dQdI
-         zETVj6YjD7fAiXDdN8K77eZc9e50h1SwfexjYBcL6vpYPHAUmX2SGtAHwky9IQc8BnVc
-         E3X6GqPZ2tWAPWPFm1AQiclYg2k8K6J9zTPZRxY0LCBDJa9gOIg3KznQXgE93f3qV7fR
-         i2Yvy/Ega/Oqof4EZB4EVHn4FJf6556ge+NcDr9vH/Gkt29bEDSZLQobprdvJFSLlUoW
-         FsPG5XYJWNjkKIFKOK6o6mPutBvquET+ev0bGbG2nPbv5tf4hp3DlrMIFg5PHW41w1AI
-         Nfyg==
-X-Gm-Message-State: AOAM532U5p4i9R6l2TwVjV/olynNX5Ee8ubiSmiIaCmOjyrcDRXfle61
-        s50C54kUOk58aBbZRPRkPejL8a6YNynSdEUUd56r
-X-Google-Smtp-Source: ABdhPJwqkv4mz6cACdKoD4/liTLQr04AC/Mb4V7+BAD2dA4iqOmCk161chEgGlKc//pVQVvyiNh6L9G7xcUCR8QN460=
-X-Received: by 2002:a81:844c:0:b0:2d6:920b:f959 with SMTP id
- u73-20020a81844c000000b002d6920bf959mr26893176ywf.443.1645587434737; Tue, 22
- Feb 2022 19:37:14 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ss9CQrenCYzdH6jACZIdZ+kxt5gNMEdsRLw6I3i9fX0=;
+        b=PfaBi2p9F5GIGW+BK7cJKKaMxnnblNy6j+/MHPil6bfQgmSbs2I+pduBwlh1Xn9D8I
+         g/q272GEib9kUNVVRArAcS5rvSYCRB0AAXlFzY6n/QdlGfLbjk2JrzBfjc6+McUqk+Ch
+         EFjIHkQ7LhTc+SKXbAD3eg3350pzvAdzNZzysWvs9x8+XZ0yHECteTl2fagidcCeUvJB
+         wia1gaWm5HqJFTvnfJxf+InmNoTYYZBtv8w+82DH/C/JacH3yXECDHsfDmnRTUbHb91C
+         J5hOJcpEp8aOHMS2Bkz57jQNdrksDCRkZ1ONXYNRmlpR67D0SSbpvP9GDTeq7uear8t0
+         zgjw==
+X-Gm-Message-State: AOAM530//2exeqAhyFYt4tGVu07nzt+VNG3J3xYtJnqMq0C9770VvLDP
+        N8bBFk0QoFxLdYVQWeR9kYc=
+X-Google-Smtp-Source: ABdhPJzhF40IC+0CpRZ1jtWjnsQVBe912GBg3fk2d++1drpatXPmO+YGep9hXsTTkCLol03Yo+NM3g==
+X-Received: by 2002:a63:6982:0:b0:373:494a:22ae with SMTP id e124-20020a636982000000b00373494a22aemr22108252pgc.624.1645587483892;
+        Tue, 22 Feb 2022 19:38:03 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id nr11-20020a17090b240b00b001b9e24b16basm1141248pjb.0.2022.02.22.19.38.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 19:38:03 -0800 (PST)
+Date:   Wed, 23 Feb 2022 03:37:59 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     David Rientjes <rientjes@google.com>
+Cc:     linux-mm@kvack.org, Roman Gushchin <guro@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>
+Subject: Re: [PATCH 4/5] mm/slub: Limit min_partial only in cache creation
+Message-ID: <YhWsF/Bz89LpLa/g@ip-172-31-19-208.ap-northeast-1.compute.internal>
+References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+ <20220221105336.522086-5-42.hyeyoo@gmail.com>
+ <91cc8ab-a0f0-2687-df99-10b2267c7a9@google.com>
 MIME-Version: 1.0
-References: <20220201082227.361967-1-apatel@ventanamicro.com> <20220201082227.361967-7-apatel@ventanamicro.com>
-In-Reply-To: <20220201082227.361967-7-apatel@ventanamicro.com>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Tue, 22 Feb 2022 19:37:04 -0800
-Message-ID: <CAOnJCUJ_13oZqLhmcwO4tx+OsnL1YdR-y_FyNAmd=_+9rGAFLw@mail.gmail.com>
-Subject: Re: [PATCH 6/6] RISC-V: KVM: Implement SBI HSM suspend call
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        KVM General <kvm@vger.kernel.org>,
-        kvm-riscv@lists.infradead.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <91cc8ab-a0f0-2687-df99-10b2267c7a9@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 1, 2022 at 12:24 AM Anup Patel <apatel@ventanamicro.com> wrote:
->
-> The SBI v0.3 specification extends SBI HSM extension by adding SBI HSM
-> suspend call and related HART states. This patch extends the KVM RISC-V
-> HSM implementation to provide KVM guest a minimal SBI HSM suspend call
-> which is equivalent to a WFI instruction.
->
-> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> ---
->  arch/riscv/kvm/vcpu_sbi_hsm.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->
-> diff --git a/arch/riscv/kvm/vcpu_sbi_hsm.c b/arch/riscv/kvm/vcpu_sbi_hsm.c
-> index 1ac4b2e8e4ec..239dec0a628a 100644
-> --- a/arch/riscv/kvm/vcpu_sbi_hsm.c
-> +++ b/arch/riscv/kvm/vcpu_sbi_hsm.c
-> @@ -61,6 +61,8 @@ static int kvm_sbi_hsm_vcpu_get_status(struct kvm_vcpu *vcpu)
->                 return -EINVAL;
->         if (!target_vcpu->arch.power_off)
->                 return SBI_HSM_STATE_STARTED;
-> +       else if (vcpu->stat.generic.blocking)
-> +               return SBI_HSM_STATE_SUSPENDED;
->         else
->                 return SBI_HSM_STATE_STOPPED;
->  }
-> @@ -91,6 +93,18 @@ static int kvm_sbi_ext_hsm_handler(struct kvm_vcpu *vcpu, struct kvm_run *run,
->                         ret = 0;
->                 }
->                 break;
-> +       case SBI_EXT_HSM_HART_SUSPEND:
-> +               switch (cp->a0) {
-> +               case SBI_HSM_SUSPEND_RET_DEFAULT:
-> +                       kvm_riscv_vcpu_wfi(vcpu);
-> +                       break;
-> +               case SBI_HSM_SUSPEND_NON_RET_DEFAULT:
-> +                       ret = -EOPNOTSUPP;
-> +                       break;
-> +               default:
-> +                       ret = -EINVAL;
-> +               }
-> +               break;
->         default:
->                 ret = -EOPNOTSUPP;
->         }
-> --
-> 2.25.1
->
+On Tue, Feb 22, 2022 at 03:48:16PM -0800, David Rientjes wrote:
+> On Mon, 21 Feb 2022, Hyeonggon Yoo wrote:
+> 
+> > SLUB sets number of minimum partial slabs for node (min_partial) using
+> > set_min_partial(). SLUB holds at least min_partial slabs even if they're empty
+> > to avoid excessive use of page allocator.
+> > 
+> > set_min_partial() limits value of min_partial between MIN_PARTIAL and
+> > MAX_PARTIAL. As set_min_partial() can be called by min_partial_store()
+> > too, Only limit value of min_partial in kmem_cache_open() so that it
+> > can be changed to value that a user wants.
+> > 
+> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> 
+> I think this makes sense and there is no reason to limit the bounds that 
+> may be set at runtime with undocumented behavior.
 
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
+Thank you for comment.
+
+> 
+> However, since set_min_partial() is only setting the value in the 
+> kmem_cache, could we remove the helper function entirely and fold it into 
+> its two callers?
+
+Right. We don't need to separate this as function. I'll update this
+in next version. Thanks!
+
+> 
+> > ---
+> >  mm/slub.c | 11 ++++++-----
+> >  1 file changed, 6 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/mm/slub.c b/mm/slub.c
+> > index 3a4458976ab7..a4964deccb61 100644
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -4002,10 +4002,6 @@ static int init_kmem_cache_nodes(struct kmem_cache *s)
+> >  
+> >  static void set_min_partial(struct kmem_cache *s, unsigned long min)
+> >  {
+> > -	if (min < MIN_PARTIAL)
+> > -		min = MIN_PARTIAL;
+> > -	else if (min > MAX_PARTIAL)
+> > -		min = MAX_PARTIAL;
+> >  	s->min_partial = min;
+> >  }
+> >  
+> > @@ -4184,6 +4180,8 @@ static int calculate_sizes(struct kmem_cache *s, int forced_order)
+> >  
+> >  static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+> >  {
+> > +	int min_partial;
+> > +
+> >  	s->flags = kmem_cache_flags(s->size, flags, s->name);
+> >  #ifdef CONFIG_SLAB_FREELIST_HARDENED
+> >  	s->random = get_random_long();
+> > @@ -4215,7 +4213,10 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+> >  	 * The larger the object size is, the more slabs we want on the partial
+> >  	 * list to avoid pounding the page allocator excessively.
+> >  	 */
+> > -	set_min_partial(s, ilog2(s->size) / 2);
+> > +	min_partial = min(MAX_PARTIAL, ilog2(s->size) / 2);
+> > +	min_partial = max(MIN_PARTIAL, min_partial);
+> > +
+> > +	set_min_partial(s, min_partial);
+> >  
+> >  	set_cpu_partial(s);
+> >  
+> > -- 
+> > 2.33.1
+> > 
+> >
 
 -- 
-Regards,
-Atish
+Hyeonggon
