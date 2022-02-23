@@ -2,168 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2170CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:00:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243703AbiBWSBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:01:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
+        id S243739AbiBWSBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243744AbiBWSAp (ORCPT
+        with ESMTP id S243738AbiBWSAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:00:45 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C4B9424A5;
-        Wed, 23 Feb 2022 10:00:17 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA723D6E;
-        Wed, 23 Feb 2022 10:00:16 -0800 (PST)
-Received: from [10.57.40.147] (unknown [10.57.40.147])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C7A5F3F70D;
-        Wed, 23 Feb 2022 10:00:10 -0800 (PST)
-Message-ID: <f830c268-daca-8e8f-a429-0c80496a7273@arm.com>
-Date:   Wed, 23 Feb 2022 18:00:06 +0000
+        Wed, 23 Feb 2022 13:00:44 -0500
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EC54199C;
+        Wed, 23 Feb 2022 10:00:14 -0800 (PST)
+Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nMvvw-00039p-MB; Wed, 23 Feb 2022 19:00:12 +0100
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v6 7/8] watchdog: max77620: add comment to clarify set_timeout procedure
+Date:   Wed, 23 Feb 2022 18:59:07 +0100
+Message-Id: <20220223175908.191618-8-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220223175908.191618-1-luca@lucaceresoli.net>
+References: <20220223175908.191618-1-luca@lucaceresoli.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 01/11] iommu: Add dma ownership management interfaces
-Content-Language: en-GB
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-2-baolu.lu@linux.intel.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220218005521.172832-2-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-18 00:55, Lu Baolu wrote:
-[...]
-> +/**
-> + * iommu_group_claim_dma_owner() - Set DMA ownership of a group
-> + * @group: The group.
-> + * @owner: Caller specified pointer. Used for exclusive ownership.
-> + *
-> + * This is to support backward compatibility for vfio which manages
-> + * the dma ownership in iommu_group level. New invocations on this
-> + * interface should be prohibited.
-> + */
-> +int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
-> +{
-> +	int ret = 0;
-> +
-> +	mutex_lock(&group->mutex);
-> +	if (group->owner_cnt) {
+Clarify why we need to ping the watchdog before changing the timeout by
+quoting the MAX77714 datasheet.
 
-To clarify the comment buried in the other thread, I really think we 
-should just unconditionally flag the error here...
+Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-> +		if (group->owner != owner) {
-> +			ret = -EPERM;
-> +			goto unlock_out;
-> +		}
-> +	} else {
-> +		if (group->domain && group->domain != group->default_domain) {
-> +			ret = -EBUSY;
-> +			goto unlock_out;
-> +		}
-> +
-> +		group->owner = owner;
-> +		if (group->domain)
-> +			__iommu_detach_group(group->domain, group);
-> +	}
-> +
-> +	group->owner_cnt++;
-> +unlock_out:
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
-> +
-> +/**
-> + * iommu_group_release_dma_owner() - Release DMA ownership of a group
-> + * @group: The group.
-> + *
-> + * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
-> + */
-> +void iommu_group_release_dma_owner(struct iommu_group *group)
-> +{
-> +	mutex_lock(&group->mutex);
-> +	if (WARN_ON(!group->owner_cnt || !group->owner))
-> +		goto unlock_out;
-> +
-> +	if (--group->owner_cnt > 0)
-> +		goto unlock_out;
+---
 
-...and equivalently just set owner_cnt directly to 0 here. I don't see a 
-realistic use-case for any driver to claim the same group more than 
-once, and allowing it in the API just feels like opening up various 
-potential corners for things to get out of sync.
+Changes in v6: none
 
-I think that's the only significant concern I have left with the series 
-as a whole - you can consider my other grumbles non-blocking :)
+Changes in v5:
+ - improve comment to remove misleading ambiguous interpretation
+   (Guenter Roeck)
 
-Thanks,
-Robin.
+This patch is new in v4. It adds a clarification comment to the max77620
+driver taken from v3 patch 7.
+---
+ drivers/watchdog/max77620_wdt.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> +
-> +	/*
-> +	 * The UNMANAGED domain should be detached before all USER
-> +	 * owners have been released.
-> +	 */
-> +	if (!WARN_ON(group->domain) && group->default_domain)
-> +		__iommu_attach_group(group->default_domain, group);
-> +	group->owner = NULL;
-> +
-> +unlock_out:
-> +	mutex_unlock(&group->mutex);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
-> +
-> +/**
-> + * iommu_group_dma_owner_claimed() - Query group dma ownership status
-> + * @group: The group.
-> + *
-> + * This provides status query on a given group. It is racey and only for
-> + * non-binding status reporting.
-> + */
-> +bool iommu_group_dma_owner_claimed(struct iommu_group *group)
-> +{
-> +	unsigned int user;
-> +
-> +	mutex_lock(&group->mutex);
-> +	user = group->owner_cnt;
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return user;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+diff --git a/drivers/watchdog/max77620_wdt.c b/drivers/watchdog/max77620_wdt.c
+index cd321c7e0d59..b76ad6ba0915 100644
+--- a/drivers/watchdog/max77620_wdt.c
++++ b/drivers/watchdog/max77620_wdt.c
+@@ -123,6 +123,11 @@ static int max77620_wdt_set_timeout(struct watchdog_device *wdt_dev,
+ 		break;
+ 	}
+ 
++	/*
++	 * "If the value of TWD needs to be changed, clear the system
++	 * watchdog timer first [...], then change the value of TWD."
++	 * (MAX77714 datasheet but applies to MAX77620 too)
++	 */
+ 	ret = regmap_update_bits(wdt->rmap, wdt->drv_data->reg_cnfg_glbl3,
+ 				 wdt->drv_data->wdtc_mask, 0x1);
+ 	if (ret < 0)
+-- 
+2.25.1
+
