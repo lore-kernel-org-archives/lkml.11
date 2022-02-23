@@ -2,84 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1981C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9710AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239054AbiBWIp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:45:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        id S239058AbiBWIr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:47:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238984AbiBWIpu (ORCPT
+        with ESMTP id S235494AbiBWIrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:45:50 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890D0657BB
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:45:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645605923; x=1677141923;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=N9wNRGQb5qAzIZff6kmsco6KpmpYN4ManUXhow3yTnM=;
-  b=kamE9SdXxoGpWA2y3bPUZTsCkptt4sLrbtijxHeTbPpENcQk/f9/rR3L
-   nwBtrhFMpHQ+8HwtXHBR0nemjJnasU1Ac1NUzogyzcJceoNM+VeOJPQk/
-   FYT6FZyRpMVtEZ+HIA0YFiXfehhnzCIKFtbfYxTu54J2Ygr/HabeDHtss
-   rGV2FeYMTqdelW9LJTCD65/w/+KZ18Z8B5PV6t1UzfIQwOwotQBaX7h4K
-   yJytPmFjGfZwppFDMGeon8OIpD1Xlg5e6Pt/mAuGAu3Qpc2tC6YqyGm0Y
-   1dvlZgJRcGsujbBeYoBHxhV49V0rg+YGG+Q6eLqEqV86gtXFg+Q3rBQRw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="252106723"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="252106723"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 00:45:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="706949782"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 23 Feb 2022 00:45:21 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMnGy-0001Au-Gk; Wed, 23 Feb 2022 08:45:20 +0000
-Date:   Wed, 23 Feb 2022 16:44:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matan Ziv-Av <matan@svgalib.org>
-Cc:     kbuild-all@lists.01.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [pdx86-platform-drivers-x86:review-hans 40/40] ERROR: modpost:
- "battery_hook_register" [drivers/platform/x86/lg-laptop.ko] undefined!
-Message-ID: <202202231609.ZQpgFUIn-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 23 Feb 2022 03:47:24 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34159340F7;
+        Wed, 23 Feb 2022 00:46:57 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B92941A0CF0;
+        Wed, 23 Feb 2022 09:46:55 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8A2951A0CDA;
+        Wed, 23 Feb 2022 09:46:55 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 1487E183AC96;
+        Wed, 23 Feb 2022 16:46:54 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com, Richard Zhu <hongxing.zhu@nxp.com>
+Subject: [PATCH] PCI: imx6: Override the CLKREQ low in the initialization
+Date:   Wed, 23 Feb 2022 16:38:33 +0800
+Message-Id: <1645605513-7731-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git review-hans
-head:   7e45710a8a56896d7af5c5ff4ed7cfb18573791b
-commit: 7e45710a8a56896d7af5c5ff4ed7cfb18573791b [40/40] lg-laptop: Move setting of battery charge limit to common location
-config: x86_64-randconfig-r035-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231609.ZQpgFUIn-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?id=7e45710a8a56896d7af5c5ff4ed7cfb18573791b
-        git remote add pdx86-platform-drivers-x86 https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git
-        git fetch --no-tags pdx86-platform-drivers-x86 review-hans
-        git checkout 7e45710a8a56896d7af5c5ff4ed7cfb18573791b
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+The CLKREQ# signal is an open drain, active low signal that is driven
+low by the remote Endpoint device. But it might not be driven low if no
+Endpoint device is connected.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On i.MX8MM PCIe, phy_init() would be failed and system boot hang if the
+reference clock is not toggled.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+Follow with i.MX8MQ PCIe, to make sure the reference clock on, override
+the CLKREQ# low during initialization to fix this issue.
 
->> ERROR: modpost: "battery_hook_register" [drivers/platform/x86/lg-laptop.ko] undefined!
->> ERROR: modpost: "battery_hook_unregister" [drivers/platform/x86/lg-laptop.ko] undefined!
-
+Fixes: 178e244cb6e2 ("PCI: imx: Add the imx8mm pcie support")
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/pci/controller/dwc/pci-imx6.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index d7f0db01f3c3..a334341a1789 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -447,10 +447,6 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
+ 	case IMX7D:
+ 		break;
+ 	case IMX8MM:
+-		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
+-		if (ret)
+-			dev_err(dev, "unable to enable pcie_aux clock\n");
+-		break;
+ 	case IMX8MQ:
+ 		ret = clk_prepare_enable(imx6_pcie->pcie_aux);
+ 		if (ret) {
+-- 
+2.25.1
+
