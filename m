@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 285D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33054C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237738AbiBWCjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
+        id S237744AbiBWCjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:39:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237387AbiBWChd (ORCPT
+        with ESMTP id S237594AbiBWChe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:37:33 -0500
+        Tue, 22 Feb 2022 21:37:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA4C54BC6;
-        Tue, 22 Feb 2022 18:32:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFD65B8AD;
+        Tue, 22 Feb 2022 18:32:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEA9E614D3;
-        Wed, 23 Feb 2022 02:32:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A367C340F5;
-        Wed, 23 Feb 2022 02:32:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6176A61577;
+        Wed, 23 Feb 2022 02:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9789C340E8;
+        Wed, 23 Feb 2022 02:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583563;
-        bh=YcUfRZgWEGpn1g4IoP0l5BsEI6IBAvoQlVrFxmlIMIg=;
+        s=k20201202; t=1645583534;
+        bh=nLWmvXF1sbSB5w0vX93/dzlHaktDdgXyzyiBM9mWbEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZp4RvUC39vq0lNXGF/TpGl+CWIRX9rJiGHlxj1o76HwUr0U3j1/gRJ51OyQKWSbX
-         1ZqpS2vdCqVcvY264gNoGMFkKnZq0HAh5Y3UoUWVkpco+DX8D/XENGIZLkgdEMu2ZC
-         u+vW8fpqTg1ljpr3MlMwHJQw26I0yogO5dGjKUv9FB5tFT+5rGNiOKA13W6YPkFoiX
-         wU4+DJPsMwxwCH8Ob8AGX8EdC6NAF1BT9LE+wy8VyyWWHR/X7L6kS1WuP/RCHHH0GH
-         jEuumRsU8UympafV1qIYDRnG2UKgkcTDoPcvCqzlJSL0eNzxdjhlmyeKeELEeYyMXc
-         VJjeDd46fKmFA==
+        b=s+f6vT+ZIh7OrGkgyxc+2ZOSpQLeFGEBegZ3K6zE2rp+R/BchIGM1KE1BtgkF5xhK
+         xRbDOdjZGVrC9mzk0zS1V1uTXfEXLpsHMrvJPRuy055XRkbP9LLnm7tTbE3SZMpICh
+         w4xjy7hPmWsqqCxSuxB51It9Uee59Xvmor3eu7Et2MYngFnvAI2yq6FaNcSQKyo3iP
+         XsTghyUwMC5iAyTKLH+7ABsidWFU+PanEHlZ3y/oQBapklRNeGa5uM6izHnmj3+RoV
+         GXoi4VPEdUmjE9MN7hFRHOCnmCl0Irp2osXoz4nGD6CKE6joLDpdfbmoZHoqMV2bTZ
+         StVvZVIuvvftw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/10] Input: clear BTN_RIGHT/MIDDLE on buttonpads
-Date:   Tue, 22 Feb 2022 21:32:27 -0500
-Message-Id: <20220223023233.242468-4-sashal@kernel.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
+        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/13] USB: zaurus: support another broken Zaurus
+Date:   Tue, 22 Feb 2022 21:31:47 -0500
+Message-Id: <20220223023152.242065-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023233.242468-1-sashal@kernel.org>
-References: <20220223023233.242468-1-sashal@kernel.org>
+In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
+References: <20220223023152.242065-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,80 +53,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit 37ef4c19b4c659926ce65a7ac709ceaefb211c40 ]
+[ Upstream commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c ]
 
-Buttonpads are expected to map the INPUT_PROP_BUTTONPAD property bit
-and the BTN_LEFT key bit.
+This SL-6000 says Direct Line, not Ethernet
 
-As explained in the specification, where a device has a button type
-value of 0 (click-pad) or 1 (pressure-pad) there should not be
-discrete buttons:
-https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/touchpad-windows-precision-touchpad-collection#device-capabilities-feature-report
+v2: added Reporter and Link
 
-However, some drivers map the BTN_RIGHT and/or BTN_MIDDLE key bits even
-though the device is a buttonpad and therefore does not have those
-buttons.
-
-This behavior has forced userspace applications like libinput to
-implement different workarounds and quirks to detect buttonpads and
-offer to the user the right set of features and configuration options.
-For more information:
-https://gitlab.freedesktop.org/libinput/libinput/-/merge_requests/726
-
-In order to avoid this issue clear the BTN_RIGHT and BTN_MIDDLE key
-bits when the input device is register if the INPUT_PROP_BUTTONPAD
-property bit is set.
-
-Notice that this change will not affect udev because it does not check
-for buttons. See systemd/src/udev/udev-builtin-input_id.c.
-
-List of known affected hardware:
-
- - Chuwi AeroBook Plus
- - Chuwi Gemibook
- - Framework Laptop
- - GPD Win Max
- - Huawei MateBook 2020
- - Prestigio Smartbook 141 C2
- - Purism Librem 14v1
- - StarLite Mk II   - AMI firmware
- - StarLite Mk II   - Coreboot firmware
- - StarLite Mk III  - AMI firmware
- - StarLite Mk III  - Coreboot firmware
- - StarLabTop Mk IV - AMI firmware
- - StarLabTop Mk IV - Coreboot firmware
- - StarBook Mk V
-
-Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Acked-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Link: https://lore.kernel.org/r/20220208174806.17183-1-jose.exposito89@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/input.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/usb/cdc_ether.c | 12 ++++++++++++
+ drivers/net/usb/zaurus.c    | 12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index cadb368be8eff..cb8ff919ba82b 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -2120,6 +2120,12 @@ int input_register_device(struct input_dev *dev)
- 	/* KEY_RESERVED is not supposed to be transmitted to userspace. */
- 	__clear_bit(KEY_RESERVED, dev->keybit);
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 529c8fac15314..778bd9aaba9f1 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -584,6 +584,11 @@ static const struct usb_device_id	products[] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
-+	/* Buttonpads should not map BTN_RIGHT and/or BTN_MIDDLE. */
-+	if (test_bit(INPUT_PROP_BUTTONPAD, dev->propbit)) {
-+		__clear_bit(BTN_RIGHT, dev->keybit);
-+		__clear_bit(BTN_MIDDLE, dev->keybit);
-+	}
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 +
- 	/* Make sure that bitmasks not mentioned in dev->evbit are clean. */
- 	input_cleanse_bitmasks(dev);
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -637,6 +642,13 @@ static const struct usb_device_id	products[] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+diff --git a/drivers/net/usb/zaurus.c b/drivers/net/usb/zaurus.c
+index 9c2196c3fd113..1f19fc5e6117e 100644
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -268,6 +268,11 @@ static const struct usb_device_id	products [] = {
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -325,6 +330,13 @@ static const struct usb_device_id	products [] = {
+ 	.idProduct              = 0x9032,	/* SL-6000 */
+ 	ZAURUS_MASTER_INTERFACE,
+ 	.driver_info = ZAURUS_PXA_INFO,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
 -- 
 2.34.1
 
