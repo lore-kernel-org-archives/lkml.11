@@ -2,126 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2806C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240287AbiBWSYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S243818AbiBWSYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235190AbiBWSYO (ORCPT
+        with ESMTP id S235190AbiBWSYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:24:14 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEB33BBE1;
-        Wed, 23 Feb 2022 10:23:44 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 04B96210E8;
-        Wed, 23 Feb 2022 18:23:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1645640623; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zmlkY1kbQBsVLQ5pzhianT7TxQAbIfNHni1vWGh3+gY=;
-        b=VVE8gYSE5/Ck83Y3lTFe/dA93oYo0UMb/ioj0RNe4jLzkY/KOtGASIdez99JVpVBINYujY
-        RFgAhQ1l3lj2WjAgaG95Ztz9WeBXmrWG4pU8/GA3kKXwHQBJxCaMeIcPJYPz2j0kA+Qe0B
-        L4OYJv0udIo7Ay8F+HD9+YD9LL9s+x0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1645640623;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zmlkY1kbQBsVLQ5pzhianT7TxQAbIfNHni1vWGh3+gY=;
-        b=BCY/dF2RqwnUb3uAmNBW8HCt/Xr7osfuXnlFCon4nsKbfpVrvMJTJNYbiGrrgyeuHGNSrZ
-        Hr35WiMILBCljgDw==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        Wed, 23 Feb 2022 13:24:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037EB4831E;
+        Wed, 23 Feb 2022 10:24:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A3E5CA3B83;
-        Wed, 23 Feb 2022 18:23:42 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 19:23:41 +0100
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
-        Helge Deller <deller@gmx.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Simon Trimmer <simont@opensource.cirrus.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rob Herring <robh@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        David Herrmann <dh.herrmann@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz
-Subject: Re: [PATCH v3] simplefb: Enable boot time VESA graphic mode
- selection.
-Message-ID: <20220223182341.GG3113@kunlun.suse.cz>
-References: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
- <20220218160436.23211-1-msuchanek@suse.de>
- <33b80f9c-d54a-5471-a58b-7a783a7a9e5b@redhat.com>
- <20220223164528.GE3113@kunlun.suse.cz>
- <f832a836-b6ee-ffc5-6f83-86c9ba475400@redhat.com>
- <20220223171235.GF3113@kunlun.suse.cz>
- <a9df1753-8e3b-55bb-2dab-9e7aeaa52a8d@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7669B8216C;
+        Wed, 23 Feb 2022 18:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C198AC340E7;
+        Wed, 23 Feb 2022 18:24:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645640661;
+        bh=Ok0TjFXJ89KIp9SMK2a9xW2sNM6gB+qMJkswhq8JnIg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qTuTE0XGFGAJp8v05Cqya1ji7cwN6A+kZRXDoM+tDKsq0ziH/y4Y/Bt6tIeHDPl2+
+         BVmlbklfFhrtWXnT0AV279eA8SvTkC1e7x/HI4VV0iM1Z6VWjDpppjqXY4hKHPE5NZ
+         v1cprPuaRA4NOc1YV9KFqVplvrhBh2cIA/Abc1gI=
+Date:   Wed, 23 Feb 2022 19:24:18 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     stable@vger.kernel.org, sashal@kernel.org,
+        david regan <dregan@mail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        "open list:NAND FLASH SUBSYSTEM" <linux-mtd@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RESEND stable 4.9] mtd: rawnand: brcmnand: Fixed
+ incorrect sub-page ECC status
+Message-ID: <YhZ70pTGdGoPEMUb@kroah.com>
+References: <20220223174431.1083-1-f.fainelli@gmail.com>
+ <20220223174431.1083-3-f.fainelli@gmail.com>
+ <YhZ0vZxlp1VTgNG8@kroah.com>
+ <325bb69b-691b-3c61-9578-d42ec33277b8@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a9df1753-8e3b-55bb-2dab-9e7aeaa52a8d@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <325bb69b-691b-3c61-9578-d42ec33277b8@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 07:13:07PM +0100, Javier Martinez Canillas wrote:
-> On 2/23/22 18:12, Michal Suchánek wrote:
-> > On Wed, Feb 23, 2022 at 05:54:54PM +0100, Javier Martinez Canillas wrote:
+On Wed, Feb 23, 2022 at 09:54:59AM -0800, Florian Fainelli wrote:
 > 
-> [snip]
 > 
-> >>
-> >> Yes, that's what I tried to say. But your commit message says "To enable
-> >> use of VESA modes with simplefb in legacy BIOS boot mode" and that isn't
-> >> accurate AFAIU (unless you meant sysfb instead).
+> On 2/23/2022 9:54 AM, Greg KH wrote:
+> > On Wed, Feb 23, 2022 at 09:44:31AM -0800, Florian Fainelli wrote:
+> > > From: david regan <dregan@mail.com>
+> > > 
+> > > commit 36415a7964711822e63695ea67fede63979054d9 upstream
+> > > 
+> > > The brcmnand driver contains a bug in which if a page (example 2k byte)
+> > > is read from the parallel/ONFI NAND and within that page a subpage (512
+> > > byte) has correctable errors which is followed by a subpage with
+> > > uncorrectable errors, the page read will return the wrong status of
+> > > correctable (as opposed to the actual status of uncorrectable.)
+> > > 
+> > > The bug is in function brcmnand_read_by_pio where there is a check for
+> > > uncorrectable bits which will be preempted if a previous status for
+> > > correctable bits is detected.
+> > > 
+> > > The fix is to stop checking for bad bits only if we already have a bad
+> > > bits status.
+> > > 
+> > > Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
+> > > Signed-off-by: david regan <dregan@mail.com>
+> > > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
+> > > [florian: make patch apply to 4.14, file was renamed]
+> > > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > ---
+> > >   drivers/mtd/nand/brcmnand/brcmnand.c | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
 > > 
-> >  config SYSFB_SIMPLEFB
-> >         bool "Mark VGA/VBE/EFI FB as generic system framebuffer"
-> >         depends on SYSFB
-> > +       select BOOT_VESA_SUPPORT if X86
-> > 
-> > This to me means that it's simplefb specifically that requires it, not sysfb.
-> > More precisely SYSFB_SIMPLEFB which is the simplefb implementation on top of
-> > legacy BIOS.
-> > 
+> > Why is this a RESEND?  What happened with the first set?
 > 
-> Ok, I see what you meant. The fact that simplefb is what's named to the part
-> of the sysfb driver that register the "simple-framebuffer" platform device
-> and also the name of the fbdev driver that matches the "simple-framebuffer"
-> is too confusing.
-> 
-> My point about the subject line remains thought, I would use something like:
-> 
-> firmware: sysfb: Enable boot time VESA graphic mode selection for simplefb
+> I forgot to copy stable and you and Sasha, wanted to make it clear to the
+> MTD folks why this is being resent.
 
-I see where the confusion comes from.
+But this commit is already in the 4.14.268 and 4.19.231 release, why do
+we need to add it again?
 
-The efifb (and probably vesafb) has implicit unstated dependency on
-sysfb. So the drivers that select BOOT_VESA_SUPPORT should instead
-depend on SYSFB, and then SYSFB can select BOOT_VESA_SUPPORT, and it
-will look much saner.
+For 4.9 we need the backport, I'll take that one...
 
-Thanks
+thanks,
 
-Michal
+greg k-h
