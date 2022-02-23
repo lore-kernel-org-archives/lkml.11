@@ -2,107 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0909BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243406AbiBWR2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
+        id S243411AbiBWRge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237738AbiBWR2X (ORCPT
+        with ESMTP id S242141AbiBWRgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:28:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9966A47388;
-        Wed, 23 Feb 2022 09:27:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C620B8210A;
-        Wed, 23 Feb 2022 17:27:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCDDCC340E7;
-        Wed, 23 Feb 2022 17:27:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645637273;
-        bh=BZ72Cv96SDULoZqRBhdwvA8X1c4BIfcsSZ5Rny2PuLM=;
+        Wed, 23 Feb 2022 12:36:32 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EFE554A2;
+        Wed, 23 Feb 2022 09:36:02 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id B13981F41250
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645637761;
+        bh=CSOlJtblEwB4RlgPahvcN3gy+e32KywvGIkmYOzijI0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FQmygXJJt2g54V+d9trXkiWWQ7HNa3uYnsgmfTn6/B4dZ5SMh4YaGrrt7GRNds8ZH
-         ca94NfYv9xzDeUgKAYn/mqUPhvs9wEgDQiy99FDhAToFjjXygK6KA5tHDwXET17R8J
-         hnpD2jrwkrz1jh5ZXtC8WX04Ts76+WfixivAPUt+DFgzd1sW4Gi3qmGOwnloxEyMJM
-         E5LK4j8dUD6tK9xdFNsM8ZvmzDx4RmaQuNGu9DESaHaqoN7eYNMs1kIN2Iufkwdv0V
-         xaCpPFNhNQWPQyVz1MncyaBU8arQl/1WA01U6Cjjr0wmX/xgLJqjIsNYfMbilN4xLd
-         5fsrqlEinDLPg==
-Date:   Wed, 23 Feb 2022 10:27:47 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Like Xu <like.xu.linux@gmail.com>
-Subject: Re: [PATCH] KVM: x86: Fix pointer mistmatch warning when patching
- RET0 static calls
-Message-ID: <YhZuk8eA6rsDuJkd@dev-arch.archlinux-ax161>
-References: <20220223162355.3174907-1-seanjc@google.com>
+        b=YVngT9RX4Zl8QM2ArzTdGkd+v6f9P7vNkU8HsSyWpEFDVkJFkdig9Y38uTCEdsr5O
+         5t6Ht9ZtyTDN+d1KqBwwOel2VU2Y6WYNaZMuFi3kjgIhHr7/Prog05ocB5CiV5IY2U
+         ymtA7PWhTGWrPnYdV0zUaKANpOI6GJ/Jgn30ZmrySwXWP5kKbr/vxIFVvwllKBgATa
+         NJkBmrDA9ZRwPK2lbqCDN+jOp/x4V7Lnt3XIN0vA6EYcRWItn8CGNs50sZwyOqazHQ
+         RG2MZ7y+cz0OgnTVSm4lttyzqdgJtqyC2coEngJCR7pVwOH33+NjiCD0Zv5dcap+c2
+         H3nWRyFpsEdow==
+Date:   Wed, 23 Feb 2022 12:35:56 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Min Guo <Min.Guo@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: phy: Add compatible for Mediatek MT8192
+Message-ID: <20220223173556.u3dx7ugpxpcpir2n@notapiano>
+References: <20220217135620.10559-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220223162355.3174907-1-seanjc@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220217135620.10559-1-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+Hi Allen,
 
-On Wed, Feb 23, 2022 at 04:23:55PM +0000, Sean Christopherson wrote:
-> Cast kvm_x86_ops.func to 'void *' when updating KVM static calls that are
-> conditionally patched to __static_call_return0().  clang complains about
-> using mismatching pointers in the ternary operator, which breaks the
-> build when compiling with CONFIG_KVM_WERROR=y.
+thanks for the patch. Please see the comment below.
+
+On Thu, Feb 17, 2022 at 09:56:20PM +0800, Allen-KH Cheng wrote:
+> This commit adds dt-binding documentation of T-Phy for Mediatek MT8192 SoC
+> Platform.
+
+Commit messages should be in imperative [1]. I'd suggest the following message:
+
+	Add MT8192 compatible to the Mediatek T-PHY dt-binding.
+
+[1] https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
+
+Also, the commit title would be better if it had the tag for the tphy file, like
+this:
+
+	dt-bindings: phy: mediatek,tphy: Add compatible for MT8192
+
+Otherwise it's not clear that you're changing the T-PHY just from the title.
+
 > 
->   >> arch/x86/include/asm/kvm-x86-ops.h:82:1: warning: pointer type mismatch
->   ('bool (*)(struct kvm_vcpu *)' and 'void *') [-Wpointer-type-mismatch]
-> 
-> Fixes: 5be2226f417d ("KVM: x86: allow defining return-0 static calls")
-> Reported-by: Like Xu <like.xu.linux@gmail.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 
-Thank you for the patch! Is this a bug in clang? I ended up creating a
-small reproducer in case we need to file a bug with clang upstream:
+Other than that,
 
-https://godbolt.org/z/P7nEdzejE
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-This does shut up the warning and I can still spawn guests on my AMD and
-Intel systems so:
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
+Thanks,
+Nícolas
 
 > ---
->  arch/x86/include/asm/kvm_host.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/phy/mediatek,tphy.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 713e08f62385..f285ddb8b66b 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1547,8 +1547,8 @@ static inline void kvm_ops_static_call_update(void)
->  	WARN_ON(!kvm_x86_ops.func); __KVM_X86_OP(func)
->  #define KVM_X86_OP_OPTIONAL __KVM_X86_OP
->  #define KVM_X86_OP_OPTIONAL_RET0(func) \
-> -	static_call_update(kvm_x86_##func, kvm_x86_ops.func ? : \
-> -			   (void *) __static_call_return0);
-> +	static_call_update(kvm_x86_##func, (void *)kvm_x86_ops.func ? : \
-> +					   (void *)__static_call_return0);
->  #include <asm/kvm-x86-ops.h>
->  #undef __KVM_X86_OP
->  }
-> 
-> base-commit: f4bc051fc91ab9f1d5225d94e52d369ef58bec58
+> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> index d279ba222316..7b2e1bc119be 100644
+> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> @@ -81,6 +81,7 @@ properties:
+>                - mediatek,mt7629-tphy
+>                - mediatek,mt8183-tphy
+>                - mediatek,mt8186-tphy
+> +              - mediatek,mt8192-tphy
+>            - const: mediatek,generic-tphy-v2
+>        - items:
+>            - enum:
 > -- 
-> 2.35.1.473.g83b2b277ed-goog
+> 2.18.0
+> 
 > 
