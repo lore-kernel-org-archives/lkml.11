@@ -2,147 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476FEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:29:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A9BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244376AbiBWTaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:30:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        id S244390AbiBWTag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238408AbiBWTaN (ORCPT
+        with ESMTP id S243076AbiBWTae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:30:13 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BF147AE4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:45 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id q8-20020a17090a178800b001bc299b8de1so3958859pja.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:45 -0800 (PST)
+        Wed, 23 Feb 2022 14:30:34 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE1247AF0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:30:06 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id e13so2030496plh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:30:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rcZtDDDiBwFJfxUmlCOz3RDMEXHNKOOpzN1iEr3gL5U=;
-        b=QWBzyrjZbDyYSLOvasncoWEYru0Moni/yVGRO01JjZbgsx9D2Olu/maNAtD0effRNG
-         wNYTVyenRE2iN8/gxF8zvDFIp1czImRucV3q+rH/Db4mDxfkNsMa5DdPNA12q8f3hQw0
-         CGhSrzqNOX9eTGM8sUUHgDxFqNl+jJQdeU/Ko=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ka9RHf5LlAV9t5YczB4B6EzcVCEwJsVaAo0A7urPEuQ=;
+        b=uNfsilgsoMSprr0nmijK5vWZsLbNKMzuPQCUHZlT6W83s/RX4FXCDUKRGVvE8oSoly
+         TNDfU1DgpOitg2Vvh6mTKiUSyXyA8f33alp/ANVOrr7pGencnFPttIugbPlcxN/UD5Nk
+         HSj/ScXuxGNsrNRtNF2pdWgUj9khCPCOab5bhT/YOPnlpVLGO4iFvaD010Gw3o3+9LGI
+         /8ImEYESSBLIrIotYit/iJuUR4QdYQU+O9D8QlW1Fn76bh7iRVZNQxdKhqCS1Lbp1b3W
+         c/NQmBv3muRawg9UgwFagYzq8W8JUMZsYtl7tDAYsKfBT/usuiwNlVwkUwZ0H3LtdTOd
+         dezQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rcZtDDDiBwFJfxUmlCOz3RDMEXHNKOOpzN1iEr3gL5U=;
-        b=BIc/egrS7GoaMYUXhvfghSZ7EX4sjwFPwZpXEhVqipTeDFHKI2Dmh1NsUYenLQnwzE
-         qMJk7i7FJLHxq1ei66+zGmBZfBu0y44wDplEARJRkHd36pJsaf0nj3HKHPEYSh5Njh27
-         QP80dvafqo+6/5HdCdmeZBglLGjDyEPbe3FprKlmcFSuyFUfeeh8wADCi955wAoxVVK7
-         enlVS6d9avjP52iTnksHmR+16FEugMkqv8Tk8tUx3DPBui2j7LjwvPIisnfje91Y5vRo
-         PlkDDq9S/0hpI0b+5bbJkRBxoNNPGao/9AU5Wr9xa5DolIimQiSFL5IqKMNa3NcxCHON
-         J8Pg==
-X-Gm-Message-State: AOAM5300+Us7kwjqsFTKaGoUJTG+4zPX6KMpt5DGoFRyaXxVBXGXopnK
-        fc8VKe1lzxZvlOOUcrdGs87k05xwa6FkVQ==
-X-Google-Smtp-Source: ABdhPJxlXjAtTppGbdCoaBZt4izIbAhB7dGQ5TNK+YADNjZYa3D+4W9K2F3X6jY0EE0TLHnQMMfldA==
-X-Received: by 2002:a17:902:ab12:b0:14f:ce60:2ae4 with SMTP id ik18-20020a170902ab1200b0014fce602ae4mr1048141plb.87.1645644584562;
-        Wed, 23 Feb 2022 11:29:44 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id on17sm246496pjb.40.2022.02.23.11.29.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ka9RHf5LlAV9t5YczB4B6EzcVCEwJsVaAo0A7urPEuQ=;
+        b=Y5/w115sGGhAplKck32RLPam0Gb7mj/GhXRPpe/m2YaavsZwpDZ9CHM/YbbQtx9scf
+         dAHTtKHzAMC/psKb0dGJKs7gt4F/ZAUYWYbNS3pvHs4taJLhnp3Av/WxeT541DMpjLcK
+         +gXv5WWLppT+hYOIZ3Hi5h3wfSGpMNC5wMd2uC3UojjluUOl9DBk15HXl/xWRJTzqb5D
+         LQQAoFJxaldFtPCglZuwYKVbeVEZPQErXBgZO7xjLu6tAdQS0oi6AIa3TsbQgRb+ckpy
+         t6SQV9Za4g2MCk1OqOaJqci0j2ljYTpkQzFVfEzSJTfGYkWzAI5FBB4hHxiZxwywyJ8t
+         JUgA==
+X-Gm-Message-State: AOAM5334fR5xLCtInrFAJBaYVIKwHLpmBkoo4x7EwNJJdinjzJVNadVU
+        IKj2219vcxRMPhqQo6VSxhu2lw==
+X-Google-Smtp-Source: ABdhPJxdcCJcayTBWBXDYvjtmSzduPXab/lhZ3pLtgwrLQGH4kkv87u7YxVz3zGKvvtjiijk6roiUw==
+X-Received: by 2002:a17:902:8644:b0:14f:cf95:648a with SMTP id y4-20020a170902864400b0014fcf95648amr1110647plt.138.1645644606234;
+        Wed, 23 Feb 2022 11:30:06 -0800 (PST)
+Received: from localhost.localdomain ([2402:3a80:180f:6b3c:fda0:57e9:7d44:2aa7])
+        by smtp.gmail.com with ESMTPSA id z10-20020a17090a8b8a00b001b8d20074c8sm3719917pjn.33.2022.02.23.11.30.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 11:29:44 -0800 (PST)
-Date:   Wed, 23 Feb 2022 11:29:43 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jann Horn <jannh@google.com>
-Cc:     Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2] pstore: Don't use semaphores in always-atomic-context
- code
-Message-ID: <202202231128.E7445769AD@keescook>
-References: <20220218181950.1438236-1-jannh@google.com>
- <8D85619E-99BD-4DB5-BDDB-A205B057C910@chromium.org>
- <CAG48ez0UJDBzoaB4=c0Uju6L-eZvhWMdnzAp8N3QfeERbzYv2w@mail.gmail.com>
+        Wed, 23 Feb 2022 11:30:05 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        lorenzo.pieralisi@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
+        bhelgaas@google.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: [PATCH 0/6] Add PCIe support for SM8150 SoC
+Date:   Thu, 24 Feb 2022 00:59:40 +0530
+Message-Id: <20220223192946.473172-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG48ez0UJDBzoaB4=c0Uju6L-eZvhWMdnzAp8N3QfeERbzYv2w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 06:50:52PM +0100, Jann Horn wrote:
-> On Wed, Feb 23, 2022 at 8:50 AM Kees Cook <keescook@chromium.org> wrote:
-> > On February 18, 2022 10:19:50 AM PST, Jann Horn <jannh@google.com> wrote:
-> > >pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
-> > >read-side critical section, before that under a spinlock).
-> > >It doesn't make sense to try to use semaphores here.
-> >
-> > Ah, very nice. Thanks for the analysis!
-> >
-> > >[...]
-> > >-static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
-> > >+bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
-> >
-> > Why the rename,
-> 
-> That's one of the parts of commit ea84b580b955 that I included in the
-> revert. "wait" in the name is not accurate, since "wait" in the kernel
-> normally refers to scheduling away until some condition is fulfilled.
-> (Though I guess "block" also isn't the best name either... idk.) The
-> place where we might want to have different behavior depending on
-> whether we're handling a kernel crash are spinlocks; during a kernel
-> crash, we shouldn't deadlock on them, but otherwise, AFAIK it's fine
-> to block on them.
+This series adds PCIe support for Qualcomm SM8150 SoC with relevant PHYs.
+There are 2 PCIe instances on this SoC each with different PHYs. The PCIe
+controller and PHYs are mostly compatible with the ones found on SM8250
+SoC, hence the old drivers are modified to add the support.
 
-Gotcha. I'm find to avoid "wait"; I was just curious why it was
-changing, but I see now.
+This series has been tested on SA8155p ADP board with QCA6696 chipset connected
+onboard.
 
-> 
-> > extern, and EXPORT? This appears to still only have the same single caller?
-> 
-> Also part of the revert. I figured it might make sense to also revert
-> that part because:
-> 
-> With this commit applied, the EFI code will always take the "nonblock"
-> path for now, but that's kinda suboptimal; on some platforms the
-> "blocking" path uses a semaphore, so we really can't take that, but on
-> x86 it uses a spinlock, which we could block on if we're not oopsing.
-> We could avoid needlessly losing non-crash dmesg dumps there; I don't
-> know whether we care about that though.
-> 
-> So I figured that we might want to start adding new callers to this
-> later on. But if you want, I'll remove that part of the revert and
-> resend?
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>
 
-Yeah, let's just keep this static -- there's no reason to export it.
+Bhupesh Sharma (6):
+  dt-bindings: pci: qcom: Document PCIe bindings for SM8150 SoC
+  dt-bindings: phy: qcom,qmp: Add SM8150 PCIe PHY bindings
+  phy: qcom-qmp: Add SM8150 PCIe QMP PHYs
+  PCI: qcom: Add SM8150 SoC support
+  arm64: dts: qcom: sm8150: Add pcie nodes for SM8150
+  arm64: dts: qcom: sa8155: Enable pcie nodes
 
-> 
-> > > [...]
-> > >-                      pr_err("dump skipped in %s path: may corrupt error record\n",
-> > >-                              in_nmi() ? "NMI" : why);
-> > >-                      return;
-> > >-              }
-> > >-              if (down_interruptible(&psinfo->buf_lock)) {
-> > >-                      pr_err("could not grab semaphore?!\n");
-> > >+      if (pstore_cannot_block_path(reason)) {
-> > >+              if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
-> > >+                      pr_err("dump skipped in %s path because of concurrent dump\n"
-> > >+                                     , in_nmi() ? "NMI" : why);
-> >
-> > The pr_err had the comma following the format string moved,
-> 
-> Ah, whoops, that was also part of the revert, but I guess I should
-> have left that part out...
-> 
-> > and the note about corruption removed. Is that no longer accurate?
-> 
-> There should be no more corruption since commit 959217c84c27 ("pstore:
-> Actually give up during locking failure") - if we're bailing out, we
-> can't be causing corruption, I believe?
-
-Yeah, agreed. String content change is fine, the weird leading comma I'd
-like to do without. :)
-
-Thanks!
+ .../devicetree/bindings/pci/qcom,pcie.txt     |   5 +-
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml |   4 +
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts      |  42 +++
+ arch/arm64/boot/dts/qcom/sm8150.dtsi          | 243 ++++++++++++++++++
+ drivers/pci/controller/dwc/pcie-qcom.c        |  16 ++
+ drivers/phy/qualcomm/phy-qcom-qmp.c           |  90 +++++++
+ 6 files changed, 398 insertions(+), 2 deletions(-)
 
 -- 
-Kees Cook
+2.35.1
+
