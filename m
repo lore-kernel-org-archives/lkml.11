@@ -2,375 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242038AbiBWPWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S242049AbiBWPWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:22:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241931AbiBWPWG (ORCPT
+        with ESMTP id S241993AbiBWPWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:22:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0737E260E;
-        Wed, 23 Feb 2022 07:21:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77B0D6178B;
-        Wed, 23 Feb 2022 15:21:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00A79C340F5;
-        Wed, 23 Feb 2022 15:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645629690;
-        bh=LnMKR1otK6gjq0p0aeAnsDTztdGm/wMTgaZA5CgVMdY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hePsX62wrqsmSEKUbTfnxKU66KQh78wKwtpvff2YQyKF+62QqhqiqoIk+TRTNrchP
-         +pAATCb0JhzNomzyC4FjYb21SnlbnOQPgkuUbKJTtCYxvn56HgT9192bagAGOJfP7b
-         Qre7ReLsDTFTMEtB2L3vmXlz51UumadFiaZ7a1JgjEzaEBgyhol3aj0xregBnF7M/V
-         cuWi3Et6MIIJoFlIsYkhWh1NePs7aAKmyBDgZ+CKvZggsflDEwZN+tVaCEmowXWx4D
-         LrKDDbgD/ibj0JqTTW4Sjc1QKtks7xrCuHprgS1n6hm2cyPTaGFHhC7XCPrzH6fJ2L
-         DaATpc4KVC7hQ==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
-        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH 09/12] mm/damon/sysfs: Support DAMOS watermarks
-Date:   Wed, 23 Feb 2022 15:20:48 +0000
-Message-Id: <20220223152051.22936-10-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220223152051.22936-1-sj@kernel.org>
-References: <20220223152051.22936-1-sj@kernel.org>
+        Wed, 23 Feb 2022 10:22:25 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38752D1FF
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:21:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645629707; x=1677165707;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=W91DoE6TL+4OKbeiMkBnlrkBiN+4cw0JCGKbCFOg1FI=;
+  b=dBvYjHxX5+dFr4ZJDs4aGDpIXznGkI2hcuGmTfubrDOMs9Fvt7kUG8VZ
+   jFZ9A+n/rlcsQA+rM2xpJ0fHTW3t2bFeopslIyh00IYidXD8d6ZMRKcnb
+   m0QA2LfEgVqGCdyTEvVZMkH+KxzPLvGDJbgQi2W4cjXxfetIV3zj9rkte
+   0whZ3Z0KToHgCx5kCZe9nXH5+FVNxkJiqR4K0ZxLcV1lmHceBk+wx8J8Z
+   dbkrbe/OxPCCamJR9AKvFlUH0cn142apjyCqQ3IrKDuNYFteQXqEnAgkp
+   H4sI26i1Zza4ALNcQFggqVOGWLG7b/LJzvZ9V5EdtNZrImzJUcHwrcdm1
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="312702850"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="312702850"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:21:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="591734433"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Feb 2022 07:21:36 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMtSR-0001Yf-HT; Wed, 23 Feb 2022 15:21:35 +0000
+Date:   Wed, 23 Feb 2022 23:21:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Palmer <daniel@0x0f.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [chenxing:msc313_mainlining 36/93]
+ drivers/pinctrl/mstar/pinctrl-msc313.c:1339:4: warning: unannotated
+ fall-through between switch labels
+Message-ID: <202202232310.hUaNIAYU-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit makes DAMON sysfs interface supports the DAMOS watermarks
-feature.  Specifically, this commit adds 'watermarks' directory under
-each scheme directory and makes kdamond 'state' file writing respects
-the contents in the directory.
+tree:   git://github.com/linux-chenxing/linux.git msc313_mainlining
+head:   99a396728dcff78ca3eddcbd2085f11eeb8a01b8
+commit: 05d00d7581ff240f6293cebf5f0e58f743aeea4b [36/93] pinctrl: mstar: msc313 pinctrl driver
+config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202232310.hUaNIAYU-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/linux-chenxing/linux/commit/05d00d7581ff240f6293cebf5f0e58f743aeea4b
+        git remote add chenxing git://github.com/linux-chenxing/linux.git
+        git fetch --no-tags chenxing msc313_mainlining
+        git checkout 05d00d7581ff240f6293cebf5f0e58f743aeea4b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/clk/imx/ drivers/irqchip/ drivers/pinctrl/mstar/
 
-As a result, the files hierarchy becomes as below:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-    /sys/kernel/mm/damon/admin
-    │ kdamonds/nr
-    │ │ 0/state,pid
-    │ │ │ contexts/nr
-    │ │ │ │ 0/operations
-    │ │ │ │ │ monitoring_attrs/intervals/sample_us,aggr_us,update_us
-    │ │ │ │ │ │ nr_regions/min,max
-    │ │ │ │ │ targets/nr
-    │ │ │ │ │ │ 0/pid
-    │ │ │ │ │ │ │ regions/nr
-    │ │ │ │ │ │ │ │ 0/start,end
-    │ │ │ │ │ │ │ │ ...
-    │ │ │ │ │ │ ...
-    │ │ │ │ │ schemes/nr
-    │ │ │ │ │ │ 0/action
-    │ │ │ │ │ │ │ access_pattern/
-    │ │ │ │ │ │ │ │ sz/min,max
-    │ │ │ │ │ │ │ │ nr_accesses/min,max
-    │ │ │ │ │ │ │ │ age/min,max
-    │ │ │ │ │ │ │ quotas/ms,sz,reset_interval_ms
-    │ │ │ │ │ │ │ │ weights/sz,nr_accesses,age
-    │ │ │ │ │ │ │ watermarks/    <- NEW DIRECTORY
-    │ │ │ │ │ │ │ │ metric,interval_us,high,mid,lo
-    │ │ │ │ │ │ ...
-    │ │ │ │ ...
-    │ │ ...
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
+>> drivers/pinctrl/mstar/pinctrl-msc313-pm.c:36:27: warning: unused variable 'pm_uart_groups' [-Wunused-const-variable]
+   static const char * const pm_uart_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313-pm.c:40:27: warning: unused variable 'pm_spi_groups' [-Wunused-const-variable]
+   static const char * const pm_spi_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313-pm.c:44:27: warning: unused variable 'pm_irin_groups' [-Wunused-const-variable]
+   static const char * const pm_irin_groups[] = {
+                             ^
+   3 warnings generated.
+--
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:1339:4: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+                           default:
+                           ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:1339:4: note: insert 'break;' to avoid fall-through
+                           default:
+                           ^
+                           break; 
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:37:27: warning: unused variable 'i2c0_groups' [-Wunused-const-variable]
+   static const char * const i2c0_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:40:18: warning: unused variable 'i2c0_values' [-Wunused-const-variable]
+   static const u16 i2c0_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:44:27: warning: unused variable 'i2c1_groups' [-Wunused-const-variable]
+   static const char * const i2c1_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:47:18: warning: unused variable 'i2c1_values' [-Wunused-const-variable]
+   static const u16 i2c1_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:51:27: warning: unused variable 'fuart_groups' [-Wunused-const-variable]
+   static const char * const fuart_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:55:18: warning: unused variable 'fuart_values' [-Wunused-const-variable]
+   static const u16 fuart_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:60:27: warning: unused variable 'uart0_groups' [-Wunused-const-variable]
+   static const char * const uart0_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:64:27: warning: unused variable 'uart1_groups' [-Wunused-const-variable]
+   static const char * const uart1_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:68:18: warning: unused variable 'uart1_values' [-Wunused-const-variable]
+   static const u16 uart1_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:73:27: warning: unused variable 'usb_groups' [-Wunused-const-variable]
+   static const char * const usb_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:76:27: warning: unused variable 'usb1_groups' [-Wunused-const-variable]
+   static const char * const usb1_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:80:27: warning: unused variable 'pwm0_groups' [-Wunused-const-variable]
+   static const char * const pwm0_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:83:18: warning: unused variable 'pwm0_values' [-Wunused-const-variable]
+   static const u16 pwm0_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:87:27: warning: unused variable 'pwm1_groups' [-Wunused-const-variable]
+   static const char * const pwm1_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:90:18: warning: unused variable 'pwm1_values' [-Wunused-const-variable]
+   static const u16 pwm1_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:94:27: warning: unused variable 'pwm2_groups' [-Wunused-const-variable]
+   static const char * const pwm2_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:97:18: warning: unused variable 'pwm2_values' [-Wunused-const-variable]
+   static const u16 pwm2_values[] = {
+                    ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:101:27: warning: unused variable 'pwm3_groups' [-Wunused-const-variable]
+   static const char * const pwm3_groups[] = {
+                             ^
+>> drivers/pinctrl/mstar/pinctrl-msc313.c:104:18: warning: unused variable 'pwm3_values' [-Wunused-const-variable]
+   static const u16 pwm3_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:108:27: warning: unused variable 'pwm4_groups' [-Wunused-const-variable]
+   static const char * const pwm4_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:111:18: warning: unused variable 'pwm4_values' [-Wunused-const-variable]
+   static const u16 pwm4_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:115:27: warning: unused variable 'pwm5_groups' [-Wunused-const-variable]
+   static const char * const pwm5_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:118:18: warning: unused variable 'pwm5_values' [-Wunused-const-variable]
+   static const u16 pwm5_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:122:27: warning: unused variable 'pwm6_groups' [-Wunused-const-variable]
+   static const char * const pwm6_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:125:18: warning: unused variable 'pwm6_values' [-Wunused-const-variable]
+   static const u16 pwm6_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:129:27: warning: unused variable 'pwm7_groups' [-Wunused-const-variable]
+   static const char * const pwm7_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:132:18: warning: unused variable 'pwm7_values' [-Wunused-const-variable]
+   static const u16 pwm7_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:136:27: warning: unused variable 'eth_groups' [-Wunused-const-variable]
+   static const char * const eth_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:139:18: warning: unused variable 'eth_values' [-Wunused-const-variable]
+   static const u16 eth_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:143:27: warning: unused variable 'jtag_groups' [-Wunused-const-variable]
+   static const char * const jtag_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:147:27: warning: unused variable 'spi0_groups' [-Wunused-const-variable]
+   static const char * const spi0_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:151:18: warning: unused variable 'spi0_values' [-Wunused-const-variable]
+   static const u16 spi0_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:155:27: warning: unused variable 'spi1_groups' [-Wunused-const-variable]
+   static const char * const spi1_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:158:18: warning: unused variable 'spi1_values' [-Wunused-const-variable]
+   static const u16 spi1_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:161:27: warning: unused variable 'sdio_groups' [-Wunused-const-variable]
+   static const char * const sdio_groups[] = {
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:164:18: warning: unused variable 'sdio_values' [-Wunused-const-variable]
+   static const u16 sdio_values[] = {
+                    ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:201:27: warning: unused variable 'sd_drivestrengths' [-Wunused-const-variable]
+   static const unsigned int sd_drivestrengths[] = {4, 8};
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:215:27: warning: unused variable 'spi0_drivestrengths' [-Wunused-const-variable]
+   static const unsigned int spi0_drivestrengths[] = {4, 8, 12, 16};
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:225:27: warning: unused variable 'i2c_drivestrengths' [-Wunused-const-variable]
+   static const unsigned int i2c_drivestrengths[] = {4, 8};
+                             ^
+   drivers/pinctrl/mstar/pinctrl-msc313.c:233:27: warning: unused variable 'sr_drivestrengths' [-Wunused-const-variable]
+   static const unsigned int sr_drivestrengths[] = {4, 8};
+                             ^
+   41 warnings generated.
+
+
+vim +1339 drivers/pinctrl/mstar/pinctrl-msc313.c
+
+  1318	
+  1319	static int mstar_set_config(struct msc313_pinctrl *pinctrl, int pin, unsigned long config)
+  1320	{
+  1321		enum pin_config_param param = pinconf_to_config_param(config);
+  1322		u32 arg = pinconf_to_config_argument(config);
+  1323		int i;
+  1324		unsigned int mask;
+  1325		const struct msc313_pinctrl_pinconf *confpin;
+  1326	
+  1327		dev_dbg(pinctrl->dev, "setting %d:%u on pin %d\n", (int)config, (unsigned int)arg, pin);
+  1328		for (i = 0; i < pinctrl->info->npinconfs; i++) {
+  1329			if (pinctrl->info->pinconfs[i].pin == pin) {
+  1330				confpin = &pinctrl->info->pinconfs[i];
+  1331				switch (param) {
+  1332				case PIN_CONFIG_BIAS_PULL_UP:
+  1333					if (confpin->pull_en_reg != -1) {
+  1334						dev_dbg(pinctrl->dev, "setting pull up %d on pin %d\n", (int) arg, pin);
+  1335						mask = 1 << confpin->pull_en_bit;
+  1336						regmap_update_bits(pinctrl->regmap, confpin->pull_en_reg, mask, arg ? mask : 0);
+  1337					} else
+  1338						dev_info(pinctrl->dev, "pullup reg/bit isn't known for pin %d\n", pin);
+> 1339				default:
+  1340					break;
+  1341				}
+  1342				return 0;
+  1343			}
+  1344		}
+  1345		return 0;
+  1346	}
+  1347	
+
 ---
- mm/damon/sysfs.c | 226 +++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 221 insertions(+), 5 deletions(-)
-
-diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
-index b8596908be7b..9e54ed7316c6 100644
---- a/mm/damon/sysfs.c
-+++ b/mm/damon/sysfs.c
-@@ -115,6 +115,195 @@ static struct kobj_type damon_sysfs_ul_range_ktype = {
- 	.default_groups = damon_sysfs_ul_range_groups,
- };
- 
-+/*
-+ * watermarks directory
-+ */
-+
-+struct damon_sysfs_watermarks {
-+	struct kobject kobj;
-+	enum damos_wmark_metric metric;
-+	unsigned long interval_us;
-+	unsigned long high;
-+	unsigned long mid;
-+	unsigned long low;
-+};
-+
-+static struct damon_sysfs_watermarks *damon_sysfs_watermarks_alloc(
-+		enum damos_wmark_metric metric, unsigned long interval_us,
-+		unsigned long high, unsigned long mid, unsigned long low)
-+{
-+	struct damon_sysfs_watermarks *watermarks = kmalloc(
-+			sizeof(*watermarks), GFP_KERNEL);
-+
-+	if (!watermarks)
-+		return NULL;
-+	watermarks->kobj = (struct kobject){};
-+	watermarks->metric = metric;
-+	watermarks->interval_us = interval_us;
-+	watermarks->high = high;
-+	watermarks->mid = mid;
-+	watermarks->low = low;
-+	return watermarks;
-+}
-+
-+/* Should match with enum damos_wmark_metric */
-+static const char * const damon_sysfs_wmark_metric_strs[] = {
-+	"none",
-+	"free_mem_rate",
-+};
-+
-+static ssize_t damon_sysfs_watermarks_metric_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+
-+	return sysfs_emit(buf, "%s\n",
-+			damon_sysfs_wmark_metric_strs[watermarks->metric]);
-+}
-+
-+static ssize_t damon_sysfs_watermarks_metric_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+	enum damos_wmark_metric metric;
-+
-+	for (metric = 0; metric <= NR_DAMOS_WMARK_METRICS; metric++) {
-+		if (sysfs_streq(buf, damon_sysfs_wmark_metric_strs[metric])) {
-+			watermarks->metric = metric;
-+			return count;
-+		}
-+	}
-+	return -EINVAL;
-+}
-+
-+static ssize_t damon_sysfs_watermarks_interval_us_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+
-+	return sysfs_emit(buf, "%lu\n", watermarks->interval_us);
-+}
-+
-+static ssize_t damon_sysfs_watermarks_interval_us_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+	int err = kstrtoul(buf, 0, &watermarks->interval_us);
-+
-+	if (err)
-+		return -EINVAL;
-+	return count;
-+}
-+
-+static ssize_t damon_sysfs_watermarks_high_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+
-+	return sysfs_emit(buf, "%lu\n", watermarks->high);
-+}
-+
-+static ssize_t damon_sysfs_watermarks_high_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+	int err = kstrtoul(buf, 0, &watermarks->high);
-+
-+	if (err)
-+		return -EINVAL;
-+	return count;
-+}
-+
-+static ssize_t damon_sysfs_watermarks_mid_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+
-+	return sysfs_emit(buf, "%lu\n", watermarks->mid);
-+}
-+
-+static ssize_t damon_sysfs_watermarks_mid_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+	int err = kstrtoul(buf, 0, &watermarks->mid);
-+
-+	if (err)
-+		return -EINVAL;
-+	return count;
-+}
-+
-+static ssize_t damon_sysfs_watermarks_low_show(struct kobject *kobj,
-+		struct kobj_attribute *attr, char *buf)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+
-+	return sysfs_emit(buf, "%lu\n", watermarks->low);
-+}
-+
-+static ssize_t damon_sysfs_watermarks_low_store(struct kobject *kobj,
-+		struct kobj_attribute *attr, const char *buf, size_t count)
-+{
-+	struct damon_sysfs_watermarks *watermarks = container_of(kobj,
-+			struct damon_sysfs_watermarks, kobj);
-+	int err = kstrtoul(buf, 0, &watermarks->low);
-+
-+	if (err)
-+		return -EINVAL;
-+	return count;
-+}
-+
-+static void damon_sysfs_watermarks_release(struct kobject *kobj)
-+{
-+	kfree(container_of(kobj, struct damon_sysfs_watermarks, kobj));
-+}
-+
-+static struct kobj_attribute damon_sysfs_watermarks_metric_attr =
-+		__ATTR(metric, 0600, damon_sysfs_watermarks_metric_show,
-+				damon_sysfs_watermarks_metric_store);
-+
-+static struct kobj_attribute damon_sysfs_watermarks_interval_us_attr =
-+		__ATTR(interval_us, 0600,
-+				damon_sysfs_watermarks_interval_us_show,
-+				damon_sysfs_watermarks_interval_us_store);
-+
-+static struct kobj_attribute damon_sysfs_watermarks_high_attr =
-+		__ATTR(high, 0600, damon_sysfs_watermarks_high_show,
-+				damon_sysfs_watermarks_high_store);
-+
-+static struct kobj_attribute damon_sysfs_watermarks_mid_attr =
-+		__ATTR(mid, 0600, damon_sysfs_watermarks_mid_show,
-+				damon_sysfs_watermarks_mid_store);
-+
-+static struct kobj_attribute damon_sysfs_watermarks_low_attr =
-+		__ATTR(low, 0600, damon_sysfs_watermarks_low_show,
-+				damon_sysfs_watermarks_low_store);
-+
-+static struct attribute *damon_sysfs_watermarks_attrs[] = {
-+	&damon_sysfs_watermarks_metric_attr.attr,
-+	&damon_sysfs_watermarks_interval_us_attr.attr,
-+	&damon_sysfs_watermarks_high_attr.attr,
-+	&damon_sysfs_watermarks_mid_attr.attr,
-+	&damon_sysfs_watermarks_low_attr.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(damon_sysfs_watermarks);
-+
-+static struct kobj_type damon_sysfs_watermarks_ktype = {
-+	.release = damon_sysfs_watermarks_release,
-+	.sysfs_ops = &kobj_sysfs_ops,
-+	.default_groups = damon_sysfs_watermarks_groups,
-+};
-+
- /*
-  * scheme/weights directory
-  */
-@@ -476,6 +665,7 @@ struct damon_sysfs_scheme {
- 	enum damos_action action;
- 	struct damon_sysfs_access_pattern *access_pattern;
- 	struct damon_sysfs_quotas *quotas;
-+	struct damon_sysfs_watermarks *watermarks;
- };
- 
- /* This should match with enum damos_action */
-@@ -548,6 +738,24 @@ static int damon_sysfs_scheme_set_quotas(struct damon_sysfs_scheme *scheme)
- 	return err;
- }
- 
-+static int damon_sysfs_scheme_set_watermarks(struct damon_sysfs_scheme *scheme)
-+{
-+	struct damon_sysfs_watermarks *watermarks =
-+		damon_sysfs_watermarks_alloc(DAMOS_WMARK_NONE, 0, 0, 0, 0);
-+	int err;
-+
-+	if (!watermarks)
-+		return -ENOMEM;
-+	err = kobject_init_and_add(&watermarks->kobj,
-+			&damon_sysfs_watermarks_ktype, &scheme->kobj,
-+			"watermarks");
-+	if (err)
-+		kobject_put(&watermarks->kobj);
-+	else
-+		scheme->watermarks = watermarks;
-+	return err;
-+}
-+
- static int damon_sysfs_scheme_add_dirs(struct damon_sysfs_scheme *scheme)
- {
- 	int err;
-@@ -558,8 +766,14 @@ static int damon_sysfs_scheme_add_dirs(struct damon_sysfs_scheme *scheme)
- 	err = damon_sysfs_scheme_set_quotas(scheme);
- 	if (err)
- 		goto put_access_pattern_out;
-+	err = damon_sysfs_scheme_set_watermarks(scheme);
-+	if (err)
-+		goto put_quotas_access_pattern_out;
- 	return 0;
- 
-+put_quotas_access_pattern_out:
-+	kobject_put(&scheme->quotas->kobj);
-+	scheme->quotas = NULL;
- put_access_pattern_out:
- 	kobject_put(&scheme->access_pattern->kobj);
- 	scheme->access_pattern = NULL;
-@@ -572,6 +786,7 @@ static void damon_sysfs_scheme_rm_dirs(struct damon_sysfs_scheme *scheme)
- 	kobject_put(&scheme->access_pattern->kobj);
- 	damon_sysfs_quotas_rm_dirs(scheme->quotas);
- 	kobject_put(&scheme->quotas->kobj);
-+	kobject_put(&scheme->watermarks->kobj);
- }
- 
- static ssize_t damon_sysfs_scheme_action_show(struct kobject *kobj,
-@@ -1821,6 +2036,7 @@ static struct damos *damon_sysfs_mk_scheme(
- 		sysfs_scheme->access_pattern;
- 	struct damon_sysfs_quotas *sysfs_quotas = sysfs_scheme->quotas;
- 	struct damon_sysfs_weights *sysfs_weights = sysfs_quotas->weights;
-+	struct damon_sysfs_watermarks *sysfs_wmarks = sysfs_scheme->watermarks;
- 	struct damos_quota quota = {
- 		.ms = sysfs_quotas->ms,
- 		.sz = sysfs_quotas->sz,
-@@ -1830,11 +2046,11 @@ static struct damos *damon_sysfs_mk_scheme(
- 		.weight_age = sysfs_weights->age,
- 	};
- 	struct damos_watermarks wmarks = {
--		.metric = DAMOS_WMARK_NONE,
--		.interval = 0,
--		.high = 0,
--		.mid = 0,
--		.low = 0,
-+		.metric = sysfs_wmarks->metric,
-+		.interval = sysfs_wmarks->interval_us,
-+		.high = sysfs_wmarks->high,
-+		.mid = sysfs_wmarks->mid,
-+		.low = sysfs_wmarks->low,
- 	};
- 
- 	return damon_new_scheme(pattern->sz->min, pattern->sz->max,
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
