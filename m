@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF72C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18F5C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 11:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239968AbiBWLez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 06:34:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        id S239922AbiBWLfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 06:35:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239925AbiBWLei (ORCPT
+        with ESMTP id S239957AbiBWLex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 06:34:38 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D126A90FDA
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:34:09 -0800 (PST)
+        Wed, 23 Feb 2022 06:34:53 -0500
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEBC90FD4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 03:34:22 -0800 (PST)
 Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21NBXthm022843;
-        Wed, 23 Feb 2022 05:33:55 -0600
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21NBYFUt067880;
+        Wed, 23 Feb 2022 05:34:15 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645616035;
+        s=ti-com-17Q1; t=1645616055;
         bh=2LkD5YBwfGax8FSb4kF5KhkTV5+/YMmcx2pkuCKsJLo=;
         h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=jP5CLdeUMGw9+f4XVNX+SEVSn7pKUNJHsA18PijicYvP/NAHoORSU9V+7S42AtVc8
-         XjfkoTbTxYORqK5pwhpyJugdJ1zBZlUCvwCrVi6Q75VjOC+e6kwnDujuRN3GJMZc/w
-         6MvpvLWaREannCYyseDvt7jnozxhVtQBJpHbm6gg=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21NBXtau066939
+        b=FzfGoYsz8mChcNQvv4DFI4u4gFlQ4pyTZ/I3HCB5tzml3JZyul0LZphnfihl5o4hR
+         Ab3exPlovIcti82zderru5bGg0A66gHh2lRWFJSciwNyJLVGO2mUAi3O7pfgHLvfY6
+         Lvui4vHLbYGNH5Yxla5uXlnuBHpESHILiSOs5iSk=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21NBYFjq067397
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 05:33:55 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 23 Feb 2022 05:34:15 -0600
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
- Feb 2022 05:33:55 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ Feb 2022 05:34:15 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 23 Feb 2022 05:33:54 -0600
+ Frontend Transport; Wed, 23 Feb 2022 05:34:15 -0600
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21NBXse0048103;
-        Wed, 23 Feb 2022 05:33:55 -0600
-Date:   Wed, 23 Feb 2022 17:03:53 +0530
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21NBYEtb060315;
+        Wed, 23 Feb 2022 05:34:15 -0600
+Date:   Wed, 23 Feb 2022 17:04:13 +0530
 From:   Pratyush Yadav <p.yadav@ti.com>
 To:     Michael Walle <michael@walle.cc>
 CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
@@ -49,14 +49,14 @@ CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         <yaliang.wang@windriver.com>
-Subject: Re: [PATCH v4 03/32] mtd: spi-nor: eon: unify function names
-Message-ID: <20220223113353.zdxhfp3r4qhufzen@ti.com>
+Subject: Re: [PATCH v4 04/32] mtd: spi-nor: esmt: unify function names
+Message-ID: <20220223113413.g6maqnl4d4lew4wj@ti.com>
 References: <20220221120809.1531502-1-michael@walle.cc>
- <20220221120809.1531502-4-michael@walle.cc>
+ <20220221120809.1531502-5-michael@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220221120809.1531502-4-michael@walle.cc>
+In-Reply-To: <20220221120809.1531502-5-michael@walle.cc>
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
