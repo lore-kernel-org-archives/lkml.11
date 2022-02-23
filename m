@@ -2,58 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA83C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 06:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 06:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238342AbiBWGbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 01:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S238358AbiBWGc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 01:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234080AbiBWGbR (ORCPT
+        with ESMTP id S235483AbiBWGcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 01:31:17 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EF060ABB;
-        Tue, 22 Feb 2022 22:30:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Mym/h6YpZsFXh7+iKk8DwnZ9xaixR3q5K6YNYz/TNd4=; b=D3XA1T3Qe9IXl2DQ4wiKeSO5E9
-        O6Liu2jVV6RzN4A+mt3yfQ7krek8XnrYPid/TkgwGoMg1S6gL+tGRqYY9tozwfEqsrgV+OqByxvWf
-        cpQ2ed8ei/HkApN0o7vHFpJwvIy4oNd1eLMICW8twW1g6PhPEIX20vUsX2WrTSFwjqXKKtX8fl2MB
-        LkE7Kw9cDHXKVO6ia9dsjkBlzmCDBD2qEL+LmHj+2l1D6DOBh4XCYy2woFM2WmeZ6zFAvxCHG/50o
-        oAdOyBKsDORvALn9GYpt86AsEsqYomPv0hnrmxY77H93uKgSzIW8kvZvaTYp6ZEOJNYDMqU9r5q5B
-        pxTSH6vA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nMlAf-00Cz1Y-7c; Wed, 23 Feb 2022 06:30:41 +0000
-Date:   Tue, 22 Feb 2022 22:30:41 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Finn Thain <fthain@linux-m68k.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Juergen E. Fischer" <fischer@norbit.de>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] aha152x: Clean up struct scsi_pointer usage
-Message-ID: <YhXUkRSsOUyOZkm4@infradead.org>
-References: <4e17ff7295a96e31ed21ccb250c65b56c173b530.1645484982.git.fthain@linux-m68k.org>
- <YhSYDC4YMEx0XCYY@infradead.org>
- <62241a-be3-ed61-965f-afec1452f2c4@linux-m68k.org>
+        Wed, 23 Feb 2022 01:32:51 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1F3267D;
+        Tue, 22 Feb 2022 22:32:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645597943; x=1677133943;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t+EWHkxVYiuPqz5bFdNUluXRx58UgyPApSK+jiVbtZw=;
+  b=GkquXK1GV0bmr2G7x1ZI00ZmiCjATypWitLLqUNrh1NVapuDBqaw0iZb
+   66SVLnPMwpGSsRSET2OxCNow9v0G0ip0paJsQUk+8vcv1Mj0cqDPi6BIS
+   Hge1OP/x/V0E7DWPeZrG6i/Hz1tsMeVLRUoAaxRAUPYPgpNfqE0+9aZ0X
+   wBOLEK03GgQjI55XmcYrE2AyuSeK93CSSXsDrA6DoIOdEU50HLvzNLwB6
+   kKOLoEIZpdO9l9CZ5rqoxA4xOoc0SZ7qhzE0FfO1bHopuvXhGarlmgRjd
+   AfI2x0mHw3D4UOmj0GpmGk5MmiQAMqaKue9ve5EWxU943a13Sy+RzTt7D
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251815156"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="251815156"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 22:32:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="637304237"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 22 Feb 2022 22:32:18 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMlCD-00014Q-Qt; Wed, 23 Feb 2022 06:32:17 +0000
+Date:   Wed, 23 Feb 2022 14:31:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, sboyd@kernel.org,
+        robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        abel.vesa@nxp.com
+Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V2 5/5] clk: imx: add i.MX93 clk
+Message-ID: <202202231413.DjpCSE8G-lkp@intel.com>
+References: <20220223011606.3282165-6-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62241a-be3-ed61-965f-afec1452f2c4@linux-m68k.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220223011606.3282165-6-peng.fan@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:08:08AM +1100, Finn Thain wrote:
-> Are you asking me to rework Bart's series? Or are you asking Martin to 
-> drop it, or both, or neither...
+Hi "Peng,
 
-Neither.  Either leave the as-far as I can tell harmless inconsistency
-as-is, or if you want to fix it up send a patch that removes the usage
-of scsi_pointer in aha152x entirely by adding the actually used members
-to the private structure.
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on next-20220217]
+[cannot apply to shawnguo/for-next robh/for-next clk/clk-next v5.17-rc5 v5.17-rc4 v5.17-rc3 v5.17-rc5]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220223-091628
+base:    3c30cf91b5ecc7272b3d2942ae0505dd8320b81c
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202231413.DjpCSE8G-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/6af055ecd8262a7ba5aa17d0bde604f63fae465c
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX93-clk-bindings-and-driver/20220223-091628
+        git checkout 6af055ecd8262a7ba5aa17d0bde604f63fae465c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/clk/imx/clk-imx93.c:17:10: fatal error: soc/imx/soc.h: No such file or directory
+      17 | #include <soc/imx/soc.h>
+         |          ^~~~~~~~~~~~~~~
+   compilation terminated.
+
+
+vim +17 drivers/clk/imx/clk-imx93.c
+
+  > 17	#include <soc/imx/soc.h>
+    18	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
