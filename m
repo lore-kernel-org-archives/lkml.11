@@ -2,174 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEC5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbiBWPNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:13:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
+        id S241142AbiBWPOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232062AbiBWPNn (ORCPT
+        with ESMTP id S232062AbiBWPOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:13:43 -0500
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC77B12E7;
-        Wed, 23 Feb 2022 07:13:14 -0800 (PST)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 785A76000B;
-        Wed, 23 Feb 2022 15:13:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645629193;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bsmqhDPQ9IDgKu3Ou89zWq+VD4eKDFIuIM9PrDvh930=;
-        b=epz77kD1Xc1YujS8BJTlKa2wRsM6sUQyzoyVr9f/wbR+PZWRnL5746DQbxG1dCrO8HzJHj
-        /u4JJr5/XfbtFqfFocrfJWhyhjgPVA7AW+8xAr92yKRIUAR760AQSHI6/Yrpz/fmM+m7H4
-        4ICCazc0t+wkR6sIJoTsFxObEI9PCPkdkYKvQlnBnuFCBJG+9kHM/91Bp71Taoi8hMU4hw
-        CUsZS7+4LoB4gjAziUTFr512+rN6wMVPNxSaVxP4Q4TRoRyMPzaHxC9cWrbBnKDC9IVVDN
-        DnYEP0zphwazMIVwB0QPZ79lSM/nqUk6LQzY6jeUylc60aHqrvmhDIg7H1k4Aw==
-Date:   Wed, 23 Feb 2022 16:11:50 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Enrico Weigelt <info@metux.net>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <20220223161150.664aa5e6@fixe.home>
-In-Reply-To: <YhZI1XImMNJgzORb@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
-        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
-        <20220222173019.2380dcaf@fixe.home>
-        <YhZI1XImMNJgzORb@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Wed, 23 Feb 2022 10:14:53 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50AE8B82DE;
+        Wed, 23 Feb 2022 07:14:23 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.31:44458.435332613
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id 30AE11001F7;
+        Wed, 23 Feb 2022 23:14:17 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-bwdqx with ESMTP id 90e95b07aa22426594cd3a88c70e7830 for maxime@cerno.tech;
+        Wed, 23 Feb 2022 23:14:21 CST
+X-Transaction-ID: 90e95b07aa22426594cd3a88c70e7830
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <0d4a75c4-78bb-4aed-0fa8-88e9cc165896@189.cn>
+Date:   Wed, 23 Feb 2022 23:14:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 3/4] drm/lsdc: add drm driver for loongson display
+ controller
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>
+References: <20220220145554.117854-1-15330273260@189.cn>
+ <20220220145554.117854-4-15330273260@189.cn>
+ <20220222082747.66otrkc4zwvhem7w@houat>
+ <54ea69d7-2fac-74dc-2ef6-843a666cff85@189.cn>
+ <20220223143912.m727fie3vtdkvklo@houat>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <20220223143912.m727fie3vtdkvklo@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 23 Feb 2022 16:46:45 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-[...]
+On 2022/2/23 22:39, Maxime Ripard wrote:
+> On Tue, Feb 22, 2022 at 10:46:35PM +0800, Sui Jingfeng wrote:
+>> On 2022/2/22 16:27, Maxime Ripard wrote:
+>>>> +	if (!of_device_is_available(output)) {
+>>>> +		of_node_put(output);
+>>>> +		drm_info(ddev, "connector%d is not available\n", index);
+>>>> +		return NULL;
+>>>> +	}
+>>>> +
+>>>> +	disp_tims_np = of_get_child_by_name(output, "display-timings");
+>>>> +	if (disp_tims_np) {
+>>>> +		lsdc_get_display_timings_from_dtb(output, &lconn->disp_tim);
+>>>> +		lconn->has_disp_tim = true;
+>>>> +		of_node_put(disp_tims_np);
+>>>> +		drm_info(ddev, "Found display timings provided by connector%d\n", index);
+>>>> +	}
+>>>> +
+>>>> +	connector_type = lsdc_get_connector_type(ddev, output, index);
+>>>> +
+>>>> +	if (output) {
+>>>> +		of_node_put(output);
+>>>> +		output = NULL;
+>>>> +	}
+>>>> +
+>>>> +DT_SKIPED:
+>>>> +
+>>>> +	/* Only create the i2c channel if display timing is not provided */
+>>>> +	if (!lconn->has_disp_tim) {
+>>>> +		const struct lsdc_chip_desc * const desc = ldev->desc;
+>>>> +
+>>>> +		if (desc->have_builtin_i2c)
+>>>> +			lconn->ddc = lsdc_create_i2c_chan(ddev, index);
+>>>> +		else
+>>>> +			lconn->ddc = lsdc_get_i2c_adapter(ddev, index);
+>>> This looks weird: the connector bindings have a property to store the
+>>> i2c controller connected to the DDC lines, so you should use that
+>>> instead.
+>>>
+>> This is not  weird,  ast, mgag200, hibmc do the same thing.
+> And none of them have DT support.
+>
+> Maxime
 
-> >=20
-> > Converting existing OF support to fwnode support and thus allowing
-> > drivers and subsystems to be compatible with software nodes seemed like
-> > the easiest way to do what I needed by keeping all existing drivers.
-> > With this support, the driver is completely self-contained and does
-> > allow the card to be plugged on whatever platform the user may have. =20
->=20
-> I agree with Hans on the point that converting to / supporting fwnode is
-> a good thing by its own.
->=20
-> > Again, the PCI card is independent of the platform, I do not really see
-> > why it should be described using platform description language. =20
->=20
-> Yep, and that why it should cope with the platforms it's designed to be u=
-sed
-> with.
+You are wrong, ast driver have dt support. See ast_detect_config_mode() 
+in drm/ast/ast_main.c
 
-I don't think PCIe card manufacturer expect them to be used solely on a
-x86 platform with ACPI. So why should I used ACPI to describe it (or DT
-by the way), that's my point.
+static void ast_detect_config_mode(struct drm_device *dev, u32 *scu_rev)
+{
+     struct device_node *np = dev->dev->of_node;
+     struct ast_private *ast = to_ast_private(dev);
+     struct pci_dev *pdev = to_pci_dev(dev->dev);
+     uint32_t data, jregd0, jregd1;
 
-[...]
+     /* Defaults */
+     ast->config_mode = ast_use_defaults;
+     *scu_rev = 0xffffffff;
 
-> >=20
-> > For the moment, I only added fwnode API support as an alternative to
-> > support both OF and software nodes. ACPI is not meant to be handled by
-> > this code "as-is". There is for sure some modifications to be made and
-> > I do not know how clocks are handled when using ACPI. Based on some
-> > thread dating back to 2018 [1], it seem it was even not supported at
-> > all.
-> >=20
-> > To be clear, I added the equivalent of the OF support but using
-> > fwnode API because I was interested primarly in using it with software
-> > nodes and still wanted OF support to work. I did not planned it to be
-> > "ACPI compliant" right now since I do not have any knowledge in that
-> > field. =20
->=20
-> And here is the problem. We have a few different resource providers
-> (a.k.a. firmware interfaces) which we need to cope with.
+     /* Check if we have device-tree properties */
+     if (np && !of_property_read_u32(np, "aspeed,scu-revision-id",
+                     scu_rev)) {
+         /* We do, disable P2A access */
+         ast->config_mode = ast_use_dt;
+         drm_info(dev, "Using device-tree for configuration\n");
+         return;
+     }
 
-Understood that but does adding fwnode support means it should work
-as-is with both DT and ACPI ? ACPI code is still in place and only the
-of part was converted. But maybe you expect the fwnode prot to be
-conformant with ACPI.
+  ....
 
->=20
-> What is going on in this series seems to me quite a violation of the
-> layers and technologies. But I guess you may find a supporter of your
-> ideas (I mean Enrico). However, I'm on the other side and do not like
-> this approach.
+}
 
-As I said in the cover-letter, this approach is the only one that I did
-found acceptable without being tied to some firmware description. If you
-have another more portable approach, I'm ok with that. But this
-solution should ideally work with pinctrl, gpio, clk, reset, phy, i2c,
-i2c-mux without rewriting half of the code. And also allows to easily
-swap the PCIe card to other slots/computer without having to modify the
-description.
-
->=20
-> >=20
-> > Ok, before going down that way, should the fwnode support be the "only"
-> > one, ie remove of_clk_register and others and convert them to
-> > fwnode_clk_register for instance or should it be left to avoid
-> > modifying all clock drivers ? =20
->=20
-> IRQ domain framework decided to cohabit both, while deprecating the OF on=
-e.
-> (see "add" vs. "create" APIs there). I think it's a sane choice.
-
-Ok, thanks for the info.
-
-[...]
-
-> > > > static const struct property_entry ddr_clk_props[] =3D {
-> > > >         PROPERTY_ENTRY_U32("clock-frequency", 30000000),   =20
-> > >  =20
-> > > >         PROPERTY_ENTRY_U32("#clock-cells", 0),   =20
-> > >=20
-> > > Why this is used? =20
-> >=20
-> > These props actually describes a fixed-clock properties. When adding
-> > fwnode support to clk framework, it was needed to add the
-> > equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
-> > cells used to describe a reference is still needed to do the
-> > translation using fwnode_property_get_reference_args() and give the
-> > correct arguments to fwnode_xlate(). =20
->=20
-> What you described is the programming (overkilled) point. But does hardwa=
-re
-> needs this? I.o.w. does it make sense in the _hardware_ description?
-
-This does not makes sense for the hardware of course. It also does not
-makes sense for the hardware to provide that in the device-tree though.
-I actually think this should be only provided by the drivers but it
-might be difficult to parse the descriptions then (either DT or
-software_node), at least that's how it works right now.
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
