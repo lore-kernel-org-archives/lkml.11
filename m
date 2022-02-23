@@ -2,150 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA918C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F040C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238730AbiBWUGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 15:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
+        id S237733AbiBWUIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 15:08:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbiBWUF7 (ORCPT
+        with ESMTP id S229842AbiBWUIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 15:05:59 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7DC4C40A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:05:27 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id t14so26299333ljh.8
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:05:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+S6BFzj6o5ckty5iXSThNrfkPsdFE94/fVb8NP4+aFs=;
-        b=F/2f/aEUKxSuzDdCknAbug+t8clrlE0v7gj9NkhphhHftuFg6XGIjvpJXVx+ZHKhn9
-         jOIdz4l7lK+/F1JhXkxR/PARyehOhzu1/S93ijWQKe7fGKOKTiRs9R81aIq3OYNVOgnf
-         G4UcKLBEtMgH8cssPIzV42vV3R64/Z0YRVhdY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+S6BFzj6o5ckty5iXSThNrfkPsdFE94/fVb8NP4+aFs=;
-        b=NiMr5psxsJB3IZ2auamJab5cLGvWYKJZGhL1hQOA92DgzjMP4OTp95cgDYH6OQkENL
-         abHN95mMUroOM6HWpaFZaEpTPJhJ7iCG9VNPzv7/774rKMvMMukDyqmMEv2oEVlAsIJ8
-         TWPwZ5hlH1hdU+fYqDGzfh+E/W7TEvu45YFiR4DI9yiCs6BTqhtF3MCBMzHoLsv0wuzr
-         L2yz5AP/if4s1p5s2r8ez+Zs13zp+CmwEARNgWH1PLX8h08x5wURQlNhEK63348m+3Pa
-         gVuOoAFQqBOMAwv/YSnkzAsVcKmPgL/7I9J/5hxSC5PO8JPG1kaZ603g0uyIagxs9naw
-         wPEg==
-X-Gm-Message-State: AOAM533I5fqwWUnq90PXZu0+1KIUNb6aPmMj5ikeNZUJThimjnQmSPvI
-        WIERHD1YJWQ75yhHn+BqGK9TeWNYcQ7VdHks1+w=
-X-Google-Smtp-Source: ABdhPJxR4BFouoxJXXZ00MdF4eswCOBS5XHb1bGGS7+SYZaF8Ibbf3QG1L1t+EyccOrgbuv/A7iqGw==
-X-Received: by 2002:a2e:9ad5:0:b0:244:c85f:d546 with SMTP id p21-20020a2e9ad5000000b00244c85fd546mr705558ljj.303.1645646724756;
-        Wed, 23 Feb 2022 12:05:24 -0800 (PST)
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
-        by smtp.gmail.com with ESMTPSA id a17sm41472lfs.35.2022.02.23.12.05.20
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 12:05:21 -0800 (PST)
-Received: by mail-lf1-f45.google.com with SMTP id i11so216787lfu.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:05:20 -0800 (PST)
-X-Received: by 2002:a05:6512:130b:b0:443:c2eb:399d with SMTP id
- x11-20020a056512130b00b00443c2eb399dmr822016lfu.27.1645646720244; Wed, 23 Feb
- 2022 12:05:20 -0800 (PST)
+        Wed, 23 Feb 2022 15:08:16 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BB0488AA
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:07:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645646868; x=1677182868;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0yDuDUtYkUYxpptBDI0BNASkVm09UHYe7zxy9Eu8ksg=;
+  b=kJrgqScvvXtTImivSE/W5SFgkT/qUy8sYrmD+tLrzNtdVvRz3IZDkJLP
+   a0/8bkbSzWfpV7endscn7T6uP1GIQEarEcBWrHCDcX4ztf+MwG2hIQEVw
+   8xPVSp0ZPglELWLDZMHIB9c7Y4djg8vA7EthD/4euHgnBctUUUFrcmTQ3
+   NmoEVvnJr5br2HrlgtwbBVhZ68J6v+IDRJ+Yl8ZWvQnwB0Su5uyh/qTlW
+   0Np+X1PR924mCnFokl3hbgPl8/dWa6VOaIbDnNI5Q4vMrHAeGqFyjFE+F
+   SymOzsI4L874y6SysQ3xhVuwt6ia2AXgwX///NAwUMbfYJUyU81CfzQEF
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232691720"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="232691720"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 12:07:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="532828002"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 23 Feb 2022 12:07:46 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMxvN-0001mU-P4; Wed, 23 Feb 2022 20:07:45 +0000
+Date:   Thu, 24 Feb 2022 04:07:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [nbd168-wireless:mtk-flow-offload 15/15]
+ drivers/net/ethernet/mediatek/mtk_ppe.c:650:33: error: 'struct net_device'
+ has no member named 'dsa_ptr'; did you mean 'dn_ptr'?
+Message-ID: <202202240458.daZyVdyc-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220216131332.1489939-1-arnd@kernel.org> <20220216131332.1489939-10-arnd@kernel.org>
- <20220221132456.GA7139@alpha.franken.de>
-In-Reply-To: <20220221132456.GA7139@alpha.franken.de>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 23 Feb 2022 12:05:04 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjdHz6OU3M9T5zE9Fc9SNdDs52iOE+eVn-wuUT6UDpBLg@mail.gmail.com>
-Message-ID: <CAHk-=wjdHz6OU3M9T5zE9Fc9SNdDs52iOE+eVn-wuUT6UDpBLg@mail.gmail.com>
-Subject: Re: [PATCH v2 09/18] mips: use simpler access_ok()
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Brian Cain <bcain@codeaurora.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Stafford Horne <shorne@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Rich Felker <dalias@libc.org>,
-        David Miller <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:SYNOPSYS ARC ARCHITECTURE" 
-        <linux-snps-arc@lists.infradead.org>, linux-csky@vger.kernel.org,
-        linux-hexagon <linux-hexagon@vger.kernel.org>,
-        linux-ia64@vger.kernel.org,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        linux-parisc <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-sparc <sparclinux@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 5:25 AM Thomas Bogendoerfer
-<tsbogend@alpha.franken.de> wrote:
->
-> With this patch
-[ .. snip snip ..]
-> I at least get my simple test cases fixed, but I'm not sure this is
-> correct.
+tree:   https://github.com/nbd168/wireless mtk-flow-offload
+head:   4dded169141416b3248146f545378f36cca6bd03
+commit: 4dded169141416b3248146f545378f36cca6bd03 [15/15] net: ethernet: mtk_eth_soc: support creating mac address based offload entries
+config: m68k-randconfig-r004-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240458.daZyVdyc-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/nbd168/wireless/commit/4dded169141416b3248146f545378f36cca6bd03
+        git remote add nbd168-wireless https://github.com/nbd168/wireless
+        git fetch --no-tags nbd168-wireless mtk-flow-offload
+        git checkout 4dded169141416b3248146f545378f36cca6bd03
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/ethernet/mediatek/
 
-I think you really want to do that anyway, just to get things like
-wild kernel pointers right (ie think get_kernel_nofault() and friends
-for ftrace etc).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-They shouldn't happen in any normal situation, but those kinds of
-unverified pointers is why we _have_ get_kernel_nofault() in the first
-place.
+All errors (new ones prefixed by >>):
 
-On x86-64, the roughly equivalent situation is that addresses that
-aren't in canonical format do not take a #PF (page fault), they take a
-#GP (general protection) fault.
+   drivers/net/ethernet/mediatek/mtk_ppe.c: In function 'mtk_flow_entry_update_l2':
+   drivers/net/ethernet/mediatek/mtk_ppe.c:446:28: warning: variable 'head' set but not used [-Wunused-but-set-variable]
+     446 |         struct hlist_head *head;
+         |                            ^~~~
+   drivers/net/ethernet/mediatek/mtk_ppe.c: In function '__mtk_ppe_check_skb':
+>> drivers/net/ethernet/mediatek/mtk_ppe.c:650:33: error: 'struct net_device' has no member named 'dsa_ptr'; did you mean 'dn_ptr'?
+     650 |                 ops = skb->dev->dsa_ptr->tag_ops;
+         |                                 ^~~~~~~
+         |                                 dn_ptr
 
-So I think you want to do that fixup_exception() for any possible addresses.
 
-> Is there a reason to not also #define TASK_SIZE_MAX   __UA_LIMIT like
-> for the 32bit case ?
+vim +650 drivers/net/ethernet/mediatek/mtk_ppe.c
 
-I would suggest against using a non-constant TASK_SIZE_MAX. Being
-constant is literally one reason why it exists, when TASK_SIZE itself
-has often been about other things (ie "32-bit process").
+   598	
+   599	void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
+   600	{
+   601		struct hlist_head *head = &ppe->foe_flow[hash / 2];
+   602		struct mtk_foe_entry *hwe = &ppe->foe_table[hash];
+   603		const struct dsa_device_ops *ops;
+   604		struct mtk_flow_entry *entry;
+   605		struct mtk_foe_bridge key = {};
+   606		struct ethhdr *eh;
+   607		bool found = false;
+   608		u8 *tag;
+   609	
+   610		spin_lock_bh(&ppe_lock);
+   611	
+   612		if (FIELD_GET(MTK_FOE_IB1_STATE, hwe->ib1) == MTK_FOE_STATE_BIND)
+   613			goto out;
+   614	
+   615		hlist_for_each_entry(entry, head, list) {
+   616			if (entry->type == MTK_FLOW_TYPE_L2_SUBFLOW) {
+   617				if (unlikely(FIELD_GET(MTK_FOE_IB1_STATE, hwe->ib1) ==
+   618					     MTK_FOE_STATE_BIND))
+   619					continue;
+   620	
+   621				entry->hash = 0xffff;
+   622				__mtk_foe_entry_clear(ppe, entry);
+   623				continue;
+   624			}
+   625	
+   626			if (found || !mtk_flow_entry_match(entry, hwe)) {
+   627				if (entry->hash != 0xffff)
+   628					entry->hash = 0xffff;
+   629				continue;
+   630			}
+   631	
+   632			entry->hash = hash;
+   633			__mtk_foe_entry_commit(ppe, &entry->data, hash);
+   634			found = true;
+   635		}
+   636	
+   637		if (found)
+   638			goto out;
+   639	
+   640		eh = eth_hdr(skb);
+   641		ether_addr_copy(key.dest_mac, eh->h_dest);
+   642		ether_addr_copy(key.src_mac, eh->h_source);
+   643		tag = skb->data - 2;
+   644		key.vlan = 0;
+   645		switch (skb->protocol) {
+   646		case htons(ETH_P_XDSA):
+   647			if (!netdev_uses_dsa(skb->dev))
+   648				goto out;
+   649	
+ > 650			ops = skb->dev->dsa_ptr->tag_ops;
+   651			if (ops->proto != DSA_TAG_PROTO_MTK)
+   652				goto out;
+   653	
+   654			tag += 4;
+   655			if (get_unaligned_be16(tag) != ETH_P_8021Q)
+   656				break;
+   657	
+   658			fallthrough;
+   659		case htons(ETH_P_8021Q):
+   660			key.vlan = get_unaligned_be16(tag + 2) & VLAN_VID_MASK;
+   661			break;
+   662		default:
+   663			break;
+   664		}
+   665	
+   666		entry = rhashtable_lookup_fast(&ppe->l2_flows, &key, mtk_flow_l2_ht_params);
+   667		if (!entry)
+   668			goto out;
+   669	
+   670		mtk_foe_entry_commit_subflow(ppe, entry, hash);
+   671	
+   672	out:
+   673		spin_unlock_bh(&ppe_lock);
+   674	}
+   675	
 
-Having to load variables for things like get_user() is annoying, if
-you could do it with a simple constant instead (where that "simple"
-part is to avoid having to load big values from a constant pool -
-often constants like "high bit set" can be loaded and compared against
-more efficiently).
-
-               Linus
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
