@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B791CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 791ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237399AbiBWCfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
+        id S234826AbiBWCfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:35:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiBWCdH (ORCPT
+        with ESMTP id S237498AbiBWCdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:33:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FD845782;
-        Tue, 22 Feb 2022 18:31:06 -0800 (PST)
+        Tue, 22 Feb 2022 21:33:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25E95C84B;
+        Tue, 22 Feb 2022 18:31:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39061B81E15;
-        Wed, 23 Feb 2022 02:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F44C340F0;
-        Wed, 23 Feb 2022 02:31:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79E58614FF;
+        Wed, 23 Feb 2022 02:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8590C340F0;
+        Wed, 23 Feb 2022 02:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583464;
-        bh=bUoUjXun1H5cleJ/gc0H1qiSuKbmHGKHPKKSjZmqy6k=;
+        s=k20201202; t=1645583452;
+        bh=dD+9dySqOBY0GnPXc0vqEOlGIoqkKIGq+vQ0XmTQUfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UaPyxfQZoGjXRZnSkSbWwaHcA3Op1R18wZkSjZi1rWXKw0FI71DvPzwymhEqi4NeI
-         hv77u4H2qCeNlSNL/jTf9jnVB6RQkdVmINYxEyyWboLzQExIFaevRTEeiuZH/nt/4E
-         i3L94ppdLOZ598yoQNR7ACPdElI/eEL+pTpn05Pe3H5RksF6zGc+pyiNps1UyGHZkZ
-         9tHUxpkP57aB0D6N6IKQyYiIT0czlNUxiC/rOA3RFLIcWfsXryYwCpsbfli02pRn5c
-         3hijLJ1ZwSBZTPdoccyAZ8+WmGl8Xz7KnXYUA9V/rQ4yO2aW5Qc2kcTiZ3kPMVHiUy
-         74L/Yi9Flc2yQ==
+        b=p8MzRb4Zqp3XES7w0W+zRRwQFRSeDAB5v0lzI3hvi/xHIMNLFHcbAMBz/NaVMWQVb
+         30IaAY72aogps7/C7yHUupykDZvniz37o5vGavEnYYrRW75OmwNwFUv1A5TNMfiD0m
+         ALou3c1E0cFaItu/p7Ixj5N12mWzMlSejlekBNQylvkXC2AG0FXDzaBeVyRXTXCb2m
+         ArffD5YrPn9XKpH1Zb9jmk+5dmV47slBSUwrISNwAu0SbIHSSCABxEUBn/p6GXK511
+         VSbO3dunn0JkjXmqAaNaD5h/C/WVxovwaSUHhtBIBa0kyamgn46tPh+s4XDsTdqbUt
+         S9L9VpuF6Vn+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/18] selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
-Date:   Tue, 22 Feb 2022 21:30:30 -0500
-Message-Id: <20220223023035.241551-13-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Ricardo Koller <ricarkol@google.com>,
+        Sasha Levin <sashal@kernel.org>, catalin.marinas@arm.com,
+        will@kernel.org, rikard.falkeborn@gmail.com, eric.auger@redhat.com,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu
+Subject: [PATCH AUTOSEL 5.10 08/18] KVM: arm64: vgic: Read HW interrupt pending state from the HW
+Date:   Tue, 22 Feb 2022 21:30:25 -0500
+Message-Id: <20220223023035.241551-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
 References: <20220223023035.241551-1-sashal@kernel.org>
@@ -54,43 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 6fec1ab67f8d60704cc7de64abcfd389ab131542 ]
+[ Upstream commit 5bfa685e62e9ba93c303a9a8db646c7228b9b570 ]
 
-The PREEMPT_RT patchset does not use do_softirq() function thus trying
-to filter for do_softirq fails for such kernel:
+It appears that a read access to GIC[DR]_I[CS]PENDRn doesn't always
+result in the pending interrupts being accurately reported if they are
+mapped to a HW interrupt. This is particularily visible when acking
+the timer interrupt and reading the GICR_ISPENDR1 register immediately
+after, for example (the interrupt appears as not-pending while it really
+is...).
 
-  echo do_softirq
-  ftracetest: 81: echo: echo: I/O error
+This is because a HW interrupt has its 'active and pending state' kept
+in the *physical* distributor, and not in the virtual one, as mandated
+by the spec (this is what allows the direct deactivation). The virtual
+distributor only caries the pending and active *states* (note the
+plural, as these are two independent and non-overlapping states).
 
-Choose some other visible function for the test.  The function does not
-have to be actually executed during the test, because it is only testing
-filter API interface.
+Fix it by reading the HW state back, either from the timer itself or
+from the distributor if necessary.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Reported-by: Ricardo Koller <ricarkol@google.com>
+Tested-by: Ricardo Koller <ricarkol@google.com>
+Reviewed-by: Ricardo Koller <ricarkol@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220208123726.3604198-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kvm/vgic/vgic-mmio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-index e96e279e0533a..25432b8cd5bd2 100644
---- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-+++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-@@ -19,7 +19,7 @@ fail() { # mesg
- 
- FILTER=set_ftrace_filter
- FUNC1="schedule"
--FUNC2="do_softirq"
-+FUNC2="scheduler_tick"
- 
- ALL_FUNCS="#### all functions enabled ####"
- 
+diff --git a/arch/arm64/kvm/vgic/vgic-mmio.c b/arch/arm64/kvm/vgic/vgic-mmio.c
+index b2d73fc0d1ef4..9e1459534ce54 100644
+--- a/arch/arm64/kvm/vgic/vgic-mmio.c
++++ b/arch/arm64/kvm/vgic/vgic-mmio.c
+@@ -248,6 +248,8 @@ unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
+ 						    IRQCHIP_STATE_PENDING,
+ 						    &val);
+ 			WARN_RATELIMIT(err, "IRQ %d", irq->host_irq);
++		} else if (vgic_irq_is_mapped_level(irq)) {
++			val = vgic_get_phys_line_level(irq);
+ 		} else {
+ 			val = irq_is_pending(irq);
+ 		}
 -- 
 2.34.1
 
