@@ -2,159 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD60C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B334CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239085AbiBWIvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:51:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
+        id S239083AbiBWIxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:53:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239063AbiBWIu6 (ORCPT
+        with ESMTP id S232440AbiBWIxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:50:58 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46F079C70;
-        Wed, 23 Feb 2022 00:50:30 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21N8oPY7076115;
-        Wed, 23 Feb 2022 02:50:25 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645606225;
-        bh=6CIkt/hlkAwW03RCFxZHbRpIUvcGICDjdJbyN3FRFrM=;
-        h=From:To:CC:Subject:Date;
-        b=FEJKTtcJlTcVHSJTSh6ZicVjayJoiV9pgWhohPylOGsg0bcWdGCHnGUHqfjtKt3+X
-         KBkaN7hrfUq1Khied9SoR3aH5U8Dhqko11u7mEKa6mhV3Y368KSFy4oc/Ic2ppaRdV
-         zozkz5iUGEqexrPqjlUuFBuX0jqlycETcsx8Ti34=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21N8oPoT048788
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 02:50:25 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
- Feb 2022 02:50:25 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 23 Feb 2022 02:50:24 -0600
-Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21N8oKm5067262;
-        Wed, 23 Feb 2022 02:50:21 -0600
-From:   Aparna M <a-m1@ti.com>
-To:     <nm@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <praneeth@ti.com>, <nikhil.nd@ti.com>
-Subject: [PATCH] arm64: dts: ti: k3-am642-sk: Enable WLAN connected to SDHCI0
-Date:   Wed, 23 Feb 2022 14:20:18 +0530
-Message-ID: <20220223085018.29283-1-a-m1@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 23 Feb 2022 03:53:43 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CBD65780;
+        Wed, 23 Feb 2022 00:53:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645606396; x=1677142396;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Gf7fLnuz2/+PWrNrtqGk1PKFdI0hQYHsrfCkNF3N2OE=;
+  b=wfa74g05p79C6sjxL3xJ82DiO5q4vDUA2aprhaAcKbq0sipbcQXCuCJV
+   UDz7Xo4806bIa+1v5X9/tdXNYEaROAPRUZR+eXa1ePKaA1OAhubZpKYP1
+   purYunz0Zl500zH4BtKtISVV7cRteONTGkwwVO2JbFmg07PPSdVZXA0pf
+   4FGkpPbi0k0eEValV5eQDH+9khs4ZH2XnSMbHsdodl3G69hkH02q4PDji
+   J9Wj3A3JLktAqqQrDiXRyleiSpmFCVwbkl9PHMh1PmxYFyzpj+t2j0lnW
+   Q8dZXQDI5xIU3dQrtkaQI0OAX9ieIE8SVZC9OaL8lLLUV3hgFTMGwQu4+
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="149703384"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Feb 2022 01:53:14 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 23 Feb 2022 01:53:14 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 23 Feb 2022 01:53:09 -0700
+From:   <conor.dooley@microchip.com>
+To:     <u.kleine-koenig@pengutronix.de>,
+        <krzysztof.kozlowski@canonical.com>
+CC:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <aou@eecs.berkeley.edu>, <atishp@rivosinc.com>, <brgl@bgdev.pl>,
+        <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
+        <devicetree@vger.kernel.org>, <geert@linux-m68k.org>,
+        <ivan.griffin@microchip.com>, <jassisinghbrar@gmail.com>,
+        <lee.jones@linaro.org>, <lewis.hanly@microchip.com>,
+        <linus.walleij@linaro.org>, <linux-gpio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-rtc@vger.kernel.org>,
+        <palmer@dabbelt.com>, <palmer@rivosinc.com>,
+        <paul.walmsley@sifive.com>, <robh+dt@kernel.org>,
+        <robh@kernel.org>, <thierry.reding@gmail.com>
+Subject: Re: [PATCH v7 05/11] dt-bindings: pwm: add microchip corepwm binding
+Date:   Wed, 23 Feb 2022 08:55:10 +0000
+Message-ID: <20220223085509.3664942-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220223082018.degrftmxpk5uc6xn@pengutronix.de>
+References: <20220223082018.degrftmxpk5uc6xn@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
-This will enable the WiFi functionaliy on the board.
+On 23/02/2022 08:20, Uwe Kleine-König wrote:
+> On Wed, Feb 23, 2022 at 08:12:49AM +0100, Krzysztof Kozlowski wrote:
+> > On 23/02/2022 07:20, Uwe Kleine-König wrote:
+> > > On Mon, Feb 14, 2022 at 01:58:35PM +0000, conor.dooley@microchip.com wrote:
+> > >> From: Conor Dooley <conor.dooley@microchip.com>
+> > >>
+> > >> Add device tree bindings for the Microchip fpga fabric based "core" PWM
+> > >> controller.
+> > >>
+> > >> Reviewed-by: Rob Herring <robh@kernel.org>
+> > >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> > >> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> > > 
+> > > I like it:
+> > > 
+> > > Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > 
+> > > nitpick: Put your S-o-b last in the commit log. (This doesn't justify a
+> > > resend IMHO)
+> > 
+> > It should be the opposite - the first. First author signs the patch,
+> > then comes review and finally an ack. Putting SoB at then suggests that
+> > tags were accumulated before sending patch, out of mailing list.
+> 
+> well, or in an earlier revision of this patch as is the case here. One
+> of the ideas of S-o-b is that the order shows the flow of the patch
+> states and if this patch ends in git with:
+> 
+> 	Referred-by: Rob Herring <robh@kernel.org>
+> 	Singed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> 	Backed-by: Palmer Dabbelt <palmer@rivosinc.com>
+> 	Singed-off-by: Peter Maintainer <pm@example.com>
+> 
+> I'd expect that Backed-by was added by Peter, not Conor.
+> (Modified the tags on purpose to not interfere with b4's tag pickup, I
+> guess you humans still get the point.)
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
-Signed-off-by: Aparna M <a-m1@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 62 ++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+I had put the acks after the S-o-B for patches I hadn't changed since the ack,
+but I think that may have been a misinterpretation of what was meant by Rob
+when he said tags should be in chronological order. Won't do it this way in
+the future.
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 6b04745147be..1178bb982f05 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -125,6 +125,31 @@
- 		vin-supply = <&vcc_3v3_sys>;
- 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	com8_ls_en: fixed-regulator-com8 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "com8_ls_en";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+		pinctrl-0 = <&main_com8_ls_en_pins_default>;
-+		pinctrl-names = "default";
-+		gpio = <&main_gpio0 62 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	wlan_en: fixed-regulator-wlan {
-+		/* output of SN74AVC4T245RSVR */
-+		compatible = "regulator-fixed";
-+		regulator-name = "wlan_en";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		enable-active-high;
-+		pinctrl-0 = <&main_wlan_en_pins_default>;
-+		pinctrl-names = "default";
-+		vin-supply = <&com8_ls_en>;
-+		gpio = <&main_gpio0 48 GPIO_ACTIVE_HIGH>;
-+	};
- };
- 
- &main_pmx0 {
-@@ -216,6 +241,23 @@
- 			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
- 		>;
- 	};
-+	main_wlan_en_pins_default: main-wlan-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
-+		>;
-+	};
-+
-+	main_com8_ls_en_pins_default: main-com8-ls-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00fc, PIN_OUTPUT, 7) /* (U7) PRG1_PRU0_GPO17.GPIO0_62 */
-+		>;
-+	};
-+
-+	main_wlan_pins_default: main-wlan-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00bc, PIN_INPUT, 7) /* (U8) GPIO0_46 */
-+		>;
-+	};
- };
- 
- &mcu_uart0 {
-@@ -293,6 +335,26 @@
- 	status = "reserved";
- };
- 
-+&sdhci0 {
-+	vmmc-supply = <&wlan_en>;
-+	bus-width = <4>;
-+	non-removable;
-+	cap-power-off-card;
-+	keep-power-in-suspend;
-+	ti,driver-strength-ohm = <50>;
-+
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	wlcore: wlcore@2 {
-+		compatible = "ti,wl1837";
-+		reg = <2>;
-+		pinctrl-0 = <&main_wlan_pins_default>;
-+		pinctrl-names = "default";
-+		interrupt-parent = <&main_gpio0>;
-+		interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
-+	};
-+};
-+
- &sdhci1 {
- 	/* SD/MMC */
- 	vmmc-supply = <&vdd_mmc1>;
--- 
-2.17.1
+If the remaining patch gets a maintainer ack, the order will be fine I guess
+since it'll be Palmer taking it anyway. If there's a v8, I will fix the order.
 
+Thanks,
+Conor
