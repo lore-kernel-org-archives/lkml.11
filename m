@@ -2,129 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A1CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09027C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238890AbiBWIU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        id S238825AbiBWIYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:24:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiBWIU4 (ORCPT
+        with ESMTP id S237670AbiBWIYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:20:56 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB873BBDB
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:20:29 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nMmsn-0001hh-Uq; Wed, 23 Feb 2022 09:20:22 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nMmsm-000mFQ-1R; Wed, 23 Feb 2022 09:20:19 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nMmsk-004z5V-Gb; Wed, 23 Feb 2022 09:20:18 +0100
-Date:   Wed, 23 Feb 2022 09:20:18 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     conor.dooley@microchip.com, linus.walleij@linaro.org,
-        brgl@bgdev.pl, robh+dt@kernel.org, jassisinghbrar@gmail.com,
-        thierry.reding@gmail.com, lee.jones@linaro.org,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, geert@linux-m68k.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        lewis.hanly@microchip.com, daire.mcnamara@microchip.com,
-        ivan.griffin@microchip.com, atishp@rivosinc.com,
-        Rob Herring <robh@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: Re: [PATCH v7 05/11] dt-bindings: pwm: add microchip corepwm binding
-Message-ID: <20220223082018.degrftmxpk5uc6xn@pengutronix.de>
-References: <20220214135840.168236-1-conor.dooley@microchip.com>
- <20220214135840.168236-6-conor.dooley@microchip.com>
- <20220223062018.nbgidqxgh2soz625@pengutronix.de>
- <65edc257-82ec-e100-7a44-5c510aba51ce@canonical.com>
+        Wed, 23 Feb 2022 03:24:31 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B35A5A0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:24:03 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EEAF33FCA4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:24:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645604641;
+        bh=OUH0bTj/LUGqclp4FyWkS6uNhE/OcvDSgnjHRV7vNUM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+         In-Reply-To:Content-Type;
+        b=JU82KO191cdrgWJg0J+I4iO3K9Gx66UhqZp8+3CY/Sv5aJlcEnS2LUtq384fzfEYt
+         we8C4pXQL6ljFwxrIy7azBYL7MT2oNy061lxsNG7eyvpj1LL2jiZ2gzT5XPqXghtGR
+         RGX5HmpdQhrnEUkjGP7NQEEZe2B3H6SciC7dNix+sii7FkOOZ3+C3JFffagKNud/Lo
+         gr3Qmxm2jeQ07+eboVA8eSiR4uEt9txcbCJMs4JTx+1jXuD9wMQF/KeBLpC6MgxO2g
+         aHsUqyw3uKyL/4kcRjsFkZO4Pg2k0MdZnmlxweK7CRRAmr9JG63oHDF1T11WBA+FKW
+         lYLt9XaKAdpvw==
+Received: by mail-ej1-f70.google.com with SMTP id ky6-20020a170907778600b0068e4bd99fd1so6790456ejc.15
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:24:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OUH0bTj/LUGqclp4FyWkS6uNhE/OcvDSgnjHRV7vNUM=;
+        b=W5s1ElwfZYTzHZITrhnTbizgpNnoJyxbLrjJ2GbZbVoNceJjYGK9lOR3vrHgbuKta4
+         CE9Kx9FnzCd3b6/+ihfuHS+bEpmEZ7trCDIKliLPLfcqUwq4HrtSjJ3mdK2YBOxhdM6v
+         O17dLt/6HtFZFfAZTjvCrFSILpJGc+KJq0HETWF1PuXRUjYe+hXMXpJCi44LVzKyCr3U
+         z6rOe0+NFpHSZ7NEbbDTWZKGBFRb6A36TFg3n4uGJVc7OCz3x+hsign8inh9TUPEpZ00
+         uSoCZaqzrj60S9tVEq00q+C3X/amVj2njD4dnCty9Vig1HR+Ui6cFegLDuC/B5e0aB1l
+         TJRw==
+X-Gm-Message-State: AOAM530/pJbDqoqbYqT5dtXjstd9FuVxlPPrEpupuwgxSyABCTtoG2pb
+        giYGgBwUjHl77zx/aXFLEAYOjPltctBq2y1vab4nJ3rHn0yz8RUgqPIpBA7SkZujpqmfEbK4tZr
+        MkjQFVOZg/8hQ4wb70T9MF3sgVSj8WReb70ZfPRnbBg==
+X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id 9-20020a170906310900b006cc07a18db0mr22106105ejx.266.1645604640501;
+        Wed, 23 Feb 2022 00:24:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzmlOe0uOWGCSaW649hZ3pFA8AEz4z12SvTxoyLOxSd5Mf7R4zHsjAvMUopfEcfA/lfYgjr1A==
+X-Received: by 2002:a17:906:3109:b0:6cc:7a1:8db0 with SMTP id 9-20020a170906310900b006cc07a18db0mr22106094ejx.266.1645604640319;
+        Wed, 23 Feb 2022 00:24:00 -0800 (PST)
+Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id p16sm1162411ejn.33.2022.02.23.00.23.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 00:23:59 -0800 (PST)
+Message-ID: <968cf18e-af5c-0503-79b1-a622938d4e0a@canonical.com>
+Date:   Wed, 23 Feb 2022 09:23:58 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iwzv2cqxmtoj6ivg"
-Content-Disposition: inline
-In-Reply-To: <65edc257-82ec-e100-7a44-5c510aba51ce@canonical.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
+Content-Language: en-US
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        'Avri Altman' <avri.altman@wdc.com>,
+        'Rob Herring' <robh+dt@kernel.org>,
+        'Andy Gross' <agross@kernel.org>,
+        'Bjorn Andersson' <bjorn.andersson@linaro.org>,
+        'Wei Xu' <xuwei5@hisilicon.com>, 'Nishanth Menon' <nm@ti.com>,
+        'Vignesh Raghavendra' <vigneshr@ti.com>,
+        'Tero Kristo' <kristo@kernel.org>,
+        "'James E.J. Bottomley'" <jejb@linux.ibm.com>,
+        "'Martin K. Petersen'" <martin.petersen@oracle.com>,
+        'Jan Kotas' <jank@cadence.com>, 'Li Wei' <liwei213@huawei.com>,
+        'Stanley Chu' <stanley.chu@mediatek.com>,
+        'Yaniv Gardi' <ygardi@codeaurora.org>,
+        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+ <CGME20220222150007epcas5p22f05e6c8e80a5ad18a9528cd0ead865d@epcas5p2.samsung.com>
+ <20220222145854.358646-10-krzysztof.kozlowski@canonical.com>
+ <0c8b01d8280b$868abc20$93a03460$@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <0c8b01d8280b$868abc20$93a03460$@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 22/02/2022 17:44, Alim Akhtar wrote:
+> Hi Krzysztof
+> 
+>> -----Original Message-----
+>> From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
+>> Sent: Tuesday, February 22, 2022 8:29 PM
+>> To: Alim Akhtar <alim.akhtar@samsung.com>; Avri Altman
+>> <avri.altman@wdc.com>; Rob Herring <robh+dt@kernel.org>; Krzysztof
+>> Kozlowski <krzysztof.kozlowski@canonical.com>; Andy Gross
+>> <agross@kernel.org>; Bjorn Andersson <bjorn.andersson@linaro.org>; Wei
+>> Xu <xuwei5@hisilicon.com>; Nishanth Menon <nm@ti.com>; Vignesh
+>> Raghavendra <vigneshr@ti.com>; Tero Kristo <kristo@kernel.org>; James E.J.
+>> Bottomley <jejb@linux.ibm.com>; Martin K. Petersen
+>> <martin.petersen@oracle.com>; Jan Kotas <jank@cadence.com>; Li Wei
+>> <liwei213@huawei.com>; Stanley Chu <stanley.chu@mediatek.com>; Yaniv
+>> Gardi <ygardi@codeaurora.org>; linux-scsi@vger.kernel.org;
+>> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
+>> msm@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-samsung-
+>> soc@vger.kernel.org; linux-mediatek@lists.infradead.org
+>> Subject: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
+>>
+>> The 'freq-table-hz' is not correct in DT schema, because '-hz' suffix
+> defines
+>> uint32 type, not an array.  Therefore deprecate 'freq-table-hz'
+>> and use 'freq-table' instead.
+>>
+> May be once all the dts change migrate to using 'freq-table', just remove
+> 'freq-table-hz' from driver.
 
---iwzv2cqxmtoj6ivg
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+At some point in the future 'freq-table-hz' parsing could be removed,
+but now you have both old and new DTS, so it should stay. Also for DTB
+compatibility.
 
-On Wed, Feb 23, 2022 at 08:12:49AM +0100, Krzysztof Kozlowski wrote:
-> On 23/02/2022 07:20, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Feb 14, 2022 at 01:58:35PM +0000, conor.dooley@microchip.com wr=
-ote:
-> >> From: Conor Dooley <conor.dooley@microchip.com>
-> >>
-> >> Add device tree bindings for the Microchip fpga fabric based "core" PWM
-> >> controller.
-> >>
-> >> Reviewed-by: Rob Herring <robh@kernel.org>
-> >> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> >> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> >=20
-> > I like it:
-> >=20
-> > Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> >=20
-> > nitpick: Put your S-o-b last in the commit log. (This doesn't justify a
-> > resend IMHO)
->=20
-> It should be the opposite - the first. First author signs the patch,
-> then comes review and finally an ack. Putting SoB at then suggests that
-> tags were accumulated before sending patch, out of mailing list.
 
-well, or in an earlier revision of this patch as is the case here. One
-of the ideas of S-o-b is that the order shows the flow of the patch
-states and if this patch ends in git with:
-
-	Referred-by: Rob Herring <robh@kernel.org>
-	Singed-off-by: Conor Dooley <conor.dooley@microchip.com>
-	Backed-by: Palmer Dabbelt <palmer@rivosinc.com>
-	Singed-off-by: Peter Maintainer <pm@example.com>
-
-I'd expect that Backed-by was added by Peter, not Conor.
-(Modified the tags on purpose to not interfere with b4's tag pickup, I
-guess you humans still get the point.)
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---iwzv2cqxmtoj6ivg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIV7j8ACgkQwfwUeK3K
-7Aloogf+O25Xs80EkRbZcoT53Op4Qz+T2M0ldDqTk6fHIxcR3qzb7m74O1AGSR3K
-UfR9clLI5oaiJ77rpUJrj755Va3JCOlPiwB14+LakdvvjWlnf+z7h+DC892GcAaj
-ML4S91q/Y/ORSl0189iTfICN78MRMs6UWjVJWX3wV/HqeFQi3fSMNXTjQ8IC6LYe
-GWMVhC3eYpSFxsdqMDeAaEX6CChb0CwfAwMzWxrOt+6sFPfimaOMz4HgHpJsn1bf
-qTj64t9fgifBN41OJNqirl2R2mPxKn/McocqNmDFj+o1DyQ0ikT1sqGFTjnEN3fl
-I/W+Pfdxw50SJZHNxfcDTll9wibNTA==
-=Be78
------END PGP SIGNATURE-----
-
---iwzv2cqxmtoj6ivg--
+Best regards,
+Krzysztof
