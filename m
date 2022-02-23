@@ -2,93 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 04:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C40C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 04:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238098AbiBWEkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 23:40:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        id S238112AbiBWEkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 23:40:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237733AbiBWEkl (ORCPT
+        with ESMTP id S237981AbiBWEko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 23:40:41 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA2558E55
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:40:14 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id s5so16969115oic.10
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:40:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XiUxUsXWoDSPBkoDa65L0Qpfkg0qt8UeOBJM//CPRsE=;
-        b=aa5BbAbSu6x3X7MiDWb43zozBEWAazuwiR4F8BBZXQmIukJ6AevjJlCHIPuka3PYQM
-         ZjfdlnGcr3KRavbRRoi6DwUOlP6DYVN7RJ2bRYbsGuPYxdg4IEgP2bvjdGGzJ8Q0oumu
-         I069ctxgJ8QR2a+CMyuuNn70Q1FA4CqxKGpS7GbkF5yQC+oaCouTU+s0zCzrHPn3O9kK
-         O2bmo4J3LyWfvBw1m7HrCQOsN8+hDNz1by90EO/FGKCMvuAs2mG1O8vNRS9gE3PvJ/YK
-         lFr8khCBl4ST6jesWOm+nipXt9ZTC9XBCjoWzNnB89eE2yoO2jLSwJ1mtC9StHdBmkxh
-         WqVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XiUxUsXWoDSPBkoDa65L0Qpfkg0qt8UeOBJM//CPRsE=;
-        b=H9NMFI1C23/xlAeYscOwJT0KrmDhzM662SzhdSHxGunVuVl6SYhK0yJlT2lmwPRwMm
-         JfTr5UbJN+zCkgkcfrG5x1aZAz9kgjYFMfjE+zyQLsagoudB4rlLPqY4QmU/QGye7fw+
-         rY1cP+J4RJ8pPlyot0g2El53U9W31FEWEZRnMR85ypm2W5jsKQg0RFETt6IZCUU9C3pw
-         5gOJOF85JIj2VNLHet+8QPaaZp37gZbYPQZ8pyj7Vc/D+w7+MeWVcNSfCeZM9js6vItf
-         snKG7uhBy5pkEGaIW8ACzkF7KYt77WN7xt9AjpbGeyMe6faSWdw+dgHtf6sVOjwiZaZf
-         VK/g==
-X-Gm-Message-State: AOAM530+RlcCXh4IysSxTmPJzARWSryvsjf+ecdxWvyPXYnSLTlEiBhk
-        k6JD/OvYA+qAn9wc8lglmt9yOg==
-X-Google-Smtp-Source: ABdhPJyP0nyPUXhj10ErDAzhFQarkRTaVsanvEHsiXxxdAeCMKTQZHa0SlawcezkX1m/UMXsKQfx2w==
-X-Received: by 2002:a05:6808:178a:b0:2d4:eef:144f with SMTP id bg10-20020a056808178a00b002d40eef144fmr3748077oib.225.1645591214001;
-        Tue, 22 Feb 2022 20:40:14 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id x22sm6250033ooo.20.2022.02.22.20.40.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Feb 2022 20:40:13 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] phy: qcom-qmp: add sc8280xp UFS PHY
-Date:   Tue, 22 Feb 2022 20:42:13 -0800
-Message-Id: <20220223044213.3776600-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220223044213.3776600-1-bjorn.andersson@linaro.org>
-References: <20220223044213.3776600-1-bjorn.andersson@linaro.org>
+        Tue, 22 Feb 2022 23:40:44 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251D060DBA
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:40:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645591218; x=1677127218;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=L+2Qr8V6KUyJCrvg3kEW5Q15nQ2Fw9Yx3P2tGHF4ZQ0=;
+  b=FIUrd4+nvg6DObrVczpKv2k/f2NiVGjXC9nfPVCyvqLW4OLSEVzOUoRr
+   F0ilQmgedn99zPJV3sVfCrWU4jGUOebsLQpv9D1x35bPfDfI7cY7TSgS5
+   4RV0QzQC/n/662O3vC9/znWT1yHZ78fqAtg+bcXglek8p+lE8GanBoigA
+   kEtjH2esuehPAfnjFeuKGdclYSVwcq3wKPNfp4km4W4qxMHtrtcTMRkcT
+   Vq2XrMQtYzNhQqi33fe9CWuT/FpEMdCWmyDixHgAR7kxmC8kyqPWB5o/0
+   tkJ50e2v3LdGJ/7dhT8V+v2P6u5caRkxZKlaw5w3XxEJOcH8Yi1kEgUm+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="315111369"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="315111369"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 20:40:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="508278615"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 22 Feb 2022 20:40:15 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMjRm-0000z4-VL; Wed, 23 Feb 2022 04:40:14 +0000
+Date:   Wed, 23 Feb 2022 12:39:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Imre Deak <imre.deak@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [ammarfaizi2-block:next/linux-next/master 97/182]
+ drivers/gpu/drm/dp/drm_dp.c:210:4: warning: no previous prototype for
+ function 'drm_dp_get_adjust_request_post_cursor'
+Message-ID: <202202231250.VkvwGjL3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reuse the SM8350 UFS PHY initialization sequence to add support for the
-same found in the Qualcomm SC8280XP platform.
+tree:   https://github.com/ammarfaizi2/linux-block next/linux-next/master
+head:   196d330d7fb1e7cc0d85641c89ce4602cb36f12e
+commit: b885fbed0eb9d79d96a1f8145dc430e14fb33808 [97/182] Merge branch 'for-linux-next' of git://anongit.freedesktop.org/drm-intel
+config: i386-randconfig-a011-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231250.VkvwGjL3-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/b885fbed0eb9d79d96a1f8145dc430e14fb33808
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block next/linux-next/master
+        git checkout b885fbed0eb9d79d96a1f8145dc430e14fb33808
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/dp/
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/gpu/drm/dp/drm_dp.c:210:4: warning: no previous prototype for function 'drm_dp_get_adjust_request_post_cursor' [-Wmissing-prototypes]
+   u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+      ^
+   drivers/gpu/drm/dp/drm_dp.c:210:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/drm_dp_get_adjust_request_post_cursor +210 drivers/gpu/drm/dp/drm_dp.c
+
+0192c25c03cd2f drivers/gpu/drm/drm_dp_helper.c Jani Nikula    2022-02-03  209  
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21 @210  u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  211  					 unsigned int lane)
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  212  {
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  213  	unsigned int offset = DP_ADJUST_REQUEST_POST_CURSOR2;
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  214  	u8 value = dp_link_status(link_status, offset);
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  215  
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  216  	return (value >> (lane << 1)) & 0x3;
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  217  }
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  218  EXPORT_SYMBOL(drm_dp_get_adjust_request_post_cursor);
+79465e0ffeb9e4 drivers/gpu/drm/drm_dp_helper.c Thierry Reding 2019-10-21  219  
+
+:::::: The code at line 210 was first introduced by commit
+:::::: 79465e0ffeb9e4866939ea562bc55367be91e595 drm/dp: Add helper to get post-cursor adjustments
+
+:::::: TO: Thierry Reding <treding@nvidia.com>
+:::::: CC: Thierry Reding <treding@nvidia.com>
+
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index 8ea87c69f463..b144ae1f729a 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -5977,6 +5977,9 @@ static const struct of_device_id qcom_qmp_phy_of_match_table[] = {
- 	}, {
- 		.compatible = "qcom,sc8180x-qmp-ufs-phy",
- 		.data = &sm8150_ufsphy_cfg,
-+	}, {
-+		.compatible = "qcom,sc8280xp-qmp-ufs-phy",
-+		.data = &sm8350_ufsphy_cfg,
- 	}, {
- 		.compatible = "qcom,sc8180x-qmp-usb3-phy",
- 		.data = &sm8150_usb3phy_cfg,
--- 
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
