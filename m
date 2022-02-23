@@ -2,147 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A73C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238142AbiBWF7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:59:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
+        id S238110AbiBWGAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 01:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237219AbiBWF7Q (ORCPT
+        with ESMTP id S232274AbiBWGAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:59:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C88F1D316;
-        Tue, 22 Feb 2022 21:58:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23B6AB81E80;
-        Wed, 23 Feb 2022 05:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B07BC340E7;
-        Wed, 23 Feb 2022 05:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645595925;
-        bh=6zqjN+ejPis2B9ACr4wZd1FjHKnzjkEF3tE0bhMxNXE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=njIsi30tL6ufxOFei92QTBJMv47QqlchMWiZPjUpGK2CgUfQaNlqmMnecmUI4qoRx
-         pr9W53ELevdeg1nUI/muGp/G+eVCD2g0vUmyTZc7e6YBSsXZoGk3bW5u5hsm+qWxiL
-         PuF8Z1kfpr+OAqynSxNlsSVUPDOdWla5N+ujGuY+fHIf469JtqElTX1f+A/9MOzQyf
-         13kVSMpfmbghCYJcfKD6MX/IcLs2H241PKTrli1Q3VPg2MBUcZOEC6uHOo96dljAMh
-         +h58Rif4y+CxBab1ZMC5g3t8Zop72jV08RGDFU7Gg5N/IOph1yAncv6YeNFLzmaBtR
-         eEjlvZ2cFmJTA==
-Date:   Wed, 23 Feb 2022 14:58:40 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
-Message-Id: <20220223145840.64f708ed2357c89039f55f07@kernel.org>
-In-Reply-To: <20220222170600.611515-3-jolsa@kernel.org>
-References: <20220222170600.611515-1-jolsa@kernel.org>
-        <20220222170600.611515-3-jolsa@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 23 Feb 2022 01:00:15 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA92D3B00C;
+        Tue, 22 Feb 2022 21:59:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645595988; x=1677131988;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NIratgGYOhkpACukr35jSYKDkM0v76qmlkK/PhGjAS8=;
+  b=XVBj3nLxznNDiHi4XIYkTH+HXpjHe5z+3Xah9hLcrbQA84PEqeE6wCqm
+   bNyCLWvpBeB/iGhMqvcLUwcnSYIflSVOZV7D9WiYKZufoUbKusRQ9PV5l
+   WIIMXU6pu2jlMnLt8LtSS4dWt5EpdmCWpzCfla/LPrz9f26ZeQrMMVt+S
+   wd9zhSaU9c1yUlmttEtsTa3iRfNodAIwxr6domBz/2rMzhDtsRonYORpj
+   uXyNLXSIWRFOIO/jQui7/xjp68DNvdbncz19FMQIEg1Ouk2jO6Qiwo5pG
+   iw3idhSdJvzmYSx1f86vAbULVgv752vMJNKXWbsV7+dpAtVSQ4pgRUNI+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="235401098"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="235401098"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:59:48 -0800
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
+   d="scan'208";a="491071664"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 21:59:42 -0800
+Date:   Wed, 23 Feb 2022 14:10:38 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>
+Subject: Re: [PATCH v5 7/8] KVM: VMX: Update PID-pointer table entry when
+ APIC ID is changed
+Message-ID: <20220223061037.GA21263@gao-cwp>
+References: <640e82f3-489d-60af-1d31-25096bef1a46@amd.com>
+ <4eee5de5-ab76-7094-17aa-adc552032ba0@intel.com>
+ <aa86022c-2816-4155-8d77-f4faf6018255@amd.com>
+ <aa7db6d2-8463-2517-95ce-c0bba22e80d4@intel.com>
+ <d058f7464084cadc183bd9dbf02c7f525bb9f902.camel@redhat.com>
+ <20220110074523.GA18434@gao-cwp>
+ <1ff69ed503faa4c5df3ad1b5abe8979d570ef2b8.camel@redhat.com>
+ <YeClaZWM1cM+WLjH@google.com>
+ <YfsSjvnoQcfzdo68@google.com>
+ <Yfw5ddGNOnDqxMLs@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yfw5ddGNOnDqxMLs@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiri,
+On Thu, Feb 03, 2022 at 08:22:13PM +0000, Sean Christopherson wrote:
+>i.e. ACPI_NUMA gets priority and thus amd_numa_init() will never be reached if
+>the NUMA topology is enumerated in the ACPI tables.  Furthermore, the VMM would
+>have to actually emulate an old AMD northbridge, which is also extremely unlikely.
+>
+>The odds of breaking a guest are further diminised given that KVM doesn't emulate
+>the xAPIC ID => x2APIC ID hilarity on AMD CPUs and no one has complained.
+>
+>So, rather than tie this to IPI virtualization, I think we should either make
+>the xAPIC ID read-only across the board,
 
-On Tue, 22 Feb 2022 18:05:52 +0100
-Jiri Olsa <jolsa@kernel.org> wrote:
+We will go this way and defer the introduction of "xapic_id_writable" to the
+emergence of the "crazy" use case.
 
-[snip]
-> +
-> +static void
-> +kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
-> +			  struct pt_regs *regs)
-> +{
-> +	unsigned long saved_ip = instruction_pointer(regs);
-> +	struct bpf_kprobe_multi_link *link;
-> +
-> +	/*
-> +	 * Because fprobe's regs->ip is set to the next instruction of
-> +	 * dynamic-ftrace instruction, correct entry ip must be set, so
-> +	 * that the bpf program can access entry address via regs as same
-> +	 * as kprobes.
-> +	 */
-> +	instruction_pointer_set(regs, entry_ip);
+Levitsky, we plan to revise your patch 13 "[PATCH RESEND 13/30] KVM: x86: lapic:
+don't allow to change APIC ID when apic acceleration is enabled" to make xAPIC
+ID read-only regardless of APICv/AVIC and include it into IPI virtualization
+series (to eliminate the dependency on your AVIC series). Is it fine with you?
+And does this patch 13 depend on other patches in your fixes?
 
-This is true for the entry_handler, but false for the exit_handler,
-because entry_ip points the probed function address, not the
-return address. Thus, when this is done in the exit_handler,
-the bpf prog seems to be called from the entry of the function,
-not return.
-
-If it is what you expected, please explictly comment it to
-avoid confusion. Or, make another handler function for exit
-probing.
-
-> +
-> +	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
-> +	kprobe_multi_link_prog_run(link, regs);
-> +
-> +	instruction_pointer_set(regs, saved_ip);
-> +}
-> +
-> +static int
-> +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
-> +			  unsigned long *addrs)
-> +{
-> +	unsigned long addr, size;
-> +	const char **syms;
-> +	int err = -ENOMEM;
-> +	unsigned int i;
-> +	char *func;
-> +
-> +	size = cnt * sizeof(*syms);
-> +	syms = kvzalloc(size, GFP_KERNEL);
-> +	if (!syms)
-> +		return -ENOMEM;
-> +
-> +	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
-> +	if (!func)
-> +		goto error;
-> +
-> +	if (copy_from_user(syms, usyms, size)) {
-> +		err = -EFAULT;
-> +		goto error;
-> +	}
-> +
-> +	for (i = 0; i < cnt; i++) {
-> +		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
-> +		if (err == KSYM_NAME_LEN)
-> +			err = -E2BIG;
-> +		if (err < 0)
-> +			goto error;
-> +
-> +		err = -EINVAL;
-> +		if (func[0] == '\0')
-> +			goto error;
-> +		addr = kallsyms_lookup_name(func);
-> +		if (!addr)
-> +			goto error;
-> +		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
-> +			size = MCOUNT_INSN_SIZE;
-
-Note that this is good for x86, but may not be good for other arch
-which use some preparation instructions before mcount call.
-Maybe you can just reject it if kallsyms_lookup_size_offset() fails.
-
-Thank you,
-
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+>or if we want to hedge in case someone
+>has a crazy use case, make the xAPIC ID read-only by default, add a module param
+>to let userspace opt-in to a writable xAPIC ID, and report x2APIC and APICv as
+>unsupported if the xAPIC ID is writable.  E.g. rougly this, plus your AVIC patches
+>if we want to hedge.
