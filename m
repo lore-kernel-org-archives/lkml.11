@@ -2,56 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbiBWChW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        id S237559AbiBWCh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:37:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237492AbiBWCgT (ORCPT
+        with ESMTP id S237306AbiBWCgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:36:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A258446B37;
+        Tue, 22 Feb 2022 21:36:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2487646650;
         Tue, 22 Feb 2022 18:32:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 243B06152A;
-        Wed, 23 Feb 2022 02:32:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E89AC340EB;
-        Wed, 23 Feb 2022 02:32:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0676A614FF;
+        Wed, 23 Feb 2022 02:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C9CC36AE3;
+        Wed, 23 Feb 2022 02:31:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583525;
-        bh=BvI6XKS2a6C7yafGKdew4q9Fsz5hDA4ieFJRLYviGN0=;
+        s=k20201202; t=1645583482;
+        bh=zkNcC6hnSHqKlwlocwB7CPDuJLbjT2NpdqYeAQVJKoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=anpDHIaNncLBUWIz9Rgl/z0/KD2CVCxuMoU49xD4LftAGps+O/VAppbOaqWKfsY1o
-         4ckEzKzy+dqn+uaqc99CjETuRf/uIGZB/43xqHehMvdH/JtVdeBBF43Z2OcC5ITMKv
-         0pkLN+eGfGpyatsXJtOWoEsuNLAurYhLRqy5ScoW3KAKmZM041PlT6RDVeE9k46VYT
-         pHrKJjaGKcRdWloqYirnvrZOwy9xgHdNYvyVqtp7OsBm5jgo5XG44RCpn4YHyjTJkX
-         bRV1B+S9rhDi3BIF8lozJuLwKFbG9L7d4SyGSjINPXxd6GSPpCipfnbIYGGYLGyb8d
-         c/LgokQAbyQsg==
+        b=dmOD+V1GdH/5rV4nzaQA/dqGZx7+MlEyP2mpEtq5GJBIHqPfM+2qVZWoZljNXrMH7
+         AMeulUGUHCuu34kNumTEmZxOkwAA2i5MW5sMstWRu2ftaoq4LC3dKGAy9U6rPLkE5N
+         jfTpVt5ZvRNFzfO/NMaERRlb1P3CCq7hYK+k4lH8cTW+CLhqv0wqtPgmpcMjzdxmmK
+         heTc0vJTC7supcLFssAfmOE0SE8vDyOknJY2eLGxCknhRbaSa3t8qiUtgsQ6RrsLy4
+         QDmql+wQjUMi6Qu7p9IBx+sL0o39krfXFZHQmwkAmKcOb4eURdFc3p8fFChfxr+Bca
+         YODD8c7BSQmIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 05/13] ASoC: rt5682: do not block workqueue if card is unbound
-Date:   Tue, 22 Feb 2022 21:31:44 -0500
-Message-Id: <20220223023152.242065-5-sashal@kernel.org>
+Cc:     JaeMan Park <jaeman@google.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/13] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
+Date:   Tue, 22 Feb 2022 21:31:06 -0500
+Message-Id: <20220223023118.241815-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
-References: <20220223023152.242065-1-sashal@kernel.org>
+In-Reply-To: <20220223023118.241815-1-sashal@kernel.org>
+References: <20220223023118.241815-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,61 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: JaeMan Park <jaeman@google.com>
 
-[ Upstream commit 4c33de0673ced9c7c37b3bbd9bfe0fda72340b2a ]
+[ Upstream commit cacfddf82baf1470e5741edeecb187260868f195 ]
 
-The current rt5682_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+In mac80211_hwsim, the probe_req frame is created and sent while
+scanning. It is sent with ieee80211_tx_info which is not initialized.
+Uninitialized ieee80211_tx_info can cause problems when using
+mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
+ieee80211_tx_info and doesn't relay probe_req frame to other clients
+even if it is a broadcasting message.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
+Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
+the probe_req that is created by hw_scan_work in mac80211_hwsim.
 
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
-
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-3-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: JaeMan Park <jaeman@google.com>
+Link: https://lore.kernel.org/r/20220113060235.546107-1-jaeman@google.com
+[fix memory leak]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/wireless/mac80211_hwsim.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
-index 7a78bb00f874d..5979165ac37cf 100644
---- a/sound/soc/codecs/rt5682.c
-+++ b/sound/soc/codecs/rt5682.c
-@@ -1039,11 +1039,13 @@ static void rt5682_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5682_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index cfd97fe92d468..6e1721d533846 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -2062,6 +2062,15 @@ static void hw_scan_work(struct work_struct *work)
+ 			if (req->ie_len)
+ 				skb_put_data(probe, req->ie, req->ie_len);
  
--	while (!rt5682->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5682->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5682->component || !rt5682->component->card ||
-+	    !rt5682->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5682->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
- 
- 	mutex_lock(&rt5682->calibrate_mutex);
- 
++			if (!ieee80211_tx_prepare_skb(hwsim->hw,
++						      hwsim->hw_scan_vif,
++						      probe,
++						      hwsim->tmp_chan->band,
++						      NULL)) {
++				kfree_skb(probe);
++				continue;
++			}
++
+ 			local_bh_disable();
+ 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
+ 						hwsim->tmp_chan);
 -- 
 2.34.1
 
