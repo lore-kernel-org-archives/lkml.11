@@ -2,112 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B40C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiBWJQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 04:16:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
+        id S239240AbiBWJRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 04:17:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235732AbiBWJQ4 (ORCPT
+        with ESMTP id S233201AbiBWJRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 04:16:56 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCB683010
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:16:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645607786; x=1677143786;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=6sTo4gXFz5bm9XNXNCHZncq9os9vZ2vETv0KtfsJTCA=;
-  b=ONIi9IWVicJ9Wbvi6cXFY9eDhw7ikgAUHq3llTWI5MCa/YlDivW3y5do
-   zvFaYsQCM2kwLI4HqWKWdbrPQkjN+raEteCDaSaj4iXNuTmlY2ydsPJR6
-   fOETGEKojwn0Y1XxE/28XsSKg6sLMAd5XvwFc8lKS1xqPmIs4RSNH7ClC
-   RvKrnhVDe/Dx1szhzqksZ/7htZWZWggO3Lc35KhdHkVkn50PcyoYIhuAB
-   An24LapJPBAyT+FCfyIEgyTX3e9SZAF5f61ANSsl19pGiCrw0iIBNnvoP
-   I9MNsL9uqCVZPPCU/M4qvRQx7vfgUTMYjkVP6WbTg8V+qIg6Vfx9TNxHc
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="315148960"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="315148960"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 01:16:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="573749179"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 23 Feb 2022 01:16:24 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMnl1-0001D3-ES; Wed, 23 Feb 2022 09:16:23 +0000
-Date:   Wed, 23 Feb 2022 17:15:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Subject: Re: [PATCH 3/4] ARM: at91: pm: add support for sama5d2 secure suspend
-Message-ID: <202202231708.CAFCHZIn-lkp@intel.com>
-References: <20220222150846.255307-4-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220222150846.255307-4-clement.leger@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 23 Feb 2022 04:17:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FABC32EE6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:17:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B3C861696
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CC7C340E7;
+        Wed, 23 Feb 2022 09:17:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645607822;
+        bh=hs5yvpcvkFNU908smRGHGIeMdSnQU/rvrtNyOkhgjmo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oS+r2DvjETmvxCC1BXd9xacjOnzrS66dVqi7HzqdW7a51zqGXc6n0l2F8x4+feIem
+         ldFxFw1SXfXDb231UnIKK/DZ8+O64B4wZEeJCgN//LGmsmAdLQrk9tfE89h2c7npvF
+         M5kXB0C8+FlHIm6U+xIJb4hvC/jR+DQFp4PLXN6xy/YfhQ+ev31ivr0xm3FGfNOi/Y
+         ewOUvvSjQk5W6x+x1HIVGtzz3rMFWUcd74bctRrxpmHsAjKcoiGUCiH0mO3Ir8Az17
+         9eq2/7sZv8xw+T9BoLNRbML2vhZLft/aY1fLM8n2VUEXRFDKWlaN54MvfwtSCSdveh
+         mA26mYM1L9OJA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nMnlc-009rC7-95; Wed, 23 Feb 2022 09:17:00 +0000
+Date:   Wed, 23 Feb 2022 09:16:59 +0000
+Message-ID: <875yp63ptg.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>,
+        kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, will@kernel.org,
+        qperret@google.com, tabba@google.com, surenb@google.com,
+        kernel-team@android.com, Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Subject: Re: [PATCH v2 6/9] KVM: arm64: Detect and handle hypervisor stack overflows
+In-Reply-To: <202202231727.L621fVgD-lkp@intel.com>
+References: <20220222165212.2005066-7-kaleshsingh@google.com>
+        <202202231727.L621fVgD-lkp@intel.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, lkp@intel.com, llvm@lists.linux.dev, kbuild-all@lists.01.org, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, catalin.marinas@arm.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, ardb@kernel.org, mark.rutland@arm.com, pasha.tatashin@soleen.com, joey.gouly@arm.com, pcc@google.com, ascull@google.com, pbonzini@redhat.com, yuzenghui@huawei.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Clément,
+On Wed, 23 Feb 2022 09:05:18 +0000,
+kernel test robot <lkp@intel.com> wrote:
+> 
+> Hi Kalesh,
+> 
+> Thank you for the patch! Perhaps something to improve:
+>
+> [auto build test WARNING on cfb92440ee71adcc2105b0890bb01ac3cddb8507]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+> base:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
+> config: arm64-randconfig-r011-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231727.L621fVgD-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm64 cross compiling tool for clang build
+>         # apt-get install binutils-aarch64-linux-gnu
+>         # https://github.com/0day-ci/linux/commit/7fe99fd40f7c4b2973218045ca5b9c9160524db1
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+>         git checkout 7fe99fd40f7c4b2973218045ca5b9c9160524db1
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+>    #define NULL ((void *)0)
+>                 ^~~~~~~~~~~
+>    arch/arm64/kvm/hyp/nvhe/switch.c:200:27: warning: initializer overrides prior initialization of this subobject [-Winitializer-overrides]
+>            [ESR_ELx_EC_FP_ASIMD]           = kvm_hyp_handle_fpsimd,
+>                                              ^~~~~~~~~~~~~~~~~~~~~
+>    arch/arm64/kvm/hyp/nvhe/switch.c:196:28: note: previous initialization is here
+>            [0 ... ESR_ELx_EC_MAX]          = NULL,
+>                                              ^~~~
+>    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+>    #define NULL ((void *)0)
+>                 ^~~~~~~~~~~
 
-Thank you for the patch! Yet something to improve:
+Kalesh, please ignore this nonsense. There may be things to improve,
+but this is *NOT* one of them.
 
-[auto build test ERROR on soc/for-next]
-[also build test ERROR on abelloni/rtc-next linus/master v5.17-rc5 next-20220222]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+These reports are pretty useless, and just lead people to ignore real
+bug reports.
 
-url:    https://github.com/0day-ci/linux/commits/Cl-ment-L-ger/ARM-at91-add-support-for-secure-suspend-on-sama5d2/20220222-231305
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220223/202202231708.CAFCHZIn-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/e7f524a6f3693c0e84b0258766c98a24046c9ba1
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Cl-ment-L-ger/ARM-at91-add-support-for-secure-suspend-on-sama5d2/20220222-231305
-        git checkout e7f524a6f3693c0e84b0258766c98a24046c9ba1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+	M.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arm-linux-gnueabi-ld: arch/arm/mach-at91/pm_secure.o: in function `sama5_pm_init':
->> (.init.text+0x10c): multiple definition of `sama5_pm_init'; arch/arm/mach-at91/pm.o:(.init.text+0x1b58): first defined here
-   arm-linux-gnueabi-ld: arch/arm/mach-at91/pm_secure.o: in function `sama5d2_pm_init':
->> (.init.text+0x160): multiple definition of `sama5d2_pm_init'; arch/arm/mach-at91/pm.o:(.init.text+0x1c0c): first defined here
-   arm-linux-gnueabi-ld: arch/arm/mach-at91/pm_secure.o: in function `at91_suspend_entering_slow_clock':
->> (.text+0x0): multiple definition of `at91_suspend_entering_slow_clock'; arch/arm/mach-at91/pm.o:(.text+0x80): first defined here
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for ATMEL_PM
-   Depends on ARCH_AT91 && !ATMEL_SECURE_PM
-   Selected by
-   - SOC_SAMA7 && ARCH_AT91 && PM
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Without deviation from the norm, progress is not possible.
