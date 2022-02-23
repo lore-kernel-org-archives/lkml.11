@@ -2,84 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313EFC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240660AbiBWM4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        id S240669AbiBWM5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:57:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240643AbiBWM4U (ORCPT
+        with ESMTP id S240662AbiBWM5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:56:20 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5574BA41AE;
-        Wed, 23 Feb 2022 04:55:53 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id gb39so52349454ejc.1;
-        Wed, 23 Feb 2022 04:55:53 -0800 (PST)
+        Wed, 23 Feb 2022 07:57:37 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EDF6468
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:09 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id o23so3402761pgk.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kScADH37OaRYlYEouQtZu5Ct7rmTJHi0Bet35ccCJNo=;
-        b=aF7itRK88PovkGNak7KWgkct8NosmYkciBGGyP6k91f/DtbjKFiDc73uy6LvZzMcfG
-         uluu/mqFMfZThidjFmgJ7nKxugfFCKz10PDjjQKXPH1NAcMGBuhcYV5R5Y55HxxIKEqv
-         R+ZPiPlQDDY58jY8vRiHbmCcgpznYS8LcaktGiAEkYt06njQTHTj5FP7cJrxsftjehBD
-         Zff8F2Q+gbW/vrEi741PfsehQYqZ3YIGUZ0ARcaw5aLvYueqYqncNSdYVK5KzcqP+Jqd
-         UkoUg6Lv8jNaMA4DYe4yt6c+ntCGHu9j3CiZRwqfwb12oFdTI4DgCuqVpJv+AFyKcI9T
-         05lw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y7p50x25eNVekjg+ymUsqrkEEJjrygmLcJW+jfWZAL4=;
+        b=hO8KtL8T4lW0iWOfKNJYOgSwDXKQ2KB3KpJKEZEvQhwg0KLrxXK6yXpgWqV4WFOSf/
+         M8SBPEbEW9VOXbbRa1vNA80wMeq+e7FX30FoOtjlyWclj0Eqz1mB6EHH5XWCMVafnhJ/
+         hRe7wV8PAx7uSGxJBGvxc4pTf90yD3nNgO7xBPd/T1vrZy2CFwpPcnOuek84uzQYbD82
+         0+tns0Wgb067H6YDGtrOj/rArns/nnmTbWmrd1NWDHUuUEPZg+7yacwY0etNwWTLweuD
+         nkNaWHAHT9Vp0vo0FvDTnXCeevZmgs0j89+Ln4OM/+jbp0EyVUFUZAs6YELjkyEPsGba
+         mQjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kScADH37OaRYlYEouQtZu5Ct7rmTJHi0Bet35ccCJNo=;
-        b=2tJspQAmv8spszPOYiwOy4pGGInOJ4jHZ/1IzrBK+/1PR8VVaJ1xZGJD7V9ZEiQJ8j
-         ZZd8CpxXNp8DhELy/BGxOcWWb8Q2LfjFQw9YD798hnyHKG1vqF2F99fY4deDe0Q9JJJQ
-         8M+N5PUD4obMSsUq8t6Z7CNQjSD0+3nvCkvHetpE4JvuuKHcDAEeFbMijW8wu2M3Tdua
-         172DYdm/gdoDaWG/3aZTJbM5nOsRoYRG9p2+yEmdmmEK3C7/ybL4h2fOzdNyf5ZHOxf4
-         xkE4qfKxOMUhFJivfSfkIeBGFBHeaPlrskhowvO8WG6+4GnimNgZ4onT2Uz31Xi2JPp9
-         79/w==
-X-Gm-Message-State: AOAM5313K666ekEvCEylXIiokndxBvraZZgqb633SwPUXAutggdyZHbN
-        2v1p2lStHufXIktpIZuY6QY=
-X-Google-Smtp-Source: ABdhPJxGmnIY9fKDkAoalOGRzaG+w97YXUaHlIBuJVsu5JF1QhA8PoxZs/Ckb21YhW02JIe1skpvpA==
-X-Received: by 2002:a17:906:9454:b0:6b5:aa6:2822 with SMTP id z20-20020a170906945400b006b50aa62822mr21863909ejx.619.1645620951808;
-        Wed, 23 Feb 2022 04:55:51 -0800 (PST)
-Received: from fuji.fritz.box (ip-89-161-76-237.tel.tkb.net.pl. [89.161.76.237])
-        by smtp.gmail.com with ESMTPSA id l9sm5877407eds.9.2022.02.23.04.55.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y7p50x25eNVekjg+ymUsqrkEEJjrygmLcJW+jfWZAL4=;
+        b=r0aGUKPXzWO5y5B8Vky4Q/UGYOr8rT/ANMFxObMJ/8dKmivKd7EExei+3q8+5k1UWw
+         ybMrCJ4jTzY/E3qn1cbnnaYElyTAJeL2yI8lBJzyMpONppDRvP2gJw7RfdMepRSpbpJX
+         ahfDsRJcNFxbWoAZcA2RZh5h++D5G7dGvrc1ry2mhKv6ejp9Wv4ZKrUIUVbU1Ve6q+Cc
+         BnRlys2xwO3XbSWL30cG7cBbqzdPNdy4sDy+HdNL0lAFOiovuv3Ql5jn73Yl2argfO/k
+         +hVcFwaEFuOAzhRRA4BBNM8DgGe0Mo5yS52T7sDHtb1ZPavt978AriHzG5UImbzyF6yn
+         c+Cg==
+X-Gm-Message-State: AOAM533ToKC8VctMd9G9abTw8Vyjn+XZ5/SvNJLDCvwqRFVKaOcG+BeA
+        hxGK8nVvLqTRILMJ2tycpHxhLQ==
+X-Google-Smtp-Source: ABdhPJw3oJNN7uI+1rZGMolJCYaTrvpcScHLNMedFT8pmYEybpvBHt++jzQGrywlVm4DHkTdSX/gEQ==
+X-Received: by 2002:a05:6a00:1743:b0:4e0:c65e:d656 with SMTP id j3-20020a056a00174300b004e0c65ed656mr30187313pfc.5.1645621028776;
+        Wed, 23 Feb 2022 04:57:08 -0800 (PST)
+Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id z23sm22136243pfj.87.2022.02.23.04.57.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 04:55:51 -0800 (PST)
-Date:   Wed, 23 Feb 2022 13:55:48 +0100
-From:   Tomasz =?UTF-8?B?V2FybmllxYLFgm8=?= <tomasz.warniello@gmail.com>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tomasz.warniello@gmail.com
-Subject: Re: [PATCH v4 00/11] Transform documentation into POD
-Message-ID: <20220223135548.27babd85@fuji.fritz.box>
-In-Reply-To: <939ef119-8a84-9206-bd7c-cfd215bb0200@gmail.com>
-References: <525f3696-91f4-5a4a-c9ef-24758ccaa2bb@infradead.org>
-        <ff98f455-0221-7ff0-08ed-8dea9f08694b@gmail.com>
-        <939ef119-8a84-9206-bd7c-cfd215bb0200@gmail.com>
+        Wed, 23 Feb 2022 04:57:07 -0800 (PST)
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Marc Zyngier <maz@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH v6 0/3] Add Qualcomm MPM irqchip driver support
+Date:   Wed, 23 Feb 2022 20:55:33 +0800
+Message-Id: <20220223125536.230224-1-shawn.guo@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Akira,
+It starts from updating cpu_pm to support CPU_LAST_PM_ENTER (and
+CPU_FIRST_PM_EXIT) event, and then adds DT binding and driver support
+for Qualcomm MPM (MSM Power Manager) interrupt controller.
 
-Take a look at `man perl` and you will find a synopsis also. It's simply
-better in depicting grammar relations than a flat switch list. Especially
-when the grammar gets complex. I dislike it also. And I don't think it
-looks good. Rather creepy and overwhelming.
+Changes for v6:
+- Add new event CPU_LAST_PM_ENTER (and CPU_FIRST_PM_EXIT) in cpu_pm
+- Drop vendor driver notes from commit log
+- Check NULL mpm_gic_map instead to save the use of MPM_NO_PARENT_IRQ
+- Add lock protection for register read in qcom_mpm_handler()
+- Return IRQ_NONE if there is no pending interrupt
+- Drop IRQF_TRIGGER_RISING flag from devm_request_irq() call since it's
+  being specified in DT
+- Drop dev_set_drvdata() call which is a leftover from previous version
+- Fix dt_binding_check errors reported by upgraded dtschema
 
-> > I don't see much point for such a non-user-facing script having nice-looking
-> > well-structured documentation in the first place.
+Changes for v5:
+- Drop inline attributes and let compiler to decide
+- Use _irqsave/_irqrestore flavour for spin lock
+- Assignment on a single for irq_resolve_mapping() call
+- Add documentation to explain vMPM ownership transition
+- Move MPM pin map data into device tree and so use a generic compatible
+- Drop the code that counts CPUs in PM and use CPU_CLUSTER_PM_ENTER
+  notification instead
 
-You're touching the very essence of kernel-doc here. What and who is it for?
-Not just the script - all of it.
+Changes for v4:
+- Add the missing include of <linux/interrupt.h> to fix build errors
+  on arm architecture.
+- Leave IRQCHIP_PLATFORM_DRIVER infrastructural unchanged, and use
+  of_find_device_by_node() to get platform_device pointer.
 
-Regards,
+Changes for v3:
+- Support module build
+- Use relaxed accessors
+- Add barrier call to ensure MMIO write completes
+- Use d->chip_data to pass driver private data
+- Use raw spinlock
+- USe BIT() for bit shift
+- Create a single irq domain to cover both types of MPM pins
+- Call irq_resolve_mapping() to find out Linux irq number
+- Save the use of ternary conditional operator and use switch/case for
+  .irq_set_type call
+- Drop unnecessary .irq_disable hook
+- Align qcom_mpm_chip and qcom_mpm_ops members vertically
+- Use helper irq_domain_translate_twocell()
+- Move mailbox requesting forward in probe function
+- Improve the documentation on qcm2290_gic_pins[]
+- Use IRQCHIP_PLATFORM_DRIVER infrastructural
+- Use cpu_pm notifier instead of .suspend_late hook to write MPM for
+  sleep, so that MPM can be set up for both suspend and idle context.
+  The TIMER0/1 setup is currently omitted for idle use case though,
+  as I haven't been able to successfully test the idle context.
 
-Tomasz
+Shawn Guo (3):
+  PM: cpu: Add CPU_LAST_PM_ENTER and CPU_FIRST_PM_EXIT support
+  dt-bindings: interrupt-controller: Add Qualcomm MPM support
+  irqchip: Add Qualcomm MPM controller driver
+
+ .../interrupt-controller/qcom,mpm.yaml        |  96 ++++
+ drivers/irqchip/Kconfig                       |   8 +
+ drivers/irqchip/Makefile                      |   1 +
+ drivers/irqchip/qcom-mpm.c                    | 439 ++++++++++++++++++
+ include/linux/cpu_pm.h                        |  15 +
+ kernel/cpu_pm.c                               |  33 +-
+ 6 files changed, 590 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
+ create mode 100644 drivers/irqchip/qcom-mpm.c
+
+-- 
+2.25.1
+
