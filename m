@@ -2,114 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40326C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 838BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:51:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241716AbiBWUuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 15:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
+        id S241748AbiBWUwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 15:52:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241714AbiBWUub (ORCPT
+        with ESMTP id S237436AbiBWUwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 15:50:31 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF534DF62
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:50:02 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id p14so54892473ejf.11
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:50:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ToP7+u5TAIA1n+un4iO9944/Fjm/9qjoDI5PHB1SdbA=;
-        b=K1sL+JK8G+5oEKb2E8fAwrSR5os84QIowAVzA3JAWOyiezYS97zbR3Od2bvOKCG/Ya
-         kHJfrEiaMRcfMYUW2C/o5y0GvbP0W+EtqpZMZu8JEGyXGRnTf4DiKlI5Ivwjvx0CXlKh
-         ANHqMVyaiR6CAY08j4pgEDEV47Qvbzqi34tlQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ToP7+u5TAIA1n+un4iO9944/Fjm/9qjoDI5PHB1SdbA=;
-        b=nQupqDkl+FlREn5k+XupMSRhhjWkdXYpOTeoFFhYAtZYjGyl3I0IqgKn2exfd53FCU
-         slDe9LE0yipaGAWA7t88v2OV3qJWkInuKor2iUKBryzyPTdWZ3ZUi8mxrmugs62DIIGE
-         LEX+vDQr80kyXeg6wv+PfglF3jdGnbzMi2MPtSMyWxDbvZbfuJwQoX3MLxf0Lg76OQFv
-         U0ZUrQh17VwLP+tki1VC8jTh7QwXCx+qbZXnqpQAjtPKREiIGBoh7beRWMxcBz7WgYP5
-         OwsjtMo8KUmv9CjtTqqWMiJT+hAJ8fQlSwy/fh/O9WxW8Q83f85TX3gZ79Uj001WpZK4
-         t9eA==
-X-Gm-Message-State: AOAM533o3AfNLw5bXwfzTwD1BbkouNY3ASPgDeXbrD6E08/6apFoPp8H
-        8ovXLnI6qv9xfjRYtko5YKLtk1Tov79FgDJbp7I=
-X-Google-Smtp-Source: ABdhPJyv4hc+m2BMF40+wgZSzYWWmJmbWJ5wIigyKSwtoxnsvxjnKA4Aqp4R4JMothJSLlcsfqdF5A==
-X-Received: by 2002:a17:906:b248:b0:6ce:556:52bd with SMTP id ce8-20020a170906b24800b006ce055652bdmr1093698ejb.479.1645649400816;
-        Wed, 23 Feb 2022 12:50:00 -0800 (PST)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id 27sm309169eji.66.2022.02.23.12.50.00
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 12:50:00 -0800 (PST)
-Received: by mail-wr1-f45.google.com with SMTP id o4so4815521wrf.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:50:00 -0800 (PST)
-X-Received: by 2002:a2e:bc17:0:b0:246:32b7:464 with SMTP id
- b23-20020a2ebc17000000b0024632b70464mr792954ljf.506.1645649006967; Wed, 23
- Feb 2022 12:43:26 -0800 (PST)
+        Wed, 23 Feb 2022 15:52:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBB71175;
+        Wed, 23 Feb 2022 12:51:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E14F36184A;
+        Wed, 23 Feb 2022 20:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06108C340E7;
+        Wed, 23 Feb 2022 20:51:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645649491;
+        bh=fuBbEnwtDxq+kiQXx8gxSj7IRCfE9GArt5C1WdOxPbI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=k600/LqrVOgUpVAQTlIMr5ar7Gb1FMGwtEL7yplP6HRlmTtueupWshev9F4nYEhUA
+         YLLAMQLykHFJP60Ur1b2gxqkYtsCgRtS6cx9zhxQUfLlpHwgRzvm6ScAqmySiAl0aK
+         uWDHI/ivvvl3hcjJHz57Ly/2Q+uCI0mKtMLdNeWdqbtGNQEQlRV2zX8LCh5P2gJDC1
+         Zfo3EK1E0MV15ni2U5x53DKNoc+dnDyQuYcYIUgNSJmu24f+R8YVDcdMzOSXSDUX31
+         VLXXTI9bp7sXld5FfnvXLS4XTTPl6+3xYH6FvQMEza2diqj4RD9UxhiRO4bQgbxf8U
+         ivug1SmqHD64Q==
+Date:   Wed, 23 Feb 2022 14:51:29 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Ben Dooks <ben.dooks@codethink.co.uk>
+Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCHv4 1/2] PCI: fu740: fix finding GPIOs
+Message-ID: <20220223205129.GA148800@bhelgaas>
 MIME-Version: 1.0
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
- <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
- <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com> <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 23 Feb 2022 12:43:10 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
-Message-ID: <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221210347.1335004-1-ben.dooks@codethink.co.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 12:25 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> I looked at the gcc documentation for this flag, and it tells me that
-> it's default-enabled for std=c99 or higher. Turning it on for --std=gnu89
-> shows the same warning, so at least it doesn't sound like the actual
-> behavior changed, only the warning output. clang does not warn
-> for this code at all, regardless of the --std= flag.
+On Mon, Feb 21, 2022 at 09:03:46PM +0000, Ben Dooks wrote:
+> The calls to devm_gpiod_get_optional() have the -gpios at the end of
+> the name but the GPIO core code is already adding the suffix during
+> the lookup. This means the PCIe driver is not finding the necessary
+> reset or power lines to allow initialisation of the PCIe.
+> 
+> This bug has not been noticed as if U-Boot has setup the GPIO lines
+> for the hardware when it does the PCIe initialisation (either by
+> booting from PCIe or user command to access PCIe) then the PCIe
+> will work in Linux. The U-Boot as supplied by SiFive does not by
+> default initialise any PCIe component.
 
-Ok, so we should be able to basically convert '--std=gnu89' into
-'--std=gnu11 -Wno-shift-negative-value' with no expected change of
-behavior.
+Lorenzo, if you apply this, would you mind s/fix/Fix/ in the subject?
+Or maybe even update to "Drop redundant '-gpios' from DT GPIO lookup"?
 
-Of course, maybe we need to make -Wno-shift-negative-value be
-conditional on the compiler supporting it in the first place?
-
-I really would love to finally move forward on this, considering that
-it's been brewing for many many years.
-
-I think the loop iterators are the biggest user-visible thing, but
-there might be others.
-
-And some googling seems to show that the reason for
--Wshift-negative-value is that with C99 the semantics changed for
-targets that weren't two's complement. We *really* don't care.
-
-Of course, the C standard being the bunch of incompetents they are,
-they in the process apparently made left-shifts undefined (rather than
-implementation-defined). Christ, they keep on making the same mistakes
-over and over. What was the definition of insanity again?
-
-                  Linus
+> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+> ---
+>  drivers/pci/controller/dwc/pcie-fu740.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+> index 00cde9a248b5..842b7202b96e 100644
+> --- a/drivers/pci/controller/dwc/pcie-fu740.c
+> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
+> @@ -259,11 +259,11 @@ static int fu740_pcie_probe(struct platform_device *pdev)
+>  		return PTR_ERR(afp->mgmt_base);
+>  
+>  	/* Fetch GPIOs */
+> -	afp->reset = devm_gpiod_get_optional(dev, "reset-gpios", GPIOD_OUT_LOW);
+> +	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+>  	if (IS_ERR(afp->reset))
+>  		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
+>  
+> -	afp->pwren = devm_gpiod_get_optional(dev, "pwren-gpios", GPIOD_OUT_LOW);
+> +	afp->pwren = devm_gpiod_get_optional(dev, "pwren", GPIOD_OUT_LOW);
+>  	if (IS_ERR(afp->pwren))
+>  		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
+>  
+> -- 
+> 2.34.1
+> 
