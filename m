@@ -2,206 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C15ACC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 14:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DE7C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 14:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241714AbiBWOsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 09:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        id S241723AbiBWOtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 09:49:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiBWOsK (ORCPT
+        with ESMTP id S229893AbiBWOtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 09:48:10 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6A5B45BD;
-        Wed, 23 Feb 2022 06:47:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645627662; x=1677163662;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=BkHybutatV6vUyGz3nWn+QmzS5y/pmABztKKcic8BMk=;
-  b=aJrmeSqIL57jpznpZUAoULcFs2MWVCtB5+bZ4Isy7gnuUdMIb/TdjlIm
-   Cb5YFg3co+32N3AqN7a3DZF0diwpJw5uhWYnbpfHpQUyrVm1D9eNjDwEN
-   ckAjkSidbgrQmTN8MtvuOsupbsHEAGlMyDA399I3K/plHPafKegReHJd/
-   LsOhSz7MIySbCtjwiDiXnjt/nHZmzKtxMbzjgjCizTTzdTgp79PrT4TNz
-   mGJp7iJ6qxA3fOY6fAAyPwB1ROEIav+IG9GUk9VNJzOB/9n7ppu9rHWjt
-   vih28bR/U5hDkeN+qthtsOFYKegW+e9IhxoQxioaM2X9XdDgKX4+lyBEO
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="312694401"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="312694401"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:47:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="707054244"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 06:47:37 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMsuk-007Sjr-5L;
-        Wed, 23 Feb 2022 16:46:46 +0200
-Date:   Wed, 23 Feb 2022 16:46:45 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Enrico Weigelt <info@metux.net>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhZI1XImMNJgzORb@smile.fi.intel.com>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <YhPOxL++yhNHh+xH@smile.fi.intel.com>
- <20220222173019.2380dcaf@fixe.home>
+        Wed, 23 Feb 2022 09:49:16 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB0DB54EE;
+        Wed, 23 Feb 2022 06:48:48 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NDfpkv023403;
+        Wed, 23 Feb 2022 14:48:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=o7j5iHiT8UTKVsgeEcvLHgmHFsqwXBtiP2sSdM2L4xk=;
+ b=GIMmBnIZvxc31EfH9Pv5qLr7sSCgEyb8IsAMZzyUuIbEuKjuhGTG2ujjXz7fJwnZfo0a
+ FcCy414Y4ScyJSFbFOLSyi3fWT5Z0eXYWGHDcK9dCPQQAqnSc6Gvk/mYkt7npQRaN+jS
+ +hTfMKu8uPleq2kkoAR9Fl/hlnEDwbyz96snQAyiZhPKuZ7R61dFzrDsGN+eFQBTDCgH
+ kq4uWs34JOW5SjKlt14W1dOBlL79eKKqbE8IVi6Wu8D2/AY2Vapv7ivWpOsEVp5XyoNQ
+ EdhnyE43IRVOZ+mGKpA6LBXQTZ8IoIr/kxIyD3GBuxnEr/WYyyy82qXSKyxWSDKHjfb2 5A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edp1jhn0c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 14:48:40 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NETsWV003055;
+        Wed, 23 Feb 2022 14:48:40 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edp1jhmyc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 14:48:40 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NEXiag015044;
+        Wed, 23 Feb 2022 14:48:38 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ear69aujj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 14:48:37 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NEmXc937093748
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 14:48:33 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 68B0E4204D;
+        Wed, 23 Feb 2022 14:48:33 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4AC2D42049;
+        Wed, 23 Feb 2022 14:48:31 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.114.12.92])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 14:48:31 +0000 (GMT)
+From:   Steffen Eiden <seiden@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v2 0/3] s390: Ultravisor device
+Date:   Wed, 23 Feb 2022 09:48:27 -0500
+Message-Id: <20220223144830.44039-1-seiden@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220222173019.2380dcaf@fixe.home>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: bxgI3EJe9dmfHTbd1e1cIWlOIIZe4Dln
+X-Proofpoint-GUID: rNMnPAXNf77I7QH57Zeka8g1Uu-3iGGy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_06,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ mlxscore=0 malwarescore=0 impostorscore=0 bulkscore=0 suspectscore=0
+ priorityscore=1501 spamscore=0 clxscore=1015 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202230083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 05:30:19PM +0100, Clément Léger wrote:
-> Le Mon, 21 Feb 2022 19:41:24 +0200,
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
+This series adds an Ultravisor(UV) device letting the userspace send some
+Ultravisor calls to the UV. Currently two calls are supported.
+Query Ultravisor Information (QUI) and
+Receive Attestation Measurement (Attest[ation]).
 
-> > > We thought about adding CONFIG_OF to x86 and potentially describe this
-> > > card using device-tree overlays but it introduce other problems that
-> > > also seems difficult to solve (overlay loading without base
-> > > device-tree, fixup of IRQs, adresses, and so on) and CONFIG_OF is not
-> > > often enabled on x86 to say the least.  
-> > 
-> > Why it can't be described by SSDT overlay (if the x86 platform in question is
-> > ACPI based)?
-> 
-> This devices uses a SoC for which drivers are already available but are
-> meant to be used by a device-tree description. These drivers uses the
-> following subsystems:
-> - reset (no ACPI support ?)
-> - clk (no ACPI support ?)
-> - pinctrl (no ACPI support ?)
-> - syscon (no ACPI support ?)
-> - gpio
-> - phy
-> - mdio
-> 
-> Converting existing OF support to fwnode support and thus allowing
-> drivers and subsystems to be compatible with software nodes seemed like
-> the easiest way to do what I needed by keeping all existing drivers.
-> With this support, the driver is completely self-contained and does
-> allow the card to be plugged on whatever platform the user may have.
+The UV device is implemented as a miscdevice accepting only IOCTLs.
+The IOCTL cmd specifies the UV call and the IOCTL arg the request
+and response data depending on the UV call.
+The device driver writes the UV response in the ioctl argument data.
 
-I agree with Hans on the point that converting to / supporting fwnode is
-a good thing by its own.
+The 'uvdevice' does no checks on the request beside faulty userspace
+addresses, if sizes are in a sane range before allocating in kernel space,
+and other tests that prevent the system from corruption.
+Especially, no checks are made, that will be performed by the UV anyway
+(E.g. 'invalid command' in case of attestation on unsupported hardware).
+These errors are reported back to Userspace using the UV return code
+field.
 
-> Again, the PCI card is independent of the platform, I do not really see
-> why it should be described using platform description language.
+The first two patches introduce the new device as a module configured to be
+compiled directly into the kernel (y) similar to the s390 SCLP and CHSH
+miscdevice modules. Patch 3/3 introduces selftests which verify error
+paths of the ioctl.
 
-Yep, and that why it should cope with the platforms it's designed to be used
-with.
+v1->v2:
+  * ioctl returns -ENOIOCTLCMD in case of a invalid ioctl command
+  * streamlined reserved field test
+  * default Kconfig is y instead of m
+  * improved selftest documentation
 
-> > > This series introduce a number of changes in multiple subsystems to
-> > > allow registering and using devices that are described with a
-> > > software_node description attached to a mfd_cell, making them usable
-> > > with the fwnode API. It was needed to modify many subsystem where
-> > > CONFIG_OF was tightly integrated through the use of of_xlate()
-> > > functions and other of_* calls. New calls have been added to use fwnode
-> > > API and thus be usable with a wider range of nodes. Functions that are
-> > > used to get the devices (pinctrl_get, clk_get and so on) also needed
-> > > to be changed to use the fwnode API internally.
-> > > 
-> > > For instance, the clk framework has been modified to add a
-> > > fwnode_xlate() callback and a new named fwnode_clk_add_hw_provider()
-> > > has been added. This function will register a clock using
-> > > fwnode_xlate() callback. Note that since the fwnode API is compatible
-> > > with devices that have a of_node member set, it will still be possible
-> > > to use the driver and get the clocks with CONFIG_OF enabled
-> > > configurations.  
-> > 
-> > How does this all is compatible with ACPI approaches?
-> > I mean we usually do not reintroduce 1:1 DT schemas in ACPI.
-> 
-> For the moment, I only added fwnode API support as an alternative to
-> support both OF and software nodes. ACPI is not meant to be handled by
-> this code "as-is". There is for sure some modifications to be made and
-> I do not know how clocks are handled when using ACPI. Based on some
-> thread dating back to 2018 [1], it seem it was even not supported at
-> all.
-> 
-> To be clear, I added the equivalent of the OF support but using
-> fwnode API because I was interested primarly in using it with software
-> nodes and still wanted OF support to work. I did not planned it to be
-> "ACPI compliant" right now since I do not have any knowledge in that
-> field.
+Steffen Eiden (3):
+  drivers/s390/char: Add Ultravisor io device
+  drivers/s390/char: Add Ultravisor attestation to uvdevice
+  selftests: drivers/s390x: Add uvdevice tests
 
-And here is the problem. We have a few different resource providers
-(a.k.a. firmware interfaces) which we need to cope with.
-
-What is going on in this series seems to me quite a violation of the
-layers and technologies. But I guess you may find a supporter of your
-ideas (I mean Enrico). However, I'm on the other side and do not like
-this approach.
-
-> > I think the CCF should be converted to use fwnode APIs and meanwhile
-> > we may discuss how to deal with clocks on ACPI platforms, because
-> > it may be a part of the power management methods.
-> 
-> Ok, before going down that way, should the fwnode support be the "only"
-> one, ie remove of_clk_register and others and convert them to
-> fwnode_clk_register for instance or should it be left to avoid
-> modifying all clock drivers ?
-
-IRQ domain framework decided to cohabit both, while deprecating the OF one.
-(see "add" vs. "create" APIs there). I think it's a sane choice.
-
-> > > In some subsystems, it was possible to keep OF related function by
-> > > wrapping the fwnode ones. It is not yet sure if both support
-> > > (device-tree and fwnode) should still continue to coexists. For instance
-> > > if fwnode_xlate() and of_xlate() should remain since the fwnode version
-> > > also supports device-tree. Removing of_xlate() would of course require
-> > > to modify all drivers that uses it.
-> > > 
-> > > Here is an excerpt of the lan966x description when used as a PCIe card.
-> > > The complete description is visible at [2]. This part only describe the
-> > > flexcom controller and the fixed-clock that is used as an input clock.
-> > > 
-> > > static const struct property_entry ddr_clk_props[] = {
-> > >         PROPERTY_ENTRY_U32("clock-frequency", 30000000),  
-> > 
-> > >         PROPERTY_ENTRY_U32("#clock-cells", 0),  
-> > 
-> > Why this is used?
-> 
-> These props actually describes a fixed-clock properties. When adding
-> fwnode support to clk framework, it was needed to add the
-> equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
-> cells used to describe a reference is still needed to do the
-> translation using fwnode_property_get_reference_args() and give the
-> correct arguments to fwnode_xlate().
-
-What you described is the programming (overkilled) point. But does hardware
-needs this? I.o.w. does it make sense in the _hardware_ description?
-
-> [1]
-> https://lore.kernel.org/lkml/914341e7-ca94-054d-6127-522b745006b4@arm.com/T/
+ MAINTAINERS                                   |   3 +
+ arch/s390/include/asm/uv.h                    |  23 +-
+ arch/s390/include/uapi/asm/uvdevice.h         |  46 +++
+ drivers/s390/char/Kconfig                     |  11 +
+ drivers/s390/char/Makefile                    |   1 +
+ drivers/s390/char/uvdevice.c                  | 308 ++++++++++++++++++
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/drivers/.gitignore    |   1 +
+ .../selftests/drivers/s390x/uvdevice/Makefile |  22 ++
+ .../selftests/drivers/s390x/uvdevice/config   |   1 +
+ .../drivers/s390x/uvdevice/test_uvdevice.c    | 281 ++++++++++++++++
+ 11 files changed, 697 insertions(+), 1 deletion(-)
+ create mode 100644 arch/s390/include/uapi/asm/uvdevice.h
+ create mode 100644 drivers/s390/char/uvdevice.c
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/Makefile
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/config
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/test_uvdevice.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
