@@ -2,83 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3471BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238581AbiBWHRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:17:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
+        id S238611AbiBWHS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:18:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235535AbiBWHRM (ORCPT
+        with ESMTP id S235279AbiBWHSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:17:12 -0500
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D1C46B37
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:16:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=icH7A7Mcs++qD6v5oQ8tnDH0OAovFNxVtZ/iN3vwo5A=;
-        b=RyYb6zh4/8jx3DHYHETaBRijqqqVcjILRnS4ag9VD+wVMIvz+CTOz4NdD/Njos+fPsJ8hq3EzxqNs
-         crwrKNV12uxtbDVyxO+WocVy9pBuAfOs8H0BwSfIw4Y46VbqLGxDAFMENpe9/BIY5di/KeFg1L5BQr
-         HOXheRaxpdsTmXY0gWWOk+Ncxq4zFpWwTBKtSPKnHlX7Xgk5u5LuCLAbNUlf1+4g3Zcbfd/1nwUAoO
-         0IJl5tBsDp6XLTh8qDQmjEiFY/20eZeMRyn4GmcoHCtJSXID2HCOf2t7oEz/dRIltfSXOAEwf5WBNn
-         D9osPXpy/mC7LHXDhsQrPaTsLduwCTw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005258)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.065102), Hit: No, Details: v2.25.0; Id: 15.52kbl7.1fsin0mpv.nh05; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 23 Feb 2022 10:16:33 +0300
-Date:   Wed, 23 Feb 2022 09:58:15 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        jiabing.wan@qq.com
-Subject: Re: [PATCH] bus: imx-weim: fix NULL but dereferenced coccicheck error
-Message-ID: <20220223065815.i7qbyz2gtkgjzcwv@x260>
-References: <20220223035146.412499-1-wanjiabing@vivo.com>
+        Wed, 23 Feb 2022 02:18:23 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47D659A6C
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:17:55 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 8D345407CE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:17:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645600674;
+        bh=pNhZLyO1aRbMKJR3E5jbPjYni0gu5zR1R9ulpGYQlfo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=fNr9tmsd6x1Fy7uchtPcOhKjF86tBpqh4IBBaU29yuwEDzFMWm/peRpDiSVrNyD+M
+         BVjrzHpEa7H9Nhk90z7y9Wbe1epZaLFvDDSuyRpBf8FnPwDjp0ep+wuouCsuxAX3Cv
+         +JhBd0jHPzOpBX3Co2IW2l1i7ivj7MhbqauURjmIz7VXj0AvtN63Hkbp0cYbPM7CZn
+         bQya5c6byiPPinHc/a9J5CPbcgphMrv5wwlyGId5B8O0lRaYQyso7BpwqGI2AHmxM+
+         EfUXNpWq20HHL3vtSh4elW3kHxDYKCOngtTZ8dn1Ecpu4oq/CPkfFwoo33wD+6EuGA
+         JUdTAL9kNGIHw==
+Received: by mail-ed1-f69.google.com with SMTP id l3-20020a50cbc3000000b0041083c11173so13184250edi.4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:17:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pNhZLyO1aRbMKJR3E5jbPjYni0gu5zR1R9ulpGYQlfo=;
+        b=KXIl70GfT+/iun4rwN18O94e17rZjBfCTrugl8O4Wi43dfQgVj68SHF3BDdPh6ThX3
+         hpvNfKhApBCE7sGb3eAN3gjNxDC7aENMr84c294xGfGil5sLq3Jpu8XDNB4Uh0Ca7vFa
+         mqtfpFEjxQL+jz/FwUYd3MEWSIh25E4q0B5srW2/JYgKPOTzyuOug89r37Tibsq0dIcQ
+         GJT7IRRFdIeIc7A+L5dqG7vphnUczO2fk2in2ZZ4Hj97wnL5ZhGSElbhp8j5F3A06MJC
+         uPoLbDg6PJ30GCz0JeJvGduYw1gZamxIQuWUEvKUwqZpIiu3YyZ7S9hUfQqeT+AxL1x6
+         WhTg==
+X-Gm-Message-State: AOAM532gd24Y+M8GTtyOeJGBJU6eYt86xeLy26Ijl/XLHxnuB7IEMDS9
+        cbrvoF77r6i9dQQCAZKc8cf1cmaRAeQnpMGqj/UASMBAjcMnZJwwUHPxP+89dWU1ILy4pgknTFa
+        vTGDyhAIigF5iOAAEc0rzS+VZ8ujrcthhJ2hCB+yfTA==
+X-Received: by 2002:a17:906:960c:b0:6ce:f326:f0d with SMTP id s12-20020a170906960c00b006cef3260f0dmr22364014ejx.154.1645600674002;
+        Tue, 22 Feb 2022 23:17:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJytxCMf3oX2iILnCYpZtMcrjt7Xa73med3vZDJvwLgW7YJjJ3i4vJy9tPCBBDUlxazJyY8A0w==
+X-Received: by 2002:a17:906:960c:b0:6ce:f326:f0d with SMTP id s12-20020a170906960c00b006cef3260f0dmr22364002ejx.154.1645600673832;
+        Tue, 22 Feb 2022 23:17:53 -0800 (PST)
+Received: from [192.168.0.124] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id b3sm7021079ejl.67.2022.02.22.23.17.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Feb 2022 23:17:52 -0800 (PST)
+Message-ID: <13af6f53-2a8c-c8d5-f061-baf59b511e58@canonical.com>
+Date:   Wed, 23 Feb 2022 08:17:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223035146.412499-1-wanjiabing@vivo.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] dt-bindings: memory: lpddr2: Adjust revision ID
+ property to match lpddr3
+Content-Language: en-US
+To:     Julius Werner <jwerner@chromium.org>
+Cc:     Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220219012457.2889385-1-jwerner@chromium.org>
+ <9d33314e-97da-dc47-8361-2e45b75fa566@canonical.com>
+ <CAODwPW_JbcppFGKvrooxf25dLJuvf5iWoWim1xSXZ2wqgL1k0A@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <CAODwPW_JbcppFGKvrooxf25dLJuvf5iWoWim1xSXZ2wqgL1k0A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 11:51:45AM +0800, Wan Jiabing wrote:
-> Fix following coccicheck warning:
-> ./drivers/bus/imx-weim.c:355:18-21: ERROR: pdev is NULL but dereferenced.
+On 23/02/2022 03:44, Julius Werner wrote:
+>>> +  revision-id:
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+>>> +    minItems: 2
+>>> +    maxItems: 2
+>>
+>> You need maximum value under items.  See:
+>> Documentation/devicetree/bindings/arm/l2c2x0.yaml
 > 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/bus/imx-weim.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> Sorry, can you clarify how this is supposed to be? Do you want
 > 
-> diff --git a/drivers/bus/imx-weim.c b/drivers/bus/imx-weim.c
-> index 60fbd42041dd..2ea0a51f79f6 100644
-> --- a/drivers/bus/imx-weim.c
-> +++ b/drivers/bus/imx-weim.c
-> @@ -352,8 +352,7 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
->  
->  		pdev = of_find_device_by_node(rd->dn);
->  		if (!pdev) {
-> -			dev_err(&pdev->dev,
-> -				"Could not find platform device for '%pOF'\n",
-> +			pr_err("Could not find platform device for '%pOF'\n",
->  				rd->dn);
->  
->  			ret = notifier_from_errno(-EINVAL);
-> -- 
-> 2.35.1
+>  revision-id:
+>    minItems: 2
+>    maxItems: 2
+>    items:
+>      minItems: 2
+>      maxItems: 2
 > 
+> or just
+> 
+>  revision-id:
+>    items:
+>      minItems: 2
+>      maxItems: 2
+> 
+> I see examples of both in the file you linked (and also examples of
+> what my original patch did).
 
-Acked-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+There is no example of the first case in linked file. I am not sure if
+it is correct even... I did not ask about maximum number of items, but
+"maximum value", so like this:
+https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/arm/l2c2x0.yaml#L73
 
+> Is there any authoritative documentation
+> somewhere I can read that specifies which of those is correct? (I
+> tried looking at
+> https://json-schema.org/understanding-json-schema/reference/array.html#length
+> but I'm not sure if that's relevant here.)
+
+example-schema.yaml is the best, but it might not cover that part. We
+need more docs, I know...
+
+
+> For updating existing DTSes, do you want that in the same patch or a
+> separate patch in a series?
+
+Separate patch in this series, please.
+
+
+Best regards,
+Krzysztof
