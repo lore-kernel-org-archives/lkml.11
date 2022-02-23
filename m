@@ -2,151 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F300C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 01:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 01:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235801AbiBWBt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 20:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S235923AbiBWBwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 20:52:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233342AbiBWBt4 (ORCPT
+        with ESMTP id S235111AbiBWBwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 20:49:56 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F2653E3E;
-        Tue, 22 Feb 2022 17:49:30 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21N0igvx013877;
-        Wed, 23 Feb 2022 01:48:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=iKFpQ9kbhqeLxy4HC18HZD9+9bhlB13TyDv7gJ8L99I=;
- b=GODOdtDrT93RlhyWG7kiXyUIkCAL9vNjG01G/T4V+jLAwIghchepcZfHpDW8LEzK7cXl
- tbiTfFhsLyECnoWqRd3RICuWm0fE5bt3wYVXIZYLLC4Wea1p+FGsDg87CoZ9HEuIyoek
- nVYZUBnISssH3a7Pji4F5outRClNKokKwBfQTL3r8IF73MXMvwiCNz1w/86HEtAfDJtU
- sCzJeqUKxA2ajNgNyBKynE4SperV/y5aVRaL/i37MixusuDV+Z8Ht4kKIc0/s6ufJDad
- 2wQHKkhPkhbTW3YnsGjzqFD2A4J+WIblvIYoKQGqIlJZ+ShPnD3rg4BuoZvyZiPTNG5h Nw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed8gfaw1q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 01:48:58 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21N1mwkP008738;
-        Wed, 23 Feb 2022 01:48:58 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ed8gfaw16-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 01:48:58 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21N1lnRL021504;
-        Wed, 23 Feb 2022 01:48:55 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06fra.de.ibm.com with ESMTP id 3eaqtjn85h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 01:48:55 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21N1mojV38404432
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 01:48:51 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DF90EA4054;
-        Wed, 23 Feb 2022 01:48:50 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9166CA405C;
-        Wed, 23 Feb 2022 01:48:48 +0000 (GMT)
-Received: from sig-9-65-81-84.ibm.com (unknown [9.65.81.84])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 01:48:48 +0000 (GMT)
-Message-ID: <177baf827c4dbf9a225b14552725360066af6471.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 22/27] securityfs: Extend securityfs with
- namespacing support
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        Christian Brauner <brauner@kernel.org>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>
-Date:   Tue, 22 Feb 2022 20:48:47 -0500
-In-Reply-To: <20220201203735.164593-23-stefanb@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-23-stefanb@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Tue, 22 Feb 2022 20:52:17 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77FDE1141;
+        Tue, 22 Feb 2022 17:51:48 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K3JpX1n7Tz4wB9;
+        Wed, 23 Feb 2022 09:48:20 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 23 Feb 2022 09:51:46 +0800
+CC:     <yangyicong@hisilicon.com>, <git@xilinx.com>,
+        <michal.simek@xilinx.com>, <linux-kernel@vger.kernel.org>,
+        Chirag Parekh <chiragp@xilinx.com>
+Subject: Re: [PATCH] i2c: cadence: Recover bus after controller reset
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>,
+        <linux-i2c@vger.kernel.org>
+References: <20220222134632.18598-1-shubhrajyoti.datta@xilinx.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <ad6918e5-b9e8-75de-2a1c-b30a8d2a1a05@huawei.com>
+Date:   Wed, 23 Feb 2022 09:51:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <20220222134632.18598-1-shubhrajyoti.datta@xilinx.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 7V62I64nn7OkWARNIC9G2e67EqS6lT0Q
-X-Proofpoint-GUID: y6sEF0FKWWD0DP0ofnsaya5WQhmV79Mf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-22_08,2022-02-21_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- impostorscore=0 adultscore=0 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 mlxscore=0 clxscore=1015 spamscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230004
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
-> Enable multiple instances of securityfs by keying each instance with a
-> pointer to the user namespace it belongs to.
+On 2022/2/22 21:46, Shubhrajyoti Datta wrote:
+> From: Chirag Parekh <chiragp@xilinx.com>
 > 
-> Since we do not need the pinning of the filesystem for the virtualization
-
-^namespacing case
-
-> case, limit the usage of simple_pin_fs() and simpe_release_fs() to the
-
-^simple_release_fs
-
-> case when the init_user_ns is active. This simplifies the cleanup for the
-> virtualization case where usage of securityfs_remove() to free dentries
-
-^namespacing 
-
-> is therefore not needed anymore.
+> This will save from potential lock-up caused when I2c master controller
+> resets in the middle of transfer and the slave is holding SDA line to
+> transmit more data.
 > 
-> For the initial securityfs, i.e. the one mounted in the host userns mount,
-> nothing changes. The rules for securityfs_remove() are as before and it is
-> still paired with securityfs_create(). Specifically, a file created via
-> securityfs_create_dentry() in the initial securityfs mount still needs to
-> be removed by a call to securityfs_remove(). Creating a new dentry in the
-> initial securityfs mount still pins the filesystem like it always did.
-> Consequently, the initial securityfs mount is not destroyed on
-> umount/shutdown as long as at least one user of it still has dentries that
-> it hasn't removed with a call to securityfs_remove().
+> Signed-off-by: Chirag Parekh <chiragp@xilinx.com>
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> ---
+>  drivers/i2c/busses/i2c-cadence.c | 109 +++++++++++++++++++++++++++++++
+>  1 file changed, 109 insertions(+)
 > 
-> Prevent mounting of an instance of securityfs in another user namespace
-> than it belongs to. Also, prevent accesses to files and directories by
-> a user namespace that is neither the user namespace it belongs to
-> nor an ancestor of the user namespace that the instance of securityfs
-> belongs to. Do not prevent access if securityfs was bind-mounted and
-> therefore the init_user_ns is the owning user namespace.
+> diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+> index 805c77143a0f..682821481b67 100644
+> --- a/drivers/i2c/busses/i2c-cadence.c
+> +++ b/drivers/i2c/busses/i2c-cadence.c
+> @@ -7,13 +7,16 @@
+>  
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/of.h>
+> +#include <linux/of_gpio.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/pinctrl/consumer.h>
+>  
+>  /* Register offsets for the I2C device. */
+>  #define CDNS_I2C_CR_OFFSET		0x00 /* Control Register, RW */
+> @@ -179,6 +182,10 @@ enum cdns_i2c_slave_state {
+>   * @clk_rate_change_nb:	Notifier block for clock rate changes
+>   * @quirks:		flag for broken hold bit usage in r1p10
+>   * @ctrl_reg:		Cached value of the control register.
+> + * @rinfo:		Structure holding recovery information.
+> + * @pinctrl:		Pin control state holder.
+> + * @pinctrl_pins_default: Default pin control state.
+> + * @pinctrl_pins_gpio:	GPIO pin control state.
+>   * @ctrl_reg_diva_divb: value of fields DIV_A and DIV_B from CR register
+>   * @slave:		Registered slave instance.
+>   * @dev_mode:		I2C operating role(master/slave).
+> @@ -204,6 +211,10 @@ struct cdns_i2c {
+>  	struct notifier_block clk_rate_change_nb;
+>  	u32 quirks;
+>  	u32 ctrl_reg;
+> +	struct i2c_bus_recovery_info rinfo;
+> +	struct pinctrl *pinctrl;
+> +	struct pinctrl_state *pinctrl_pins_default;
+> +	struct pinctrl_state *pinctrl_pins_gpio;
+
+Some reason for managing the pin info in the cdns_i2c struct? Since you're using
+generic GPIO recovery, if you store these in struct i2c_bus_recovery_info the
+i2c core framework will help handling the pin mux on recovery and I think you
+don't need the prepare/unprepare() method anymore.
+
+>  #if IS_ENABLED(CONFIG_I2C_SLAVE)
+>  	u16 ctrl_reg_diva_divb;
+>  	struct i2c_client *slave;
+> @@ -788,6 +799,7 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+>  	/* Wait for the signal of completion */
+>  	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
+>  	if (time_left == 0) {
+> +		i2c_recover_bus(adap);
+>  		cdns_i2c_master_reset(adap);
+>  		dev_err(id->adap.dev.parent,
+>  				"timeout waiting on completion\n");
+> @@ -1208,6 +1220,96 @@ static int __maybe_unused cdns_i2c_runtime_resume(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +/**
+> + * cdns_i2c_prepare_recovery - Withhold recovery state
+> + * @adapter:    Pointer to i2c adapter
+> + *
+> + * This function is called to prepare for recovery.
+> + * It changes the state of pins from SCL/SDA to GPIO.
+> + */
+> +static void cdns_i2c_prepare_recovery(struct i2c_adapter *adapter)
+> +{
+> +	struct cdns_i2c *p_cdns_i2c;
+> +	int ret;
+> +
+> +	p_cdns_i2c = container_of(adapter, struct cdns_i2c, adap);
+> +
+> +	/* Setting pin state as gpio */
+> +	ret = pinctrl_select_state(p_cdns_i2c->pinctrl,
+> +			     p_cdns_i2c->pinctrl_pins_gpio);
+> +	if (ret < 0)
+> +		dev_err(p_cdns_i2c->adap.dev.parent,
+> +				"pinctrl_select_state failed\n");
+> +}
+> +
+> +/**
+> + * cdns_i2c_unprepare_recovery - Release recovery state
+> + * @adapter:    Pointer to i2c adapter
+> + *
+> + * This function is called on exiting recovery. It reverts
+> + * the state of pins from GPIO to SCL/SDA.
+> + */
+> +static void cdns_i2c_unprepare_recovery(struct i2c_adapter *adapter)
+> +{
+> +	struct cdns_i2c *p_cdns_i2c;
+> +	int ret;
+> +
+> +	p_cdns_i2c = container_of(adapter, struct cdns_i2c, adap);
+> +
+> +	/* Setting pin state to default(i2c) */
+> +	ret = pinctrl_select_state(p_cdns_i2c->pinctrl,
+> +			     p_cdns_i2c->pinctrl_pins_default);
+> +	if (ret < 0)
+> +		dev_err(p_cdns_i2c->adap.dev.parent,
+> +				"pinctrl_select_state failed\n");
+> +}
+> +
+> +/**
+> + * cdns_i2c_init_recovery_info  - Initialize I2C bus recovery
+> + * @pid:        Pointer to cdns i2c structure
+> + * @pdev:       Handle to the platform device structure
+> + *
+> + * This function does required initialization for i2c bus
+> + * recovery. It registers three functions for prepare,
+> + * recover and unprepare
+> + *
+> + * Return: 0 on Success, negative error otherwise.
+> + */
+> +static int cdns_i2c_init_recovery_info(struct cdns_i2c *pid,
+> +		struct platform_device *pdev)
+> +{
+> +	struct i2c_bus_recovery_info *rinfo = &pid->rinfo;
+> +
+> +	pid->pinctrl_pins_default = pinctrl_lookup_state(pid->pinctrl,
+> +			PINCTRL_STATE_DEFAULT);
+> +	pid->pinctrl_pins_gpio = pinctrl_lookup_state(pid->pinctrl, "gpio");
+> +
+> +	/* Fetches GPIO pins */
+> +	rinfo->sda_gpiod = devm_gpiod_get(&pdev->dev, "sda-gpios", GPIOD_ASIS);
+> +	rinfo->scl_gpiod = devm_gpiod_get(&pdev->dev, "scl-gpios", GPIOD_ASIS);
+> +
+> +	/* if GPIO driver isn't ready yet, deffer probe */
+> +	if (PTR_ERR(rinfo->sda_gpiod) == -EPROBE_DEFER ||
+> +	    PTR_ERR(rinfo->scl_gpiod) == -EPROBE_DEFER)
+> +		return -EPROBE_DEFER;
+> +
+> +	/* Validates fetched information */
+> +	if (IS_ERR(rinfo->sda_gpiod) ||
+> +	    IS_ERR(rinfo->scl_gpiod) ||
+> +			IS_ERR(pid->pinctrl_pins_default) ||
+> +			IS_ERR(pid->pinctrl_pins_gpio)) {
+> +		dev_dbg(&pdev->dev, "recovery information incomplete\n");
+> +		return 0;
+> +	}
+> +
+> +	rinfo->prepare_recovery     = cdns_i2c_prepare_recovery;
+> +	rinfo->unprepare_recovery   = cdns_i2c_unprepare_recovery;
+> +	rinfo->recover_bus          = i2c_generic_scl_recovery;
+> +	pid->adap.bus_recovery_info = rinfo;
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct dev_pm_ops cdns_i2c_dev_pm_ops = {
+>  	SET_RUNTIME_PM_OPS(cdns_i2c_runtime_suspend,
+>  			   cdns_i2c_runtime_resume, NULL)
+> @@ -1254,6 +1356,13 @@ static int cdns_i2c_probe(struct platform_device *pdev)
+>  		id->quirks = data->quirks;
+>  	}
+>  
+> +	id->pinctrl = devm_pinctrl_get(&pdev->dev);
+> +	if (!IS_ERR(id->pinctrl)) {
+> +		ret = cdns_i2c_init_recovery_info(id, pdev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	id->membase = devm_platform_get_and_ioremap_resource(pdev, 0, &r_mem);
+>  	if (IS_ERR(id->membase))
+>  		return PTR_ERR(id->membase);
 > 
-> Suggested-by: Christian Brauner <brauner@kernel.org>
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
-
-Christian, I understand that "[PATCH v10 23/27] ima: Setup securityfs
-for IMA namespace" needs to be deferred, but is there a reason for
-deferring  "[PATCH v10 22/27] securityfs: Extend securityfs with
-namespacing support"?   As the securityfs patches are really
-independent of IMA namespacing, I would have thought  "[PATCH v10
-04/27] securityfs: rework dentry creation" and this patch should be co-
-located at the beginning of the patch set.
-
--- 
-thanks,
-
-Mimi
-
