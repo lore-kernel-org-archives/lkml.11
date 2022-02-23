@@ -2,164 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B900C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiBWP7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:59:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51442 "EHLO
+        id S242552AbiBWQAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:00:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234105AbiBWP7c (ORCPT
+        with ESMTP id S234105AbiBWQAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:59:32 -0500
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A27BC12CB;
-        Wed, 23 Feb 2022 07:59:01 -0800 (PST)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21NFwl67063190;
-        Wed, 23 Feb 2022 09:58:47 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645631927;
-        bh=E/bTPkKyvKNO3M+trEvQvgNaUVq/uZYZz6ly5Zwvuy4=;
-        h=From:To:CC:Subject:Date;
-        b=gNONmWsY2mVORI2MITc6H7MZj1ZLYeH8gmLE0Kt9awiSQ/oWFdIyw/Pby/9aWoa+W
-         cmynfjfpKyHcwIrSpnc1gjMSVS80QhO8+uitz1tyo25C+XkzqRgqm2YF7uWr5tSEsq
-         1RPLWkg4XxkYA6Wnz9siCjkKbtJOD+wfDneESDlU=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21NFwlae104499
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 09:58:47 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
- Feb 2022 09:58:46 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 23 Feb 2022 09:58:46 -0600
-Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21NFwhDF032258;
-        Wed, 23 Feb 2022 09:58:43 -0600
-From:   Aparna M <a-m1@ti.com>
-To:     <nm@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <praneeth@ti.com>, <nikhil.nd@ti.com>
-Subject: [PATCH v2] arm64: dts: ti: k3-am642-sk: Enable WLAN connected to SDHCI0
-Date:   Wed, 23 Feb 2022 21:27:54 +0530
-Message-ID: <20220223155754.7298-1-a-m1@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 23 Feb 2022 11:00:08 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518FDC2E4B;
+        Wed, 23 Feb 2022 07:59:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=U1NJLx2hNGzn0cF6hu7XUgutHeB7KzSAS3+ZL8eXD0c=; b=sI/6jm4ANMJu2XxEFZa6wo+hHy
+        TuR5xBR9lM5xrobaeW8u9ebzG577X2PORDlb5LJkqggX8lWqoBhEgF0o39ZZMq3znekbvNdLJYxdF
+        aLDJ0lR5Q+qaq3N29TO+vZvDmZ8Qb0Uv8aW65L5cHjNCiYxbcKgnlr3I36994zBhTe3DdUOTwAwVl
+        7oiGWpcAkw1Az8BiFa5vCHVpuMAsBmoV82WmFaCmcgB0EIszgU6y/PBIqC1A0ylGXnsSQDcd3lnAf
+        u090fogA7nsPBAqX6xPvctNvg60gd0j1vy0AA9lxezzKMzHhwAiTd6WeDSxNEgi8KiK3dqPzl0gk0
+        L2LAg8Yg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMu3D-003tMu-EB; Wed, 23 Feb 2022 15:59:35 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     stable@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kirill.shutemov@linux.intel.com,
+        Song Liu <songliubraving@fb.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Adam Majer <amajer@suse.com>, Dirk Mueller <dmueller@suse.com>,
+        Takashi Iwai <tiwai@suse.de>, Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH] mm/filemap: Fix handling of THPs in generic_file_buffered_read()
+Date:   Wed, 23 Feb 2022 15:59:18 +0000
+Message-Id: <20220223155918.927140-1-willy@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+When a THP is present in the page cache, we can return it several times,
+leading to userspace seeing the same data repeatedly if doing a read()
+that crosses a 64-page boundary.  This is probably not a security issue
+(since the data all comes from the same file), but it can be interpreted
+as a transient data corruption issue.  Fortunately, it is very rare as
+it can only occur when CONFIG_READ_ONLY_THP_FOR_FS is enabled, and it can
+only happen to executables.  We don't often call read() on executables.
 
-WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
-This will enable the WiFi functionaliy on the board.
+This bug is fixed differently in v5.17 by commit 6b24ca4a1a8d
+("mm: Use multi-index entries in the page cache").  That commit is
+unsuitable for backporting, so fix this in the clearest way.  It
+sacrifices a little performance for clarity, but this should never
+be a performance path in these kernel versions.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
-Signed-off-by: Aparna M <a-m1@ti.com>
+Fixes: cbd59c48ae2b ("mm/filemap: use head pages in generic_file_buffered_read")
+Cc: stable@vger.kernel.org # v5.15, v5.16
+Link: https://lore.kernel.org/r/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
+Analyzed-by: Adam Majer <amajer@suse.com>
+Analyzed-by: Dirk Mueller <dmueller@suse.com>
+Bisected-by: Takashi Iwai <tiwai@suse.de>
+Reported-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
+ mm/filemap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-v1 -> v2: Update commit message with "From:" details
-
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 62 ++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 6b04745147be..1178bb982f05 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -125,6 +125,31 @@
- 		vin-supply = <&vcc_3v3_sys>;
- 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	com8_ls_en: fixed-regulator-com8 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "com8_ls_en";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+		pinctrl-0 = <&main_com8_ls_en_pins_default>;
-+		pinctrl-names = "default";
-+		gpio = <&main_gpio0 62 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	wlan_en: fixed-regulator-wlan {
-+		/* output of SN74AVC4T245RSVR */
-+		compatible = "regulator-fixed";
-+		regulator-name = "wlan_en";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		enable-active-high;
-+		pinctrl-0 = <&main_wlan_en_pins_default>;
-+		pinctrl-names = "default";
-+		vin-supply = <&com8_ls_en>;
-+		gpio = <&main_gpio0 48 GPIO_ACTIVE_HIGH>;
-+	};
- };
- 
- &main_pmx0 {
-@@ -216,6 +241,23 @@
- 			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
- 		>;
- 	};
-+	main_wlan_en_pins_default: main-wlan-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
-+		>;
-+	};
-+
-+	main_com8_ls_en_pins_default: main-com8-ls-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00fc, PIN_OUTPUT, 7) /* (U7) PRG1_PRU0_GPO17.GPIO0_62 */
-+		>;
-+	};
-+
-+	main_wlan_pins_default: main-wlan-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00bc, PIN_INPUT, 7) /* (U8) GPIO0_46 */
-+		>;
-+	};
- };
- 
- &mcu_uart0 {
-@@ -293,6 +335,26 @@
- 	status = "reserved";
- };
- 
-+&sdhci0 {
-+	vmmc-supply = <&wlan_en>;
-+	bus-width = <4>;
-+	non-removable;
-+	cap-power-off-card;
-+	keep-power-in-suspend;
-+	ti,driver-strength-ohm = <50>;
-+
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	wlcore: wlcore@2 {
-+		compatible = "ti,wl1837";
-+		reg = <2>;
-+		pinctrl-0 = <&main_wlan_pins_default>;
-+		pinctrl-names = "default";
-+		interrupt-parent = <&main_gpio0>;
-+		interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
-+	};
-+};
-+
- &sdhci1 {
- 	/* SD/MMC */
- 	vmmc-supply = <&vdd_mmc1>;
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 82a17c35eb96..1293c3409e42 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2354,8 +2354,12 @@ static void filemap_get_read_batch(struct address_space *mapping,
+ 			break;
+ 		if (PageReadahead(head))
+ 			break;
+-		xas.xa_index = head->index + thp_nr_pages(head) - 1;
+-		xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
++		if (PageHead(head)) {
++			xas_set(&xas, head->index + thp_nr_pages(head));
++			/* Handle wrap correctly */
++			if (xas.xa_index - 1 >= max)
++				break;
++		}
+ 		continue;
+ put_page:
+ 		put_page(head);
 -- 
-2.17.1
+2.34.1
 
