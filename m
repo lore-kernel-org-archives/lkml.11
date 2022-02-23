@@ -2,117 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E360FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D55DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiBWAYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 19:24:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
+        id S234685AbiBWA1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 19:27:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231765AbiBWAYQ (ORCPT
+        with ESMTP id S234723AbiBWA1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 19:24:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99D634679;
-        Tue, 22 Feb 2022 16:23:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55324612C3;
-        Wed, 23 Feb 2022 00:23:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8791FC340E8;
-        Wed, 23 Feb 2022 00:23:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645575829;
-        bh=5BdC/hk6mQx2wiONPIjO2S8J7pPFSbEQ9KnQQgIHc1w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ob1Y5bXJWrbpwDY2/YYzbvCgBABo7khCOAMXduz7XeChqJjAimg0UvcDf5fqcff9o
-         6kFj8OfcYmdUrD80sVhKLoMmUyt6xsdkiUscWwFlpyVutpT7uzL98JoW9PgXt/W7FF
-         GafZn7Fg8x/OhH9lodzrd6iz/g9Vzzx3I7IHkeyLBK6aPzKdGfXl7JWlkWH0u3jhC7
-         XDNSx1tB7BtPDRLm0uNkhAauIck1kKHq0M880Oy5dsryPycyTm6x4fMNhWwvrtmd3B
-         j9xgzvj13NL5T9YL8MMzJ+qq8ue8qgMQwmtSc6UZwW4Wy20HUB7CeA30T4kTxdG7Y+
-         RX9jBAGtTqBUA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 8CFA1400FE; Tue, 22 Feb 2022 21:23:47 -0300 (-03)
-Date:   Tue, 22 Feb 2022 21:23:47 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Mahmoud Abumandour <ma.mandourr@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf data: don't mention --to-ctf if it's not supported
-Message-ID: <YhV+kyk7kbuOeY/Q@kernel.org>
-References: <20220220113952.138280-1-ma.mandourr@gmail.com>
- <YhQAt+iSkc2VcvEP@krava>
+        Tue, 22 Feb 2022 19:27:48 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5C053E30;
+        Tue, 22 Feb 2022 16:27:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=HgX98OwrP9QUu0q0EJFJcZeLVOY5T3k3JWd4rYr6BMo=; b=HSGt8JyaiSyOrUJRY5Ho2bSdmd
+        tt5G6vXTlofiiErK/Ujm0KeRMlREfmjY4AiXNOgNvCmhIMLwEVzbUEwXXl54e1gnFm08z0HUTuAO4
+        AglCy/ANITMXpUXBT9AMevUYLxlD8agzYyG2gMSuOcAEPTIPGAD23T3IEYazkF8f1jBS2a+ohIdUG
+        rdLQfFUi4SRo9C0Z8f66m1IJBHxTuhYtwJCmMCSzbPuMCUA2/pUOIWyegMBK/WVQolThVPOOx6H+c
+        rdvUzrIYkpfGXbsThE72Co4DGrgg4y+iSptCmrD4syM5M4I488z13tCScXYFqivizmKjEyq1bI/zy
+        LFVLNwMw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nMfUz-00C0ys-V7; Wed, 23 Feb 2022 00:27:17 +0000
+Date:   Tue, 22 Feb 2022 16:27:17 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, linux-modules@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/4] Miscellaneous cleanups
+Message-ID: <YhV/ZQKsO2rElYdL@bombadil.infradead.org>
+References: <cover.1645542893.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YhQAt+iSkc2VcvEP@krava>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <cover.1645542893.git.christophe.leroy@csgroup.eu>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Feb 21, 2022 at 10:14:31PM +0100, Jiri Olsa escreveu:
-> On Sun, Feb 20, 2022 at 01:39:52PM +0200, Mahmoud Abumandour wrote:
-> > From: Mahmoud Mandour <ma.mandourr@gmail.com>
-> > 
-> > The option `--to-ctf` is only available when perf has libbabeltrace
-> > support. Hence, on error, we shouldn't state that user must include
-> > `--to-ctf` unless it's supported.
-> > 
-> > The only user-visible change for this commit is that when `perf` is not
-> > configured to support libbabeltrace, the user is only prompted to
-> > provide the `--to-json` option instead of bothe `--to-json` and
-> > `--to-ctf`.
-> > 
-> > Signed-off-by: Mahmoud Mandour <ma.mandourr@gmail.com>
+On Tue, Feb 22, 2022 at 04:16:30PM +0100, Christophe Leroy wrote:
+> This series applies on top of my series "Allocate module text and data separately" v5.
 > 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
-
-Thanks, applied.
-
-- Arnaldo
-
- 
-> thanks,
-> jirka
+> It does some cleanup around the settling of modules's layout page flags:
+> - Make module_enable_x() independent of CONFIG_ARCH_HAS_STRICT_MODULE_RWX
+> - Reunify everything into strict_rwx.c
+> - Change big hammer BUG_ON()s into WARN_ON()s
+> - Change misleading debug_align() to strict_align()
 > 
-> > ---
-> >  tools/perf/builtin-data.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/tools/perf/builtin-data.c b/tools/perf/builtin-data.c
-> > index b7f9dc85a407..c22d82d2a73c 100644
-> > --- a/tools/perf/builtin-data.c
-> > +++ b/tools/perf/builtin-data.c
-> > @@ -62,10 +62,17 @@ static int cmd_data_convert(int argc, const char **argv)
-> >  		pr_err("You cannot specify both --to-ctf and --to-json.\n");
-> >  		return -1;
-> >  	}
-> > +#ifdef HAVE_LIBBABELTRACE_SUPPORT
-> >  	if (!to_json && !to_ctf) {
-> >  		pr_err("You must specify one of --to-ctf or --to-json.\n");
-> >  		return -1;
-> >  	}
-> > +#else
-> > +	if (!to_json) {
-> > +		pr_err("You must specify --to-json.\n");
-> > +	return -1;
-> > +}
-> > +#endif
-> >  
-> >  	if (to_json)
-> >  		return bt_convert__perf2json(input_name, to_json, &opts);
-> > -- 
-> > 2.30.2
-> > 
+> Changes in v2/v3:
+> - Rebased on top of my series "Allocate module text and data separately" v5
+> - Moved the Kconfig patch out of this series, it is an independent change
+> 
+> Sorry for the mess in v2.
 
--- 
+Thanks for all this work! Any chance you can actually submit this prior
+to your allocate module series? This and the patch, "module: Move
+module's Kconfig item in kernel/module/". Because *iff* we get enough
+testing out of Aaron's changes and your cleanups, perhaps those might
+be candidates for the next merge window. Then we can save all the new
+functional changes for the other merge window.
 
-- Arnaldo
+  Luis
