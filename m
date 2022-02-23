@@ -2,182 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C41CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF56C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240723AbiBWNGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:06:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59448 "EHLO
+        id S240705AbiBWNKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:10:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240711AbiBWNGW (ORCPT
+        with ESMTP id S229491AbiBWNKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:06:22 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1329859C
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:05:54 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id bg16-20020a05600c3c9000b00380f6f473b0so1015775wmb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:05:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=6Iisim3PKzqx+0SuQ2EiWiTngQbIiBBSQFYW4bmZFG4=;
-        b=xL6fA/11WclCJM2MxlSqzWBaUxk7fA+4OI+SITJI3HuBC6aQNHwmvUdRbzI1PWCJjl
-         nouFQQhqbAdlbueFM4m4nechphstnnVXOLaT+TT5I1cZyq1ZPuPhF4HtYie6PMauU2Xm
-         O5y8ACzbRTCySsiNoG6ClSYFzXpaVUE25zrItpI4eg7w2gdceTjzAoMqekdca/mwhw2A
-         0X4OPqCP0xw5cQdDChXDAKGE2Ptt3GNilnfvPJ8MJzcV8cI1QihpzAVp+jpbSy84uxJA
-         kpLQ+TDO5gjA0kM/GLr8jOWm0+Gk3p8/LGu0A7nCV+J5YODK8d8N5fL0XBhB1Yox5U0G
-         ArZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6Iisim3PKzqx+0SuQ2EiWiTngQbIiBBSQFYW4bmZFG4=;
-        b=IvYrWRAEUaHrMpC90uRv2JIdMw4bnGOqERG+Ou8Jiq/263VCpD2MrMfOl6n4lT6n1S
-         1SHoWdNYHDGkq8kZwWavhYYHMWwrSq1NOu4n8KTccEBx3elb421EOLHQriLRRIWMmxhc
-         3J6hG7VzVpI4FWhpIJwrE7KU1w7E/snNg+IJ7agwoLErHyFqP9XLidWTWZXXLJxnEfv+
-         PHGxzBWzTl977Z5kN1nAiNtCQN+O35LGT7bn+Q7TecwK4ujm9Bh22jOF4r92w3UfsQFf
-         FovEWPjb5Eo1dASx+hMXJjsfwkqjzyCund7W7u2Jy3ZZOZuH6rav5R2O7/DSEvzzKb/S
-         S3aA==
-X-Gm-Message-State: AOAM533J510FmOrpgULNyAsjABaRdHwEUosGe89ymBNV0er7ujX5qaCd
-        uJA6/Q+1a4Ycg6hGosydvmE1Uw==
-X-Google-Smtp-Source: ABdhPJxjlMvrB5Zg7n5QG4YhSseGskPdLA0ieLEpVQkkvGr/YjdvxZNHAECAhketBqw3EMUC5LVe9w==
-X-Received: by 2002:a05:600c:4f93:b0:37b:c4c1:e806 with SMTP id n19-20020a05600c4f9300b0037bc4c1e806mr7711932wmq.104.1645621552724;
-        Wed, 23 Feb 2022 05:05:52 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id s2sm5334745wmc.45.2022.02.23.05.05.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 05:05:52 -0800 (PST)
-Date:   Wed, 23 Feb 2022 14:05:50 +0100
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     heiko@sntech.de, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        herbert@gondor.apana.org.au, davem@davemloft.net
-Subject: Re: [PATCH v3] dt-bindings: crypto: convert rockchip-crypto to yaml
-Message-ID: <YhYxLmBYa+DMCnuz@Red>
-References: <20220211115925.3382735-1-clabbe@baylibre.com>
- <f078ac6f-5605-7b86-5734-cbbf7dc52c71@gmail.com>
+        Wed, 23 Feb 2022 08:10:02 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9906D939B2;
+        Wed, 23 Feb 2022 05:09:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645621774; x=1677157774;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AwjJpWYCTPQeVuVVgEdKhStdiV5l6kXXN/ua0XFu1JM=;
+  b=eXJ4XVjO/NPd+2c0wuMCElSZUXq9Na1p1/xY87VvStwMXN3PoEL55Q0E
+   v5q8iF6IJCvnUSBghEol71Q6D5zmTQJdGZxhsdRblzFVZ/NLqHeIDpRbi
+   tf9THrHr0QhsbHaKKNY43gOTTjbANqjlXkPWX9oFla6RoDkZGbcC3hKSC
+   RMoJvpQ3TX97D9g/qunzPES1amRCh03YFQdM6jgamUg4JM0XOIKSF7NkI
+   4lb1GM7G6VVvl4L/TqUQJ5izl7dq0KZbx9jieeA3qFPZWEtioNX7Xf6/4
+   Udy6S61/XzT+laa9w0t/FD9k6kIMyBNkz+WiZAJof4rZMgGcZrvKrpS/r
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="231931111"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="231931111"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 05:09:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="781925466"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Feb 2022 05:09:31 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMrOc-0001T2-Tx; Wed, 23 Feb 2022 13:09:30 +0000
+Date:   Wed, 23 Feb 2022 21:08:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "broonie@kernel.org" <broonie@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] arm64: Change elfcore for_each_mte_vma() to use VMA
+ iterator
+Message-ID: <202202232114.VBMtKcTj-lkp@intel.com>
+References: <20220223023245.uicyzttakfq3k5zf@revolver>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f078ac6f-5605-7b86-5734-cbbf7dc52c71@gmail.com>
+In-Reply-To: <20220223023245.uicyzttakfq3k5zf@revolver>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, Feb 15, 2022 at 03:07:56PM +0100, Johan Jonker a écrit :
-> Hi Heiko,
-> 
-> On 2/11/22 12:59, Corentin Labbe wrote:
-> > Convert rockchip-crypto to yaml
-> > 
-> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> > ---
-> > Changes since v1:
-> > - fixed example
-> > - renamed to a new name
-> > - fixed some maxItems
-> > 
-> > Change since v2:
-> > - Fixed maintainers section
-> > 
-> >  .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
-> >  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
-> >  2 files changed, 66 insertions(+), 28 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-> 
-> rockchip,crypto.yaml
+Hi Liam,
+
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on arm64/for-next/core]
+[also build test ERROR on next-20220222]
+[cannot apply to linux/master linus/master v5.17-rc5]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Liam-Howlett/arm64-Change-elfcore-for_each_mte_vma-to-use-VMA-iterator/20220223-104149
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: arm64-randconfig-p001-20220221 (https://download.01.org/0day-ci/archive/20220223/202202232114.VBMtKcTj-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e416e64fe4e04c43daa48131e564c9f2f64ec333
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Liam-Howlett/arm64-Change-elfcore-for_each_mte_vma-to-use-VMA-iterator/20220223-104149
+        git checkout e416e64fe4e04c43daa48131e564c9f2f64ec333
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_phdrs':
+>> arch/arm64/kernel/elfcore.c:68:9: error: implicit declaration of function 'VMA_ITERATOR' [-Werror=implicit-function-declaration]
+      68 |         VMA_ITERATOR(vmi, current->mm, 0);
+         |         ^~~~~~~~~~~~
+>> arch/arm64/kernel/elfcore.c:68:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
+      68 |         VMA_ITERATOR(vmi, current->mm, 0);
+         |                      ^~~
+         |                      vma
+   arch/arm64/kernel/elfcore.c:68:22: note: each undeclared identifier is reported only once for each function it appears in
+>> arch/arm64/kernel/elfcore.c:13:17: error: implicit declaration of function 'for_each_vma'; did you mean 'for_each_cpu'? [-Werror=implicit-function-declaration]
+      13 |                 for_each_vma(vmi, vma)                                  \
+         |                 ^~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c:70:9: note: in expansion of macro 'for_each_mte_vma'
+      70 |         for_each_mte_vma(vmi, vma)
+         |         ^~~~~~~~~~~~~~~~
+   In file included from include/asm-generic/bug.h:5,
+                    from arch/arm64/include/asm/bug.h:26,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:9,
+                    from include/linux/coredump.h:6,
+                    from arch/arm64/kernel/elfcore.c:3:
+>> include/linux/compiler.h:56:23: error: expected ';' before 'if'
+      56 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                       ^~
+   arch/arm64/kernel/elfcore.c:14:25: note: in expansion of macro 'if'
+      14 |                         if (vma->vm_flags & VM_MTE)
+         |                         ^~
+   arch/arm64/kernel/elfcore.c:70:9: note: in expansion of macro 'for_each_mte_vma'
+      70 |         for_each_mte_vma(vmi, vma)
+         |         ^~~~~~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
+   arch/arm64/kernel/elfcore.c:79:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
+      79 |         VMA_ITERATOR(vmi, current->mm, 0);
+         |                      ^~~
+         |                      vma
+   In file included from include/asm-generic/bug.h:5,
+                    from arch/arm64/include/asm/bug.h:26,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:9,
+                    from include/linux/coredump.h:6,
+                    from arch/arm64/kernel/elfcore.c:3:
+>> include/linux/compiler.h:56:23: error: expected ';' before 'if'
+      56 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                       ^~
+   arch/arm64/kernel/elfcore.c:14:25: note: in expansion of macro 'if'
+      14 |                         if (vma->vm_flags & VM_MTE)
+         |                         ^~
+   arch/arm64/kernel/elfcore.c:81:9: note: in expansion of macro 'for_each_mte_vma'
+      81 |         for_each_mte_vma(vmi, vma) {
+         |         ^~~~~~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_extra_data_size':
+   arch/arm64/kernel/elfcore.c:105:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
+     105 |         VMA_ITERATOR(vmi, current->mm, 0);
+         |                      ^~~
+         |                      vma
+   In file included from include/asm-generic/bug.h:5,
+                    from arch/arm64/include/asm/bug.h:26,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:9,
+                    from include/linux/coredump.h:6,
+                    from arch/arm64/kernel/elfcore.c:3:
+>> include/linux/compiler.h:56:23: error: expected ';' before 'if'
+      56 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                       ^~
+   arch/arm64/kernel/elfcore.c:14:25: note: in expansion of macro 'if'
+      14 |                         if (vma->vm_flags & VM_MTE)
+         |                         ^~
+   arch/arm64/kernel/elfcore.c:107:9: note: in expansion of macro 'for_each_mte_vma'
+     107 |         for_each_mte_vma(vmi, vma)
+         |         ^~~~~~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
+   arch/arm64/kernel/elfcore.c:116:22: error: 'vmi' undeclared (first use in this function); did you mean 'vma'?
+     116 |         VMA_ITERATOR(vmi, current->mm, 0);
+         |                      ^~~
+         |                      vma
+   In file included from include/asm-generic/bug.h:5,
+                    from arch/arm64/include/asm/bug.h:26,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:9,
+                    from include/linux/coredump.h:6,
+                    from arch/arm64/kernel/elfcore.c:3:
+>> include/linux/compiler.h:56:23: error: expected ';' before 'if'
+      56 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                       ^~
+   arch/arm64/kernel/elfcore.c:14:25: note: in expansion of macro 'if'
+      14 |                         if (vma->vm_flags & VM_MTE)
+         |                         ^~
+   arch/arm64/kernel/elfcore.c:118:9: note: in expansion of macro 'for_each_mte_vma'
+     118 |         for_each_mte_vma(vmi, vma) {
+         |         ^~~~~~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_phdrs':
+   arch/arm64/kernel/elfcore.c:99:1: error: control reaches end of non-void function [-Werror=return-type]
+      99 | }
+         | ^
+   arch/arm64/kernel/elfcore.c: In function 'elf_core_write_extra_data':
+   arch/arm64/kernel/elfcore.c:127:1: error: control reaches end of non-void function [-Werror=return-type]
+     127 | }
+         | ^
+   At top level:
+   arch/arm64/kernel/elfcore.c:25:12: warning: 'mte_dump_tag_range' defined but not used [-Wunused-function]
+      25 | static int mte_dump_tag_range(struct coredump_params *cprm,
+         |            ^~~~~~~~~~~~~~~~~~
+   arch/arm64/kernel/elfcore.c:16:22: warning: 'mte_vma_tag_dump_size' defined but not used [-Wunused-function]
+      16 | static unsigned long mte_vma_tag_dump_size(struct vm_area_struct *vma)
+         |                      ^~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
-Hello
+vim +/VMA_ITERATOR +68 arch/arm64/kernel/elfcore.c
 
-DT maintainer asked for rockchip,rk3288-crypto, so I will keep it.
+    10	
+    11	#define for_each_mte_vma(vmi, vma)					\
+    12		if (system_supports_mte())					\
+  > 13			for_each_vma(vmi, vma)					\
+    14				if (vma->vm_flags & VM_MTE)
+    15	
+    16	static unsigned long mte_vma_tag_dump_size(struct vm_area_struct *vma)
+    17	{
+    18		if (vma->vm_flags & VM_DONTDUMP)
+    19			return 0;
+    20	
+    21		return vma_pages(vma) * MTE_PAGE_TAG_STORAGE;
+    22	}
+    23	
+    24	/* Derived from dump_user_range(); start/end must be page-aligned */
+    25	static int mte_dump_tag_range(struct coredump_params *cprm,
+    26				      unsigned long start, unsigned long end)
+    27	{
+    28		unsigned long addr;
+    29	
+    30		for (addr = start; addr < end; addr += PAGE_SIZE) {
+    31			char tags[MTE_PAGE_TAG_STORAGE];
+    32			struct page *page = get_dump_page(addr);
+    33	
+    34			/*
+    35			 * get_dump_page() returns NULL when encountering an empty
+    36			 * page table entry that would otherwise have been filled with
+    37			 * the zero page. Skip the equivalent tag dump which would
+    38			 * have been all zeros.
+    39			 */
+    40			if (!page) {
+    41				dump_skip(cprm, MTE_PAGE_TAG_STORAGE);
+    42				continue;
+    43			}
+    44	
+    45			/*
+    46			 * Pages mapped in user space as !pte_access_permitted() (e.g.
+    47			 * PROT_EXEC only) may not have the PG_mte_tagged flag set.
+    48			 */
+    49			if (!test_bit(PG_mte_tagged, &page->flags)) {
+    50				put_page(page);
+    51				dump_skip(cprm, MTE_PAGE_TAG_STORAGE);
+    52				continue;
+    53			}
+    54	
+    55			mte_save_page_tags(page_address(page), tags);
+    56			put_page(page);
+    57			if (!dump_emit(cprm, tags, MTE_PAGE_TAG_STORAGE))
+    58				return 0;
+    59		}
+    60	
+    61		return 1;
+    62	}
+    63	
+    64	Elf_Half elf_core_extra_phdrs(void)
+    65	{
+    66		struct vm_area_struct *vma;
+    67		int vma_count = 0;
+  > 68		VMA_ITERATOR(vmi, current->mm, 0);
+    69	
+    70		for_each_mte_vma(vmi, vma)
+    71			vma_count++;
+    72	
+    73		return vma_count;
+    74	}
+    75	
 
-> 
-> >  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-> > new file mode 100644
-> > index 000000000000..2e1e9fa711c4
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-> > @@ -0,0 +1,66 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/crypto/rockchip,rk3288-crypto.yaml#
-> 
-> rockchip,crypto.yaml
-> 
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Rockchip Electronics And Security Accelerator
-> > +
-> > +maintainers:
-> > +  - Heiko Stuebner <heiko@sntech.de>
-> > +
-> > +properties:
-> > +  compatible:
-> 
->     oneOf:
->       - const: rockchip,rk3288-crypto
->       - items:
->           - enum:
->               - rockchip,rk3228-crypto
->               - rockchip,rk3328-crypto
->               - rockchip,rk3368-crypto
->               - rockchip,rk3399-crypto
->           - const: rockchip,rk3288-crypto
-> 
-> rk3288 was the first in line that had support, so we use that as fall
-> back string.
-
-I will dont add compatible which are not handled by the driver unless DT maintainer said I should.
-
-> 
-> > +    const: rockchip,rk3288-crypto
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: clock data
-> > +      - description: clock data
-> > +      - description: clock crypto accelerator
-> 
-> > +      - description: clock dma
-> 
-> remove ???
-> 
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: aclk
-> > +      - const: hclk
-> > +      - const: sclk
-> 
-> > +      - const: apb_pclk
-> 
-> remove ???
-> 
-> Similar to the rk3568 pclk_xpcs discussion ACLK_DMAC1 belongs to the
-> dmac_bus_s node and should have been enabled by the DMA driver I think.
-> Could you advise if this is correct or should we remove parsing/enabling
-> ACLK_DMAC1 in rk3288_crypto.c in order to it easier
-> porting/adding/syncing nodes for other SoC types?
-> 
-> Johan
-
-I tested on my rk3328-rock64 and I confirm apb_pclk is unnessecary.
-I will issue patch for fixing this.
-
-Regards
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
