@@ -2,157 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D284C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242182AbiBWVG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 16:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
+        id S242196AbiBWVHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 16:07:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239208AbiBWVGu (ORCPT
+        with ESMTP id S242144AbiBWVH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 16:06:50 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638834DF79;
-        Wed, 23 Feb 2022 13:06:21 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 1B05E22247;
-        Wed, 23 Feb 2022 22:06:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645650379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SBkyV3Y37C1PQOYlMNcw1v4s6vUf2MzUko1G+h5pAHs=;
-        b=gckdT97Tc7r0urgZ5KftgN2f0Ex4RaFi5rRBMzXM0NmKAgahjB/z+P8J6+nyiTCmLJGZRX
-        0ZtuIAHT/388SGrl0XFCV5TfuDmZzTUNVq9fWFr27pczWbtnyO4cr41ZQyU/uKamKeF0/P
-        5x0Ff1jduV7l6YKdqZUErntuUwAWSLE=
-From:   Michael Walle <michael@walle.cc>
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     heiko.thiery@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 1/2] arm64: dts: imx8mn-evk: use proper names for PMIC outputs
-Date:   Wed, 23 Feb 2022 22:05:58 +0100
-Message-Id: <20220223210559.1999209-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        Wed, 23 Feb 2022 16:07:26 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C60646B;
+        Wed, 23 Feb 2022 13:06:58 -0800 (PST)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NJgVTQ024276;
+        Wed, 23 Feb 2022 21:06:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Z7Xd9jxc9tzGFCJShmB8n/yyZ4MnF/i2KsEAp1969D4=;
+ b=WQmBLRdxQl2wocCSEnoEFmfjLVRLBFQaILGIVp8M5qnIiHBYao/CHaCT4IHGDL5yrZi9
+ JcLzy2oCUDMba+oEEJ5qjl3eBsJhbRgKlExE68t0l0VuFVex5eWcH3J6ViBcC4W29NLS
+ VKgsfOSBESJlROG/g6kku+OfwVE0jM4KOl5+mImHyA2x3MjGOG33tLJvE9sq8AJmDNOz
+ qzYbM0hIKFXSmZxWzbLMuywbWzMSSn9F3Sbf/FMIS5YfKsWxzh7GMcDM832hcWhaAJhL
+ pysGjJNXw4RdIoD+7yigWAUfpPu8GDtl9A4En5DdDOq/gbAjKoRqH/Dd9Uv6WLzb/Unw 4w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eduas9pwn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 21:06:45 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NKunFH006384;
+        Wed, 23 Feb 2022 21:06:44 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eduas9pw6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 21:06:44 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NKwWhu009053;
+        Wed, 23 Feb 2022 21:06:43 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma02dal.us.ibm.com with ESMTP id 3ear6b97e0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 21:06:43 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NL6fs434341208
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 21:06:42 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E349ABE05B;
+        Wed, 23 Feb 2022 21:06:41 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8DB4ABE051;
+        Wed, 23 Feb 2022 21:06:39 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 21:06:39 +0000 (GMT)
+Message-ID: <57237fc5-cb48-3286-4148-76a6b3c8efd3@linux.ibm.com>
+Date:   Wed, 23 Feb 2022 16:06:39 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 26/27] ima: Limit number of policy rules in
+ non-init_ima_ns
+Content-Language: en-US
+To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org
+References: <20220201203735.164593-1-stefanb@linux.ibm.com>
+ <20220201203735.164593-27-stefanb@linux.ibm.com>
+ <5e4a862917785972281bbcb483404da01b71e801.camel@linux.ibm.com>
+ <479f09e7-0d39-0281-45ef-5cce4861d24d@linux.ibm.com>
+ <8a4f9cb6cab5ba04eb61e346d0fca16efa4c6703.camel@linux.ibm.com>
+ <46156a90-d6a6-a0cc-247a-3ceb29f1cf75@linux.ibm.com>
+ <9efd4502617e39280ca47a91d395eae154a328a4.camel@linux.ibm.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <9efd4502617e39280ca47a91d395eae154a328a4.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 8q4kvvc2ICLujWCGC5_SaD7jVWdBRhTq
+X-Proofpoint-ORIG-GUID: JkqNZB9-b71SXYRTDrYQyhcjAPD4FIoO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1015
+ phishscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 priorityscore=1501
+ spamscore=0 impostorscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202230119
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the power signal names as given in the schematics of the reference
-board.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- arch/arm64/boot/dts/freescale/imx8mn-evk.dts | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-index b4225cfcb6d9..eaa06f49aef5 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-@@ -41,7 +41,7 @@ pmic: pmic@25 {
- 
- 		regulators {
- 			buck1: BUCK1{
--				regulator-name = "BUCK1";
-+				regulator-name = "VDD_ARM_0V9";
- 				regulator-min-microvolt = <600000>;
- 				regulator-max-microvolt = <2187500>;
- 				regulator-boot-on;
-@@ -50,7 +50,7 @@ buck1: BUCK1{
- 			};
- 
- 			buck2: BUCK2 {
--				regulator-name = "BUCK2";
-+				regulator-name = "VDD_SOC";
- 				regulator-min-microvolt = <600000>;
- 				regulator-max-microvolt = <2187500>;
- 				regulator-boot-on;
-@@ -61,7 +61,7 @@ buck2: BUCK2 {
- 			};
- 
- 			buck4: BUCK4{
--				regulator-name = "BUCK4";
-+				regulator-name = "VDD_3V3";
- 				regulator-min-microvolt = <600000>;
- 				regulator-max-microvolt = <3400000>;
- 				regulator-boot-on;
-@@ -69,7 +69,7 @@ buck4: BUCK4{
- 			};
- 
- 			buck5: BUCK5{
--				regulator-name = "BUCK5";
-+				regulator-name = "VDD_1V8";
- 				regulator-min-microvolt = <600000>;
- 				regulator-max-microvolt = <3400000>;
- 				regulator-boot-on;
-@@ -77,7 +77,7 @@ buck5: BUCK5{
- 			};
- 
- 			buck6: BUCK6 {
--				regulator-name = "BUCK6";
-+				regulator-name = "NVCC_DRAM_1V1";
- 				regulator-min-microvolt = <600000>;
- 				regulator-max-microvolt = <3400000>;
- 				regulator-boot-on;
-@@ -85,7 +85,7 @@ buck6: BUCK6 {
- 			};
- 
- 			ldo1: LDO1 {
--				regulator-name = "LDO1";
-+				regulator-name = "NVCC_SNVS_1V8";
- 				regulator-min-microvolt = <1600000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
-@@ -93,7 +93,7 @@ ldo1: LDO1 {
- 			};
- 
- 			ldo2: LDO2 {
--				regulator-name = "LDO2";
-+				regulator-name = "VDD_SNVS_0V8";
- 				regulator-min-microvolt = <800000>;
- 				regulator-max-microvolt = <1150000>;
- 				regulator-boot-on;
-@@ -101,7 +101,7 @@ ldo2: LDO2 {
- 			};
- 
- 			ldo3: LDO3 {
--				regulator-name = "LDO3";
-+				regulator-name = "VDDA_1V8";
- 				regulator-min-microvolt = <800000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
-@@ -109,7 +109,7 @@ ldo3: LDO3 {
- 			};
- 
- 			ldo4: LDO4 {
--				regulator-name = "LDO4";
-+				regulator-name = "VDD_PHY_1V2";
- 				regulator-min-microvolt = <800000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
-@@ -117,7 +117,7 @@ ldo4: LDO4 {
- 			};
- 
- 			ldo5: LDO5 {
--				regulator-name = "LDO5";
-+				regulator-name = "NVCC_SD2";
- 				regulator-min-microvolt = <1800000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
--- 
-2.30.2
-
+On 2/23/22 15:59, Mimi Zohar wrote:
+> On Wed, 2022-02-23 at 15:45 -0500, Stefan Berger wrote:
+>
+>> avoid huge kernel memory consumption in the case that a cgroup limit for
+>> memory was not set up.
+> Ok, that is the motivation for the this patch.
+>
+Any user can create several user namespaces and with that several IMA 
+namespaces and now we want to limit the number of rules inside an IMA 
+namespace to limit the amount of kernel memory the policy rules are 
+consuming. It isn't necessarily  related to cgroups but a hard limit on 
+the number of rules to avoid wasted of memory.
