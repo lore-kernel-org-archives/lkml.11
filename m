@@ -2,176 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF737C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70806C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiBWKUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 05:20:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S237005AbiBWKWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 05:22:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231947AbiBWKUm (ORCPT
+        with ESMTP id S233798AbiBWKWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 05:20:42 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A550C8BF71
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:20:14 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id i21so14860656pfd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:20:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DQX7V52CBiJ7FddDejeLAMem+iUAD4nV8smE6+HMiCk=;
-        b=nN41YCVInSLt/JhZi7jK4UIpYreHneBcjM9jaq1ZZoxJ1/HvTSNw/17hZcv+kDyYd6
-         +REnkeyTUgx0AmMKdy+VTVlBINeBfEKvrtvRYmlTs9AgmnLtJF9qZixJ3s5pQNss0vs6
-         zVZe/dXo1+NnSdrdMA9wcfg6nXb7vGWJxV6I5T0J6PkmWpN0YNnb6zjvCoCr935RSum7
-         Y2LQBdU3OuNnflCdHskASMBzdNDYIplLTdH793XbTrZvH4nak4d7jYpjPCz/3Z2V+Mar
-         9jB/QwBi/DjewJnn924OyllWj+1kAstpa7J+h5ZalOgqI27LkUHizcD3M1ll6ekNuD3h
-         WfoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DQX7V52CBiJ7FddDejeLAMem+iUAD4nV8smE6+HMiCk=;
-        b=YOZuBy1xI97QabQ4GJCWVB/aywEe1W8TrwUoLZawh/NYRtPhRss5YaICL1DTLAYS+K
-         dRHdXav5Hj+vnnIEwCD3er3JCYAj7JJcW+70UivW/rss9ku0UGwvfq0xTgBktqczBKWd
-         kFZeRrqY+w5cgLzch/sn/QmpkpWSM0KR5JmUUH+cIwBuFGm/sgI9IorKPt5lOop0otlN
-         OzTUrKMmyCbz4VzIaN502wg5IPOL68+fJn7/w1Tg8cotCoAz1Rtl/YHFEHFSGkc/QUNr
-         5mEjZq+DBbKuQwYPe/iA7dcE3Z6XYASD3zuftl5gX7AlOT4x3SNRejBIjvJeTtX/sobM
-         FUuQ==
-X-Gm-Message-State: AOAM532sTi3icMvUfwJ2OGiFa5VultJnQsQ43svfY0CTrBxtKVqjl0AN
-        crFfFf50yrbxDbGq+gt9sh1BOg==
-X-Google-Smtp-Source: ABdhPJwOzH9BvKERdYDHwMSCkR2/GlOKIJMuXG+DePst13wAFc5G8wENJdbZFppqmk3wfvsgl9oAbg==
-X-Received: by 2002:a63:af4b:0:b0:373:a2a1:bf9a with SMTP id s11-20020a63af4b000000b00373a2a1bf9amr23123430pgo.369.1645611614111;
-        Wed, 23 Feb 2022 02:20:14 -0800 (PST)
-Received: from [10.76.15.169] ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id x64-20020a17090a6c4600b001bc6d235a0esm2496931pjj.1.2022.02.23.02.20.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 02:20:13 -0800 (PST)
-Subject: Re: [PATCH v2 3/3] virtio-crypto: implement RSA algorithm
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     "Gonglei (Arei)" <arei.gonglei@huawei.com>
-Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        kernel test robot <lkp@intel.com>
-References: <20220211084108.1254218-1-pizhenwei@bytedance.com>
- <20220211084108.1254218-4-pizhenwei@bytedance.com>
- <c9144b0d82e34566a960f210ddc32696@huawei.com>
- <8ef2f660-bd84-de70-1539-402c73795dfe@bytedance.com>
-Message-ID: <bc2bbc3b-8a34-2f09-41f5-60f1568a6bef@bytedance.com>
-Date:   Wed, 23 Feb 2022 18:17:21 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 23 Feb 2022 05:22:04 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EFE1262F
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:21:35 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E8FB41F3A8;
+        Wed, 23 Feb 2022 10:21:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645611693; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tadDHS2N9HpA5UT59geTEf24+yMniaG0dLcp39bFAek=;
+        b=canKdnVDaZO2bfg0kP5vn40cVmrf6/XyVJqkl4ouP4eXsdj3wpDyOzPKO/ET6/hayqISPz
+        pr0fXduSP1eMZ41n/+vVxY5bWfZeB/LljdZJd6BIUiydto3TzO9F/IEAM84Xo1zxrRre4/
+        vZ8c2djPEKaWfLnJFLaF8BGWLVPjAuI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645611693;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tadDHS2N9HpA5UT59geTEf24+yMniaG0dLcp39bFAek=;
+        b=fyB4WeWwY3gzsDqwwiVb+cmNA6han5BXJE7RJZI34QEmGqRHrRSvJ+BFOAPq8TncwFzYIR
+        N8hdGvqP/drKJJDw==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B46B1A3B93;
+        Wed, 23 Feb 2022 10:21:33 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 11:21:33 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Peter Zijlstra <peterz@infradead.org>
+cc:     Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 04/29] x86/livepatch: Validate __fentry__ location
+In-Reply-To: <YhYH6FMNh8pMws6Z@hirez.programming.kicks-ass.net>
+Message-ID: <alpine.LSU.2.21.2202231119160.2981@pobox.suse.cz>
+References: <20220218164902.008644515@infradead.org> <20220218171408.808810436@infradead.org> <20220218210831.u2ugtfr7gxllk4cs@treble> <YhYH6FMNh8pMws6Z@hirez.programming.kicks-ass.net>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <8ef2f660-bd84-de70-1539-402c73795dfe@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 23 Feb 2022, Peter Zijlstra wrote:
 
-On 2/18/22 11:12 AM, zhenwei pi wrote:
->>> +void virtio_crypto_akcipher_algs_unregister(struct virtio_crypto
->>> +*vcrypto) {
->>> +    int i = 0;
->>> +
->>> +    mutex_lock(&algs_lock);
->>> +
->>> +    for (i = 0; i < ARRAY_SIZE(virtio_crypto_akcipher_algs); i++) {
->>> +        uint32_t service = virtio_crypto_akcipher_algs[i].service;
->>> +        uint32_t algonum = virtio_crypto_akcipher_algs[i].algonum;
->>> +
->>> +        if (virtio_crypto_akcipher_algs[i].active_devs == 0 ||
->>> +            !virtcrypto_algo_is_supported(vcrypto, service, algonum))
->>> +            continue;
->>> +
->>> +        if (virtio_crypto_akcipher_algs[i].active_devs == 1)
->>> +
->>>     crypto_unregister_akcipher(&virtio_crypto_akcipher_algs[i].algo);
->>> +
->>> +        virtio_crypto_akcipher_algs[i].active_devs--;
->>> +    }
->>> +
->>> +    mutex_unlock(&algs_lock);
->>> +}
->>
->> Why don't you reuse the virtio_crypto_algs_register/unregister functions?
->> The current code is too repetitive. Maybe we don't need create the new 
->> file virtio_crypto_akcipher_algo.c
->> because we had virtio_crypto_algs.c which includes all algorithms.
->>
+> On Fri, Feb 18, 2022 at 01:08:31PM -0800, Josh Poimboeuf wrote:
+> > On Fri, Feb 18, 2022 at 05:49:06PM +0100, Peter Zijlstra wrote:
+> > > Currently livepatch assumes __fentry__ lives at func+0, which is most
+> > > likely untrue with IBT on. Override the weak klp_get_ftrace_location()
+> > > function with an arch specific version that's IBT aware.
+> > > 
+> > > Also make the weak fallback verify the location is an actual ftrace
+> > > location as a sanity check.
+> > > 
+> > > Suggested-by: Miroslav Benes <mbenes@suse.cz>
+> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > ---
+> > >  arch/x86/include/asm/livepatch.h |    9 +++++++++
+> > >  kernel/livepatch/patch.c         |    2 +-
+> > >  2 files changed, 10 insertions(+), 1 deletion(-)
+> > > 
+> > > --- a/arch/x86/include/asm/livepatch.h
+> > > +++ b/arch/x86/include/asm/livepatch.h
+> > > @@ -17,4 +17,13 @@ static inline void klp_arch_set_pc(struc
+> > >  	ftrace_instruction_pointer_set(fregs, ip);
+> > >  }
+> > >  
+> > > +#define klp_get_ftrace_location klp_get_ftrace_location
+> > > +static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
+> > > +{
+> > > +	unsigned long addr = ftrace_location(faddr);
+> > > +	if (!addr && IS_ENABLED(CONFIG_X86_IBT))
+> > > +		addr = ftrace_location(faddr + 4);
+> > > +	return addr;
+> > 
+> > I'm kind of surprised this logic doesn't exist in ftrace itself.  Is
+> > livepatch really the only user that needs to find the fentry for a given
+> > function?
+> > 
+> > I had to do a double take for the ftrace_location() semantics, as I
+> > originally assumed that's what it did, based on its name and signature.
+> > 
+> > Instead it apparently functions like a bool but returns its argument on
+> > success.
+> > 
+> > Though the function comment tells a different story:
+> > 
+> > /**
+> >  * ftrace_location - return true if the ip giving is a traced location
+> > 
+> > So it's all kinds of confusing...
 > 
-> Yes, this looks similar to virtio_crypto_algs_register/unregister.
+> Yes.. so yesterday, when making function-graph tracing not explode, I
+> ran into a similar issue. Steve suggested something along the lines of
+> .... this.
 > 
-> Let's look at the difference:
-> struct virtio_crypto_akcipher_algo {
->          uint32_t algonum;
->          uint32_t service;
->          unsigned int active_devs;
->          struct akcipher_alg algo;
-> };
+> (modified from his actual suggestion to also cover this case)
 > 
-> struct virtio_crypto_algo {
->          uint32_t algonum;
->          uint32_t service;
->          unsigned int active_devs;
->          struct skcipher_alg algo; /* akcipher_alg VS skcipher_alg */
-> };
-> 
-> If reusing virtio_crypto_algs_register/unregister, we need to modify the 
-> data structure like this:
-> struct virtio_crypto_akcipher_algo {
->          uint32_t algonum;
->          uint32_t service;    /* use service to distinguish 
-> akcipher/skcipher */
->          unsigned int active_devs;
->      union {
->          struct skcipher_alg skcipher;
->              struct akcipher_alg akcipher;
->      } alg;
-> };
-> 
-> int virtio_crypto_akcipher_algs_register(struct virtio_crypto *vcrypto)
-> {
->      ...
->          for (i = 0; i < ARRAY_SIZE(virtio_crypto_akcipher_algs); i++) {
->                  uint32_t service = virtio_crypto_akcipher_algs[i].service;
->          ...
->          /* test service type then call 
-> crypto_register_akcipher/crypto_register_skcipher */
->                  if (service == VIRTIO_CRYPTO_SERVICE_AKCIPHER)
->              
-> crypto_register_akcipher(&virtio_crypto_akcipher_algs[i].algo.akcipher);
->          else
->              
-> crypto_register_skcipher(&virtio_crypto_skcipher_algs[i].algo.skcipher);
->          ...
->          }
->      ...
-> }
-> 
-> Also test service type and call 
-> crypto_unregister_skcipher/crypto_unregister_akcipher.
-> 
-> This gets unclear from current v2 version.
-> 
-> On the other hand, the kernel side prefers to separate skcipher and 
-> akcipher(separated header files and implementations).
-> 
-Hi, Lei
-I also take a look at other crypto drivers at qat/ccp/hisilicon, they 
-separate akcipher/skcipher algo. If you consider that reusing 
-virtio_crypto_algs_register/unregister seems better, I will try to merge 
-them into a single function.
+> Let me go try this...
 
--- 
-zhenwei pi
+Yes, this looks good.
+ 
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -1578,7 +1578,23 @@ unsigned long ftrace_location_range(unsi
+>   */
+>  unsigned long ftrace_location(unsigned long ip)
+>  {
+> -	return ftrace_location_range(ip, ip);
+> +	struct dyn_ftrace *rec;
+> +	unsigned long offset;
+> +	unsigned long size;
+> +
+> +	rec = lookup_rec(ip, ip);
+> +	if (!rec) {
+> +		if (!kallsyms_lookup(ip, &size, &offset, NULL, NULL))
+
+Since we do not care about a symbol name, kallsyms_lookup_size_offset() 
+would be better I think.
+
+Miroslav
