@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12519C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D173CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238332AbiBWF0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:26:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S229720AbiBWF0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238331AbiBWFZm (ORCPT
+        with ESMTP id S238320AbiBWFZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:25:42 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27386D964
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:49 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d74a0ff060so75803747b3.6
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:49 -0800 (PST)
+        Wed, 23 Feb 2022 00:25:41 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C456D863
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:46 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e129-20020a25d387000000b006245d830ca6so12323810ybf.13
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=migmFG7UQDaW8MeCncNCopIOLc7/KCi4nAx8Y23Kqls=;
-        b=ZIf827+EcfBkAYznkNAzIxjepuJOo5jGJUpKJJAWVlbJLp/v2xx9WndG0Zfv0Y30pp
-         QVoiE4x5/isYQS6r529V5FuPTwvJXepA8/Ig/UwtVbwxtSPhO5eBWW/xZu7GdKR2hwRD
-         noJsJ3Ur8bMBMS1eL71R7PXbr8K1C4T4AmgEfBVK5/+rkrUOvlO+o5qBs5UJm8vfEFH8
-         iWvYMGLx9ZnbGLPu3ZtgRIXCqWDVhmvwLhi1ORJZdwX1PxFlhSsfJbPaCpw4raGaKYCV
-         43iNhXkj/THFgjjQb9mrwbCVq0tdVwLBhSI29IV5lijsBJ9zHJayAmn0j12b9dgg/i30
-         Q+4w==
+        bh=wpN/U5eluX6Jnat+pEDX2C0UlbFhsXsgqK2IMjW00B0=;
+        b=eO68TZsayJUnzF9ppfHaPSwA9f3cpJtiM/bQv1NjIx1viksnomhVCZg/OPfesExCQe
+         GPBpKhmjuCayGTZhMCQafKSmuYZ+smeOmFtUbvbkWS5siPQw7nd2sd5jds4KSpKgIMG1
+         5rAZMh+2rFOS1AHpWlupbprjH1FaaIPoFdMADMVIZrEncJu5IwxbAAD77jq17vk7nHI/
+         pHx7Yx3y5+Ja+7mdhxYJ7U+IEaib+spU25N1cAyqYIyEgycYL490w9sjOc0zBhbj55fl
+         oXav/h9TUMbHXVfYpZ1MYXyKyDqxgCsBYAWNUi6HD47X/71tlKLWuj7QNFucy0Ul1WpD
+         v86A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=migmFG7UQDaW8MeCncNCopIOLc7/KCi4nAx8Y23Kqls=;
-        b=tyC8PEAm+nHdFxM9SbddE+nmk4SbGQTtDT7y9ENUnSRRXXPJs6PCbuIAb9OLtbrUR1
-         JkvZy1y1Jz+WzRsmmvLQejtn6WtQDD1Ub+zUrtB73Ro9EPj8UVIt6HcfQ1zLfjQrMYAG
-         r6iYGN1y0y8pCTZp/img5Lk9X9PZF6tRv5xoBhYQwfqARBbYEpOnhnfoppWtOGWRoTIA
-         uCu2z5FoR1JCMOBPT0GAfc/EYsEPm5rihp+thouE7U+3LaCMmwnOHyvqtpytXam+V1xF
-         7AWvibOFH2s/MiDESyesvKIvuyNI6ElYCmvxg25TSYLfxeb4XPIV9LovQYPvSoiJxdpN
-         /tKg==
-X-Gm-Message-State: AOAM533I7XGRq/O6ns+TFI5J6Q/CqbRYi1m53s7hoBdGr9lPTeZRWyty
-        SdwEgo0/orVTVoVjdRUL01ChilgrCUCQb6SJDmxxZaRLRY01r9N0W51pkKu7YCkz5XV8+lFe5Lq
-        AmBJGIrjXHhT347RCfWmUKCT8S9i+0PoiiQc8crV27qw2+TFcTQ8OOvXUBlAvJyvO2HmVrjHc
-X-Google-Smtp-Source: ABdhPJzpSBL0VJdokvTlUTI5d1w3wFKyOwiaPENifHATjNeM+qviCG3MD0z5nH5EeDzE1oVe+ERWkd3RD0Jr
+        bh=wpN/U5eluX6Jnat+pEDX2C0UlbFhsXsgqK2IMjW00B0=;
+        b=k2kUzrY4SYQ1HwTRTHRX/y3uVPy+8UlCLEeL4nxFjlWas06/df1Fl83rU7Hv8gKpAx
+         MOul15VkOZw9ffwRfTqz6Ak0DusQgIN4ACmO/bS16ch+Xtb2G/1kqXFu6Gw4fp6qMLpC
+         B0pBVExtvGkEEuVuLALsSgLdBYyEZ1RTW8VhXrQwAJ6hrtVdBf0uZpp6dnu6cU1Q4zWo
+         gKSx4GzVf4yawcjfcCuRqkHbd5InP97qxxfs+8ax0B4Jw0pCfx9T7/GvkYQIHw/fl5MS
+         SFUGyU4FCGVVTYTdRfadPbeh9nWmRy6yavrWpTQQ1d45GjF/3Brv3Ax6NNhQIFzUe0d7
+         sTBQ==
+X-Gm-Message-State: AOAM530cHnGssKhipa0WA2hrdzG1BTcJexjPlrLe7+dkaeMTyXbRo3AL
+        0G4uTJHSr14jGeVZEUHMlhs++AnCANEKWaBq8KNzbz2P+G40+ZBu0HtX8l6yR74azszgzNnFpl1
+        JdA3ImlrWGbTJUFPF9d3DhyC//20tj9U08kjgZkcNkrIojCvYxf6jOb8baEVUjlXwPdrE6x4B
+X-Google-Smtp-Source: ABdhPJy8YBcGGLS1CDa1jQAvWHy6IX+C9Fx9N9t0vFRpgYOq3ptmbXD9mdu9QbdYBQ3ESjXtAc+9DWkF+HCP
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a81:84d5:0:b0:2d1:e85:bf04 with SMTP id
- u204-20020a8184d5000000b002d10e85bf04mr27926930ywf.465.1645593877093; Tue, 22
- Feb 2022 21:24:37 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:59 -0800
+ (user=junaids job=sendgmr) by 2002:a81:7141:0:b0:2d3:d549:23f8 with SMTP id
+ m62-20020a817141000000b002d3d54923f8mr27573261ywc.87.1645593872454; Tue, 22
+ Feb 2022 21:24:32 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:57 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-24-junaids@google.com>
+Message-Id: <20220223052223.1202152-22-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 23/47] mm: asi: Add support for mapping all userspace
- memory into ASI
+Subject: [RFC PATCH 21/47] mm: asi: Add support for locally non-sensitive
+ VM_USERMAP pages
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -67,186 +67,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a new ASI class flag, ASI_MAP_ALL_USERSPACE, which if set,
-would automatically map all userspace addresses into that ASI address
-space. This is achieved by lazily cloning the userspace PGD entries
-during page faults encountered while in that restricted address space.
-
-When the userspace PGD entry is cleared (e.g. in munmap()), we go
-through all restricted address spaces with the ASI_MAP_ALL_USERSPACE
-flag and clear the corresponding entry in those address spaces as well.
+VM_USERMAP pages can be mapped into userspace, which would overwrite
+the asi_mm field, so we restore that field when freeing these pages.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h |  2 +
- arch/x86/mm/asi.c          | 81 ++++++++++++++++++++++++++++++++++++++
- include/asm-generic/asi.h  |  7 ++++
- mm/memory.c                |  2 +
- 4 files changed, 92 insertions(+)
+ mm/vmalloc.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index 2dc465f78bcc..062ccac07fd9 100644
---- a/arch/x86/include/asm/asi.h
-+++ b/arch/x86/include/asm/asi.h
-@@ -68,6 +68,8 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb);
- void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len);
- void asi_sync_mapping(struct asi *asi, void *addr, size_t len);
- void asi_do_lazy_map(struct asi *asi, size_t addr);
-+void asi_clear_user_pgd(struct mm_struct *mm, size_t addr);
-+void asi_clear_user_p4d(struct mm_struct *mm, size_t addr);
- 
- static inline void asi_init_thread_state(struct thread_struct *thread)
- {
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index ac35323193a3..a3d96be76fa9 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -702,6 +702,41 @@ static bool is_addr_in_local_nonsensitive_range(size_t addr)
- 	       addr < VMALLOC_GLOBAL_NONSENSITIVE_START;
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index ea94d8a1e2e9..a89866a926f6 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2424,6 +2424,14 @@ static void asi_unmap_vm_area(struct vm_struct *area)
+ 	 */
+ 	if (area->flags & (VM_GLOBAL_NONSENSITIVE | VM_LOCAL_NONSENSITIVE))
+ 		asi_unmap(area->asi, area->addr, get_vm_area_size(area), true);
++
++	if (area->flags & VM_USERMAP) {
++		uint i;
++
++		for (i = 0; i < area->nr_pages; i++)
++			if (PageLocalNonSensitive(area->pages[i]))
++				area->pages[i]->asi_mm = area->asi->mm;
++	}
  }
  
-+static void asi_clone_user_pgd(struct asi *asi, size_t addr)
-+{
-+	pgd_t *src = pgd_offset_pgd(asi->mm->pgd, addr);
-+	pgd_t *dst = pgd_offset_pgd(asi->pgd, addr);
-+	pgdval_t old_src, curr_src;
-+
-+	if (pgd_val(*dst))
-+		return;
-+
-+	VM_BUG_ON(!irqs_disabled());
-+
-+	/*
-+	 * This synchronizes against the PGD entry getting cleared by
-+	 * free_pgd_range(). That path has the following steps:
-+	 * 1. pgd_clear
-+	 * 2. asi_clear_user_pgd
-+	 * 3. Remote TLB Flush
-+	 * 4. Free page tables
-+	 *
-+	 * (3) will be blocked for the duration of this function because the
-+	 * IPI will remain pending until interrupts are re-enabled.
-+	 *
-+	 * The following loop ensures that if we read the PGD value before
-+	 * (1) and write it after (2), we will re-read the value and write
-+	 * the new updated value.
-+	 */
-+	curr_src = pgd_val(*src);
-+	do {
-+		set_pgd(dst, __pgd(curr_src));
-+		smp_mb();
-+		old_src = curr_src;
-+		curr_src = pgd_val(*src);
-+	} while (old_src != curr_src);
-+}
-+
- void asi_do_lazy_map(struct asi *asi, size_t addr)
- {
- 	if (!static_cpu_has(X86_FEATURE_ASI) || !asi)
-@@ -710,6 +745,9 @@ void asi_do_lazy_map(struct asi *asi, size_t addr)
- 	if ((asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE) &&
- 	    is_addr_in_local_nonsensitive_range(addr))
- 		asi_clone_pgd(asi->pgd, asi->mm->asi[0].pgd, addr);
-+	else if ((asi->class->flags & ASI_MAP_ALL_USERSPACE) &&
-+		 addr < TASK_SIZE_MAX)
-+		asi_clone_user_pgd(asi, addr);
- }
- 
- /*
-@@ -766,3 +804,46 @@ void __init asi_vmalloc_init(void)
- 	VM_BUG_ON(vmalloc_local_nonsensitive_end >= VMALLOC_END);
- 	VM_BUG_ON(vmalloc_global_nonsensitive_start <= VMALLOC_START);
- }
-+
-+static void __asi_clear_user_pgd(struct mm_struct *mm, size_t addr)
-+{
-+	uint i;
-+
-+	if (!static_cpu_has(X86_FEATURE_ASI) || !mm_asi_enabled(mm))
-+		return;
-+
-+	/*
-+	 * This function is called right after pgd_clear/p4d_clear.
-+	 * We need to be sure that the preceding pXd_clear is visible before
-+	 * the ASI pgd clears below. Compare with asi_clone_user_pgd().
-+	 */
-+	smp_mb__before_atomic();
-+
-+	/*
-+	 * We need to ensure that the ASI PGD tables do not get freed from
-+	 * under us. We can potentially use RCU to avoid that, but since
-+	 * this path is probably not going to be too performance sensitive,
-+	 * so we just acquire the lock to block asi_destroy().
-+	 */
-+	mutex_lock(&mm->asi_init_lock);
-+
-+	for (i = 1; i < ASI_MAX_NUM; i++)
-+		if (mm->asi[i].class &&
-+		    (mm->asi[i].class->flags & ASI_MAP_ALL_USERSPACE))
-+			set_pgd(pgd_offset_pgd(mm->asi[i].pgd, addr),
-+				native_make_pgd(0));
-+
-+	mutex_unlock(&mm->asi_init_lock);
-+}
-+
-+void asi_clear_user_pgd(struct mm_struct *mm, size_t addr)
-+{
-+	if (pgtable_l5_enabled())
-+		__asi_clear_user_pgd(mm, addr);
-+}
-+
-+void asi_clear_user_p4d(struct mm_struct *mm, size_t addr)
-+{
-+	if (!pgtable_l5_enabled())
-+		__asi_clear_user_pgd(mm, addr);
-+}
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index 7c50d8b64fa4..8513d0d7865a 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -6,6 +6,7 @@
- 
- /* ASI class flags */
- #define ASI_MAP_STANDARD_NONSENSITIVE	1
-+#define ASI_MAP_ALL_USERSPACE		2
- 
- #ifndef CONFIG_ADDRESS_SPACE_ISOLATION
- 
-@@ -85,6 +86,12 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb) { }
- static inline
- void asi_do_lazy_map(struct asi *asi, size_t addr) { }
- 
-+static inline
-+void asi_clear_user_pgd(struct mm_struct *mm, size_t addr) { }
-+
-+static inline
-+void asi_clear_user_p4d(struct mm_struct *mm, size_t addr) { }
-+
- static inline
- void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
- 
-diff --git a/mm/memory.c b/mm/memory.c
-index 8f1de811a1dc..667ece86e051 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -296,6 +296,7 @@ static inline void free_pud_range(struct mmu_gather *tlb, p4d_t *p4d,
- 
- 	pud = pud_offset(p4d, start);
- 	p4d_clear(p4d);
-+	asi_clear_user_p4d(tlb->mm, start);
- 	pud_free_tlb(tlb, pud, start);
- 	mm_dec_nr_puds(tlb->mm);
- }
-@@ -330,6 +331,7 @@ static inline void free_p4d_range(struct mmu_gather *tlb, pgd_t *pgd,
- 
- 	p4d = p4d_offset(pgd, start);
- 	pgd_clear(pgd);
-+	asi_clear_user_pgd(tlb->mm, start);
- 	p4d_free_tlb(tlb, p4d, start);
- }
- 
+ #else
 -- 
 2.35.1.473.g83b2b277ed-goog
 
