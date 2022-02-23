@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A96C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CDCC43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237492AbiBWCjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
+        id S233465AbiBWCjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237685AbiBWCh4 (ORCPT
+        with ESMTP id S237690AbiBWCh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 21:37:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601F946660;
-        Tue, 22 Feb 2022 18:32:52 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDE45C66D;
+        Tue, 22 Feb 2022 18:32:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83C16B81E10;
-        Wed, 23 Feb 2022 02:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EE8BC340E8;
-        Wed, 23 Feb 2022 02:32:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C229F61558;
+        Wed, 23 Feb 2022 02:32:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1285C340F0;
+        Wed, 23 Feb 2022 02:32:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583541;
-        bh=Gm4v8ZjMM0wOfI7MuPJdBUYVi8qe54nykDQmJ+xR7Sc=;
+        s=k20201202; t=1645583551;
+        bh=faKb8S+dj0AamNTJtP4wWkYFDzropf0AlV3qAJECMQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCnSGaEPRmeK8fFlQ3Mjd/kSz+wvWb8EMSTsUzBpEPYPGN51+d4MIaiF952v1AXbv
-         siuFewb/gnm6EG2/Z/lOrwHGki6C5+j9DhJKDMgn0+K3L2qX+k8qDWsNQXZ/KR5InN
-         GHES8YTT3/h3pBsbZyFaIpSh1HroADnNjt/cTScqQVV6NXjonswaMYywPPOpvKC/bv
-         jzsjOcqhe4oItKCicEOmKYMXjEBB90ce8waDOy8987OmA6YF1N3OfcGr1EsgVFs3Gi
-         yWR83Mqa3bA2KHL9nVZmaC9x2L6YJLXoF79os6yBSm+9vKKlu5v3ieKuRfWDmIVlY6
-         7CdWgJXPCS94A==
+        b=J6O5sM8QjUlLA9030bHNMP+z+uOEJkDPbjY0XcJtmfN3gspjLIzxLigELCrDL4XBR
+         Y/WfuFNh6MfbUjEOZLgT97ID/EpW0IMz3KSrB7lnu0EF7Y2RFEjg3KB/1yA5vRrTAu
+         +tYiOQNHa3CS25KaIG0NznH/QERdcMJB6nBmFnyGglgrQM9z/FjrPgLwQMwDCq1P7X
+         Z5XXK0WM19EvE2l1sN2uqws/iC0c5mdP0THQU8M3sm3RE7Dzl7IxPGs7SLBNY0DvYT
+         A9TW/SMYSW/9Rly3ZRfB79oQhq5cfMQTnsqayoc30vKzSofkhZWGkn9MpxkmpGfuCC
+         Imrt4kVFbSyZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, arnd@arndb.de,
-        christophe.jaillet@wanadoo.fr, laurent.pinchart@ideasonboard.com,
-        dmaengine@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 10/13] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Tue, 22 Feb 2022 21:31:49 -0500
-Message-Id: <20220223023152.242065-10-sashal@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@canonical.com, semen.protsenko@linaro.org,
+        robh@kernel.org, yangyicong@hisilicon.com, geert+renesas@glider.be,
+        sven@svenpeter.dev, jie.deng@intel.com, bence98@sch.bme.hu,
+        lukas.bulwahn@gmail.com, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 12/13] i2c: qup: allow COMPILE_TEST
+Date:   Tue, 22 Feb 2022 21:31:51 -0500
+Message-Id: <20220223023152.242065-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
 References: <20220223023152.242065-1-sashal@kernel.org>
@@ -52,38 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+[ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+and easier maintenance.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index 6b5626e299b22..419c841aef34d 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -118,8 +118,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index 3a2f85d811f75..165c112bc5b9a 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -849,7 +849,7 @@ config I2C_QCOM_GENI
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
-+		}
- 
- 		pm_runtime_barrier(schan->dev);
- 
+ config I2C_QUP
+ 	tristate "Qualcomm QUP based I2C controller"
+-	depends on ARCH_QCOM
++	depends on ARCH_QCOM || COMPILE_TEST
+ 	help
+ 	  If you say yes to this option, support will be included for the
+ 	  built-in I2C interface on the Qualcomm SoCs.
 -- 
 2.34.1
 
