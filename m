@@ -2,106 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 03:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237727AbiBWDpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 22:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
+        id S237326AbiBWDrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 22:47:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbiBWDpG (ORCPT
+        with ESMTP id S230325AbiBWDrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 22:45:06 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB7B60A91
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:44:40 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A28AD58020A;
-        Tue, 22 Feb 2022 22:44:39 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 22 Feb 2022 22:44:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=LAq/x+sjX1h3RY
-        deEBmP+TCHY+nFbfG+PQIlZr63FDY=; b=elHl0afiXEziLWdOnRbl7oUM0gdPzJ
-        QYZnjZmp2R7XAKpY2tQNincaBNWe4NaeSK+222l77EKsegdmxlt5oH1X/WDLnJWl
-        B4BfZhC7gOg4LKkXVXb2sD0Qs8qy9bbxzAt5q4QkN5n88IrQ5xaQ/V13leDpOEtC
-        WmvxOtqhlCfRsXFo4DLrk/7Yl1yaqTW72mgK2vZXoF2wk9gXGlZMa8Q9BzHNmQBT
-        phmDa3YagziTnNa3V5rZ+TTkHkt5QYrqe4pv44rcQ/2cBqN5W5ibxLSSwajhL1MK
-        Kmux8pjQ7E7fwEeK5KH4kL3DhvYNblYZJSg1aVbZpvpNPg1d7AOaeJKw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=LAq/x+sjX1h3RYdeEBmP+TCHY+nFbfG+PQIlZr63F
-        DY=; b=fHdn1PYE+BCM6+WUUC4nqAaHKOeKuL0gl8LceZPMWT4fk8TpmnlikKL5z
-        fT46FJKlitdG3Rg7Ycmt1v836klQMWjOK7X8SuOtjxoH9O8QSwOGSb+HIlgMRAyR
-        p33OViRrbv/etwYwCyIycpJUoJ4a0+mCE6OqGWZz2jB5viB7c3FKKmc076FkNrWq
-        fM3jvp1seCdiBKy7etExc+HTvOJP1gOee7BAI2n0nV7S+G2lfZEaoxNUDSXkM44A
-        jwGExwP3YQ7e1mkGyV2JFc1et0x6KCB34vYboKolUDZlN4kgwzBYncMq8W6Xy+cZ
-        fEb/UEL7pn+PpXsv3xPuFiSVz4p5w==
-X-ME-Sender: <xms:p60VYqjE462gq5F5hrEjkVgZADtwHafHh2Y6H7Y_RVfbVgzyO3Wziw>
-    <xme:p60VYrDHf--zdazfym0pzgMHI2HvpadEC9EziZ5I9OrrwjjUBUwq7tUIU6s_ithGI
-    loSOpdkO29PasbXLA>
-X-ME-Received: <xmr:p60VYiF-cHSWoJxQo0UbJVPl_vlXnsbntJBQ_JvTqDcSw9kREw7rCTiQRnam-FIunKGAeNtbzu6zws4EkEszNgrOA6qhAV0WrDTX6qTY4wg7qG37T4U8hubg4Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeelgdeiudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefuvfhfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpefgveffteelheffjeeukedvkedviedtheevgeefkeehueeiieeuteeu
-    gfettdeggeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:p60VYjTGhs7sqjKp-UEQ9kNQECvHjoy_hcCiy1Ydkitl3LFyoy-mhw>
-    <xmx:p60VYnzgqBHYDJipdgKohR_K5EMY8xGF4VEremP6tKhp1bqoAvZY2g>
-    <xmx:p60VYh6ZzTkoArf6KIir4xCJ-fCRitXdXNPo_0iyeY8uVIjbjabeRw>
-    <xmx:p60VYqoiGYE3uKZQqzimgK7rjV6TQFbF1XfBsFKYjTsGjeu61Tlk7Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Feb 2022 22:44:38 -0500 (EST)
-Subject: Re: [PATCH v10 13/18] phy: sun4i-usb: Allow reset line to be shared
-To:     Andre Przywara <andre.przywara@arm.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Rob Herring <robh@kernel.org>, Ondrej Jirman <megous@megous.com>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
-        Philipp Zabel <p.zabel@pengutronix.de>
-References: <20220211122643.1343315-1-andre.przywara@arm.com>
- <20220211122643.1343315-14-andre.przywara@arm.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <aac11817-5c3c-631e-ad10-0fecf83e4c41@sholland.org>
-Date:   Tue, 22 Feb 2022 21:44:38 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Tue, 22 Feb 2022 22:47:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADB5B60CCD
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 19:46:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645588014;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IyrPqz1BsumJA1M6xQYUZkQ2C6LgRTDoH7fHGR94hxE=;
+        b=cxpZWq685acJl3ZaPoZ3Fz9ND3AkPwcjC+7wzAXMBuI91meT0i/cxruyqh5mC/78C+dKbG
+        G/sGCSG3aQnTDxTtPnt5KTC6QZvbByK+cd8Bhr61tHIsCPk7fGJ0W3cN/n4YI53mSE7FBz
+        kB4xAptlb+DNvXbfbcoROf2hy7ICDWg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-646-rFsA4Yg1Op6pT1x-pzdmWA-1; Tue, 22 Feb 2022 22:46:51 -0500
+X-MC-Unique: rFsA4Yg1Op6pT1x-pzdmWA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7AD2480DE09;
+        Wed, 23 Feb 2022 03:46:49 +0000 (UTC)
+Received: from localhost (ovpn-14-1.pek2.redhat.com [10.72.14.1])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A87624ABA9;
+        Wed, 23 Feb 2022 03:46:28 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 11:46:26 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v4 04/10] crash hp: prototype change for
+ crash_prepare_elf64_headers
+Message-ID: <YhWuElhbF4GslSfq@MiWiFi-R3L-srv>
+References: <20220209195706.51522-1-eric.devolder@oracle.com>
+ <20220209195706.51522-5-eric.devolder@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <20220211122643.1343315-14-andre.przywara@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209195706.51522-5-eric.devolder@oracle.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/11/22 6:26 AM, Andre Przywara wrote:
-> The USB HCIs (and PHYs?) in Allwinner's newer generation SoCs (H616)
-> rely on the reset line of USB PHY 2 to be de-asserted, even when only
-> one of the other PHYs is actually in use.
+On 02/09/22 at 02:57pm, Eric DeVolder wrote:
+> From within crash_prepare_elf64_headers() there is a need to
+> reference the struct kimage hotplug members. As such, this
+> change passes the struct kimage as a parameter to the
+> crash_prepare_elf64_headers().
 
-Thankfully, so far this appears to be a quirk of H616 only.
+One more sentence can be added"
 
-> To make those ports work, we include this reset line in the HCIs' resets
-> property, which requires this line to be shareable.
+"This is preparation for later patch, no functionality change."
+
+Otherwise, this patch looks good to me.
+
+Acked-by: Baoquan He <bhe@redhat.com>
+
 > 
-> Change the call to allocate the reset line to mark it as shared, to
-> enable the other ports on those SoCs.
+> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> ---
+>  arch/arm64/kernel/machine_kexec_file.c | 6 +++---
+>  arch/powerpc/kexec/file_load_64.c      | 2 +-
+>  arch/x86/kernel/crash.c                | 3 ++-
+>  include/linux/kexec.h                  | 5 +++--
+>  kernel/kexec_file.c                    | 4 ++--
+>  5 files changed, 11 insertions(+), 9 deletions(-)
 > 
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+> diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+> index 59c648d51848..7dbafb42ecf2 100644
+> --- a/arch/arm64/kernel/machine_kexec_file.c
+> +++ b/arch/arm64/kernel/machine_kexec_file.c
+> @@ -39,7 +39,7 @@ int arch_kimage_file_post_load_cleanup(struct kimage *image)
+>  	return kexec_image_post_load_cleanup_default(image);
+>  }
+>  
+> -static int prepare_elf_headers(void **addr, unsigned long *sz)
+> +static int prepare_elf_headers(struct kimage *image, void **addr, unsigned long *sz)
+>  {
+>  	struct crash_mem *cmem;
+>  	unsigned int nr_ranges;
+> @@ -67,7 +67,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>  	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
+>  
+>  	if (!ret)
+> -		ret =  crash_prepare_elf64_headers(cmem, true, addr, sz);
+> +		ret =  crash_prepare_elf64_headers(image, cmem, true, addr, sz);
+>  
+>  	kfree(cmem);
+>  	return ret;
+> @@ -96,7 +96,7 @@ int load_other_segments(struct kimage *image,
+>  
+>  	/* load elf core header */
+>  	if (image->type == KEXEC_TYPE_CRASH) {
+> -		ret = prepare_elf_headers(&headers, &headers_sz);
+> +		ret = prepare_elf_headers(image, &headers, &headers_sz);
+>  		if (ret) {
+>  			pr_err("Preparing elf core header failed\n");
+>  			goto out_err;
+> diff --git a/arch/powerpc/kexec/file_load_64.c b/arch/powerpc/kexec/file_load_64.c
+> index b4981b651d9a..07da6bf1cf24 100644
+> --- a/arch/powerpc/kexec/file_load_64.c
+> +++ b/arch/powerpc/kexec/file_load_64.c
+> @@ -797,7 +797,7 @@ static int load_elfcorehdr_segment(struct kimage *image, struct kexec_buf *kbuf)
+>  		goto out;
+>  
+>  	/* Setup elfcorehdr segment */
+> -	ret = crash_prepare_elf64_headers(cmem, false, &headers, &headers_sz);
+> +	ret = crash_prepare_elf64_headers(image, cmem, false, &headers, &headers_sz);
+>  	if (ret) {
+>  		pr_err("Failed to prepare elf headers for the core\n");
+>  		goto out;
+> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+> index 9730c88530fc..9db41cce8d97 100644
+> --- a/arch/x86/kernel/crash.c
+> +++ b/arch/x86/kernel/crash.c
+> @@ -265,7 +265,8 @@ static int prepare_elf_headers(struct kimage *image, void **addr,
+>  		goto out;
+>  
+>  	/* By default prepare 64bit headers */
+> -	ret =  crash_prepare_elf64_headers(cmem, IS_ENABLED(CONFIG_X86_64), addr, sz);
+> +	ret =  crash_prepare_elf64_headers(image, cmem,
+> +				IS_ENABLED(CONFIG_X86_64), addr, sz);
+>  
+>  out:
+>  	vfree(cmem);
+> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+> index 13c238c2da48..b11d75a6b2bc 100644
+> --- a/include/linux/kexec.h
+> +++ b/include/linux/kexec.h
+> @@ -221,8 +221,9 @@ struct crash_mem {
+>  extern int crash_exclude_mem_range(struct crash_mem *mem,
+>  				   unsigned long long mstart,
+>  				   unsigned long long mend);
+> -extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+> -				       void **addr, unsigned long *sz);
+> +extern int crash_prepare_elf64_headers(struct kimage *image,
+> +	struct crash_mem *mem, int kernel_map,
+> +	void **addr, unsigned long *sz);
+>  #endif /* CONFIG_KEXEC_FILE */
+>  
+>  #ifdef CONFIG_KEXEC_ELF
+> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+> index 8347fc158d2b..801d0d0a5012 100644
+> --- a/kernel/kexec_file.c
+> +++ b/kernel/kexec_file.c
+> @@ -1260,8 +1260,8 @@ int crash_exclude_mem_range(struct crash_mem *mem,
+>  	return 0;
+>  }
+>  
+> -int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+> -			  void **addr, unsigned long *sz)
+> +int crash_prepare_elf64_headers(struct kimage *image, struct crash_mem *mem,
+> +	int kernel_map, void **addr, unsigned long *sz)
+>  {
+>  	Elf64_Ehdr *ehdr;
+>  	Elf64_Phdr *phdr;
+> -- 
+> 2.27.0
+> 
 
-Acked-by: Samuel Holland <samuel@sholland.org>
