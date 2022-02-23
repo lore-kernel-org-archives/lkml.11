@@ -2,86 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D730CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D23C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234046AbiBWCfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:35:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        id S237424AbiBWCfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237589AbiBWCdQ (ORCPT
+        with ESMTP id S237591AbiBWCdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 21:33:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1475E744;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BE75E74E;
         Tue, 22 Feb 2022 18:31:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B5716158A;
-        Wed, 23 Feb 2022 02:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286A0C340F1;
-        Wed, 23 Feb 2022 02:31:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E63036157F;
+        Wed, 23 Feb 2022 02:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFF3C340EB;
+        Wed, 23 Feb 2022 02:31:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583477;
-        bh=n5T1+I/pmeyijBxU7FOIfuJEcV3dxvkqCaFuwww8pfg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GaaMVG+c0WqCz/jd4d/wfiYzh12XHTi57HeW18L1GEGlbopQAr74JcQuo0HUQ6m1h
-         vF+8PYgTQCxgEOxE+PABZpUSObkW3nBnDB4osp8vL1/R6g0rfK4BAQNznugdYZR7OS
-         d20mYVF+xH50xikzwQfprwfcg6n+jouKNvHIrxwsKrcDv2fXKlz4s6rfCM1+fFkxq2
-         jgRipkdayNw2IsRj/WXhj7MyU0gZi4YTs1J6dfcQqsHsvH7Vzg6c/ywUQTawzj6+3b
-         JzQp7cWf4oPu19jCqP4mjRaDH0CTS9VZPRgVvZLdKrlt0NT9AgpXM/PhwaQkBAKbEw
-         TiqNdlhNrdzoQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
-        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 18/18] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Tue, 22 Feb 2022 21:30:35 -0500
-Message-Id: <20220223023035.241551-18-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
-References: <20220223023035.241551-1-sashal@kernel.org>
+        s=k20201202; t=1645583463;
+        bh=TiTQiThEcjMtldsoXuGuzk5+IrynefCoac+K2A/X0ZQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FX8vOT9INRi15jmEHdaHjHRcT7R00ciDebJJCTKPl3ZURLX0k3t8KWFCp57YgRo0J
+         Dmw9OalEKv7Cvgdy+58l+TRnmZuMHHwXFRn9rfNEEPlq1TshHsxEQLCJco7Zh5214S
+         iZSUMKOuTqENBm+B9D840+pcfuDMjfBWFqx/hLO5aiFyeZcbN1mklHAG4WwwXGGrNQ
+         Rp8vogO3oWdK52DWDd/dH7AsKtJ3hPtTzE9yKte5hkrOJSw1I4vfnnXf3CWLs4UFSu
+         tfEj9URYhHmFo5S+5zagNG1Zr/+bdhc4nxwqzun0R1GD4YO6JoXfqsvbYe4ipdh1ai
+         sGIxvJa9AN+JA==
+Date:   Tue, 22 Feb 2022 20:38:57 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 4/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array  member in struct wmi_connect_event
+Message-ID: <8a0e347615a3516980fd8b6ad2dc4864a880613b.1645583264.git.gustavoars@kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1645583264.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+Replace one-element array with flexible-array member in struct
+wmi_connect_event.
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+It's also worth noting that due to the flexible array transformation,
+the size of struct wmi_connect_event changed (now the size is 1 byte
+smaller), and in order to preserve the logic of before the transformation,
+the following change is needed:
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+	-       if (len < sizeof(struct wmi_connect_event))
+	+       if (len <= sizeof(struct wmi_connect_event))
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
+
+Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Hi!
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index 77ac5a721e7b6..414341c9cf5ae 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -658,6 +658,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
+It'd be great if someone can confirm or comment on the following
+changes described in the changelog text:
+
+        -       if (len < sizeof(struct wmi_connect_event))
+        +       if (len <= sizeof(struct wmi_connect_event))
+
+Thanks
+
+ drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
+ drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+index 049d75f31f3c..ccdccead688e 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.c
++++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+@@ -857,7 +857,7 @@ static int ath6kl_wmi_connect_event_rx(struct wmi *wmi, u8 *datap, int len,
+ 	struct wmi_connect_event *ev;
+ 	u8 *pie, *peie;
  
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
-+
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
+-	if (len < sizeof(struct wmi_connect_event))
++	if (len <= sizeof(struct wmi_connect_event))
+ 		return -EINVAL;
+ 
+ 	ev = (struct wmi_connect_event *) datap;
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+index 432e4f428a4a..6b064e669d87 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.h
++++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+@@ -1545,7 +1545,7 @@ struct wmi_connect_event {
+ 	u8 beacon_ie_len;
+ 	u8 assoc_req_len;
+ 	u8 assoc_resp_len;
+-	u8 assoc_info[1];
++	u8 assoc_info[];
+ } __packed;
+ 
+ /* Disconnect Event */
 -- 
-2.34.1
+2.27.0
 
