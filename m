@@ -2,137 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5292AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5FFC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243948AbiBWSdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:33:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
+        id S243960AbiBWSeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243922AbiBWSdc (ORCPT
+        with ESMTP id S243927AbiBWSeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:33:32 -0500
-Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F0F123;
-        Wed, 23 Feb 2022 10:33:02 -0800 (PST)
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1nMwRP-0003AV-QA; Wed, 23 Feb 2022 19:32:43 +0100
-Message-ID: <7822c00f-5a2d-b6a2-2f81-cf3330801ad3@maciej.szmigiero.name>
-Date:   Wed, 23 Feb 2022 19:32:37 +0100
+        Wed, 23 Feb 2022 13:34:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B69E4EA0B;
+        Wed, 23 Feb 2022 10:33:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3DAC7B8211D;
+        Wed, 23 Feb 2022 18:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BEB6C340E7;
+        Wed, 23 Feb 2022 18:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645641213;
+        bh=0xj9aSd6jMvgA2fZvLT9i6WQjMs7jPcimi01inky5Yc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V9ji03D9KgSvmPz+XksOIsQKaDXTdI0jhrmMjsQtv5QBjHdUnLPmsgA85dv7JXWw1
+         2+gxlgpemNYSfq3OIa242IRKYcBtO/UhOUYlU1N1InyZybSkR3xe06n1sMfNdFYAvR
+         mxHVXziWDQ4WrYxBThpaPUfJIaZvmB/RDHRWAWkg=
+Date:   Wed, 23 Feb 2022 19:33:31 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     SeongJae Park <sj@kernel.org>
+Cc:     akpm@linux-foundation.org, corbet@lwn.net,
+        skhan@linuxfoundation.org, rientjes@google.com,
+        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/12] mm/damon: Implement a minimal stub for sysfs-based
+ DAMON interface
+Message-ID: <YhZ9+xsQ2zNmTdjD@kroah.com>
+References: <20220223164513.23089-1-sj@kernel.org>
+ <20220223171341.29010-1-sj@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-13-chao.p.peng@linux.intel.com>
- <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
- <20220217134548.GA33836@chaop.bj.intel.com>
- <45148f5f-fe79-b452-f3b2-482c5c3291c4@maciej.szmigiero.name>
- <20220223120047.GB53733@chaop.bj.intel.com>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
-In-Reply-To: <20220223120047.GB53733@chaop.bj.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223171341.29010-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23.02.2022 13:00, Chao Peng wrote:
-> On Tue, Feb 22, 2022 at 02:16:46AM +0100, Maciej S. Szmigiero wrote:
->> On 17.02.2022 14:45, Chao Peng wrote:
->>> On Tue, Jan 25, 2022 at 09:20:39PM +0100, Maciej S. Szmigiero wrote:
->>>> On 18.01.2022 14:21, Chao Peng wrote:
->>>>> KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
->>>>> on it by implementing kvm_arch_private_memory_supported().
->>>>>
->>>>> Also private memslot cannot be movable and the same file+offset can not
->>>>> be mapped into different GFNs.
->>>>>
->>>>> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
->>>>> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
->>>>> ---
->>>> (..)
->>>>>     static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
->>>>> -				      gfn_t start, gfn_t end)
->>>>> +				      struct file *file,
->>>>> +				      gfn_t start, gfn_t end,
->>>>> +				      loff_t start_off, loff_t end_off)
->>>>>     {
->>>>>     	struct kvm_memslot_iter iter;
->>>>> +	struct kvm_memory_slot *slot;
->>>>> +	struct inode *inode;
->>>>> +	int bkt;
->>>>>     	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
->>>>>     		if (iter.slot->id != id)
->>>>>     			return true;
->>>>>     	}
->>>>> +	/* Disallow mapping the same file+offset into multiple gfns. */
->>>>> +	if (file) {
->>>>> +		inode = file_inode(file);
->>>>> +		kvm_for_each_memslot(slot, bkt, slots) {
->>>>> +			if (slot->private_file &&
->>>>> +			     file_inode(slot->private_file) == inode &&
->>>>> +			     !(end_off <= slot->private_offset ||
->>>>> +			       start_off >= slot->private_offset
->>>>> +					     + (slot->npages >> PAGE_SHIFT)))
->>>>> +				return true;
->>>>> +		}
->>>>> +	}
->>>>
->>>> That's a linear scan of all memslots on each CREATE (and MOVE) operation
->>>> with a fd - we just spent more than a year rewriting similar linear scans
->>>> into more efficient operations in KVM.
->>>
-(..)
->>> So linear scan is used before I can find a better way.
->>
->> Another option would be to simply not check for overlap at add or move
->> time, declare such configuration undefined behavior under KVM API and
->> make sure in MMU notifiers that nothing bad happens to the host kernel
->> if it turns out somebody actually set up a VM this way (it could be
->> inefficient in this case, since it's not supposed to ever happen
->> unless there is a bug somewhere in the userspace part).
+On Wed, Feb 23, 2022 at 05:13:41PM +0000, SeongJae Park wrote:
+> On Wed, 23 Feb 2022 16:45:13 +0000 SeongJae Park <sj@kernel.org> wrote:
 > 
-> Specific to TDX case, SEAMMODULE will fail the overlapping case and then
-> KVM prints a message to the kernel log. It will not cause any other side
-> effect, it does look weird however. Yes warn that in the API document
-> can help to some extent.
+> > On Wed, 23 Feb 2022 17:09:38 +0100 Greg KH <gregkh@linuxfoundation.org> wrote:
+> > 
+> > > On Wed, Feb 23, 2022 at 03:20:42PM +0000, SeongJae Park wrote:
+> > > > +static struct kobj_attribute damon_sysfs_ul_range_min_attr =
+> > > > +		__ATTR(min, 0600, damon_sysfs_ul_range_min_show,
+> > > > +				damon_sysfs_ul_range_min_store);
+> > > > +
+> > > > +static struct kobj_attribute damon_sysfs_ul_range_max_attr =
+> > > > +		__ATTR(max, 0600, damon_sysfs_ul_range_max_show,
+> > > > +				damon_sysfs_ul_range_max_store);
+> > > 
+> > > Can you use __ATTR_RW_MODE() instead here and elsewhere?
+> > 
+> > Sure, I will, in the next revision.
+> 
+> After thinking once more, I realized that it might not so simple.  First of
+> all, there are two files having same name in different directories
+> (kdamonds/<N>/pid and targets/<N>/pid).  The files work differently, so I need
+> to use different _show/_store callbacks for them but __ATTR_RW_MODE() wouldn't
+> support the case.
 
-So for the functionality you are adding this code for (TDX) this scan
-isn't necessary and the overlapping case (not supported anyway) is safely
-handled by the hardware (or firmware)?
-Then I would simply remove the scan and, maybe, add a comment instead
-that the overlap check is done by the hardware.
+The reason I recommend using these macros is to prevent you from having
+sysfs files with the same name, yet doing different things in different
+places in the sysfs tree :)
 
-By the way, if a kernel log message could be triggered by (misbehaving)
-userspace then it should be rate limited (if it isn't already).
+> Secondly, I'd like to keep the file names short because the meaning of the
+> files can easily inferred from the hierarchy, but want to keep the _show/_store
+> callback names to have prefixes that allows us easily know their meaning and
+> usage even though it makes the name a little bit longer because I don't want to
+> have too much source files for DAMON sysfs interface.
+> 
+> Am I missing some of your point?
 
-> Thanks,
-> Chao
+How about renaming one of the files?
 
-Thanks,
-Maciej
+thanks,
+
+greg k-h
