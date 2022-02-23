@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23460C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239986AbiBWPLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:11:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
+        id S240886AbiBWPMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:12:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiBWPLl (ORCPT
+        with ESMTP id S232062AbiBWPM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:11:41 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A584AB65E9;
-        Wed, 23 Feb 2022 07:11:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645629073; x=1677165073;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=AoSFRgrUFUDO1B0aof0XuA6F59treUMH8g8YYtllkbo=;
-  b=kCKmp6b8bfahkTOCBMwaxIy3dFNvs/2l/2fE2H0f7+kwyd7QuEZv3NNx
-   5lq66EwcIe/Yly1KoZQxH/CdVOvoB2+HrVUFRmlRe6t8RhbHAaOoM2Lhq
-   biK4jzvzHZLVebKmyYQEa4M3YP07HQJH0aZibs7jDPaDXMMxNWz9orqbI
-   aH5pD7IupVKaJ85HY1JWyiZrThgD8JZ8LO03g7B7DLwdEjJ8uLMrL33tv
-   oCF8fKSWWYoqzZ9I11SB0K0seAK24DEjQObA4z/WNnzj17UWS6NEYPVaN
-   PEwAR8I+M7BaVKTv99dg8e4sOibrUMHog+AExIR0F1kVCf/XTSwa77p9X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="239374967"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="239374967"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:11:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="607080661"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Feb 2022 07:11:10 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8B31394; Wed, 23 Feb 2022 17:11:27 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Qing Wang <wangqing@vivo.com>
-Subject: [PATCH v2 1/1] serial: 8250_mid: Balance reference count for PCI DMA device
-Date:   Wed, 23 Feb 2022 17:11:24 +0200
-Message-Id: <20220223151124.70026-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 23 Feb 2022 10:12:28 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65756E28F;
+        Wed, 23 Feb 2022 07:12:00 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id AF9001F44A38
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645629119;
+        bh=ELPweJBc6ajob3F7Lui867O0B7uOutbKAFuyBG7+YpI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dRntzR73s7+bZmeaMg/SQxnWDBkL1AIhU6PAT8n/MPSuMwzDE8nUHna9JAKcikkdw
+         aSy2WBCmWQ+vXwLyYfzNZIhhxk5buaVev1Xgps9sROqdLeua7TI+F9VlJEN0fA2VnG
+         KnV6g/R3LZMyXjBwQe2BlD3oCA07ZwdA91ajkVZiBwt08PGs6y3HcdkNKBAONKJ8vT
+         nj80NEBPGkw6ahUoP+pA6/prEYTa2vhG0K7q06uMuq0Bv58Lb6lYuEcb23SykAz0yE
+         FMfmERBoqjWOfTEi+oeiwoj0TVXa+4ZlqgqSVNKKVkYJu0gcn9U0lfq75fjPLj4YV5
+         EmUUwg8++EPuQ==
+Date:   Wed, 23 Feb 2022 10:11:53 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        --to=Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>
+Subject: Re: [PATCH v2 06/23] arm64: dts: mt8192: Add usb-phy node
+Message-ID: <20220223151153.mjmo6vspg6cior2i@notapiano>
+References: <20220218091633.9368-1-allen-kh.cheng@mediatek.com>
+ <20220218091633.9368-7-allen-kh.cheng@mediatek.com>
+ <20220222201034.pb36pfrgujushsge@notapiano>
+ <ef364c56deef3cc20d7d7d9ca6c568c0612c7a2a.camel@mediatek.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <ef364c56deef3cc20d7d7d9ca6c568c0612c7a2a.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+On Wed, Feb 23, 2022 at 09:24:12PM +0800, allen-kh.cheng wrote:
+> On Tue, 2022-02-22 at 15:10 -0500, Nícolas F. R. A. Prado wrote:
+> > On Fri, Feb 18, 2022 at 05:16:16PM +0800, Allen-KH Cheng wrote:
+> > > Add xhci node for mt8192 SoC.
+> > > 
+> > > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> > > ---
+> > >  arch/arm64/boot/dts/mediatek/mt8192.dtsi | 25
+> > > ++++++++++++++++++++++++
+> > >  1 file changed, 25 insertions(+)
+> > > 
+> > > diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> > > b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> > > index 61aadd7bd397..ce18d692175f 100644
+> > > --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> > > +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> > > @@ -875,6 +875,31 @@
+> > >  			#clock-cells = <1>;
+> > >  		};
+> > >  
+> > > +		u3phy0: usb-phy@11e40000 {
+> > 
+> > According to
+> > Documentation/devicetree/bindings/phy/mediatek,tphy.yaml, this node
+> > should be called t-phy. Only the child nodes should be usb-phy.
+> > 
+> Hi Nícolas,
+> 
+> I think it should be "u3phy0: t-phy@11e40000". am I right?
 
-Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: rebased on top of the latest tty-linus
- drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index 83592b51a996..a2a03acb04ad 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void pnw_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int tng_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void tng_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -328,9 +338,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_set_drvdata(pdev, mid);
- 	return 0;
-+
- err:
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- 	return ret;
- }
- 
-@@ -340,8 +350,7 @@ static void mid8250_remove(struct pci_dev *pdev)
- 
- 	serial8250_unregister_port(mid->line);
- 
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- }
- 
- static const struct mid8250_board pnw_board = {
-@@ -349,6 +358,7 @@ static const struct mid8250_board pnw_board = {
- 	.freq = 50000000,
- 	.base_baud = 115200,
- 	.setup = pnw_setup,
-+	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
-@@ -356,6 +366,7 @@ static const struct mid8250_board tng_board = {
- 	.freq = 38400000,
- 	.base_baud = 1843200,
- 	.setup = tng_setup,
-+	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
--- 
-2.34.1
-
+Yes, that's it.
