@@ -2,56 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC46C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C59C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237221AbiBWCfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
+        id S237259AbiBWCfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237659AbiBWCdT (ORCPT
+        with ESMTP id S237649AbiBWCdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 22 Feb 2022 21:33:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C0A5F4D1;
-        Tue, 22 Feb 2022 18:31:28 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8807E55743;
+        Tue, 22 Feb 2022 18:31:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3B5A6155F;
-        Wed, 23 Feb 2022 02:31:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C528AC340EB;
-        Wed, 23 Feb 2022 02:31:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 800EAB81E10;
+        Wed, 23 Feb 2022 02:31:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41164C340E8;
+        Wed, 23 Feb 2022 02:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583488;
-        bh=x8fJSb9IKlcqvRl4YJcfYG9sKVjOS3ECVVnLLeHY8RQ=;
+        s=k20201202; t=1645583467;
+        bh=3Q6HfLvnyk20c5KteC9b+hLzCTbQ2st3hb44bFNMDzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MPy/ci52QpCL0GC6+0MzNXTRjEIk42eK11oXHQX1j8UnY7ycSjDRK0APBtYXgpJPF
-         +ywdyLAfjWYdD8Dzxb8YGRNzpwv4E/ucpzczYJgsJnBIgm2LiYFXyCh2A0N03BpVOe
-         s7SEdRj4t575M7p5EeSuoQohSb6BzD0gEIuSAbXMpyhFEEUF1w2R6m0eVyDzUEKJXz
-         tPBJmryWhATE5boQFoup9LV/pan4R5xkqhGrS5ZUu5dxSHWlvdOmPyynfwT8fMIyvb
-         5s1y84Y5YHHKdaY/vyBF/4UNA9R+WvxHLsoBbDgxQIifqwjUoPo6uR3yvo2MwLN3oW
-         IW8EoI8EJNW2w==
+        b=Lwn2W0AaQxj8gNKhpqJoHjTw4jPX3KVe8tzGWk07wqNo4h80PKpbi+7GN0hcejX5L
+         yVpabTqqEchT6Mu3IV05zwDUF5IovzwUoNXbs2nkowXtRpq6Grk+SlkJv7paNCnEpA
+         TRr37D/aEqUahdUNCi3n66qaPUU5+KSyuonrp7dWtzlKrMuJAwM+g2na3ri6xHOJS0
+         v7RrGysxYia36RqZ1KH7ofaoqlg+poLQdo+3AHKnpraI20TTpcAOefWAmW95z9/A2h
+         jToxNVSJoiiHtrT5gb4wPvNRu5BEd8zQBZ8oY1/mp9dEigrRaHedj4IbjxyV2QohgM
+         syq/PCMsEoD9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Shuming Fan <shumingf@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 04/13] ASoC: rt5668: do not block workqueue if card is unbound
-Date:   Tue, 22 Feb 2022 21:31:08 -0500
-Message-Id: <20220223023118.241815-4-sashal@kernel.org>
+Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, Vinod Koul <vkoul@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, christophe.jaillet@wanadoo.fr,
+        arnd@arndb.de, laurent.pinchart@ideasonboard.com,
+        broonie@kernel.org, dmaengine@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 14/18] dmaengine: shdma: Fix runtime PM imbalance on error
+Date:   Tue, 22 Feb 2022 21:30:31 -0500
+Message-Id: <20220223023035.241551-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023118.241815-1-sashal@kernel.org>
-References: <20220223023118.241815-1-sashal@kernel.org>
+In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
+References: <20220223023035.241551-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,60 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+From: Yongzhi Liu <lyz_cs@pku.edu.cn>
 
-[ Upstream commit a6d78661dc903d90a327892bbc34268f3a5f4b9c ]
+[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
 
-The current rt5668_jack_detect_handler() assumes the component
-and card will always show up and implements an infinite usleep
-loop waiting for them to show up.
+pm_runtime_get_() increments the runtime PM usage counter even
+when it returns an error code, thus a matching decrement is needed on
+the error handling path to keep the counter balanced.
 
-This does not hold true if a codec interrupt (or other
-event) occurs when the card is unbound. The codec driver's
-remove  or shutdown functions cannot cancel the workqueue due
-to the wait loop. As a result, code can either end up blocking
-the workqueue, or hit a kernel oops when the card is freed.
-
-Fix the issue by rescheduling the jack detect handler in
-case the card is not ready. In case card never shows up,
-the shutdown/remove/suspend calls can now cancel the detect
-task.
-
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220207153000.3452802-2-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5668.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/dma/sh/shdma-base.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5668.c b/sound/soc/codecs/rt5668.c
-index 5716cede99cb4..acc2b34ca334a 100644
---- a/sound/soc/codecs/rt5668.c
-+++ b/sound/soc/codecs/rt5668.c
-@@ -1022,11 +1022,13 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
- 		container_of(work, struct rt5668_priv, jack_detect_work.work);
- 	int val, btn_type;
+diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
+index 7f72b3f4cd1ae..19ac95c0098f0 100644
+--- a/drivers/dma/sh/shdma-base.c
++++ b/drivers/dma/sh/shdma-base.c
+@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
+ 		ret = pm_runtime_get(schan->dev);
  
--	while (!rt5668->component)
--		usleep_range(10000, 15000);
--
--	while (!rt5668->component->card->instantiated)
--		usleep_range(10000, 15000);
-+	if (!rt5668->component || !rt5668->component->card ||
-+	    !rt5668->component->card->instantiated) {
-+		/* card not yet ready, try later */
-+		mod_delayed_work(system_power_efficient_wq,
-+				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
-+		return;
-+	}
+ 		spin_unlock_irq(&schan->chan_lock);
+-		if (ret < 0)
++		if (ret < 0) {
+ 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
++			pm_runtime_put(schan->dev);
++		}
  
- 	mutex_lock(&rt5668->calibrate_mutex);
+ 		pm_runtime_barrier(schan->dev);
  
 -- 
 2.34.1
