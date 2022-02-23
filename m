@@ -2,416 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B63C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C17F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244512AbiBWTrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:47:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S244300AbiBWTsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:48:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244506AbiBWTrV (ORCPT
+        with ESMTP id S233539AbiBWTso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:47:21 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBD633E17
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:46:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645645610; x=1677181610;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=83yi7+J2BaWupY0URhVucnRMpWAXsu49yuiZO526r4A=;
-  b=aJUHkPhynSjKyzq1KYgV+nCQ0s5IpidcTJ7hd0Dq/qL0f/cB0+nRihur
-   I+HsDdeKqCLN55WyRmZJcogqazDdG/5CTZF5ufG5gUIhc0legJndrYy2V
-   bz2cGnR37oPVKPHZqXmm5PiKXQqUNgTs+ggyKJ9om1HsaYoPAYTTqKJyX
-   aKz2skG5/LfjU6HqhgWcngoLzAD3+KICXI+38kdpN94tLOkctEN+D36DE
-   qC9k3yt3HttJrCD2PlVZ0eW5HHPTsDUhhJ3owVggLn+rrpPOb8fin+e76
-   7KNiCv0EWlaaLvcmJUVzWUKzUzwd5Hj2caeSRmeI2bibvulgZyNhAZ+Ty
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="249647048"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="249647048"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 11:46:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="628208534"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Feb 2022 11:46:45 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMxb3-0001l4-5P; Wed, 23 Feb 2022 19:46:45 +0000
-Date:   Thu, 24 Feb 2022 03:46:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Raghu Bankapur <quic_rbankapu@quicinc.com>,
-        Jaroslav Kysela <perex@perex.cz>, linux-kernel@vger.kernel.org,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Krishna Jha <kkishorj@codeaurora.org>,
-        Raghu Bankapur <quic_rbankapu@quicinc.com>
-Subject: Re: [PATCH V1 1/1] ASoC: compress: propagate the error code from the
- compress framework
-Message-ID: <202202240324.GFUDFcms-lkp@intel.com>
-References: <eda8b6cdd53576c5487422e46af20bae1a5c864f.1645618332.git.quic_rbankapu@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eda8b6cdd53576c5487422e46af20bae1a5c864f.1645618332.git.quic_rbankapu@quicinc.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 23 Feb 2022 14:48:44 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B718A40A10
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:48:16 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b12-20020a056902030c00b0061d720e274aso28588644ybs.20
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:48:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=MM6VpwEuHyZ5v5v0jkqjjMY1tkkmV3hr/n/VQS94jks=;
+        b=lkZO2GjNLpY1p8wRTYMQKCURny9OLBoayJa+FZ5zbPz4LDZBvHCV06L73NHFu0MIMQ
+         HszNdU6gZ84ueetyuYOMK9iZV4Qt2rHE0DRYDYunAcDMevcqAYdOuKRQcA7vEUyxT0ut
+         7iXcnr6wxHDVbUA6H7XMhS6qFii6FoVrP3V/rdcGkfwACofFURhVkxkPYKR2FEOTXszY
+         2j8jLTCyQeMpEBdkXgjM5p+Dqc5WPFuKFxi20BM2YbI981ObaFLYYEThPGfMuDLx/mPs
+         QkKqjSo3yYluG9yStCtfgBj6VbLorXXj+4rsOhkgD5EnJwS3N4w0Cb1QoAf/0efvPuL9
+         9Ocw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=MM6VpwEuHyZ5v5v0jkqjjMY1tkkmV3hr/n/VQS94jks=;
+        b=BoEpgQgQgDBUfBOc4pcAnmQKA0bFvWrI+oI9zjQ2otnsAXXdL9v/qMdmD1X6fDl39P
+         dcLos6Cc5ocrfQ3RtN0P3BQ6fCckdupTCR4TNbVgi0g0yhurTp9bC3YTQQJXi0aQN5Sh
+         LhQ1IdWhcgArg5beLIjN3J69Il9ptKYizmtiC6E3/KZKZHj1peGKqIIDjRPy1+TosO75
+         lGMnO7We0864mZXqup1KqSma70BDTh6dfZV5U1JpRHina6SATfhFfJvKlCnS6XVZtiOH
+         NPHIpWF+Eun6rS6pdhJG0hf7CjaH5haOvwvNTnq+ioCUbiWJLSqmPQ/7nVuMSaBkgHBo
+         XNkw==
+X-Gm-Message-State: AOAM532U0Y1/Er9rvsbHnVMo61cCLAiKcAzRkS4DIxthyERF3zsBCxnr
+        KToK3liFyByQS7Vjtr2aMs0pnwmm1ZI=
+X-Google-Smtp-Source: ABdhPJzOMSgn9uDD/a4pJaJMz6d/iPAqkjY23/RUpGkAAjMqcefD2ddyVi/6WU6MFC3BPviettcstjqE6tU=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:5093:9fb5:d0ba:a5f])
+ (user=surenb job=sendgmr) by 2002:a25:b18e:0:b0:624:62c1:be56 with SMTP id
+ h14-20020a25b18e000000b0062462c1be56mr1167372ybj.624.1645645695981; Wed, 23
+ Feb 2022 11:48:15 -0800 (PST)
+Date:   Wed, 23 Feb 2022 11:48:12 -0800
+Message-Id: <20220223194812.1299646-1-surenb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v3 1/1] mm: count time in drain_all_pages during direct
+ reclaim as memory pressure
+From:   Suren Baghdasaryan <surenb@google.com>
+To:     akpm@linux-foundation.org
+Cc:     hannes@cmpxchg.org, mhocko@suse.com, pmladek@suse.com,
+        peterz@infradead.org, guro@fb.com, shakeelb@google.com,
+        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@android.com,
+        surenb@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Raghu,
+When page allocation in direct reclaim path fails, the system will
+make one attempt to shrink per-cpu page lists and free pages from
+high alloc reserves. Draining per-cpu pages into buddy allocator can
+be a very slow operation because it's done using workqueues and the
+task in direct reclaim waits for all of them to finish before
+proceeding. Currently this time is not accounted as psi memory stall.
 
-Thank you for the patch! Yet something to improve:
+While testing mobile devices under extreme memory pressure, when
+allocations are failing during direct reclaim, we notices that psi
+events which would be expected in such conditions were not triggered.
+After profiling these cases it was determined that the reason for
+missing psi events was that a big chunk of time spent in direct
+reclaim is not accounted as memory stall, therefore psi would not
+reach the levels at which an event is generated. Further investigation
+revealed that the bulk of that unaccounted time was spent inside
+drain_all_pages call.
 
-[auto build test ERROR on tiwai-sound/for-next]
-[also build test ERROR on linux/master broonie-sound/for-next linus/master v5.17-rc5 next-20220222]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+A typical captured case when drain_all_pages path gets activated:
 
-url:    https://github.com/0day-ci/linux/commits/Raghu-Bankapur/ASoC-compress-propagate-the-error-code-from-the-compress-framework/20220223-215509
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git for-next
-config: hexagon-buildonly-randconfig-r001-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240324.GFUDFcms-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/6154c602c715dac9253695c89bebd921f43cc81d
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Raghu-Bankapur/ASoC-compress-propagate-the-error-code-from-the-compress-framework/20220223-215509
-        git checkout 6154c602c715dac9253695c89bebd921f43cc81d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash sound/core/
+__alloc_pages_slowpath  took 44.644.613ns
+    __perform_reclaim   took    751.668ns (1.7%)
+    drain_all_pages     took 43.887.167ns (98.3%)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+PSI in this case records the time spent in __perform_reclaim but
+ignores drain_all_pages, IOW it misses 98.3% of the time spent in
+__alloc_pages_slowpath.
 
-All error/warnings (new ones prefixed by >>):
+Annotate __alloc_pages_direct_reclaim in its entirety so that delays
+from handling page allocation failure in the direct reclaim path are
+accounted as memory stall.
 
->> sound/core/compress_offload.c:34:35: warning: extra tokens at end of #include directive [-Wextra-tokens]
-   #include <sound/compress_driver.h>ASoC: compress: propagate the error code from the compress framework
-                                     ^
-                                     //
->> sound/core/compress_offload.c:36:1: error: unknown type name 'Propagate'
-   Propagate the error code from the compress framework for the timestamp
-   ^
->> sound/core/compress_offload.c:36:14: error: expected ';' after top level declarator
-   Propagate the error code from the compress framework for the timestamp
-                ^
-                ;
->> sound/core/compress_offload.c:112:23: error: invalid application of 'sizeof' to an incomplete type 'struct snd_compr_file'
-           data = kzalloc(sizeof(*data), GFP_KERNEL);
-                                ^~~~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:252:15: note: expanded from macro '__INIT_DELAYED_WORK'
-                   INIT_WORK(&(_work)->work, (_func));                     \
-                               ^~~~~
-   include/linux/workqueue.h:245:15: note: expanded from macro 'INIT_WORK'
-           __INIT_WORK((_work), (_func), 0)
-                        ^~~~~
-   include/linux/workqueue.h:228:16: note: expanded from macro '__INIT_WORK'
-                   __init_work((_work), _onstack);                         \
-                                ^~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:252:15: note: expanded from macro '__INIT_DELAYED_WORK'
-                   INIT_WORK(&(_work)->work, (_func));                     \
-                               ^~~~~
-   include/linux/workqueue.h:245:15: note: expanded from macro 'INIT_WORK'
-           __INIT_WORK((_work), (_func), 0)
-                        ^~~~~
-   include/linux/workqueue.h:229:4: note: expanded from macro '__INIT_WORK'
-                   (_work)->data = (atomic_long_t) WORK_DATA_INIT();       \
-                    ^~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:252:15: note: expanded from macro '__INIT_DELAYED_WORK'
-                   INIT_WORK(&(_work)->work, (_func));                     \
-                               ^~~~~
-   include/linux/workqueue.h:245:15: note: expanded from macro 'INIT_WORK'
-           __INIT_WORK((_work), (_func), 0)
-                        ^~~~~
-   include/linux/workqueue.h:230:22: note: expanded from macro '__INIT_WORK'
-                   lockdep_init_map(&(_work)->lockdep_map, "(work_completion)"#_work, &__key, 0); \
-                                      ^~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:252:15: note: expanded from macro '__INIT_DELAYED_WORK'
-                   INIT_WORK(&(_work)->work, (_func));                     \
-                               ^~~~~
-   include/linux/workqueue.h:245:15: note: expanded from macro 'INIT_WORK'
-           __INIT_WORK((_work), (_func), 0)
-                        ^~~~~
-   include/linux/workqueue.h:231:20: note: expanded from macro '__INIT_WORK'
-                   INIT_LIST_HEAD(&(_work)->entry);                        \
-                                    ^~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:252:15: note: expanded from macro '__INIT_DELAYED_WORK'
-                   INIT_WORK(&(_work)->work, (_func));                     \
-                               ^~~~~
-   include/linux/workqueue.h:245:15: note: expanded from macro 'INIT_WORK'
-           __INIT_WORK((_work), (_func), 0)
-                        ^~~~~
-   include/linux/workqueue.h:232:4: note: expanded from macro '__INIT_WORK'
-                   (_work)->func = (_func);                                \
-                    ^~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
->> sound/core/compress_offload.c:118:25: error: incomplete definition of type 'struct snd_compr_file'
-           INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-                              ~~~~^
-   include/linux/workqueue.h:267:22: note: expanded from macro 'INIT_DELAYED_WORK'
-           __INIT_DELAYED_WORK(_work, _func, 0)
-                               ^~~~~
-   include/linux/workqueue.h:253:18: note: expanded from macro '__INIT_DELAYED_WORK'
-                   __init_timer(&(_work)->timer,                           \
-                                  ^~~~~
-   include/linux/timer.h:115:19: note: expanded from macro '__init_timer'
-                   init_timer_key((_timer), (_fn), (_flags), #_timer, &__key);\
-                                   ^~~~~~
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:120:6: error: incomplete definition of type 'struct snd_compr_file'
-           data->stream.ops = compr->ops;
-           ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:121:6: error: incomplete definition of type 'struct snd_compr_file'
-           data->stream.direction = dirn;
-           ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:122:6: error: incomplete definition of type 'struct snd_compr_file'
-           data->stream.private_data = compr->private_data;
-           ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:123:6: error: incomplete definition of type 'struct snd_compr_file'
-           data->stream.device = compr;
-           ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:132:6: error: incomplete definition of type 'struct snd_compr_file'
-           data->stream.runtime = runtime;
-           ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:135:30: error: incomplete definition of type 'struct snd_compr_file'
-           ret = compr->ops->open(&data->stream);
-                                   ~~~~^
-   sound/core/compress_offload.c:82:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data;
-                  ^
-   sound/core/compress_offload.c:148:42: error: incomplete definition of type 'struct snd_compr_file'
-           struct snd_compr_runtime *runtime = data->stream.runtime;
-                                               ~~~~^
-   sound/core/compress_offload.c:147:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data = f->private_data;
-                  ^
-   sound/core/compress_offload.c:150:32: error: incomplete definition of type 'struct snd_compr_file'
-           cancel_delayed_work_sync(&data->stream.error_work);
-                                     ~~~~^
-   sound/core/compress_offload.c:147:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data = f->private_data;
-                  ^
-   sound/core/compress_offload.c:156:7: error: incomplete definition of type 'struct snd_compr_file'
-                   data->stream.ops->trigger(&data->stream, SNDRV_PCM_TRIGGER_STOP);
-                   ~~~~^
-   sound/core/compress_offload.c:147:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data = f->private_data;
-                  ^
-   sound/core/compress_offload.c:156:34: error: incomplete definition of type 'struct snd_compr_file'
-                   data->stream.ops->trigger(&data->stream, SNDRV_PCM_TRIGGER_STOP);
-                                              ~~~~^
-   sound/core/compress_offload.c:147:9: note: forward declaration of 'struct snd_compr_file'
-           struct snd_compr_file *data = f->private_data;
-                  ^
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   1 warning and 20 errors generated.
-
-
-vim +/Propagate +36 sound/core/compress_offload.c
-
-    14	
-    15	#include <linux/file.h>
-    16	#include <linux/fs.h>
-    17	#include <linux/list.h>
-    18	#include <linux/math64.h>
-    19	#include <linux/mm.h>
-    20	#include <linux/mutex.h>
-    21	#include <linux/poll.h>
-    22	#include <linux/slab.h>
-    23	#include <linux/sched.h>
-    24	#include <linux/types.h>
-    25	#include <linux/uio.h>
-    26	#include <linux/uaccess.h>
-    27	#include <linux/module.h>
-    28	#include <linux/compat.h>
-    29	#include <sound/core.h>
-    30	#include <sound/initval.h>
-    31	#include <sound/info.h>
-    32	#include <sound/compress_params.h>
-    33	#include <sound/compress_offload.h>
-  > 34	#include <sound/compress_driver.h>ASoC: compress: propagate the error code from the compress framework
-    35	
-  > 36	Propagate the error code from the compress framework for the timestamp
-    37	query. This error code will be used by the client to handle the
-    38	error case scenarios gracefully.
-    39	
-    40	/* struct snd_compr_codec_caps overflows the ioctl bit size for some
-    41	 * architectures, so we need to disable the relevant ioctls.
-    42	 */
-    43	#if _IOC_SIZEBITS < 14
-    44	#define COMPR_CODEC_CAPS_OVERFLOW
-    45	#endif
-    46	
-    47	/* TODO:
-    48	 * - add substream support for multiple devices in case of
-    49	 *	SND_DYNAMIC_MINORS is not used
-    50	 * - Multiple node representation
-    51	 *	driver should be able to register multiple nodes
-    52	 */
-    53	
-    54	struct snd_compr_file {
-    55		unsigned long caps;
-    56		struct snd_compr_stream stream;
-    57	};
-    58	
-    59	static void error_delayed_work(struct work_struct *work);
-    60	
-    61	/*
-    62	 * a note on stream states used:
-    63	 * we use following states in the compressed core
-    64	 * SNDRV_PCM_STATE_OPEN: When stream has been opened.
-    65	 * SNDRV_PCM_STATE_SETUP: When stream has been initialized. This is done by
-    66	 *	calling SNDRV_COMPRESS_SET_PARAMS. Running streams will come to this
-    67	 *	state at stop by calling SNDRV_COMPRESS_STOP, or at end of drain.
-    68	 * SNDRV_PCM_STATE_PREPARED: When a stream has been written to (for
-    69	 *	playback only). User after setting up stream writes the data buffer
-    70	 *	before starting the stream.
-    71	 * SNDRV_PCM_STATE_RUNNING: When stream has been started and is
-    72	 *	decoding/encoding and rendering/capturing data.
-    73	 * SNDRV_PCM_STATE_DRAINING: When stream is draining current data. This is done
-    74	 *	by calling SNDRV_COMPRESS_DRAIN.
-    75	 * SNDRV_PCM_STATE_PAUSED: When stream is paused. This is done by calling
-    76	 *	SNDRV_COMPRESS_PAUSE. It can be stopped or resumed by calling
-    77	 *	SNDRV_COMPRESS_STOP or SNDRV_COMPRESS_RESUME respectively.
-    78	 */
-    79	static int snd_compr_open(struct inode *inode, struct file *f)
-    80	{
-    81		struct snd_compr *compr;
-    82		struct snd_compr_file *data;
-    83		struct snd_compr_runtime *runtime;
-    84		enum snd_compr_direction dirn;
-    85		int maj = imajor(inode);
-    86		int ret;
-    87	
-    88		if ((f->f_flags & O_ACCMODE) == O_WRONLY)
-    89			dirn = SND_COMPRESS_PLAYBACK;
-    90		else if ((f->f_flags & O_ACCMODE) == O_RDONLY)
-    91			dirn = SND_COMPRESS_CAPTURE;
-    92		else
-    93			return -EINVAL;
-    94	
-    95		if (maj == snd_major)
-    96			compr = snd_lookup_minor_data(iminor(inode),
-    97						SNDRV_DEVICE_TYPE_COMPRESS);
-    98		else
-    99			return -EBADFD;
-   100	
-   101		if (compr == NULL) {
-   102			pr_err("no device data!!!\n");
-   103			return -ENODEV;
-   104		}
-   105	
-   106		if (dirn != compr->direction) {
-   107			pr_err("this device doesn't support this direction\n");
-   108			snd_card_unref(compr->card);
-   109			return -EINVAL;
-   110		}
-   111	
- > 112		data = kzalloc(sizeof(*data), GFP_KERNEL);
-   113		if (!data) {
-   114			snd_card_unref(compr->card);
-   115			return -ENOMEM;
-   116		}
-   117	
- > 118		INIT_DELAYED_WORK(&data->stream.error_work, error_delayed_work);
-   119	
-   120		data->stream.ops = compr->ops;
-   121		data->stream.direction = dirn;
-   122		data->stream.private_data = compr->private_data;
-   123		data->stream.device = compr;
-   124		runtime = kzalloc(sizeof(*runtime), GFP_KERNEL);
-   125		if (!runtime) {
-   126			kfree(data);
-   127			snd_card_unref(compr->card);
-   128			return -ENOMEM;
-   129		}
-   130		runtime->state = SNDRV_PCM_STATE_OPEN;
-   131		init_waitqueue_head(&runtime->sleep);
-   132		data->stream.runtime = runtime;
-   133		f->private_data = (void *)data;
-   134		mutex_lock(&compr->lock);
-   135		ret = compr->ops->open(&data->stream);
-   136		mutex_unlock(&compr->lock);
-   137		if (ret) {
-   138			kfree(runtime);
-   139			kfree(data);
-   140		}
-   141		snd_card_unref(compr->card);
-   142		return ret;
-   143	}
-   144	
-
+Reported-by: Tim Murray <timmurray@google.com>
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+changes in v3:
+- Moved psi_memstall_leave after the "out" label
+
+ mm/page_alloc.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 3589febc6d31..029bceb79861 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4595,13 +4595,12 @@ __perform_reclaim(gfp_t gfp_mask, unsigned int order,
+ 					const struct alloc_context *ac)
+ {
+ 	unsigned int noreclaim_flag;
+-	unsigned long pflags, progress;
++	unsigned long progress;
+ 
+ 	cond_resched();
+ 
+ 	/* We now go into synchronous reclaim */
+ 	cpuset_memory_pressure_bump();
+-	psi_memstall_enter(&pflags);
+ 	fs_reclaim_acquire(gfp_mask);
+ 	noreclaim_flag = memalloc_noreclaim_save();
+ 
+@@ -4610,7 +4609,6 @@ __perform_reclaim(gfp_t gfp_mask, unsigned int order,
+ 
+ 	memalloc_noreclaim_restore(noreclaim_flag);
+ 	fs_reclaim_release(gfp_mask);
+-	psi_memstall_leave(&pflags);
+ 
+ 	cond_resched();
+ 
+@@ -4624,11 +4622,13 @@ __alloc_pages_direct_reclaim(gfp_t gfp_mask, unsigned int order,
+ 		unsigned long *did_some_progress)
+ {
+ 	struct page *page = NULL;
++	unsigned long pflags;
+ 	bool drained = false;
+ 
++	psi_memstall_enter(&pflags);
+ 	*did_some_progress = __perform_reclaim(gfp_mask, order, ac);
+ 	if (unlikely(!(*did_some_progress)))
+-		return NULL;
++		goto out;
+ 
+ retry:
+ 	page = get_page_from_freelist(gfp_mask, order, alloc_flags, ac);
+@@ -4644,6 +4644,8 @@ __alloc_pages_direct_reclaim(gfp_t gfp_mask, unsigned int order,
+ 		drained = true;
+ 		goto retry;
+ 	}
++out:
++	psi_memstall_leave(&pflags);
+ 
+ 	return page;
+ }
+-- 
+2.35.1.473.g83b2b277ed-goog
+
