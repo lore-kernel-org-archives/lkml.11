@@ -2,160 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD27C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 790F8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243188AbiBWRHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:07:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
+        id S243226AbiBWRIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:08:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233059AbiBWRHf (ORCPT
+        with ESMTP id S243328AbiBWRIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:07:35 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28385EDDA;
-        Wed, 23 Feb 2022 09:07:05 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 621FA1F43E;
-        Wed, 23 Feb 2022 17:07:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645636024; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CaDuGVMSnVYMBtbixokplU//+MPnASve3hmmEe3B/h8=;
-        b=TqKpsWRJetKNQIjMX62ryxEm53gPFT4Ddlge7AjxiZy+3ipmpZ8sKf9k553nqoSIx38g8J
-        bD4fpwJdFVt+kt3HK0s0ljvU4i6bmpdbmRI1AZjjLZ9z46UYnHgezq0Eo69vWMq48UCn4U
-        Wx4ISi8z/fBoyStzt9b6kBK4fb58q3U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645636024;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CaDuGVMSnVYMBtbixokplU//+MPnASve3hmmEe3B/h8=;
-        b=YMy5kpWxlF/sLctza+/jeSBv105CdyfrVALqxr6yuDfU4nDWqnWaEj8ptKr9SsVhWjpB1W
-        vxJA4wQa5lkyiHBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3A5C613C94;
-        Wed, 23 Feb 2022 17:07:04 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 12KWDbhpFmK3GQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 23 Feb 2022 17:07:04 +0000
-Message-ID: <87b056da-80e8-17f5-41ae-9fb493a7f0da@suse.cz>
-Date:   Wed, 23 Feb 2022 18:07:03 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: read() data corruption with CONFIG_READ_ONLY_THP_FOR_FS=y
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Christoph Hellwig <hch@infradead.org>, Jan Kara <jack@suse.cz>,
-        Takashi Iwai <tiwai@suse.de>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>, patches@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-References: <df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz>
- <YhZFr+kXIJFgiMaf@casper.infradead.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <YhZFr+kXIJFgiMaf@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 23 Feb 2022 12:08:07 -0500
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1801E65409
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:07:37 -0800 (PST)
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220223170732epoutp04bd5650f57cd0b69807e633fb36fa7bd4~WeUVkHWvS3148231482epoutp04D
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:07:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220223170732epoutp04bd5650f57cd0b69807e633fb36fa7bd4~WeUVkHWvS3148231482epoutp04D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1645636052;
+        bh=UL4yhKqRjrF/i/6aY21BYBDYT+6g6lJv1blGzeLha14=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=PrbEmm2Pa70axQTVADf3yZuIWHVXlhcd+TkVepcPwoyQs31trdu4buaPVVfNqssOB
+         CgYy7IGqtMWEjH6iZrJo6jzPkhMG1Y7s673DoYMkqNRG0inn62M4TJPSWpjukVyNkR
+         ptMQz1czxZBakPxm5BNs4rtbKuk+OzuIHoXK2o6o=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220223170731epcas5p23aa2664ea9b6a4782322656b004b8e40~WeUUkjA7F0865808658epcas5p2k;
+        Wed, 23 Feb 2022 17:07:31 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.183]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4K3jC43wbrz4x9Pv; Wed, 23 Feb
+        2022 17:07:28 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E2.AC.05590.0D966126; Thu, 24 Feb 2022 02:07:28 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec~WeUQyf_yy2933129331epcas5p29;
+        Wed, 23 Feb 2022 17:07:27 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220223170727epsmtrp10e82f6823a94ebb3d16642084f81978e~WeUQxwOV32819728197epsmtrp1T;
+        Wed, 23 Feb 2022 17:07:27 +0000 (GMT)
+X-AuditID: b6c32a4b-723ff700000015d6-55-621669d007b9
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        89.E2.29871.FC966126; Thu, 24 Feb 2022 02:07:27 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220223170726epsmtip1457171ab722826f93d0e118b0385d941~WeUPnYIXk1400314003epsmtip17;
+        Wed, 23 Feb 2022 17:07:26 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        pankaj.dubey@samsung.com, robh+dt@kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH] arm64: dts: fsd: Add the MCT support
+Date:   Wed, 23 Feb 2022 22:48:58 +0530
+Message-Id: <20220223171858.11384-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrFKsWRmVeSWpSXmKPExsWy7bCmuu6FTLEkg1W90hYP5m1js5h/5Byr
+        xca3P5gsNj2+xmpxedccNosZ5/cxWSza+oXdonXvEXYHDo9ZDb1sHptWdbJ5bF5S79G3ZRWj
+        x+dNcgGsUdk2GamJKalFCql5yfkpmXnptkrewfHO8aZmBoa6hpYW5koKeYm5qbZKLj4Bum6Z
+        OUCnKCmUJeaUAoUCEouLlfTtbIryS0tSFTLyi0tslVILUnIKTAr0ihNzi0vz0vXyUkusDA0M
+        jEyBChOyM54+2M1YsIO74v3HN4wNjAs5uxg5OSQETCTObD3H3sXIxSEksJtR4vrFnSwQzidG
+        iSVdU5kgnG+MEv9n/WeEabm37QJU1V5Gif6Fr6CcFiaJub8+gVWxCWhL3J2+hQnEFhFwk7jR
+        2AE2ihmkY3XbJTaQhLCAqcS0GbPAGlgEVCW+nJrDDmLzCthILGraxgaxTl5i9YYDzBD2NnaJ
+        pq/5ELaLxMT5z9khbGGJV8e3QNlSEi/724BsDiA7W6JnlzFEuEZi6bxjLBC2vcSBK3NYQEqY
+        BTQl1u/SBwkzC/BJ9P5+wgTRySvR0SYEUa0q0fzuKlSntMTE7m5WCNtDouXsK7DDhARigaaf
+        Y5nAKDMLYegCRsZVjJKpBcW56anFpgXGeanl8LhJzs/dxAhOVFreOxgfPfigd4iRiYPxEKME
+        B7OSCO8dduEkId6UxMqq1KL8+KLSnNTiQ4ymwECayCwlmpwPTJV5JfGGJpYGJmZmZiaWxmaG
+        SuK8p9I3JAoJpCeWpGanphakFsH0MXFwSjUw3bW46cKvEM3J/G5JrJbEuWCe+Ent8n3sIpfP
+        LChfxeD2hctlavMukTR3JznvOi+mzhMT5X4yLNha9PCYpPIKn91d3/l1g57q6x14e5pvHzv7
+        x4CytIuNEzg3/rqneMmHP1a+wO3MwXU9Bo/fPxX7nPqD92C33LOk+Jg3OXpR2e5Vk9Uf9yz7
+        /kV4gq399zVP1mxZVOd3WOZ+jpzjzT3P8puPn3prtE1P5WlO8mzBBfr507IO33C8f+nchwct
+        bz8nTem2ija8eiG1XS7Vdvm3W3rfVEJcV/z2mORoFnRsR9keDf1vZc+uuK46fFqxdiXbgqj4
+        bq79r+9fWNHlKt5/5PFVu60CG3PWmjCKcZY6KrEUZyQaajEXFScCANqbSIXdAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpmluLIzCtJLcpLzFFi42LZdlhJTvd8pliSwfs5yhYP5m1js5h/5Byr
+        xca3P5gsNj2+xmpxedccNosZ5/cxWSza+oXdonXvEXYHDo9ZDb1sHptWdbJ5bF5S79G3ZRWj
+        x+dNcgGsUVw2Kak5mWWpRfp2CVwZTx/sZizYwV3x/uMbxgbGhZxdjJwcEgImEve2XWABsYUE
+        djNKzFqtBhGXlri+cQI7hC0ssfLfcyCbC6imiUli29VeNpAEm4C2xN3pW5hAbBEBD4m2f/eY
+        QYqYBQ4zSnx5t5EZJCEsYCoxbcYsRhCbRUBV4supOWBTeQVsJBY1bWOD2CAvsXrDAeYJjDwL
+        GBlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXrJefnbmIEh5OW5g7G7as+6B1iZOJgPMQowcGs
+        JMJ7h104SYg3JbGyKrUoP76oNCe1+BCjNAeLkjjvha6T8UIC6YklqdmpqQWpRTBZJg5OqQam
+        qRcYX/kezOk0Cgs2CV29WeSKoJyBjtPF7iN188Q7+nWSspcE75TcI8NZee7Tn9rD3bUuO//9
+        2rdqoapa3I1HJarz6v/ItCqdbxHLcil2TF7DuixZcMHNzafvVkg/6JAqt49b6JmsUaM/IenI
+        M27J2iU129sE9l3qfePTH5V1rkWNy/PwJ6/rWxbslIxQZomSmmq7eeF73prXPcl7n/06NPl2
+        vJGcTMpxtd/MVjP5zmUc90uob8wyNlR71xB2+z737+7/r+umWjW23cmICHv2s62+fdmz5Xsi
+        o8yDHNJb8x/Y1lxb1mMmyyuq8nl79MbetQUefJNOXP0VZxZs+2/Oy9lVZ6eGrokxE/Q7ckiJ
+        pTgj0VCLuag4EQBi/eUilgIAAA==
+X-CMS-MailID: 20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec
+References: <CGME20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/23/22 15:33, Matthew Wilcox wrote:
-> On Wed, Feb 23, 2022 at 02:54:43PM +0100, Vlastimil Babka wrote:
->> we have found a bug involving CONFIG_READ_ONLY_THP_FOR_FS=y, introduced in
->> 5.12 by cbd59c48ae2b ("mm/filemap: use head pages in
->> generic_file_buffered_read")
->> and apparently fixed in 5.17-rc1 by 6b24ca4a1a8d ("mm: Use multi-index
->> entries in the page cache")
->> The latter commit is part of folio rework so likely not stable material, so
->> it would be nice to have a small fix for e.g. 5.15 LTS. Preferably from
->> someone who understands xarray :)
-> 
-> [...]
-> 
->> I've hacked some printk on top 5.16 (attached debug.patch)
->> which gives this output:
->> 
->> i=0 page=ffffea0004340000 page_offset=0 uoff=0 bytes=2097152
->> i=1 page=ffffea0004340000 page_offset=0 uoff=0 bytes=2097152
->> i=2 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=3 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=4 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=5 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=6 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=7 page=ffffea0004340000 page_offset=0 uoff=0 bytes=0
->> i=8 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=9 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=10 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=11 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=12 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=13 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> i=14 page=ffffea0004470000 page_offset=2097152 uoff=0 bytes=0
->> 
->> It seems filemap_get_read_batch() should be returning pages ffffea0004340000
->> and ffffea0004470000 consecutively in the pvec, but returns the first one 8
->> times, so it's read twice and then the rest is just skipped over as it's
->> beyond the requested read size.
->> 
->> I suspect these lines:
->>   xas.xa_index = head->index + thp_nr_pages(head) - 1;
->>   xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
->> 
->> commit 6b24ca4a1a8d changes those to xas_advance() (introduced one patch
->> earlier), so some self-contained fix should be possible for prior kernels?
->> But I don't understand xarray well enough.
-> 
-> I figured it out!
-> 
-> In v5.15 (indeed, everything before commit 6b24ca4a1a8d), an order-9
-> page is stored in 512 consecutive slots.  The XArray stores 64 entries
-> per level.  So what happens is we start looking at index 0 and we walk
-> down to the bottom of the tree and find the THP at index 0.
-> 
->                 xas.xa_index = head->index + thp_nr_pages(head) - 1;
->                 xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
-> 
-> So we've advanced xas.xa_index to 511, but advanced xas.xa_offset to 63.
-> Then we call xas_next() which calls __xas_next(), which moves us along to
-> array index 64 while we think we're looking at index 512.
-> 
-> We could make __xas_next() more resistant to this kind of abuse (by
-> extracting the correct offset in the parent node from xa_index), but
-> as you say, we're looking for a small fix for LTS.  I suggest this
-> will probably do the right thing:
+Add node relevant to support MCT, which is used as
+one of the system timer on this SoC.
 
-Great!
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+---
+ arch/arm64/boot/dts/tesla/fsd.dtsi | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-Just so others are aware: the final fix is here:
-https://lore.kernel.org/all/20220223155918.927140-1-willy@infradead.org/
-
-> +++ b/mm/filemap.c
-> @@ -2354,8 +2354,7 @@ static void filemap_get_read_batch(struct address_space *mapping,
->                         break;
->                 if (PageReadahead(head))
->                         break;
-> -               xas.xa_index = head->index + thp_nr_pages(head) - 1;
-> -               xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
-> +               xas_set(&xas, head->index + thp_nr_pages(head) - 1);
->                 continue;
->  put_page:
->                 put_page(head);
-> 
-> but I'll start trying the reproducer now.
-> 
-> 
+diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
+index da4acd68b976..9a652abcbcac 100644
+--- a/arch/arm64/boot/dts/tesla/fsd.dtsi
++++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
+@@ -725,6 +725,29 @@ spi_2: spi@14160000 {
+ 			num-cs = <1>;
+ 			status = "disabled";
+ 		};
++
++		timer@10040000 {
++			compatible = "samsung,exynos4210-mct";
++			reg = <0x0 0x10040000 0x0 0x800>;
++			interrupts = <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 466 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 468 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>,
++				<GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&fin_pll>, <&clock_imem IMEM_MCT_PCLK>;
++			clock-names = "fin_pll", "mct";
++		};
+ 	};
+ };
+ 
+-- 
+2.25.1
 
