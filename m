@@ -2,80 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2806C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243813AbiBWSVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:21:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
+        id S240287AbiBWSYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:24:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243811AbiBWSVN (ORCPT
+        with ESMTP id S235190AbiBWSYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:21:13 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AA804A3DF;
-        Wed, 23 Feb 2022 10:20:45 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B22C8D6E;
-        Wed, 23 Feb 2022 10:20:44 -0800 (PST)
-Received: from [10.57.40.147] (unknown [10.57.40.147])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23D623F70D;
-        Wed, 23 Feb 2022 10:20:41 -0800 (PST)
-Message-ID: <2114e6e6-68cc-4552-8781-0a824de2c0de@arm.com>
-Date:   Wed, 23 Feb 2022 18:20:36 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 01/11] iommu: Add dma ownership management interfaces
-Content-Language: en-GB
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
-        David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        kvm@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        Wed, 23 Feb 2022 13:24:14 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEB33BBE1;
+        Wed, 23 Feb 2022 10:23:44 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 04B96210E8;
+        Wed, 23 Feb 2022 18:23:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645640623; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zmlkY1kbQBsVLQ5pzhianT7TxQAbIfNHni1vWGh3+gY=;
+        b=VVE8gYSE5/Ck83Y3lTFe/dA93oYo0UMb/ioj0RNe4jLzkY/KOtGASIdez99JVpVBINYujY
+        RFgAhQ1l3lj2WjAgaG95Ztz9WeBXmrWG4pU8/GA3kKXwHQBJxCaMeIcPJYPz2j0kA+Qe0B
+        L4OYJv0udIo7Ay8F+HD9+YD9LL9s+x0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645640623;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zmlkY1kbQBsVLQ5pzhianT7TxQAbIfNHni1vWGh3+gY=;
+        b=BCY/dF2RqwnUb3uAmNBW8HCt/Xr7osfuXnlFCon4nsKbfpVrvMJTJNYbiGrrgyeuHGNSrZ
+        Hr35WiMILBCljgDw==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A3E5CA3B83;
+        Wed, 23 Feb 2022 18:23:42 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 19:23:41 +0100
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
+        Helge Deller <deller@gmx.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        iommu@lists.linux-foundation.org,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-2-baolu.lu@linux.intel.com>
- <f830c268-daca-8e8f-a429-0c80496a7273@arm.com>
- <20220223180244.GA390403@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220223180244.GA390403@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Simon Trimmer <simont@opensource.cirrus.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rob Herring <robh@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        David Herrmann <dh.herrmann@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz
+Subject: Re: [PATCH v3] simplefb: Enable boot time VESA graphic mode
+ selection.
+Message-ID: <20220223182341.GG3113@kunlun.suse.cz>
+References: <a789e375-a23e-6988-33bc-1410eb5d974f@suse.de>
+ <20220218160436.23211-1-msuchanek@suse.de>
+ <33b80f9c-d54a-5471-a58b-7a783a7a9e5b@redhat.com>
+ <20220223164528.GE3113@kunlun.suse.cz>
+ <f832a836-b6ee-ffc5-6f83-86c9ba475400@redhat.com>
+ <20220223171235.GF3113@kunlun.suse.cz>
+ <a9df1753-8e3b-55bb-2dab-9e7aeaa52a8d@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a9df1753-8e3b-55bb-2dab-9e7aeaa52a8d@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-23 18:02, Jason Gunthorpe via iommu wrote:
-> On Wed, Feb 23, 2022 at 06:00:06PM +0000, Robin Murphy wrote:
+On Wed, Feb 23, 2022 at 07:13:07PM +0100, Javier Martinez Canillas wrote:
+> On 2/23/22 18:12, Michal Suchánek wrote:
+> > On Wed, Feb 23, 2022 at 05:54:54PM +0100, Javier Martinez Canillas wrote:
 > 
->> ...and equivalently just set owner_cnt directly to 0 here. I don't see a
->> realistic use-case for any driver to claim the same group more than once,
->> and allowing it in the API just feels like opening up various potential
->> corners for things to get out of sync.
+> [snip]
 > 
-> I am Ok if we toss it out to get this merged, as there is no in-kernel
-> user right now.
+> >>
+> >> Yes, that's what I tried to say. But your commit message says "To enable
+> >> use of VESA modes with simplefb in legacy BIOS boot mode" and that isn't
+> >> accurate AFAIU (unless you meant sysfb instead).
+> > 
+> >  config SYSFB_SIMPLEFB
+> >         bool "Mark VGA/VBE/EFI FB as generic system framebuffer"
+> >         depends on SYSFB
+> > +       select BOOT_VESA_SUPPORT if X86
+> > 
+> > This to me means that it's simplefb specifically that requires it, not sysfb.
+> > More precisely SYSFB_SIMPLEFB which is the simplefb implementation on top of
+> > legacy BIOS.
+> > 
 > 
-> Something will have to come back for iommufd, but we can look at what
-> is best suited then.
+> Ok, I see what you meant. The fact that simplefb is what's named to the part
+> of the sysfb driver that register the "simple-framebuffer" platform device
+> and also the name of the fbdev driver that matches the "simple-framebuffer"
+> is too confusing.
+> 
+> My point about the subject line remains thought, I would use something like:
+> 
+> firmware: sysfb: Enable boot time VESA graphic mode selection for simplefb
 
-If iommufd plans to be too dumb to keep track of whether it already owns 
-a given group or not, I can't see it dealing with attaching that group 
-to a single domain no more than once, either ;)
+I see where the confusion comes from.
 
-Robin.
+The efifb (and probably vesafb) has implicit unstated dependency on
+sysfb. So the drivers that select BOOT_VESA_SUPPORT should instead
+depend on SYSFB, and then SYSFB can select BOOT_VESA_SUPPORT, and it
+will look much saner.
+
+Thanks
+
+Michal
