@@ -2,202 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239064AbiBWIur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
+        id S239073AbiBWIu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:50:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237723AbiBWIuo (ORCPT
+        with ESMTP id S239069AbiBWIuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:50:44 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1BC6E8F1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:50:13 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id s24so36568351edr.5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:50:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EpfKLc99g2AFPaNgll4n6SEjyTg8UdxdMIQ94Ww8aqM=;
-        b=OIbDrTlUvuyMg6rNiq7c57g+SKrXjLRR7n6ZdMWrCssWWLDi2jKpHDX6T9s9GSoqNd
-         ruTn78V4szfzLVPVQmPja9+TVFg4wfHrTA0jhmslTmgxg1NgXV8AcRktrK8KhiIGfbjC
-         FQDxxV85yh2//76ghd5IVwIZU9fht3S4D/f3E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EpfKLc99g2AFPaNgll4n6SEjyTg8UdxdMIQ94Ww8aqM=;
-        b=xSqMacMGy99qhHDlB3JaRH8jtdsTE4Vd3mFzv5oSF/36LIuWpPD6rSFhI1Ur9ULeG+
-         wXOXWnKCNQEwD+iWWYCLcJCCtlSzHEfc0y9Wfj2t1rFaUhTICxSyq9J9UCL2OR4/OZh8
-         1/QC08ZoiOl+dPdfNIpzHxwtPIGBVbuficTHmGsZKFFhdarnNim6ME13qCJPX1wLg5R0
-         ekbLU34MrkBNqOX5v39Z1ccMIXIklK08qZ/tLd+YW5O2sgHll+FItmikCX7qAvyKVlKg
-         Yg+D0bUEbt0bc2xSTx+cCqwIYdSGZfr2v2NErZJ13CdPpKCsVFrkgOHqcPdXp91ELk8Z
-         iKVg==
-X-Gm-Message-State: AOAM531GzC3LyNwaysdmAIiBiMDJf/46ZD6VVFeTOIGnF5Cj4Q9PJMJG
-        aObAPDw6ElhqMv0CcUohHXb7uw==
-X-Google-Smtp-Source: ABdhPJyRR4QwzCSZ0eUweZDNv61B0PjzkG3wmCpseV3m49uZfuDTOYBxrtCle8a06vl+py2/XiNfTQ==
-X-Received: by 2002:aa7:d7c8:0:b0:3f9:3b65:f2b3 with SMTP id e8-20020aa7d7c8000000b003f93b65f2b3mr29820183eds.389.1645606212336;
-        Wed, 23 Feb 2022 00:50:12 -0800 (PST)
-Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
-        by smtp.gmail.com with ESMTPSA id c11sm11836709edx.42.2022.02.23.00.50.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 00:50:12 -0800 (PST)
-Date:   Wed, 23 Feb 2022 09:50:10 +0100
-From:   Miklos Szeredi <miklos@szeredi.hu>
-To:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xieyongji@bytedance.com
-Subject: Re: [PATCH v2] fuse: fix deadlock between atomic O_TRUNC open() and
- page invalidations
-Message-ID: <YhX1QlW87Hs/HS4h@miu.piliscsaba.redhat.com>
-References: <20211229040239.66075-1-zhangjiachen.jaycee@bytedance.com>
+        Wed, 23 Feb 2022 03:50:54 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A537B55B;
+        Wed, 23 Feb 2022 00:50:26 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=ashimida@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0V5HHvjC_1645606221;
+Received: from 192.168.193.152(mailfrom:ashimida@linux.alibaba.com fp:SMTPD_---0V5HHvjC_1645606221)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 23 Feb 2022 16:50:22 +0800
+Message-ID: <69d351c6-a69d-6ebb-53bc-b46dfe4da08a@linux.alibaba.com>
+Date:   Wed, 23 Feb 2022 00:50:21 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211229040239.66075-1-zhangjiachen.jaycee@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] [PATCH] AARCH64: Add gcc Shadow Call Stack support
+Content-Language: en-US
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     catalin.marinas@arm.com, will@kernel.org, ndesaulniers@google.com,
+        keescook@chromium.org, masahiroy@kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, mark.rutland@arm.com,
+        samitolvanen@google.com, npiggin@gmail.com, linux@roeck-us.net,
+        mhiramat@kernel.org, ojeda@kernel.org, luc.vanoostenryck@gmail.com,
+        elver@google.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+References: <20220222095736.24898-1-ashimida@linux.alibaba.com>
+ <YhUMRoLDan7tJRiL@dev-arch.archlinux-ax161>
+From:   Dan Li <ashimida@linux.alibaba.com>
+In-Reply-To: <YhUMRoLDan7tJRiL@dev-arch.archlinux-ax161>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 12:02:39PM +0800, Jiachen Zhang wrote:
-> fuse_finish_open() will be called with FUSE_NOWRITE set in case of atomic
-> O_TRUNC open(), so commit 76224355db75 ("fuse: truncate pagecache on
-> atomic_o_trunc") replaced invalidate_inode_pages2() by truncate_pagecache()
-> in such a case to avoid the A-A deadlock. However, we found another A-B-B-A
-> deadlock related to the case above, which will cause the xfstests
-> generic/464 testcase hung in our virtio-fs test environment.
-> 
-> For example, consider two processes concurrently open one same file, one
-> with O_TRUNC and another without O_TRUNC. The deadlock case is described
-> below, if open(O_TRUNC) is already set_nowrite(acquired A), and is trying
-> to lock a page (acquiring B), open() could have held the page lock
-> (acquired B), and waiting on the page writeback (acquiring A). This would
-> lead to deadlocks.
-> 
-> open(O_TRUNC)
-> ----------------------------------------------------------------
-> fuse_open_common
->   inode_lock            [C acquire]
->   fuse_set_nowrite      [A acquire]
-> 
->   fuse_finish_open
->     truncate_pagecache
->       lock_page         [B acquire]
->       truncate_inode_page
->       unlock_page       [B release]
-> 
->   fuse_release_nowrite  [A release]
->   inode_unlock          [C release]
-> ----------------------------------------------------------------
-> 
-> open()
-> ----------------------------------------------------------------
-> fuse_open_common
->   fuse_finish_open
->     invalidate_inode_pages2
->       lock_page         [B acquire]
-> 	fuse_launder_page
-> 	  fuse_wait_on_page_writeback [A acquire & release]
->       unlock_page       [B release]
-> ----------------------------------------------------------------
-> 
-> Besides this case, all calls of invalidate_inode_pages2() and
-> invalidate_inode_pages2_range() in fuse code also can deadlock with
-> open(O_TRUNC). This commit tries to fix it by adding a new lock,
-> atomic_o_trunc, to protect the areas with the A-B-B-A deadlock risk.
 
-Thanks.  Can you please try the following patch?  Instead of introducing a new
-lock it tries to fix this by moving the truncate_pagecache() out of the nowrite
-protected section.
+
+On 2/22/22 08:16, Nathan Chancellor wrote:
+> On Tue, Feb 22, 2022 at 01:57:36AM -0800, Dan Li wrote:
+>> Shadow call stack is available in GCC > 11.2.0, this patch makes
+>> the corresponding kernel configuration available when compiling
+>> the kernel with gcc.
+>>   config SHADOW_CALL_STACK
+>> -	bool "Clang Shadow Call Stack"
+>> -	depends on CC_IS_CLANG && ARCH_SUPPORTS_SHADOW_CALL_STACK
+>> +	bool "Shadow Call Stack"
+>> +	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
+>>   	depends on DYNAMIC_FTRACE_WITH_REGS || !FUNCTION_GRAPH_TRACER
+>>   	help
+>> -	  This option enables Clang's Shadow Call Stack, which uses a
+>> +	  This option enables Clang/GCC's Shadow Call Stack, which uses a
+> 
+> I wonder if we want to just ditch the mention of the compiler if both
+> support it?
+> 
+
+My intention is to remind users that this is a compiler feature.
+But since there is also a hint in CC_HAVE_SHADOW_CALL_STACK:
++# Supported by clang >= 7.0 or GCC ...
+
+Removing the specific compiler here also looks fine to me.
+Would this look better?
+
+"This option enables Shadow Call Stack, which uses a ..."
+
+or maybe:
+
+"This option enables compiler's Shadow Call Stack, which uses a ..."
+
+>>   	  shadow stack to protect function return addresses from being
+>>   	  overwritten by an attacker. More information can be found in
+>>   	  Clang's documentation:
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index 09b885cc4db5..a48a604301aa 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -1255,7 +1255,7 @@ config HW_PERF_EVENTS
+>>   config ARCH_HAS_FILTER_PGPROT
+>>   	def_bool y
+>>   
+>> -# Supported by clang >= 7.0
+>> +# Supported by clang >= 7.0 or GCC > 11.2.0
+> 
+> Same thing here, although eventually there may be a minimum GCC version
+> bump to something newer than 11.2.0, which would allow us to just drop
+> CONFIG_CC_HAVE_SHADOW_CALL_STACK altogether. No strong opinion.
+> 
+
+As Guenter said, I thought maybe we could mark the minimum available
+version for users :)
 
 Thanks,
-Miklos
+Dan.
 
----
-diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-index 656e921f3506..56f439719129 100644
---- a/fs/fuse/dir.c
-+++ b/fs/fuse/dir.c
-@@ -537,6 +537,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
- 	struct fuse_file *ff;
- 	void *security_ctx = NULL;
- 	u32 security_ctxlen;
-+	bool trunc = flags & O_TRUNC;
- 
- 	/* Userspace expects S_IFREG in create mode */
- 	BUG_ON((mode & S_IFMT) != S_IFREG);
-@@ -561,7 +562,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
- 	inarg.mode = mode;
- 	inarg.umask = current_umask();
- 
--	if (fm->fc->handle_killpriv_v2 && (flags & O_TRUNC) &&
-+	if (fm->fc->handle_killpriv_v2 && trunc &&
- 	    !(flags & O_EXCL) && !capable(CAP_FSETID)) {
- 		inarg.open_flags |= FUSE_OPEN_KILL_SUIDGID;
- 	}
-@@ -623,6 +624,8 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
- 	} else {
- 		file->private_data = ff;
- 		fuse_finish_open(inode, file);
-+		if (fm->fc->atomic_o_trunc && trunc)
-+			truncate_pagecache(inode, 0);
- 	}
- 	return err;
- 
-diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-index 829094451774..2e041708ef44 100644
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -210,7 +210,6 @@ void fuse_finish_open(struct inode *inode, struct file *file)
- 		fi->attr_version = atomic64_inc_return(&fc->attr_version);
- 		i_size_write(inode, 0);
- 		spin_unlock(&fi->lock);
--		truncate_pagecache(inode, 0);
- 		file_update_time(file);
- 		fuse_invalidate_attr_mask(inode, FUSE_STATX_MODSIZE);
- 	} else if (!(ff->open_flags & FOPEN_KEEP_CACHE)) {
-@@ -239,30 +238,32 @@ int fuse_open_common(struct inode *inode, struct file *file, bool isdir)
- 	if (err)
- 		return err;
- 
--	if (is_wb_truncate || dax_truncate) {
-+	if (is_wb_truncate || dax_truncate)
- 		inode_lock(inode);
--		fuse_set_nowrite(inode);
--	}
- 
- 	if (dax_truncate) {
- 		filemap_invalidate_lock(inode->i_mapping);
- 		err = fuse_dax_break_layouts(inode, 0, 0);
- 		if (err)
--			goto out;
-+			goto out_inode_unlock;
- 	}
- 
-+	if (is_wb_truncate || dax_truncate)
-+		fuse_set_nowrite(inode);
-+
- 	err = fuse_do_open(fm, get_node_id(inode), file, isdir);
- 	if (!err)
- 		fuse_finish_open(inode, file);
- 
--out:
-+	if (is_wb_truncate | dax_truncate)
-+		fuse_release_nowrite(inode);
-+	if (fc->atomic_o_trunc && (file->f_flags & O_TRUNC))
-+		truncate_pagecache(inode, 0);
- 	if (dax_truncate)
- 		filemap_invalidate_unlock(inode->i_mapping);
--
--	if (is_wb_truncate | dax_truncate) {
--		fuse_release_nowrite(inode);
-+out_inode_unlock:
-+	if (is_wb_truncate | dax_truncate)
- 		inode_unlock(inode);
--	}
- 
- 	return err;
- }
