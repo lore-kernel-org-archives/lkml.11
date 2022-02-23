@@ -2,88 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 029CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiBWJDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 04:03:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S237408AbiBWJGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 04:06:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239117AbiBWJDS (ORCPT
+        with ESMTP id S230301AbiBWJGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 04:03:18 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2049A3D488
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:02:50 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id w27so12072116lfa.5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:02:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=karuga-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UYUz8Ivg2sbFi9UjIBOKZiugtmcYnDRDXJxBmoWlVVg=;
-        b=sHXbPaiDyQ3l/e6qLDfuZeJXm2/PKiAgNVSSJYjNmC5GMFt8QDF4Y8dTpVE8OIcpTo
-         loJTHj58geHyrTR/YmU5b4+wn/ojLgliBle3iateISLnKnfELvKp808M3oo7z7mNapA7
-         bpYaSzBZee14Kw/BceIV2sB74QYFDmFggaoaqazsHY8i+Rr4JvzyZro1qpa1iWa426pL
-         NfqEeNFd9cn02kYPz+QMj8GE/Hexn27XZV/QhvZMdMQ6NBwNFQrc4tWNAw4uemQfUAbq
-         Qad0ca+nDUEu/hAUwrkkXSGPzVCYtc9uWxjil+F25yGhXuyyKkXJHkIahlw7hAh5YJwp
-         fdTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UYUz8Ivg2sbFi9UjIBOKZiugtmcYnDRDXJxBmoWlVVg=;
-        b=5SOEToFwxNSmhZDFYsVyhsathtA8hN/SIYQ01Oyn7gVvLVdHii3aZBCD53eXsYN924
-         gwzP1qlmT49lEauqJzvXgWZb+oqNxVH4mWC9kKeIC3HHqw2bk1LNmPRujeYM4Y+M+9oG
-         IwbTFb0X01tLlZLzGPBu/Npb7TuMcCxrR4ENlZf65p+Gcq4lwFAYdTodNW/XvKA82ylj
-         HE0NCAykNu+iK3B/uc0CDGRrB3V2Oe1db6/A8NTMvXWkZVbAXC1zvkvqeTcd+aKgnr8Y
-         pUa2+OHPYmEJki9aE1J/Yl9Yfu86rlYuVf+DA2xq9IgSoe9iH5YgTjGR404q38W43UCJ
-         uBeA==
-X-Gm-Message-State: AOAM5300GhjW9U2CZ8Uu/T0yEQkIEEXmfJKvteiJ0O9839H+S1XYt+42
-        79WWEeCd8meAErksig1OG3WZmC1Pyt76e0Za6NTXJQ==
-X-Google-Smtp-Source: ABdhPJzRxqYdGtINoTjRLuYEfhz/riWHFWKne4XGoI6AKqqyyI0KzUhiRfsSiUXDz3QTbCSq5IdOYQ==
-X-Received: by 2002:a19:a404:0:b0:443:2ef6:1ae7 with SMTP id q4-20020a19a404000000b004432ef61ae7mr20699528lfc.554.1645606968882;
-        Wed, 23 Feb 2022 01:02:48 -0800 (PST)
-Received: from virtualbox.. ([197.211.27.230])
-        by smtp.gmail.com with ESMTPSA id k12sm642562lfg.108.2022.02.23.01.02.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 01:02:48 -0800 (PST)
-From:   Wambui Karuga <wambui@karuga.org>
-To:     zackr@vmware.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-graphics-maintainer@vmware.com
-Subject: [PATCH] drm/vmwgfx: make vmw_pt_sys_placement static
-Date:   Wed, 23 Feb 2022 12:02:44 +0300
-Message-Id: <20220223090244.576093-1-wambui@karuga.org>
-X-Mailer: git-send-email 2.32.0
+        Wed, 23 Feb 2022 04:06:35 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E39557B35;
+        Wed, 23 Feb 2022 01:06:06 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=ashimida@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0V5I3avg_1645607161;
+Received: from 192.168.193.152(mailfrom:ashimida@linux.alibaba.com fp:SMTPD_---0V5I3avg_1645607161)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 23 Feb 2022 17:06:02 +0800
+Message-ID: <c30e464f-6d61-1274-3c47-d0df5d98cada@linux.alibaba.com>
+Date:   Wed, 23 Feb 2022 01:06:01 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] [PATCH] AARCH64: Add gcc Shadow Call Stack support
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        masahiroy@kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, samitolvanen@google.com,
+        npiggin@gmail.com, linux@roeck-us.net, mhiramat@kernel.org,
+        ojeda@kernel.org, luc.vanoostenryck@gmail.com, elver@google.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+References: <20220222095736.24898-1-ashimida@linux.alibaba.com>
+ <YhUvp5RHkTlBXX3o@lakrids>
+From:   Dan Li <ashimida@linux.alibaba.com>
+In-Reply-To: <YhUvp5RHkTlBXX3o@lakrids>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Converts the variable vmw_pt_sys_placement to static to
-fix the following Sparse warning:
-warning: symbol 'vmw_pt_sys_placement' was not declared. Should it be static?
 
-Signed-off-by: Wambui Karuga <wambui@karuga.org>
----
- drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c b/drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c
-index b84ecc6d6611..21057ff0d340 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c
-@@ -120,7 +120,7 @@ struct ttm_placement vmw_sys_placement = {
- 	.busy_placement = &sys_placement_flags
- };
- 
--struct ttm_placement vmw_pt_sys_placement = {
-+static struct ttm_placement vmw_pt_sys_placement = {
- 	.num_placement = 1,
- 	.placement = &vmw_sys_placement_flags,
- 	.num_busy_placement = 1,
--- 
-2.32.0
+On 2/22/22 10:47, Mark Rutland wrote:
+> Hi,
+> 
+> On Tue, Feb 22, 2022 at 01:57:36AM -0800, Dan Li wrote:
+>> Shadow call stack is available in GCC > 11.2.0, this patch makes
+>> the corresponding kernel configuration available when compiling
+>> the kernel with gcc.
+> 
+> Neat!
+> 
+> My local GCC devs told me that means GCC 12.x.x rather than 11.2.x or
+> 11.3.x, so as others have said it'd be clearer to say `GCC >= 12.0.0`.
+> 
 
+Ah, yes, I just saw this flag in gcc/BASE-VER.
+
+> I'd like to try this with a GCC binary before I provide an Ack or R-b;
+> but in the mean time I have a few comments below.
+> 
+
+Thanks for your test, Mark.
+Please let me know if there is any issues :)
+
+>> ---
+>> FYI:
+>> This function can be used to test if the shadow call stack works:
+>> //noinline void __noscs scs_test(void)
+>> noinline void scs_test(void)
+>> {
+>>      register unsigned long *sp asm("sp");
+>>      unsigned long * lr = sp + 1;
+>>
+>>      asm volatile("":::"x30");
+>>      *lr = 0;
+>> }
+> 
+> It's probably be better to use __builtin_frame_address(0) to get the
+> address of the frame record rather than assuming that fp==sp in the
+> middle of the function.
+> 
+
+Got it.
+
+>>   config SHADOW_CALL_STACK
+>> -	bool "Clang Shadow Call Stack"
+>> -	depends on CC_IS_CLANG && ARCH_SUPPORTS_SHADOW_CALL_STACK
+>> +	bool "Shadow Call Stack"
+>> +	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
+>>   	depends on DYNAMIC_FTRACE_WITH_REGS || !FUNCTION_GRAPH_TRACER
+>>   	help
+>> -	  This option enables Clang's Shadow Call Stack, which uses a
+>> +	  This option enables Clang/GCC's Shadow Call Stack, which uses a
+>>   	  shadow stack to protect function return addresses from being
+>>   	  overwritten by an attacker. More information can be found in
+>>   	  Clang's documentation:
+> 
+> Is there any additional GCC documentation that we can refer to?
+> 
+
+Currently there is only a brief description of
+-fsanitize=shadow-call-stack in the user manual.
+
+Since the description of the clang documentation is more detailed, should
+I add this gcc link to the configuration description?
+
+Link: https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html#Instrumentation-Options
+
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index 09b885cc4db5..a48a604301aa 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -1255,7 +1255,7 @@ config HW_PERF_EVENTS
+>>   config ARCH_HAS_FILTER_PGPROT
+>>   	def_bool y
+>>   
+>> -# Supported by clang >= 7.0
+>> +# Supported by clang >= 7.0 or GCC > 11.2.0
+> 
+> As above, I beleive that should be `GCC >= 12.0.0`.
+> 
+
+Yeah.
+
+Thanks,
+Dan.
