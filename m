@@ -2,172 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D91C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08232C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238889AbiBWIZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S238925AbiBWIZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:25:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbiBWIZB (ORCPT
+        with ESMTP id S231350AbiBWIZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:25:01 -0500
-Received: from spam.unicloud.com (eage.unicloud.com [220.194.70.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87C65A5A5;
-        Wed, 23 Feb 2022 00:24:32 -0800 (PST)
-Received: from eage.unicloud.com ([220.194.70.35])
-        by spam.unicloud.com with ESMTP id 21N8Lh1l031001;
-        Wed, 23 Feb 2022 16:21:43 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
- (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Wed, 23
- Feb 2022 16:21:42 +0800
-From:   luofei <luofei@unicloud.com>
-To:     <tony.luck@intel.com>, <bp@alien8.de>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <dave.hansen@linux.intel.com>,
-        <x86@kernel.org>, <naoya.horiguchi@nec.com>,
-        <akpm@linux-foundation.org>
-CC:     <hpa@zytor.com>, <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mm@kvack.org>, luofei <luofei@unicloud.com>
-Subject: [PATCH v5 1/2] mm/hwpoison: Avoid the impact of hwpoison_filter() return value on mce handler
-Date:   Wed, 23 Feb 2022 03:21:35 -0500
-Message-ID: <20220223082135.2769649-1-luofei@unicloud.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 23 Feb 2022 03:25:44 -0500
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774B35AED0;
+        Wed, 23 Feb 2022 00:25:15 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 0358B20527;
+        Wed, 23 Feb 2022 09:25:12 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id jC4y_vDuKg4B; Wed, 23 Feb 2022 09:25:11 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 86DF220519;
+        Wed, 23 Feb 2022 09:25:11 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 7E9BB80004A;
+        Wed, 23 Feb 2022 09:25:11 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Wed, 23 Feb 2022 09:25:11 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 23 Feb
+ 2022 09:25:10 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 8C8803180FB1; Wed, 23 Feb 2022 09:25:10 +0100 (CET)
+Date:   Wed, 23 Feb 2022 09:25:10 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David Ahern" <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] xfrm: fix tunnel model fragmentation behavior
+Message-ID: <20220223082510.GL17351@gauss3.secunet.de>
+References: <20220221110405.GJ1223722@gauss3.secunet.de>
+ <20220222021803.27965-1-lina.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.10.1.7]
-X-ClientProxiedBy: zgys-ex-mb08.Unicloud.com (10.10.0.14) To
- zgys-ex-mb09.Unicloud.com (10.10.0.24)
-X-DNSRBL: 
-X-MAIL: spam.unicloud.com 21N8Lh1l031001
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220222021803.27965-1-lina.wang@mediatek.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the hwpoison page meets the filter conditions, it should
-not be regarded as successful memory_failure() processing for
-mce handler, but should return a distinct value, otherwise
-mce handler regards the error page has been identified and
-isolated, which may lead to calling set_mce_nospec() to change
-page attribute, etc.
+On Tue, Feb 22, 2022 at 10:18:04AM +0800, Lina Wang wrote:
+> On Mon, 2022-02-21 at 12:04 +0100, Steffen Klassert wrote:
+> > On Mon, Feb 21, 2022 at 01:16:48PM +0800, Lina Wang wrote:
+> > > in tunnel mode, if outer interface(ipv4) is less, it is easily to
+> We have two commits in the ipsec tree that address a very similar
+> > issue. That is:
+> > 
+> > commit 6596a0229541270fb8d38d989f91b78838e5e9da
+> > xfrm: fix MTU regression
+> > 
+> > and
+> > 
+> > commit a6d95c5a628a09be129f25d5663a7e9db8261f51
+> > Revert "xfrm: xfrm_state_mtu should return at least 1280 for ipv6"
+> > 
+> > Can you please doublecheck that the issue you are fixing still
+> > exist in the ipsec tree?
+> 
+> Yes, I know the two patches, which didnot help for my scenary. Whatever 
+> commit a6d95c5a62 exist or not, there still is double fragment issue. From
+> commit 6596a022's mail thread, owner has met double fragment issue, I am 
+> not sure if it is the same with mine.
 
-Here memory_failure() return -EOPNOTSUPP to indicate that the
-error event is filtered, mce handler should not take any action
-for this situation and hwpoison injector should treat as correct.
-
-Signed-off-by: luofei <luofei@unicloud.com>
----
- arch/x86/kernel/cpu/mce/core.c | 8 +++++---
- drivers/base/memory.c          | 2 ++
- mm/hwpoison-inject.c           | 3 ++-
- mm/madvise.c                   | 2 ++
- mm/memory-failure.c            | 9 +++++++--
- 5 files changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 728f3b36ce2d..f4b56904db8a 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1332,10 +1332,12 @@ static void kill_me_maybe(struct callback_head *cb)
- 
- 	/*
- 	 * -EHWPOISON from memory_failure() means that it already sent SIGBUS
--	 * to the current process with the proper error info, so no need to
--	 * send SIGBUS here again.
-+	 * to the current process with the proper error info,
-+	 * -EOPNOTSUPP means hwpoison_filter() filtered the error event,
-+	 *
-+	 * In both cases, no further processing is required.
- 	 */
--	if (ret == -EHWPOISON)
-+	if (ret == -EHWPOISON || ret == -EOPNOTSUPP)
- 		return;
- 
- 	pr_err("Memory error not recovered");
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 365cd4a7f239..abf407e45467 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -555,6 +555,8 @@ static ssize_t hard_offline_page_store(struct device *dev,
- 		return -EINVAL;
- 	pfn >>= PAGE_SHIFT;
- 	ret = memory_failure(pfn, 0);
-+	if (ret == -EOPNOTSUPP)
-+		ret = 0;
- 	return ret ? ret : count;
- }
- 
-diff --git a/mm/hwpoison-inject.c b/mm/hwpoison-inject.c
-index aff4d27ec235..a1d6fc3c78b9 100644
---- a/mm/hwpoison-inject.c
-+++ b/mm/hwpoison-inject.c
-@@ -48,7 +48,8 @@ static int hwpoison_inject(void *data, u64 val)
- 
- inject:
- 	pr_info("Injecting memory failure at pfn %#lx\n", pfn);
--	return memory_failure(pfn, 0);
-+	err = memory_failure(pfn, 0);
-+	return (err == -EOPNOTSUPP) ? 0 : err;
- }
- 
- static int hwpoison_unpoison(void *data, u64 val)
-diff --git a/mm/madvise.c b/mm/madvise.c
-index ae35d72627ef..e7cb7a0751d6 100644
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1096,6 +1096,8 @@ static int madvise_inject_error(int behavior,
- 			pr_info("Injecting memory failure for pfn %#lx at process virtual address %#lx\n",
- 				 pfn, start);
- 			ret = memory_failure(pfn, MF_COUNT_INCREASED);
-+			if (ret == -EOPNOTSUPP)
-+				ret = 0;
- 		}
- 
- 		if (ret)
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 662afe7b514f..7e16d31df0f3 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1528,7 +1528,7 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 				if (TestClearPageHWPoison(head))
- 					num_poisoned_pages_dec();
- 				unlock_page(head);
--				return 0;
-+				return -EOPNOTSUPP;
- 			}
- 			unlock_page(head);
- 			res = MF_FAILED;
-@@ -1615,7 +1615,7 @@ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		goto out;
- 
- 	if (hwpoison_filter(page)) {
--		rc = 0;
-+		rc = -EOPNOTSUPP;
- 		goto unlock;
- 	}
- 
-@@ -1688,6 +1688,10 @@ static DEFINE_MUTEX(mf_mutex);
-  *
-  * Must run in process context (e.g. a work queue) with interrupts
-  * enabled and no spinlocks hold.
-+ *
-+ * Return: 0 for successfully handled the memory error,
-+ *         -EOPNOTSUPP for memory_filter() filtered the error event,
-+ *         < 0(except -EOPNOTSUPP) on failure.
-  */
- int memory_failure(unsigned long pfn, int flags)
- {
-@@ -1843,6 +1847,7 @@ int memory_failure(unsigned long pfn, int flags)
- 			num_poisoned_pages_dec();
- 		unlock_page(p);
- 		put_page(p);
-+		res = -EOPNOTSUPP;
- 		goto unlock_mutex;
- 	}
- 
--- 
-2.27.0
-
+Thanks for the doublecking this!
