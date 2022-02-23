@@ -2,177 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C35D5C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B32EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240688AbiBWM5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:57:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51792 "EHLO
+        id S240704AbiBWM5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:57:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240670AbiBWM5m (ORCPT
+        with ESMTP id S240675AbiBWM5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 07:57:42 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E755F9FFE
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:13 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id d17so15273951pfl.0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9zjHo6BnE+LkvSb3drhMyymhfgiGeZ2qxQyNQtjreqM=;
-        b=CNsXNq6GX/7wV0tQQjbzBvUkFpuR3GUyUnpFx34jzgdd5Fca/MULlkHlNnop9BE1H7
-         UzYtJoh0fjmwrJ7nPJWqTsMnuA09heFJZcOadyMiQnz0YGRZ/cBWaupEglqNi+YebIfG
-         bOd1OHuu0t0wZKKTgcbhFCjlTiEy7o0wednqgj1ST/w7M17cUKSSQXfRpvdVVuqub/Sb
-         ulNUDwC7lxJ4ocr5GGvujco3nau+SVz1RFQkaiugxQQbQchtOTC8nzH541e/vEwwKtGS
-         vxVgnoH3bg3IHWaZTegO5vsd79ctl9MSUb4ZNp5ritfSZ0gc+b4dzihzzT3qXH53GrdP
-         zrzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9zjHo6BnE+LkvSb3drhMyymhfgiGeZ2qxQyNQtjreqM=;
-        b=LhjNUzBzxNsx1kfu+LMoYfu+oUGfqRQ6It9XtxcrWp9TLEM608c4gAhWBy6XRsT7qw
-         Wi+LmFVAzZFz5MPUtQsAhNDEBvFUm8knE2vNQWMFqIPEZ1FqIAg7RXRFIUD1SYDl8b5L
-         qaKE9wGOZksQIvcNUZqPRzv6sqOEduIl5aV7+h4bjFm7GX29HrvAVfS0vYIBl+vK+Vt6
-         UnX37gw57zImr8wBrvFB5zbKgV0jY1lloXrncxUIrRWeHyf0DzbJSiMsrB3oeDmJ0ZqK
-         rNjiZdgcTWAqmPZL8F1mbo344jbCA9e8jgwx6ARMTs3WVsXxqXFq8kWzlq369NfFzE1y
-         I9UA==
-X-Gm-Message-State: AOAM533MYWQD+Y4iCZkEnKiYKiJVRaZiWFWgpCCX4HJWQ6MB3803xEjf
-        coo/HO8QoNftD/KaDh72CBvB+A==
-X-Google-Smtp-Source: ABdhPJyfMBO4QcCVfia/BemnU75mzGDNEqqptHIs/x1P4e0kISqh/l1AoaX/wM3QNabCIVs7Kj+0QQ==
-X-Received: by 2002:a63:531d:0:b0:365:5f0c:7cbb with SMTP id h29-20020a63531d000000b003655f0c7cbbmr23503993pgb.150.1645621033463;
-        Wed, 23 Feb 2022 04:57:13 -0800 (PST)
-Received: from localhost.localdomain (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id z23sm22136243pfj.87.2022.02.23.04.57.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 04:57:12 -0800 (PST)
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shawn Guo <shawn.guo@linaro.org>
-Subject: [PATCH v6 1/3] PM: cpu: Add CPU_LAST_PM_ENTER and CPU_FIRST_PM_EXIT support
-Date:   Wed, 23 Feb 2022 20:55:34 +0800
-Message-Id: <20220223125536.230224-2-shawn.guo@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220223125536.230224-1-shawn.guo@linaro.org>
-References: <20220223125536.230224-1-shawn.guo@linaro.org>
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7280646B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 20A03CE1AFF
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63124C340E7
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:57:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645621031;
+        bh=T3RPLphnpfjwjFji7iWJDHhlKcmc/lW8LSE7GNk2LKQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=oRYCnN+JtWTk+ZS+CT7d6jaqcSPRpUuFonbOK9xP0xB7QUUTpeIRYil0Z6yC0IrpP
+         +STyaafk7/Yc//R5yR3Na6Wq8JTsYEQhJulAeoMOY2cxmshWudggYn9SYfYhvPbjqz
+         S1XqLyRVOh1UX3uZwyDM/14Yi7HSPfG4EpA2kazhE8+xmwWUoOWTd1WMI99ANMWTg5
+         oUulsYyUXWW2XP5os7plGfrs4dIepLnvkI1ZUGsK82KQIbU31vVFcj+qNNgPrdztYc
+         n9a+b11/5Pe1Vquy+iQtBZEfvkVQqFxTCFvave+ELkO89WpT/CSxx1FVOJ2uZ5FkkF
+         B3pJD/7n4mIIQ==
+Received: by mail-yb1-f170.google.com with SMTP id w63so26496619ybe.10
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 04:57:11 -0800 (PST)
+X-Gm-Message-State: AOAM533jjBOE66cnNeKeADrhz3+99nQbefKwwt9tgmjR5asQQ+ZohRcG
+        vVCaOkG3HbemklQSTHP8yjIf0DZIoxNsY5xyceg=
+X-Google-Smtp-Source: ABdhPJwEL3v2n7dXLiGGSxBUDiI1buHwdZ4ctEc1Ksn2/qthjXJ6pwsBtWyB0/G9MaH4qLrswEBFghsg5dkZhl8K2zI=
+X-Received: by 2002:a25:e014:0:b0:619:a368:c3b5 with SMTP id
+ x20-20020a25e014000000b00619a368c3b5mr27062454ybg.383.1645621030432; Wed, 23
+ Feb 2022 04:57:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220222165212.2005066-7-kaleshsingh@google.com>
+ <202202231727.L621fVgD-lkp@intel.com> <875yp63ptg.wl-maz@kernel.org>
+ <YhYpvfZaSjrAtkZp@rli9-dbox> <cb750267af0636c49d2f8aa354f086a5@kernel.org>
+In-Reply-To: <cb750267af0636c49d2f8aa354f086a5@kernel.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 23 Feb 2022 13:56:59 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXHsNsQXbeeS1zcy+xYA7kSE5apbLpChohfvkABS7Z6jKg@mail.gmail.com>
+Message-ID: <CAMj1kXHsNsQXbeeS1zcy+xYA7kSE5apbLpChohfvkABS7Z6jKg@mail.gmail.com>
+Subject: Re: [kbuild-all] Re: [PATCH v2 6/9] KVM: arm64: Detect and handle
+ hypervisor stack overflows
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Philip Li <philip.li@intel.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Fuad Tabba <tabba@google.com>, surenb@google.com,
+        Android Kernel Team <kernel-team@android.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It becomes a common situation on some platforms that certain hardware
-setup needs to be done on the last standing cpu, and rpmh-rsc[1] is such
-an existing example.  As figuring out the last standing cpu is really
-something generic, it adds CPU_LAST_PM_ENTER (and CPU_FIRST_PM_EXIT)
-event support to cpu_pm helper, so that individual driver can be
-notified when the last standing cpu is about to enter low power state.
+On Wed, 23 Feb 2022 at 13:54, Marc Zyngier <maz@kernel.org> wrote:
+>
+> On 2022-02-23 12:34, Philip Li wrote:
+> > On Wed, Feb 23, 2022 at 09:16:59AM +0000, Marc Zyngier wrote:
+> >> On Wed, 23 Feb 2022 09:05:18 +0000,
+> >> kernel test robot <lkp@intel.com> wrote:
+> >> >
+> >> > Hi Kalesh,
+> >> >
+> >> > Thank you for the patch! Perhaps something to improve:
+> >> >
+> >> > [auto build test WARNING on cfb92440ee71adcc2105b0890bb01ac3cddb8507]
+> >> >
+> >> > url:    https://github.com/0day-ci/linux/commits/Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+> >> > base:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
+> >> > config: arm64-randconfig-r011-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231727.L621fVgD-lkp@intel.com/config)
+> >> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+> >> > reproduce (this is a W=1 build):
+> >> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> >> >         chmod +x ~/bin/make.cross
+> >> >         # install arm64 cross compiling tool for clang build
+> >> >         # apt-get install binutils-aarch64-linux-gnu
+> >> >         # https://github.com/0day-ci/linux/commit/7fe99fd40f7c4b2973218045ca5b9c9160524db1
+> >> >         git remote add linux-review https://github.com/0day-ci/linux
+> >> >         git fetch --no-tags linux-review Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+> >> >         git checkout 7fe99fd40f7c4b2973218045ca5b9c9160524db1
+> >> >         # save the config file to linux build tree
+> >> >         mkdir build_dir
+> >> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+> >> >
+> >> > If you fix the issue, kindly add following tag as appropriate
+> >> > Reported-by: kernel test robot <lkp@intel.com>
+> >> >
+> >> > All warnings (new ones prefixed by >>):
+> >> >
+> >> >    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+> >> >    #define NULL ((void *)0)
+> >> >                 ^~~~~~~~~~~
+> >> >    arch/arm64/kvm/hyp/nvhe/switch.c:200:27: warning: initializer overrides prior initialization of this subobject [-Winitializer-overrides]
+> >> >            [ESR_ELx_EC_FP_ASIMD]           = kvm_hyp_handle_fpsimd,
+> >> >                                              ^~~~~~~~~~~~~~~~~~~~~
+> >> >    arch/arm64/kvm/hyp/nvhe/switch.c:196:28: note: previous initialization is here
+> >> >            [0 ... ESR_ELx_EC_MAX]          = NULL,
+> >> >                                              ^~~~
+> >> >    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+> >> >    #define NULL ((void *)0)
+> >> >                 ^~~~~~~~~~~
+> >>
+> >> Kalesh, please ignore this nonsense. There may be things to improve,
+> >> but this is *NOT* one of them.
+> >>
+> >> These reports are pretty useless, and just lead people to ignore real
+> >> bug reports.
+> >
+> > Hi Kalesh, sorry there're some irrelevant issues mixed in the report,
+> > kindly ignore them. And the valuable ones are the new ones that
+> > prefixed by >>, as the below one in original report.
+> >
+> >>> arch/arm64/kvm/hyp/nvhe/switch.c:372:17: warning: no previous
+> >>> prototype for function 'hyp_panic_bad_stack' [-Wmissing-prototypes]
+> >    void __noreturn hyp_panic_bad_stack(void)
+> >                    ^
+>
+> This is only called from assembly code, so a prototype wouldn't bring
+> much.
+>
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/soc/qcom/rpmh-rsc.c?id=v5.16#n773
-
-Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
----
- include/linux/cpu_pm.h | 15 +++++++++++++++
- kernel/cpu_pm.c        | 33 +++++++++++++++++++++++++++++++--
- 2 files changed, 46 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/cpu_pm.h b/include/linux/cpu_pm.h
-index 552b8f9ea05e..153344307b7c 100644
---- a/include/linux/cpu_pm.h
-+++ b/include/linux/cpu_pm.h
-@@ -55,6 +55,21 @@ enum cpu_pm_event {
- 
- 	/* A cpu power domain is exiting a low power state */
- 	CPU_CLUSTER_PM_EXIT,
-+
-+	/*
-+	 * A cpu is entering a low power state after all other cpus
-+	 * in the system have entered the lower power state.
-+	 */
-+	CPU_LAST_PM_ENTER,
-+
-+	/* The last cpu failed to enter a low power state */
-+	CPU_LAST_PM_ENTER_FAILED,
-+
-+	/*
-+	 * A cpu is exiting a low power state before any other cpus
-+	 * in the system exits the low power state.
-+	 */
-+	CPU_FIRST_PM_EXIT,
- };
- 
- #ifdef CONFIG_CPU_PM
-diff --git a/kernel/cpu_pm.c b/kernel/cpu_pm.c
-index 246efc74e3f3..7c104446e1e9 100644
---- a/kernel/cpu_pm.c
-+++ b/kernel/cpu_pm.c
-@@ -26,6 +26,8 @@ static struct {
- 	.lock  = __RAW_SPIN_LOCK_UNLOCKED(cpu_pm_notifier.lock),
- };
- 
-+static atomic_t cpus_in_pm;
-+
- static int cpu_pm_notify(enum cpu_pm_event event)
- {
- 	int ret;
-@@ -116,7 +118,20 @@ EXPORT_SYMBOL_GPL(cpu_pm_unregister_notifier);
-  */
- int cpu_pm_enter(void)
- {
--	return cpu_pm_notify_robust(CPU_PM_ENTER, CPU_PM_ENTER_FAILED);
-+	int ret;
-+
-+	ret = cpu_pm_notify_robust(CPU_PM_ENTER, CPU_PM_ENTER_FAILED);
-+	if (ret)
-+		return ret;
-+
-+	if (atomic_inc_return(&cpus_in_pm) == num_online_cpus()) {
-+		ret = cpu_pm_notify_robust(CPU_LAST_PM_ENTER,
-+					   CPU_LAST_PM_ENTER_FAILED);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(cpu_pm_enter);
- 
-@@ -134,7 +149,21 @@ EXPORT_SYMBOL_GPL(cpu_pm_enter);
-  */
- int cpu_pm_exit(void)
- {
--	return cpu_pm_notify(CPU_PM_EXIT);
-+	int ret;
-+
-+	ret = cpu_pm_notify(CPU_PM_EXIT);
-+	if (ret)
-+		return ret;
-+
-+	if (atomic_read(&cpus_in_pm) == num_online_cpus()) {
-+		ret = cpu_pm_notify(CPU_FIRST_PM_EXIT);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	atomic_dec(&cpus_in_pm);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(cpu_pm_exit);
- 
--- 
-2.25.1
-
+Should probably be marked as 'asmlinkage' then. I've suggested many
+times already that this bogus diagnostic should either be disabled, or
+disregard 'asmlinkage' symbols.
