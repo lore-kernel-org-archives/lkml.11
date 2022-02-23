@@ -2,129 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 096AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242373AbiBWVwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 16:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S242687AbiBWVwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 16:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240806AbiBWVwE (ORCPT
+        with ESMTP id S233941AbiBWVwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 16:52:04 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D0A245B1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:51:35 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id j5so448767qvs.13
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:51:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7HUVNZQiEEXaUvy3RrhbANmYcH8oGsdxifIctFemNVw=;
-        b=SnxuRkXzdbe1wR2S1H3+KBQbfIfB8Losrc/r+oTwCiBTWmQ5dw9Fa8YhkcNJh5N1b1
-         67vU/Yjbe2hOZPfPAK2L456wDMBjXmTTw4234gOdFxKY2T/Z1G9vylHw7RxkwOHLDn1O
-         sadSZ7aXEeSTaKMePhtVGGU7YPQdZMzgKmZ5V+FF/BZumo1Y8Bs7rrLGicTSUzRo6xRd
-         cHYnrCT7HTizDx1O7UEZ4B3pE4Umhx9OYitYHiTaZnQ8ThY+gVfzwTC3FPJYBUbnPOIA
-         cvMNhcK2/6GTHLF8w7iBsgJJWc0d1RoLrAYuBb+W4clwWvdIQwWFI27AaFh3X2JnrR1p
-         ZUtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7HUVNZQiEEXaUvy3RrhbANmYcH8oGsdxifIctFemNVw=;
-        b=xgTCxLFQNL18NB1sLyNhzTCDp7jVR/YrCKtjQp3tjNSlXEAWybFBvYT/uha9DZwYpo
-         IDZd0lhPt7zLABeeP8GWyj2E5iestarFZhBbJH31SFH8ZoIptz7TeDmUt1bzjFdOraVp
-         LrGEnBlRtClopII/iE9BXZucGAaE8HgvxP79FD6u0+rHdE9yPSxYO6cj9LNI7N22/O4D
-         CqgVJ2qUblCQJgVgBBaQZ8PqBrGBmm2fhl5NsoU0yKOPxnPfyJNpZyrcuRbouReSS/gY
-         wTT6bsRX/rMdOErIcu9Cbs1ilD1jqB7M3wBsDTZmOzrn8DIMolVBm8bDhJ0csf6PTyLh
-         utLA==
-X-Gm-Message-State: AOAM531gNh2d4l5E6a+FSfyT7hP5mG2hwFBAhSUKh/iw0zRt9MieJjZr
-        mR/tSoakYNPtPss66WwtaFRXPuXE4hqO4Pkj5jpsTS0sztU=
-X-Google-Smtp-Source: ABdhPJzje7a7YdyFqZl6kLPzcoGrxOi4FHB8EGjU8WIbzSRWfDzPfj6CqCqQ5BsMUuXZxTnCbgaG73MeeM39f6u1zVQ=
-X-Received: by 2002:a0c:d807:0:b0:42c:1ff7:7242 with SMTP id
- h7-20020a0cd807000000b0042c1ff77242mr1538738qvj.119.1645653094284; Wed, 23
- Feb 2022 13:51:34 -0800 (PST)
+        Wed, 23 Feb 2022 16:52:38 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF533C4B9;
+        Wed, 23 Feb 2022 13:52:07 -0800 (PST)
+Received: from mail-ej1-f51.google.com ([209.85.218.51]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mc02T-1nwrnu3KHv-00da4O; Wed, 23 Feb 2022 22:52:05 +0100
+Received: by mail-ej1-f51.google.com with SMTP id r13so249489ejd.5;
+        Wed, 23 Feb 2022 13:52:05 -0800 (PST)
+X-Gm-Message-State: AOAM5308jvEXhpKL/w+dlKOqx/PFZZgd5JfDS6c5Bk8AtLsATnuuPNun
+        FTUsSC+jEyRTsxcmRagkzksfRbiAM3ocICNcygA=
+X-Google-Smtp-Source: ABdhPJxtj8uyicd8SyqQTEpI7vIdv7hPv52/WmZ5AoYWSFitVsWjSUWx5lKV5rVYc5oiMdSbMnSOL/JSvK5tIzHTFXA=
+X-Received: by 2002:a5d:59aa:0:b0:1ed:9f45:c2ff with SMTP id
+ p10-20020a5d59aa000000b001ed9f45c2ffmr1035641wrr.192.1645649355189; Wed, 23
+ Feb 2022 12:49:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20220223192946.473172-1-bhupesh.sharma@linaro.org> <20220223192946.473172-5-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220223192946.473172-5-bhupesh.sharma@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Thu, 24 Feb 2022 00:51:23 +0300
-Message-ID: <CAA8EJppDVo5rN3swiVoE8zAqCTmwQD9RZAxbrP0CPO30kQTBmA@mail.gmail.com>
-Subject: Re: [PATCH 4/6] PCI: qcom: Add SM8150 SoC support
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        bhupesh.linux@gmail.com, lorenzo.pieralisi@arm.com,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        svarbanov@mm-sol.com, bhelgaas@google.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Vinod Koul <vkoul@kernel.org>
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+ <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
+ <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
+ <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
+ <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com> <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
+In-Reply-To: <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 23 Feb 2022 21:48:59 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2b_RtXkhQ2pwqbZ1zz6QtjaWwD4em_MCF_wGXRwZirKA@mail.gmail.com>
+Message-ID: <CAK8P3a2b_RtXkhQ2pwqbZ1zz6QtjaWwD4em_MCF_wGXRwZirKA@mail.gmail.com>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Nathan Chancellor <nathan@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:cjkUysxlJscg26BdLEqvQDwPBkRPWuqIBWReqtQZ15RnMmjfj5A
+ FReQE+scpfMJKfK1nSKyO3B+N6OnxYFTXnwyAGB2Eobvu65WBoTlkEx+RaGqyBuqmR2p2vV
+ yt/yJUMtHyZBsuwj2WOWK7cq4UvbcFFPdKOLJimz3wd3kC8J5tiqJYItu3+WU41vGpRkQe8
+ 4AKDYq3OmeMc1vKbCm/pQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3MLiFAkrs2E=:9Tf5B1NU3+YtBT74Jx1q64
+ +JNlxJdngVHLKPENxJcTq5Wy3AYtzwF4uAUGLkZluOndrX+1cQMcH770BO+fVqcqBO26KxcPT
+ wyTqxnko6GWoBQTzIL9OPjmZOQvb+TK9bc4KZOoR4AA+OI3eHfw44TcIeHBxcKH+rg5L6j08Z
+ byvTUW/r0foAa9S7xniGGPclGJbRAo9Rt65aRhepIR3u6cX+nBC8EGEwYbULFBSY47bjs8Tu4
+ Nsftv/BOYuHaqOg5JZ9lw5GIcPpE/2TJAtJFej3Qo9qrQ/lgPE5/NL9nIK05Mdh2dwRso5NeS
+ oS0lMKJlef/2jlC3KpDLdHS1l8Eh5SFjHbih8rO+PPz/bZBNgmgpbLQl4RbWZsrJK8yBgGZVz
+ I+/kUp4XoILQjQus/654TzbeXD3gmbAQg7zSp90wnSwAu4IfRFQi2eexMSRXXwLDrBYimTxlf
+ CD3P9+peR8lw56EoUky+dIpS65Rk5st8cXXx5toWhkRQsS3kAo1a6xfr5K0Pk2HQWQ3nAdT4A
+ PT2cUspSW+Xy6SjqBHqGHhsFsaCqhURKoy+m85RfsYlyk1vsRdxek4MEKeoCvMAoEf0huRxsh
+ 4ipSZexpkrm2sa7rSwN1Rp0OQ0UEYleXjlooqO543a0xxEyZNXWcgP+STje3pD8NSplL27It5
+ 9t4EEUaO8LNjPNZrEIO0sioyXo/A+nVLBsjPas7XBp/0JEYV5buwvjqWF5TjDZAj50ZoO3krV
+ l2YIuoYkD7ntHXD3AmN/5O2kzuQQLQ75/dE17re9G0hm9RC0vpflONqoAyocfXoY+NtFEvsuf
+ JkpUxd7y1Nqo6vDBmavUOSrAJdldpeQXFmdSlq6SGH7U61Anp4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 at 22:30, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
+On Wed, Feb 23, 2022 at 9:43 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> The PCIe IP (rev 1.5.0) on SM8150 SoC is similar to the one used on
-> SM8250. Hence the support is added reusing the members of ops_2_7_0.
+> On Wed, Feb 23, 2022 at 12:25 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > I looked at the gcc documentation for this flag, and it tells me that
+> > it's default-enabled for std=c99 or higher. Turning it on for --std=gnu89
+> > shows the same warning, so at least it doesn't sound like the actual
+> > behavior changed, only the warning output. clang does not warn
+> > for this code at all, regardless of the --std= flag.
 >
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> Ok, so we should be able to basically convert '--std=gnu89' into
+> '--std=gnu11 -Wno-shift-negative-value' with no expected change of
+> behavior.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Yes, I think that is correct.
 
-> ---
->  drivers/pci/controller/dwc/pcie-qcom.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
->
-> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-> index c19cd506ed3f..66fbc0234888 100644
-> --- a/drivers/pci/controller/dwc/pcie-qcom.c
-> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
-> @@ -1487,6 +1487,17 @@ static const struct qcom_pcie_ops ops_1_9_0 = {
->         .config_sid = qcom_pcie_config_sid_sm8250,
->  };
->
-> +/* Qcom IP rev.: 1.5.0 */
-> +static const struct qcom_pcie_ops ops_1_5_0 = {
-> +       .get_resources = qcom_pcie_get_resources_2_7_0,
-> +       .init = qcom_pcie_init_2_7_0,
-> +       .deinit = qcom_pcie_deinit_2_7_0,
-> +       .ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
-> +       .post_init = qcom_pcie_post_init_2_7_0,
-> +       .post_deinit = qcom_pcie_post_deinit_2_7_0,
-> +       .config_sid = qcom_pcie_config_sid_sm8250,
-> +};
-> +
->  static const struct qcom_pcie_cfg apq8084_cfg = {
->         .ops = &ops_1_0_0,
->  };
-> @@ -1511,6 +1522,10 @@ static const struct qcom_pcie_cfg sdm845_cfg = {
->         .ops = &ops_2_7_0,
->  };
->
-> +static const struct qcom_pcie_cfg sm8150_cfg = {
-> +       .ops = &ops_1_5_0,
-> +};
-> +
->  static const struct qcom_pcie_cfg sm8250_cfg = {
->         .ops = &ops_1_9_0,
->  };
-> @@ -1626,6 +1641,7 @@ static const struct of_device_id qcom_pcie_match[] = {
->         { .compatible = "qcom,pcie-ipq4019", .data = &ipq4019_cfg },
->         { .compatible = "qcom,pcie-qcs404", .data = &ipq4019_cfg },
->         { .compatible = "qcom,pcie-sdm845", .data = &sdm845_cfg },
-> +       { .compatible = "qcom,pcie-sm8150", .data = &sm8150_cfg },
->         { .compatible = "qcom,pcie-sm8250", .data = &sm8250_cfg },
->         { .compatible = "qcom,pcie-sc8180x", .data = &sm8250_cfg },
->         { .compatible = "qcom,pcie-sc7280", .data = &sc7280_cfg },
-> --
-> 2.35.1
->
+> Of course, maybe we need to make -Wno-shift-negative-value be
+> conditional on the compiler supporting it in the first place?
 
+I think they all do. I discussed this with Nathan Chancellor on IRC, to
+see what clang does, and he points out that the warning was made
+conditional on -fwrapv there a while ago:
 
--- 
-With best wishes
-Dmitry
+https://github.com/llvm/llvm-project/commit/59802321785b4b9fc31b10456c62ba3a06d3a631
+
+So the normal behavior on clang is to always warn about it, but since
+we explicitly ask for sane signed integer behavior, it doesn't warn for
+the kernel.
+
+        Arnd
