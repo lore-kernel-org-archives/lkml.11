@@ -2,81 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C17C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241018AbiBWPNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
+        id S241100AbiBWPNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:13:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232062AbiBWPNk (ORCPT
+        with ESMTP id S232062AbiBWPNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:13:40 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC37B12E7;
-        Wed, 23 Feb 2022 07:13:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645629193; x=1677165193;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a68exJg5PUkXlSFsTW/nFLDiaj4D+gBrJFzqKkgzm1g=;
-  b=UW6uz91oDEfFZjFzZCecs7HwTUiTlIlYkhIgykDV7SCj58KJfFU68LiB
-   VXdkYMEg+7QPm9EJPkW0C7/xMABvRjDxGxZj21L/CPKhM1v+7OEwCNDzY
-   e9Il3x6wq+9nQ/UwGkpgGW7u+rWUYxCkz6Vj8FFPgr+x7p+mOk98OiNtY
-   XxjNJ4600Gs7gNHQKJd2VxS0NtO5W79BiVmJWC+VS13ADPfCp+IGOpUVZ
-   +aL5hQ6N7VzmEyFYwh0Dqe596/1PsB+ZJ4eG9ClrNB91GMSk280QJmqu6
-   lq8cAUliVZulXteOOcRaYvNcnxYYYPL98jYUOG6NpizoWvs1wv16K8UH8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="250811824"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="250811824"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:13:12 -0800
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="491228551"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:13:10 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nMtJU-007TEX-Aj;
-        Wed, 23 Feb 2022 17:12:20 +0200
-Date:   Wed, 23 Feb 2022 17:12:19 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 4/4] pinctrl: icelake: Add Ice Lake-N PCH pin
- controller support
-Message-ID: <YhZO021m102OOJsk@smile.fi.intel.com>
-References: <20220215152800.21104-1-andriy.shevchenko@linux.intel.com>
- <20220215152800.21104-4-andriy.shevchenko@linux.intel.com>
- <YhOvuFwr2v15zY3u@lahna>
+        Wed, 23 Feb 2022 10:13:43 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC77B12E7;
+        Wed, 23 Feb 2022 07:13:14 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 785A76000B;
+        Wed, 23 Feb 2022 15:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645629193;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bsmqhDPQ9IDgKu3Ou89zWq+VD4eKDFIuIM9PrDvh930=;
+        b=epz77kD1Xc1YujS8BJTlKa2wRsM6sUQyzoyVr9f/wbR+PZWRnL5746DQbxG1dCrO8HzJHj
+        /u4JJr5/XfbtFqfFocrfJWhyhjgPVA7AW+8xAr92yKRIUAR760AQSHI6/Yrpz/fmM+m7H4
+        4ICCazc0t+wkR6sIJoTsFxObEI9PCPkdkYKvQlnBnuFCBJG+9kHM/91Bp71Taoi8hMU4hw
+        CUsZS7+4LoB4gjAziUTFr512+rN6wMVPNxSaVxP4Q4TRoRyMPzaHxC9cWrbBnKDC9IVVDN
+        DnYEP0zphwazMIVwB0QPZ79lSM/nqUk6LQzY6jeUylc60aHqrvmhDIg7H1k4Aw==
+Date:   Wed, 23 Feb 2022 16:11:50 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Enrico Weigelt <info@metux.net>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <20220223161150.664aa5e6@fixe.home>
+In-Reply-To: <YhZI1XImMNJgzORb@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+        <20220222173019.2380dcaf@fixe.home>
+        <YhZI1XImMNJgzORb@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhOvuFwr2v15zY3u@lahna>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 05:28:56PM +0200, Mika Westerberg wrote:
-> On Tue, Feb 15, 2022 at 05:28:00PM +0200, Andy Shevchenko wrote:
-> > This adds pinctrl/GPIO support for Intel Ice Lake-N PCH. The Ice Lake-N
-> > PCH GPIO is based on the same version of the Intel GPIO hardware than
-> > Intel Cannon Lake with different set of pins and ACPI ID.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Le Wed, 23 Feb 2022 16:46:45 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-All pushed to my review and testing queue, thanks!
+[...]
 
+> >=20
+> > Converting existing OF support to fwnode support and thus allowing
+> > drivers and subsystems to be compatible with software nodes seemed like
+> > the easiest way to do what I needed by keeping all existing drivers.
+> > With this support, the driver is completely self-contained and does
+> > allow the card to be plugged on whatever platform the user may have. =20
+>=20
+> I agree with Hans on the point that converting to / supporting fwnode is
+> a good thing by its own.
+>=20
+> > Again, the PCI card is independent of the platform, I do not really see
+> > why it should be described using platform description language. =20
+>=20
+> Yep, and that why it should cope with the platforms it's designed to be u=
+sed
+> with.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I don't think PCIe card manufacturer expect them to be used solely on a
+x86 platform with ACPI. So why should I used ACPI to describe it (or DT
+by the way), that's my point.
 
+[...]
 
+> >=20
+> > For the moment, I only added fwnode API support as an alternative to
+> > support both OF and software nodes. ACPI is not meant to be handled by
+> > this code "as-is". There is for sure some modifications to be made and
+> > I do not know how clocks are handled when using ACPI. Based on some
+> > thread dating back to 2018 [1], it seem it was even not supported at
+> > all.
+> >=20
+> > To be clear, I added the equivalent of the OF support but using
+> > fwnode API because I was interested primarly in using it with software
+> > nodes and still wanted OF support to work. I did not planned it to be
+> > "ACPI compliant" right now since I do not have any knowledge in that
+> > field. =20
+>=20
+> And here is the problem. We have a few different resource providers
+> (a.k.a. firmware interfaces) which we need to cope with.
+
+Understood that but does adding fwnode support means it should work
+as-is with both DT and ACPI ? ACPI code is still in place and only the
+of part was converted. But maybe you expect the fwnode prot to be
+conformant with ACPI.
+
+>=20
+> What is going on in this series seems to me quite a violation of the
+> layers and technologies. But I guess you may find a supporter of your
+> ideas (I mean Enrico). However, I'm on the other side and do not like
+> this approach.
+
+As I said in the cover-letter, this approach is the only one that I did
+found acceptable without being tied to some firmware description. If you
+have another more portable approach, I'm ok with that. But this
+solution should ideally work with pinctrl, gpio, clk, reset, phy, i2c,
+i2c-mux without rewriting half of the code. And also allows to easily
+swap the PCIe card to other slots/computer without having to modify the
+description.
+
+>=20
+> >=20
+> > Ok, before going down that way, should the fwnode support be the "only"
+> > one, ie remove of_clk_register and others and convert them to
+> > fwnode_clk_register for instance or should it be left to avoid
+> > modifying all clock drivers ? =20
+>=20
+> IRQ domain framework decided to cohabit both, while deprecating the OF on=
+e.
+> (see "add" vs. "create" APIs there). I think it's a sane choice.
+
+Ok, thanks for the info.
+
+[...]
+
+> > > > static const struct property_entry ddr_clk_props[] =3D {
+> > > >         PROPERTY_ENTRY_U32("clock-frequency", 30000000),   =20
+> > >  =20
+> > > >         PROPERTY_ENTRY_U32("#clock-cells", 0),   =20
+> > >=20
+> > > Why this is used? =20
+> >=20
+> > These props actually describes a fixed-clock properties. When adding
+> > fwnode support to clk framework, it was needed to add the
+> > equivalent of of_xlate() for fwnode (fwnode_xlate()). The number of
+> > cells used to describe a reference is still needed to do the
+> > translation using fwnode_property_get_reference_args() and give the
+> > correct arguments to fwnode_xlate(). =20
+>=20
+> What you described is the programming (overkilled) point. But does hardwa=
+re
+> needs this? I.o.w. does it make sense in the _hardware_ description?
+
+This does not makes sense for the hardware of course. It also does not
+makes sense for the hardware to provide that in the device-tree though.
+I actually think this should be only provided by the drivers but it
+might be difficult to parse the descriptions then (either DT or
+software_node), at least that's how it works right now.
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
