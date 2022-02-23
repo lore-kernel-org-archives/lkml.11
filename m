@@ -2,127 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA18C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB849C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243478AbiBWRvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:51:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S243544AbiBWRxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:53:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237008AbiBWRvt (ORCPT
+        with ESMTP id S231815AbiBWRxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:51:49 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F074826CA
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:51:20 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id o6so25823401ljp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:51:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RrdEVsjsD+nqXmQqBvUEIQg+R+7+UWVmueHZbvxi/fY=;
-        b=HrqUskcTi7myVyE20lUHGxJ5Cbqhrcee6XGl5vkm8NnzpACCfPRFm/+h5jJFvLnJIH
-         J09n5gnVJYBhqvTpCNt326dmBcHXVR9YUWVcgJOUx74XOdS76Di+Wn+9quQYy+pi6ymr
-         AsBJ+RxttBSyKX71ZYQ6bNvnrcXsiJ1bMJZvziOq0mEDMa/C6SnANiHyPjCmlEDftBo/
-         /dmao04eFUAwrM4TWxdQ2+Jv6uDUNIJ/Y7xhQ5+9z5AGuZ7My4MfYahlXf0wQULDAW0S
-         WUl4lShCV5B1BEGM+itp8+KvXaDTINCwBbb3TuBr8OUEIxfhmCSDYRJNrwhzTrZlOXR8
-         AoMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RrdEVsjsD+nqXmQqBvUEIQg+R+7+UWVmueHZbvxi/fY=;
-        b=n+ItAJm6nux2N6k2MyL4YR6YWbCHvqaajXDk6OxQ67SdC2qenUjuLmnqEc9KpPlQ94
-         zVKuQt9dDGBM2HP0kNVUyQ68AcF9C8A7eSOA83I+5dVEMlbo4XZA1wXQPbqUe4pVZ/ie
-         r/n6KG5cDOfIdeI5eVc/+oAcCyg7HnMnZsmxutDPkOkBZT6yCtEESBXTMB3cUs6R8P7C
-         xmWCPBCOfj04WHUDJ19FnPmdNVdBN+5nWO8Kg7WplVXxWzCIAzNTCzOLFom/fOjgwMrH
-         YLP8/DSwBGBmBjEtHBQFwp2DB+cTdrpgTSgu6Wed1F9NmpTYmgBMU+L5uJV7JrLslrzP
-         knGA==
-X-Gm-Message-State: AOAM530seRPk0tK/hN00J4flKrnxvtSZBRvfsxe9pPw9WSOig9IEvNE9
-        Q3Ll19gZ3ynxSAvajKjQb+GQ1vWF1U27YD9UJLq5hw==
-X-Google-Smtp-Source: ABdhPJyy2+PbEHWjK5m1pGy4RMoMiz8/1ddYOLWwa6WdZj216uctOj7fPykTeNcuWhj9vtR5ujN+1LSrAt9hQfe4l5g=
-X-Received: by 2002:a2e:b78f:0:b0:246:6331:c1bc with SMTP id
- n15-20020a2eb78f000000b002466331c1bcmr378483ljo.188.1645638679148; Wed, 23
- Feb 2022 09:51:19 -0800 (PST)
+        Wed, 23 Feb 2022 12:53:10 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2084.outbound.protection.outlook.com [40.107.237.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CB295;
+        Wed, 23 Feb 2022 09:52:41 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hJlq+dvsQnhP4bGhxlYn2AxoPg1CXFOAEsjV9Zj2n4QDbKiMfMRchPxKAQtiBWF/zLjky1zSCD4FYYNqGRMHua4K0TNgsAfRxbQF6zeMuFGnrXfaTbmjaBfXy/uj5uN0DTCq300GQJKvpheoQkOwX+p1LqnNtRzI1YKaPCzQ9BGZ9A8mGK4gSCjMBOqTmHTUr6BP1lkW2ySn7afBEs6J3/EF0ZV5ASG18/NYrhjQwlkJ/ofRXXuMyRu0732XFp0G90co0bmfwqJEZR/M+xpDIQAZlnxW8ywHcYB8wui08V7KprC2Kh3WNRw5OahrTb5fQYUaeewQ4pJ7wnrdRcx5rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KWWq+jlx6OU3Vr6fOuzHGPFEw1rhdT6586JlvciyfIw=;
+ b=RxjPa/G094GfPYbia8GYvHneOPnx2Qu1+EmOyb6jutk9UkUu5k3GiMLoCZzJVy+6pl3oNxHqpiYsVIDRPeuBX83DHfyXrT61/7D1+PtcTJoRbzB8mDFMsC0bP0/svpdliQ5rK0FbsOiWWzd1vAjoiE6lzvrkmhAx+Q9RtZAGmu6BuBRwZ7GWxhUPA96rDHX9zDYIF4weKi++KG9tr9q2rVh/1ft7wNxwHFxhNDKOEaBYEZo24BToeYzp+zSPPFUuJdGbyQCx9ZQsQQlW2D0xZqsay9yT30dyM/H4B1EUmZQVWuo4Jy8zOLdy7XSqgBG/ukCQYk7Rfjg4QcJo5PgeKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KWWq+jlx6OU3Vr6fOuzHGPFEw1rhdT6586JlvciyfIw=;
+ b=mDLGKw8tM5qse/RXMgLe5K2FiRigMhGWnoHZ4WbSRsRBofc+QZW5rcqQHZ8FhLCP3lutBNFXwQLBQW+HZN8IQH1sAKLxVfEzVRwHVt4OU/0Asp76solbu4GT0VomPrAJIjJBiJ/HmU8WXCGsm4nIVUtv0bXvvp8FAERMCNxuRg8tuYJ5U0OXRqV5lQ9gJY2mi62gMto9pmIZvZ16S3nx2Hs//QX2Kh1mo60qvMoX4e4Iutr7BqNKTMX2zsQua4i0a3Dj3vZse55qYZYedc4LJdkHOSQrxEut/S+OxLvuRCATjYZQci0qj5rmNcAlvJ9OxGDDJQDRagFmZDCOkNkn2Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MW2PR12MB2460.namprd12.prod.outlook.com (2603:10b6:907:9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Wed, 23 Feb
+ 2022 17:52:38 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.5017.022; Wed, 23 Feb 2022
+ 17:52:38 +0000
+Date:   Wed, 23 Feb 2022 13:52:36 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, cohuck@redhat.com,
+        mgurtovoy@nvidia.com, yishaih@nvidia.com, linuxarm@huawei.com,
+        liulongfang@huawei.com, prime.zeng@hisilicon.com,
+        jonathan.cameron@huawei.com, wangzhou1@hisilicon.com
+Subject: Re: [PATCH v5 7/8] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Message-ID: <20220223175236.GS10061@nvidia.com>
+References: <20220221114043.2030-1-shameerali.kolothum.thodi@huawei.com>
+ <20220221114043.2030-8-shameerali.kolothum.thodi@huawei.com>
+ <20220223005251.GJ10061@nvidia.com>
+ <20220223093443.367ee531.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223093443.367ee531.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0440.namprd13.prod.outlook.com
+ (2603:10b6:208:2c3::25) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-References: <20220218181950.1438236-1-jannh@google.com> <8D85619E-99BD-4DB5-BDDB-A205B057C910@chromium.org>
-In-Reply-To: <8D85619E-99BD-4DB5-BDDB-A205B057C910@chromium.org>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 23 Feb 2022 18:50:52 +0100
-Message-ID: <CAG48ez0UJDBzoaB4=c0Uju6L-eZvhWMdnzAp8N3QfeERbzYv2w@mail.gmail.com>
-Subject: Re: [PATCH v2] pstore: Don't use semaphores in always-atomic-context code
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9255daaf-d3ad-48b9-3965-08d9f6f547bf
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2460:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB2460699903EDFF398401ED2DC23C9@MW2PR12MB2460.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fjZmyLm5pEnB4gEjK6hl0fmSIFYFnor7NTWbJn5VrpF7p7lJtjujsAz4XuMlJ8bPd/v3LvN3G57ziNlAEu6x3lnNS7uVTrSyLV5bvRHjzMjhHq524NL91A+99UfKz4DCtZewEZi6QJTeIcO9T9f4Xi2EgVWGCGeTRgMAHGP3Ty3v+IU4WhdnS/wwIHE7As58/Ql4QTYTf2bcdBsGV5q636ZW1xJOE3holGHL27+RZqvPCh22CmjEw9xAzt8DzhMtjvVW7uPpseQamz2trCo9Py+yKdk9ScqNtE1PAwhCmlleUPjK2/txEVxwkORxEy4kHYfZwijBftnzZMvA6TxOLzbNBnl906KMAneBFYyLGduqKzewBCmPlTT0D7UjtW08r0/EF/6cvKg6GhJ661rsmLvka70sPTGOMyRZMgb3GelypfVKY4HHDmolTMbMYvDEMAPd59UEgU5NDlT/6rvWYMqqtMEUMrpgztBuzVZwKCLKfsuXWk4F38dT9kkbaEMcsLm1m7LvpNorfOIUll+2al2o3fBaehlmse8knOXE/D38DB2X7z1JYsGOaWwsm4DBKC0fcz5393GkIgvCgXLz2G4o806cJ5F7KvC1C2eu36LLrTOjsyLasO+KOMyfgHlyVpph+GO4bXghVq+SprM3+Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66556008)(66476007)(316002)(7416002)(2906002)(5660300002)(8676002)(6916009)(4326008)(8936002)(2616005)(86362001)(36756003)(33656002)(38100700002)(6506007)(26005)(186003)(6512007)(6486002)(83380400001)(508600001)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xJoOPvRDa+7U1xkmbUjUoQ2GcBkcIVhX54y4pZB0B7nstr0d8HHD6FL8Dc/U?=
+ =?us-ascii?Q?20V7LYIomRE79y7r5rkmlnnUm8nr82BA8TYSgBo0DKlAl+qSHvrY8svqf9fS?=
+ =?us-ascii?Q?xD+XJSyTMjnkfVEcSC4uRHuP+WjyX7ZzpBiPXwM6gy+QYsTJPNgo3TQ91id9?=
+ =?us-ascii?Q?VH9pVcrRH0OmlsxGASN39t6iHMvl/t1flMjsuBLtoaPXLBQSzWSaP1Ybk2LQ?=
+ =?us-ascii?Q?2vz/6izVYT3QqibxXLvEn1NvPKptFwrh8ctvinHYtHw2llNejuPRtn3XKwA2?=
+ =?us-ascii?Q?zKYf+mXe7nLT8VERUTj8oJD+xKJ8LYA1YOYNJsBD6koJqmX5Vb6Qw111dBpt?=
+ =?us-ascii?Q?QPdX3RD69GkK76hGHTNFlaZcJTJQnu3H+X92SHQxeUDxV0FVfH5s8EXAh8ar?=
+ =?us-ascii?Q?cmersZFXZV0mo7mYGvfKemHUS44JSinc2no/hv7LC8sMx1hrYRaZ8mttpzfz?=
+ =?us-ascii?Q?HiudRx/92sdEHbH3EI6gJuXcxMzh8Z2v2HRoAKpBY9zHruRWpb4dGXURiod9?=
+ =?us-ascii?Q?5/FiT3zyE7jIibOBz8SjkrsqRLUzpX7z5AY7TWw7/XtC/NonCPJQIhFzdsdA?=
+ =?us-ascii?Q?5gNf4pdi1G7p985j17kl35/91osK60tpgw0TwnBmeoY9sKc8HiblYNJZRzAT?=
+ =?us-ascii?Q?IGz0y7JzFwYlxe4qs5drMz3C1aKubFtQZrZkvqaS1rMpU8ML9fKDPRqaOlXh?=
+ =?us-ascii?Q?PuyS9gjJj0Px83VMxPezT5MArX0+Z2PGnWexQH+vjz+w+xpTB0XDWaFSZqNw?=
+ =?us-ascii?Q?l9rRfZ/XVdUoMCKqUS0qsDhin03w0ZJFhZoOFhGhS/kdPtsrqzDfwHKrDcEQ?=
+ =?us-ascii?Q?kHVWQlDr3EYXBlFiZFgWnZNGJSAjayAPnk2o+Cn0vhLJuJVN8iAMUhGjF/DU?=
+ =?us-ascii?Q?GJ0TrBBIuZUTVo5vr/KV+giIceGoImfWuMHhjGT5ydMUYVWZqxTPU51imY2/?=
+ =?us-ascii?Q?6ovPKYcxbLn43kESV9RNs+zDL19Ru2qMayMWITMW8XPA3TEdvNZnO+N3OY3g?=
+ =?us-ascii?Q?lOYoTp+L1fMdnV35ut8nxPPkhLLsJfL5NxWeZjQIzTkL8DdDeW59YvOzK7Un?=
+ =?us-ascii?Q?9zQv3vQTe4L2WkWx5tqAHQQrQlTt3CrLwud2Gnb5mg5mCmFE81PT25dwmcli?=
+ =?us-ascii?Q?J4uE4dSzDfh+oKjLE/fRppypWqSzyG485wHjhWV9xg49B0tXDZubkWAuCwGS?=
+ =?us-ascii?Q?TL+R28ez95qBIwhQdRK3ateHmenbG9J35wMVUOXchEYdrWyuHyykjiqf3Anq?=
+ =?us-ascii?Q?q3iRg5OTO+BqhCDbFi6cwuA2HiScHxk7RWQ0qaztgr2MSyrG7/8cZAMajJV/?=
+ =?us-ascii?Q?FIVMC3GpKt5gBrnVC+ES2DHHSNzBch9BBQu/2RkaWZDMYnbFDN+8rwsTmorL?=
+ =?us-ascii?Q?fl/uwVUBbB2rjvjG/5+yqTYKiOvxSNvsumC4VAKWnEciFepjsfrw5iXlaSGF?=
+ =?us-ascii?Q?JJMQr4tAYCH4v24DH/o9bJFjF68AZ1wxGDGgOkg/GRzEPnJlsZP13zkOMHH3?=
+ =?us-ascii?Q?7K9X+mSM+qRSYd9cvefcgsIJjh2p5TqIJm16pGHV9v/scFxcgRbc84r9qqA+?=
+ =?us-ascii?Q?nM9oTgCSvwiQFfqoRe4=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9255daaf-d3ad-48b9-3965-08d9f6f547bf
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 17:52:38.2020
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MIBvgv++M3qVUYIvvdyRWz1B7/eitoei0a7tZNVnn35IstX2CUMIxNuKgRhzRPQf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2460
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 8:50 AM Kees Cook <keescook@chromium.org> wrote:
-> On February 18, 2022 10:19:50 AM PST, Jann Horn <jannh@google.com> wrote:
-> >pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
-> >read-side critical section, before that under a spinlock).
-> >It doesn't make sense to try to use semaphores here.
->
-> Ah, very nice. Thanks for the analysis!
->
-> >[...]
-> >-static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
-> >+bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
->
-> Why the rename,
+On Wed, Feb 23, 2022 at 09:34:43AM -0700, Alex Williamson wrote:
+> On Tue, 22 Feb 2022 20:52:51 -0400
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Mon, Feb 21, 2022 at 11:40:42AM +0000, Shameer Kolothum wrote:
+> > 
+> > > +	/*
+> > > +	 * ACC VF dev BAR2 region consists of both functional register space
+> > > +	 * and migration control register space. For migration to work, we
+> > > +	 * need access to both. Hence, we map the entire BAR2 region here.
+> > > +	 * But from a security point of view, we restrict access to the
+> > > +	 * migration control space from Guest(Please see mmap/ioctl/read/write
+> > > +	 * override functions).
+> > > +	 *
+> > > +	 * Also the HiSilicon ACC VF devices supported by this driver on
+> > > +	 * HiSilicon hardware platforms are integrated end point devices
+> > > +	 * and has no capability to perform PCIe P2P.  
+> > 
+> > If that is the case why not implement the RUNNING_P2P as well as a
+> > NOP?
+> > 
+> > Alex expressed concerned about proliferation of non-P2P devices as it
+> > complicates qemu to support mixes
+> 
+> I read the above as more of a statement about isolation, ie. grouping.
+> Given that all DMA from the device is translated by the IOMMU, how is
+> it possible that a device can entirely lack p2p support, or even know
+> that the target address post-translation is to a peer device rather
+> than system memory.  If this is the case, it sounds like a restriction
+> of the SMMU not supporting translations that reflect back to the I/O
+> bus rather than a feature of the device itself.  Thanks,
 
-That's one of the parts of commit ea84b580b955 that I included in the
-revert. "wait" in the name is not accurate, since "wait" in the kernel
-normally refers to scheduling away until some condition is fulfilled.
-(Though I guess "block" also isn't the best name either... idk.) The
-place where we might want to have different behavior depending on
-whether we're handling a kernel crash are spinlocks; during a kernel
-crash, we shouldn't deadlock on them, but otherwise, AFAIK it's fine
-to block on them.
+This is an interesting point..
 
-> extern, and EXPORT? This appears to still only have the same single caller?
+Arguably if P2P addresses are invalid in an IOPTE then
+pci_p2pdma_distance() should fail and we shouldn't have installed them
+into the iommu in the first place.
 
-Also part of the revert. I figured it might make sense to also revert
-that part because:
-
-With this commit applied, the EFI code will always take the "nonblock"
-path for now, but that's kinda suboptimal; on some platforms the
-"blocking" path uses a semaphore, so we really can't take that, but on
-x86 it uses a spinlock, which we could block on if we're not oopsing.
-We could avoid needlessly losing non-crash dmesg dumps there; I don't
-know whether we care about that though.
-
-So I figured that we might want to start adding new callers to this
-later on. But if you want, I'll remove that part of the revert and
-resend?
-
-> > [...]
-> >-                      pr_err("dump skipped in %s path: may corrupt error record\n",
-> >-                              in_nmi() ? "NMI" : why);
-> >-                      return;
-> >-              }
-> >-              if (down_interruptible(&psinfo->buf_lock)) {
-> >-                      pr_err("could not grab semaphore?!\n");
-> >+      if (pstore_cannot_block_path(reason)) {
-> >+              if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
-> >+                      pr_err("dump skipped in %s path because of concurrent dump\n"
-> >+                                     , in_nmi() ? "NMI" : why);
->
-> The pr_err had the comma following the format string moved,
-
-Ah, whoops, that was also part of the revert, but I guess I should
-have left that part out...
-
-> and the note about corruption removed. Is that no longer accurate?
-
-There should be no more corruption since commit 959217c84c27 ("pstore:
-Actually give up during locking failure") - if we're bailing out, we
-can't be causing corruption, I believe?
+Jason
