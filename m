@@ -2,74 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A27C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B35C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243532AbiBWRuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:50:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
+        id S243535AbiBWRuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243526AbiBWRuT (ORCPT
+        with ESMTP id S237008AbiBWRus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:50:19 -0500
-X-Greylist: delayed 1231 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 09:49:51 PST
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.47.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E71E3E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:49:51 -0800 (PST)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id 525BA35E7D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:20 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id MvS4nXCuW9AGSMvS4n9mmq; Wed, 23 Feb 2022 11:29:20 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:33714 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nMvS3-001vhR-RG; Wed, 23 Feb 2022 11:29:19 -0600
-Message-ID: <155ef2c4-84c6-ace7-5676-9fc96554539b@kernel.org>
-Date:   Wed, 23 Feb 2022 18:29:17 +0100
+        Wed, 23 Feb 2022 12:50:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ACC35FF7;
+        Wed, 23 Feb 2022 09:50:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC1FD61470;
+        Wed, 23 Feb 2022 17:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6BBC340F0;
+        Wed, 23 Feb 2022 17:50:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645638618;
+        bh=tlGfAuQ/IMqnIqCvJXqfuyQ+e69E/QZS0Z5cZBeqpE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=bh21cG5LASljj+iTvs99EC8JUuAQtfLwUEc0e+65NH1U3Uo4I/ED6ZvGFkYaZzu/K
+         OHqcyfw8UzkHRfZPvXTYy0LPmIe6Tfv8XEHmpvCxrW/tNkZD4K1pG/1Mdixg6iQ5Ks
+         MOrP7WgTgmC04jthUlXOCNtsoPlTnXkTq+dVkRTS/8fUSfTm5BtOEPJHRAaLgV/5cz
+         6mrmtttvKn9ufUbIw1FNAF9+Y1weqJ9hg4898GTrxcnRxoXLBXRx1tp7BCw/6c/w/O
+         7CKucBDo2o4ctGU1E/S2MXlrPzpIyxvpFtcNr82fro0rKZ3aLg5vRIGnOXN5dAM91w
+         jyeOJoiq2FhXw==
+Date:   Wed, 23 Feb 2022 11:50:16 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Richard Zhu <hongxing.zhu@nxp.com>
+Cc:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: Re: [PATCH v7 7/8] PCI: imx6: Disable enabled clocks and regulators
+ after link is down
+Message-ID: <20220223175016.GA140091@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/1] rtla: Fix systme -> system typo on man page
-Content-Language: en-US
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <YhZsZxqk+IaFxorj@kernel.org>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <YhZsZxqk+IaFxorj@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nMvS3-001vhR-RG
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:33714
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 1
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644992463-14467-8-git-send-email-hongxing.zhu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/23/22 18:18, Arnaldo Carvalho de Melo wrote:
-> Fixes: 496082df01bb08a4 ("rtla: Add rtla osnoise man page")
-> Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+In subject,
 
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+s/Disable enabled clocks/Disable clocks/
 
--- Daniel
+On Wed, Feb 16, 2022 at 02:21:02PM +0800, Richard Zhu wrote:
+> Since i.MX PCIe doesn't support the hot-plug, and to save power
+> consumption as much as possible. Return error and disable the enabled
+> clocks and regulators when link is down,.
+
+Maybe:
+
+  Since i.MX PCIe doesn't support hot-plug, reduce power consumption
+  as much as possible by disabling clocks and regulators and returning
+  error when the link is down.
+
+> Add a new host_exit() callback for i.MX PCIe driver to disable the
+> enabled clocks, regulators and so on in the error handling after
+> host_init is finished.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> ---
+>  drivers/pci/controller/dwc/pci-imx6.c | 30 ++++++++++++++++++++++++---
+>  1 file changed, 27 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index 242d8ef73c1e..fe671e88ec93 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -848,7 +848,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+>  	/* Start LTSSM. */
+>  	imx6_pcie_ltssm_enable(dev);
+>  
+> -	dw_pcie_wait_for_link(pci);
+> +	ret = dw_pcie_wait_for_link(pci);
+> +	if (ret)
+> +		goto err_reset_phy;
+
+These labels look wrong now, since you no longer reset the PHY at
+err_reset_phy.
+
+>  	if (pci->link_gen == 2) {
+>  		/* Allow Gen2 mode after the link is up. */
+> @@ -884,7 +886,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+>  		}
+>  
+>  		/* Make sure link training is finished as well! */
+> -		dw_pcie_wait_for_link(pci);
+> +		ret = dw_pcie_wait_for_link(pci);
+> +		if (ret)
+> +			goto err_reset_phy;
+>  	} else {
+>  		dev_info(dev, "Link: Gen2 disabled\n");
+>  	}
+> @@ -897,7 +901,6 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
+>  	dev_dbg(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
+>  		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
+>  		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
+> -	imx6_pcie_reset_phy(imx6_pcie);
+>  	return ret;
+>  }
+>  
+> @@ -921,8 +924,29 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
+>  	return 0;
+>  }
+>  
+> +static void imx6_pcie_host_exit(struct pcie_port *pp)
+> +{
+> +	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
+> +	struct device *dev = pci->dev;
+> +	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
+> +
+> +	imx6_pcie_reset_phy(imx6_pcie);
+> +	imx6_pcie_clk_disable(imx6_pcie);
+> +	switch (imx6_pcie->drvdata->variant) {
+> +	case IMX8MM:
+> +		if (phy_power_off(imx6_pcie->phy))
+> +			dev_err(dev, "unable to power off phy\n");
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +	if (imx6_pcie->vpcie)
+> +		regulator_disable(imx6_pcie->vpcie);
+> +}
+> +
+>  static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
+>  	.host_init = imx6_pcie_host_init,
+> +	.host_exit = imx6_pcie_host_exit,
+>  };
+>  
+>  static const struct dw_pcie_ops dw_pcie_ops = {
+> -- 
+> 2.25.1
+> 
