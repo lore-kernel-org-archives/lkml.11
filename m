@@ -2,148 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC39C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF376C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242509AbiBWP6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:58:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49860 "EHLO
+        id S242518AbiBWP63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:58:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiBWP6T (ORCPT
+        with ESMTP id S229842AbiBWP61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:58:19 -0500
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF208AB463;
-        Wed, 23 Feb 2022 07:57:50 -0800 (PST)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nMu1U-00073R-00; Wed, 23 Feb 2022 16:57:48 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 03722C2761; Wed, 23 Feb 2022 16:03:50 +0100 (CET)
-Date:   Wed, 23 Feb 2022 16:03:50 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Juxin Gao <gaojuxin@loongson.cn>, linux-mips@vger.kernel.org,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] MIPS: Modernize READ_IMPLIES_EXEC
-Message-ID: <20220223150350.GA15128@alpha.franken.de>
-References: <20210901194208.2420671-1-keescook@chromium.org>
+        Wed, 23 Feb 2022 10:58:27 -0500
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AB8B2D77;
+        Wed, 23 Feb 2022 07:58:00 -0800 (PST)
+Received: by mail-oo1-f54.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so22888636ooi.2;
+        Wed, 23 Feb 2022 07:58:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MXdhDqHwo9RSoGDS4F+6YXTay9qxmpFa8aYups9hS1A=;
+        b=CLgtxzDivu4bC/JfXabDfvlqvmxET2hwG14oJ0LOIFKJoa9lBEcYyZ7VXsbuUG4B3Q
+         A8Du8iQhZu1cI1Fu/1EsmeqRFl2bLTqI2jWNaYjq3cQ/UxwAsepktyULg4Szu+RkW8dd
+         dGKMNDPiE92B1ymiUMgn9/89IIKyxMAuvIXiSRGYIiDB/f7uRrDexHKeJ6uQA0wVUHM0
+         +V+sNiiVZRUI9DJPfKSNvToEgmLZXHrbJB38dfrmqpZt3KNSJMC3bu8tB6aLCMvpGufv
+         iNV86oxOkCGpkPEK+7a0qHA/CYcrjLeyzcSRvg6JplHWamT8PoGMIDGGtVhNq+GlFwq2
+         LxKA==
+X-Gm-Message-State: AOAM532VF0TRraIFQ4cLNumcQH0LXlALz7SbCFSyFnjAqlx/hn9PLNEl
+        9EcBncMXsj0M/+Y0VM55MyNE14s/fg==
+X-Google-Smtp-Source: ABdhPJxzUe+lJIur2gdc+j9OgKQIEfPj1dm2wxDDipkMIvMR9csXumgpHJcUUi9gfQzfXkkbK1XtsA==
+X-Received: by 2002:a05:6870:8883:b0:d3:6ffa:cf20 with SMTP id m3-20020a056870888300b000d36ffacf20mr4027959oam.104.1645631879697;
+        Wed, 23 Feb 2022 07:57:59 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id q10sm5860otl.1.2022.02.23.07.57.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 07:57:58 -0800 (PST)
+Received: (nullmailer pid 1005248 invoked by uid 1000);
+        Wed, 23 Feb 2022 15:57:58 -0000
+Date:   Wed, 23 Feb 2022 09:57:57 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, linux-input@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        phone-devel@vger.kernel.org, devicetree@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v6 1/2] dt-bindings: input/touchscreen: bindings for
+ Imagis
+Message-ID: <YhZZhUVldKkSaKsb@robh.at.kernel.org>
+References: <20220222203414.8656-1-markuss.broks@gmail.com>
+ <20220222203414.8656-2-markuss.broks@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210901194208.2420671-1-keescook@chromium.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220222203414.8656-2-markuss.broks@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Sep 01, 2021 at 12:42:08PM -0700, Kees Cook wrote:
-> I'm doing some thread necromancy of
-> https://lore.kernel.org/lkml/202007081624.82FA0CC1EA@keescook/
+On Tue, 22 Feb 2022 22:34:10 +0200, Markuss Broks wrote:
+> This patch adds device-tree bindings for the Imagis
+> IST3038C touch screen IC.
 > 
-> x86, arm64, and arm32 adjusted their READ_IMPLIES_EXEC logic to better
-> align with the safer defaults and the interactions with other mappings,
-> which I illustrated with this comment on x86:
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
 > 
-> /*
->  * An executable for which elf_read_implies_exec() returns TRUE will
->  * have the READ_IMPLIES_EXEC personality flag set automatically.
->  *
->  * The decision process for determining the results are:
->  *
->  *                 CPU: | lacks NX*  | has NX, ia32     | has NX, x86_64 |
->  * ELF:                 |            |                  |                |
->  * ---------------------|------------|------------------|----------------|
->  * missing PT_GNU_STACK | exec-all   | exec-all         | exec-none      |
->  * PT_GNU_STACK == RWX  | exec-stack | exec-stack       | exec-stack     |
->  * PT_GNU_STACK == RW   | exec-none  | exec-none        | exec-none      |
->  *
->  *  exec-all  : all PROT_READ user mappings are executable, except when
->  *              backed by files on a noexec-filesystem.
->  *  exec-none : only PROT_EXEC user mappings are executable.
->  *  exec-stack: only the stack and PROT_EXEC user mappings are
->  *  executable.
->  *
->  *  *this column has no architectural effect: NX markings are ignored by
->  *   hardware, but may have behavioral effects when "wants X" collides with
->  *   "cannot be X" constraints in memory permission flags, as in
->  *   https://lkml.kernel.org/r/20190418055759.GA3155@mellanox.com
->  *
->  */
-> 
-> For MIPS, the "lacks NX" above is the "!cpu_has_rixi" check. On x86,
-> we decided that the READ_IMPLIES_EXEC flag needed to reflect the
-> expectations, not the architectural behavior due to bad interactions
-> as noted above, as always returning "1" on non-NX hardware breaks
-> some mappings.
-> 
-> The other part of the issue is "what does the MIPS toolchain do for
-> PT_GNU_STACK?" The answer seems to be "by default, include PT_GNU_STACK,
-> but mark it executable" (likely due to concerns over non-NX hardware):
-> 
-> $ mipsel-linux-gnu-gcc -o hello_world hello_world.c
-> $ llvm-readelf -lW hellow_world | grep GNU_STACK
->   GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
-> 
-> Given that older hardware doesn't support non-executable memory, it
-> seems safe to make the "PT_GNU_STACK is absent" logic mean "assume
-> non-executable", but this might break very old software running on
-> modern MIPS. This situation matches the ia32-on-x86_64 logic x86
-> uses (which assumes needing READ_IMPLIES_EXEC in that situation). But
-> modern toolchains on modern MIPS hardware should follow a safer default
-> (assume NX stack).
-> 
-> A follow-up to this change would be to switch the MIPS toolchain to emit
-> a non-executable PT_GNU_STACK, as this seems to be unneeded.
-> 
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Tiezhu Yang <yangtiezhu@loongson.cn>
-> Cc: Xuefeng Li <lixuefeng@loongson.cn>
-> Cc: Juxin Gao <gaojuxin@loongson.cn>
-> Cc: linux-mips@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 > ---
->  arch/mips/kernel/elf.c | 16 +++++-----------
->  1 file changed, 5 insertions(+), 11 deletions(-)
+>  .../input/touchscreen/imagis,ist3038c.yaml    | 74 +++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>  2 files changed, 76 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
 > 
-> diff --git a/arch/mips/kernel/elf.c b/arch/mips/kernel/elf.c
-> index 7b045d2a0b51..5582a4ca1e9e 100644
-> --- a/arch/mips/kernel/elf.c
-> +++ b/arch/mips/kernel/elf.c
-> @@ -328,16 +328,10 @@ void mips_set_personality_nan(struct arch_elf_state *state)
->  
->  int mips_elf_read_implies_exec(void *elf_ex, int exstack)
->  {
-> -	if (exstack != EXSTACK_DISABLE_X) {
-> -		/* The binary doesn't request a non-executable stack */
-> -		return 1;
-> -	}
-> -
-> -	if (!cpu_has_rixi) {
-> -		/* The CPU doesn't support non-executable memory */
-> -		return 1;
-> -	}
-> -
-> -	return 0;
-> +	/*
-> +	 * Set READ_IMPLIES_EXEC only on non-NX systems that
-> +	 * do not request a specific state via PT_GNU_STACK.
-> +	 */
-> +	return (!cpu_has_rixi && exstack == EXSTACK_DEFAULT);
->  }
->  EXPORT_SYMBOL(mips_elf_read_implies_exec);
-> -- 
-> 2.30.2
 
-applied to mips-next.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Acked-by: Rob Herring <robh@kernel.org>
