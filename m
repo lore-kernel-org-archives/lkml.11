@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33054C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2410C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237744AbiBWCjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:39:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S232477AbiBWCjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:39:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237594AbiBWChe (ORCPT
+        with ESMTP id S237647AbiBWChv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:37:34 -0500
+        Tue, 22 Feb 2022 21:37:51 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFD65B8AD;
-        Tue, 22 Feb 2022 18:32:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27085C36D;
+        Tue, 22 Feb 2022 18:32:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6176A61577;
-        Wed, 23 Feb 2022 02:32:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9789C340E8;
-        Wed, 23 Feb 2022 02:32:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B304761526;
+        Wed, 23 Feb 2022 02:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD0EC340EB;
+        Wed, 23 Feb 2022 02:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583534;
-        bh=nLWmvXF1sbSB5w0vX93/dzlHaktDdgXyzyiBM9mWbEk=;
+        s=k20201202; t=1645583568;
+        bh=NAoBagqK1YGbtkifvuNGxER8AmMW1D+CZo5Pwf0+Eps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s+f6vT+ZIh7OrGkgyxc+2ZOSpQLeFGEBegZ3K6zE2rp+R/BchIGM1KE1BtgkF5xhK
-         xRbDOdjZGVrC9mzk0zS1V1uTXfEXLpsHMrvJPRuy055XRkbP9LLnm7tTbE3SZMpICh
-         w4xjy7hPmWsqqCxSuxB51It9Uee59Xvmor3eu7Et2MYngFnvAI2yq6FaNcSQKyo3iP
-         XsTghyUwMC5iAyTKLH+7ABsidWFU+PanEHlZ3y/oQBapklRNeGa5uM6izHnmj3+RoV
-         GXoi4VPEdUmjE9MN7hFRHOCnmCl0Irp2osXoz4nGD6CKE6joLDpdfbmoZHoqMV2bTZ
-         StVvZVIuvvftw==
+        b=fiiMrQYko0h9gGFgnRJjSKXbYq6+bZtPHkmKRVySZGgShRN82fALHDDbZcmwkm0M6
+         Sc185JCPz5+SEQCBxJkZWzkWmQ7NyJIvmezv6+lRWD/TnuiU9a9E0zKEpalzpWiK+m
+         jeC51pJ2y6QI9eXW4C5d2eYb/Uwc18QTu4wtcohyACuC53atkurPfpL6h5JHtjk0Dp
+         Xyq41B5oRk9wvWGiWkFHSFjT4eDwSVzJ75j/DPWfFNfgjjc/yUkCSSzpI+24+VjoS8
+         kmM20ta+y2CU/Vr1cPIfx9ZrxKqQH4t6mltzVsDpPt+1ih7nc5bZXy2nCEkQdBbP/y
+         bVhqJS46tHH+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Oliver Neukum <oneukum@suse.com>,
@@ -39,12 +39,12 @@ Cc:     Oliver Neukum <oneukum@suse.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
         kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/13] USB: zaurus: support another broken Zaurus
-Date:   Tue, 22 Feb 2022 21:31:47 -0500
-Message-Id: <20220223023152.242065-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 06/10] USB: zaurus: support another broken Zaurus
+Date:   Tue, 22 Feb 2022 21:32:29 -0500
+Message-Id: <20220223023233.242468-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023152.242065-1-sashal@kernel.org>
-References: <20220223023152.242065-1-sashal@kernel.org>
+In-Reply-To: <20220223023233.242468-1-sashal@kernel.org>
+References: <20220223023233.242468-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -72,7 +72,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 24 insertions(+)
 
 diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index 529c8fac15314..778bd9aaba9f1 100644
+index 8c9eae5f30722..92a7247b62999 100644
 --- a/drivers/net/usb/cdc_ether.c
 +++ b/drivers/net/usb/cdc_ether.c
 @@ -584,6 +584,11 @@ static const struct usb_device_id	products[] = {
