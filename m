@@ -2,138 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A88BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 04:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C45C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 04:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237725AbiBWEjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 23:39:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49098 "EHLO
+        id S234994AbiBWEkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 23:40:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiBWEjn (ORCPT
+        with ESMTP id S237477AbiBWEkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 23:39:43 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42768387BC
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:39:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645591157; x=1677127157;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OBAsJgAmXkoQH3w5up6qajOcwoEvBVR4pxFkXCd4nFU=;
-  b=Ch/554q0opFzIG2eBQKoYynaBYJZMoeKbYGyQYTUFthUFQwkkjFpyMsL
-   E/CcL15G6Wnk9l7FH/lBzVS+18kR4n/LTsRYNOqfCQkFXUP3cdYpoXHwA
-   Ro+lcdYzICJ06W6RyBtETL8bzL0EiKppLNYaPqzAIBm3BJKVWyFCBjyTy
-   ziYmcdUkYLMdehy0g1yKucSaC9dSndg6vY6Zz9YSnX4513h9G+J+cSN3b
-   QRRG5aKwIxNr/r5femK8tchjpKdxlftxBeovPSJ04TqUX9MdKXZ4lmH6c
-   /vGuwdczftmLunssqwME1m0kEMCZDg/BjjIITJwqdxA49cAHYGUkdsqvf
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="250708957"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="250708957"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 20:39:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="543190727"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Feb 2022 20:39:15 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMjQo-0000yu-Uh; Wed, 23 Feb 2022 04:39:14 +0000
-Date:   Wed, 23 Feb 2022 12:39:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Subject: [agd5f:drm-next 120/147]
- drivers/gpu/drm/amd/amdgpu/amdgpu_benchmark.c:202:7: warning: variable 'r'
- is uninitialized when used here
-Message-ID: <202202231216.WfOj4nJp-lkp@intel.com>
+        Tue, 22 Feb 2022 23:40:41 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AA7583A7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:40:13 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id a6so16964088oid.9
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 20:40:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dsRICSn/v/bxa2UPxGZA6ohcDIrS1JILrK1mA8xJ1sM=;
+        b=MtKTSE6hOugw+wabSEoE2OSjauzQDZM2iYlBI9ljINbu2I9Aha4c7jS0rxVXF9r/2c
+         KfuX+1zlgoTw1C5N3iC7v8gJfjcb6YA9a08PcPBJsgTBzwHppWGzG/MgV5lndag4aVMm
+         ADOLlpH84QVnLYS2FJBureW8Vq378WM9/eJRqFtlYrXZV99VqTd6BysLABjSDlxTmFqf
+         MZ4N3kzH+3VPG9lBvZ6w+LiYq10sZADNn4Ql11zzwy2pjqgupMrHx0QZ2zLFQPS71ZGi
+         3ENz4sOagvf1cDTdkYZ9zD/RA8xdooL3iQzyllskpt2L1TtHdM5u1HPo5fqLKCgyPq4u
+         p0zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dsRICSn/v/bxa2UPxGZA6ohcDIrS1JILrK1mA8xJ1sM=;
+        b=XvsrHW0ODhfujTdPoOHOHYC5az07x28eUWan3iEcfK0W0/csNPXyzCMVGHqyawBrny
+         XvehRm+8Ymseckr+3Rzf+aQyBowYilPdQ6BWepBZgK/57ovFPqIgV9uMDqiErg0oidgV
+         AbfuJP07Gx7oS95ofKIGwV+CZegMyvx7AUD7uClsljrxpH+8Z746lVZl1HDV9rLFIgPW
+         VBdFFumYGRFfCi8Rk1tMRkA3txNivGBso4FyOl9cn7kwVijmtqA3bsrArUy2t8HBqVaJ
+         ryizHYNWMmGGaqgrPDObvv1HzbB7yix4qQoVVlivVeqvrtzBoBDg5NdxcPQju214cWwu
+         WTyg==
+X-Gm-Message-State: AOAM532YEGf4KkfEwYru1Vf+Kz8jJFLa1/BHftUIPce61jYIi3CTL+pi
+        aYdyuQLygIKdau/dLf6sud3UdA==
+X-Google-Smtp-Source: ABdhPJxGR18ifwlVddz7t3QMNx9RO1Y7RolZ4RAfZ5MQCWauQAWAk0VK+DWH7WoyX2k6g75V7LvcKg==
+X-Received: by 2002:aca:b206:0:b0:2d3:fa53:4fab with SMTP id b6-20020acab206000000b002d3fa534fabmr3626425oif.174.1645591213041;
+        Tue, 22 Feb 2022 20:40:13 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id x22sm6250033ooo.20.2022.02.22.20.40.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 20:40:12 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: phy: qcom,qmp: add sc8180x and sc8280xp ufs compatibles
+Date:   Tue, 22 Feb 2022 20:42:12 -0800
+Message-Id: <20220223044213.3776600-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   8bc1e581192e7ee9e808d1616b6d34b5da8f1206
-commit: 9645c9c9fb153c149c7dffe8c7dc2bc8a6a7ce1a [120/147] drm/amdgpu: plumb error handling though amdgpu_benchmark()
-config: arm-randconfig-r035-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231216.WfOj4nJp-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout 9645c9c9fb153c149c7dffe8c7dc2bc8a6a7ce1a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+Add compatible for the UFS PHY found in the Qualcomm SC8280XP platform
+and document the required clocks for this and the SC8180X UFS PHY.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/amd/amdgpu/amdgpu_benchmark.c:202:7: warning: variable 'r' is uninitialized when used here [-Wuninitialized]
-                   if (r)
-                       ^
-   drivers/gpu/drm/amd/amdgpu/amdgpu_benchmark.c:165:10: note: initialize the variable 'r' to silence this warning
-           int i, r;
-                   ^
-                    = 0
-   1 warning generated.
-
-
-vim +/r +202 drivers/gpu/drm/amd/amdgpu/amdgpu_benchmark.c
-
-   162	
-   163	int amdgpu_benchmark(struct amdgpu_device *adev, int test_number)
-   164	{
-   165		int i, r;
-   166		static const int common_modes[AMDGPU_BENCHMARK_COMMON_MODES_N] = {
-   167			640 * 480 * 4,
-   168			720 * 480 * 4,
-   169			800 * 600 * 4,
-   170			848 * 480 * 4,
-   171			1024 * 768 * 4,
-   172			1152 * 768 * 4,
-   173			1280 * 720 * 4,
-   174			1280 * 800 * 4,
-   175			1280 * 854 * 4,
-   176			1280 * 960 * 4,
-   177			1280 * 1024 * 4,
-   178			1440 * 900 * 4,
-   179			1400 * 1050 * 4,
-   180			1680 * 1050 * 4,
-   181			1600 * 1200 * 4,
-   182			1920 * 1080 * 4,
-   183			1920 * 1200 * 4
-   184		};
-   185	
-   186		switch (test_number) {
-   187		case 1:
-   188			/* simple test, VRAM to GTT and GTT to VRAM */
-   189			r = amdgpu_benchmark_move(adev, 1024*1024, AMDGPU_GEM_DOMAIN_GTT,
-   190						  AMDGPU_GEM_DOMAIN_VRAM);
-   191			if (r)
-   192				return r;
-   193			r = amdgpu_benchmark_move(adev, 1024*1024, AMDGPU_GEM_DOMAIN_VRAM,
-   194						  AMDGPU_GEM_DOMAIN_GTT);
-   195			if (r)
-   196				return r;
-   197			break;
-   198		case 2:
-   199			/* simple test, VRAM to VRAM */
-   200			amdgpu_benchmark_move(adev, 1024*1024, AMDGPU_GEM_DOMAIN_VRAM,
-   201					      AMDGPU_GEM_DOMAIN_VRAM);
- > 202			if (r)
-
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index e417cd667997..455317dee5ea 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -32,6 +32,7 @@ properties:
+       - qcom,sc8180x-qmp-pcie-phy
+       - qcom,sc8180x-qmp-ufs-phy
+       - qcom,sc8180x-qmp-usb3-phy
++      - qcom,sc8280xp-qmp-ufs-phy
+       - qcom,sdm845-qhp-pcie-phy
+       - qcom,sdm845-qmp-pcie-phy
+       - qcom,sdm845-qmp-ufs-phy
+@@ -280,6 +281,8 @@ allOf:
+               - qcom,sdm845-qmp-ufs-phy
+               - qcom,sm8150-qmp-ufs-phy
+               - qcom,sm8250-qmp-ufs-phy
++	      - qcom,sc8180x-qmp-ufs-phy
++	      - qcom,sc8280xp-qmp-ufs-phy
+     then:
+       properties:
+         clocks:
+-- 
+2.33.1
+
