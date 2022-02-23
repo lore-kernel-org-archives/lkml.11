@@ -2,152 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90036C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF674C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242681AbiBWQQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        id S242687AbiBWQR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:17:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236228AbiBWQQ1 (ORCPT
+        with ESMTP id S236228AbiBWQR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:16:27 -0500
-X-Greylist: delayed 522 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 08:15:58 PST
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E5FC4E12;
-        Wed, 23 Feb 2022 08:15:58 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.west.internal (Postfix) with ESMTP id 70C702B0014E;
-        Wed, 23 Feb 2022 11:07:15 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 23 Feb 2022 11:07:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yotsuba.nl; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; bh=6WaAJK5lyFLmcmFKJl+0M+d6NIX9M8qY6UrRrz5b9zI=; b=eEh3k
-        eL6El0y2BpWdZVivRqzzJikfGRKEww/41gQZgykXPMQv/2oIPH4jh/m+SdBtTLtI
-        20cI43uQwFWMG1lPao0tT9IaZhDgZzO006IgK0JadDHIDwrbpN1qvkysLlEq5KvW
-        jw9kOEekgM6R0MDKNgRFUmcwmZDwbyLGlMhxurpBdrmhFVeh/NWqEEpKjQJljr6i
-        qsayVve8o/OXRFwFwYfFeb3Yky2TRss3QVCWfF4Dn+WIJqUOqMGjw1Ux6oU1V34+
-        0SO9WeQ4pVBtN2yDF8Fol7Gy7hjN6v1ISces9Oin0WJSwfCtg0DZnTdBA+Y5JXT0
-        m3OHSW5j1JwtuC8uw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=6WaAJK5lyFLmcmFKJl+0M+d6NIX9M
-        8qY6UrRrz5b9zI=; b=HaRTHEgCGe+caz2sQsKoHHme3UB6NQ8YbcSovGCrxHKjP
-        otSNGsM1gqQjhEUwIhsTaW2JZGiGGAD/EQ2DyBM5VRgLeJyennBIReyJ8PFmEMz+
-        5LmtqrXgPXYI2qt9YNXFAqT4fTTLWgsvDvlL5lc7X/oJAq2YXMfmCBuN6q2urLPr
-        Bo35z3leobrdjuvCkLKZM/6UUfaiGfqEnR+pZl9LNdCxiOsvyPPmDDuSuXEYK4y+
-        splUPU5JIH0Fktta/JahNbcRtogxuEaglJNkId7ld/0BxJwKXOuoJHcOoYPLp+ol
-        kFkcTgIhTQGPeWSPoTSsZx8U14CdkfN/3eC6F+cdg==
-X-ME-Sender: <xms:slsWYqoNzUbmSnbWW7HIlb2tFL6XSTWqfv65Cwl0GecxMi_v-hd4kg>
-    <xme:slsWYoqpQ6zRqqoWOY8UcZQ_N-wmlPrBO0AYYrmm82V-NLhRS0nC120D8_asCvAZT
-    n4mcyX2QpN_clVeGu8>
-X-ME-Received: <xmr:slsWYvODuRF8D_NadyrzUYhSy1ILTh4crYtOv-3CFF51J3QrE2GNsJOSZJHISosO9AXBvA51uE_B6h0o0ElVy1mCrjcVEGauS1uUMYbsyjH7gjY8s88KxR06nQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledtgdekfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepofgrrhhkucevihhl
-    ihhsshgvnhcuoehmrghrkheshihothhsuhgsrgdrnhhlqeenucggtffrrghtthgvrhhnpe
-    ehudevhedtleefkefgjeduvefhgffhhedvteffhefgleetleehleegffdtffduheenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrghrkheshi
-    hothhsuhgsrgdrnhhl
-X-ME-Proxy: <xmx:slsWYp7scNv8-zCXV2_wfWEtpBe4EREL41uJKSxlz_WF53wEm71ZHw>
-    <xmx:slsWYp53lkUiJ3SJyTslX0hhOWwBL3TqGnAVs9GqQjUahn7ApZHQRQ>
-    <xmx:slsWYph-F5uFCM5U8OXixZfnx5dqcJhJoarPmW3ENc-3VsXQ5JGUhQ>
-    <xmx:s1sWYmwtItwewWO-_NDnIP7WYAHxiVs5MzRLDAyijwIWBwlfOrXm6nH2lic>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Feb 2022 11:07:12 -0500 (EST)
-From:   Mark Cilissen <mark@yotsuba.nl>
-To:     linux-acpi@vger.kernel.org, x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Mark Cilissen <mark@yotsuba.nl>
-Subject: [PATCH] x86/acpi: Work around broken XSDT on SEGA AALE board
-Date:   Wed, 23 Feb 2022 17:07:08 +0100
-Message-Id: <20220223160708.88100-1-mark@yotsuba.nl>
-X-Mailer: git-send-email 2.28.0
+        Wed, 23 Feb 2022 11:17:56 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDD8AC91F
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:17:28 -0800 (PST)
+Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 82C19DD;
+        Wed, 23 Feb 2022 17:17:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1645633045;
+        bh=atCpG2wGq1bioML62FCnIx+SdqijD2iEfIT0BMG1CJI=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=dgqUuGDMg6knomkd3+jaYVmGmIQ6ndXFWYqLgI1q3F4rwIpkwuPs50/dT7BMvjCuN
+         ZJ9ffkYYybbCwHrLrnCjX+T1bRVhSkZsK2CgS21n6dZ8sDL3OJpRHg/UeyhchvaXHS
+         OK9gbaSFZSMPEiXjcVsaSo1RdJk6nfv+/piZHvwI=
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Yczy3UYpU2UMFQ6N@pendragon.ideasonboard.com>
+References: <20211225063151.2110878-1-nikita.yoush@cogentembedded.com> <Yczy3UYpU2UMFQ6N@pendragon.ideasonboard.com>
+Subject: Re: [PATCH] drm/bridge_connector: enable HPD by default if supported
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Date:   Wed, 23 Feb 2022 16:17:22 +0000
+Message-ID: <164563304251.4066078.10022034509552549983@Monstersaurus>
+User-Agent: alot/0.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On this board the ACPI RSDP structure points to both a RSDT and an XSDT,
-but the XSDT points to a truncated FADT. This causes all sorts of trouble
-and usually a complete failure to boot after the following error occurs:
+Hi Laurent, Nikita,
 
-  ACPI Error: Unsupported address space: 0x20 (*/hwregs-*)
-  ACPI Error: AE_SUPPORT, Unable to initialize fixed events (*/evevent-*)
-  ACPI: Unable to start ACPI Interpreter
+Quoting Laurent Pinchart (2021-12-29 23:44:29)
+> Hi Nikita,
+>=20
+> Thank you for the patch.
+>=20
+> On Sat, Dec 25, 2021 at 09:31:51AM +0300, Nikita Yushchenko wrote:
+> > Hotplug events reported by bridge drivers over drm_bridge_hpd_notify()
+> > get ignored unless somebody calls drm_bridge_hpd_enable(). When the
+> > connector for the bridge is bridge_connector, such a call is done from
+> > drm_bridge_connector_enable_hpd().
+> >=20
+> > However drm_bridge_connector_enable_hpd() is never called on init paths,
+> > documentation suggests that it is intended for suspend/resume paths.
+>=20
+> Hmmmm... I'm in two minds about this. The problem description is
+> correct, but I wonder if HPD should be enabled unconditionally here, or
+> if this should be left to display drivers to control.
+> drivers/gpu/drm/imx/dcss/dcss-kms.c enables HPD manually at init time,
+> other drivers don't.
+>=20
+> It feels like this should be under control of the display controller
+> driver, but I can't think of a use case for not enabling HPD at init
+> time. Any second opinion from anyone ?
 
-This leaves the ACPI implementation in such a broken state that subsequent
-kernel subsystem initialisations go wrong, resulting in among others
-mismapped PCI memory, SATA and USB enumeration failures, and freezes.
+This patch solves an issue I have where I have recently enabled HPD on
+the SN65DSI86, but without this, I do not get calls to my .hpd_enable or
+.hpd_disable hooks that I have added to the ti_sn_bridge_funcs.
 
-As this is an older embedded platform that will likely never see any BIOS
-updates to address this issue and its default shipping OS only complies to
-ACPI 1.0, work around this by forcing `acpi=rsdt`. This patch, applied on
-top of Linux 5.10.102, was confirmed on real hardware to fix the issue.
+So it needs to be enabled somewhere, and this seems reasonable to me?
+It's not directly related to the display controller - as it's a factor
+of the bridge?
 
-Signed-off-by: Mark Cilissen <mark@yotsuba.nl>
-Cc: stable@vger.kernel.org
----
- arch/x86/kernel/acpi/boot.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+On Falcon-V3U with HPD additions to SN65DSI86:
+Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
 
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 5b6d1a95776f..7caf4da075cd 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -1328,6 +1328,17 @@ static int __init disable_acpi_pci(const struct dmi_system_id *d)
- 	return 0;
- }
- 
-+static int __init disable_acpi_xsdt(const struct dmi_system_id *d)
-+{
-+	if (!acpi_force) {
-+		pr_notice("%s detected: force use of acpi=rsdt\n", d->ident);
-+		acpi_gbl_do_not_use_xsdt = TRUE;
-+	} else {
-+		pr_notice("Warning: DMI blacklist says broken, but acpi XSDT forced\n");
-+	}
-+	return 0;
-+}
-+
- static int __init dmi_disable_acpi(const struct dmi_system_id *d)
- {
- 	if (!acpi_force) {
-@@ -1451,6 +1462,20 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
- 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
- 		     },
- 	 },
-+	/*
-+	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
-+	 */
-+	{
-+	 .callback = disable_acpi_xsdt,
-+	 .ident = "SEGA AALE",
-+	 .matches = {
-+		     DMI_MATCH(DMI_SYS_VENDOR, "NEC"),
-+		     DMI_MATCH(DMI_PRODUCT_NAME, "Bearlake CRB Board"),
-+		     DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
-+		     DMI_MATCH(DMI_BIOS_VERSION, "V1.12"),
-+		     DMI_MATCH(DMI_BIOS_DATE, "02/01/2011"),
-+		     },
-+	},
- 	{}
- };
- 
 
-base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
--- 
-2.28.0
-
+> > In result, once encoders are switched to bridge_connector,
+> > bridge-detected HPD stops working.
+> >=20
+> > This patch adds a call to that API on init path.
+> >=20
+> > This fixes HDMI HPD with rcar-du + adv7513 case when adv7513 reports HPD
+> > events via interrupts.
+> >=20
+> > Fixes: c24110a8fd09 ("drm: rcar-du: Use drm_bridge_connector_init() hel=
+per")
+> > Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+> > ---
+> >  drivers/gpu/drm/drm_bridge_connector.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/gpu/drm/drm_bridge_connector.c b/drivers/gpu/drm/d=
+rm_bridge_connector.c
+> > index 791379816837..4f20137ef21d 100644
+> > --- a/drivers/gpu/drm/drm_bridge_connector.c
+> > +++ b/drivers/gpu/drm/drm_bridge_connector.c
+> > @@ -369,8 +369,10 @@ struct drm_connector *drm_bridge_connector_init(st=
+ruct drm_device *drm,
+> >                                   connector_type, ddc);
+> >       drm_connector_helper_add(connector, &drm_bridge_connector_helper_=
+funcs);
+> > =20
+> > -     if (bridge_connector->bridge_hpd)
+> > +     if (bridge_connector->bridge_hpd) {
+> >               connector->polled =3D DRM_CONNECTOR_POLL_HPD;
+> > +             drm_bridge_connector_enable_hpd(connector);
+> > +     }
+> >       else if (bridge_connector->bridge_detect)
+> >               connector->polled =3D DRM_CONNECTOR_POLL_CONNECT
+> >                                 | DRM_CONNECTOR_POLL_DISCONNECT;
+>=20
+> --=20
+> Regards,
+>=20
+> Laurent Pinchart
