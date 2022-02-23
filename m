@@ -2,95 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71623C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D239C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240332AbiBWMDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:03:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
+        id S236658AbiBWMFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240302AbiBWMD2 (ORCPT
+        with ESMTP id S232761AbiBWMFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:03:28 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404E39A9A6;
-        Wed, 23 Feb 2022 04:02:50 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21N2wEqr012240;
-        Wed, 23 Feb 2022 07:02:48 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3edckssseh-1
+        Wed, 23 Feb 2022 07:05:39 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC1298F4D;
+        Wed, 23 Feb 2022 04:05:11 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NBkjN8005236;
+        Wed, 23 Feb 2022 12:05:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=cAqsjmvAs3DfqRV7gSoiMSp/RNJjRqeiylIgknhlfbM=;
+ b=Z843OxjHX5NLNTb0Hm4IMMVG8mJ1j1iFjrAR/arZphlXc77Pujxvcsc5KDWbG4Mg/cGE
+ DJjWVWyd7X0QPgOsVrotDIwyw5gFUSAIhMjh5MJ5KKl9BRPFgz08RUvm1gqFef87XP5f
+ OQ8YSDJJTYHTy2N9fJq2+aUUlQm9khHFsAF483Eje9QMckTrcwYqD5dZjwP0ihy+HJrt
+ J1zecz3SmQ58XXRphlr/joN/A4/qoSpCRbBnrjBDwQlQugnrXoyNG3g6FPZKcBSV30zh
+ kYVryo1O41Ht118OMSM5mENOXJqkThnN1Lm1vs4Ft+HmfRw2qs7OUxIezppN/xiS3IPu XQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3edmbr8bpn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 07:02:48 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21NC2lrf019355
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 07:02:47 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 23 Feb
- 2022 07:02:46 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 23 Feb 2022 07:02:46 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.126])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21NC2Y1c023695;
-        Wed, 23 Feb 2022 07:02:40 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v6 3/3] MAINTAINERS: add maintainer for ADA4250 driver
-Date:   Wed, 23 Feb 2022 14:01:12 +0200
-Message-ID: <20220223120112.8067-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220223120112.8067-1-antoniu.miclaus@analog.com>
-References: <20220223120112.8067-1-antoniu.miclaus@analog.com>
+        Wed, 23 Feb 2022 12:05:08 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NBvN6r008390;
+        Wed, 23 Feb 2022 12:05:07 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3edmbr8bnn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 12:05:07 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NC1id5028101;
+        Wed, 23 Feb 2022 12:05:05 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ear699mnd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Feb 2022 12:05:05 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NC52BB45089250
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 23 Feb 2022 12:05:02 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A498DA4051;
+        Wed, 23 Feb 2022 12:05:02 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AE8DBA4057;
+        Wed, 23 Feb 2022 12:05:00 +0000 (GMT)
+Received: from localhost (unknown [9.43.68.5])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 23 Feb 2022 12:05:00 +0000 (GMT)
+Date:   Wed, 23 Feb 2022 17:34:57 +0530
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     Jan Kara <jack@suse.cz>
+Cc:     linux-ext4@vger.kernel.org,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC 3/9] ext4: Add couple of more fast_commit tracepoints
+Message-ID: <20220223120457.a6mx3uufvainfi2n@riteshh-domain>
+References: <cover.1645558375.git.riteshh@linux.ibm.com>
+ <90608d31b7ad8500c33d875d3a7fa50e3456dc1a.1645558375.git.riteshh@linux.ibm.com>
+ <20220223094057.53zcovnazrqwbngw@quack3.lan>
+ <20220223101159.ekwbylvbmec5v35q@riteshh-domain>
+ <20220223115313.3s73bu7p454bodvl@quack3.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: JBU5sdKYW7BAkGMABYd_v9YbwLxwMePA
-X-Proofpoint-GUID: JBU5sdKYW7BAkGMABYd_v9YbwLxwMePA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223115313.3s73bu7p454bodvl@quack3.lan>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: mfiuBmmEeruvcLuHMfmnrzevTk-Oz7M4
+X-Proofpoint-GUID: OZj7rKQW6lhngJSE81vl9WGJ0SrZQe5E
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_04,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 adultscore=0 impostorscore=0 suspectscore=0 clxscore=1015
- malwarescore=0 bulkscore=0 spamscore=0 mlxscore=0 priorityscore=1501
- mlxlogscore=807 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230067
+ definitions=2022-02-23_03,2022-02-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=43 lowpriorityscore=0
+ mlxscore=43 impostorscore=0 phishscore=0 adultscore=0 clxscore=1015
+ suspectscore=0 priorityscore=1501 mlxlogscore=12 bulkscore=0
+ malwarescore=0 spamscore=43 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202230068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer for the ADA4250 driver.
+On 22/02/23 12:53PM, Jan Kara wrote:
+> On Wed 23-02-22 15:41:59, Ritesh Harjani wrote:
+> > On 22/02/23 10:40AM, Jan Kara wrote:
+> > > On Wed 23-02-22 02:04:11, Ritesh Harjani wrote:
+> > > > This adds two more tracepoints for ext4_fc_track_template() &
+> > > > ext4_fc_cleanup() which are helpful in debugging some fast_commit issues.
+> > > >
+> > > > Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+> > >
+> > > So why is this more useful than trace_ext4_fc_track_range() and other
+> > > tracepoints? I don't think it provides any more information? What am I
+> > > missing?
+> >
+> > Thanks Jan for all the reviews.
+> >
+> > So ext4_fc_track_template() adds almost all required information
+> > (including the caller info) in this one trace point along with transaction tid
+> > which is useful for tracking issue similar to what is mentioned in Patch-9.
+> >
+> > (race with if inode is part of two transactions tid where jbd2 full commit
+> > may begin for txn n-1 while inode is still in sbi->s_fc_q[MAIN])
+>
+> I understand commit tid is interesting but cannot we just add it to
+> tracepoints like trace_ext4_fc_track_range() directly? It would seem useful
+> to have it there and when it is there, the need for
+> ext4_fc_track_template() is not really big. I don't care too much but
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Yes make sense. Sure, I will look into adding this info to existing trace
+points then. With that I think trace_ext4_fc_track_template() won't be required.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce7168aa..0410054a7bf5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1075,6 +1075,14 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	drivers/media/i2c/ad9389b*
- 
-+ANALOG DEVICES INC ADA4250 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-+F:	drivers/iio/amplifiers/ada4250.c
-+
- ANALOG DEVICES INC ADGS1408 DRIVER
- M:	Mircea Caprioru <mircea.caprioru@analog.com>
- S:	Supported
--- 
-2.35.1
+Will add those changes in V2.
 
+> this tracepoint looked a bit superfluous to me.
+>
+> > And similarly ext4_fc_cleanup() helps with that information about which tid
+> > completed and whether it was called from jbd2 full commit or from fast_commit.
+>
+> Yeah, that one is clear.
+
+Will retain trace_ext4_fc_cleanup() then.
+
+
+-ritesh
+>
+> 								Honza
+> --
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
