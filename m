@@ -2,118 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A084C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241300AbiBWN7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:59:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44734 "EHLO
+        id S241308AbiBWN7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241260AbiBWN7P (ORCPT
+        with ESMTP id S241290AbiBWN7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:59:15 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB3799ED9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:58:47 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id v28so17329713ljv.9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:58:47 -0800 (PST)
+        Wed, 23 Feb 2022 08:59:34 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94939B0D01;
+        Wed, 23 Feb 2022 05:59:06 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id i6so15372972pfc.9;
+        Wed, 23 Feb 2022 05:59:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aHyzMFtQe0EUOGyo5aNMOVUBLvuCyxjF47uhkzb6m4c=;
-        b=kErSueoTeHbWeWky89XlisWfN7RXR5Bflcws8Duv1Byb1Kjh6SF4QfOqyyH08ANsvr
-         YCBvyKZjsm46rLQCoeD5JVy+tQiKQRI+WhZ4MZP6JubaTFlr24WPJHfFvjKfMFiv7n64
-         /J+uOha29mNmckK7Skdqrj9iZ9ShzeHKZ+TEdPTJykePyCGNzgsCqXHq36TLn6MlMCmz
-         pEogmT6UzYgfoCF1MgWeFvfNElXy0hAnBm+zOZ+C4sZ79i1L6ukdUe5xmf2b+0/OCBnr
-         XXur+Bz41evUrrlQ8GLP01gv320vzdqUu3DMs6qv+PHpFSasxuk1NYXaot5vBdBdtShd
-         1jdw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=X6Dow0Ktg3f7s9R18PXLBZ+c8Wk6NqWpU+XTTN91E7I=;
+        b=RX18hLk8t4yl1UuCrwmxyKV6FBLuOZ3CuRlfI8mh5eLsCRMcu7yYNlt4TqZChs1x90
+         YIF1QcDiax/U7D1b/RxbvjQRQTVmNorNcAm2EjluWo36Ky98SoJ2mDVvniaWOCHo0wLo
+         MrSTyWM6L8qAmA0oII5XoNSDDIfmKZ1oIHE6ZxTnfimKV1g7qwJDZEPJc1+Qj1H3XeUV
+         95ooAE+V+bgUjidm2NmsrNzjbPnQ2qE0ciZ43KufM6ki9Tm8fFXAxzDBPAfPRpo1zW8m
+         aSUj24sOun3OrPu5xgc0aLDj+s2zNX1RKkjE4Hee5BEkzB+pQddCpFs7pxkuuYgKii0X
+         +jQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aHyzMFtQe0EUOGyo5aNMOVUBLvuCyxjF47uhkzb6m4c=;
-        b=5X5/zGvaW/ff6Suni0mbR5ODxx/dhhvcwazBFza39ZqL8GxPMyFIQHmXpMRcMTlzmu
-         xGgDKDGiYMRBUyKEuKk7Hu3Oq35+fsTOEmyksnCdOnMfuIPQajqeyfhTgYLguaM1eA9Q
-         +FBLYpVwyJ6w7aYenrFZgud+IYa8LN0k7OiOm7eQw5RMv6R9tZrODPPgURXBJZNxJK9x
-         3YTtK85LOtdyrKWpEuAX6QbzpfQOPFEQaybHp8v7ITr2yPrYXN8Err4epNowrXr5951A
-         KKJatQJCVLT/WYT5AeElGtS9pHha6wTFlRp6bzIVvCRnD2902E4YiFiLW3SKnhkG3XrT
-         lZ+g==
-X-Gm-Message-State: AOAM533LxtbHVhKp+yRtBkEJHfyzFIJLvpQucVSl75KlKvRUdUz33Lav
-        ezPZAPDmZPw5dRi6zVow4TjLSqyveGtzCA==
-X-Google-Smtp-Source: ABdhPJy+EUB1iUZR6g+rNGOcfuP/RW3CsnyJ4DsE44Il+ubBCSVjVoKE42htrM/ebNo+fSdbSc3ufQ==
-X-Received: by 2002:a05:651c:307:b0:244:dc4c:c2f2 with SMTP id a7-20020a05651c030700b00244dc4cc2f2mr20026151ljp.531.1645624725984;
-        Wed, 23 Feb 2022 05:58:45 -0800 (PST)
-Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
-        by smtp.gmail.com with ESMTPSA id v29sm2099448ljv.72.2022.02.23.05.58.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 05:58:45 -0800 (PST)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     mpe@ellerman.id.au
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 3/3] powerpc: lib: sstep: fix build errors
-Date:   Wed, 23 Feb 2022 14:58:20 +0100
-Message-Id: <20220223135820.2252470-3-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223135820.2252470-1-anders.roxell@linaro.org>
-References: <20220223135820.2252470-1-anders.roxell@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=X6Dow0Ktg3f7s9R18PXLBZ+c8Wk6NqWpU+XTTN91E7I=;
+        b=lvjDaKvMBZp2IcJyLbWNz07OPbK82E0akO96AGAURRKt4qJNAlt5WM2BmVlcpgMv51
+         y+M62v40Qm87mHcV7NxgYs/bUUaWeXBEr7uyoD3K+iNdrJW0ZARNwYQRw9G5EpShUhoH
+         x2vzzgjXv5BEZxr4t+ea5tIrMCHuPi73fHrOaizSZbWTPKp+OinmldiQCKnIY6XJRgX+
+         rytk7U/uYbyyq7hpsPbkaRVNjTVXZj3dkvcSoUytEtdpDKwxZv7ZQp3PoquOo6TRA0mn
+         CzFOCurOUtwCldRCPYGm/EcdmsTLw40rnrAJVCv8kPfLmvElOVkTGaDCGMaIAnSGsh5o
+         Giig==
+X-Gm-Message-State: AOAM530t1ap6bkfV1w6oF2Fq0r2l0yDHc66NG+4gGv3d6Q/BMRHih7IX
+        Q4RvqJPEDwMcHZixpT2quP4=
+X-Google-Smtp-Source: ABdhPJzh6lTbjHeHmAyasMYIQHn/EZf6R89kUL1gUNz+eL3VXPSutvjf0y7809cEOUpc8J6UGsMlOA==
+X-Received: by 2002:a05:6a00:2405:b0:4e1:5008:adcc with SMTP id z5-20020a056a00240500b004e15008adccmr30100114pfh.35.1645624746021;
+        Wed, 23 Feb 2022 05:59:06 -0800 (PST)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id 16sm24688182pgz.76.2022.02.23.05.59.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 05:59:05 -0800 (PST)
+Message-ID: <721f860a-a662-0f0c-a82d-eacf80841eb3@gmail.com>
+Date:   Wed, 23 Feb 2022 22:59:01 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] scripts: kernel-doc: Check existence of FILE arg
+Content-Language: en-US
+To:     =?UTF-8?B?VG9tYXN6IFdhcm5pZcWCxYJv?= <tomasz.warniello@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+References: <1c71e5d2-f87e-6c8e-6176-e5ce42e4d41b@gmail.com>
+ <20220223144713.6e2284e3@fuji.fritz.box>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <20220223144713.6e2284e3@fuji.fritz.box>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+On Wed, 23 Feb 2022 14:47:13 +0100,
+Tomasz Warnie=C5=82=C5=82o wrote:
+> On Wed, 23 Feb 2022 15:07:30 +0900
+> Akira Yokosawa <akiyks@gmail.com> wrote:
+>=20
+>> Currently, when no FILE argument is given following switches such
+>> as -man, -rst, and -none, kernel-doc ends up in the error of (long
+>> msg from perl folded):
+>>
+>>     Use of uninitialized value $ARGV[0] in pattern match (m//)
+>>     at ./scripts/kernel-doc line 438.
+>=20
+> It's a warning not an error.
 
-{standard input}: Assembler messages:
-{standard input}:10576: Error: unrecognized opcode: `stbcx.'
-{standard input}:10680: Error: unrecognized opcode: `lharx'
-{standard input}:10694: Error: unrecognized opcode: `lbarx'
+Good catch!
 
-Rework to add assembler directives [1] around the instruction.  The
-problem with this might be that we can trick a power6 into
-single-stepping through an stbcx. for instance, and it will execute that
-in kernel mode.
+Will amend in v2 with proper attribution.
 
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Cc: <stable@vger.kernel.org>
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- arch/powerpc/lib/sstep.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
-index d2d29243fa6d..b9f43bbdd55a 100644
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -1097,7 +1097,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
- 
- #define __put_user_asmx(x, addr, err, op, cr)		\
- 	__asm__ __volatile__(				\
-+		".machine \"push\"\n"			\
-+		".machine \"power8\"\n"			\
- 		"1:	" op " %2,0,%3\n"		\
-+		".machine \"pop\"\n"			\
- 		"	mfcr	%1\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
-@@ -1110,7 +1113,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
- 
- #define __get_user_asmx(x, addr, err, op)		\
- 	__asm__ __volatile__(				\
-+		".machine \"push\"\n"			\
-+		".machine \"power8\"\n"			\
- 		"1:	"op" %1,0,%2\n"			\
-+		".machine \"pop\"\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li	%0,%3\n"		\
--- 
-2.34.1
-
+        Thanks Akira
