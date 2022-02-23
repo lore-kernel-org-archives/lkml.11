@@ -2,142 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6781C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 013AEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 09:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239217AbiBWJQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 04:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        id S239233AbiBWJQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 04:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235732AbiBWJQI (ORCPT
+        with ESMTP id S235732AbiBWJQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 04:16:08 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5424811AF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:15:40 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EA02B405D7
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:15:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645607738;
-        bh=6E8LpkVcd+7AGHgdYAkEZe+ycoMDPekcdYSjpmTWlKw=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=F3Md2UK0jpLf/OAzfbgKmFCBwBeke1DULmZlJ+CpuvEBrveuQrKO0kOEqUVL0StUy
-         lkUq7kXNy6I8pevlTsgN3BqPKhTgTT95dIvTRTKuyNqrE9w4pQQDJqy3cngBW6lMGW
-         su7jAVHqovTNaTRMfxbz9R60w2v+DWUPXvEW6v6rcBys1/x4okiEKoT7OerWFfFpOw
-         r5/1kj4kelVPuYOTK00H8+1KzucfdrgLftkrJ/uVNdYE28AyCmBFn4U4yzZc9lIyjx
-         qadjT4uBgOAsoXRjJD0HaYVqlw3wAd+nqAiPIw7m3da5qKl1YPdVk7v/7JRLfNPXpj
-         HAM4mz1qVEHeA==
-Received: by mail-ed1-f72.google.com with SMTP id y10-20020a056402358a00b00410deddea4cso13261220edc.16
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:15:38 -0800 (PST)
+        Wed, 23 Feb 2022 04:16:33 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F9F811B6
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:16:06 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id w13so12846132wmi.2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 01:16:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ZUexAi7XZpt/IXnr6iWEdkKC6eoohAZnCV7GkbV1MDk=;
+        b=UPs30jYkSROqMLjG9j1ccaDvuvFBZ5GNgJvTkAHoPWEguU9vkan3wlqp8w4RRC+sNC
+         d6HpX1ZOmhxyb28eXxfPplk+OaEdgK7CK1LlCHbScbnKriOWRk9o0nkk8CQL+j3M8rIz
+         uHYHshSSLKD9qppDHOPTFPQo1j2TB4mGO6JJt26ND9E5k+LQJNTi3Unm4yssGvV8rK6F
+         csNHqtqJuoSDtXq/kTvRq/JNzMut6/oIOrWqxA9Q1fFh92hTdcaLmwyedYdGhRCd/nC8
+         Pi6oTFPTmPvKaXDd5PQ2t8SSGOPBjkBgPW7AROQg92nxlhgTUSXDbHq6ozZVhTRGR6WO
+         yPjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6E8LpkVcd+7AGHgdYAkEZe+ycoMDPekcdYSjpmTWlKw=;
-        b=lKY/OrFsknliOh0SPweDlvRYw43g6lNQEC5BZC2w3ypBSqL9fsxOXxcvdBe8pCx9Pt
-         q9XzwfTU0vqSbIjIJ9o2xDTD92prczgiVRLv5M7vVnsjmbqvIW0/QLjq7jCgpDfEDbf/
-         7Rg6M3340SsRXDurHEeGSx85hw19NyXBG09kh5NyZFtAb1RM0cAyKZG1x/XNBK/QmwZ6
-         DG8J9XabSnZF288hcOB/h+jVlhFpBIHVvrfaYJXCiuYKf6JuiKfCyrhfSqoXKb/9c6wr
-         ShpgHpLt+RxtjJWPoneC2zJYHozwVWRbGB+7NCF0rs5TIajOHUR7k/Ltm0W8k2j5pZMr
-         Q7QA==
-X-Gm-Message-State: AOAM530aOOtgGzt7V+xTjGhkz1aoWfjMbsxuXXEQNzGo6WtES9/yoZgi
-        v+I/UbgwWjkxn9cCuOsozxlSg2rZ5YnR3z7FTigz9BTDqq16Xr5NwFo5ZZopsiBbEOWCLV0SnbN
-        JoIDbBJT6nYS4VEw8tEO5uWUfeAu6fjy5ryvHzmy+kA==
-X-Received: by 2002:a17:906:a2d7:b0:6d3:45dd:bdf0 with SMTP id by23-20020a170906a2d700b006d345ddbdf0mr4297323ejb.104.1645607738087;
-        Wed, 23 Feb 2022 01:15:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy+9RnhMOLjSidBg/q3fUtt63PE3LgnR/AR0rH4GmRR5w77qD1Ua2aWMA7kqobhEoIkxmVgRg==
-X-Received: by 2002:a17:906:a2d7:b0:6d3:45dd:bdf0 with SMTP id by23-20020a170906a2d700b006d345ddbdf0mr4297297ejb.104.1645607737804;
-        Wed, 23 Feb 2022 01:15:37 -0800 (PST)
-Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id el5sm10993751edb.71.2022.02.23.01.15.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 01:15:37 -0800 (PST)
-Message-ID: <455a8a87-63e7-7864-f765-142be18d1fa8@canonical.com>
-Date:   Wed, 23 Feb 2022 10:15:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, Wei Xu <xuwei5@hisilicon.com>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Jan Kotas <jank@cadence.com>, Li Wei <liwei213@huawei.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Yaniv Gardi <ygardi@codeaurora.org>,
-        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZUexAi7XZpt/IXnr6iWEdkKC6eoohAZnCV7GkbV1MDk=;
+        b=ZNp4wZEZFLdn73WHpuCtaOTGr0vpfsi5XaTp0QhA2HzGT4AHQ2IpaiwWhNk3FRh2R2
+         ANN2b3FTTJzLH+wX/RCrkJKYeM6GIpLC8x4kNPUT6Cq9UcQd5DDg2L8M+cHImPi4cpoR
+         V3U3lS5/WewhRmtO6Bt6qL7qxYeBvPjc45W7vCqeq33Zli8zMPIuArTVloDkFc30IHif
+         kX8YqYfhv4zDKVdyIGoBO94u26pN5iWxqhK9bdavbwLFHiPjj3jvd2vo/jBy6R23CYQR
+         PFZYr1hjBOOvlYZnPW+CeK7syH8yi4BGLlrdfEJoA2h7kLtVkCf0RtEnEgd9fvmIHJv5
+         DJvQ==
+X-Gm-Message-State: AOAM532ufc9tP9G2WeS8x0a/MrtAxd7M1eulFaUpVLMzjv11TcUo76MQ
+        4YeXOPl55jUaZVKQ4EuAeCqdNQ==
+X-Google-Smtp-Source: ABdhPJwE97ajBq4XbB7MA2j4GjW5Zdm1JD/pIlevtg+JNehqxG7yZMbVnQQYKJW2cgh7nNAlFO7JGg==
+X-Received: by 2002:a05:600c:cf:b0:380:f85a:1cd8 with SMTP id u15-20020a05600c00cf00b00380f85a1cd8mr1239350wmm.1.1645607764646;
+        Wed, 23 Feb 2022 01:16:04 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id m5sm2565403wrb.13.2022.02.23.01.16.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 01:16:04 -0800 (PST)
+Date:   Wed, 23 Feb 2022 09:16:01 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Douglas Anderson <dianders@chromium.org>,
+        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
- <20220222145854.358646-10-krzysztof.kozlowski@canonical.com>
- <YhUodbzxx4wbr+gy@ripper>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <YhUodbzxx4wbr+gy@ripper>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH 1/4] dt-bindings: pwm: google,cros-ec: include generic
+ pwm schema
+Message-ID: <YhX7UZSDaqNyD1rV@google.com>
+References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
+ <20220214081916.162014-2-krzysztof.kozlowski@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214081916.162014-2-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/2022 19:16, Bjorn Andersson wrote:
-> On Tue 22 Feb 06:58 PST 2022, Krzysztof Kozlowski wrote:
-> 
->> The 'freq-table-hz' is not correct in DT schema, because '-hz' suffix
->> defines uint32 type, not an array.  Therefore deprecate 'freq-table-hz'
->> and use 'freq-table' instead.
->>
-> 
-> Patch looks good in itself, but why don't we use opp-table to describe
-> the performance states?
-> 
-> In particular looking at the two columns of frequencies for various
-> Qualcomm boards they require different performance-states.
-> 
-> A concrete example is sm8350.dtsi, which specifies 75MHz and 300MHz as
-> the first frequency pair. The lower level requires the VDD_CX power rail
-> to be at least &rpmhpd_opp_low_svs, the higher frequency has a
-> required-opps of &rpmhpd_opp_nom.
-> 
-> 
-> As this isn't possible to express in the current binding we've just been
-> forced to always run at a higher voltage level and kept this in the todo
-> list.
-> 
-> But rather than migrating freq-table-hz to freq-table and then having to
-> introduce an opp table to express the power constraints, could we
-> perhaps skip the intermediate step?
-> 
-> Or would you have any other suggestion about how we can represent the
-> required-opps level together with the freq-table (if that's what we want
-> to stick with).
+On Mon, 14 Feb 2022, Krzysztof Kozlowski wrote:
 
-Usage of OPP tables is interesting solution. It would solve your problem
-of power rail levels. This would need several opp-tables - one for each
-clock, which is not a big problem.
+> Include generic pwm.yaml schema, which enforces PWM node naming.  Keep
+> the old name in bindings as deprecated.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  Documentation/devicetree/bindings/mfd/google,cros-ec.yaml    | 4 ++++
 
-The problem is that I do not have any UFS hardware (none of my Samsung
-Exynos boards have UFS... I don't have even arm64 Exynos chips :( ), so
-implementing it theoretically will be painful.
-OTOH, I believe that having a working dtschema is very useful. Having
-dtschema without errors/warnings is even worth some churn/intermediary work.
+Acked-by: Lee Jones <lee.jones@linaro.org>
 
-The intermediary work is also not that big. Once proper OPP is
-implemented, we will have "just" two deprecated properties in the bindings.
+>  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml          | 5 ++++-
+>  2 files changed, 8 insertions(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
