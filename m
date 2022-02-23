@@ -2,139 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEE4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbiBWRFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:05:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        id S243164AbiBWRF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243098AbiBWRFD (ORCPT
+        with ESMTP id S243173AbiBWRFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:05:03 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D794B413;
-        Wed, 23 Feb 2022 09:04:35 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NGc2SE019566;
-        Wed, 23 Feb 2022 17:04:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=V5ouTWLw3zk6L0EVif2Rdg9rNy4H1yV7hnOvL3gnssM=;
- b=qKluLf1I42VBFBFvldWEObuDNHYijYkC8+mr9xAwczW1RReL0F4cDFtfgWskQ3d3yXJU
- rv+knf+XheW06Z/6W3m3IJr/QhwMCDDg7LvZ4S5qqnlJACtEKONMmhVMuaB2PpdkxNNk
- 7NtgpUrstwuQJUm2tUUsDrimdMDApkrEy65mJftMVfNKIAVUrS7tBWv+BZmvSpd0hU68
- TUXEwxTuztvt72yiRzAwVxs+Zi4hbQv19E219DKOO5enHJ3zzUaBDzgF9bPtp+RpXc1h
- sf9LXE7xMjLndBgv0aVfdGp47amcefnVuYbLAExSIJJmqrQ2Xa+WavudcFrh6fo6kcqB VQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edpjum5qt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:04:20 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NGqQ0x025906;
-        Wed, 23 Feb 2022 17:04:19 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edpjum5p8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:04:19 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NGwa8P004970;
-        Wed, 23 Feb 2022 17:04:16 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03fra.de.ibm.com with ESMTP id 3ear69a27c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:04:16 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NGrX2N50201010
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 16:53:33 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3A2534203F;
-        Wed, 23 Feb 2022 17:04:13 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D3E3742041;
-        Wed, 23 Feb 2022 17:04:10 +0000 (GMT)
-Received: from sig-9-65-80-154.ibm.com (unknown [9.65.80.154])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 17:04:10 +0000 (GMT)
-Message-ID: <8a4f9cb6cab5ba04eb61e346d0fca16efa4c6703.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 26/27] ima: Limit number of policy rules in
- non-init_ima_ns
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Wed, 23 Feb 2022 12:04:10 -0500
-In-Reply-To: <479f09e7-0d39-0281-45ef-5cce4861d24d@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-27-stefanb@linux.ibm.com>
-         <5e4a862917785972281bbcb483404da01b71e801.camel@linux.ibm.com>
-         <479f09e7-0d39-0281-45ef-5cce4861d24d@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Wed, 23 Feb 2022 12:05:36 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E6053B6C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:05:07 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id p17so547992plo.9
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:05:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/b6WfMnsXYZ00s2c/GvQAhaeUOqRUYQX35Lr5N92Ce0=;
+        b=Y9TC5Np6UhOrthaLw72Tmbkmac9ZcnyLYjKjHlfYKYivlqCn60jU6F2GWrzRbTO8M5
+         ZlGZUp6KkqzhOWY4U0T+I7nDsvwM018T8tLK+yCiXaUS72m9Mx2vqumZ2ePYDvJ0qhFT
+         12JSUAjtl91GU6mJotfNZfezDKxOquWCjOHVarCed6PYMlAlwckhtlSg0gZeWz3XPVgE
+         x4SzYOeMzwxIOXF1bW+VVvZjDNxipzxf/c//G78yPwq+ZZ6giviBZ5uCYh7v1qrafwX9
+         slhReHlGyY8niuVlLJmYP8z7TfTonDx+N+HLvYf8DPL/aSojJAlcECvf9pYNSa1qtbfS
+         JrWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/b6WfMnsXYZ00s2c/GvQAhaeUOqRUYQX35Lr5N92Ce0=;
+        b=mrJX5xK7khkhMwEtX5wj9YtyIV6HnlA/ibYbyaa4CupaCfRLZpFLTBnfpldTuFOskF
+         RtUx55eGhD5vEpx4D5YoGYicBvLxd0nBRXdpk6rQUmbu9h8esLT9t0hyo/agdHFUCFgC
+         JH8j9LG4WRGGIOsRtMuC5rz4y1R9dtzAAghUPNmmXqw1ikOVdOBlOutxY3OZUy7HRn7r
+         +QGZKOyLXiIfgHwiH42JoWvhrzE9R8gm7NHrBz4zBK5nIXo5MmE+jfZbNLn68OVc7P4J
+         77PSZz4wuNYvSEFfHlDRSU9422q+oLW7ac20X9GMNGMaAXai9bhGPGaJwjXMBSkg94UD
+         NsDg==
+X-Gm-Message-State: AOAM530c1JMbtTDiyMHcDq0+YJzZb4h1w1d0b3YunKZtDPiIsjTFiFSH
+        UZuE7zZAfnKNd7Ge/qkem+h1Dg==
+X-Google-Smtp-Source: ABdhPJwwxZtT1+nHRCZoasgxAPStg4KmhlveczsZWUYFIlMICmGoKNCPw5uO8UbrayXG43nYtLt3hg==
+X-Received: by 2002:a17:902:ce05:b0:14f:8cfa:1ace with SMTP id k5-20020a170902ce0500b0014f8cfa1acemr469038plg.149.1645635906521;
+        Wed, 23 Feb 2022 09:05:06 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id u11sm62507pfi.71.2022.02.23.09.05.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 09:05:05 -0800 (PST)
+Date:   Wed, 23 Feb 2022 09:05:02 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: vlan: allow vlan device MTU change follow real
+ device from smaller to bigger
+Message-ID: <20220223090502.29e5f87a@hermes.local>
+In-Reply-To: <20220223080342.5cdd597c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220221124644.1146105-1-william.xuanziyang@huawei.com>
+        <CANn89iKyWWCbAdv8W26HwGpM9q5+6rrk9E-Lbd2aujFkD3GMaQ@mail.gmail.com>
+        <YhQ1KrtpEr3TgCwA@gondor.apana.org.au>
+        <8248d662-8ea5-7937-6e34-5f1f8e19190f@huawei.com>
+        <CANn89iLf2ira4XponYV91cbvcdK76ekU7fDW93fmuJ3iytFHcw@mail.gmail.com>
+        <20220222103733.GA3203@debian.home>
+        <20220222152815.1056ca24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220223112618.GA19531@debian.home>
+        <20220223080342.5cdd597c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 7GjEqBC8iEN-xACjWX1NgiL5exLKGVfp
-X-Proofpoint-GUID: phrRRm-ldqaBJQBzSZpKnWQVULfAUjcv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 suspectscore=0 adultscore=0 clxscore=1015 mlxscore=0
- malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 11:37 -0500, Stefan Berger wrote:
-> On 2/23/22 10:38, Mimi Zohar wrote:
-> > On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
-> >> Limit the number of policy rules one can set in non-init_ima_ns to a
-> >> hardcoded 1024 rules. If the user attempts to exceed this limit by
-> >> setting too many additional rules, emit an audit message with the cause
-> >> 'too-many-rules' and simply ignore the newly added rules.
-> > This paragraph describes 'what' you're doing, not 'why'.  Please prefix
-> > this paragraph with a short, probably one sentence, reason for the
-> > change.
-> >> Switch the accounting for the memory allocated for IMA policy rules to
-> >> GFP_KERNEL_ACCOUNT so that cgroups kernel memory accounting takes effect.
-> > Does this change affect the existing IMA policy rules for init_ima_ns?
+On Wed, 23 Feb 2022 08:03:42 -0800
+Jakub Kicinski <kuba@kernel.org> wrote:
+
+> On Wed, 23 Feb 2022 12:26:18 +0100 Guillaume Nault wrote:
+> > Do you mean something like:
+> > 
+> >   ip link set dev eth0 vlan-mtu-policy <policy-name>
+> > 
+> > that'd affect all existing (and future) vlans of eth0?  
 > 
-> There's typically no cgroup for the int_ima_ns, so not effect on 
-> init_ima_ns.
+> I meant
 > 
-> Here's the updated text:
+>   ip link set dev vlan0 mtu-policy blah
 > 
-> Limit the number of policy rules one can set in non-init_ima_ns to a
-> hardcoded 1024 rules to restrict the amount of memory used for IMA's
-> policy.
-
-The question is "why" there should be a difference between the
-init_ima_ns and non-init_ima_ns cases.  Perhaps something like, "Only
-host root with CAP_SYS_ADMIN may write init_ima_ns policy rules, but in
-the non-init_ima_ns case root in the namespace with CAP_MAC_ADMIN
-privileges may write IMA policy rules.  Limit the total number of IMA
-policy rules per namespace."
-
->  Ignore the added rules if the user attempts to exceed this
-> limit by setting too many additional rules.
+> but also
 > 
-> Switch the accounting for the memory allocated for IMA policy rules to
-> GFP_KERNEL_ACCOUNT so that cgroups kernel memory accounting takes effect.
-> This switch has no effect on the init_ima_ns.
+>   ip link set dev bond0 mtu-policy blah
+> 
+> and
+> 
+>   ip link set dev macsec0 mtu-policy blah2
+>   ip link set dev vxlan0 mtu-policy blah2
 
-thanks,
-
-Mimi
-
+Sorry, putting this in ip link is not the right place.
+It belongs in sysctl (if at all); not convinced this is worth doing.
