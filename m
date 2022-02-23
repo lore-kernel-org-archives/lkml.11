@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E23C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiBWCax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:30:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
+        id S236894AbiBWCa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237033AbiBWCaT (ORCPT
+        with ESMTP id S236930AbiBWCaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:30:19 -0500
+        Tue, 22 Feb 2022 21:30:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E834D5715B;
-        Tue, 22 Feb 2022 18:29:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B3255499;
+        Tue, 22 Feb 2022 18:29:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 958E6B81CA7;
-        Wed, 23 Feb 2022 02:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF1AC340E8;
-        Wed, 23 Feb 2022 02:29:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 660A6B81E1D;
+        Wed, 23 Feb 2022 02:29:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902A8C340E8;
+        Wed, 23 Feb 2022 02:29:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583367;
-        bh=zu9GGypCn49npQPsC4pSb6zw7vWim0NA15BG2j6ZpXw=;
+        s=k20201202; t=1645583347;
+        bh=SY22ClUZLoWf0GwF+Z7U7j93X1mpL7+EqeXRk9EJzlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1bA36ISymCTiPGgOM+ZIWoEHxMvbW0eEM+Mb7LWgflXu/KuxtXfmF2wZNcq+IX/G
-         xKQRw2PKPpbAYZuo57q0dzA8WFKEB13CF3jOPRXJvY6CZLUSHeKXw004cg4yWGKI9j
-         h1D9O8Lyg37qUfaD6eAEsinxdATQqLFk3StbwuVCIQZga68JnhS9mW5bQRPfBOsEmp
-         LuRl8EDZp/NDSKgOEpFJTS6vIQI0005KWQqPIYB/o7PwEsogQ3l0dwkxxlLQskSsJZ
-         jiMhIuj+Xh0lwyrzhs+FDCqrPorLAC6PLRTeEZu/nHUDO4INVQga3ydNmO3W2O58iw
-         P4q7qd/ObpKMw==
+        b=Hq1igHlVC2oufeKXLK0UV+DCucWIh8BXxtYVUQbKJ4o4sLsJoq3DDqgetpCzHLC7/
+         VzMAvkhIkvVTwoZ4vrU/q16P+7yKnIyzXZcdR/hUdj5LREPUizpOLxALWteY/lMqIo
+         /MSXdyzDxc8kbwLLaJlc2Oj2DR3LlxLMVU9jPTIQbtLFtUW8Cv8gtR9po15zp3pOeq
+         Rx25asHRxPNK0t4MO6N6eDrNXBubrQSZ+dmbBL3EJkBApg9T5gZyVsUpNLufcQhLtW
+         qPGLxAf5qH4Z8qJjWgq4pt7NPMU6x/yPQmnJrdioS+0gAOGpJUIi0yUYwgZWswev+o
+         TW/l1qTUnMLNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
-        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 29/30] net: usb: cdc_mbim: avoid altsetting toggling for Telit FN990
-Date:   Tue, 22 Feb 2022 21:28:18 -0500
-Message-Id: <20220223022820.240649-29-sashal@kernel.org>
+Cc:     Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, luben.tuikov@amd.com, kenneth.feng@amd.com,
+        andrey.grodzovsky@amd.com, darren.powell@amd.com, Jack.Gui@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 22/30] drm/amd/pm: correct UMD pstate clocks for Dimgrey Cavefish and Beige Goby
+Date:   Tue, 22 Feb 2022 21:28:11 -0500
+Message-Id: <20220223022820.240649-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223022820.240649-1-sashal@kernel.org>
 References: <20220223022820.240649-1-sashal@kernel.org>
@@ -52,36 +55,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 21e8a96377e6b6debae42164605bf9dcbe5720c5 ]
+[ Upstream commit 0136f5844b006e2286f873457c3fcba8c45a3735 ]
 
-Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FN990
-0x1071 composition in order to avoid bind error.
+Correct the UMD pstate profiling clocks for Dimgrey Cavefish and Beige
+Goby.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cdc_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.c   | 26 +++++++++++++++----
+ .../amd/pm/swsmu/smu11/sienna_cichlid_ppt.h   |  8 ++++++
+ 2 files changed, 29 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index 82bb5ed94c485..c0b8b4aa78f37 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -659,6 +659,11 @@ static const struct usb_device_id mbim_devs[] = {
- 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
- 	},
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+index 446d37320b948..cd75a65982cf7 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+@@ -1231,21 +1231,37 @@ static int sienna_cichlid_populate_umd_state_clk(struct smu_context *smu)
+ 				&dpm_context->dpm_tables.soc_table;
+ 	struct smu_umd_pstate_table *pstate_table =
+ 				&smu->pstate_table;
++	struct amdgpu_device *adev = smu->adev;
  
-+	/* Telit FN990 */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1071, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
-+	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
-+	},
+ 	pstate_table->gfxclk_pstate.min = gfx_table->min;
+ 	pstate_table->gfxclk_pstate.peak = gfx_table->max;
+-	if (gfx_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK)
+-		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
+ 
+ 	pstate_table->uclk_pstate.min = mem_table->min;
+ 	pstate_table->uclk_pstate.peak = mem_table->max;
+-	if (mem_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK)
+-		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
+ 
+ 	pstate_table->socclk_pstate.min = soc_table->min;
+ 	pstate_table->socclk_pstate.peak = soc_table->max;
+-	if (soc_table->max >= SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK)
 +
- 	/* default entry */
- 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
- 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
++	switch (adev->asic_type) {
++	case CHIP_SIENNA_CICHLID:
++	case CHIP_NAVY_FLOUNDER:
++		pstate_table->gfxclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK;
+ 		pstate_table->socclk_pstate.standard = SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	case CHIP_DIMGREY_CAVEFISH:
++		pstate_table->gfxclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK;
++		pstate_table->socclk_pstate.standard = DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	case CHIP_BEIGE_GOBY:
++		pstate_table->gfxclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK;
++		pstate_table->uclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK;
++		pstate_table->socclk_pstate.standard = BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK;
++		break;
++	default:
++		break;
++	}
+ 
+ 	return 0;
+ }
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
+index 38cd0ece24f6b..42f705c7a36f8 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h
+@@ -33,6 +33,14 @@ typedef enum {
+ #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK    960
+ #define SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK    1000
+ 
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK 1950
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK 960
++#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK 676
++
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK 2200
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK 960
++#define BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK 1000
++
+ extern void sienna_cichlid_set_ppt_funcs(struct smu_context *smu);
+ 
+ #endif
 -- 
 2.34.1
 
