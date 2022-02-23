@@ -2,113 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3471BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238611AbiBWHNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:13:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S238581AbiBWHRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:17:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237755AbiBWHNk (ORCPT
+        with ESMTP id S235535AbiBWHRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:13:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AB259A43
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:13:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 422A8B81E7E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:13:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67540C340E7;
-        Wed, 23 Feb 2022 07:13:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645600390;
-        bh=+DGzvPHAQ6IbmlzSXeG2hbFfqt/5MKzb+1UR8+c8x2M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vVRpKs37RLe7EKJJcUhi6ISAKPOxEM8zefmXwVShM7O73mfcBh9LQqz6pArS3RpDS
-         os5uNQroDZSb899RphtEMb/lex5UYTuHcWUHeXr/yUWGxDCA+qjE7AqAliHh1tqh5F
-         4sphX46ismj2+0I02g4s7iDedivUz/hOx5e6hXzs=
-Date:   Wed, 23 Feb 2022 08:13:08 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     syzbot <syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "balbi@kernel.org" <balbi@kernel.org>
-Subject: Re: [syzbot] KASAN: use-after-free Read in dev_uevent
-Message-ID: <YhXehCLx9LVwCIO6@kroah.com>
-References: <0000000000005a991a05a86970bb@google.com>
- <00000000000033314805d8765175@google.com>
- <PH0PR11MB5880C431590170767B4BACFEDA3C9@PH0PR11MB5880.namprd11.prod.outlook.com>
+        Wed, 23 Feb 2022 02:17:12 -0500
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D1C46B37
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:16:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=icH7A7Mcs++qD6v5oQ8tnDH0OAovFNxVtZ/iN3vwo5A=;
+        b=RyYb6zh4/8jx3DHYHETaBRijqqqVcjILRnS4ag9VD+wVMIvz+CTOz4NdD/Njos+fPsJ8hq3EzxqNs
+         crwrKNV12uxtbDVyxO+WocVy9pBuAfOs8H0BwSfIw4Y46VbqLGxDAFMENpe9/BIY5di/KeFg1L5BQr
+         HOXheRaxpdsTmXY0gWWOk+Ncxq4zFpWwTBKtSPKnHlX7Xgk5u5LuCLAbNUlf1+4g3Zcbfd/1nwUAoO
+         0IJl5tBsDp6XLTh8qDQmjEiFY/20eZeMRyn4GmcoHCtJSXID2HCOf2t7oEz/dRIltfSXOAEwf5WBNn
+         D9osPXpy/mC7LHXDhsQrPaTsLduwCTw==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.005258)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.065102), Hit: No, Details: v2.25.0; Id: 15.52kbl7.1fsin0mpv.nh05; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.66.234])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Wed, 23 Feb 2022 10:16:33 +0300
+Date:   Wed, 23 Feb 2022 09:58:15 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        jiabing.wan@qq.com
+Subject: Re: [PATCH] bus: imx-weim: fix NULL but dereferenced coccicheck error
+Message-ID: <20220223065815.i7qbyz2gtkgjzcwv@x260>
+References: <20220223035146.412499-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR11MB5880C431590170767B4BACFEDA3C9@PH0PR11MB5880.namprd11.prod.outlook.com>
+In-Reply-To: <20220223035146.412499-1-wanjiabing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 06:51:10AM +0000, Zhang, Qiang1 wrote:
+On Wed, Feb 23, 2022 at 11:51:45AM +0800, Wan Jiabing wrote:
+> Fix following coccicheck warning:
+> ./drivers/bus/imx-weim.c:355:18-21: ERROR: pdev is NULL but dereferenced.
 > 
-> HEAD commit:    4f12b742eb2b Merge tag 'nfs-for-5.17-3' of git://git.linux..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=110a6df2700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f6a069ed94a1ed1d
-> dashboard link: https://syzkaller.appspot.com/bug?extid=348b571beb5eeb70a582
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12377296700000
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  drivers/bus/imx-weim.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+348b571beb5eeb70a582@syzkaller.appspotmail.com
+> diff --git a/drivers/bus/imx-weim.c b/drivers/bus/imx-weim.c
+> index 60fbd42041dd..2ea0a51f79f6 100644
+> --- a/drivers/bus/imx-weim.c
+> +++ b/drivers/bus/imx-weim.c
+> @@ -352,8 +352,7 @@ static int of_weim_notify(struct notifier_block *nb, unsigned long action,
+>  
+>  		pdev = of_find_device_by_node(rd->dn);
+>  		if (!pdev) {
+> -			dev_err(&pdev->dev,
+> -				"Could not find platform device for '%pOF'\n",
+> +			pr_err("Could not find platform device for '%pOF'\n",
+>  				rd->dn);
+>  
+>  			ret = notifier_from_errno(-EINVAL);
+> -- 
+> 2.35.1
 > 
-> ==================================================================
-> BUG: KASAN: use-after-free in dev_uevent+0x712/0x780 drivers/base/core.c:2320 Read of size 8 at addr ffff88802b934098 by task udevd/3689
-> 
-> CPU: 2 PID: 3689 Comm: udevd Not tainted 5.17.0-rc4-syzkaller-00229-g4f12b742eb2b #0 Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014 Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255  __kasan_report mm/kasan/report.c:442 [inline]  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->  dev_uevent+0x712/0x780 drivers/base/core.c:2320
->  uevent_show+0x1b8/0x380 drivers/base/core.c:2391
->  dev_attr_show+0x4b/0x90 drivers/base/core.c:2094
->  sysfs_kf_seq_show+0x219/0x3d0 fs/sysfs/file.c:59
->  seq_read_iter+0x4f5/0x1280 fs/seq_file.c:230
->  kernfs_fop_read_iter+0x514/0x6f0 fs/kernfs/file.c:241  call_read_iter include/linux/fs.h:2068 [inline]
->  new_sync_read+0x429/0x6e0 fs/read_write.c:400
->  vfs_read+0x35c/0x600 fs/read_write.c:481
->  ksys_read+0x12d/0x250 fs/read_write.c:619
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f964cc558fe
-> Code: c0 e9 e6 fe ff ff 50 48 8d 3d 0e c7 09 00 e8 c9 cf 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
-> RSP: 002b:00007ffc0133d258 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> RAX: ffffffffffffffda RBX: 000056497b21a140 RCX: 00007f964cc558fe
-> RDX: 0000000000001000 RSI: 000056497b218650 RDI: 0000000000000008
-> RBP: 00007f964cd22380 R08: 0000000000000008 R09: 00007f964cd25a60
-> R10: 0000000000000008 R11: 0000000000000246 R12: 000056497b21a140
-> R13: 0000000000000d68 R14: 00007f964cd21780 R15: 0000000000000d68  </TASK>
-> 
-> 
-> Hi All 
-> 
-> This should be because when the raw_dev is released, the 'driver' address has expired,
-> although the usb_gadget_remove_driver() empty 'dev.driver ' NULL, but UAF cannot be avoided.
-> 
-> static int dev_uevent(struct kobject *kobj, struct kobj_uevent_env *env) {
-> .....
->          if (dev->driver)
-> 2320                 add_uevent_var(env, "DRIVER=%s", dev->driver->name);
-> .....
-> }
-> 
-> Whether protection can be added when operating 'dev->driver'?
 
-When the driver structure is unbound, this should be set to NULL.  Why
-isn't that happening?
+Acked-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
 
-thanks,
-
-greg k-h
