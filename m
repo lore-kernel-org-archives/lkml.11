@@ -2,103 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C117C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243444AbiBWRou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
+        id S243456AbiBWRpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:45:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243436AbiBWRos (ORCPT
+        with ESMTP id S243436AbiBWRpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:44:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C369741331;
-        Wed, 23 Feb 2022 09:44:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 608D6612B5;
-        Wed, 23 Feb 2022 17:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B843C340EF;
-        Wed, 23 Feb 2022 17:44:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645638258;
-        bh=ieSfUD0+w+fPqm2Dn3xrJaap6YZ7Coy/YY/N9ES6v70=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JAQR+4JUavxhFq+hS9+sZQ+fTnx8cWxy+hJe3MeOmKcAh1s0T0hBHHTxloDSCvmL8
-         MaegYED3lXb+3C0pzTUwT4XHQOrbqWAZCGXxf1kipuxtGej65WVPC3LQpMmH3tE2Db
-         m2VDBXTn6Z1ATw5C0zDk5YPyPYNT5rPxre2wC/4g=
-Date:   Wed, 23 Feb 2022 18:44:16 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     stable@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kirill.shutemov@linux.intel.com,
-        Song Liu <songliubraving@fb.com>, Adam Majer <amajer@suse.com>,
-        Dirk Mueller <dmueller@suse.com>, Takashi Iwai <tiwai@suse.de>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH] mm/filemap: Fix handling of THPs in
- generic_file_buffered_read()
-Message-ID: <YhZycDfxDo2K9Db+@kroah.com>
-References: <20220223155918.927140-1-willy@infradead.org>
+        Wed, 23 Feb 2022 12:45:05 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DA241334;
+        Wed, 23 Feb 2022 09:44:37 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id r13so30979629ejd.5;
+        Wed, 23 Feb 2022 09:44:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zltyPlxW3uDjVlzYzIgB3L+AcBjct0C7Tq5+1WnfdfA=;
+        b=MtL9zxsAt5x8IvEGyjWYZzL7bO2nEo7tbm4EPwvey0Od7Qeyny+KlyEtLYAYnCFAOo
+         IwsMc0QKTjRIdxwVUClWJT4KmDm3p44THHMXBcIuRX4btcVlNgyeeEP5BcFisGQ5kEz3
+         /Ij3ZlCgTAHJSyWo96klCsI9AfWVhyTzFBIPApiGy7BiErsisOuO3E42zPBoIW2aQORv
+         +PSThX5C2dl9Cr2rVVG/nUKjccqI6BcNeWP2MlCFGUp3v4VtR/FJBx4YFQe5Ef6CPdAH
+         jA29k3g695S5sUSgsIUXRxEQsDpLYoCUSQ07z+1Z5xVWcdPHaBza3luRLdSklXNr+ea7
+         XxBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zltyPlxW3uDjVlzYzIgB3L+AcBjct0C7Tq5+1WnfdfA=;
+        b=0phdmWKBAzoq1j7629JEEXx6LbBtAeFjJ6YYSYycTLZBHb2cc1qyTPN3uMOd/6OqVT
+         ao5nVRgbGX7kwp7F6BJreL3cghjUNwh+G86iMb9V551mKDtZyjMIDnPyyXpqA3Bv7T5X
+         7cqVPe/r0VLvZpy3f2SyGTxWPUvP4IFzY8kKGf2kN7XZTO+yJMH8M99lxKWdj75DSW3q
+         jNWXDG3LnNYuAcyxUJFQLgcE6h5Lf8BSDwBbV8KxPQNkVhjZX5aVkmJjr6aKcSAqVA/W
+         Sd6r/PZLaMmTFRaxfE6uyABHL40T9h7Mix2daITvrrs/oe7mP6R8Y0/7chi9mF9Nf8fp
+         yL/Q==
+X-Gm-Message-State: AOAM530cyo0Q/NVPMLfDVlLTw86q5m9qu6mQm1q7TYY8tJrvw9XRG/9d
+        DEDb1r71IQTI2lbH/of62cI=
+X-Google-Smtp-Source: ABdhPJwLpI4uj3x+MhFJtBONe9+bf12BVfOHGoZcMd1saToiRSokzyqCBoS52vq5G3Bkf53sbIrJug==
+X-Received: by 2002:a17:906:4313:b0:6b8:b3e5:a46 with SMTP id j19-20020a170906431300b006b8b3e50a46mr618427ejm.417.1645638275698;
+        Wed, 23 Feb 2022 09:44:35 -0800 (PST)
+Received: from krava (ip-89-102-25-98.net.upcbroadband.cz. [89.102.25.98])
+        by smtp.gmail.com with ESMTPSA id m18sm130578eje.145.2022.02.23.09.44.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 09:44:35 -0800 (PST)
+Date:   Wed, 23 Feb 2022 18:44:33 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
+Message-ID: <YhZygR9AMtJmo1mJ@krava>
+References: <20220222170600.611515-1-jolsa@kernel.org>
+ <20220222170600.611515-3-jolsa@kernel.org>
+ <20220223145840.64f708ed2357c89039f55f07@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223155918.927140-1-willy@infradead.org>
+In-Reply-To: <20220223145840.64f708ed2357c89039f55f07@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 03:59:18PM +0000, Matthew Wilcox (Oracle) wrote:
-> When a THP is present in the page cache, we can return it several times,
-> leading to userspace seeing the same data repeatedly if doing a read()
-> that crosses a 64-page boundary.  This is probably not a security issue
-> (since the data all comes from the same file), but it can be interpreted
-> as a transient data corruption issue.  Fortunately, it is very rare as
-> it can only occur when CONFIG_READ_ONLY_THP_FOR_FS is enabled, and it can
-> only happen to executables.  We don't often call read() on executables.
+On Wed, Feb 23, 2022 at 02:58:40PM +0900, Masami Hiramatsu wrote:
+> Hi Jiri,
 > 
-> This bug is fixed differently in v5.17 by commit 6b24ca4a1a8d
-> ("mm: Use multi-index entries in the page cache").  That commit is
-> unsuitable for backporting, so fix this in the clearest way.  It
-> sacrifices a little performance for clarity, but this should never
-> be a performance path in these kernel versions.
+> On Tue, 22 Feb 2022 18:05:52 +0100
+> Jiri Olsa <jolsa@kernel.org> wrote:
 > 
-> Fixes: cbd59c48ae2b ("mm/filemap: use head pages in generic_file_buffered_read")
-> Cc: stable@vger.kernel.org # v5.15, v5.16
-> Link: https://lore.kernel.org/r/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
-> Analyzed-by: Adam Majer <amajer@suse.com>
-> Analyzed-by: Dirk Mueller <dmueller@suse.com>
-> Bisected-by: Takashi Iwai <tiwai@suse.de>
-> Reported-by: Vlastimil Babka <vbabka@suse.cz>
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  mm/filemap.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+> [snip]
+> > +
+> > +static void
+> > +kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+> > +			  struct pt_regs *regs)
+> > +{
+> > +	unsigned long saved_ip = instruction_pointer(regs);
+> > +	struct bpf_kprobe_multi_link *link;
+> > +
+> > +	/*
+> > +	 * Because fprobe's regs->ip is set to the next instruction of
+> > +	 * dynamic-ftrace instruction, correct entry ip must be set, so
+> > +	 * that the bpf program can access entry address via regs as same
+> > +	 * as kprobes.
+> > +	 */
+> > +	instruction_pointer_set(regs, entry_ip);
 > 
-> diff --git a/mm/filemap.c b/mm/filemap.c
-> index 82a17c35eb96..1293c3409e42 100644
-> --- a/mm/filemap.c
-> +++ b/mm/filemap.c
-> @@ -2354,8 +2354,12 @@ static void filemap_get_read_batch(struct address_space *mapping,
->  			break;
->  		if (PageReadahead(head))
->  			break;
-> -		xas.xa_index = head->index + thp_nr_pages(head) - 1;
-> -		xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
-> +		if (PageHead(head)) {
-> +			xas_set(&xas, head->index + thp_nr_pages(head));
-> +			/* Handle wrap correctly */
-> +			if (xas.xa_index - 1 >= max)
-> +				break;
-> +		}
->  		continue;
->  put_page:
->  		put_page(head);
-> -- 
-> 2.34.1
+> This is true for the entry_handler, but false for the exit_handler,
+> because entry_ip points the probed function address, not the
+> return address. Thus, when this is done in the exit_handler,
+> the bpf prog seems to be called from the entry of the function,
+> not return.
 > 
+> If it is what you expected, please explictly comment it to
+> avoid confusion. Or, make another handler function for exit
+> probing.
 
-Now queued up, thanks!
+yes we want the ip of the function we are tracing, so it's correct,
+I'll adjust the comment
 
-greg k-h
+> 
+> > +
+> > +	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
+> > +	kprobe_multi_link_prog_run(link, regs);
+> > +
+> > +	instruction_pointer_set(regs, saved_ip);
+> > +}
+> > +
+> > +static int
+> > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+> > +			  unsigned long *addrs)
+> > +{
+> > +	unsigned long addr, size;
+> > +	const char **syms;
+> > +	int err = -ENOMEM;
+> > +	unsigned int i;
+> > +	char *func;
+> > +
+> > +	size = cnt * sizeof(*syms);
+> > +	syms = kvzalloc(size, GFP_KERNEL);
+> > +	if (!syms)
+> > +		return -ENOMEM;
+> > +
+> > +	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> > +	if (!func)
+> > +		goto error;
+> > +
+> > +	if (copy_from_user(syms, usyms, size)) {
+> > +		err = -EFAULT;
+> > +		goto error;
+> > +	}
+> > +
+> > +	for (i = 0; i < cnt; i++) {
+> > +		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> > +		if (err == KSYM_NAME_LEN)
+> > +			err = -E2BIG;
+> > +		if (err < 0)
+> > +			goto error;
+> > +
+> > +		err = -EINVAL;
+> > +		if (func[0] == '\0')
+> > +			goto error;
+> > +		addr = kallsyms_lookup_name(func);
+> > +		if (!addr)
+> > +			goto error;
+> > +		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> > +			size = MCOUNT_INSN_SIZE;
+> 
+> Note that this is good for x86, but may not be good for other arch
+> which use some preparation instructions before mcount call.  Maybe you
+> can just reject it if kallsyms_lookup_size_offset() fails.
+
+I 'borrowed' this from fprobe's get_ftrace_locations function,
+and it still seems to match.. do you plan to change that?
+
+thanks,
+jirka
