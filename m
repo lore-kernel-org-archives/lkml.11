@@ -2,140 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDB4C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A564C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244454AbiBWTbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:31:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        id S243251AbiBWTcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:32:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244411AbiBWTbG (ORCPT
+        with ESMTP id S236818AbiBWTb7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:31:06 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A996F47AF2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:30:38 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id u16so16314616pfg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:30:38 -0800 (PST)
+        Wed, 23 Feb 2022 14:31:59 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8194833C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:31:30 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id r20so26221477ljj.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:31:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Zqsit+rOnmNUmUZtDFG33t7bXRXpX6/2jlTb49W6F6M=;
-        b=f7ydfWcBpxG5L6A2J381iH4HWO+Fp0BYmpu1BDed5ABZxf3XF6oP22Y2AHf1sQ84NC
-         fCHfEbUqyV0eKToUFSRE87ycmYTQ+r2inuCnGkuzGDsyADlZcAYUDOohGDDxfUP+D0FZ
-         lZ3E9/ZVEoeHtClSloT/tJEOgS4Xk3G13zV6+5JML2acxJFI0ijqb1tivgKRgWJ5EGtd
-         KoNUtrClFYCh3XaHnHiua5O+P3lP+t9GOdrrO6b3pG/KuuPyo/Ju7SkVGfi7YlmTEddu
-         /PLB44NIT8UAT1W4be7+Yjr8m2Q/A+UYi74HuvGrttYLUemQbZDa/mhrYM43pqIFaMk2
-         PNTw==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sEyhUpG5h+UzsnkwaWDI2eM3wTHuE75grcoHH/zJYag=;
+        b=P06RhFQPqHMaTnXXTqQiWy7i3ZvuvEnaxcFwUNwLKfDh834mazjKFAOBMkuBI31nYY
+         LkL6nIoyNjJTId+oTv5veateVEDhsfGxHdM9k4hMUFpmTxShWxiuxBPNZCrZqiQZADzX
+         oTmBvX8/Yd2JbxYqu3ZOPPHBH72oYvgZQX2s8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zqsit+rOnmNUmUZtDFG33t7bXRXpX6/2jlTb49W6F6M=;
-        b=qpXJDIqIQUYweYBkAYd+DNVUwSENWSWieH3Q/VoWckYojmM4XsF/LdC1iL3QWb9f+G
-         2ohqLe5YE7adpUmkLuxQNf8aszp4tjzQwi66O6iO/CA40f74krN7shg3UIsLkJrxo5Qu
-         BcHYS0VM2PJSwry39y3X/YVwmr0dDkMzj54/+w9NG7IAW49EP/fIr2MhdzJCQKSXWoas
-         Bb7nedoLqLB9PorNOo/OtduciktY8EepAblRVdbGxg1j6qQCL5R86BBXrRWwNyGBC1kA
-         kNrHChpperswEBvOkcLY+73vhAH08VT5QNe0ykJC8AlYw+JMfBTpDQa/WFfqRoS1lliP
-         m4zw==
-X-Gm-Message-State: AOAM531yVlAYYvb2QCguOwf0crPyOa8XtkK2GTwMEseWSwJq3RdKZ8bF
-        82FWh69fVrJzYQtUqOrQu7HrtA==
-X-Google-Smtp-Source: ABdhPJw53BrQr0n38u/wHZsD3cRkteTWrFt8/b5hq6lDWI5EoJ5nulNAJh28GXAqBXqUQxuAiQuCRA==
-X-Received: by 2002:a05:6a00:23d5:b0:4e1:7cfb:7e85 with SMTP id g21-20020a056a0023d500b004e17cfb7e85mr1166724pfc.29.1645644638198;
-        Wed, 23 Feb 2022 11:30:38 -0800 (PST)
-Received: from localhost.localdomain ([2402:3a80:180f:6b3c:fda0:57e9:7d44:2aa7])
-        by smtp.gmail.com with ESMTPSA id z10-20020a17090a8b8a00b001b8d20074c8sm3719917pjn.33.2022.02.23.11.30.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 11:30:37 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        lorenzo.pieralisi@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
-        bhelgaas@google.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 6/6] arm64: dts: qcom: sa8155: Enable pcie nodes
-Date:   Thu, 24 Feb 2022 00:59:46 +0530
-Message-Id: <20220223192946.473172-7-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220223192946.473172-1-bhupesh.sharma@linaro.org>
-References: <20220223192946.473172-1-bhupesh.sharma@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sEyhUpG5h+UzsnkwaWDI2eM3wTHuE75grcoHH/zJYag=;
+        b=UA4udenLnFvOlDAj/VQeN8K+gI8mtSC+mUnh17bmKsB5ECp2u/V0uUqRN4jLZoRwbd
+         W4owNOaB+h+pMXMP8Q+nV18hkVzpPBYv9XbN4l6LQFDFs0ACt0vsX70gqko4gKs2mpH5
+         KwUZsAWACy/6BpkjTqBuoTwuk+k7dL9loZeg5iYMmPi32vwzCcdc1gvoFdFosQZqY/mB
+         NLTdIHdWC+xQjkcQTIWtSOwAx5cCiEGYYEo/nI1ylsT3sbkz5VeVgmYrETwezCTpMfP8
+         PcaIvEDVbtFybOpogBF4Blvwv8vs2LSu1i7Jj2obMltlLKmZ6M3aMbMnGWbdR42yJsV5
+         wD1w==
+X-Gm-Message-State: AOAM533vYmt0SOW2VD1C0BnQJ4Q2OdP0B1krsD8MQhn+qV5uswJnt8NH
+        3g4x4BmoxYTElIpp7gHqxYc2YoEZ704gLIsE8BQ=
+X-Google-Smtp-Source: ABdhPJxHDlo+gYx0KHFw2JpDM3MNdPVTDXyDt1F+KURrB9p/upjwLiig0FmaZOPDqRT+KDNbIgRfaA==
+X-Received: by 2002:a2e:7a1a:0:b0:246:210:65cd with SMTP id v26-20020a2e7a1a000000b00246021065cdmr584115ljc.99.1645644688476;
+        Wed, 23 Feb 2022 11:31:28 -0800 (PST)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id r2sm35646lfm.19.2022.02.23.11.31.26
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 11:31:27 -0800 (PST)
+Received: by mail-lf1-f54.google.com with SMTP id f37so31257lfv.8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:31:26 -0800 (PST)
+X-Received: by 2002:a05:6512:130b:b0:443:c2eb:399d with SMTP id
+ x11-20020a056512130b00b00443c2eb399dmr745790lfu.27.1645644686317; Wed, 23 Feb
+ 2022 11:31:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+ <20220217184829.1991035-5-jakobkoschel@gmail.com> <20220218151216.GE1037534@ziepe.ca>
+ <6BA40980-554F-45E2-914D-5E4CD02FF21C@gmail.com> <CAHk-=wir=xabJ73Upk1dsuoMKWTTjTfeLFJ=p2S0yRYYaxW4fA@mail.gmail.com>
+ <20220223191222.GC10361@ziepe.ca>
+In-Reply-To: <20220223191222.GC10361@ziepe.ca>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 23 Feb 2022 11:31:10 -0800
+X-Gmail-Original-Message-ID: <CAHk-=widDQUjQS2tpaw3j_+Yz8rAY3P0qdqpz+nTNu4-3LaU3w@mail.gmail.com>
+Message-ID: <CAHk-=widDQUjQS2tpaw3j_+Yz8rAY3P0qdqpz+nTNu4-3LaU3w@mail.gmail.com>
+Subject: Re: [RFC PATCH 04/13] vfio/mdev: remove the usage of the list
+ iterator after the loop
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergman <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SA8155p ADP board supports the PCIe0 controller
-in the RC mode (only). So add the support for
-the same.
+On Wed, Feb 23, 2022 at 11:12 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>
+> Yes, this is what I had put together as well about this patch, and I
+> think it is OK as-is. In this case the list head is in the .bss of a
+> module so I don't think it is very likely that the type confused
+> container_of() will alias a kalloc result, but it is certainly
+> technically wrong as-is.
 
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
----
- arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 42 ++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+I think that the pattern we should strive to use is not top use a
+'bool' with the
 
-diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-index 8756c2b25c7e..3f6b3ee404f5 100644
---- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-+++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-@@ -387,9 +387,51 @@ &usb_2_qmpphy {
- 	vdda-pll-supply = <&vdda_usb_ss_dp_core_1>;
- };
- 
-+&pcie0 {
-+	status = "okay";
-+};
-+
-+&pcie0_phy {
-+	status = "okay";
-+	vdda-phy-supply = <&vreg_l18c_0p88>;
-+	vdda-pll-supply = <&vreg_l8c_1p2>;
-+};
-+
-+&pcie1_phy {
-+	vdda-phy-supply = <&vreg_l18c_0p88>;
-+	vdda-pll-supply = <&vreg_l8c_1p2>;
-+};
-+
- &tlmm {
- 	gpio-reserved-ranges = <0 4>;
- 
-+	bt_en_default: bt_en_default {
-+		mux {
-+			pins = "gpio172";
-+			function = "gpio";
-+		};
-+
-+		config {
-+			pins = "gpio172";
-+			drive-strength = <2>;
-+			bias-pull-down;
-+		};
-+	};
-+
-+	wlan_en_default: wlan_en_default {
-+		mux {
-+			pins = "gpio169";
-+			function = "gpio";
-+		};
-+
-+		config {
-+			pins = "gpio169";
-+			drive-strength = <16>;
-+			output-high;
-+			bias-pull-up;
-+		};
-+	};
-+
- 	usb2phy_ac_en1_default: usb2phy_ac_en1_default {
- 		mux {
- 			pins = "gpio113";
--- 
-2.35.1
+ - initialize to false, and then in loop: do 'found = true;' if found
 
+ - use the iterator variable if 'found'.
+
+but instead strive to
+
+ - either only use the iterator variable inside the loop
+
+ - if you want to use it after the loop, have a externally visible
+separate pointer initialized to NULL, and set it to the iterator
+variable inside the loop
+
+IOW, instead of having a variable that is a 'bool', just make that
+variable _be_ the pointer you want. It's clearer, and it avoids using
+the iterator variable outside the loop.
+
+It also is likely to generate better code, because there are fewer
+live variables - outside the loop now only uses that one variable,
+rather than using the 'bool' variable _and_ the iterator variable.
+
+               Linus
