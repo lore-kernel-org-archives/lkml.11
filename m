@@ -2,106 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0557BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 261DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243645AbiBWR7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:59:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
+        id S243656AbiBWR7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:59:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243642AbiBWR7i (ORCPT
+        with ESMTP id S243654AbiBWR7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:59:38 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079B33DA7A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:11 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id z4so20792905pgh.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:59:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i9ZmGUIwkyC7vjnII3cOeTZiB9a3MACRa2J9UXGI/ow=;
-        b=XJHhTu/IhJCZ37/XrmsRBgCMoxE7LQi7Lo2Wi2s9PrXp0NKXlVd6zNTxZYdlTEDAqx
-         L/j6e0Yamrbm7MLR3xgUc3Lw2+IT950x0WmnqU5OXUM//6aHcMBdwkA7rIK6YFT0JUhc
-         sZvfycmuBlW+7vxVI4IDjx+/5a+Tmn8tspepbIAylqOg5aUfL+ulyJwBswjF0ItOtVKO
-         97WUPmaUab1x3mwDYSGjTBxch3l8b3hxugErDO2pW1LUwJTeMVzMA6djZdYgR5ys3I6O
-         QnwB+tBGJWUDAijMLK5HnyZoR8nHcsOuSTEBguK42TJ00sTtcT0wbBla4qArjLsIo/nN
-         0v+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i9ZmGUIwkyC7vjnII3cOeTZiB9a3MACRa2J9UXGI/ow=;
-        b=C2pHRGStfA+DuC0tA98OR6umSAylNS7Ar1o30f45wAZqsLZhTmvKKt/gJUtsHvFADE
-         RsRNZFm2VN7xIh2wQuCNFvk3tOggJ6t2NQxkiqRfnVbh6RKnA4L5C4VRUIL5kdqoEPvx
-         UHE80QLum3ZxO0UTKOmKL8agaOv5UrtKbjfO950vTw9EP6NboD0n98k+MraFTq+bGU+O
-         W8VKntf0miYNRdN0T1V6NRZnSvX6zFtqIZAO2Hdp7mUjiMde0Yzfaj0fAwoEoNY1Hubl
-         P086KqtMtOsmJYI5cgGaBW0mcasQDvpjSYWN8R0zyYdxU6DF4VVixPZpAEDglcCtEImt
-         aQXw==
-X-Gm-Message-State: AOAM53043wXvWLk8gbOETNA+qKdvqeNqtVUZIqV//AiC9VUNswjz7xmx
-        KRFMPRkDKBzfOFZ1HFTmywue+g==
-X-Google-Smtp-Source: ABdhPJyWY8cS3LAxq9EqCzdtTUyda9OxIuVZO+b/1nALlGyO7RfH+5KzoRu/A7B8I7ghZ74CG6Bi7Q==
-X-Received: by 2002:a05:6a00:174e:b0:4e1:7cfb:7a26 with SMTP id j14-20020a056a00174e00b004e17cfb7a26mr928875pfc.50.1645639150179;
-        Wed, 23 Feb 2022 09:59:10 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h27sm170144pgb.20.2022.02.23.09.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 09:59:09 -0800 (PST)
-Date:   Wed, 23 Feb 2022 17:59:05 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Like Xu <like.xu.linux@gmail.com>
-Subject: Re: [PATCH] KVM: x86: Fix pointer mistmatch warning when patching
- RET0 static calls
-Message-ID: <YhZ16cMMcHQIvS9d@google.com>
-References: <20220223162355.3174907-1-seanjc@google.com>
- <YhZuk8eA6rsDuJkd@dev-arch.archlinux-ax161>
+        Wed, 23 Feb 2022 12:59:50 -0500
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791EF3DDDC;
+        Wed, 23 Feb 2022 09:59:19 -0800 (PST)
+Received: from [77.244.183.192] (port=62116 helo=melee.fritz.box)
+        by hostingweb31.netsons.net with esmtpa (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nMvv3-00039p-3o; Wed, 23 Feb 2022 18:59:17 +0100
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Luca Ceresoli <luca@lucaceresoli.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>, devicetree@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v6 0/8] Add MAX77714 PMIC minimal driver (RTC and watchdog only)
+Date:   Wed, 23 Feb 2022 18:59:00 +0100
+Message-Id: <20220223175908.191618-1-luca@lucaceresoli.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhZuk8eA6rsDuJkd@dev-arch.archlinux-ax161>
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca+lucaceresoli.net/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022, Nathan Chancellor wrote:
-> Hi Sean,
-> 
-> On Wed, Feb 23, 2022 at 04:23:55PM +0000, Sean Christopherson wrote:
-> > Cast kvm_x86_ops.func to 'void *' when updating KVM static calls that are
-> > conditionally patched to __static_call_return0().  clang complains about
-> > using mismatching pointers in the ternary operator, which breaks the
-> > build when compiling with CONFIG_KVM_WERROR=y.
-> > 
-> >   >> arch/x86/include/asm/kvm-x86-ops.h:82:1: warning: pointer type mismatch
-> >   ('bool (*)(struct kvm_vcpu *)' and 'void *') [-Wpointer-type-mismatch]
-> > 
-> > Fixes: 5be2226f417d ("KVM: x86: allow defining return-0 static calls")
-> > Reported-by: Like Xu <like.xu.linux@gmail.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> 
-> Thank you for the patch! Is this a bug in clang?
+Hi,
 
-IMO, no.  I think it's completely reasonable for the compiler to complain that KVM
-is generating two different pointer types out of a ternary operator.
+this series adds minimal drivers for the Maxim Semiconductor MAX77714
+(https://www.maximintegrated.com/en/products/power/power-management-ics/MAX77714.html).
+Only RTC and watchdog are implemented by these patches.
 
-clang is somewhat inconsistent, though it may be deliberate.  clang doesn't complain
-about implicitly casting a 'void *' to another data type, e.g. this complies clean,
-where "data" is a 'void *'
+This is almost a bare resend of v5. Changes are minimal, trivial and only
+in comments (see list below).
 
-	struct kvm_vcpu *x = vcpu ? : data;
+All implemented functionality is tested and working: RTC read/write,
+watchdog start/stop/ping/set_timeout.
 
-But changing it to a function on the lhs triggers the warn:
+Patches 1-3 are trivial cleanups to the max77686 drivers.
 
-	typeof(kvm_x86_ops.vcpu_run) x = kvm_x86_ops.vcpu_run ? : data;
+Patches 4-8 add dt bindings, mfd driver, watchdog driver and rtc driver.
 
-Again, complaining in the function pointer case seems reasonable.
+Changes in v6:
+ - patch 6: removed, now in mainline
+ - patch 5: describe as "Core driver", not "MFD driver" in comment
+   (Lee Jones)
+ - update copyright years
+ - add review tags
+
+Changes in v5:
+ - patch 7: fix (and simplify) watchdog_info code
+ - patch 8: remove amibguity in comment
+
+Changes in v4:
+ - do not add a new wdog driver for MAX77714, extend the MAX77620 wdog
+   driver; this means removing v3 patch 7, now replaced by patches 7+8
+ - added review tags
+
+Changes in v3:
+ - fixed all issues reported on v1 patches
+ - removed patch 1 of v2, already applied
+   ("mfd: max77686: Correct tab-based alignment of register addresses")
+
+Changes in v2:
+ - fixed all issues reported on v1 patches
+ - added patch 7 ("watchdog: Kconfig: fix help text indentation")
+ - additional minor improvements
+
+Luca
+
+Luca Ceresoli (8):
+  rtc: max77686: convert comments to kernel-doc format
+  rtc: max77686: rename day-of-month defines
+  rtc: max77686: remove unused code to read in 12-hour mode
+  dt-bindings: mfd: add Maxim MAX77714 PMIC
+  mfd: max77714: Add driver for Maxim MAX77714 PMIC
+  watchdog: max77620: add support for the max77714 variant
+  watchdog: max77620: add comment to clarify set_timeout procedure
+  rtc: max77686: add MAX77714 support
+
+ .../bindings/mfd/maxim,max77714.yaml          |  68 ++++++++
+ MAINTAINERS                                   |   7 +
+ drivers/mfd/Kconfig                           |  14 ++
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/max77686.c                        |   2 +-
+ drivers/mfd/max77714.c                        | 152 ++++++++++++++++++
+ drivers/rtc/Kconfig                           |   2 +-
+ drivers/rtc/rtc-max77686.c                    |  75 +++++----
+ drivers/watchdog/Kconfig                      |   2 +-
+ drivers/watchdog/max77620_wdt.c               |  85 ++++++++--
+ include/linux/mfd/max77686-private.h          |   4 +-
+ include/linux/mfd/max77714.h                  |  60 +++++++
+ 12 files changed, 421 insertions(+), 51 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77714.yaml
+ create mode 100644 drivers/mfd/max77714.c
+ create mode 100644 include/linux/mfd/max77714.h
+
+-- 
+2.25.1
+
