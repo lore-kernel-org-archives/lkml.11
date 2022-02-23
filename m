@@ -2,150 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790F8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243226AbiBWRIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:08:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S243239AbiBWRIP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:08:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243328AbiBWRIH (ORCPT
+        with ESMTP id S243274AbiBWRH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:08:07 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1801E65409
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 09:07:37 -0800 (PST)
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220223170732epoutp04bd5650f57cd0b69807e633fb36fa7bd4~WeUVkHWvS3148231482epoutp04D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:07:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220223170732epoutp04bd5650f57cd0b69807e633fb36fa7bd4~WeUVkHWvS3148231482epoutp04D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1645636052;
-        bh=UL4yhKqRjrF/i/6aY21BYBDYT+6g6lJv1blGzeLha14=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=PrbEmm2Pa70axQTVADf3yZuIWHVXlhcd+TkVepcPwoyQs31trdu4buaPVVfNqssOB
-         CgYy7IGqtMWEjH6iZrJo6jzPkhMG1Y7s673DoYMkqNRG0inn62M4TJPSWpjukVyNkR
-         ptMQz1czxZBakPxm5BNs4rtbKuk+OzuIHoXK2o6o=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220223170731epcas5p23aa2664ea9b6a4782322656b004b8e40~WeUUkjA7F0865808658epcas5p2k;
-        Wed, 23 Feb 2022 17:07:31 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.183]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4K3jC43wbrz4x9Pv; Wed, 23 Feb
-        2022 17:07:28 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E2.AC.05590.0D966126; Thu, 24 Feb 2022 02:07:28 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec~WeUQyf_yy2933129331epcas5p29;
-        Wed, 23 Feb 2022 17:07:27 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220223170727epsmtrp10e82f6823a94ebb3d16642084f81978e~WeUQxwOV32819728197epsmtrp1T;
-        Wed, 23 Feb 2022 17:07:27 +0000 (GMT)
-X-AuditID: b6c32a4b-723ff700000015d6-55-621669d007b9
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        89.E2.29871.FC966126; Thu, 24 Feb 2022 02:07:27 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220223170726epsmtip1457171ab722826f93d0e118b0385d941~WeUPnYIXk1400314003epsmtip17;
-        Wed, 23 Feb 2022 17:07:26 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     krzysztof.kozlowski@canonical.com,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        pankaj.dubey@samsung.com, robh+dt@kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH] arm64: dts: fsd: Add the MCT support
-Date:   Wed, 23 Feb 2022 22:48:58 +0530
-Message-Id: <20220223171858.11384-1-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrFKsWRmVeSWpSXmKPExsWy7bCmuu6FTLEkg1W90hYP5m1js5h/5Byr
-        xca3P5gsNj2+xmpxedccNosZ5/cxWSza+oXdonXvEXYHDo9ZDb1sHptWdbJ5bF5S79G3ZRWj
-        x+dNcgGsUdk2GamJKalFCql5yfkpmXnptkrewfHO8aZmBoa6hpYW5koKeYm5qbZKLj4Bum6Z
-        OUCnKCmUJeaUAoUCEouLlfTtbIryS0tSFTLyi0tslVILUnIKTAr0ihNzi0vz0vXyUkusDA0M
-        jEyBChOyM54+2M1YsIO74v3HN4wNjAs5uxg5OSQETCTObD3H3sXIxSEksJtR4vrFnSwQzidG
-        iSVdU5kgnG+MEv9n/WeEabm37QJU1V5Gif6Fr6CcFiaJub8+gVWxCWhL3J2+hQnEFhFwk7jR
-        2AE2ihmkY3XbJTaQhLCAqcS0GbPAGlgEVCW+nJrDDmLzCthILGraxgaxTl5i9YYDzBD2NnaJ
-        pq/5ELaLxMT5z9khbGGJV8e3QNlSEi/724BsDiA7W6JnlzFEuEZi6bxjLBC2vcSBK3NYQEqY
-        BTQl1u/SBwkzC/BJ9P5+wgTRySvR0SYEUa0q0fzuKlSntMTE7m5WCNtDouXsK7DDhARigaaf
-        Y5nAKDMLYegCRsZVjJKpBcW56anFpgXGeanl8LhJzs/dxAhOVFreOxgfPfigd4iRiYPxEKME
-        B7OSCO8dduEkId6UxMqq1KL8+KLSnNTiQ4ymwECayCwlmpwPTJV5JfGGJpYGJmZmZiaWxmaG
-        SuK8p9I3JAoJpCeWpGanphakFsH0MXFwSjUw3bW46cKvEM3J/G5JrJbEuWCe+Ent8n3sIpfP
-        LChfxeD2hctlavMukTR3JznvOi+mzhMT5X4yLNha9PCYpPIKn91d3/l1g57q6x14e5pvHzv7
-        x4CytIuNEzg3/rqneMmHP1a+wO3MwXU9Bo/fPxX7nPqD92C33LOk+Jg3OXpR2e5Vk9Uf9yz7
-        /kV4gq399zVP1mxZVOd3WOZ+jpzjzT3P8puPn3prtE1P5WlO8mzBBfr507IO33C8f+nchwct
-        bz8nTem2ija8eiG1XS7Vdvm3W3rfVEJcV/z2mORoFnRsR9keDf1vZc+uuK46fFqxdiXbgqj4
-        bq79r+9fWNHlKt5/5PFVu60CG3PWmjCKcZY6KrEUZyQaajEXFScCANqbSIXdAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpmluLIzCtJLcpLzFFi42LZdlhJTvd8pliSwfs5yhYP5m1js5h/5Byr
-        xca3P5gsNj2+xmpxedccNosZ5/cxWSza+oXdonXvEXYHDo9ZDb1sHptWdbJ5bF5S79G3ZRWj
-        x+dNcgGsUVw2Kak5mWWpRfp2CVwZTx/sZizYwV3x/uMbxgbGhZxdjJwcEgImEve2XWABsYUE
-        djNKzFqtBhGXlri+cQI7hC0ssfLfcyCbC6imiUli29VeNpAEm4C2xN3pW5hAbBEBD4m2f/eY
-        QYqYBQ4zSnx5t5EZJCEsYCoxbcYsRhCbRUBV4supOWBTeQVsJBY1bWOD2CAvsXrDAeYJjDwL
-        GBlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXrJefnbmIEh5OW5g7G7as+6B1iZOJgPMQowcGs
-        JMJ7h104SYg3JbGyKrUoP76oNCe1+BCjNAeLkjjvha6T8UIC6YklqdmpqQWpRTBZJg5OqQam
-        qRcYX/kezOk0Cgs2CV29WeSKoJyBjtPF7iN188Q7+nWSspcE75TcI8NZee7Tn9rD3bUuO//9
-        2rdqoapa3I1HJarz6v/ItCqdbxHLcil2TF7DuixZcMHNzafvVkg/6JAqt49b6JmsUaM/IenI
-        M27J2iU129sE9l3qfePTH5V1rkWNy/PwJ6/rWxbslIxQZomSmmq7eeF73prXPcl7n/06NPl2
-        vJGcTMpxtd/MVjP5zmUc90uob8wyNlR71xB2+z737+7/r+umWjW23cmICHv2s62+fdmz5Xsi
-        o8yDHNJb8x/Y1lxb1mMmyyuq8nl79MbetQUefJNOXP0VZxZs+2/Oy9lVZ6eGrokxE/Q7ckiJ
-        pTgj0VCLuag4EQBi/eUilgIAAA==
-X-CMS-MailID: 20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec
-References: <CGME20220223170727epcas5p20066f8455fa0ca98323ac286dabc90ec@epcas5p2.samsung.com>
+        Wed, 23 Feb 2022 12:07:56 -0500
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D794511A21;
+        Wed, 23 Feb 2022 09:07:27 -0800 (PST)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4E1191BF206;
+        Wed, 23 Feb 2022 17:07:24 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 18:07:22 +0100
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Eugen Hristev <eugen.hristev@microchip.com>
+Cc:     linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl,
+        nicolas.ferre@microchip.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        claudiu.beznea@microchip.com
+Subject: Re: [PATCH v5 06/13] media: atmel: atmel-isc-base: use mutex to lock
+ awb workqueue from streaming
+Message-ID: <20220223170722.lmi6727vjnhf6zwd@uno.localdomain>
+References: <20220217135645.1427466-1-eugen.hristev@microchip.com>
+ <20220217135645.1427466-7-eugen.hristev@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220217135645.1427466-7-eugen.hristev@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add node relevant to support MCT, which is used as
-one of the system timer on this SoC.
+Hi Eugen
 
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
----
- arch/arm64/boot/dts/tesla/fsd.dtsi | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+On Thu, Feb 17, 2022 at 03:56:38PM +0200, Eugen Hristev wrote:
+> The AWB workqueue runs in a kernel thread and needs to be synchronized
+> w.r.t. the streaming status.
+> It is possible that streaming is stopped while the AWB workq is running.
+> In this case it is likely that the check for vb2_start_streaming_called is done
+> at one point in time, but the AWB computations are done later, including a call
+> to isc_update_profile, which requires streaming to be started.
+> Thus , isc_update_profile will fail if during this operation sequence the
+> streaming was stopped.
+> To solve this issue, a mutex is added, that will serialize the awb work and
+> streaming stopping, with the mention that either streaming is stopped
+> completely including termination of the last frame is done, and after that
+> the AWB work can check stream status and stop; either first AWB work is
+> completed and after that the streaming can stop correctly.
+> The awb spin lock cannot be used since this spinlock is taken in the same
+> context and using it in the stop streaming will result in a recursion BUG.
+>
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 
-diff --git a/arch/arm64/boot/dts/tesla/fsd.dtsi b/arch/arm64/boot/dts/tesla/fsd.dtsi
-index da4acd68b976..9a652abcbcac 100644
---- a/arch/arm64/boot/dts/tesla/fsd.dtsi
-+++ b/arch/arm64/boot/dts/tesla/fsd.dtsi
-@@ -725,6 +725,29 @@ spi_2: spi@14160000 {
- 			num-cs = <1>;
- 			status = "disabled";
- 		};
-+
-+		timer@10040000 {
-+			compatible = "samsung,exynos4210-mct";
-+			reg = <0x0 0x10040000 0x0 0x800>;
-+			interrupts = <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 466 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 468 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>,
-+				<GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&fin_pll>, <&clock_imem IMEM_MCT_PCLK>;
-+			clock-names = "fin_pll", "mct";
-+		};
- 	};
- };
- 
--- 
-2.25.1
+I trust this doesn't deadlock :)
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
 
+Thanks
+   j
+
+> ---
+>  drivers/media/platform/atmel/atmel-isc-base.c | 29 ++++++++++++++++---
+>  drivers/media/platform/atmel/atmel-isc.h      |  2 ++
+>  2 files changed, 27 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+> index 74f575544e09..37c59bb4dc18 100644
+> --- a/drivers/media/platform/atmel/atmel-isc-base.c
+> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
+> @@ -401,6 +401,7 @@ static void isc_stop_streaming(struct vb2_queue *vq)
+>  	struct isc_buffer *buf;
+>  	int ret;
+>
+> +	mutex_lock(&isc->awb_mutex);
+>  	v4l2_ctrl_activate(isc->do_wb_ctrl, false);
+>
+>  	isc->stop = true;
+> @@ -410,6 +411,8 @@ static void isc_stop_streaming(struct vb2_queue *vq)
+>  		v4l2_err(&isc->v4l2_dev,
+>  			 "Timeout waiting for end of the capture\n");
+>
+> +	mutex_unlock(&isc->awb_mutex);
+> +
+>  	/* Disable DMA interrupt */
+>  	regmap_write(isc->regmap, ISC_INTDIS, ISC_INT_DDONE);
+>
+> @@ -1397,10 +1400,6 @@ static void isc_awb_work(struct work_struct *w)
+>  	u32 min, max;
+>  	int ret;
+>
+> -	/* streaming is not active anymore */
+> -	if (isc->stop)
+> -		return;
+> -
+>  	if (ctrls->hist_stat != HIST_ENABLED)
+>  		return;
+>
+> @@ -1455,7 +1454,24 @@ static void isc_awb_work(struct work_struct *w)
+>  	}
+>  	regmap_write(regmap, ISC_HIS_CFG + isc->offsets.his,
+>  		     hist_id | baysel | ISC_HIS_CFG_RAR);
+> +
+> +	/*
+> +	 * We have to make sure the streaming has not stopped meanwhile.
+> +	 * ISC requires a frame to clock the internal profile update.
+> +	 * To avoid issues, lock the sequence with a mutex
+> +	 */
+> +	mutex_lock(&isc->awb_mutex);
+> +
+> +	/* streaming is not active anymore */
+> +	if (isc->stop) {
+> +		mutex_unlock(&isc->awb_mutex);
+> +		return;
+> +	};
+> +
+>  	isc_update_profile(isc);
+> +
+> +	mutex_unlock(&isc->awb_mutex);
+> +
+>  	/* if awb has been disabled, we don't need to start another histogram */
+>  	if (ctrls->awb)
+>  		regmap_write(regmap, ISC_CTRLEN, ISC_CTRL_HISREQ);
+> @@ -1548,6 +1564,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
+>  			 */
+>  			v4l2_ctrl_activate(isc->do_wb_ctrl, false);
+>  		}
+> +		mutex_unlock(&isc->awb_mutex);
+>
+>  		/* if we have autowhitebalance on, start histogram procedure */
+>  		if (ctrls->awb == ISC_WB_AUTO &&
+> @@ -1740,6 +1757,7 @@ static void isc_async_unbind(struct v4l2_async_notifier *notifier,
+>  {
+>  	struct isc_device *isc = container_of(notifier->v4l2_dev,
+>  					      struct isc_device, v4l2_dev);
+> +	mutex_destroy(&isc->awb_mutex);
+>  	cancel_work_sync(&isc->awb_work);
+>  	video_unregister_device(&isc->video_dev);
+>  	v4l2_ctrl_handler_free(&isc->ctrls.handler);
+> @@ -1850,6 +1868,8 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
+>  	isc->current_subdev = container_of(notifier,
+>  					   struct isc_subdev_entity, notifier);
+>  	mutex_init(&isc->lock);
+> +	mutex_init(&isc->awb_mutex);
+> +
+>  	init_completion(&isc->comp);
+>
+>  	/* Initialize videobuf2 queue */
+> @@ -1929,6 +1949,7 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
+>  	video_unregister_device(vdev);
+>
+>  isc_async_complete_err:
+> +	mutex_destroy(&isc->awb_mutex);
+>  	mutex_destroy(&isc->lock);
+>  	return ret;
+>  }
+> diff --git a/drivers/media/platform/atmel/atmel-isc.h b/drivers/media/platform/atmel/atmel-isc.h
+> index c1ca3916700e..ac8c8679dd53 100644
+> --- a/drivers/media/platform/atmel/atmel-isc.h
+> +++ b/drivers/media/platform/atmel/atmel-isc.h
+> @@ -229,6 +229,7 @@ enum isc_scaler_pads {
+>   *
+>   * @lock:		lock for serializing userspace file operations
+>   *			with ISC operations
+> + * @awb_mutex:		serialize access to streaming status from awb work queue
+>   * @awb_lock:		lock for serializing awb work queue operations
+>   *			with DMA/buffer operations
+>   *
+> @@ -309,6 +310,7 @@ struct isc_device {
+>  	struct work_struct	awb_work;
+>
+>  	struct mutex		lock;
+> +	struct mutex		awb_mutex;
+>  	spinlock_t		awb_lock;
+>
+>  	struct regmap_field	*pipeline[ISC_PIPE_LINE_NODE_NUM];
+> --
+> 2.25.1
+>
