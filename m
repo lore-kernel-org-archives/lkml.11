@@ -2,104 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41365C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238215AbiBWFZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:25:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
+        id S238336AbiBWFZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:25:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238181AbiBWFYy (ORCPT
+        with ESMTP id S238300AbiBWFZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:24:54 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B786AA63
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:06 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d07ae1145aso162060697b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:06 -0800 (PST)
+        Wed, 23 Feb 2022 00:25:04 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4156D4DC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:23 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id m10-20020a25800a000000b0061daa5b7151so26449489ybk.10
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=A2kZT9A4P8bW0lI9YOtf1wQA9jJkQ1koWvhOh//ocUo=;
-        b=fbSsueZGuBScgzqcY02VIl0ILFLXpPlKdSo5ctJYl8kSPI7w0kDZ1uGY8ujtC+fl+e
-         PEzsS5j+6h2lyRr/UrTBatrXvU4f3NErvUAR7v4X1dzKu33iDdHE2QCAop5cuA3atf5U
-         EJ4V1Fx706MmP14iSjNuJdP3U5u2B16C5Fj3e/UoRc8fZC4srXBJUArKZJ67Qxmu0hNA
-         BsPOvLUKtyHj9nuWAemSw1G1+wDLXUYyYOFHHc5fb0JSBY7PBPNYf4tS05DMNxCxy6ed
-         1VKdWkC7HesYHDOsvNnF5BnhxEmTplkx92VqdXNvb7r03sGqA/SDTfz8vVfIQeADD5L1
-         ir/Q==
+        bh=J1PJHeAg+5GsFDWdvzoAJvbqIGqngaUErLJYlufPa+k=;
+        b=E8ylcvEY7HObuUi7YReOD7Xi+5ii//8STuZIJO/P8zS7AqqFvr59ONAjhLdHaJFCVd
+         ANMtkHwUkTCW3M7pycyZwbgMNj908KdgtDwrheZQ6geVat7tNVM68QbPQQZm1CRl1l6l
+         Y4ISDUE0Oi8e8zBW/PcuKqI33TayofpiZRwi9zPR+wcWJ0CNMO0p+82XCjaXWKVoLCcG
+         P0m9VyO7WwmFPDExN5wo9Zkywpckb/NizMoYl/Y1S6i3OD/kq/dMFyBf0yRW04D/GG97
+         5W9at4d8tgmUGtV7LAQny8Hl7A704zcz/QnIbquS3/UrNABcFf6svGwZpVuu40Fb0cN9
+         xygg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=A2kZT9A4P8bW0lI9YOtf1wQA9jJkQ1koWvhOh//ocUo=;
-        b=rUshBPEAU9TvpiLZ7h8fDoROMy9Kmaxns506Fmm2/9httuso15ookwNlK9sghp0vMv
-         Kp09GNvoi3uPJWuvX9lZQ7Xs2fCyGAtWr0oxCIKtKC4PVLrGF/PthNsYZChINEt/7E3S
-         /SkflYp+oI6s4EM41xa0Ej5odZI0+glT3/E+Xw3SczfRaZKBhYRE09uaV46oSzF7vM++
-         +PgeBg71t1TQBBS+cXmk5UGpYKcQLKyD1T6G0ci/xzHh6ZfcHysWWmbBSRwIYzNo03xb
-         z4+YvAlNWW5CSK80b08ELQ3KRjzLUnvDmWJKRoP/BCLIDwJ9YbWl1op/F8wfQOdBt/E2
-         swZA==
-X-Gm-Message-State: AOAM532M3Q8nOg/nO/ZzPR8/VbC9UrAq1RLt89EVEf4tAG4hNmn8uxZX
-        YcYiHAY4NV/zx2wQdh+PdD/b2uIjNJwOv4PI+VELO8TEozfgFWzrbi2pfqO3FrPxrAD7fY8SjI4
-        h0xtHrWm+eE7sWbPqGRiEnjhf4gvl+kv164PrsEdcxfXjMBBWG5VeckwVlUfosdvDFFua2X6O
-X-Google-Smtp-Source: ABdhPJx1fLXJ2Nd+XyAyj3SwtD/6yx9YWclO/RpwDKJJBLCMeXbY/FNMqCpTASogEOd+LsJ96uLWXmi1HY+9
+        bh=J1PJHeAg+5GsFDWdvzoAJvbqIGqngaUErLJYlufPa+k=;
+        b=vUkCzKdjQyh9S1t/JxOtNV+K3Alz0urlRgXycXFvslac1PUcWxrODeGHoWpI3yAdUQ
+         vPjeJb5CBOvAyiA3cQ39Evr6Goc/X30VATIFA3ErG3Ww5TFXvAAxW7EkzmwVAYa779wj
+         qakTWkIm9DHJxGfepZyVzCyBOtOPip6YalGeRE0D70F0Nh68Ftijpt9Yt+Z+MnWwN46W
+         yH97zLsOFSJryqfJC3gZ2WZOH0JcwWJASCZNIpiN5DeZd4thBYiEcyJSdHwTZWB4aOwq
+         UFfQDndvCwVtTHT3oP+x2n765nvCBR0yuzN8LbiVBN0gHoUJb08mTEsY8XhA8K5MThzv
+         kEvQ==
+X-Gm-Message-State: AOAM532Mx1E95oCNRNugsd5m6z//weyQ/Ybr9Bjy5OkmM598Ao+Ts50I
+        HbpMTp0YHGlycrKY1+iPsi6GBhbxJL0kAtnxDBsMKANp2VgJZ2phyr8f0KcvnwgeGVteAplnCC5
+        UnJwzqg0NBFW++t3qcH44Dbt9Bfc4TOHQa1SiZC1GOPE1yK6Ke4GN6lZ0723k8bb/la8Q/irS
+X-Google-Smtp-Source: ABdhPJwO2zSkIt0Rgd4eSBL4j29VK3OAOmCOM+xoXLfQvXzLhs6JlCYQqS7jIhDe/nPgasCVydPPru7Y6T7c
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a81:1d8c:0:b0:2cb:da76:5da8 with SMTP id
- d134-20020a811d8c000000b002cbda765da8mr27707177ywd.165.1645593845809; Tue, 22
- Feb 2022 21:24:05 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:45 -0800
+ (user=junaids job=sendgmr) by 2002:a81:106:0:b0:2d0:e682:8a7a with SMTP id
+ 6-20020a810106000000b002d0e6828a7amr27939534ywb.257.1645593854910; Tue, 22
+ Feb 2022 21:24:14 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:49 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-10-junaids@google.com>
+Message-Id: <20220223052223.1202152-14-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 09/47] mm: Add __PAGEFLAG_FALSE
+Subject: [RFC PATCH 13/47] asi: Added ASI memory cgroup flag
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
-        pjt@google.com, oweisse@google.com, alexandre.chartre@oracle.com,
-        rppt@linux.ibm.com, dave.hansen@linux.intel.com,
-        peterz@infradead.org, tglx@linutronix.de, luto@kernel.org,
-        linux-mm@kvack.org
+Cc:     Ofir Weisse <oweisse@google.com>, kvm@vger.kernel.org,
+        pbonzini@redhat.com, jmattson@google.com, pjt@google.com,
+        alexandre.chartre@oracle.com, rppt@linux.ibm.com,
+        dave.hansen@linux.intel.com, peterz@infradead.org,
+        tglx@linutronix.de, luto@kernel.org, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__PAGEFLAG_FALSE is a non-atomic equivalent of PAGEFLAG_FALSE.
+From: Ofir Weisse <oweisse@google.com>
 
+Adds a cgroup flag to control if ASI is enabled for processes in
+that cgroup.
+
+Can be set or cleared by writing to the memory.use_asi file in the
+memory cgroup. The flag only affects new processes created after
+the flag was set.
+
+In addition to the cgroup flag, we may also want to add a per-process
+flag, though it will have to be something that can be set at process
+creation time.
+
+Signed-off-by: Ofir Weisse <oweisse@google.com>
+Co-developed-by: Junaid Shahid <junaids@google.com>
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- include/linux/page-flags.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/mm/asi.c          | 14 ++++++++++++++
+ include/linux/memcontrol.h |  3 +++
+ include/linux/mm_types.h   | 17 +++++++++++++++++
+ mm/memcontrol.c            | 30 ++++++++++++++++++++++++++++++
+ 4 files changed, 64 insertions(+)
 
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index b5f14d581113..b90a17e9796d 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -390,6 +390,10 @@ static inline int Page##uname(const struct page *page) { return 0; }
- static inline void folio_set_##lname(struct folio *folio) { }		\
- static inline void SetPage##uname(struct page *page) {  }
+diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
+index 71348399baf1..ca50a32ecd7e 100644
+--- a/arch/x86/mm/asi.c
++++ b/arch/x86/mm/asi.c
+@@ -2,6 +2,7 @@
  
-+#define __SETPAGEFLAG_NOOP(uname, lname)				\
-+static inline void __folio_set_##lname(struct folio *folio) { }		\
-+static inline void __SetPage##uname(struct page *page) {  }
+ #include <linux/init.h>
+ #include <linux/memblock.h>
++#include <linux/memcontrol.h>
+ 
+ #include <asm/asi.h>
+ #include <asm/pgalloc.h>
+@@ -322,7 +323,20 @@ EXPORT_SYMBOL_GPL(asi_exit);
+ 
+ void asi_init_mm_state(struct mm_struct *mm)
+ {
++	struct mem_cgroup *memcg = get_mem_cgroup_from_mm(mm);
 +
- #define CLEARPAGEFLAG_NOOP(uname, lname)				\
- static inline void folio_clear_##lname(struct folio *folio) { }		\
- static inline void ClearPage##uname(struct page *page) {  }
-@@ -411,6 +415,9 @@ static inline int TestClearPage##uname(struct page *page) { return 0; }
- #define PAGEFLAG_FALSE(uname, lname) TESTPAGEFLAG_FALSE(uname, lname)	\
- 	SETPAGEFLAG_NOOP(uname, lname) CLEARPAGEFLAG_NOOP(uname, lname)
- 
-+#define __PAGEFLAG_FALSE(uname, lname) TESTPAGEFLAG_FALSE(uname, lname)	\
-+	__SETPAGEFLAG_NOOP(uname, lname) __CLEARPAGEFLAG_NOOP(uname, lname)
+ 	memset(mm->asi, 0, sizeof(mm->asi));
++	mm->asi_enabled = false;
 +
- #define TESTSCFLAG_FALSE(uname, lname)					\
- 	TESTSETFLAG_FALSE(uname, lname) TESTCLEARFLAG_FALSE(uname, lname)
++	/*
++	 * TODO: In addition to a cgroup flag, we may also want a per-process
++	 * flag.
++	 */
++        if (memcg) {
++		mm->asi_enabled = boot_cpu_has(X86_FEATURE_ASI) &&
++				  memcg->use_asi;
++		css_put(&memcg->css);
++	}
+ }
  
+ static bool is_page_within_range(size_t addr, size_t page_size,
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0c5c403f4be6..a883cb458b06 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -259,6 +259,9 @@ struct mem_cgroup {
+ 	 */
+ 	bool oom_group;
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++        bool use_asi;
++#endif
+ 	/* protected by memcg_oom_lock */
+ 	bool		oom_lock;
+ 	int		under_oom;
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 5b8028fcfe67..8624d2783661 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -607,6 +607,14 @@ struct mm_struct {
+ 		 * new_owner->alloc_lock is held
+ 		 */
+ 		struct task_struct __rcu *owner;
++
++#endif
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++                /* Is ASI enabled for this mm? ASI requires allocating extra
++                 * resources, such as ASI page tables. To prevent allocationg
++                 * these resources for every mm in the system, we expect that
++                 * only VM mm's will have this flag set. */
++		bool asi_enabled;
+ #endif
+ 		struct user_namespace *user_ns;
+ 
+@@ -665,6 +673,15 @@ struct mm_struct {
+ 
+ extern struct mm_struct init_mm;
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++static inline bool mm_asi_enabled(struct mm_struct *mm)
++{
++        return mm->asi_enabled;
++}
++#else
++static inline bool mm_asi_enabled(struct mm_struct *mm) { return false; }
++#endif
++
+ /* Pointer magic because the dynamic array size confuses some compilers. */
+ static inline void mm_init_cpumask(struct mm_struct *mm)
+ {
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 2ed5f2a0879d..a66d6b222ecf 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -3539,6 +3539,29 @@ static int mem_cgroup_hierarchy_write(struct cgroup_subsys_state *css,
+ 	return -EINVAL;
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++
++static u64 mem_cgroup_asi_read(struct cgroup_subsys_state *css,
++				     struct cftype *cft)
++{
++        return mem_cgroup_from_css(css)->use_asi;
++}
++
++static int mem_cgroup_asi_write(struct cgroup_subsys_state *css,
++				      struct cftype *cft, u64 val)
++{
++	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
++
++	if (val == 1 || val == 0)
++		memcg->use_asi = val;
++	else
++		return -EINVAL;
++
++	return 0;
++}
++
++#endif
++
+ static unsigned long mem_cgroup_usage(struct mem_cgroup *memcg, bool swap)
+ {
+ 	unsigned long val;
+@@ -4888,6 +4911,13 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.write_u64 = mem_cgroup_hierarchy_write,
+ 		.read_u64 = mem_cgroup_hierarchy_read,
+ 	},
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	{
++		.name = "use_asi",
++		.write_u64 = mem_cgroup_asi_write,
++		.read_u64 = mem_cgroup_asi_read,
++	},
++#endif
+ 	{
+ 		.name = "cgroup.event_control",		/* XXX: for compat */
+ 		.write = memcg_write_event_control,
 -- 
 2.35.1.473.g83b2b277ed-goog
 
