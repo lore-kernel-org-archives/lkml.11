@@ -2,114 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D654C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237497AbiBWCgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S237504AbiBWCg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:36:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237512AbiBWCdJ (ORCPT
+        with ESMTP id S237569AbiBWCdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:33:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66275C875;
-        Tue, 22 Feb 2022 18:31:11 -0800 (PST)
+        Tue, 22 Feb 2022 21:33:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE39A5E164;
+        Tue, 22 Feb 2022 18:31:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DD3BB81CA7;
-        Wed, 23 Feb 2022 02:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99613C340EB;
-        Wed, 23 Feb 2022 02:31:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DF6261581;
+        Wed, 23 Feb 2022 02:31:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A58DAC36AE3;
+        Wed, 23 Feb 2022 02:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583470;
-        bh=Gj0iWRHvzKvEEd9PMj+e/nxm3CPNPPbzzqd6+h5mdpk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UkxdGCOA1BSb1FZYDeps3UPMw9Fz7KOUW5QYv/KW6HM3tGTQgvOb3/n+wW8gazf73
-         F6UodAknZm3e5kwiptyJfo4GuYjBwblbghw4rpe7vTTjw8hnbTcMJaff1RyHui3iXm
-         NxURPCeB0tKlWSakzJUtEi+EFBYnB4fYVRn/wf2+1J8Rauf5vuXHAdXzpsG9QU3ssf
-         9R+ab3mKfDs0uX3uXnyxERRFJM61RB0WQWAohPMFF06dJk5i6InJg6CfDAvqhnwdcV
-         scbbokgjg7ko5Egk+AgvvrYgjKXo1fqBFQ286jhFF/7GIG8FF+/p6MK9KomQRARttW
-         xpHDCo6id22qw==
-Date:   Tue, 22 Feb 2022 20:39:05 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH 5/6][next] ath6kl: wmi: Replace one-element array with
- flexible-array  member in struct wmi_disconnect_event
-Message-ID: <4a42b591109202589cb1cf87df13daef02eb75f9.1645583264.git.gustavoars@kernel.org>
-References: <cover.1645583264.git.gustavoars@kernel.org>
+        s=k20201202; t=1645583475;
+        bh=ETgDXuiQzFhaFNdJSbiMHIBC9RzGUFsPHvvMRY++lxw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A/VSV66QN+XPOq+12ou+UM7N+w+zxtlB1Lfb5YW+8Hhm3kHNlUrzlZMvz9Z6h1bqD
+         1wEQhlMqQr5Vaid4bVawe6DXi8zjwcijLwQ+VrU4gW3z2C2/4bXv2cqAVcwNbA989u
+         fcXFaWG+ueg4/Fv7U+fs/gM/mmDkb9LfbI+R0Cb1ymbiaV52zpotiy4YkiSBGz5AuB
+         nGxwg9/wW/Ni4Kq0UKVzM2FT0uOxsrMgTXdVLGGBEloCSPjPsA9BS+CrTN4wuJ+Usu
+         480lkv6UBHRE2/Dy04dgXqpWPLu2GysycYOxGQn0PVwQ39iyvNadYtGuJtH5ZS/5dw
+         b+MIcmD96iGXQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
+        kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 17/18] CDC-NCM: avoid overflow in sanity checking
+Date:   Tue, 22 Feb 2022 21:30:34 -0500
+Message-Id: <20220223023035.241551-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
+References: <20220223023035.241551-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1645583264.git.gustavoars@kernel.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace one-element array with flexible-array member in struct
-wmi_disconnect_event.
+From: Oliver Neukum <oneukum@suse.com>
 
-It's also worth noting that due to the flexible array transformation,
-the size of struct wmi_disconnect_event changed (now the size is 1 byte
-smaller), and in order to preserve the logic of before the transformation,
-the following change is needed:
+[ Upstream commit 8d2b1a1ec9f559d30b724877da4ce592edc41fdc ]
 
-        -       if (len < sizeof(struct wmi_disconnect_event))
-        +       if (len <= sizeof(struct wmi_disconnect_event))
+A broken device may give an extreme offset like 0xFFF0
+and a reasonable length for a fragment. In the sanity
+check as formulated now, this will create an integer
+overflow, defeating the sanity check. Both offset
+and offset + len need to be checked in such a manner
+that no overflow can occur.
+And those quantities should be unsigned.
 
-This issue was found with the help of Coccinelle and audited and fixed,
-manually.
-
-Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-Link: https://github.com/KSPP/linux/issues/79
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Hi!
+ drivers/net/usb/cdc_ncm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-It'd be great if someone can confirm or comment on the following
-changes described in the changelog text:
-
-        -       if (len < sizeof(struct wmi_disconnect_event))
-        +       if (len <= sizeof(struct wmi_disconnect_event))
-
-Thanks
-
- drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
- drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
-index ccdccead688e..645fb6cae3be 100644
---- a/drivers/net/wireless/ath/ath6kl/wmi.c
-+++ b/drivers/net/wireless/ath/ath6kl/wmi.c
-@@ -1023,7 +1023,7 @@ static int ath6kl_wmi_disconnect_event_rx(struct wmi *wmi, u8 *datap, int len,
- 	struct wmi_disconnect_event *ev;
- 	wmi->traffic_class = 100;
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index eaaa5aee58251..ab91fa5b0194d 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1702,10 +1702,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
+ {
+ 	struct sk_buff *skb;
+ 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
+-	int len;
++	unsigned int len;
+ 	int nframes;
+ 	int x;
+-	int offset;
++	unsigned int offset;
+ 	union {
+ 		struct usb_cdc_ncm_ndp16 *ndp16;
+ 		struct usb_cdc_ncm_ndp32 *ndp32;
+@@ -1777,8 +1777,8 @@ int cdc_ncm_rx_fixup(struct usbnet *dev, struct sk_buff *skb_in)
+ 			break;
+ 		}
  
--	if (len < sizeof(struct wmi_disconnect_event))
-+	if (len <= sizeof(struct wmi_disconnect_event))
- 		return -EINVAL;
- 
- 	ev = (struct wmi_disconnect_event *) datap;
-diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
-index 6b064e669d87..6a7fc07cd9aa 100644
---- a/drivers/net/wireless/ath/ath6kl/wmi.h
-+++ b/drivers/net/wireless/ath/ath6kl/wmi.h
-@@ -1596,7 +1596,7 @@ struct wmi_disconnect_event {
- 	u8 disconn_reason;
- 
- 	u8 assoc_resp_len;
--	u8 assoc_info[1];
-+	u8 assoc_info[];
- } __packed;
- 
- /*
+-		/* sanity checking */
+-		if (((offset + len) > skb_in->len) ||
++		/* sanity checking - watch out for integer wrap*/
++		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
+ 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
+ 			netif_dbg(dev, rx_err, dev->net,
+ 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
 -- 
-2.27.0
+2.34.1
 
