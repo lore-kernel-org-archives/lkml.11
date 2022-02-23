@@ -2,73 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240778AbiBWUIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 15:08:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
+        id S240881AbiBWUI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 15:08:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240498AbiBWUIs (ORCPT
+        with ESMTP id S240598AbiBWUIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 15:08:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EEA4CD4B
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:08:19 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5103D4CD42;
+        Wed, 23 Feb 2022 12:08:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6A3617BB
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:08:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 481DEC340F0;
-        Wed, 23 Feb 2022 20:08:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFBC9B821A3;
+        Wed, 23 Feb 2022 20:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 886A8C340EC;
+        Wed, 23 Feb 2022 20:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645646898;
-        bh=rPvsHk9rO11ss9D+hCqp2bK02KgpNSQcTHp8HbGr4GY=;
+        s=k20201202; t=1645646896;
+        bh=IPDTti9CW7/qinPXiqGFc7rs1vex161tmESDnf+9SUI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=W4BRfXY2Ymt3eevB8M68rNwwpStykkiZwQ2K6QauRnyeAgfOlxJ3yH/D4CoTNHU5v
-         I5CQw8Aa4gloiOw3lUfNuXb5sNKWjkn6grS7s6r4464K0dWX6ZyjcoApvId2WAJiT3
-         EsgQTiOiv/Hwt/pu/BxGKuFLPxDAimdaneFsu+LMwXAGrweDAiHvd+p9Ek8wHeKtL8
-         M9RyXZ6oPx9ptMRPZUAJMESJsNp2CFUCH9l8Ol8NVOCDiV5hQTQ/ExIn7wb3YDgwmo
-         dPhH6CXp49IXE3hYVi65Mu65i5SZp2EINd2Pu87KK2+deP0FKy8347zwsHn8pdIUdB
-         zKV3TXQdttEQA==
+        b=Rk79jLzfRv9lvxSimmjSh0LKQxCWrCGBdo3Qb+iVSWpUUD5zrkH24KIBHbE36hQSj
+         8GRWevS1FhzxlUE4T9BMG2fDjN22coYLY1X6+gtWBYhtKLOi8GmkelwdKCU9DCfQ9v
+         3aHFlXJRjAos+OffeRlwWGBclaWLTpa3cp5nXZltkcQXLeQyhXLSBfDcymD6SJPsFT
+         Y8Yz0wfT1Qd68REpoaZOFssjLqZu82gBfCCjFGJbT4s26qUJIJz8xCFpnnyLF1JTWP
+         3bj3ImJBd9OG1QdatnTcFxh4RlFIuG1R+3UkEYLBrtH5XkEh9d4jlQXw671Fl9q4H6
+         HFv+Hs3fp1g1A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 364DEE5D09D;
-        Wed, 23 Feb 2022 20:08:18 +0000 (UTC)
-Subject: Re: [GIT PULL] slab fixes for 5.17-rc6
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 762B4E5D09D;
+        Wed, 23 Feb 2022 20:08:16 +0000 (UTC)
+Subject: Re: [GIT PULL] parisc unaligned handler fixes for v5.17-rc6
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <02623bc1-fc54-bc5d-8879-e62d548924fd@suse.cz>
-References: <02623bc1-fc54-bc5d-8879-e62d548924fd@suse.cz>
-X-PR-Tracked-List-Id: <linux-mm.kvack.org>
-X-PR-Tracked-Message-Id: <02623bc1-fc54-bc5d-8879-e62d548924fd@suse.cz>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.17-rc6
-X-PR-Tracked-Commit-Id: 221944736f66f38e9bdbce52c616d10df7f15c54
+In-Reply-To: <YhZuW0o9A4qhfdZ5@ls3530>
+References: <YhZuW0o9A4qhfdZ5@ls3530>
+X-PR-Tracked-List-Id: <linux-parisc.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YhZuW0o9A4qhfdZ5@ls3530>
+X-PR-Tracked-Remote: http://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.17/parisc-4
+X-PR-Tracked-Commit-Id: a97279836867b1cb50a3d4f0b1bf60e0abe6d46c
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4eb0a7c8e195d4549221f9df3a0313254c493949
-Message-Id: <164564689821.4348.3420955279683855883.pr-tracker-bot@kernel.org>
-Date:   Wed, 23 Feb 2022 20:08:18 +0000
-To:     Vlastimil Babka <vbabka@suse.cz>
+X-PR-Merge-Commit-Id: 23d04328444a8fa0ca060c5e532220dac8e8bc26
+Message-Id: <164564689647.4348.10892071496823188472.pr-tracker-bot@kernel.org>
+Date:   Wed, 23 Feb 2022 20:08:16 +0000
+To:     Helge Deller <deller@gmx.de>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        John David Anglin <dave.anglin@bell.net>,
+        Sven Schnelle <svens@stackframe.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 23 Feb 2022 10:44:19 +0100:
+The pull request you sent on Wed, 23 Feb 2022 18:26:51 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.17-rc6
+> http://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.17/parisc-4
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4eb0a7c8e195d4549221f9df3a0313254c493949
+https://git.kernel.org/torvalds/c/23d04328444a8fa0ca060c5e532220dac8e8bc26
 
 Thank you!
 
