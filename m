@@ -2,251 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A018EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242175AbiBWPjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:39:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S241737AbiBWPkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242157AbiBWPjj (ORCPT
+        with ESMTP id S242205AbiBWPj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:39:39 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE932BD2C3;
-        Wed, 23 Feb 2022 07:39:11 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NERC6e017992;
-        Wed, 23 Feb 2022 15:38:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=7DQLKUgdnvflrrBNDkKPvx9BLtwQZE03ICcMhF/Lvdw=;
- b=satumKOykpaXCKFPWAWvXk3vllRUpB0jHgG6wBR2xOYJ1l/bfdatnkvbKj0J2vNw+Kx0
- ZWOEEek26ilUYYjPw3uP+bdWk8s0TwSIlzA2V8CR0VSo/axSLL2pGoG1XwGeJ9hWC+nP
- vjwNLYYQrVrDm/M03KZtUPyiTFG76AB8HwQHxGsBnlbJ3pFTgWHql3ZLSpSh+pd6DdbR
- uVSMIlQNFUolIgpRz9lLotFlBatJqxR9vFr+EpvIEdxc/KWqnqqh28Xkgqq5/Xi4fTLN
- PUn4B3LxoAB7dPSs8k/tbkzv9n1hVJAeRAjSXKz01XhSWHPJD+pm+bdTXrBaXsXSQ/lx 0A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6ws7ka-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 15:38:49 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NEQv6T000576;
-        Wed, 23 Feb 2022 15:38:48 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6ws7jd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 15:38:48 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NFWYJ2010680;
-        Wed, 23 Feb 2022 15:38:45 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3ear699ku5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 15:38:45 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NFcg9i33816834
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 15:38:42 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 74B66A4065;
-        Wed, 23 Feb 2022 15:38:42 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 44378A4062;
-        Wed, 23 Feb 2022 15:38:40 +0000 (GMT)
-Received: from sig-9-65-80-154.ibm.com (unknown [9.65.80.154])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 15:38:40 +0000 (GMT)
-Message-ID: <5e4a862917785972281bbcb483404da01b71e801.camel@linux.ibm.com>
-Subject: Re: [PATCH v10 26/27] ima: Limit number of policy rules in
- non-init_ima_ns
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Wed, 23 Feb 2022 10:38:39 -0500
-In-Reply-To: <20220201203735.164593-27-stefanb@linux.ibm.com>
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
-         <20220201203735.164593-27-stefanb@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -_N_LTBSyNxiP_N7uD9o1NSnm0GozV1V
-X-Proofpoint-ORIG-GUID: XQeRhpxmFWWbPSVucT5-uvdNPHlIsebt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_07,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 clxscore=1015 bulkscore=0 adultscore=0 mlxscore=0
- suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202230087
+        Wed, 23 Feb 2022 10:39:56 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012B3BD8BE;
+        Wed, 23 Feb 2022 07:39:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645630767; x=1677166767;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=G01b9iXneV4ERGn5c+vYpOWdnQzUU5y7YPJDWYOkfX4=;
+  b=lMnNoAOYb3DJ1ItOYda9TeYC6MIwO7dKZjy/Gu2fvVEtx0UcQwz/cBMm
+   Li/MBXvbuunliHIpjLoziEWkuhEY2rPpokfMBrjlCnRl5R1FEoFxMbeWP
+   uxJoaEQuRaByEPozfESUcMJW+4eiNAgjk2Se3uR25WJNz5wM0ar/jV5mx
+   4=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Feb 2022 07:39:26 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:39:26 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 23 Feb 2022 07:39:25 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 23 Feb 2022 07:39:20 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v15 00/10] Add support for audio on SC7280 based targets
+Date:   Wed, 23 Feb 2022 21:08:55 +0530
+Message-ID: <1645630745-25051-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
-> Limit the number of policy rules one can set in non-init_ima_ns to a
-> hardcoded 1024 rules. If the user attempts to exceed this limit by
-> setting too many additional rules, emit an audit message with the cause
-> 'too-many-rules' and simply ignore the newly added rules.
+This patch set is to add support for Audio over wcd codec,
+digital mics, through digital codecs and without ADSP.
 
-This paragraph describes 'what' you're doing, not 'why'.  Please prefix
-this paragraph with a short, probably one sentence, reason for the
-change.
-> 
-> Switch the accounting for the memory allocated for IMA policy rules to
-> GFP_KERNEL_ACCOUNT so that cgroups kernel memory accounting takes effect.
+Changes Since V14:
+    -- Split common wrapper function to separate wrapper for each handle in platform driver.
+    -- Update cdc dma buffer handling with memremap with ioremap.    
+    -- Remove redundant error prints.
+    -- Update irq flag.
+Changes Since V13:
+    -- Change bulk cdc clock voting to individual clock voting.
+    -- Remove redundant code, conditional check and prints.
+    -- Fix typo errors.
+Changes Since V12:
+    -- Fix arguments type mismatch.
+Changes Since V11:
+    -- Fix kernel robot issue on arguments type mismatch.
+Changes Since V10:
+    -- Split bulk clock voting to individual clock voting as per use case in cdc-dma driver.
+    -- Add missing codec dma clocks.
+    -- Update rxtx lpm buffer size.
+Changes Since V9:
+    -- Change individual clock voting to bulk clock voting of lpass-sc7280 platform driver.
+    -- Remove redundant clocks in lpass variant structure.
+    -- Add mclk for MI2S based headset path.
+    -- Remove unused lpass variant structure members in lpass header.
+Changes Since V8:
+    -- Fix errors in sc7280 lpass cpu dt-bindings.
+    -- Move to quicinc domain email id's.
+Changes Since V7:
+    -- Fix indentation errors.
+    -- Bisect patches to avoid interdependency.
+Changes Since V6:
+    -- Split cdc dma regmap config macros.
+    -- Add write dma reg fields for i2s path.
+    -- Add helper function to distinguish rxtx and va dma ports.
+    -- Optimizing clock and reg name in cpu dt-bindings.
+    -- Update buffer management for cdc dma path.
+    -- Remove Kconfig fields of machine driver.
+Changes Since V5:
+    -- Include MI2S primary node to snd_soc_dai_driver in lpass-sc7280 platform driver.
+    -- Move dependency patch list to corresponding patch.
+    -- Add support for missing cdc-dma ports.
+    -- Change if/else conditional statements to switch cases.
+    -- Add missing error handlings.
+    -- Typo errors fix.
+Changes Since V4:
+    -- Remove unused variable in lpass-sc7280 platform driver.
+Changes Since V3:
+    -- Remove redundant power domain controls. As power domains can be configured from dtsi.
+Changes Since V2:
+    -- Split lpass sc7280 cpu driver patch and create regmap config patch.
+    -- Create patches based on latest kernel tip.
+    -- Add helper function to get dma control and lpaif handle.
+    -- Remove unused variables.
+Changes Since V1:
+    -- Typo errors fix
+    -- CPU driver readable/writable apis optimization.
+    -- Add Missing config patch
+    -- Add Common api for repeated dmactl initialization.
 
-Does this change affect the existing IMA policy rules for init_ima_ns?
+Srinivasa Rao Mandadapu (10):
+  ASoC: qcom: SC7280: Update config for building codec dma drivers
+  ASoC: qcom: Move lpass_pcm_data structure to lpass header
+  ASoC: qcom: lpass: Add dma fields for codec dma lpass interface
+  ASoC: qcom: Add helper function to get dma control and lpaif handle
+  ASoC: qcom: Add register definition for codec rddma and wrdma
+  ASoC: qcom: Add regmap config support for codec dma driver
+  ASoC: qcom: Add support for codec dma driver
+  ASoC: qcom: Add lpass CPU driver for codec dma control
+  ASoC: dt-bindings: Add SC7280 lpass cpu bindings
+  ASoC: qcom: lpass-sc7280: Add platform driver for lpass audio
 
-> 
-> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> ---
->  security/integrity/ima/ima_fs.c     | 20 ++++++++++++++------
->  security/integrity/ima/ima_policy.c | 23 ++++++++++++++++++-----
->  2 files changed, 32 insertions(+), 11 deletions(-)
-> 
-> diff --git a/security/integrity/ima/ima_fs.c b/security/integrity/ima/ima_fs.c
-> index 58d80884880f..cd102bbd4677 100644
-> --- a/security/integrity/ima/ima_fs.c
-> +++ b/security/integrity/ima/ima_fs.c
-> @@ -410,24 +410,32 @@ static int ima_release_policy(struct inode *inode, struct file *file)
->  {
->  	struct ima_namespace *ns = &init_ima_ns;
->  	const char *cause = ns->valid_policy ? "completed" : "failed";
-> +	int err = 0;
->  
->  	if ((file->f_flags & O_ACCMODE) == O_RDONLY)
->  		return seq_release(inode, file);
->  
-> -	if (ns->valid_policy && ima_check_policy(ns) < 0) {
-> -		cause = "failed";
-> -		ns->valid_policy = 0;
-> +	if (ns->valid_policy) {
-> +		err = ima_check_policy(ns);
-> +		if (err < 0) {
-> +			if (err == -ENOSPC)
-
-Perhaps "EDQUOT" would be more appropriate.
-
-> +				cause = "too-many-rules";
-> +			else
-> +				cause = "failed";
-> +			ns->valid_policy = 0;
-> +		}
->  	}
->  
->  	pr_info("policy update %s\n", cause);
-> -	integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL, NULL,
-> -			    "policy_update", cause, !ns->valid_policy, 0);
-> +	integrity_audit_message(AUDIT_INTEGRITY_STATUS, NULL, NULL,
-> +				"policy_update", cause, !ns->valid_policy, 0,
-> +				-err);
-
-The 'err' value is already properly set.  No need for the minus sign.
-
->  
->  	if (!ns->valid_policy) {
->  		ima_delete_rules(ns);
->  		ns->valid_policy = 1;
->  		clear_bit(IMA_FS_BUSY, &ns->ima_fs_flags);
-> -		return 0;
-> +		return err;
->  	}
->  
->  	ima_update_policy(ns);
-> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
-> index acb4c36e539f..3f84d04f101d 100644
-> --- a/security/integrity/ima/ima_policy.c
-> +++ b/security/integrity/ima/ima_policy.c
-> @@ -305,7 +305,8 @@ static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
->  		return ERR_PTR(-EINVAL);
->  	}
->  
-> -	opt_list = kzalloc(struct_size(opt_list, items, count), GFP_KERNEL);
-> +	opt_list = kzalloc(struct_size(opt_list, items, count),
-> +			   GFP_KERNEL_ACCOUNT);
->  	if (!opt_list) {
->  		kfree(src_copy);
->  		return ERR_PTR(-ENOMEM);
-> @@ -379,7 +380,7 @@ static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_namespace *ns,
->  	 * Immutable elements are copied over as pointers and data; only
->  	 * lsm rules can change
->  	 */
-> -	nentry = kmemdup(entry, sizeof(*nentry), GFP_KERNEL);
-> +	nentry = kmemdup(entry, sizeof(*nentry), GFP_KERNEL_ACCOUNT);
->  	if (!nentry)
->  		return NULL;
->  
-> @@ -826,7 +827,7 @@ static void add_rules(struct ima_namespace *ns,
->  
->  		if (policy_rule & IMA_CUSTOM_POLICY) {
->  			entry = kmemdup(&entries[i], sizeof(*entry),
-> -					GFP_KERNEL);
-> +					GFP_KERNEL_ACCOUNT);
->  			if (!entry)
->  				continue;
->  
-> @@ -863,7 +864,7 @@ static int __init ima_init_arch_policy(struct ima_namespace *ns)
->  
->  	ns->arch_policy_entry = kcalloc(arch_entries + 1,
->  					sizeof(*ns->arch_policy_entry),
-> -					GFP_KERNEL);
-> +					GFP_KERNEL_ACCOUNT);
->  	if (!ns->arch_policy_entry)
->  		return 0;
->  
-> @@ -975,8 +976,20 @@ void __init ima_init_policy(struct ima_namespace *ns)
->  /* Make sure we have a valid policy, at least containing some rules. */
->  int ima_check_policy(struct ima_namespace *ns)
->  {
-> +	struct ima_rule_entry *entry;
-> +	size_t len1 = 0;
-> +	size_t len2 = 0;
-> +
->  	if (list_empty(&ns->ima_temp_rules))
->  		return -EINVAL;
-> +	if (ns != &init_ima_ns) {
-> +		list_for_each_entry(entry, &ns->ima_temp_rules, list)
-> +			len1++;
-> +		list_for_each_entry(entry, &ns->ima_policy_rules, list)
-
-Using list_for_each_entry() is fine here, because multiple policy
-updates at the same time are blocked.  Please add a comment.
-
-> +			len2++;
-> +		if (len1 + len2 > 1024)
-
-One variable should be enough.
-
-> +			return -ENOSPC;
-> +	}
->  	return 0;
->  }
->  
-> @@ -1848,7 +1861,7 @@ ssize_t ima_parse_add_rule(struct ima_namespace *ns, char *rule)
->  	if (*p == '#' || *p == '\0')
->  		return len;
->  
-> -	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL_ACCOUNT);
->  	if (!entry) {
->  		integrity_audit_msg(AUDIT_INTEGRITY_STATUS, NULL,
->  				    NULL, op, "-ENOMEM", -ENOMEM, audit_info);
+ .../devicetree/bindings/sound/qcom,lpass-cpu.yaml  |  75 ++-
+ sound/soc/qcom/Kconfig                             |  11 +
+ sound/soc/qcom/Makefile                            |   4 +
+ sound/soc/qcom/lpass-cdc-dma.c                     | 301 ++++++++++
+ sound/soc/qcom/lpass-cpu.c                         | 252 ++++++++-
+ sound/soc/qcom/lpass-lpaif-reg.h                   | 127 ++++-
+ sound/soc/qcom/lpass-platform.c                    | 628 ++++++++++++++++++---
+ sound/soc/qcom/lpass-sc7280.c                      | 447 +++++++++++++++
+ sound/soc/qcom/lpass.h                             | 143 +++++
+ 9 files changed, 1900 insertions(+), 88 deletions(-)
+ create mode 100644 sound/soc/qcom/lpass-cdc-dma.c
+ create mode 100644 sound/soc/qcom/lpass-sc7280.c
 
 -- 
-thanks,
-
-Mimi
+2.7.4
 
