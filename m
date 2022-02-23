@@ -2,107 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD50CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238511AbiBWHBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:01:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        id S238523AbiBWHC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:02:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233368AbiBWHBU (ORCPT
+        with ESMTP id S238513AbiBWHC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:01:20 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613B549C82;
-        Tue, 22 Feb 2022 23:00:53 -0800 (PST)
+        Wed, 23 Feb 2022 02:02:26 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8962F36B6B
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:01:59 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id c1so4344055pgk.11
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:01:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645599653; x=1677135653;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=P8IB5i4i8mccW/2mm5mdBV6fgyPwz4NSzRZVqW15XCw=;
-  b=PYm9O+WRwZkcs2lBRKgPWNCB7V2uSXVyXtvpYZ1yKyUR1YQsvXonsjbB
-   wAUxOaEEOo7S/KwirSgjEA/yP9x7P0eeD4tGYj73vecgNxVIbLru5wnz2
-   ScB4sDqUMpzMOmgkx2/Bjaq7DHpIEOv9k830Z6nTSScYUEKxpfrwBTj0f
-   Y=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Feb 2022 23:00:52 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 23:00:51 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 22 Feb 2022 23:00:51 -0800
-Received: from [10.216.58.51] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 22 Feb
- 2022 23:00:45 -0800
-Message-ID: <9a618cb6-c528-94f1-c10c-248e2a04aa13@quicinc.com>
-Date:   Wed, 23 Feb 2022 12:30:42 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 5/7] pinctrl: qcom: Extract chip specific LPASS LPI
- code
-Content-Language: en-US
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>, <agross@kernel.org>,
-        <alsa-devel@alsa-project.org>, <bgoswami@codeaurora.org>,
-        <bjorn.andersson@linaro.org>, <broonie@kernel.org>,
-        <devicetree@vger.kernel.org>, <judyhsiao@chromium.org>,
-        <lgirdwood@gmail.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <perex@perex.cz>, <quic_plai@quicinc.com>, <robh+dt@kernel.org>,
-        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
-        <tiwai@suse.com>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
- <1644851994-22732-6-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n53-GRneymVoac=AT6M17aYseS88vM-o1xZxmk8sFQOYhw@mail.gmail.com>
- <ee5004ea-0aa9-b7ef-061a-e07d0d47c7c6@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <ee5004ea-0aa9-b7ef-061a-e07d0d47c7c6@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=PWtkAfYu/9B+oPvGm4+64ny3S1ewos9AVUwAN6S/0ao=;
+        b=j2n/wZoXzWWrjxmFte+sg2ojatUrb3DXEDYZH3Dd6gWkpBo+nX3FUH86bJczmZ5uKk
+         FteFXLVHyg9QNx24ryD7cgLrs7Ti6yHIFaFmUCalBd9KES+zIJsPtA0YDmS+V7hAeedm
+         g0M04sHpjeOxJDjddVNdgE2iauhR85wIwx1PamvovcMrXuh1JyclqrORbY0DqQkjtJ7S
+         flM4A+MKmF1d48yxL0Es7UiQhp/NtjbBdVqJ1Fr1LN3/ui8I+g9os6Cr+jpNxaI8pihp
+         mOaFCGYhxjB1VsXTvO7mOEeqSg10ksUXaFpB9aTK3CkgeiSPZ8jPyHMEcnQFjmvNOAod
+         G1Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=PWtkAfYu/9B+oPvGm4+64ny3S1ewos9AVUwAN6S/0ao=;
+        b=7K4ijtcBSHqC3ujiqIybaNhR0k0Zn2WF6Ys9H9QQ9m7z9iO6Bb27+gqhZVucM+GvCi
+         h5d/05NGaFL76/NKe8z/tqwAluncE74mM49xFKwkce3SWKIJV8shBnWhNQNvy+I0TY1y
+         23r/WUJSSMbbPQGgp8SfBOoGnIKTHRB4J+FTgmXXGSApzFPuHGta6at29FXMfnIOieoD
+         IC+n7Y5uraU5uSqwMFs9fJGVpAPrKg0tDN6I7MXiBQRkOI56Gu5E4gUQXQx14Z/4a+a0
+         NfFg4OsvVL2gVx2LosDzHhEabEEjfT8IEB/CTT9jrtNifuJjED/OOvMTJvqcruDT8oVP
+         477g==
+X-Gm-Message-State: AOAM533aMWL4Khe7EiJ9F6S2VOQXY6suL1SFZELc7MtpYbTsHryZ2722
+        BBQfdgXZY9u/C+2l8VNJcT8=
+X-Google-Smtp-Source: ABdhPJzuXQgtqbv19KKVidIx/JatoGPzmKzQSJKT5rzOBo2ipDu6kXoYMlGuIbUUxlrQnWQmfum5FQ==
+X-Received: by 2002:a63:fe4a:0:b0:372:e047:bc20 with SMTP id x10-20020a63fe4a000000b00372e047bc20mr22270261pgj.339.1645599719054;
+        Tue, 22 Feb 2022 23:01:59 -0800 (PST)
+Received: from ubuntu.huawei.com ([119.3.119.21])
+        by smtp.googlemail.com with ESMTPSA id c13sm20327446pfi.177.2022.02.22.23.01.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Feb 2022 23:01:58 -0800 (PST)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     jirislaby@kernel.org
+Cc:     xiam0nd.tong@gmail.com, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] vt_ioctl: fix potential spectre v1 in VT_DISALLOCATE
+Date:   Wed, 23 Feb 2022 15:01:52 +0800
+Message-Id: <20220223070152.29159-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <d83ae2d5-ac46-a3b8-ee9a-12615a48e9d9@kernel.org>
+References: <d83ae2d5-ac46-a3b8-ee9a-12615a48e9d9@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 22 Feb 2022 09:00:08 +0100, Jiri Slaby wrote:
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-On 2/20/2022 12:02 AM, Srinivasa Rao Mandadapu (Temp) wrote:
->
-> On 2/19/2022 8:13 AM, Stephen Boyd wrote:
-> Thanks for Your time Stephen!!!
->> Quoting Srinivasa Rao Mandadapu (2022-02-14 07:19:52)
->>> diff --git a/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c 
->>> b/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
->>> new file mode 100644
->>> index 0000000..27e358e
->>> --- /dev/null
->>> +++ b/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
->>> @@ -0,0 +1,166 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
->>> + * Copyright (c) 2020 Linaro Ltd.
->>> + */
->>> +
->>> +#include <linux/clk.h>
->>> +#include <linux/gpio/driver.h>
->>> +#include <linux/module.h>
->>> +#include <linux/platform_device.h>
->>> +
->>> +#include "pinctrl-lpass-lpi.h"
->> Please include ../core.h here as well for the pin_group definition.
-> Okay. will add it.
+Already added in Patch v2, thanks!
 
-Actually, core.h was included in pinctrl-lpass-lpi.h. Including again 
-here giving redefinition errors.
-
-Already sent V8 with this change. will revert it and post again in v9.
-
+Best regards,
+--
+Xiaomeng Tong
