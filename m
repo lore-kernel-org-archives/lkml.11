@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C65A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236904AbiBWCbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:31:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        id S236930AbiBWCbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237119AbiBWCaU (ORCPT
+        with ESMTP id S236936AbiBWC3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:30:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2220357B02;
-        Tue, 22 Feb 2022 18:29:31 -0800 (PST)
+        Tue, 22 Feb 2022 21:29:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CEE541AB;
+        Tue, 22 Feb 2022 18:29:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC718B81E0F;
-        Wed, 23 Feb 2022 02:29:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B25C340F0;
-        Wed, 23 Feb 2022 02:29:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19FCFB81DD2;
+        Wed, 23 Feb 2022 02:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B70C340E8;
+        Wed, 23 Feb 2022 02:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583368;
-        bh=Y0ydCJdLcvb/muRQhxCjXoK2Jvm2kqf39/xsowfr3bs=;
+        s=k20201202; t=1645583339;
+        bh=kS8D6bkfgqqgmMhggKntZnsLULvt63AbdUvRgellOS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QgBf9pPdj8QtBLHi1sUKas7k/fodj/UflX3qMTVdwbD5qC1eCgx7dh4knX58qDMSF
-         oNonO52BH6KZDFB2nsw1k54y+qqr21Q+aqADvDDHfNtHeF7w99hdBKSZTjo4ZEIojQ
-         Za96nJzWfl+1Stv+8+xXyCY422CRL2UfOS34EBQyIf5epItB0J4hcszRQXxSkrQSF5
-         Oi/c2K9ksIIeTDK0NUO2kzXSD6/Rr6y/MH/gZVQboYeG02NTSWDrJn3Ig0Lk/JVOrv
-         SqwHHtKZysnpIcIMUOklefHbFWPZH1ljP8ugv60MtrIMnKNzDaXIh8YgPa/BJW+MlH
-         Ww5g+O7qQQnXQ==
+        b=Grlcqg4NocKZlNVn/5Et/3ZED/Yg9IuYVcCjDIZqi+N6TZGkj78d8wB7jUP9vAGTJ
+         L+cau7zJiLXcIE1XMHXzRh5hblbOgi7nFqycbaIHD2bqjyioVjgtyckCzlrHCvXDpk
+         tN+WZuzZTfSY+2FaKQn59ZjuGJoKHzv4Vi73hR/028eavCITWJ/d70+vvLKALNO3IF
+         Jr0L0o16FCYWJgV+EiMTNq9LBUv1zyk3WRpXcSv+77g82mkaW148QHtfMquHijxsFs
+         X+NivdK0rC502bT220Lw37brXQNBD/5ODwsF7DWgjhd3cAr1+8zZTUDlIq+BeaiN6Y
+         hwYXAjPWL3+eg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 30/30] block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
-Date:   Tue, 22 Feb 2022 21:28:19 -0500
-Message-Id: <20220223022820.240649-30-sashal@kernel.org>
+Cc:     Ronnie Sahlberg <lsahlber@redhat.com>,
+        Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.16 20/30] cifs: modefromsids must add an ACE for authenticated users
+Date:   Tue, 22 Feb 2022 21:28:09 -0500
+Message-Id: <20220223022820.240649-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220223022820.240649-1-sashal@kernel.org>
 References: <20220223022820.240649-1-sashal@kernel.org>
@@ -52,36 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs.kernel@gmail.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-[ Upstream commit cc8f7fe1f5eab010191aa4570f27641876fa1267 ]
+[ Upstream commit 0c6f4ebf8835d01866eb686d47578cde80097981 ]
 
-Add __GFP_ZERO flag for alloc_page in function bio_copy_kern to initialize
-the buffer of a bio.
+When we create a file with modefromsids we set an ACL that
+has one ACE for the magic modefromsid as well as a second ACE that
+grants full access to all authenticated users.
 
-Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220216084038.15635-1-tcs.kernel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+When later we chante the mode on the file we strip away this, and other,
+ACE for authenticated users in set_chmod_dacl() and then just add back/update
+the modefromsid ACE.
+Thus leaving the file with a single ACE that is for the mode and no ACE
+to grant any user any rights to access the file.
+Fix this by always adding back also the modefromsid ACE so that we do not
+drop the rights to access the file.
+
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-map.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cifs/cifsacl.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-map.c b/block/blk-map.c
-index 4526adde01564..c7f71d83eff18 100644
---- a/block/blk-map.c
-+++ b/block/blk-map.c
-@@ -446,7 +446,7 @@ static struct bio *bio_copy_kern(struct request_queue *q, void *data,
- 		if (bytes > len)
- 			bytes = len;
+diff --git a/fs/cifs/cifsacl.c b/fs/cifs/cifsacl.c
+index 5df21d63dd04e..bf861fef2f0c3 100644
+--- a/fs/cifs/cifsacl.c
++++ b/fs/cifs/cifsacl.c
+@@ -949,6 +949,9 @@ static void populate_new_aces(char *nacl_base,
+ 		pnntace = (struct cifs_ace *) (nacl_base + nsize);
+ 		nsize += setup_special_mode_ACE(pnntace, nmode);
+ 		num_aces++;
++		pnntace = (struct cifs_ace *) (nacl_base + nsize);
++		nsize += setup_authusers_ACE(pnntace);
++		num_aces++;
+ 		goto set_size;
+ 	}
  
--		page = alloc_page(GFP_NOIO | gfp_mask);
-+		page = alloc_page(GFP_NOIO | __GFP_ZERO | gfp_mask);
- 		if (!page)
- 			goto cleanup;
- 
+@@ -1613,7 +1616,7 @@ id_mode_to_cifs_acl(struct inode *inode, const char *path, __u64 *pnmode,
+ 	nsecdesclen = secdesclen;
+ 	if (pnmode && *pnmode != NO_CHANGE_64) { /* chmod */
+ 		if (mode_from_sid)
+-			nsecdesclen += sizeof(struct cifs_ace);
++			nsecdesclen += 2 * sizeof(struct cifs_ace);
+ 		else /* cifsacl */
+ 			nsecdesclen += 5 * sizeof(struct cifs_ace);
+ 	} else { /* chown */
 -- 
 2.34.1
 
