@@ -2,282 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658ABC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242235AbiBWPki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:40:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
+        id S242220AbiBWPkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:40:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242226AbiBWPk3 (ORCPT
+        with ESMTP id S242225AbiBWPkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:40:29 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBC0BE1DE;
-        Wed, 23 Feb 2022 07:39:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645630799; x=1677166799;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ngCYcUx+P6Dtxjl7rqG1A3PsNFvM/gX6DS/1nmW25EY=;
-  b=cTvF5s2IFnhcWqKQ5hixCdKvNsqv4FTaWz6WlNOiKAWYVcLRDr4o7iTi
-   GmGbSBaICMjPmrVFPx2gt3Tnf5MULQ6dIJ+kqc7NlFkVMcMtai4uEIoC9
-   vPdrNI2+8BcSlUH/vT54ObNAkFDJZA0k7/qaMRSNhLA7LxPY4ykGSXdVZ
-   M=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 07:39:59 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:39:58 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 07:39:58 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 07:39:53 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v15 06/10] ASoC: qcom: Add regmap config support for codec dma driver
-Date:   Wed, 23 Feb 2022 21:09:01 +0530
-Message-ID: <1645630745-25051-7-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645630745-25051-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1645630745-25051-1-git-send-email-quic_srivasam@quicinc.com>
+        Wed, 23 Feb 2022 10:40:35 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DCCBD896;
+        Wed, 23 Feb 2022 07:40:04 -0800 (PST)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 89B7AC000D;
+        Wed, 23 Feb 2022 15:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645630803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SIImQW6Wz47dS7gZcpaHZzfA86jdmHRDoD5Bd/gJF4A=;
+        b=gIZpZpEmH+0XGOppwuovDbnnlfAWy1UVi32GSrfrYn2T5xalCQSYQpt2C/uYQndCGPW1tJ
+        Ey5mcCnRKG2xmE+pWETCoASGM5HM4b+qHYOoJsB+tTwUR2Me2c4X1pr+yppYT3fKQxbQZG
+        pPsuhvBc265xwJAsP67JAxzPCL2KPQM888flzeJVgcFUUro8RvceNHNN3QF+INkrKoMG4n
+        /0Ig84edaifDW0zLIzhZvQkAslUVbaXM4QjvMXftQWUb5Mkh8qfiajkjoeLUrmTLM8xbc2
+        1FzHNY997E409FvkDhcovNNg9Te5W7HpxPmquj2xe59uR75XSV5mt0QkTCVOoQ==
+Date:   Wed, 23 Feb 2022 16:38:40 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
+Message-ID: <20220223163840.444f84fd@fixe.home>
+In-Reply-To: <YhZRgnPG5Yd8mvc/@lunn.ch>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+        <20220221162652.103834-11-clement.leger@bootlin.com>
+        <YhPSkz8+BIcdb72R@smile.fi.intel.com>
+        <20220222142513.026ad98c@fixe.home>
+        <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
+        <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
+        <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
+        <4d611fe8-b82a-1709-507a-56be94263688@redhat.com>
+        <20220223151436.4798e5ad@fixe.home>
+        <YhZRgnPG5Yd8mvc/@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update regmap configuration for supporting headset playback and
-capture and DMIC capture using codec dma interface
+Le Wed, 23 Feb 2022 16:23:46 +0100,
+Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- sound/soc/qcom/lpass-cpu.c | 185 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 185 insertions(+)
+> > As Russell asked, I'm also really interested if someone has a solution
+> > to reuse device-tree description (overlays ?) to describe such
+> > hardware. However, the fact that CONFIG_OF isn't enabled on x86 config
+> > seems a bit complicated on this side. =20
+>=20
+> It does work, intel even used it for one of there tiny x86 SoCs. Maybe
+> it was Newton? If you search around you can find maybe a Linux
+> Plumbers presentation about DT and x86.
 
-diff --git a/sound/soc/qcom/lpass-cpu.c b/sound/soc/qcom/lpass-cpu.c
-index 3bd9eb3..4fb9669 100644
---- a/sound/soc/qcom/lpass-cpu.c
-+++ b/sound/soc/qcom/lpass-cpu.c
-@@ -28,6 +28,8 @@
- #define LPASS_CPU_I2S_SD2_3_MASK	GENMASK(3, 2)
- #define LPASS_CPU_I2S_SD0_1_2_MASK	GENMASK(2, 0)
- #define LPASS_CPU_I2S_SD0_1_2_3_MASK	GENMASK(3, 0)
-+#define LPASS_REG_READ 1
-+#define LPASS_REG_WRITE 0
- 
- /*
-  * Channel maps for Quad channel playbacks on MI2S Secondary
-@@ -798,6 +800,189 @@ static struct regmap_config lpass_hdmi_regmap_config = {
- 	.cache_type = REGCACHE_FLAT,
- };
- 
-+static bool __lpass_rxtx_regmap_accessible(struct device *dev, unsigned int reg, bool rw)
-+{
-+	struct lpass_data *drvdata = dev_get_drvdata(dev);
-+	struct lpass_variant *v = drvdata->variant;
-+	int i;
-+
-+	for (i = 0; i < v->rxtx_irq_ports; ++i) {
-+		if (reg == LPAIF_RXTX_IRQCLEAR_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_RXTX_IRQEN_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_RXTX_IRQSTAT_REG(v, i))
-+			return true;
-+	}
-+
-+	for (i = 0; i < v->rxtx_rdma_channels; ++i) {
-+		if (reg == LPAIF_CDC_RXTX_RDMACTL_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_RDMABASE_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_RDMABUFF_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+		if (rw == LPASS_REG_READ) {
-+			if (reg == LPAIF_CDC_RXTX_RDMACURR_REG(v, i, LPASS_CDC_DMA_RX0))
-+				return true;
-+		}
-+		if (reg == LPAIF_CDC_RXTX_RDMAPER_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_RDMA_INTF_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+	}
-+
-+	for (i = 0; i < v->rxtx_wrdma_channels; ++i) {
-+		if (reg == LPAIF_CDC_RXTX_WRDMACTL_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_WRDMABASE_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_WRDMABUFF_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+		if (rw == LPASS_REG_READ) {
-+			if (reg == LPAIF_CDC_RXTX_WRDMACURR_REG(v, i, LPASS_CDC_DMA_RX0))
-+				return true;
-+		}
-+		if (reg == LPAIF_CDC_RXTX_WRDMAPER_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+		if (reg == LPAIF_CDC_RXTX_WRDMA_INTF_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+	}
-+	return false;
-+}
-+
-+static bool lpass_rxtx_regmap_writeable(struct device *dev, unsigned int reg)
-+{
-+	return __lpass_rxtx_regmap_accessible(dev, reg, LPASS_REG_WRITE);
-+}
-+
-+static bool lpass_rxtx_regmap_readable(struct device *dev, unsigned int reg)
-+{
-+	return __lpass_rxtx_regmap_accessible(dev, reg, LPASS_REG_READ);
-+}
-+
-+static bool lpass_rxtx_regmap_volatile(struct device *dev, unsigned int reg)
-+{
-+	struct lpass_data *drvdata = dev_get_drvdata(dev);
-+	struct lpass_variant *v = drvdata->variant;
-+	int i;
-+
-+	for (i = 0; i < v->rxtx_irq_ports; ++i) {
-+		if (reg == LPAIF_RXTX_IRQCLEAR_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_RXTX_IRQSTAT_REG(v, i))
-+			return true;
-+	}
-+
-+	for (i = 0; i < v->rxtx_rdma_channels; ++i)
-+		if (reg == LPAIF_CDC_RXTX_RDMACURR_REG(v, i, LPASS_CDC_DMA_RX0))
-+			return true;
-+
-+	for (i = 0; i < v->rxtx_wrdma_channels; ++i)
-+		if (reg == LPAIF_CDC_RXTX_WRDMACURR_REG(v, i + v->rxtx_wrdma_channel_start,
-+							LPASS_CDC_DMA_TX3))
-+			return true;
-+
-+	return false;
-+}
-+
-+static bool __lpass_va_regmap_accessible(struct device *dev, unsigned int reg, bool rw)
-+{
-+	struct lpass_data *drvdata = dev_get_drvdata(dev);
-+	struct lpass_variant *v = drvdata->variant;
-+	int i;
-+
-+	for (i = 0; i < v->va_irq_ports; ++i) {
-+		if (reg == LPAIF_VA_IRQCLEAR_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_VA_IRQEN_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_VA_IRQSTAT_REG(v, i))
-+			return true;
-+	}
-+
-+	for (i = 0; i < v->va_wrdma_channels; ++i) {
-+		if (reg == LPAIF_CDC_VA_WRDMACTL_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+		if (reg == LPAIF_CDC_VA_WRDMABASE_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+		if (reg == LPAIF_CDC_VA_WRDMABUFF_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+		if (rw == LPASS_REG_READ) {
-+			if (reg == LPAIF_CDC_VA_WRDMACURR_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+				return true;
-+		}
-+		if (reg == LPAIF_CDC_VA_WRDMAPER_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+		if (reg == LPAIF_CDC_VA_WRDMA_INTF_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+	}
-+	return false;
-+}
-+
-+static bool lpass_va_regmap_writeable(struct device *dev, unsigned int reg)
-+{
-+	return __lpass_va_regmap_accessible(dev, reg, LPASS_REG_WRITE);
-+}
-+
-+static bool lpass_va_regmap_readable(struct device *dev, unsigned int reg)
-+{
-+	return __lpass_va_regmap_accessible(dev, reg, LPASS_REG_READ);
-+}
-+
-+static bool lpass_va_regmap_volatile(struct device *dev, unsigned int reg)
-+{
-+	struct lpass_data *drvdata = dev_get_drvdata(dev);
-+	struct lpass_variant *v = drvdata->variant;
-+	int i;
-+
-+	for (i = 0; i < v->va_irq_ports; ++i) {
-+		if (reg == LPAIF_VA_IRQCLEAR_REG(v, i))
-+			return true;
-+		if (reg == LPAIF_VA_IRQSTAT_REG(v, i))
-+			return true;
-+	}
-+
-+	for (i = 0; i < v->va_wrdma_channels; ++i) {
-+		if (reg == LPAIF_CDC_VA_WRDMACURR_REG(v, i + v->va_wrdma_channel_start,
-+							LPASS_CDC_DMA_VA_TX0))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+static struct regmap_config lpass_rxtx_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.writeable_reg = lpass_rxtx_regmap_writeable,
-+	.readable_reg = lpass_rxtx_regmap_readable,
-+	.volatile_reg = lpass_rxtx_regmap_volatile,
-+	.cache_type = REGCACHE_FLAT,
-+};
-+
-+static struct regmap_config lpass_va_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.writeable_reg = lpass_va_regmap_writeable,
-+	.readable_reg = lpass_va_regmap_readable,
-+	.volatile_reg = lpass_va_regmap_volatile,
-+	.cache_type = REGCACHE_FLAT,
-+};
-+
- static unsigned int of_lpass_cpu_parse_sd_lines(struct device *dev,
- 						struct device_node *node,
- 						const char *name)
--- 
-2.7.4
+Oh yes, I know it works and I tried loading an overlay using CONFIG_OF
+on a x86. Currently it does not works and generate a oops due to the
+fact that the lack of "/" node is not handled and that the error path
+has probably not been thoroughly tested. Adress remapping for PCI and
+lack of PCI bus description might also be a bit cumbersome but maybe
+this is the way to go.
 
+I was saying a "bit complicated" as it is not often used and it would
+require enabling CONFIG_OF to support this feature as well as allowing
+loading overlays without any root node. But this is probably something
+that is also achievable.
+
+>=20
+> You can probably use a udev rule, triggered by the PCIe device ID to
+> load the DT overlay.
+
+Or maybe load the overlay from the PCIe driver ? This would also allow
+to introduce some remapping of addresses (see below) inside the driver
+maybe.
+
+>=20
+> Do you actually need anything from the host other than PCIe? It sounds
+> like this card is pretty self contained, so you won't need phandles
+> pointing to the host i2c bus, or the hosts GPIOs? You only need
+> phandles to your own i2c bus, your own GPIOs? That will make the
+> overlay much simpler.
+
+Yes, the device is almost self contained, only the IRQ needs to be
+chained with the MSI.
+
+>=20
+> 	Andrew
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
