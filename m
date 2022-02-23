@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D43C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241216AbiBWNpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:45:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S241221AbiBWNp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:45:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241086AbiBWNow (ORCPT
+        with ESMTP id S241078AbiBWNov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:44:52 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80A1AC92C
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:15 -0800 (PST)
+        Wed, 23 Feb 2022 08:44:51 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4ACAC922
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:14 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2689822247;
-        Wed, 23 Feb 2022 14:44:14 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 355182245C;
+        Wed, 23 Feb 2022 14:44:12 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645623854;
+        t=1645623852;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IYl3MKifzSCwZWqS6/ku6kfSrHMIJbi0hdEtx6Zps4Q=;
-        b=f4uQw8k2do7sbYOn3ZVI0bhMOfRKBUnSrIsgaiHyYYAAOj6cL9VKOY4/3KFx/PcdhrrezF
-        mTf8ya9Yr5uPLNe/jUbpqUuQV4Z5YsVXcQbprNdpfZPiWyD6luiRM8ijSX8HthWTXjX4A0
-        DNC5h/WAjC+RBWeZVQJzXWPbaC18sc4=
+        bh=hXOPL5cPITB5pX8C9uT9seIIQT64+6BMqwNdfPuDNQU=;
+        b=DbjKo8dsPWkQtCCu8eWB0m8tXqheMabXvmk9yM+ZiobdO+1SZnfq6BqoZZOSBLFCYgaSjY
+        gNz6EVsTw/6KpAiqjyBG1ic4PbZLpahUxPQ/8iZwXUTOuNOVKNR4diOQXGnOX/UUczbp6n
+        3sBevsMWo+gLNLamEUChQQruhMUfYuU=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 22/32] mtd: spi-nor: xilinx: rename vendor specific functions and defines
-Date:   Wed, 23 Feb 2022 14:43:48 +0100
-Message-Id: <20220223134358.1914798-23-michael@walle.cc>
+Subject: [PATCH v5 18/32] mtd: spi-nor: allow a flash to define its own ready() function
+Date:   Wed, 23 Feb 2022 14:43:44 +0100
+Message-Id: <20220223134358.1914798-19-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223134358.1914798-1-michael@walle.cc>
 References: <20220223134358.1914798-1-michael@walle.cc>
@@ -51,111 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the generic spi_nor prefix for all the xilinx functions.
+Xilinx and Micron flashes have their own implementation of the
+spi_nor_ready() function. At the moment, the core will figure out
+which one to call according to some flags. Lay the foundation to
+make it possible that a flash can register its own ready()
+function.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/xilinx.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/mtd/spi-nor/core.c | 4 ++++
+ drivers/mtd/spi-nor/core.h | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 05c7fe843a7d..ffd5579d45cb 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -8,9 +8,9 @@
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 4d2036cdce42..390a9ab413b7 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -794,6 +794,10 @@ static int spi_nor_ready(struct spi_nor *nor)
+ {
+ 	int sr, fsr;
  
- #include "core.h"
- 
--#define SPINOR_OP_XSE		0x50	/* Sector erase */
--#define SPINOR_OP_XPP		0x82	/* Page program */
--#define SPINOR_OP_XRDSR		0xd7	/* Read status register */
-+#define XILINX_OP_SE		0x50	/* Sector erase */
-+#define XILINX_OP_PP		0x82	/* Page program */
-+#define XILINX_OP_RDSR		0xd7	/* Read status register */
- 
- #define XSR_PAGESIZE		BIT(0)	/* Page size in Po2 or Linear */
- #define XSR_RDY			BIT(7)	/* Ready */
-@@ -60,20 +60,20 @@ static u32 s3an_nor_convert_addr(struct spi_nor *nor, u32 addr)
- }
- 
- /**
-- * spi_nor_xread_sr() - Read the Status Register on S3AN flashes.
-+ * xilinx_nor_read_sr() - Read the Status Register on S3AN flashes.
-  * @nor:	pointer to 'struct spi_nor'.
-  * @sr:		pointer to a DMA-able buffer where the value of the
-  *              Status Register will be written.
-  *
-  * Return: 0 on success, -errno otherwise.
++	/* Flashes might override the standard routine. */
++	if (nor->params->ready)
++		return nor->params->ready(nor);
++
+ 	if (nor->flags & SNOR_F_READY_XSR_RDY)
+ 		sr = spi_nor_xsr_ready(nor);
+ 	else
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 4fe16b5aa3f5..fdc8c0f31f5c 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -261,6 +261,9 @@ struct spi_nor_otp {
+  *			SPI NOR flashes that have peculiarities to the SPI NOR
+  *			standard e.g. different opcodes, specific address
+  *			calculation, page size, etc.
++ * @ready:		(optional) flashes might use a different mechanism
++ *			than reading the status register to indicate they
++ *			are ready for a new command
+  * @locking_ops:	SPI NOR locking methods.
   */
--static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
-+static int xilinx_nor_read_sr(struct spi_nor *nor, u8 *sr)
- {
- 	int ret;
+ struct spi_nor_flash_parameter {
+@@ -282,6 +285,7 @@ struct spi_nor_flash_parameter {
+ 	int (*set_4byte_addr_mode)(struct spi_nor *nor, bool enable);
+ 	u32 (*convert_addr)(struct spi_nor *nor, u32 addr);
+ 	int (*setup)(struct spi_nor *nor, const struct spi_nor_hwcaps *hwcaps);
++	int (*ready)(struct spi_nor *nor);
  
- 	if (nor->spimem) {
- 		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_XRDSR, 0),
-+			SPI_MEM_OP(SPI_MEM_OP_CMD(XILINX_OP_RDSR, 0),
- 				   SPI_MEM_OP_NO_ADDR,
- 				   SPI_MEM_OP_NO_DUMMY,
- 				   SPI_MEM_OP_DATA_IN(1, sr, 0));
-@@ -82,7 +82,7 @@ static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
- 
- 		ret = spi_mem_exec_op(nor->spimem, &op);
- 	} else {
--		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_XRDSR, sr,
-+		ret = spi_nor_controller_ops_read_reg(nor, XILINX_OP_RDSR, sr,
- 						      1);
- 	}
- 
-@@ -93,17 +93,17 @@ static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
- }
- 
- /**
-- * spi_nor_xsr_ready() - Query the Status Register of the S3AN flash to see if
-- * the flash is ready for new commands.
-+ * xilinx_nor_sr_ready() - Query the Status Register of the S3AN flash to see
-+ * if the flash is ready for new commands.
-  * @nor:	pointer to 'struct spi_nor'.
-  *
-  * Return: 1 if ready, 0 if not ready, -errno on errors.
-  */
--static int spi_nor_xsr_ready(struct spi_nor *nor)
-+static int xilinx_nor_sr_ready(struct spi_nor *nor)
- {
- 	int ret;
- 
--	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
-+	ret = xilinx_nor_read_sr(nor, nor->bouncebuf);
- 	if (ret)
- 		return ret;
- 
-@@ -116,12 +116,12 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- 	u32 page_size;
- 	int ret;
- 
--	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
-+	ret = xilinx_nor_read_sr(nor, nor->bouncebuf);
- 	if (ret)
- 		return ret;
- 
--	nor->erase_opcode = SPINOR_OP_XSE;
--	nor->program_opcode = SPINOR_OP_XPP;
-+	nor->erase_opcode = XILINX_OP_SE;
-+	nor->program_opcode = XILINX_OP_PP;
- 	nor->read_opcode = SPINOR_OP_READ;
- 	nor->flags |= SNOR_F_NO_OP_CHIP_ERASE;
- 
-@@ -155,7 +155,7 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- static void xilinx_nor_late_init(struct spi_nor *nor)
- {
- 	nor->params->setup = xilinx_nor_setup;
--	nor->params->ready = spi_nor_xsr_ready;
-+	nor->params->ready = xilinx_nor_sr_ready;
- }
- 
- static const struct spi_nor_fixups xilinx_nor_fixups = {
+ 	const struct spi_nor_locking_ops *locking_ops;
+ };
 -- 
 2.30.2
 
