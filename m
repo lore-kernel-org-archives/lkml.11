@@ -2,95 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C74C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2003C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242045AbiBWP2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:28:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        id S242068AbiBWP3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:29:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232586AbiBWP2W (ORCPT
+        with ESMTP id S232535AbiBWP3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:28:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27256593BC;
-        Wed, 23 Feb 2022 07:27:55 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D097A21637;
-        Wed, 23 Feb 2022 15:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645630073;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3FUhPQarNWrhGr4m2gNeysZcuzjEBU8QonfmZqFkhwg=;
-        b=Gwx4JXhqNYI+8pCgbWW5r6+eUYyL9vqm2RRPkC7EMCHlmj5rplJGjMI0Z3oomsH96JlZMX
-        Ftjo93oJcMmZN9WVx9ZREiwTpwMPJRrrA33JknO94BqsEJi90rdvITSZUWd2LewXxsOkgq
-        GYqQMTQ0GTEaYRoizFVFlAzZ02xdSsk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645630073;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3FUhPQarNWrhGr4m2gNeysZcuzjEBU8QonfmZqFkhwg=;
-        b=2/L9RvuUBNywcU0Y+N+TaZUkAOiL2ZjWGKn7MAHm5CUmDDnO0r8sO45ce62PSJMojqBeZ1
-        5TbJbuQcQy65DoAA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id C4741A3B87;
-        Wed, 23 Feb 2022 15:27:53 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 45407DA7F7; Wed, 23 Feb 2022 16:24:05 +0100 (CET)
-Date:   Wed, 23 Feb 2022 16:24:05 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3] btrfs: add fs state details to error messages.
-Message-ID: <20220223152405.GO12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me>
+        Wed, 23 Feb 2022 10:29:07 -0500
+Received: from winds.org (winds.org [68.75.195.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6432959A57;
+        Wed, 23 Feb 2022 07:28:39 -0800 (PST)
+Received: by winds.org (Postfix, from userid 100)
+        id 10DA01CA58FD; Wed, 23 Feb 2022 10:28:39 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by winds.org (Postfix) with ESMTP id 0F110124B482;
+        Wed, 23 Feb 2022 10:28:39 -0500 (EST)
+Date:   Wed, 23 Feb 2022 10:28:39 -0500 (EST)
+From:   Byron Stanoszek <gandalf@winds.org>
+To:     Dave Chinner <david@fromorbit.com>
+cc:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        reiserfs-devel@vger.kernel.org
+Subject: Re: Is it time to remove reiserfs?
+In-Reply-To: <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org>
+Message-ID: <1a5cd8ce-e7c7-5aa8-e475-ad7810e2f057@winds.org>
+References: <YhIwUEpymVzmytdp@casper.infradead.org> <20220222100408.cyrdjsv5eun5pzij@quack3.lan> <20220222221614.GC3061737@dread.disaster.area> <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 03:42:28PM -0500, Sweet Tea Dorminy wrote:
-> --- a/fs/btrfs/super.c
-> +++ b/fs/btrfs/super.c
-> @@ -66,6 +66,46 @@ static struct file_system_type btrfs_root_fs_type;
->  
->  static int btrfs_remount(struct super_block *sb, int *flags, char *data);
->  
-> +#define STATE_STRING_PREFACE ": state "
-> +#define STATE_STRING_BUF_LEN \
-> +	(sizeof(STATE_STRING_PREFACE) + BTRFS_FS_STATE_COUNT)
-> +
-> +/* Characters to print to indicate error conditions. RO is not an error. */
-> +static const char * const fs_state_strings[] = {
-> +	[BTRFS_FS_STATE_ERROR]			= "E",
-> +	[BTRFS_FS_STATE_REMOUNTING]		= "M",
-> +	[BTRFS_FS_STATE_RO]			= NULL,
-> +	[BTRFS_FS_STATE_TRANS_ABORTED]		= "A",
-> +	[BTRFS_FS_STATE_DEV_REPLACING]		= "P",
-> +	[BTRFS_FS_STATE_DUMMY_FS_INFO]		= NULL,
-> +	[BTRFS_FS_STATE_NO_CSUMS]		= NULL,
-> +	[BTRFS_FS_STATE_LOG_CLEANUP_ERROR]	= "L",
+On Wed, 23 Feb 2022, Byron Stanoszek wrote:
+> On Wed, 23 Feb 2022, Dave Chinner wrote:
+>>  On Tue, Feb 22, 2022 at 11:04:08AM +0100, Jan Kara wrote:
+>>>  Hello!
+>>>
+>>>  On Sun 20-02-22 12:13:04, Matthew Wilcox wrote:
+>>>>  Keeping reiserfs in the tree has certain costs.  For example, I would
+>>>>  very much like to remove the 'flags' argument to ->write_begin.  We have
+>>>>  the infrastructure in place to handle AOP_FLAG_NOFS differently, but
+>>>>  AOP_FLAG_CONT_EXPAND is still around, used only by reiserfs.
+>>>>
+>>>>  Looking over the patches to reiserfs over the past couple of years,
+>>>>  there
+>>>>  are fixes for a few syzbot reports and treewide changes.  There don't
+>>>>  seem to be any fixes for user-spotted bugs since 2019.  Does reiserfs
+>>>>  still have a large install base that is just very happy with an old
+>>>>  stable filesystem?  Or have all its users migrated to new and exciting
+>>>>  filesystems with active feature development?
+>>>>
+>>>>  We've removed support for senescent filesystems before (ext, xiafs), so
+>>>>  it's not unprecedented.  But while I have a clear idea of the benefits
+>>>>  to
+>>>>  other developers of removing reiserfs, I don't have enough information
+>>>>  to
+>>>>  weigh the costs to users.  Maybe they're happy with having 5.15 support
+>>>>  for their reiserfs filesystems and can migrate to another filesystem
+>>>>  before they upgrade their kernel after 5.15.
+>>>>
+>>>>  Another possibility beyond outright removal would be to trim the kernel
+>>>>  code down to read-only support for reiserfs.  Most of the quirks of
+>>>>  reiserfs have to do with write support, so this could be a useful way
+>>>>  forward.  Again, I don't have a clear picture of how people actually
+>>>>  use reiserfs, so I don't know whether it is useful or not.
+>>>>
+>>>>  NB: Please don't discuss the personalities involved.  This is purely a
+>>>>  "we have old code using old APIs" discussion.
+>>>
+>>>  So from my distro experience installed userbase of reiserfs is pretty
+>>>  small
+>>>  and shrinking. We still do build reiserfs in openSUSE / SLES kernels but
+>>>  for enterprise offerings it is unsupported (for like 3-4 years) and the
+>>>  module
+>>>  is not in the default kernel rpm anymore.
+>>>
+>>>  So clearly the filesystem is on the deprecation path, the question is
+>>>  whether it is far enough to remove it from the kernel completely. Maybe
+>>>  time to start deprecation by printing warnings when reiserfs gets mounted
+>>>  and then if nobody yells for year or two, we'll go ahead and remove it?
+>>
+>>  Yup, I'd say we should deprecate it and add it to the removal
+>>  schedule. The less poorly tested legacy filesystem code we have to
+>>  maintain the better.
+>>
+>>  Along those lines, I think we really need to be more aggressive
+>>  about deprecating and removing filesystems that cannot (or will not)
+>>  be made y2038k compliant in the new future. We're getting to close
+>>  to the point where long term distro and/or product development life
+>>  cycles will overlap with y2038k, so we should be thinking of
+>>  deprecating and removing such filesystems before they end up in
+>>  products that will still be in use in 15 years time.
+>>
+>>  And just so everyone in the discussion is aware: XFS already has a
+>>  deprecation and removal schedule for the non-y2038k-compliant v4
+>>  filesystem format. It's officially deprecated right now, we'll stop
+>>  building kernels with v4 support enabled by default in 2025, and
+>>  we're removing the code that supports the v4 format entirely in
+>>  2030.
+>
+> For what it's worth, I have a number of production servers still using
+> Reiserfs, which I regularly maintain by upgrading to the latest Linux kernel
+> annually (mostly to apply security patches). I figured this filesystem would
+> still be available for several more years, since it's not quite y2038k yet.
+>
+> I originally installed Reiserfs on these systems as early as 2005 due to the
+> tail-packing feature, which saved space with many small files on older
+> harddrives. Since then, I witnessed the development of ext4, and then btrfs.
+> For a long time, these newer filesystems had occasional reports of
+> instabilities and lost data, and so I shied away from using them. Meanwhile,
+> Reiserfs reached a level of maturity and no longer had active development on
+> it, except for the occasional bugfix. I felt this was a filesystem I could
+> trust going forward (despite its relative slowness), even after popular Linux
+> distributions eventually dropped it from being installed by default.
+>
+> I have only recently begun to use XFS on newer installs, only since the XFS
+> developers added bigtime support for y2038k. But for existing installs, I ask
+> that we keep Reiserfs supported in the kernel a little longer. Perhaps use
+> the same deprecation schedule that was picked for XFS v4 (roughly 10 years of
+> deprecation before eventual removal)?
 
-Yeah that's the idea with the table, but I think you don't need to use
-strings, it should be sufficient to use chars, and 0 works for the empty
-ones.  The way you did it consumes more memory and has indirection with
-the pointers to the actual single letter strings.
+Sorry, I meant to say 5 years here, not 10.
 
-I'm not sure if we want the non-error states like remounting or
-replacing, but actually why not, even if it's a transient state it's
-another piece of information that could be useful eventually.
+Thanks,
+  -Byron
+
