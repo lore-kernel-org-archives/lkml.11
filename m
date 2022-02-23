@@ -2,227 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EBAC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 988F6C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242601AbiBWQIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        id S242616AbiBWQIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:08:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242609AbiBWQHx (ORCPT
+        with ESMTP id S233313AbiBWQIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:07:53 -0500
+        Wed, 23 Feb 2022 11:08:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EFC42EDC;
-        Wed, 23 Feb 2022 08:07:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5139B7173;
+        Wed, 23 Feb 2022 08:08:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49ED161926;
-        Wed, 23 Feb 2022 16:07:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2564BC340E7;
-        Wed, 23 Feb 2022 16:07:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645632443;
-        bh=Z34PCtXMMsF3CAqfeAJGNk1FOL8QxYRwGsxHBin6cUQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SBQId/o0oYtkOWz3frKGtl9gGu+5eSCVVPDH/2mihwFhxIqZtvNqC6Ua/gknPlXCC
-         6SUeq4kggreTtuMHRtYXcCULyv5O4jnl7IkrqgaL5cz3JNpUtKDLX3EOGIH8KK1Xj6
-         h/rTbu1lze8+A+ZQQbjPSZMd+LVVJh4JviM0Afl8=
-Date:   Wed, 23 Feb 2022 17:07:20 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     SeongJae Park <sj@kernel.org>
-Cc:     akpm@linux-foundation.org, corbet@lwn.net,
-        skhan@linuxfoundation.org, rientjes@google.com,
-        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/12] Introduce DAMON sysfs interface
-Message-ID: <YhZbuCcK8rW1rA6Z@kroah.com>
-References: <20220223152051.22936-1-sj@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81A3F61849;
+        Wed, 23 Feb 2022 16:08:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 376CFC340F0;
+        Wed, 23 Feb 2022 16:08:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fp8CajXh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645632494;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KIfU5+oFhsOwMYUUwLOIak3Q1ZR1ObTglPpSCZ1RML0=;
+        b=fp8CajXhg/qqnzjg/+OKoKtXE7i8z7f2ykur7nX/GB/hD+f7/dV1RY9KKe4G1DxwKh6DK5
+        cqo8wAQC1pRcZmVtHctFFglh0DpHTv+MLl3DOX6VZabKMGwj0jD3qeGhHbhyao9/VfbV8E
+        JSbLF/0HVctMQO6V/BCKxqwnWMp9lRQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 452aba86 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 23 Feb 2022 16:08:14 +0000 (UTC)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2d79394434dso73650937b3.5;
+        Wed, 23 Feb 2022 08:08:14 -0800 (PST)
+X-Gm-Message-State: AOAM531SpwA0aYZJEUwHUWYxsTOW5hsY1M9gRL+/1t914cdpotw5Uk3P
+        0nTsx7t/tb3s8+/6YXu9OyXxEh3IFRbJh000SSU=
+X-Google-Smtp-Source: ABdhPJy33A74qQdK52dpScB33s7jynPhLN4qjTE0dJTavDUA51Mn+CllONCLBg2IducogWoxWZTIJEkJ7l0DRx6DAd8=
+X-Received: by 2002:a81:7d04:0:b0:2d0:d0e2:126f with SMTP id
+ y4-20020a817d04000000b002d0d0e2126fmr288331ywc.485.1645632492376; Wed, 23 Feb
+ 2022 08:08:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220223152051.22936-1-sj@kernel.org>
+References: <20220223131231.403386-1-Jason@zx2c4.com>
+In-Reply-To: <20220223131231.403386-1-Jason@zx2c4.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 23 Feb 2022 17:08:01 +0100
+X-Gmail-Original-Message-ID: <CAHmME9ogH_mx724n_deFfva7-xPCmma1-=2Mv0JdnZ-fC4JCjg@mail.gmail.com>
+Message-ID: <CAHmME9ogH_mx724n_deFfva7-xPCmma1-=2Mv0JdnZ-fC4JCjg@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 0/2] VM fork detection for RNG
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        KVM list <kvm@vger.kernel.org>, linux-s390@vger.kernel.org,
+        adrian@parity.io
+Cc:     "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Catangiu, Adrian Costin" <acatan@amazon.com>, graf@amazon.com,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        "Singh, Balbir" <sblbir@amazon.com>,
+        "Weiss, Radu" <raduweis@amazon.com>, Jann Horn <jannh@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Igor Mammedov <imammedo@redhat.com>, ehabkost@redhat.com,
+        ben@skyportsystems.com, "Michael S. Tsirkin" <mst@redhat.com>,
+        lersek@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 03:20:39PM +0000, SeongJae Park wrote:
-> Chages from Previous Version (RFC)
-> ==================================
-> 
-> Compared to the RFC version of this patchset
-> (https://lore.kernel.org/linux-mm/20220217161938.8874-1-sj@kernel.org/), this
-> version contains below changes.
-> 
-> - Implement all DAMON debugfs interface providing features
-> - Writeup documents
-> - Add more selftests
-> 
-> Introduction
-> ============
-> 
-> DAMON's debugfs-based user interface (DAMON_DBGFS) served very well, so far.
-> However, it unnecessarily depends on debugfs, while DAMON is not aimed to be
-> used for only debugging.  Also, the interface receives multiple values via one
-> file.  For example, schemes file receives 18 values.  As a result, it is
-> inefficient, hard to be used, and difficult to be extended.  Especially,
-> keeping backward compatibility of user space tools is getting only challenging.
-> It would be better to implement another reliable and flexible interface and
-> deprecate DAMON_DBGFS in long term.
-> 
-> For the reason, this patchset introduces a sysfs-based new user interface of
-> DAMON.  The idea of the new interface is, using directory hierarchies and
-> having one dedicated file for each value.  For a short example, users can do
-> the virtual address monitoring via the interface as below:
-> 
->     # cd /sys/kernel/mm/damon/admin/
->     # echo 1 > kdamonds/nr
->     # echo 1 > kdamonds/0/contexts/nr
->     # echo vaddr > kdamonds/0/contexts/0/operations
->     # echo 1 > kdamonds/0/contexts/0/targets/nr
->     # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid
->     # echo on > kdamonds/0/state
-> 
-> A brief representation of the files hierarchy of DAMON sysfs interface is as
-> below.  Childs are represented with indentation, directories are having '/'
-> suffix, and files in each directory are separated by comma.
-> 
->     /sys/kernel/mm/damon/admin
->     │ kdamonds/nr
->     │ │ 0/state,pid
->     │ │ │ contexts/nr
->     │ │ │ │ 0/operations
->     │ │ │ │ │ monitoring_attrs/
->     │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
->     │ │ │ │ │ │ nr_regions/min,max
->     │ │ │ │ │ targets/nr
->     │ │ │ │ │ │ 0/pid
->     │ │ │ │ │ │ │ regions/nr
->     │ │ │ │ │ │ │ │ 0/start,end
->     │ │ │ │ │ │ │ │ ...
->     │ │ │ │ │ │ ...
->     │ │ │ │ │ schemes/nr
->     │ │ │ │ │ 0/action
->     │ │ │ │ │ │ access_pattern/
->     │ │ │ │ │ │ │ sz/min,max
->     │ │ │ │ │ │ │ nr_accesses/min,max
->     │ │ │ │ │ │ │ age/min,max
->     │ │ │ │ │ │ quotas/ms,sz,reset_interval_ms
->     │ │ │ │ │ │ │ weights/sz,nr_accesses,age
->     │ │ │ │ │ │ watermarks/metric,interval_us,high,mid,low
->     │ │ │ │ │ │ stats/nr_tried,sz_tried,nr_applied,sz_applied,qt_exceeds
->     │ │ │ │ │ ...
->     │ │ ...
-> 
-> Detailed usage of the files will be described in the final Documentation patch
-> of this patchset.
-> 
-> Main Difference Between DAMON_DBGFS and DAMON_SYSFS
-> ---------------------------------------------------
-> 
-> At the moment, DAMON_DBGFS and DAMON_SYSFS provides same features.  One
-> important difference between them is their exclusiveness.  DAMON_DBGFS works in
-> an exclusive manner, so that no DAMON worker thread (kdamond) in the system can
-> run concurrently and interfere somehow.  For the reason, DAMON_DBGFS asks users
-> to construct all monitoring contexts and start them at once.  It's not a big
-> problem but makes the operation a little bit complex and unflexible.
-> 
-> For more flexible usage, DAMON_SYSFS moves the responsibility of preventing any
-> possible interference to the admins and work in a non-exclusive manner.  That
-> is, users can configure and start contexts one by one.  Note that DAMON
-> respects both exclusive groups and non-exclusive groups of contexts, in a
-> manner similar to that of reader-writer locks.  That is, if any exclusive
-> monitoring contexts (e.g., contexts that started via DAMON_DBGFS) are running,
-> DAMON_SYSFS does not start new contexts, and vice versa.
-> 
-> Future Plan of DAMON_DBGFS Deprecation
-> ======================================
-> 
-> Once this patchset is merged, DAMON_DBGFS development will be frozen.  That is,
-> we will maintain it to work as is now so that no users will be break.  But, it
-> will not be extended to provide any new feature of DAMON.  The support will be
-> continued only until next LTS release.  After that, we will drop DAMON_DBGFS.
-> 
-> User-space Tooling Compatibility
-> --------------------------------
-> 
-> As DAMON_SYSFS provides all features of DAMON_DBGFS, all user space tooling can
-> move to DAMON_SYSFS.  As we will continue supporting DAMON_DBGFS until next LTS
-> kernel release, user space tools would have enough time to move to DAMON_SYSFS.
-> 
-> The official user space tool, damo[1], is already supporting both DAMON_SYSFS
-> and DAMON_DBGFS.  Both correctness tests[2] and performance tests[3] of DAMON
-> using DAMON_SYSFS also passed.
-> 
-> [1] https://github.com/awslabs/damo
-> [2] https://github.com/awslabs/damon-tests/tree/master/corr
-> [3] https://github.com/awslabs/damon-tests/tree/master/perf
-> 
-> Complete Git Tree
-> =================
-> 
-> You can get the complete git tree from
-> https://git.kernel.org/sj/h/damon/sysfs/patches/v1.
-> 
-> Sequence of Patches
-> ===================
-> 
-> First two patches (patches 1-2) make core changes for DAMON_SYSFS.  The first
-> one (patch 1) allows non-exclusive DAMON contexts so that DAMON_SYSFS can work
-> in non-exclusive mode, while the second one (patch 2) adds size of DAMON enum
-> types so that DAMON API users can safely iterate the enums.
-> 
-> Third patch (patch 3) implements basic sysfs stub for virtual address spaces
-> monitoring.  Note that this implements only sysfs files and DAMON is not
-> linked.  Fourth patch (patch 4) links the DAMON_SYSFS to DAMON so that users
-> can control DAMON using the sysfs files.
-> 
-> Following six patches (patches 5-10) implements other DAMON features that
-> DAMON_DBGFS supports one by one (physical address space monitoring, DAMON-based
-> operation schemes, schemes quotas, schemes prioritization weights, schemes
-> watermarks, and schemes stats).
-> 
-> Following patch (patch 11) adds a simple selftest for DAMON_SYSFS, and the
-> final one (patch 12) documents DAMON_SYSFS.
-> 
-> SeongJae Park (12):
->   mm/damon/core: Allow non-exclusive DAMON start/stop
->   mm/damon/core: Add number of each enum type values
->   mm/damon: Implement a minimal stub for sysfs-based DAMON interface
->   mm/damon/sysfs: Link DAMON for virtual address spaces monitoring
->   mm/damon/sysfs: Support physical address space monitoring
->   mm/damon/sysfs: Support DAMON-based Operation Schemes
->   mm/damon/sysfs: Support DAMOS quotas
->   mm/damon/sysfs: Support schemes prioritization weights
->   mm/damon/sysfs: Support DAMOS watermarks
->   mm/damon/sysfs: Support DAMOS stats
->   selftests/damon: Add a test for DAMON sysfs interface
->   Docs/admin-guide/mm/damon/usage: Document DAMON sysfs interface
-> 
->  Documentation/admin-guide/mm/damon/usage.rst |  349 ++-
->  include/linux/damon.h                        |    6 +-
->  mm/damon/Kconfig                             |    7 +
->  mm/damon/Makefile                            |    1 +
->  mm/damon/core.c                              |   23 +-
->  mm/damon/dbgfs.c                             |    2 +-
->  mm/damon/reclaim.c                           |    2 +-
->  mm/damon/sysfs.c                             | 2684 ++++++++++++++++++
->  tools/testing/selftests/damon/Makefile       |    1 +
->  tools/testing/selftests/damon/sysfs.sh       |  306 ++
->  10 files changed, 3364 insertions(+), 17 deletions(-)
->  create mode 100644 mm/damon/sysfs.c
->  create mode 100755 tools/testing/selftests/damon/sysfs.sh
+On Wed, Feb 23, 2022 at 2:12 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> second patch is the reason this is just an RFC: it's a cleanup of the
+> ACPI driver from last year, and I don't really have much experience
+> writing, testing, debugging, or maintaining these types of drivers.
+> Ideally this thread would yield somebody saying, "I see the intent of
+> this; I'm happy to take over ownership of this part." That way, I can
+> focus on the RNG part, and whoever steps up for the paravirt ACPI part
+> can focus on that.
 
-sysfs files need to be documented in Documentation/ABI/ which is where
-our tools look for them (have you run scripts/get_abi.pl with your code
-in the kernel?)
+I actually managed to test this in QEMU, and it seems to work quite well. Steps:
 
-Please fix this up to use that format so we can then verify that you are
-using sysfs correctly.
+$ qemu-system-x86_64 ... -device vmgenid,guid=auto -monitor stdio
+(qemu) savevm blah
+(qemu) quit
+$ qemu-system-x86_64 ... -device vmgenid,guid=auto -monitor stdio
+(qemu) loadvm blah
 
-thanks,
+Doing this successfully triggers the function to reinitialize the RNG
+with the new GUID. (It appears there's a bug in QEMU which prevents
+the GUID from being reinitialized when running `loadvm` without
+quitting first; I suppose this should be discussed with QEMU
+upstream.)
 
-greg k-h
+So that's very positive. But I would appreciate hearing from some
+ACPI/Virt/Amazon people about this.
+
+Jason
