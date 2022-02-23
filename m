@@ -2,432 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF18C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF737C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 10:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239564AbiBWKUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 05:20:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51058 "EHLO
+        id S238528AbiBWKUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 05:20:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237964AbiBWKUN (ORCPT
+        with ESMTP id S231947AbiBWKUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 05:20:13 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF49B8BF24
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:19:44 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9987F1F43D;
-        Wed, 23 Feb 2022 10:19:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645611583; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NOuY1k8iqSiB0qSb8P6YipaThLsTq9Oq8Ifqn73sWKo=;
-        b=gNx8CIDbXQok7BvcKgzCNTZd+DRohPC5//xq1hA43L34IWt3bPwrjFNzdyVPM6AoW2GrWQ
-        tSApwu7rVBfI0ogN7w7XKd5QqliQpNqSyx7Q5l8AArZfVbSsCR4AY95X3bLQYJcjM99goW
-        jhnLWJIuiEMsPaiFhe1kgU+380R9pYg=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6DDE2A3B84;
-        Wed, 23 Feb 2022 10:19:43 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 11:19:43 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
- proper kthread support
-Message-ID: <YhYKP/UuSKENGwfj@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-12-john.ogness@linutronix.de>
+        Wed, 23 Feb 2022 05:20:42 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A550C8BF71
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:20:14 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id i21so14860656pfd.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 02:20:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DQX7V52CBiJ7FddDejeLAMem+iUAD4nV8smE6+HMiCk=;
+        b=nN41YCVInSLt/JhZi7jK4UIpYreHneBcjM9jaq1ZZoxJ1/HvTSNw/17hZcv+kDyYd6
+         +REnkeyTUgx0AmMKdy+VTVlBINeBfEKvrtvRYmlTs9AgmnLtJF9qZixJ3s5pQNss0vs6
+         zVZe/dXo1+NnSdrdMA9wcfg6nXb7vGWJxV6I5T0J6PkmWpN0YNnb6zjvCoCr935RSum7
+         Y2LQBdU3OuNnflCdHskASMBzdNDYIplLTdH793XbTrZvH4nak4d7jYpjPCz/3Z2V+Mar
+         9jB/QwBi/DjewJnn924OyllWj+1kAstpa7J+h5ZalOgqI27LkUHizcD3M1ll6ekNuD3h
+         WfoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DQX7V52CBiJ7FddDejeLAMem+iUAD4nV8smE6+HMiCk=;
+        b=YOZuBy1xI97QabQ4GJCWVB/aywEe1W8TrwUoLZawh/NYRtPhRss5YaICL1DTLAYS+K
+         dRHdXav5Hj+vnnIEwCD3er3JCYAj7JJcW+70UivW/rss9ku0UGwvfq0xTgBktqczBKWd
+         kFZeRrqY+w5cgLzch/sn/QmpkpWSM0KR5JmUUH+cIwBuFGm/sgI9IorKPt5lOop0otlN
+         OzTUrKMmyCbz4VzIaN502wg5IPOL68+fJn7/w1Tg8cotCoAz1Rtl/YHFEHFSGkc/QUNr
+         5mEjZq+DBbKuQwYPe/iA7dcE3Z6XYASD3zuftl5gX7AlOT4x3SNRejBIjvJeTtX/sobM
+         FUuQ==
+X-Gm-Message-State: AOAM532sTi3icMvUfwJ2OGiFa5VultJnQsQ43svfY0CTrBxtKVqjl0AN
+        crFfFf50yrbxDbGq+gt9sh1BOg==
+X-Google-Smtp-Source: ABdhPJwOzH9BvKERdYDHwMSCkR2/GlOKIJMuXG+DePst13wAFc5G8wENJdbZFppqmk3wfvsgl9oAbg==
+X-Received: by 2002:a63:af4b:0:b0:373:a2a1:bf9a with SMTP id s11-20020a63af4b000000b00373a2a1bf9amr23123430pgo.369.1645611614111;
+        Wed, 23 Feb 2022 02:20:14 -0800 (PST)
+Received: from [10.76.15.169] ([61.120.150.76])
+        by smtp.gmail.com with ESMTPSA id x64-20020a17090a6c4600b001bc6d235a0esm2496931pjj.1.2022.02.23.02.20.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 02:20:13 -0800 (PST)
+Subject: Re: [PATCH v2 3/3] virtio-crypto: implement RSA algorithm
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     "Gonglei (Arei)" <arei.gonglei@huawei.com>
+Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        kernel test robot <lkp@intel.com>
+References: <20220211084108.1254218-1-pizhenwei@bytedance.com>
+ <20220211084108.1254218-4-pizhenwei@bytedance.com>
+ <c9144b0d82e34566a960f210ddc32696@huawei.com>
+ <8ef2f660-bd84-de70-1539-402c73795dfe@bytedance.com>
+Message-ID: <bc2bbc3b-8a34-2f09-41f5-60f1568a6bef@bytedance.com>
+Date:   Wed, 23 Feb 2022 18:17:21 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207194323.273637-12-john.ogness@linutronix.de>
+In-Reply-To: <8ef2f660-bd84-de70-1539-402c73795dfe@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-07 20:49:21, John Ogness wrote:
-> Rather than console_lock() callers holding the per-console mutex
-> for the duration of the console lock, the per-console mutex is only
-> taken in order to set a new CON_PAUSED flag, which is checked by
-> the kthread printers. This avoids any issues due to nested locking
-> between the various per-console mutexes.
+
+On 2/18/22 11:12 AM, zhenwei pi wrote:
+>>> +void virtio_crypto_akcipher_algs_unregister(struct virtio_crypto
+>>> +*vcrypto) {
+>>> +    int i = 0;
+>>> +
+>>> +    mutex_lock(&algs_lock);
+>>> +
+>>> +    for (i = 0; i < ARRAY_SIZE(virtio_crypto_akcipher_algs); i++) {
+>>> +        uint32_t service = virtio_crypto_akcipher_algs[i].service;
+>>> +        uint32_t algonum = virtio_crypto_akcipher_algs[i].algonum;
+>>> +
+>>> +        if (virtio_crypto_akcipher_algs[i].active_devs == 0 ||
+>>> +            !virtcrypto_algo_is_supported(vcrypto, service, algonum))
+>>> +            continue;
+>>> +
+>>> +        if (virtio_crypto_akcipher_algs[i].active_devs == 1)
+>>> +
+>>>     crypto_unregister_akcipher(&virtio_crypto_akcipher_algs[i].algo);
+>>> +
+>>> +        virtio_crypto_akcipher_algs[i].active_devs--;
+>>> +    }
+>>> +
+>>> +    mutex_unlock(&algs_lock);
+>>> +}
+>>
+>> Why don't you reuse the virtio_crypto_algs_register/unregister functions?
+>> The current code is too repetitive. Maybe we don't need create the new 
+>> file virtio_crypto_akcipher_algo.c
+>> because we had virtio_crypto_algs.c which includes all algorithms.
+>>
 > 
-> diff --git a/include/linux/console.h b/include/linux/console.h
-> index 0f94b1771df8..c51c7f5507a5 100644
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -16,6 +16,7 @@
->  
->  #include <linux/atomic.h>
->  #include <linux/types.h>
-> +#include <linux/mutex.h>
->  
->  struct vc_data;
->  struct console_font_op;
-> @@ -136,6 +137,7 @@ static inline int con_debug_leave(void)
->  #define CON_ANYTIME	(16) /* Safe to call before per-cpu resources ready */
->  #define CON_BRL		(32) /* Used for a braille device */
->  #define CON_EXTENDED	(64) /* Use the extended output format a la /dev/kmsg */
-> +#define CON_PAUSED	(128) /* Sleep while console is locked */
+> Yes, this looks similar to virtio_crypto_algs_register/unregister.
+> 
+> Let's look at the difference:
+> struct virtio_crypto_akcipher_algo {
+>          uint32_t algonum;
+>          uint32_t service;
+>          unsigned int active_devs;
+>          struct akcipher_alg algo;
+> };
+> 
+> struct virtio_crypto_algo {
+>          uint32_t algonum;
+>          uint32_t service;
+>          unsigned int active_devs;
+>          struct skcipher_alg algo; /* akcipher_alg VS skcipher_alg */
+> };
+> 
+> If reusing virtio_crypto_algs_register/unregister, we need to modify the 
+> data structure like this:
+> struct virtio_crypto_akcipher_algo {
+>          uint32_t algonum;
+>          uint32_t service;    /* use service to distinguish 
+> akcipher/skcipher */
+>          unsigned int active_devs;
+>      union {
+>          struct skcipher_alg skcipher;
+>              struct akcipher_alg akcipher;
+>      } alg;
+> };
+> 
+> int virtio_crypto_akcipher_algs_register(struct virtio_crypto *vcrypto)
+> {
+>      ...
+>          for (i = 0; i < ARRAY_SIZE(virtio_crypto_akcipher_algs); i++) {
+>                  uint32_t service = virtio_crypto_akcipher_algs[i].service;
+>          ...
+>          /* test service type then call 
+> crypto_register_akcipher/crypto_register_skcipher */
+>                  if (service == VIRTIO_CRYPTO_SERVICE_AKCIPHER)
+>              
+> crypto_register_akcipher(&virtio_crypto_akcipher_algs[i].algo.akcipher);
+>          else
+>              
+> crypto_register_skcipher(&virtio_crypto_skcipher_algs[i].algo.skcipher);
+>          ...
+>          }
+>      ...
+> }
+> 
+> Also test service type and call 
+> crypto_unregister_skcipher/crypto_unregister_akcipher.
+> 
+> This gets unclear from current v2 version.
+> 
+> On the other hand, the kernel side prefers to separate skcipher and 
+> akcipher(separated header files and implementations).
+> 
+Hi, Lei
+I also take a look at other crypto drivers at qat/ccp/hisilicon, they 
+separate akcipher/skcipher algo. If you consider that reusing 
+virtio_crypto_algs_register/unregister seems better, I will try to merge 
+them into a single function.
 
-I was few times confused by the name. It sounds like that the console
-does not show any messages as all. I mean that it is something as
-console_suspend().
-
-It is not easy to find a good short name explaining that it is only
-about kthreads. What about CON_DIRECT?
-
->  
->  struct console {
->  	char	name[16];
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index e182f31fec58..135fbe647092 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -214,6 +214,26 @@ int devkmsg_sysctl_set_loglvl(struct ctl_table *table, int write,
->  /* Number of registered extended console drivers. */
->  static int nr_ext_console_drivers;
->  
-> +/*
-> + * Used to synchronize printing kthreads against direct printing via
-> + * console_trylock/console_unlock.
-> + *
-> + * Values:
-> + * -1 = console locked (via trylock), kthreads will not print
-> + *  0 = no kthread printing, console not locked (via trylock)
-> + * >0 = kthread(s) actively printing
-> + *
-> + * Note: For synchronizing against direct printing via
-> + *       console_lock/console_unlock, see the @lock variable in
-> + *       struct console.
-> + */
-> +static atomic_t console_lock_count = ATOMIC_INIT(0);
-
-I am getting lost in all the variables called lock.
-
-What about calling this "console_kthreads_active"? The counter is
-incremented when a kthread is actively printing.
-
-> +#define console_excl_trylock() (atomic_cmpxchg(&console_lock_count, 0, -1) == 0)
-> +#define console_excl_unlock() atomic_cmpxchg(&console_lock_count, -1, 0)
-> +#define console_printer_tryenter() atomic_inc_unless_negative(&console_lock_count)
-> +#define console_printer_exit() atomic_dec(&console_lock_count)
-
-Similar here. What about the following
-
-#define console_kthreads_atomic_tryblock() (atomic_cmpxchg(&console_kthreads_active, 0, -1) == 0)
-#define console_kthreads_atomic_unblock() atomic_cmpxchg(&console_kthreads_active, -1, 0)
-#define console_kthread_tryenter() atomic_inc_unless_negative(&console_kthreads_active)
-#define console_kthread_exit() atomic_dec(&console_kthreads_active)
-
-It is more clear that it is an "atomic" way to block/pause the "kthreads".
-
-I do not resist on the word "block". I somehow like it more than
-"pause". But "pause" is good as well when used together with "kthreads".
-
-
-> +
->  /*
->   * Helper macros to handle lockdep when locking/unlocking console_sem. We use
->   * macros instead of functions so that _RET_IP_ contains useful information.
-> @@ -256,6 +276,37 @@ static void __up_console_sem(unsigned long ip)
->  }
->  #define up_console_sem() __up_console_sem(_RET_IP_)
->  
-> +/*
-> + * Tracks whether kthread printers are all paused. A value of true implies
-> + * that the console is locked via console_lock() or the console is suspended.
-> + * Reading and writing to this variable requires holding @console_sem.
-> + */
-> +static bool consoles_paused;
-> +
-> +/*
-> + * Pause or unpause all kthread printers.
-> + *
-> + * Requires the console_lock.
-> + */
-> +static void __pause_all_consoles(bool do_pause)
-
-Again. It feels like no consoles will work anymore. What about
-
-     console_kthreads_block().
-
-> +{
-> +	struct console *con;
-> +
-> +	for_each_console(con) {
-> +		mutex_lock(&con->lock);
-> +		if (do_pause)
-> +			con->flags |= CON_PAUSED;
-> +		else
-> +			con->flags &= ~CON_PAUSED;
-> +		mutex_unlock(&con->lock);
-> +	}
-> +
-> +	consoles_paused = do_pause;
-> +}
-> +
-> +#define pause_all_consoles() __pause_all_consoles(true)
-> +#define unpause_all_consoles() __pause_all_consoles(false)
-> +
->  /*
->   * This is used for debugging the mess that is the VT code by
->   * keeping track if we have the console semaphore held. It's
-> @@ -2568,15 +2616,45 @@ int console_trylock(void)
->  		up_console_sem();
->  		return 0;
->  	}
-> +	if (!console_excl_trylock()) {
-> +		up_console_sem();
-> +		return 0;
-> +	}
->  	console_locked = 1;
->  	console_may_schedule = 0;
->  	return 1;
->  }
->  EXPORT_SYMBOL(console_trylock);
->  
-> +/*
-> + * A variant of console_trylock() that allows specifying if the context may
-> + * sleep. If yes, a trylock on @console_sem is attempted and if successful,
-> + * the threaded printers are paused. This is important to ensure that
-> + * sleepable contexts do not become involved in console_lock handovers and
-> + * will call cond_resched() during the printing loop.
-> + */
-> +static int console_trylock_sched(bool may_schedule)
-> +{
-> +	if (!may_schedule)
-> +		return console_trylock();
-> +
-> +	might_sleep();
-> +
-> +	if (down_trylock_console_sem())
-> +		return 0;
-> +	if (console_suspended) {
-> +		up_console_sem();
-> +		return 0;
-> +	}
-> +	pause_all_consoles();
-
-This is weird. Any trylock function should be fast and non-blocking.
-But pause_all_consoles() uses mutex_lock().
-
-My expectation would be that console_trylock_sched() behaves
-excatly the same as console_trylock() except that it will
-set console_may_schedule by the given parameter.
-
-I would do it the other way. Rename console_trylock() and
-implement:
-
-int console_trylock(void)
-{
-	return console_trylock_sched(false);
-}
-
-LATER: I got it. It is used by console_trylock_sched() called
-       in console_unlock() when "do_cond_resched == true". In this
-       case, the trylock might wait for the mutexes. It will prevent
-       transfering console_lock from schedulable to atomic context
-       by the check in console_emit_next_record().
-
-       Hmm, I would still prefer to keep console_trylock_sched()
-       behavior sane: non-blocking in all situations. It means
-       that we actually do not need it and console_trylock()
-       is enough.
-
-       It will allow to steal console_lock() from schedulable
-       context. But it is not a regression. And it is only
-       a corner case when console_unlock() re-takes the semaphore
-       after releasing it.
-
-       We could do the same optimization in console_unlock() by
-       calling console_emit_next_record() with NULL handover pointer
-       when do_cond_resched == true. But we should do it
-       as a separate patch later.
-
-
-> +	console_locked = 1;
-> +	console_may_schedule = 1;
-> +	return 1;
-> +}
-> +
->  int is_console_locked(void)
->  {
-> -	return console_locked;
-> +	return (console_locked || atomic_read(&console_lock_count));
->  }
->  EXPORT_SYMBOL(is_console_locked);
->  
-> @@ -2610,6 +2688,19 @@ static inline bool console_is_usable(struct console *con)
->  static void __console_unlock(void)
->  {
->  	console_locked = 0;
-> +
-> +	/*
-> +	 * Depending on whether console_lock() or console_trylock() was used,
-> +	 * appropriately allow the kthread printers to continue.
-> +	 */
-> +	if (consoles_paused)
-> +		unpause_all_consoles();
-> +	else
-> +		console_excl_unlock();
-
-This is a good example when the meaning of console_excl_lock() is not
-obvious. IHMO, the following is easier to understand:
-
-	if (console_kthreads_blocked)
-		console_kthreads_unblock();
-	else
-		console_kthreads_atomic_unblock();
-
-> +
-> +	/* Wake the kthread printers. */
-> +	wake_up_klogd();
-> +
->  	up_console_sem();
->  }
->  
-> @@ -2632,7 +2723,8 @@ static void __console_unlock(void)
->   *
->   * @handover will be set to true if a printk waiter has taken over the
->   * console_lock, in which case the caller is no longer holding the
-> - * console_lock. Otherwise it is set to false.
-> + * console_lock. Otherwise it is set to false. A NULL pointer may be provided
-> + * to disable allowing the console_lock to be taken over by a printk waiter.
->   */
->  static bool console_emit_next_record(struct console *con, char *text, char *ext_text,
->  				     char *dropped_text, bool *handover)
-> @@ -2640,12 +2732,14 @@ static bool console_emit_next_record(struct console *con, char *text, char *ext_
->  	struct printk_info info;
->  	struct printk_record r;
->  	unsigned long flags;
-> +	bool allow_handover;
->  	char *write_text;
->  	size_t len;
->  
->  	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
->  
-> -	*handover = false;
-> +	if (handover)
-> +		*handover = false;
->  
->  	if (!prb_read_valid(prb, con->seq, &r))
->  		return false;
-> @@ -2671,18 +2765,23 @@ static bool console_emit_next_record(struct console *con, char *text, char *ext_
->  		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
->  	}
->  
-> -	/*
-> -	 * While actively printing out messages, if another printk()
-> -	 * were to occur on another CPU, it may wait for this one to
-> -	 * finish. This task can not be preempted if there is a
-> -	 * waiter waiting to take over.
-> -	 *
-> -	 * Interrupts are disabled because the hand over to a waiter
-> -	 * must not be interrupted until the hand over is completed
-> -	 * (@console_waiter is cleared).
-> -	 */
-> -	printk_safe_enter_irqsave(flags);
-> -	console_lock_spinning_enable();
-> +	/* Handovers may only happen between trylock contexts. */
-> +	allow_handover = (handover && atomic_read(&console_lock_count) == -1);
-
-It is far from obvious why the check for console_lock_count is needed.
-I found the reason only after removing the check and seeing the
-warning about using mutex_unlock() in atomic context.
-
-I suggest something like:
-
-	/*
-	 * Allow to handover the lock only from atomic context. The handover
-	 * is used to transfer console owner between more printk() callers.
-	 * They are not allowed to unblock the console kthreads by mutexes
-	 * in atomic context.
-	 */
-	allow_handover = (handover && console_kthreads_atomically_blocked());
-
-> +
-> +	if (allow_handover) {
-> +		/*
-> +		 * While actively printing out messages, if another printk()
-> +		 * were to occur on another CPU, it may wait for this one to
-> +		 * finish. This task can not be preempted if there is a
-> +		 * waiter waiting to take over.
-> +		 *
-> +		 * Interrupts are disabled because the hand over to a waiter
-> +		 * must not be interrupted until the hand over is completed
-> +		 * (@console_waiter is cleared).
-> +		 */
-> +		printk_safe_enter_irqsave(flags);
-> +		console_lock_spinning_enable();
-> +	}
->  
->  	stop_critical_timings();	/* don't trace print latency */
->  	call_console_driver(con, write_text, len, dropped_text);
-> @@ -2825,7 +2926,7 @@ void console_unlock(void)
->  		 * Re-check if there is a new record to flush. If the trylock
->  		 * fails, another context is already handling the printing.
->  		 */
-> -	} while (prb_read_valid(prb, next_seq, NULL) && console_trylock());
-> +	} while (prb_read_valid(prb, next_seq, NULL) && console_trylock_sched(do_cond_resched));
->  }
->  EXPORT_SYMBOL(console_unlock);
->  
-> @@ -2856,6 +2957,10 @@ void console_unblank(void)
->  	if (oops_in_progress) {
->  		if (down_trylock_console_sem() != 0)
->  			return;
-> +		if (!console_excl_trylock()) {
-> +			up_console_sem();
-> +			return;
-> +		}
-
-It would be better to use
-
- 	if (oops_in_progress) {
-		if (!console_trylock())
-			return;
-
->  	} else {
->  		pr_flush(1000, true);
->  		console_lock();
-> @@ -3397,16 +3502,17 @@ static bool printer_should_wake(struct console *con, u64 seq)
->  	if (kthread_should_stop())
->  		return true;
->  
-> -	if (console_suspended)
-> -		return false;
-> -
->  	/*
->  	 * This is an unsafe read to con->flags, but false positives
->  	 * are not an issue as long as they are rare.
->  	 */
->  	flags = data_race(READ_ONCE(con->flags));
-> -	if (!(flags & CON_ENABLED))
-> +
-> +	if (!(flags & CON_ENABLED) ||
-> +	    (flags & CON_PAUSED) ||
-> +	    atomic_read(&console_lock_count) == -1) {
->  		return false;
-> +	}
-
-I would remove also this and do the after waking up. I think
-that it is actually already being discussed in another patch.
-
->  
->  	return prb_read_valid(prb, seq, NULL);
->  }
-
-Otherwise, it looks good.
-
-This must have been hard to invent. Great job!
-
-Best Regards,
-Petr
+-- 
+zhenwei pi
