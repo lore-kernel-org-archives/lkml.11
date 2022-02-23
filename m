@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04970C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AEBC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:07:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238969AbiBWMHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:07:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39922 "EHLO
+        id S240126AbiBWMH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:07:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232761AbiBWMHR (ORCPT
+        with ESMTP id S239198AbiBWMHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:07:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD7049683;
-        Wed, 23 Feb 2022 04:06:48 -0800 (PST)
+        Wed, 23 Feb 2022 07:07:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39ABE4B1D7;
+        Wed, 23 Feb 2022 04:06:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABB95B80E5B;
-        Wed, 23 Feb 2022 12:06:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4FB5C340E7;
-        Wed, 23 Feb 2022 12:06:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFD2760B4B;
+        Wed, 23 Feb 2022 12:06:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C786AC340E7;
+        Wed, 23 Feb 2022 12:06:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645618006;
-        bh=ooxSRUQtELh/HskwRUHM3oFrIGYQoXX8M+PQygRCPvc=;
+        s=korg; t=1645618014;
+        bh=jAHoRFY5CNb+Qa3Pg6as66sUNAe9cfPxMmz/7C2PeIM=;
         h=From:To:Cc:Subject:Date:From;
-        b=2ukO6CilyYJ/SwrzexBTQOy/M9iuAyrbq2SoPYLpXGwteNy7QAPHkdJAs93dZT24g
-         aBrOXh+tK0fm6tS9SVsX9Vn/CJHLDP+kqDguElzH8VVjxAwiSroU0UEIQKhucrTR4o
-         SwWjqN5MQaueIKbgiUAJWn2tRBfdLDovrWfsQdME=
+        b=RpWMMkwSx0FbyqJxa/fOr7Li78bebRUNDrj8z/CgmIcUdHSmFAtcJZZgq74J/8pbW
+         FhTQlfXbVm/rn4rhHh/bTkBJBnpYi1VXtHjiqfGsvGmhy9UDgqg5wVNZtlRgi/iF3k
+         RqKnsp/jmlhANySqVFnLfeloj8uC5SNkc9CS5Ej4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.9.303
-Date:   Wed, 23 Feb 2022 13:06:42 +0100
-Message-Id: <1645618002181169@kroah.com>
+Subject: Linux 4.14.268
+Date:   Wed, 23 Feb 2022 13:06:47 +0100
+Message-Id: <1645618007130210@kroah.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,12 +45,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.9.303 kernel.
+I'm announcing the release of the 4.14.268 kernel.
 
-All users of the 4.9 kernel series must upgrade.
+All users of the 4.14 kernel series must upgrade.
 
-The updated 4.9.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
+The updated 4.14.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -60,40 +60,58 @@ greg k-h
 
 ------------
 
- Makefile                                        |    2 
- arch/x86/kvm/pmu.c                              |    2 
- drivers/ata/libata-core.c                       |    1 
- drivers/edac/edac_mc.c                          |    2 
- drivers/gpu/drm/radeon/atombios_encoders.c      |    3 
- drivers/i2c/busses/i2c-brcmstb.c                |    2 
- drivers/net/ieee802154/at86rf230.c              |   13 +-
- drivers/net/usb/ax88179_178a.c                  |   68 ++++++------
- drivers/net/usb/qmi_wwan.c                      |    2 
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c |    3 
- drivers/parisc/ccio-dma.c                       |    3 
- drivers/parisc/sba_iommu.c                      |    3 
- drivers/tty/serial/8250/8250_gsc.c              |    2 
- fs/btrfs/send.c                                 |    4 
- fs/nfs/dir.c                                    |    4 
- fs/nfs/inode.c                                  |    9 -
- fs/quota/dquot.c                                |   11 +
- fs/super.c                                      |   19 ++-
- kernel/trace/trace.c                            |    4 
- kernel/tsacct.c                                 |    7 -
- lib/iov_iter.c                                  |    2 
- net/ax25/af_ax25.c                              |    9 +
- net/core/drop_monitor.c                         |   11 +
- net/ipv4/xfrm4_policy.c                         |    3 
- net/vmw_vsock/af_vsock.c                        |   39 +-----
- scripts/Makefile.extrawarn                      |    1 
- sound/pci/hda/hda_intel.c                       |    5 
- sound/soc/soc-ops.c                             |   29 +++--
- tools/lib/subcmd/subcmd-util.h                  |   11 -
- tools/testing/selftests/zram/zram.sh            |   15 --
- tools/testing/selftests/zram/zram01.sh          |   33 +----
- tools/testing/selftests/zram/zram02.sh          |    1 
- tools/testing/selftests/zram/zram_lib.sh        |  134 +++++++++++++++---------
- 33 files changed, 252 insertions(+), 205 deletions(-)
+ Makefile                                             |    2 
+ arch/arm/mach-omap2/omap_hwmod.c                     |    4 
+ arch/powerpc/lib/sstep.c                             |    2 
+ arch/x86/kvm/pmu.c                                   |    2 
+ drivers/ata/libata-core.c                            |    1 
+ drivers/dma/sh/rcar-dmac.c                           |    4 
+ drivers/edac/edac_mc.c                               |    2 
+ drivers/gpu/drm/radeon/atombios_encoders.c           |    3 
+ drivers/i2c/busses/i2c-brcmstb.c                     |    2 
+ drivers/mtd/nand/brcmnand/brcmnand.c                 |  102 ++++++++------
+ drivers/net/bonding/bond_3ad.c                       |   30 +++-
+ drivers/net/ethernet/cadence/macb_main.c             |    2 
+ drivers/net/ieee802154/at86rf230.c                   |   13 +
+ drivers/net/ieee802154/ca8210.c                      |    4 
+ drivers/net/usb/ax88179_178a.c                       |   68 +++++----
+ drivers/net/usb/qmi_wwan.c                           |    2 
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c         |    2 
+ drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c |    3 
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c      |    3 
+ drivers/parisc/ccio-dma.c                            |    3 
+ drivers/parisc/sba_iommu.c                           |    3 
+ drivers/tty/serial/8250/8250_gsc.c                   |    2 
+ fs/btrfs/send.c                                      |    4 
+ fs/nfs/dir.c                                         |    4 
+ fs/nfs/inode.c                                       |    9 -
+ fs/quota/dquot.c                                     |   11 +
+ fs/super.c                                           |   19 +-
+ include/linux/sched.h                                |    1 
+ include/net/bond_3ad.h                               |    2 
+ kernel/async.c                                       |    3 
+ kernel/module.c                                      |   25 ---
+ kernel/trace/trace.c                                 |    4 
+ kernel/tsacct.c                                      |    7 
+ lib/iov_iter.c                                       |    2 
+ net/ax25/af_ax25.c                                   |    9 -
+ net/core/drop_monitor.c                              |   11 +
+ net/ipv4/ping.c                                      |   11 +
+ net/ipv4/xfrm4_policy.c                              |    3 
+ net/sched/act_api.c                                  |   13 +
+ net/vmw_vsock/af_vsock.c                             |    1 
+ scripts/Makefile.extrawarn                           |    1 
+ sound/pci/hda/hda_intel.c                            |    5 
+ sound/soc/soc-ops.c                                  |   29 ++--
+ tools/lib/subcmd/subcmd-util.h                       |   11 -
+ tools/testing/selftests/zram/zram.sh                 |   15 --
+ tools/testing/selftests/zram/zram01.sh               |   33 +---
+ tools/testing/selftests/zram/zram02.sh               |    1 
+ tools/testing/selftests/zram/zram_lib.sh             |  134 ++++++++++++-------
+ 48 files changed, 373 insertions(+), 254 deletions(-)
+
+Anders Roxell (1):
+      powerpc/lib/sstep: fix 'ptesync' build error
 
 Darrick J. Wong (2):
       vfs: make freeze_super abort when sync_filesystem returns error
@@ -108,17 +126,22 @@ Dāvis Mosāns (1):
 Eliav Farber (1):
       EDAC: Fix calculation of returned address and next offset in edac_align_ptr()
 
-Eric Dumazet (1):
+Eric Dumazet (3):
       drop_monitor: fix data-race in dropmon_net_event / trace_napi_poll_hit
+      bonding: fix data-races around agg_select_timer
+      net: sched: limit TC_ACT_REPEAT loops
 
 Eric W. Biederman (1):
       taskstats: Cleanup the use of task->exit_code
 
 Greg Kroah-Hartman (1):
-      Linux 4.9.303
+      Linux 4.14.268
 
 Guillaume Nault (1):
       xfrm: Don't accidentally set RTO_ONLINK in decode_session4()
+
+Igor Pylypiv (1):
+      Revert "module, async: async_synchronize_full() on module init iff async is used"
 
 JaeSang Yoo (1):
       tracing: Fix tp_printk option related with tp_printk_stop_on_boot
@@ -126,18 +149,29 @@ JaeSang Yoo (1):
 Jann Horn (1):
       net: usb: ax88179_178a: Fix out-of-bounds accesses in RX fixup
 
+Jiasheng Jiang (1):
+      dmaengine: sh: rcar-dmac: Check for error num after setting mask
+
 Jim Mattson (1):
       KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW
 
-Johannes Berg (1):
+Johannes Berg (3):
+      iwlwifi: fix use-after-free
       iwlwifi: pcie: fix locking when "HW not ready"
+      iwlwifi: pcie: gen2: fix locking when "HW not ready"
 
 John David Anglin (2):
       parisc: Fix data TLB miss in sba_unmap_sg
       parisc: Fix sglist access in ccio-dma.c
 
+Kamal Dasu (1):
+      mtd: rawnand: brcmnand: Refactored code to introduce helper functions
+
 Kees Cook (1):
       libsubcmd: Fix use-after-free for realloc(..., 0)
+
+Marc St-Amand (1):
+      net: macb: Align the dma and coherent dma masks
 
 Mark Brown (2):
       ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw()
@@ -146,8 +180,9 @@ Mark Brown (2):
 Max Kellermann (1):
       lib/iov_iter: initialize "flags" in new pipe_buffer
 
-Miquel Raynal (1):
+Miquel Raynal (2):
       net: ieee802154: at86rf230: Stop leaking skb's
+      net: ieee802154: ca8210: Fix lifs/sifs periods
 
 Nathan Chancellor (1):
       Makefile.extrawarn: Move -Wunaligned-access to W=1
@@ -167,9 +202,6 @@ Seth Forshee (1):
 Slark Xiao (1):
       net: usb: qmi_wwan: Add support for Dell DW5829e
 
-Sunil Muthuswamy (1):
-      vsock: correct removal of socket from the list
-
 Takashi Iwai (2):
       ALSA: hda: Fix regression on forced probe mask option
       ALSA: hda: Fix missing codec probe on Shenker Dock 15
@@ -178,6 +210,12 @@ Trond Myklebust (2):
       NFS: LOOKUP_DIRECTORY is also ok with symlinks
       NFS: Do not report writeback errors in nfs_getattr()
 
+Wan Jiabing (1):
+      ARM: OMAP2+: hwmod: Add of_node_put() before break
+
+Xin Long (1):
+      ping: fix the dif and sdif check in ping_lookup
+
 Yang Xu (3):
       selftests/zram: Skip max_comp_streams interface on newer kernel
       selftests/zram01.sh: Fix compression ratio calculation
@@ -185,4 +223,7 @@ Yang Xu (3):
 
 Zoltán Böszörményi (1):
       ata: libata-core: Disable TRIM on M88V29
+
+david regan (1):
+      mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
 
