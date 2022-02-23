@@ -2,83 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9329AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E851C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243523AbiBWRsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:48:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
+        id S243524AbiBWRuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:50:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243524AbiBWRsu (ORCPT
+        with ESMTP id S230126AbiBWRuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:48:50 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8621D62E0;
-        Wed, 23 Feb 2022 09:48:17 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id d19so14836621ioc.8;
-        Wed, 23 Feb 2022 09:48:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eKBwjSNATVWVksf5vYyDJmSVutEByHwPHr5mJXUV4XA=;
-        b=Hf1IP9xlPWhpt+MsH2DW/FYNl57mtNMp6NLqN8tLaq03hnPZ79MdCSnAXOgP33K/H4
-         EbG1SsJShFgfb0Zp5EV6O9IcT6QrW8oQWxgaz5gVUuV30p4r3VieD72Lr3mGJBCsM7Hf
-         swUwth93FbrW7ehcrWbcx5oxRIJiOLg3XH4+Fx6hpzSUTp6mT1Dz5StJgS0YDwUCZZxD
-         WeXHlZx8h2w9iBj3b/A6fbwo+s3i629qQrEbM9SOrPM02MQvr+K067mNYX3GAACaLauQ
-         4l8hCoDDarJ6y/Zm9r77Nxr1F5b5XrxU0tBs1Tyvx7YUs2Tf3EAlIXifTJwXCujNVP9X
-         JiKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eKBwjSNATVWVksf5vYyDJmSVutEByHwPHr5mJXUV4XA=;
-        b=OuWrMbe6owVbeQZ+HepvJy48QvGFRrYh6ibU6HztpWY2lpqpBqHJUH6/XKH6yElPjT
-         S018Pj1VoH9HzVj9xADU525yz/hiMndBWQ6RdoWQFZJWgWM5E/UMVl/P1BKstxwsKeqM
-         XQHggQCOBfTce9+ILmeOCoRO5fp2eXn0kMvEnMiw0IsH6RV1DVBD7HXMufSgVXxUdh7J
-         AbowaBNC8WdAwBLxTidlJ5x2NegMKLds2us63AaBiR2CVJn3gdFTGatWyc0v77czwN1R
-         H2HnR9JNUM5oS4fck8uH7WXMdel84C0BO7W9W40fvwwIsarGyzJUGqlMyNOwjYrhXH+I
-         Slrw==
-X-Gm-Message-State: AOAM532bQh3A6D/eqjySGTh0OOk3ElTd3p9BvoBXVrYpYf/oAtCi3GhO
-        hus4coozEYyJ3DXdtVAaGdWPbU6K/a07qfCL/WM=
-X-Google-Smtp-Source: ABdhPJw1QGF4dIOqwEyMjlrNSfRM/nBD5W5mlC/KkVQ4i73WQviit1rKbjjwGfVZKdBSx8DoP1ZUyosB8+1+D85BmrI=
-X-Received: by 2002:a5d:970d:0:b0:5f2:9242:d881 with SMTP id
- h13-20020a5d970d000000b005f29242d881mr401153iol.187.1645638497000; Wed, 23
- Feb 2022 09:48:17 -0800 (PST)
+        Wed, 23 Feb 2022 12:50:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74090E3E;
+        Wed, 23 Feb 2022 09:49:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21E4CB8212B;
+        Wed, 23 Feb 2022 17:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A07C340E7;
+        Wed, 23 Feb 2022 17:49:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645638581;
+        bh=H8P7Ks4m+SZ3IXEDDRjp8V4gV6GaxlZWg9rscesZaI0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=OUI9vbYbdyvJYhQd9X5itZVtsvizQ8HCbWnRE7l/48uRx0ClJ28gpnVDn/7OfLLtJ
+         sQ7s0uduwdSsijrECv3qc6EAS/cBxVD1k29vcTRJD0gBBYF2KqJqQY1nZr4anGAAEf
+         PVfLIoPAMEkjXTPmMGLFjwljNowy4li/zNGEZVs+xik6v2MTvmCsVip0ioefTQ7ysb
+         EMZGBfK1xUxCHWMyapKICQfXHXgFP2ULHYv/QoKIAda4UQRj5Dy8zvIGEtyc5dwIm6
+         Io51SayGo94VxxSMNuQbOCcy/OQqjQ1sIYR1MzMD8SA2zrT3pAIRLhV6H9cqKWWF9S
+         xCXayvRpu8BRg==
+Date:   Wed, 23 Feb 2022 11:49:40 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Richard Zhu <hongxing.zhu@nxp.com>
+Cc:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: Re: [PATCH v7 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit()
+ callback
+Message-ID: <20220223174940.GA140379@bhelgaas>
 MIME-Version: 1.0
-References: <20220223154405.54912-1-maz@kernel.org> <20220223154405.54912-2-maz@kernel.org>
-In-Reply-To: <20220223154405.54912-2-maz@kernel.org>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Wed, 23 Feb 2022 10:48:06 -0700
-Message-ID: <CAOCk7NpJ5ui+uTKvKeShKmzeKpZkwqCDtyAd_bt2PJKGhE=Gww@mail.gmail.com>
-Subject: Re: [PATCH 1/5] gpio: Don't fiddle with irqchips marked as immutable
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        gpio <linux-gpio@vger.kernel.org>, linux-tegra@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644992463-14467-7-git-send-email-hongxing.zhu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:40 AM Marc Zyngier <maz@kernel.org> wrote:
+On Wed, Feb 16, 2022 at 02:21:01PM +0800, Richard Zhu wrote:
+> When link is never came up in the link training after host_init.
+> The clocks and power supplies usage counter balance should be handled
+> properly on some DWC platforms (for example, i.MX PCIe).
 >
-> In order to move away from gpiolib messing with the internals of
-> unsuspecting irqchips, add a flag by which irqchips advertise
-> that they are not to be messed with, and do solemnly swear that
-> they correctly call into the gpiolib helpers wueh required.
+> Add a new host_exit() callback into dw_pcie_host_ops, then it could be
+> invoked to handle the unbalance issue in the error handling after
+> host_init() function when link is down.
 
-"wueh"?  Should that be "when"?
+Possible rewording, not sure if it captures everything you want:
+
+  When the link never comes up after ->host_init(), some drivers,
+  especially those that don't support hotplug, want to turn off clocks
+  and power supplies.
+
+  Add a new ->host_exit() callback in dw_pcie_host_ops so these
+  drivers can clean up if ->host_init() fails.
