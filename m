@@ -2,93 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CA7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5662C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 18:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243799AbiBWSOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 13:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
+        id S243809AbiBWSVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 13:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiBWSOk (ORCPT
+        with ESMTP id S241030AbiBWSVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 13:14:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406CB48315;
-        Wed, 23 Feb 2022 10:14:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0BFBB8212F;
-        Wed, 23 Feb 2022 18:14:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B95DC340E7;
-        Wed, 23 Feb 2022 18:14:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645640049;
-        bh=Wxzunyx2l5y9CCTx4nOCZYPf3YEgpmzKbzTfonaFoKU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cWls5NedytacTVIsmrOIUE3vd72wtl/GQAbopySZo28Qw+t3dBZxW21q358WS1WPU
-         ubsWSGp8yl8bYZCKRhoWRDLVsmLj/Ldhf4CePDJMZNCSSFTzyzbriOxkTps3HfIudw
-         VjfsWHd/FunR3t084E1Yk1iPcmL1bLFVQNhQEBMPIqgbmQkQinm3bTsS4NkCsG0bdx
-         YAvKlSqq8MA6DY2ZLvFYXj+LTMMVLXALkStw+k8txeIAi90gempgMtPi8P0Eps/q/C
-         0rOjTx2yH5VbID64xgs/gAAtJqNC9Gh1m8ah3g3cG1kXYKSD60zw740oeKlGZbVyz1
-         hBscF6tkx5FbQ==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nMw9O-009ynS-2h; Wed, 23 Feb 2022 18:14:07 +0000
+        Wed, 23 Feb 2022 13:21:01 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAD149FB8;
+        Wed, 23 Feb 2022 10:20:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645640434; x=1677176434;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=rzWuqP3ripaxaKT5al8d/OWqGFWPXcQTpyLBZCqsFqE=;
+  b=aE7fMxpLR9cxMhAsHhdWfgjjsOnjnsUTa6gQg9JjA0UJfa6nzUytNqQm
+   zub/mdHiKB8FAHQFrXRvvVdf7Wseyf2IU2JRyx2nOTkzN/fycJY51WD2K
+   VAmRMPyCp4NRKeP1Y7xJO1tpwjKQcayt/Lrxof5qmnqoY8laPyOJPsdc/
+   IXGYlO1okwN6aU5bNnpqXA5U+ooFO/57w9sb9Pr1pl/kj3QWFMfZkj+AJ
+   3cr2pTd3gBM73s9UA9y/hM3H41OU81LanqIahiagi4OiJgcxs6ypJMGU8
+   FhAcXhAqi7mXdhMMCEg5LFweS4IJ8Oj9qFBMkyzKlX4Wfk2NaDm7sPT6W
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="250876053"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="250876053"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:20:33 -0800
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="506020647"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 10:20:28 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nMwEi-007WTl-Ku;
+        Wed, 23 Feb 2022 20:19:36 +0200
+Date:   Wed, 23 Feb 2022 20:19:36 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Enrico Weigelt <info@metux.net>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
+Message-ID: <YhZ6uAmGcVjvNZy6@smile.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <YhPOxL++yhNHh+xH@smile.fi.intel.com>
+ <20220222173019.2380dcaf@fixe.home>
+ <YhZI1XImMNJgzORb@smile.fi.intel.com>
+ <20220223161150.664aa5e6@fixe.home>
+ <YhZRtads7MGzPEEL@smile.fi.intel.com>
+ <YhZxyluc7gYhmAuh@sirena.org.uk>
 MIME-Version: 1.0
-Date:   Wed, 23 Feb 2022 18:14:05 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        gpio <linux-gpio@vger.kernel.org>, linux-tegra@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>
-Subject: Re: [PATCH 1/5] gpio: Don't fiddle with irqchips marked as immutable
-In-Reply-To: <CAOCk7NpJ5ui+uTKvKeShKmzeKpZkwqCDtyAd_bt2PJKGhE=Gww@mail.gmail.com>
-References: <20220223154405.54912-1-maz@kernel.org>
- <20220223154405.54912-2-maz@kernel.org>
- <CAOCk7NpJ5ui+uTKvKeShKmzeKpZkwqCDtyAd_bt2PJKGhE=Gww@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <dfaecd99516ca3c6b994119e308c8579@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: jeffrey.l.hugo@gmail.com, linux-kernel@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, tglx@linutronix.de, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhZxyluc7gYhmAuh@sirena.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-23 17:48, Jeffrey Hugo wrote:
-> On Wed, Feb 23, 2022 at 10:40 AM Marc Zyngier <maz@kernel.org> wrote:
->> 
->> In order to move away from gpiolib messing with the internals of
->> unsuspecting irqchips, add a flag by which irqchips advertise
->> that they are not to be messed with, and do solemnly swear that
->> they correctly call into the gpiolib helpers wueh required.
-> 
-> "wueh"?  Should that be "when"?
+On Wed, Feb 23, 2022 at 05:41:30PM +0000, Mark Brown wrote:
+> On Wed, Feb 23, 2022 at 05:24:37PM +0200, Andy Shevchenko wrote:
 
-Absolutely. There are more typos in this cover letter, and probably
-even more in the individual patches!
+...
 
-         M.
+> There were separately some issues with people trying to create
+> completely swnode based enumeration mechanisms for things that required
+> totally independent code for handling swnodes which seemed very
+> concerning but it's not clear to me if that's what's going on here.
+
+This is the case IIUC.
+
 -- 
-Jazz is not dead. It just smells funny...
+With Best Regards,
+Andy Shevchenko
+
+
