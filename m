@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 23:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244943AbiBWXin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 18:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
+        id S244949AbiBWXiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 18:38:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244885AbiBWXi2 (ORCPT
+        with ESMTP id S241915AbiBWXi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 18:38:28 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814B45A597;
-        Wed, 23 Feb 2022 15:37:57 -0800 (PST)
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BC45A58D;
+        Wed, 23 Feb 2022 15:37:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645659477; x=1677195477;
+  t=1645659476; x=1677195476;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+MRbB5DRgFvuMH3fvObVcrNFhjluEvf0jPhElKZgs1w=;
-  b=gi+qzBsaFfqENBDMIaAUscS6RffAlP1N+78FKmTntti2oP9hI04z0kZm
-   nC0BJuyWrdq2AnKwfw6F1ogyVgCk3oWqolT8i302cHYrBUff4IcWfd8bH
-   DzYFOU8MqQRerlSboYYwjogmD4f64pamb+LvC1DgNwU5PIUXI8z1GcA8f
-   8=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Feb 2022 15:37:57 -0800
+  bh=O348AWxXja34F/CxfeoastVacG7K7AciL4ROR2FvJFI=;
+  b=Eyh/XzcXabgRmqrUK0dy/QYd5j4h8dKedNwTXYctTdhp+GcZIpGmlcNz
+   9Ir3gUsKYTFF7URNq9lDzUdIVTfOr8HTlAnL7lf7/3l4NTefhZeJVUSVn
+   Uw3x7hZ4l0Dn39JaBetk7zNAXERsHEPq60BjRSJll4GQPXabhmdYVcRIS
+   o=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 15:37:56 -0800
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:57 -0800
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 15:37:56 -0800
 Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 15:37:56 -0800
+ 15.2.986.15; Wed, 23 Feb 2022 15:37:55 -0800
 From:   Elliot Berman <quic_eberman@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         <linux-kernel@vger.kernel.org>
@@ -42,10 +42,12 @@ CC:     Elliot Berman <quic_eberman@quicinc.com>,
         Murali Nalajala <quic_mnalajala@quicinc.com>,
         Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
         Carl van Schaik <quic_cvanscha@quicinc.com>,
-        Andy Gross <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: [PATCH 05/11] virt: gunyah: Add sysfs nodes
-Date:   Wed, 23 Feb 2022 15:37:23 -0800
-Message-ID: <20220223233729.1571114-6-quic_eberman@quicinc.com>
+        Andy Gross <agross@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH 03/11] arm64: gunyah: Add Gunyah hypercalls ABI
+Date:   Wed, 23 Feb 2022 15:37:21 -0800
+Message-ID: <20220223233729.1571114-4-quic_eberman@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220223233729.1571114-1-quic_eberman@quicinc.com>
 References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
@@ -59,274 +61,235 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add /sys/hypervisor support when detecting that Linux is running in a
-Gunyah environment. Export the version of Gunyah which is reported via
-the hyp_identify hypercall.
+Add initial support to perform Gunyah hypercalls. The arm64 ABI for
+Gunyah hypercalls generally follows the AAPCS64, and can be summarized:
+ - Function identifier is passed through the imm operand
+ - [r0,r7] are parameter and result registers
+ - [r8-r18] are temporary and saved by the caller (VM)
+ - [r19-r31] are preserved and saved by the hypervisor
+
+The preprocessor macors for creating the necessary HVC instruction
+roughly follows the SMCCC 1.1 implementation in
+include/linux/arm-smccc.h.
 
 Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 ---
- .../ABI/testing/sysfs-hypervisor-gunyah       |  37 ++++++
- MAINTAINERS                                   |   2 +
- arch/arm64/include/asm/gunyah/hypercall.h     |   2 +
- drivers/virt/Kconfig                          |   2 +
- drivers/virt/Makefile                         |   1 +
- drivers/virt/gunyah/Kconfig                   |  13 ++
- drivers/virt/gunyah/Makefile                  |   4 +
- drivers/virt/gunyah/sysfs.c                   | 116 ++++++++++++++++++
- 8 files changed, 177 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-hypervisor-gunyah
- create mode 100644 drivers/virt/gunyah/Kconfig
- create mode 100644 drivers/virt/gunyah/Makefile
- create mode 100644 drivers/virt/gunyah/sysfs.c
+ MAINTAINERS                               |   1 +
+ arch/arm64/include/asm/gunyah/hypercall.h | 193 ++++++++++++++++++++++
+ 2 files changed, 194 insertions(+)
+ create mode 100644 arch/arm64/include/asm/gunyah/hypercall.h
 
-diff --git a/Documentation/ABI/testing/sysfs-hypervisor-gunyah b/Documentation/ABI/testing/sysfs-hypervisor-gunyah
-new file mode 100644
-index 000000000000..ebbdd0aead7b
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-hypervisor-gunyah
-@@ -0,0 +1,37 @@
-+What:		/sys/hypervisor/type
-+Date:		January 2022
-+KernelVersion:	5.17
-+Contact:	linux-arm-msm@vger.kernel.org
-+Description:	If running under Gunyah:
-+		Type of hypervisor:
-+		"gunyah": Gunyah hypervisor
-+
-+What:		/sys/hypervisor/features
-+Date:		January 2022
-+KernelVersion:	5.17
-+Contact:	linux-arm-msm@vger.kernel.org
-+Description:	If running under Gunyah:
-+		Space separated list of features supported by Linux and Gunyah:
-+		"cspace": Gunyah devices
-+		"doorbell": Sending/receiving virtual interrupts via Gunyah doorbells
-+		"message-queue": Sending/receiving messages via Gunyah message queues
-+		"vic": Interrupt lending
-+		"vpm": Virtual platform management
-+		"vcpu": Virtual CPU management
-+		"memextent": Memory lending/management
-+		"trace": Gunyah hypervisor tracing
-+
-+
-+What:		/sys/hypervisor/version/api
-+Date:		April 2020
-+KernelVersion:	5.17
-+Contact:	linux-arm-msm@vger.kernel.org
-+Description:	If running under Gunyah:
-+		The Gunyah API version.
-+
-+What:		/sys/hypervisor/version/variant
-+Date:		April 2020
-+KernelVersion:	5.17
-+Contact:	linux-arm-msm@vger.kernel.org
-+Description:	If running under Gunyah:
-+		The Gunyah variant (build) version.
-\ No newline at end of file
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 59e7070f726a..10c59c8767ff 100644
+index 6a918f653eac..7e6a8488fa3e 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -8400,9 +8400,11 @@ M:	Elliot Berman <quic_eberman@quicinc.com>
- M:	Murali Nalajala <quic_mnalajal@quicinc.com>
- L:	linux-arm-msm@vger.kernel.org
+@@ -8402,6 +8402,7 @@ L:	linux-arm-msm@vger.kernel.org
  S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-hypervisor-gunyah
  F:	Documentation/devicetree/bindings/gunyah/
  F:	Documentation/virt/gunyah/
- F:	arch/arm64/include/asm/gunyah/
-+F:	drivers/virt/gunyah/
- F:	include/linux/gunyah.h
++F:	arch/arm64/include/asm/gunyah/
  
  H8/300 ARCHITECTURE
+ M:	Yoshinori Sato <ysato@users.sourceforge.jp>
 diff --git a/arch/arm64/include/asm/gunyah/hypercall.h b/arch/arm64/include/asm/gunyah/hypercall.h
-index 626163500e32..a8e68ece074e 100644
---- a/arch/arm64/include/asm/gunyah/hypercall.h
+new file mode 100644
+index 000000000000..626163500e32
+--- /dev/null
 +++ b/arch/arm64/include/asm/gunyah/hypercall.h
-@@ -7,6 +7,8 @@
- 
- #include <linux/types.h>
- 
-+#define GH_HYPERCALL_HYP_IDENTIFY		0x6000
-+
- #define ___gh_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, x, ...) x
- 
- #define __gh_count_args(...)						\
-diff --git a/drivers/virt/Kconfig b/drivers/virt/Kconfig
-index 8061e8ef449f..823663d67a95 100644
---- a/drivers/virt/Kconfig
-+++ b/drivers/virt/Kconfig
-@@ -36,4 +36,6 @@ source "drivers/virt/vboxguest/Kconfig"
- source "drivers/virt/nitro_enclaves/Kconfig"
- 
- source "drivers/virt/acrn/Kconfig"
-+
-+source "drivers/virt/gunyah/Kconfig"
- endif
-diff --git a/drivers/virt/Makefile b/drivers/virt/Makefile
-index 3e272ea60cd9..ca2141b6837e 100644
---- a/drivers/virt/Makefile
-+++ b/drivers/virt/Makefile
-@@ -5,6 +5,7 @@
- 
- obj-$(CONFIG_FSL_HV_MANAGER)	+= fsl_hypervisor.o
- obj-y				+= vboxguest/
-+obj-$(CONFIG_GUNYAH)		+= gunyah/
- 
- obj-$(CONFIG_NITRO_ENCLAVES)	+= nitro_enclaves/
- obj-$(CONFIG_ACRN_HSM)		+= acrn/
-diff --git a/drivers/virt/gunyah/Kconfig b/drivers/virt/gunyah/Kconfig
-new file mode 100644
-index 000000000000..e88289963518
---- /dev/null
-+++ b/drivers/virt/gunyah/Kconfig
-@@ -0,0 +1,13 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+config GUNYAH
-+	tristate "Gunyah Virtualization drivers"
-+	depends on ARM64
-+	select SYS_HYPERVISOR
-+	help
-+	  The Gunyah drivers are the helper interfaces that runs in a guest VM
-+	  such as basic inter-VM IPC and signaling mechanism,s and higher level
-+	  services such as memory/device sharing, IRQ sharing, and so on.
-+
-+	  Say Y here to enable the drivers needed to interact in a Gunyah
-+	  virtual environment.
-diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
-new file mode 100644
-index 000000000000..0aa086f9149f
---- /dev/null
-+++ b/drivers/virt/gunyah/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+gunyah-y += sysfs.o
-+obj-$(CONFIG_GUNYAH) += gunyah.o
-\ No newline at end of file
-diff --git a/drivers/virt/gunyah/sysfs.c b/drivers/virt/gunyah/sysfs.c
-new file mode 100644
-index 000000000000..3d22f08360db
---- /dev/null
-+++ b/drivers/virt/gunyah/sysfs.c
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0-only
+@@ -0,0 +1,193 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
 + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 + */
++#ifndef __ASM_GH_HYPERCALL_H
++#define __ASM_GH_HYPERCALL_H
 +
-+#define pr_fmt(fmt) "gunyah: " fmt
++#include <linux/types.h>
 +
-+#include <linux/kobject.h>
-+#include <linux/gunyah.h>
-+#include <linux/module.h>
-+#include <linux/printk.h>
-+#include <linux/init.h>
-+#include <linux/of.h>
++#define ___gh_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, x, ...) x
 +
-+#include "gunyah_private.h"
++#define __gh_count_args(...)						\
++	___gh_count_args(_, ## __VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 +
-+#define GH_API_INFO_API_VERSION(x)	(((x) >> 0) & 0x3fff)
-+#define GH_API_INFO_BIG_ENDIAN(x)	(((x) >> 14) & 1)
-+#define GH_API_INFO_IS_64BIT(x)		(((x) >> 15) & 1)
-+#define GH_API_INFO_VARIANT(x)		(((x) >> 56) & 0xff)
++#define __gh_skip_0(...)		__VA_ARGS__
++#define __gh_skip_1(a, ...)	__VA_ARGS__
++#define __gh_skip_2(a, b, ...)	__VA_ARGS__
++#define __gh_skip_3(a, b, c, ...)	__VA_ARGS__
++#define __gh_skip_4(a, b, c, d, ...)	__VA_ARGS__
++#define __gh_skip_5(a, b, c, d, e, ...)	__VA_ARGS__
++#define __gh_skip_6(a, b, c, d, e, f, ...)	__VA_ARGS__
++#define __gh_skip_7(a, b, c, d, e, f, g, ...)	__VA_ARGS__
++#define __gh_skip_8(a, b, c, d, e, f, g, h, ...)	__VA_ARGS__
 +
-+#define GH_IDENTIFY_PARTITION_CSPACE(flags)	(((flags)[0] >> 0) & 1)
-+#define GH_IDENTIFY_DOORBELL(flags)		(((flags)[0] >> 1) & 1)
-+#define GH_IDENTIFY_MSGQUEUE(flags)		(((flags)[0] >> 2) & 1)
-+#define GH_IDENTIFY_VIC(flags)			(((flags)[0] >> 3) & 1)
-+#define GH_IDENTIFY_VPM(flags)			(((flags)[0] >> 4) & 1)
-+#define GH_IDENTIFY_VCPU(flags)			(((flags)[0] >> 5) & 1)
-+#define GH_IDENTIFY_MEMEXTENT(flags)		(((flags)[0] >> 6) & 1)
-+#define GH_IDENTIFY_TRACE_CTRL(flags)		(((flags)[0] >> 7) & 1)
++#define __gh_declare_arg_0(...)
 +
-+struct gh_hypercall_hyp_identify_resp {
-+	u64 api_info;
-+	u64 flags[3];
-+};
++#define __gh_declare_arg_1(a1, ...)					\
++	typeof(a1) __gh_a1 = (a1);					\
++	register uintptr_t arg1 asm("r0") = __gh_a1
 +
-+static struct gh_hypercall_hyp_identify_resp gunyah_api;
++#define __gh_declare_arg_2(a1, a2, ...)					\
++	__gh_declare_arg_1(a1);						\
++	typeof(a2) __gh_a2 = (a2);					\
++	register uintptr_t arg2 asm("r1") = __gh_a2
 +
-+static ssize_t type_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
-+{
-+	return sysfs_emit(buffer, "gunyah\n");
-+}
-+static struct kobj_attribute type_attr = __ATTR_RO(type);
++#define __gh_declare_arg_3(a1, a2, a3, ...)				\
++	__gh_declare_arg_2(a1, a2);					\
++	typeof(a3) __gh_a3 = (a3);					\
++	register uintptr_t arg3 asm("r2") = __gh_a3
 +
-+static ssize_t api_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
-+{
-+	return sysfs_emit(buffer, "%d\n", (int)GH_API_INFO_API_VERSION(gunyah_api.api_info));
-+}
-+static struct kobj_attribute api_attr = __ATTR_RO(api);
++#define __gh_declare_arg_4(a1, a2, a3, a4, ...)				\
++	__gh_declare_arg_3(a1, a2, a3);					\
++	typeof(a4) __gh_a4 = (a4);					\
++	register uintptr_t arg4 asm("r3") = __gh_a4
 +
-+static ssize_t variant_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
-+{
-+	return sysfs_emit(buffer, "%d\n", (int)GH_API_INFO_VARIANT(gunyah_api.api_info));
-+}
-+static struct kobj_attribute variant_attr = __ATTR_RO(variant);
++#define __gh_declare_arg_5(a1, a2, a3, a4, a5, ...)			\
++	__gh_declare_arg_4(a1, a2, a3, a4);				\
++	typeof(a5) __gh_a5 = (a5);					\
++	register uintptr_t arg5 asm("r4") = __gh_a5
 +
-+static ssize_t features_show(struct kobject *kobj, struct kobj_attribute *attr, char *buffer)
-+{
-+	return sysfs_emit(buffer, "\n");
-+}
-+static struct kobj_attribute features_attr = __ATTR_RO(features);
++#define __gh_declare_arg_6(a1, a2, a3, a4, a5, a6, ...)			\
++	__gh_declare_arg_5(a1, a2, a3, a4, a5);				\
++	typeof(a6) __gh_a6 = (a6);					\
++	register uintptr_t arg6 asm("r5") = __gh_a6
 +
-+static struct attribute *version_attrs[] = {
-+	&api_attr.attr,
-+	&variant_attr.attr,
-+	NULL
-+};
++#define __gh_declare_arg_7(a1, a2, a3, a4, a5, a6, a7, ...)		\
++	__gh_declare_arg_6(a1, a2, a3, a4, a5, a6);			\
++	typeof(a7) __gh_a7 = (a7);					\
++	register uintptr_t arg7 asm("r6") = __gh_a7
 +
-+static const struct attribute_group version_group = {
-+	.name = "version",
-+	.attrs = version_attrs,
-+};
++#define __gh_declare_arg_8(a1, a2, a3, a4, a5, a6, a7, a8, ...)		\
++	__gh_declare_arg_7(a1, a2, a3, a4, a5, a6, a7);			\
++	typeof(a8) __gh_a8 = (a8);					\
++	register uintptr_t arg8 asm("r7") = __gh_a8
 +
-+static int __init gh_sysfs_register(void)
-+{
-+	int ret;
++#define ___gh_declare_args(nargs)	__gh_declare_arg_ ## nargs
++#define __gh_declare_args(nargs)	___gh_declare_args(nargs)
++#define _gh_declare_args(nargs, ...) __gh_declare_args(nargs)(__VA_ARGS__)
 +
-+	ret = sysfs_create_file(hypervisor_kobj, &type_attr.attr);
-+	if (ret)
-+		return ret;
++#define __gh_constraint_arg_0
++#define __gh_constraint_arg_1	"r" (arg1),
++#define __gh_constraint_arg_2	__gh_constraint_arg_1 "r" (arg2),
++#define __gh_constraint_arg_3	__gh_constraint_arg_2 "r" (arg3),
++#define __gh_constraint_arg_4	__gh_constraint_arg_3 "r" (arg4),
++#define __gh_constraint_arg_5	__gh_constraint_arg_4 "r" (arg5),
++#define __gh_constraint_arg_6	__gh_constraint_arg_5 "r" (arg6),
++#define __gh_constraint_arg_7	__gh_constraint_arg_6 "r" (arg7),
++#define __gh_constraint_arg_8	__gh_constraint_arg_7 "r" (arg8),
 +
-+	ret = sysfs_create_group(hypervisor_kobj, &version_group);
-+	if (ret)
-+		return ret;
++#define _gh_constraint_args(nargs)	__gh_constraint_arg_ ## nargs
 +
-+	return sysfs_create_file(hypervisor_kobj, &features_attr.attr);
-+}
++#define __gh_to_res(nargs, ...)		__gh_skip_ ## nargs (__VA_ARGS__)
 +
-+static void gh_sysfs_unregister(void)
-+{
-+	sysfs_remove_file(hypervisor_kobj, &type_attr.attr);
-+	sysfs_remove_group(hypervisor_kobj, &version_group);
-+}
++#define __gh_declare_res_0
 +
-+static int __init gunyah_init(void)
-+{
-+	arch_gh_hypercall(GH_HYPERCALL_HYP_IDENTIFY, 0, gunyah_api.api_info,
-+		gunyah_api.flags[0], gunyah_api.flags[1], gunyah_api.flags[2]);
++#define __gh_declare_res_1				\
++	register uintptr_t res1 asm("r0")
 +
-+	if (GH_API_INFO_API_VERSION(gunyah_api.api_info) != 1) {
-+		pr_warn("Unrecognized gunyah version: %llu. Currently supported: 1\n",
-+			GH_API_INFO_API_VERSION(gunyah_api.api_info));
-+		return 0;
-+	}
++#define __gh_declare_res_2				\
++	__gh_declare_res_1;				\
++	register uintptr_t res2 asm("r1")
 +
-+	return gh_sysfs_register();
-+}
-+module_init(gunyah_init);
++#define __gh_declare_res_3				\
++	__gh_declare_res_2;				\
++	register uintptr_t res3 asm("r2")
 +
-+static void __exit gunyah_exit(void)
-+{
-+	gh_sysfs_unregister();
-+}
-+module_exit(gunyah_exit);
++#define __gh_declare_res_4				\
++	__gh_declare_res_3;				\
++	register uintptr_t res4 asm("r3")
 +
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Gunyah Hypervisor Driver");
++#define __gh_declare_res_5				\
++	__gh_declare_res_4;				\
++	register uintptr_t res5 asm("r4")
++
++#define __gh_declare_res_6				\
++	__gh_declare_res_5;				\
++	register uintptr_t res6 asm("r5")
++
++#define __gh_declare_res_7				\
++	__gh_declare_res_6;				\
++	register uintptr_t res7 asm("r6")
++
++#define __gh_declare_res_8				\
++	__gh_declare_res_7;				\
++	register uintptr_t res8 asm("r7")
++
++#define ___gh_declare_res(nargs)	__gh_declare_res_ ## nargs
++#define __gh_declare_res(nargs)		___gh_declare_res(nargs)
++#define _gh_declare_res(...)		__gh_declare_res(__gh_count_args(__VA_ARGS__))
++
++#define __gh_constraint_res_0
++#define __gh_constraint_res_1	"=r" (res1)
++#define __gh_constraint_res_2	__gh_constraint_res_1, "=r" (res2)
++#define __gh_constraint_res_3	__gh_constraint_res_2, "=r" (res3)
++#define __gh_constraint_res_4	__gh_constraint_res_3, "=r" (res4)
++#define __gh_constraint_res_5	__gh_constraint_res_4, "=r" (res5)
++#define __gh_constraint_res_6	__gh_constraint_res_5, "=r" (res6)
++#define __gh_constraint_res_7	__gh_constraint_res_6, "=r" (res7)
++#define __gh_constraint_res_8	__gh_constraint_res_7, "=r" (res8)
++
++#define ___gh_constraint_res(nargs)	__gh_constraint_res_ ## nargs
++#define __gh_constraint_res(nargs)	___gh_constraint_res(nargs)
++#define _gh_constraint_res(...)				\
++	__gh_constraint_res(__gh_count_args(__VA_ARGS__))
++
++#define __gh_assign_res_0(...)
++
++#define __gh_assign_res_1(r1)					\
++	r1 = res1;
++
++#define __gh_assign_res_2(r1, r2)				\
++	__gh_assign_res_1(r1);					\
++	r2 = res2
++
++#define __gh_assign_res_3(r1, r2, r3)				\
++	__gh_assign_res_2(r1, r2);				\
++	r3 = res3
++
++#define __gh_assign_res_4(r1, r2, r3, r4)			\
++	__gh_assign_res_3(r1, r2, r3);				\
++	r4 = res4
++
++#define __gh_assign_res_5(r1, r2, r3, r4, r5)			\
++	__gh_assign_res_4(r1, r2, r3, r4);			\
++	r5 = res5
++
++#define __gh_assign_res_6(r1, r2, r3, r4, r5, r6)		\
++	__gh_assign_res_5(r1, r2, r3, r4, r5);			\
++	r6 = res6
++
++#define __gh_assign_res_7(r1, r2, r3, r4, r5, r6, r7)		\
++	__gh_assign_res_6(r1, r2, r3, r4, r5, r6);		\
++	r7 = res7
++
++#define __gh_assign_res_8(r1, r2, r3, r4, r5, r6, r7, r8)	\
++	__gh_assign_res_7(r1, r2, r3, r4, r5, r6, r7);		\
++	r8 = res8
++
++#define ___gh_assign_res(nargs)	__gh_assign_res_ ## nargs
++#define __gh_assign_res(nargs)	___gh_assign_res(nargs)
++#define _gh_assign_res(...) __gh_assign_res(__gh_count_args(__VA_ARGS__))(__VA_ARGS__)
++
++/**
++ * arch_gh_hypercall() - Performs an AArch64-specific call into hypervisor using Gunyah ABI
++ * @hcall_num: Hypercall function ID to invoke
++ * @nargs: Number of input arguments
++ * @...: First nargs are the input arguments. Remaining arguments are output variables.
++ */
++#define arch_gh_hypercall(hcall_num, nargs, ...)				\
++	do {									\
++		_gh_declare_res(__gh_to_res(nargs, __VA_ARGS__));		\
++		_gh_declare_args(nargs, __VA_ARGS__);				\
++		asm volatile(							\
++			     "hvc	%[num]\n"				\
++			     : _gh_constraint_res(__gh_to_res(nargs, __VA_ARGS__))	\
++			     : _gh_constraint_args(nargs)			\
++			       [num] "i" (hcall_num)				\
++			     : "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", \
++			       "memory");					\
++		_gh_assign_res(__gh_to_res(nargs, __VA_ARGS__));		\
++	} while (0)
++
++#endif
 -- 
 2.25.1
 
