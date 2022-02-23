@@ -2,105 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6138C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 21:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243037AbiBWVyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 16:54:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        id S243020AbiBWVyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 16:54:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242158AbiBWVyO (ORCPT
+        with ESMTP id S236891AbiBWVya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 16:54:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A385004B;
-        Wed, 23 Feb 2022 13:53:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE250618F9;
-        Wed, 23 Feb 2022 21:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA655C340E7;
-        Wed, 23 Feb 2022 21:53:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645653224;
-        bh=soOvQYRaOyZB66UMOdZmvj155c4NjxblRTlsoz7NPWM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Rnac7ap99w001yaIWWSDvCcMuzb4R6SAfj0LsDJC9di7qM+crR9k/cY2llxXgAVae
-         QFGtb0ad4PBYVxi75RirP6dccAvb/YLEB2wy3JjHbeXOkaqKgZeRRtd6yVF0yDH2bX
-         pz0IUI0hmSspHhbjKUCgtxSE6nrqvVWHeJgKFJeUrIJjpsFEqe/+RGrkNOuSHPKypb
-         0ZwdJk12cdt9PAP1ZL3LN2+KDUA7YOVUwFJcLv7Qfag5C0QESOZ5SuSUXjDU+v8/sC
-         JSx3uLNr/O0Ox2z2I6BCIY2za2vtgmF4cDPdJ8NlSpe2wOyaPc+YlwVQ6ua50G6jz0
-         auUVVFaAiFa0w==
-Date:   Wed, 23 Feb 2022 15:53:42 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v2 01/11] driver: platform: add and use helper for safer
- setting of driver_override
-Message-ID: <20220223215342.GA155282@bhelgaas>
+        Wed, 23 Feb 2022 16:54:30 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A0950451
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:54:01 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id u20so656536lff.2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:54:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4TnD6jYOSsNtQKWO0JaU3gwq6Qdh6TjyUgcvqEl+K5I=;
+        b=dX/Jy7+F597/hIqi/9qMzXNMQrDyhVkP3dTnhBEOAl49NjqeCD8FqayzKHmPDChTw3
+         FXxIkt9v5pPo2K0sD+mRbJ2ze9fZjc9QQ0YoibAdDT8COHVHj0K4UemJxZnobNcdHhFL
+         ecGrXKp1xqB580NwK5g7hNFGZEgHao6WIIXUA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4TnD6jYOSsNtQKWO0JaU3gwq6Qdh6TjyUgcvqEl+K5I=;
+        b=FctymX292tA+gmkzdVNROhB9ubtoD/eWGmVAWbRGjF3qztPSudG+9pSBtnErJ/Qyfc
+         RiJX7WRCUfXbGlHyeCb+Ay6TuGXfIzWCOFj4KzekENrQ6eXyMHx3PJEzMUYZm33Hdfad
+         +Mji3rjGCnoQl8V1Ye73OEYsZaYBnZE9cxOmzGUMy+RmyMACwpehLTEldfMgZ4KDgPcH
+         /57SxHufqpVJj+ou24OiAQv3Gbxe4noUxYPZ4JHAHaLlCCVJb0jY3UTc22HNTGpptfyL
+         kOU+JghxjIQzggVn47AmxhSWMsEtk+uSmyP7AdtT6jqeZNOsYgqfmHjvBlgljFD1jZpu
+         LZSg==
+X-Gm-Message-State: AOAM5309retIsM6oaC/wEGluvtJpJ+6luHPTuGL+72d8APTNmbS4tcNB
+        vb/hNYeSsh7vgcN2w67Puv6VkSjHevmc+lOwH6M=
+X-Google-Smtp-Source: ABdhPJzEDFOJ0s1JQ5zRrqmi1ZcZ/y+AbaMxkXLw3b/Odem5AlM5Ic/jAoXr5i74TPG8NFUowMmgYQ==
+X-Received: by 2002:a19:6a07:0:b0:443:ecf7:e4b4 with SMTP id u7-20020a196a07000000b00443ecf7e4b4mr1019148lfu.395.1645653239782;
+        Wed, 23 Feb 2022 13:53:59 -0800 (PST)
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
+        by smtp.gmail.com with ESMTPSA id a9sm57781lfl.180.2022.02.23.13.53.56
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 13:53:56 -0800 (PST)
+Received: by mail-lf1-f51.google.com with SMTP id f37so602825lfv.8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 13:53:56 -0800 (PST)
+X-Received: by 2002:a05:6512:2033:b0:443:3d49:dac with SMTP id
+ s19-20020a056512203300b004433d490dacmr1067001lfs.52.1645653236389; Wed, 23
+ Feb 2022 13:53:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223191310.347669-2-krzysztof.kozlowski@canonical.com>
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+ <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
+ <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
+ <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
+ <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com>
+ <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com> <CAK8P3a2b_RtXkhQ2pwqbZ1zz6QtjaWwD4em_MCF_wGXRwZirKA@mail.gmail.com>
+In-Reply-To: <CAK8P3a2b_RtXkhQ2pwqbZ1zz6QtjaWwD4em_MCF_wGXRwZirKA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 23 Feb 2022 13:53:39 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wh97QY9fEQUK6zMVQwaQ_JWDvR=R+TxQ_0OYrMHQ+egvQ@mail.gmail.com>
+Message-ID: <CAHk-=wh97QY9fEQUK6zMVQwaQ_JWDvR=R+TxQ_0OYrMHQ+egvQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, Nathan Chancellor <nathan@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 08:13:00PM +0100, Krzysztof Kozlowski wrote:
-> Several core drivers and buses expect that driver_override is a
-> dynamically allocated memory thus later they can kfree() it.
-> ...
+On Wed, Feb 23, 2022 at 1:46 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> > Ok, so we should be able to basically convert '--std=gnu89' into
+> > '--std=gnu11 -Wno-shift-negative-value' with no expected change of
+> > behavior.
+>
+> Yes, I think that is correct.
 
-> + * set_driver_override() - Helper to set or clear driver override.
+Ok, somebody please remind me, and let's just try this early in the
+5.18 merge window.
 
-Doesn't match actual function name.
+Because at least for me, doing
 
-> + * @dev: Device to change
-> + * @override: Address of string to change (e.g. &device->driver_override);
-> + *            The contents will be freed and hold newly allocated override.
-> + * @s: NULL terminated string, new driver name to force a match, pass empty
-> + *     string to clear it
-> + *
-> + * Helper to setr or clear driver override in a device, intended for the cases
-> + * when the driver_override field is allocated by driver/bus code.
+-                  -std=gnu89
++                  -std=gnu11 -Wno-shift-negative-value
 
-s/setr/set/
+for KBUILD_CFLAGS works fine both in my gcc and clang builds. But
+that's obviously just one version of each.
 
-> + * Returns: 0 on success or a negative error code on failure.
-> + */
-> +int driver_set_override(struct device *dev, char **override, const char *s)
-> +{
+(I left the host compiler flags alone - I have this memory of us
+having had issues with people having old host compilers and wanting
+headers for tools still build with gcc-4)
+
+                Linus
