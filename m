@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 20:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241907AbiBWUzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 15:55:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
+        id S241956AbiBWUzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 15:55:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241838AbiBWUzI (ORCPT
+        with ESMTP id S241838AbiBWUzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 15:55:08 -0500
-X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 12:54:37 PST
-Received: from mx02.puc.rediris.es (outbound3sev.lav.puc.rediris.es [130.206.19.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35B64DF7E
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:54:37 -0800 (PST)
-Received: from mta-out03.sim.rediris.es (mta-out03.sim.rediris.es [130.206.24.45])
-        by mx02.puc.rediris.es  with ESMTP id 21NKmHO5005544-21NKmHO7005544
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 23 Feb 2022 21:48:17 +0100
-Received: from mta-out03.sim.rediris.es (localhost.localdomain [127.0.0.1])
-        by mta-out03.sim.rediris.es (Postfix) with ESMTPS id 6237930004B1;
-        Wed, 23 Feb 2022 21:48:17 +0100 (CET)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mta-out03.sim.rediris.es (Postfix) with ESMTP id 4F364306B1F1;
-        Wed, 23 Feb 2022 21:48:17 +0100 (CET)
-X-Amavis-Modified: Mail body modified (using disclaimer) -
-        mta-out03.sim.rediris.es
-Received: from mta-out03.sim.rediris.es ([127.0.0.1])
-        by localhost (mta-out03.sim.rediris.es [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id SWZS_Scr0pjj; Wed, 23 Feb 2022 21:48:17 +0100 (CET)
-Received: from lt-gp.iram.es (haproxy02.sim.rediris.es [130.206.24.70])
-        by mta-out03.sim.rediris.es (Postfix) with ESMTPA id 33B8430004B1;
-        Wed, 23 Feb 2022 21:48:16 +0100 (CET)
-Date:   Wed, 23 Feb 2022 21:48:09 +0100
-From:   Gabriel Paubert <paubert@iram.es>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/32: Clear volatile regs on syscall exit
-Message-ID: <YhadiVbwao/p2N7o@lt-gp.iram.es>
-References: <28b040bd2357a1879df0ca1b74094323f778a472.1645636285.git.christophe.leroy@csgroup.eu>
+        Wed, 23 Feb 2022 15:55:35 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DAC4E3B1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:55:06 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id e2so23089396ljq.12
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:55:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=si7AL42ZuEkVrfiwamYcHieHO/8AUiwawUmyYL9iblE=;
+        b=B1SDugO2vfy60lWlBgpH1fmDo//8I/Kk5ECqxfCvk6Dd78O1zwDRkUy6yEngCcSm2Y
+         QLuJReCp7lCrHgKRQ7/EBEjJvHXtPOGHquG0zKFDYQt2fOO7fMJ2yGliuKb848Sj9VLX
+         FUrC/AymzuR/j1+hK2zjmg53bV4WzqYFgTET0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=si7AL42ZuEkVrfiwamYcHieHO/8AUiwawUmyYL9iblE=;
+        b=D+inCzN7R/m6uGkSr4KKUfF2QardeB9h9KMKvBAJEjfiJA1R+ujL04P8VYpsryW+OQ
+         n0toBkJXUIYj/BpP5RWgPVwXFTZcHhRW8KaAMV3T8MER8VzgyVjc5zIC2KtHbYtH9uCT
+         qpvuhPqXfvYPYzAqXCBDO/gOs8GGsWqN/23TvPsiq6rnpRfkFdP+k1Y4T4fHiyoX6eWA
+         uV8etBdcJp6edPZh6XxIhrfifLZo91JcnF2lSYM6JMY7+mow9bn8H9uWmHSEiCLrqgLD
+         dAgBdEdJnz5dz8S2+HKwfJrgYNMi/j0tUiqEcHKdmH6Igi8tbhlgqINFJ3DGwI/MvUqS
+         eVmA==
+X-Gm-Message-State: AOAM530ymWVgg4rIHfpNwd5bnSRU4I38nJZWvd6m63tSF8N+wBKk6WMR
+        N89mz6IvKK90QFSqn1V3xu+0oE/8aYKBMVmulN4=
+X-Google-Smtp-Source: ABdhPJz1s6lwEeZK017dSdQH6aEiGnPlzWMi6+PrTdKDijVnjMT41Y2oINtteJxLuR655pFa+rPImQ==
+X-Received: by 2002:a2e:aa18:0:b0:244:bb00:db39 with SMTP id bf24-20020a2eaa18000000b00244bb00db39mr809404ljb.341.1645649704959;
+        Wed, 23 Feb 2022 12:55:04 -0800 (PST)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id m7sm90650ljb.87.2022.02.23.12.55.02
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 12:55:02 -0800 (PST)
+Received: by mail-lf1-f42.google.com with SMTP id y24so437477lfg.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 12:55:02 -0800 (PST)
+X-Received: by 2002:a05:6512:130b:b0:443:c2eb:399d with SMTP id
+ x11-20020a056512130b00b00443c2eb399dmr933476lfu.27.1645649701759; Wed, 23 Feb
+ 2022 12:55:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <28b040bd2357a1879df0ca1b74094323f778a472.1645636285.git.christophe.leroy@csgroup.eu>
-X-FE-Policy-ID: 23:8:0:SYSTEM
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=iram.es; s=DKIM; c=relaxed/relaxed;
- h=date:from:to:cc:subject:message-id:references:mime-version:content-type;
- bh=bz6Q3MCl84at11A0B3YpTI0E5vC6G8qpl+kHI5iMXXA=;
- b=EDuB3ZsP42vMN0Hn/eWIC0hn2u5caeCWIsjU5g6NFDBpt+ZoFWaW+M6QLurdDP5epHqd1ixNrV18
-        P0L9k0KpCQ4UGRA2eAe3kUkafu82cXab5JA5gUZ4d9toOaJMb/V6PqCATIcjL7OdBElWbxSUPG9F
-        g8MfNbEvjJqx7/9zaSlXdrAWwl1a+V96yAsgoSnEw3YG6Q7jfEkFxtEQ8eHnQ90G+PGzRdokM6lU
-        /baXqEFOXkWYpqTOuLALCmRq8RjbOj0/ilwsXpa+IxkvbhoY5GLmFpYnLfrA3uAEY5qg8m6FxOB9
-        SJOUDbTkTo82sUSMAk2nrz2HwnX5zQj4uk+tQA==
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+ <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
+ <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
+ <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
+ <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com> <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
+In-Reply-To: <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 23 Feb 2022 12:54:45 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
+Message-ID: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 06:11:36PM +0100, Christophe Leroy wrote:
-> Commit a82adfd5c7cb ("hardening: Introduce CONFIG_ZERO_CALL_USED_REGS")
-> added zeroing of used registers at function exit.
-> 
-> At the time being, PPC64 clears volatile registers on syscall exit but
-> PPC32 doesn't do it for performance reason.
-> 
-> Add that clearing in PPC32 syscall exit as well, but only when
-> CONFIG_ZERO_CALL_USED_REGS is selected.
-> 
-> On an 8xx, the null_syscall selftest gives:
-> - Without CONFIG_ZERO_CALL_USED_REGS		: 288 cycles
-> - With CONFIG_ZERO_CALL_USED_REGS		: 305 cycles
-> - With CONFIG_ZERO_CALL_USED_REGS + this patch	: 319 cycles
-> 
-> Note that (independent of this patch), with pmac32_defconfig,
-> vmlinux size is as follows with/without CONFIG_ZERO_CALL_USED_REGS:
-> 
->    text	   	data	    bss	    dec	    hex		filename
-> 9578869		2525210	 194400	12298479	bba8ef	vmlinux.without
-> 10318045	2525210  194400	13037655	c6f057	vmlinux.with
-> 
-> That is a 7.7% increase on text size, 6.0% on overall size.
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  arch/powerpc/kernel/entry_32.S | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/arch/powerpc/kernel/entry_32.S b/arch/powerpc/kernel/entry_32.S
-> index 7748c278d13c..199f23092c02 100644
-> --- a/arch/powerpc/kernel/entry_32.S
-> +++ b/arch/powerpc/kernel/entry_32.S
-> @@ -151,6 +151,21 @@ syscall_exit_finish:
->  	bne	3f
->  	mtcr	r5
->  
-> +#ifdef CONFIG_ZERO_CALL_USED_REGS
-> +	/* Zero volatile regs that may contain sensitive kernel data */
-> +	li	r0,0
-> +	li	r4,0
-> +	li	r5,0
-> +	li	r6,0
-> +	li	r7,0
-> +	li	r8,0
-> +	li	r9,0
-> +	li	r10,0
-> +	li	r11,0
-> +	li	r12,0
-> +	mtctr	r0
-> +	mtxer	r0
+On Wed, Feb 23, 2022 at 12:43 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Of course, the C standard being the bunch of incompetents they are,
+> they in the process apparently made left-shifts undefined (rather than
+> implementation-defined). Christ, they keep on making the same mistakes
+> over and over. What was the definition of insanity again?
 
-Here, I'm almost sure that on some processors, it would be better to
-separate mtctr form mtxer. mtxer is typically very expensive (pipeline
-flush) but I don't know what's the best ordering for the average core.
+Hey, some more googling on my part seems to say that somebody saw the
+light, and it's likely getting fixed in newer C standard version.
 
-And what about lr? Should it also be cleared?
+So it was just a mistake, not actual malice. Maybe we can hope that
+the tide is turning against the "undefined" crowd that used to rule
+the roost in the C standards bodies. Maybe the fundamental security
+issues with undefined behavior finally convinced people how bad it
+was?
 
-	Gabriel
-
-> +#endif
->  1:	lwz	r2,GPR2(r1)
->  	lwz	r1,GPR1(r1)
->  	rfi
-> -- 
-> 2.34.1
-> 
- 
-
+            Linus
