@@ -2,131 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE2BCC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65172C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243269AbiBWRJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:09:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
+        id S243282AbiBWRJy convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235233AbiBWRJW (ORCPT
+        with ESMTP id S243241AbiBWRHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:09:22 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAF86A052;
-        Wed, 23 Feb 2022 09:08:55 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21NGklN0008284;
-        Wed, 23 Feb 2022 17:08:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=v/9iqPWP9GaGeN8okiXT35bEkgeyZqF20Bo4yaP6Zbc=;
- b=VrNvN7cWxIpZfqBeMZvwBdiF+qR4DSX3Jrpjh+RM18NOFPvuZKNgDelEWT5QxRbYUULM
- wvfITQ+gQe6GJgrX3BWzgmgxCp+TpPfSkNNtarqAH/n+WALIP9E18D62YgERYXZphIQQ
- sN/foGGalX68UUCaAAg/VsoZn0YB4sglEOpGthe8mOsbwXeO2SrBLow9Op492C593J1g
- blI9MCoyeKbmuTDKAX8NNOtqL+llbNMN1layjFGb0JRmjVii19J91KTeTIqPxMc6amTB
- 7k+PsV6q6Zr2aaxS77dj40bWnxNH3HfqT4FtFVgV40kpCzA5hWbnP13VPyixgu/b8yEl YQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edrrcrhk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:08:44 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21NH6OSV001118;
-        Wed, 23 Feb 2022 17:08:43 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edrrcrhjh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:08:43 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21NH60Tl022427;
-        Wed, 23 Feb 2022 17:08:42 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma03dal.us.ibm.com with ESMTP id 3ear6bvx2v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 17:08:42 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21NH8eCP46334246
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 23 Feb 2022 17:08:40 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C6BD7B2065;
-        Wed, 23 Feb 2022 17:08:40 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4FB38B205F;
-        Wed, 23 Feb 2022 17:08:40 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 23 Feb 2022 17:08:40 +0000 (GMT)
-Message-ID: <9262a630-1f3e-0f58-110d-abfebe8274af@linux.ibm.com>
-Date:   Wed, 23 Feb 2022 12:08:40 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v10 24/27] ima: Introduce securityfs file to activate an
- IMA namespace
+        Wed, 23 Feb 2022 12:07:47 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CF45D19A;
+        Wed, 23 Feb 2022 09:07:16 -0800 (PST)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K3j5G4wg6z680ZP;
+        Thu, 24 Feb 2022 01:02:26 +0800 (CST)
+Received: from lhreml715-chm.china.huawei.com (10.201.108.66) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 23 Feb 2022 18:07:07 +0100
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml715-chm.china.huawei.com (10.201.108.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 23 Feb 2022 17:07:06 +0000
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2308.021; Wed, 23 Feb 2022 17:07:06 +0000
+From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        liulongfang <liulongfang@huawei.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        "Wangzhou (B)" <wangzhou1@hisilicon.com>
+Subject: RE: [PATCH v5 7/8] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Thread-Topic: [PATCH v5 7/8] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Thread-Index: AQHYJxgOEQAq1mellU2EgPXLuddEUaygUS2AgAEHKICAAAi68A==
+Date:   Wed, 23 Feb 2022 17:07:06 +0000
+Message-ID: <60d48005f88a4d63b9a9228c0f4d95b9@huawei.com>
+References: <20220221114043.2030-1-shameerali.kolothum.thodi@huawei.com>
+        <20220221114043.2030-8-shameerali.kolothum.thodi@huawei.com>
+        <20220223005251.GJ10061@nvidia.com>
+ <20220223093443.367ee531.alex.williamson@redhat.com>
+In-Reply-To: <20220223093443.367ee531.alex.williamson@redhat.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-References: <20220201203735.164593-1-stefanb@linux.ibm.com>
- <20220201203735.164593-25-stefanb@linux.ibm.com>
- <9a720bf5928151a0cbc7994ee498a1c3ca779c56.camel@linux.ibm.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <9a720bf5928151a0cbc7994ee498a1c3ca779c56.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: dzCcfQ4VjkfeIovbD0g_06AG5j1fOtQW
-X-Proofpoint-ORIG-GUID: 8TkWLL1sE-GCLWOycacwjGZZ1pviQHG-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_08,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
- malwarescore=0 impostorscore=0 mlxlogscore=999 suspectscore=0 spamscore=0
- adultscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202230097
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.27.208]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 2/23/22 08:54, Mimi Zohar wrote:
-> On Tue, 2022-02-01 at 15:37 -0500, Stefan Berger wrote:
->
->>   int ima_fs_ns_init(struct user_namespace *user_ns, struct dentry *root)
->>   {
->>   	struct ima_namespace *ns = ima_ns_from_user_ns(user_ns);
->> @@ -531,6 +596,12 @@ int ima_fs_ns_init(struct user_namespace *user_ns, struct dentry *root)
->>   		}
->>   	}
->>   
->> +	if (ns != &init_ima_ns) {
->> +		ret = ima_fs_add_ns_files(ima_dir);
->> +		if (ret)
->> +			goto out;
->> +	}
->> +
-> In all other cases, the securityfs files are directly created in
-> ima_fs_ns_init().   What is different about "active" that a new
-> function is defined?
 
+> -----Original Message-----
+> From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> Sent: 23 February 2022 16:35
+> To: Jason Gunthorpe <jgg@nvidia.com>
+> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
+> linux-crypto@vger.kernel.org; cohuck@redhat.com; mgurtovoy@nvidia.com;
+> yishaih@nvidia.com; Linuxarm <linuxarm@huawei.com>; liulongfang
+> <liulongfang@huawei.com>; Zengtao (B) <prime.zeng@hisilicon.com>;
+> Jonathan Cameron <jonathan.cameron@huawei.com>; Wangzhou (B)
+> <wangzhou1@hisilicon.com>
+> Subject: Re: [PATCH v5 7/8] hisi_acc_vfio_pci: Add support for VFIO live
+> migration
+> 
+> On Tue, 22 Feb 2022 20:52:51 -0400
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Mon, Feb 21, 2022 at 11:40:42AM +0000, Shameer Kolothum wrote:
+> >
+> > > +	/*
+> > > +	 * ACC VF dev BAR2 region consists of both functional register space
+> > > +	 * and migration control register space. For migration to work, we
+> > > +	 * need access to both. Hence, we map the entire BAR2 region here.
+> > > +	 * But from a security point of view, we restrict access to the
+> > > +	 * migration control space from Guest(Please see mmap/ioctl/read/write
+> > > +	 * override functions).
+> > > +	 *
+> > > +	 * Also the HiSilicon ACC VF devices supported by this driver on
+> > > +	 * HiSilicon hardware platforms are integrated end point devices
+> > > +	 * and has no capability to perform PCIe P2P.
+> >
+> > If that is the case why not implement the RUNNING_P2P as well as a
+> > NOP?
+> >
+> > Alex expressed concerned about proliferation of non-P2P devices as it
+> > complicates qemu to support mixes
+> 
+> I read the above as more of a statement about isolation, ie. grouping.
 
-It was meant as a function to create namespace-specific files, if more 
-were to come along.  I can move the code from ima_fs_add_ns_files() into 
-this function if you want.
+That's right. That's what I meant by " no capability to perform PCIe P2P"
 
+Thanks,
+Shameer
 
->
-> thanks,
->
-> Mimi
->
->
+> Given that all DMA from the device is translated by the IOMMU, how is
+> it possible that a device can entirely lack p2p support, or even know
+> that the target address post-translation is to a peer device rather
+> than system memory.  If this is the case, it sounds like a restriction
+> of the SMMU not supporting translations that reflect back to the I/O
+> bus rather than a feature of the device itself.  Thanks,
+> 
+> Alex
+
