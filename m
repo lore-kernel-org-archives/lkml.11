@@ -2,357 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244445AbiBWTha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:37:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S244462AbiBWTiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:38:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244466AbiBWThY (ORCPT
+        with ESMTP id S233923AbiBWTiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:37:24 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93B43526C
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:36:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645645015; x=1677181015;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XejRFWffjzHpWmroA4DZ5EqnJeS+quUD9WS2FcF0R0U=;
-  b=Ix+TIk1IZvUT2WyAfph4dETSZLZ5XgEZSMmb4RTnB9exVyGwV3KnN9QH
-   V1LWc3D51++gWZW+sPFI5hrAgX7zVM5PV3olppr5wyXwgzEscIcLY7375
-   NkEkXKSTBJ1EMKVyk73jpF5CQrGrGSSRlZpBUUYAVLffh/PMQywtgblL8
-   COHRI75nnwNl84dhenyS6LnuKsOuFTZHaqbgdYDfo3DncSIbpqSovNAzA
-   DriIHr/fbraFYYUJtDRDIwjm0yDcFywsjyysGErM6wma+aTXhQiE4nzOB
-   kJW9b4tTg/HWkF5vaMiqqcffz9QLVGfKuVmUpmHdqeUPEH9O8C4zWssWR
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232686536"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="232686536"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 11:36:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
-   d="scan'208";a="684019896"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 11:36:45 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nMxRM-0001kE-NR; Wed, 23 Feb 2022 19:36:44 +0000
-Date:   Thu, 24 Feb 2022 03:36:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1471/2340]
- arch/powerpc/include/asm/mmu.h:350:9: error: use of undeclared identifier
- 'rodata_enabled'; did you mean 'radix_enabled'?
-Message-ID: <202202240339.NOVtjfye-lkp@intel.com>
+        Wed, 23 Feb 2022 14:38:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41F1B48E62
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:37:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645645069;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=N/l3oCj67GUwlDfyFRu9RXhbDrMuZBvOYEDah0hu0xk=;
+        b=KbbsA2QgZ3qDgYCdd+1zy2HQJzyrAfQuGOieL8U6mtDwdvpvqg5oT4Un8WGPWNi1wq9jZi
+        7gzgkjrFvMmY+9THMmRq9pGh/1wrAhTnrCERxdZQTeHAL20TFjxKPZcq7wO3y2C3+s9NSG
+        uLopAH+lA4tCoo759d19979Fi1890IU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-QoJ-i34YO4OBuUzsg-8scQ-1; Wed, 23 Feb 2022 14:37:48 -0500
+X-MC-Unique: QoJ-i34YO4OBuUzsg-8scQ-1
+Received: by mail-wm1-f72.google.com with SMTP id v125-20020a1cac83000000b0037e3d70e7e1so1565603wme.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:37:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N/l3oCj67GUwlDfyFRu9RXhbDrMuZBvOYEDah0hu0xk=;
+        b=M16JETmtQ1m5R779HEHdVkWnKjbL8gQzpLpPqvB6o/VTHwrU+tFQ+ySwXo0Qj/I9so
+         b9RIbH8IaFshU+4yzfpLnmohiFswpGZIjI1LSgwPXPePHvMsJWN+7SxWx60prAXfadhp
+         lay+dqqnHI9YIEitExMFqon4ttHQ1TzseqGgm62YLk2G9BMeNu0q4LRDlOqe4nF5QILu
+         sL26n2N59HwOWehl6Kxf7hchU6NNFIKDHzMOH0ft5X1E2Nn+cVEyo27RLrbNngFqIIgh
+         kU03wxQ4dCQ9jagQIhSOWMfDK4H7LyX7tQ0CfaPlvlyLVEvtG/TWU4rccser+7xxBb7a
+         jRpA==
+X-Gm-Message-State: AOAM532EzGO2ZeOhZClQubuKTF0Sr13Avkfrmb5CMRInq5aNOARPT6C4
+        OPwc9FhC60qgQGNRONzC/8TS2cWZSMVDvFvkl6JQOaylS5LZQ+qLefCcZAdMjqQKZNeEunGzycr
+        +NNTQZKJfc9JpBH9VfWKWt0FncouakUawwxVAJQGxWmW9PpCMl3hZRExBFDF8jSMA29z1Akr3Nn
+        8=
+X-Received: by 2002:a5d:4450:0:b0:1e6:8d72:b88e with SMTP id x16-20020a5d4450000000b001e68d72b88emr865459wrr.632.1645645066695;
+        Wed, 23 Feb 2022 11:37:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy3dlcQ4rDmWCLTRjmi51tojX5NlBHrp66hbYXNYrBhpSKQ+FebzA6eKdmARYqeDYgmhj79ow==
+X-Received: by 2002:a5d:4450:0:b0:1e6:8d72:b88e with SMTP id x16-20020a5d4450000000b001e68d72b88emr865433wrr.632.1645645066320;
+        Wed, 23 Feb 2022 11:37:46 -0800 (PST)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id v9sm511346wrx.27.2022.02.23.11.37.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 11:37:45 -0800 (PST)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/repaper: Use format helper for xrgb8888 to monochrome conversion
+Date:   Wed, 23 Feb 2022 20:37:35 +0100
+Message-Id: <20220223193735.213185-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   97c5eeb4de3ad324ed2a4656b46465299cfd010a
-commit: 0ca8be0dc3575bd4f7e5e9c4b84cf200f5a8e494 [1471/2340] headers/deps: printk: Reduce <linux/printk.h> header dependencies
-config: powerpc64-randconfig-r013-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240339.NOVtjfye-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc64 cross compiling tool for clang build
-        # apt-get install binutils-powerpc64le-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=0ca8be0dc3575bd4f7e5e9c4b84cf200f5a8e494
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 0ca8be0dc3575bd4f7e5e9c4b84cf200f5a8e494
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc prepare
+There is now a drm_fb_xrgb8888_to_mono_reversed() helper function to do
+format conversion from XRGB8888 to reversed monochrome.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Use that helper and remove the open coded version in the repaper driver.
 
-All error/warnings (new ones prefixed by >>):
-
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
->> arch/powerpc/include/asm/mmu.h:350:9: error: use of undeclared identifier 'rodata_enabled'; did you mean 'radix_enabled'?
-           return rodata_enabled;
-                  ^~~~~~~~~~~~~~
-                  radix_enabled
-   arch/powerpc/include/asm/mmu.h:337:29: note: 'radix_enabled' declared here
-   static __always_inline bool radix_enabled(void)
-                               ^
->> arch/powerpc/include/asm/mmu.h:350:9: warning: address of function 'radix_enabled' will always evaluate to 'true' [-Wpointer-bool-conversion]
-           return rodata_enabled;
-           ~~~~~~ ^~~~~~~~~~~~~~
-   arch/powerpc/include/asm/mmu.h:350:9: note: prefix with the address-of operator to silence this warning
-           return rodata_enabled;
-                  ^
-                  &
-   arch/powerpc/include/asm/mmu.h:350:9: note: suffix with parentheses to turn this into a function call
-           return rodata_enabled;
-                  ^
-                                ()
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
-   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:299:
->> arch/powerpc/include/asm/book3s/64/hash.h:244:21: error: expected ';' after top level declarator
-   extern int __meminit hash__vmemmap_create_mapping(unsigned long start,
-                       ^
-                       ;
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
-   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:300:
->> arch/powerpc/include/asm/book3s/64/radix.h:289:21: error: expected ';' after top level declarator
-   extern int __meminit radix__vmemmap_create_mapping(unsigned long start,
-                       ^
-                       ;
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1087:8: error: 'inline' can only appear on functions
-   static inline int __meminit vmemmap_create_mapping(unsigned long start,
-          ^
-   include/linux/compiler_types.h:149:16: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                  ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1087:8: warning: '__gnu_inline__' attribute only applies to functions [-Wignored-attributes]
-   include/linux/compiler_types.h:149:23: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                         ^
-   include/linux/compiler_attributes.h:160:56: note: expanded from macro '__gnu_inline'
-   #define __gnu_inline                    __attribute__((__gnu_inline__))
-                                                          ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1087:8: warning: '__no_instrument_function__' attribute only applies to functions and Objective-C methods [-Wignored-attributes]
-   include/linux/compiler_types.h:149:58: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                                                            ^
-   include/linux/compiler_types.h:129:34: note: expanded from macro 'notrace'
-   #define notrace                 __attribute__((__no_instrument_function__))
-                                                  ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1087:19: error: static declaration of '__meminit' follows non-static declaration
-   static inline int __meminit vmemmap_create_mapping(unsigned long start,
-                     ^
-   arch/powerpc/include/asm/book3s/64/radix.h:289:12: note: previous declaration is here
-   extern int __meminit radix__vmemmap_create_mapping(unsigned long start,
-              ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu.h:39:
-   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1087:28: error: expected ';' after top level declarator
-   static inline int __meminit vmemmap_create_mapping(unsigned long start,
-                              ^
-                              ;
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1241:6: error: implicit declaration of function 'pmd_pte' [-Werror,-Wimplicit-function-declaration]
-           if (__pmd_write((*pmdp)))
-               ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1162:38: note: expanded from macro '__pmd_write'
-   #define __pmd_write(pmd)        __pte_write(pmd_pte(pmd))
-                                               ^
->> arch/powerpc/include/asm/book3s/64/pgtable.h:1241:6: error: passing 'int' to parameter of incompatible type 'pte_t'
-           if (__pmd_write((*pmdp)))
-               ^~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1162:38: note: expanded from macro '__pmd_write'
-   #define __pmd_write(pmd)        __pte_write(pmd_pte(pmd))
-                                               ^~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:419:37: note: passing argument to parameter 'pte' here
-   static inline int __pte_write(pte_t pte)
-                                       ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1243:20: error: passing 'int' to parameter of incompatible type 'pte_t'
-           else if (unlikely(pmd_savedwrite(*pmdp)))
-                    ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1163:44: note: expanded from macro 'pmd_savedwrite'
-   #define pmd_savedwrite(pmd)     pte_savedwrite(pmd_pte(pmd))
-                                                  ^
-   include/linux/compiler.h:48:41: note: expanded from macro 'unlikely'
-   #  define unlikely(x)   (__branch_check__(x, 0, __builtin_constant_p(x)))
-                            ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:439:41: note: passing argument to parameter 'pte' here
-   static inline bool pte_savedwrite(pte_t pte)
-                                           ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1243:20: error: passing 'int' to parameter of incompatible type 'pte_t'
-           else if (unlikely(pmd_savedwrite(*pmdp)))
-                    ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1163:44: note: expanded from macro 'pmd_savedwrite'
-   #define pmd_savedwrite(pmd)     pte_savedwrite(pmd_pte(pmd))
-                                                  ^
-   include/linux/compiler.h:48:68: note: expanded from macro 'unlikely'
-   #  define unlikely(x)   (__branch_check__(x, 0, __builtin_constant_p(x)))
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:439:41: note: passing argument to parameter 'pte' here
-   static inline bool pte_savedwrite(pte_t pte)
-                                           ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1380:20: error: implicit declaration of function 'pmd_pte' [-Werror,-Wimplicit-function-declaration]
-           return pte_devmap(pmd_pte(pmd));
-                             ^
-   arch/powerpc/include/asm/book3s/64/pgtable.h:1380:20: error: passing 'int' to parameter of incompatible type 'pte_t'
-           return pte_devmap(pmd_pte(pmd));
-                             ^~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/pgtable.h:733:36: note: passing argument to parameter 'pte' here
-   static inline int pte_devmap(pte_t pte)
-                                      ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
->> arch/powerpc/include/asm/book3s/64/mmu.h:231:8: error: 'inline' can only appear on functions
-   static inline void __init early_init_mmu(void)
-          ^
-   include/linux/compiler_types.h:149:16: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                  ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
->> arch/powerpc/include/asm/book3s/64/mmu.h:231:8: warning: '__gnu_inline__' attribute only applies to functions [-Wignored-attributes]
-   include/linux/compiler_types.h:149:23: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                         ^
-   include/linux/compiler_attributes.h:160:56: note: expanded from macro '__gnu_inline'
-   #define __gnu_inline                    __attribute__((__gnu_inline__))
-                                                          ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
->> arch/powerpc/include/asm/book3s/64/mmu.h:231:8: warning: '__no_instrument_function__' attribute only applies to functions and Objective-C methods [-Wignored-attributes]
-   include/linux/compiler_types.h:149:58: note: expanded from macro 'inline'
-   #define inline inline __gnu_inline __inline_maybe_unused notrace
-                                                            ^
-   include/linux/compiler_types.h:129:34: note: expanded from macro 'notrace'
-   #define notrace                 __attribute__((__no_instrument_function__))
-                                                  ^
-   In file included from arch/powerpc/kernel/asm-offsets.c:12:
-   In file included from include/linux/preempt.h:10:
-   In file included from arch/powerpc/include/asm/current.h:13:
-   In file included from arch/powerpc/include/asm/paca.h:17:
-   In file included from arch/powerpc/include/asm/lppaca.h:46:
-   In file included from arch/powerpc/include/asm/mmu.h:405:
->> arch/powerpc/include/asm/book3s/64/mmu.h:231:20: error: variable has incomplete type 'void'
-   static inline void __init early_init_mmu(void)
-                      ^
->> arch/powerpc/include/asm/book3s/64/mmu.h:231:26: error: expected ';' after top level declarator
-   static inline void __init early_init_mmu(void)
-                            ^
-                            ;
->> arch/powerpc/include/asm/book3s/64/mmu.h:243:9: error: implicit declaration of function 'hash__early_init_mmu_secondary' [-Werror,-Wimplicit-function-declaration]
-           return hash__early_init_mmu_secondary();
-                  ^
-   arch/powerpc/include/asm/book3s/64/mmu.h:243:9: note: did you mean 'radix__early_init_mmu_secondary'?
-   arch/powerpc/include/asm/book3s/64/mmu.h:238:13: note: 'radix__early_init_mmu_secondary' declared here
-   extern void radix__early_init_mmu_secondary(void);
-               ^
->> arch/powerpc/include/asm/book3s/64/mmu.h:243:2: error: void function 'early_init_mmu_secondary' should not return a value [-Wreturn-type]
-           return hash__early_init_mmu_secondary();
-           ^      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/book3s/64/mmu.h:262:6: error: variable has incomplete type 'void'
-   void __init radix_init_pseries(void);
-        ^
-   arch/powerpc/include/asm/book3s/64/mmu.h:262:12: error: expected ';' after top level declarator
-   void __init radix_init_pseries(void);
-              ^
-              ;
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   5 warnings and 20 errors generated.
-   make[2]: *** [scripts/Makefile.build:121: arch/powerpc/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1191: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +350 arch/powerpc/include/asm/mmu.h
-
-bab4c8de6289b4 Michael Ellerman 2016-07-27  346  
-28ea38b9cba68e Christophe Leroy 2019-02-21  347  #ifdef CONFIG_STRICT_KERNEL_RWX
-28ea38b9cba68e Christophe Leroy 2019-02-21  348  static inline bool strict_kernel_rwx_enabled(void)
-28ea38b9cba68e Christophe Leroy 2019-02-21  349  {
-28ea38b9cba68e Christophe Leroy 2019-02-21 @350  	return rodata_enabled;
-28ea38b9cba68e Christophe Leroy 2019-02-21  351  }
-28ea38b9cba68e Christophe Leroy 2019-02-21  352  #else
-28ea38b9cba68e Christophe Leroy 2019-02-21  353  static inline bool strict_kernel_rwx_enabled(void)
-28ea38b9cba68e Christophe Leroy 2019-02-21  354  {
-28ea38b9cba68e Christophe Leroy 2019-02-21  355  	return false;
-28ea38b9cba68e Christophe Leroy 2019-02-21  356  }
-28ea38b9cba68e Christophe Leroy 2019-02-21  357  #endif
-4fcc636615b1a3 Jordan Niethe    2021-06-09  358  
-
-:::::: The code at line 350 was first introduced by commit
-:::::: 28ea38b9cba68eec55cf550acd6b36b6f507cd17 powerpc/mmu: add is_strict_kernel_rwx() helper
-
-:::::: TO: Christophe Leroy <christophe.leroy@c-s.fr>
-:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
-
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+This was only built tested because I don't have access to the hardware.
+
+ drivers/gpu/drm/tiny/repaper.c | 24 +-----------------------
+ 1 file changed, 1 insertion(+), 23 deletions(-)
+
+diff --git a/drivers/gpu/drm/tiny/repaper.c b/drivers/gpu/drm/tiny/repaper.c
+index 97a775c48cea..5c74e236b16d 100644
+--- a/drivers/gpu/drm/tiny/repaper.c
++++ b/drivers/gpu/drm/tiny/repaper.c
+@@ -508,26 +508,6 @@ static void repaper_get_temperature(struct repaper_epd *epd)
+ 	epd->factored_stage_time = epd->stage_time * factor10x / 10;
+ }
+ 
+-static void repaper_gray8_to_mono_reversed(u8 *buf, u32 width, u32 height)
+-{
+-	u8 *gray8 = buf, *mono = buf;
+-	int y, xb, i;
+-
+-	for (y = 0; y < height; y++)
+-		for (xb = 0; xb < width / 8; xb++) {
+-			u8 byte = 0x00;
+-
+-			for (i = 0; i < 8; i++) {
+-				int x = xb * 8 + i;
+-
+-				byte >>= 1;
+-				if (gray8[y * width + x] >> 7)
+-					byte |= BIT(7);
+-			}
+-			*mono++ = byte;
+-		}
+-}
+-
+ static int repaper_fb_dirty(struct drm_framebuffer *fb)
+ {
+ 	struct drm_gem_cma_object *cma_obj = drm_fb_cma_get_gem_obj(fb, 0);
+@@ -560,12 +540,10 @@ static int repaper_fb_dirty(struct drm_framebuffer *fb)
+ 	if (ret)
+ 		goto out_free;
+ 
+-	drm_fb_xrgb8888_to_gray8(buf, 0, cma_obj->vaddr, fb, &clip);
++	drm_fb_xrgb8888_to_mono_reversed(buf, 0, cma_obj->vaddr, fb, &clip);
+ 
+ 	drm_gem_fb_end_cpu_access(fb, DMA_FROM_DEVICE);
+ 
+-	repaper_gray8_to_mono_reversed(buf, fb->width, fb->height);
+-
+ 	if (epd->partial) {
+ 		repaper_frame_data_repeat(epd, buf, epd->current_frame,
+ 					  REPAPER_NORMAL);
+-- 
+2.34.1
+
