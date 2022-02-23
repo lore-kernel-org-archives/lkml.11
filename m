@@ -2,130 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E33AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238955AbiBWH5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:57:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
+        id S235762AbiBWH7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:59:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238953AbiBWH5G (ORCPT
+        with ESMTP id S231245AbiBWH7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:57:06 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EDF5F73;
-        Tue, 22 Feb 2022 23:56:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645602993; x=1677138993;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=E08tgNQeQ9Ef3DLQks66FyP1PMu959mkmFifh3k8TxU=;
-  b=OlIXnnQQyg3g1jc1gqXQ8C9RGEFidIiSutc+nYLAPLjNhvbq6iSD7gWA
-   WJcR94jUKn3AFZaKh9l/+K9gLMU3knQcvastH/c4dT80Hm/asnyRn95px
-   0enyTFCPFeDdbDliOvKNIpORZjXruhDZbBXCAUMmTrmFNfGaZEfTzVcXI
-   Y=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 22 Feb 2022 23:56:33 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 23:56:32 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 22 Feb 2022 23:56:31 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 22 Feb 2022 23:56:25 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v9 7/7] pinctrl: qcom: Update clock voting as optional
-Date:   Wed, 23 Feb 2022 13:25:32 +0530
-Message-ID: <1645602932-6659-8-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645602932-6659-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1645602932-6659-1-git-send-email-quic_srivasam@quicinc.com>
+        Wed, 23 Feb 2022 02:59:18 -0500
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40BF141FB4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:58:50 -0800 (PST)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21N7wSIK118950;
+        Wed, 23 Feb 2022 01:58:28 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1645603108;
+        bh=xeHlKo3olK+DJJaOwQQ411JFoxtohqodC7yeAbrDRYA=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=YA4EAXoxrMNk350f5P4LdC5iLpmvAuztW/M6SSt5Mc39+qOAEoxeifodLdHgFZ9jI
+         D2AUiO0pdIheqNA08jYjFI7ZuUrdMZCosbEBuzATFRqaRESqMQuV6culGn7pR6yvnC
+         dBijKK5/V876oKMPcjzBaXD2EmFpG2WswzHZ1eP0=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21N7wSbT075191
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 23 Feb 2022 01:58:28 -0600
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
+ Feb 2022 01:58:27 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 23 Feb 2022 01:58:27 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21N7wQDr052547;
+        Wed, 23 Feb 2022 01:58:27 -0600
+Date:   Wed, 23 Feb 2022 13:28:26 +0530
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Nishanth Menon <nm@ti.com>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <shawnguo@kernel.org>, <krzk@kernel.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <biju.das.jz@bp.renesas.com>, <vkoul@kernel.org>,
+        <enric.balletbo@collabora.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] arm64: defconfig: Enable configs for DisplayPort on J721e
+Message-ID: <20220223075825.ecqbyhllikh2sscx@uda0490373>
+References: <20220222180703.30401-1-r-ravikumar@ti.com>
+ <20220222193930.sbc5xlsofhg3amgk@overrun>
+ <YhVKSpMOKWzZy9a2@ripper>
+ <20220222212642.vwtw7xiz7cck63ea@zombie>
+ <YhVgjFWShgc8btJP@ripper>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YhVgjFWShgc8btJP@ripper>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update bulk clock voting to optional voting as ADSP bypass platform doesn't
-need macro and decodec clocks, these are maintained as power domains and
-operated from lpass audio core cc.
+On 14:15-20220222, Bjorn Andersson wrote:
+> On Tue 22 Feb 13:26 PST 2022, Nishanth Menon wrote:
+> 
+> > On 12:40-20220222, Bjorn Andersson wrote:
+> > > On Tue 22 Feb 11:39 PST 2022, Nishanth Menon wrote:
+> > > 
+> > > > On 23:37-20220222, Rahul T R wrote:
+> > > > > Enable DRM and PHY configs required for supporting
+> > > > > DisplayPort on J721e
+> > > > > 
+> > > > > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> > > > > ---
+> > > > >  arch/arm64/configs/defconfig | 5 +++++
+> > > > >  1 file changed, 5 insertions(+)
+> > > > > 
+> > > > > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> > > > > index 9f23d7ec1232..b0cb894a392e 100644
+> > > > > --- a/arch/arm64/configs/defconfig
+> > > > > +++ b/arch/arm64/configs/defconfig
+> > > > > @@ -702,6 +702,9 @@ CONFIG_DRM_EXYNOS_DSI=y
+> > > > >  CONFIG_DRM_EXYNOS_HDMI=y
+> > > > >  CONFIG_DRM_EXYNOS_MIC=y
+> > > > >  CONFIG_DRM_ROCKCHIP=m
+> > > > > +CONFIG_DRM_TIDSS=m
+> > > > > +CONFIG_DRM_DISPLAY_CONNECTOR=m
+> > > > > +CONFIG_DRM_CDNS_MHDP8546=m
+> > > > 
+> > > > Please use savedefconfig to place the changes in the correct location
+> > > > 
+> > > 
+> > > Just to clarify the request, use "make savedefconfig" to generate a
+> > > defconfig, then based on that put _only_ the relevant changes in the
+> > > commit.
+> > 
+> > Yup, thanks for clarifying.
+> > > 
+> > > > Also indicate changes if any in vmlinux in commit message.
+> > > > 
+> > > 
+> > > Nishanth, what are you asking for here? Just a mentioning if this has
+> > > any impact to vmlinux (or is isolated to the modules selected), or are
+> > > you asking for anything specific?
+> > 
+> > In this case, just ensure to state that vmlinux size has'nt
+> > changed, in case where we see a =y, we should indicate via
+> > ./scripts/bloat-o-meter change that is introduced and if yes, we
+> > should explain why this is fundamental to system boot.
+> > 
+> > Why is this necessary? This is to prevent product specific
+> > configurations (such as early display banner, chime etc) from creeping
+> > and increasing vmlinux size which has an impact for all ARM SoCs.
+> > 
+> 
+> Sounds very reasonable, I'll make sure to ask for such motivations in
+> the defconfig changes that I pick up through the Qualcomm tree as well.
+> 
+> Regards,
+> Bjorn
+>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c        | 12 +++++++++---
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.h        |  1 +
- drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c |  1 +
- 3 files changed, 11 insertions(+), 3 deletions(-)
+Thanks for the review!
+I will send a v2 with the fixes
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-index 1ab572f..c618b74 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-@@ -407,9 +407,15 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, PTR_ERR(pctrl->slew_base),
- 				     "Slew resource not provided\n");
- 
--	ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
--	if (ret)
--		return dev_err_probe(dev, ret, "Can't get clocks\n");
-+	if (data->is_clk_optional) {
-+		ret = devm_clk_bulk_get_optional(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Can't get clocks\n");
-+	} else {
-+		ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "Can't get clocks\n");
-+	}
- 
- 	ret = clk_bulk_prepare_enable(MAX_LPI_NUM_CLKS, pctrl->clks);
- 	if (ret)
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-index afbac2a..3bcede6 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
-@@ -77,6 +77,7 @@ struct lpi_pinctrl_variant_data {
- 	int ngroups;
- 	const struct lpi_function *functions;
- 	int nfunctions;
-+	int is_clk_optional;
- };
- 
- int lpi_pinctrl_probe(struct platform_device *pdev);
-diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-index d67ff25..304d8a2 100644
---- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
-@@ -142,6 +142,7 @@ static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
- 	.ngroups = ARRAY_SIZE(sc7280_groups),
- 	.functions = sc7280_functions,
- 	.nfunctions = ARRAY_SIZE(sc7280_functions),
-+	.is_clk_optional = 1,
- };
- 
- static const struct of_device_id lpi_pinctrl_of_match[] = {
--- 
-2.7.4
+Regards
+Rahul T R
 
+> > 
+> > [...]
+> > 
+> > -- 
+> > Regards,
+> > Nishanth Menon
+> > Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
