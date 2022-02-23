@@ -2,138 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238820AbiBWHyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 02:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
+        id S238828AbiBWHzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:55:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238776AbiBWHyj (ORCPT
+        with ESMTP id S238821AbiBWHzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 02:54:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31933580D0
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:54:12 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nMmTN-0006ga-Gz; Wed, 23 Feb 2022 08:54:05 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nMmTM-00024F-Bo; Wed, 23 Feb 2022 08:54:04 +0100
-Date:   Wed, 23 Feb 2022 08:54:04 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        kernel@pengutronix.de, Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz9477: implement
- MTU configuration
-Message-ID: <20220223075404.GA4594@pengutronix.de>
-References: <20220221084328.3661250-1-o.rempel@pengutronix.de>
- <20220222165217.62426462@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Wed, 23 Feb 2022 02:55:20 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CE360CEF
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:54:53 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id k2so13576904oia.2
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 23:54:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dOf41jW+SbVxhrNgz/1309Tg2LU9yaMsGenvPEV/hds=;
+        b=EUjrDNavl6Xdtl07S0e5hH3teF2X2AhpcVme19R0H3iVxCWiRydUjt/+G0zgRplcPd
+         yFyubejfq8Jso17iqo51SDmkeg1VpdhyH4cUkBpDovOle+BiVmkolS7AW6xC7DxRmZ7+
+         imZu0Z+Vt59zi3NaxL9ORm8Siw1J4ryXDHaDpmUq6Nd68SmatDw8kGdooSvQDbx/9fIH
+         PuBM6emXs4NY+CSRCUEbflKrSDLYTHHxyN9xX4kGU3XPUuMB876ECuE0K7iKrbIT7kZN
+         8N4u6tmRKqlhcMnrl0hethQCKcyOUpOPyPduFKsInWXA0M6alADLmuorUSg5XiGYn0YO
+         0xQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dOf41jW+SbVxhrNgz/1309Tg2LU9yaMsGenvPEV/hds=;
+        b=IAlB5uN+r1IAQtoQk5XmQOklhzeGkvqz9aSitqqCf7to996yS71oXKjrmn2C4Y1hjk
+         MI5cQJoIXIuJF1jfrQYzXg6Teub/KYVDntLAB2bIH2/oohH1Szs4v1JyXMnKnpq5RwP5
+         USghmKXIN8HVtYcxYANPcsJbQhlESwsWkIr7Q2nD8rT8JJnmjT3lFHWPfGNz+QfL0n93
+         4K9OXz08JfiBIA7xchbxP+xq/nxZB8dX9B5I6lPjeTi4MB1uyVuHXl+3tggUKDC/YgCA
+         Qe0IcCZ12+5AtoKhBi3juBIUkqQWs5eUEvxT3n8+JPxZWTwPe46e4o5D3VWiu5pyxddv
+         GjhQ==
+X-Gm-Message-State: AOAM531+ZSEOfzhwMOnZlvuvgLWEl2oDFyi/LjkstdZfnrrUdvqq7J3K
+        RrckXtdOyAjRZxirPHxo0NIyE8zBSq+UTc4+o7M=
+X-Google-Smtp-Source: ABdhPJxjbzdSoGPV5R73HMKFxIT7yvBlahcGc6kTONGd0JvJRrzuvp93wkkbbWYhrImD6EpMJj/Z78nMMfOr43GBdjo=
+X-Received: by 2002:a05:6808:1710:b0:2d3:f699:b876 with SMTP id
+ bc16-20020a056808171000b002d3f699b876mr3912306oib.281.1645602892805; Tue, 22
+ Feb 2022 23:54:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220222165217.62426462@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:44:25 up 74 days, 16:30, 83 users,  load average: 0.16, 0.16,
- 0.17
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220222024651.36675-1-qiang.yu@amd.com> <2998de6b-bff2-4ef5-135a-1269f948c486@molgen.mpg.de>
+In-Reply-To: <2998de6b-bff2-4ef5-135a-1269f948c486@molgen.mpg.de>
+From:   Qiang Yu <yuq825@gmail.com>
+Date:   Wed, 23 Feb 2022 15:54:41 +0800
+Message-ID: <CAKGbVbu7a_Q3wehsC+7p6N_rG06T508Q2T24tHZtnvu6AJmm0Q@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Qiang Yu <qiang.yu@amd.com>, David Airlie <airlied@linux.ie>,
+        Xinhui Pan <Xinhui.Pan@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        amd-gfx@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 04:52:17PM -0800, Jakub Kicinski wrote:
-> On Mon, 21 Feb 2022 09:43:28 +0100 Oleksij Rempel wrote:
-> > This chips supports two ways to configure max MTU size:
-> > - by setting SW_LEGAL_PACKET_DISABLE bit: if this bit is 0 allowed packed size
-> >   will be between 64 and bytes 1518. If this bit is 1, it will accept
-> >   packets up to 2000 bytes.
-> > - by setting SW_JUMBO_PACKET bit. If this bit is set, the chip will
-> >   ignore SW_LEGAL_PACKET_DISABLE value and use REG_SW_MTU__2 register to
-> >   configure MTU size.
-> > 
-> > Current driver has disabled SW_JUMBO_PACKET bit and activates
-> > SW_LEGAL_PACKET_DISABLE. So the switch will pass all packets up to 2000 without
-> > any way to configure it.
-> > 
-> > By providing port_change_mtu we are switch to SW_JUMBO_PACKET way and will
-> > be able to configure MTU up to ~9000.
-> 
-> And it has no negative side affects to always have jumbo enabled?
-> Maybe the internal buffer will be carved up in a different way?
-
-Hm I tested it with iperf3 on 4 of 7 ports on this switch without
-noticeable changes before and after this patch. My setup looks as
-following:
-
-----`
-    |      /- iperf -s
-    = port0
-    |      \- iperf3 -c 172.17.0.11 -t 100
-    |
-    |
-    = port1 ... same as port0, ... -c 172.17.0.10
-    = port2 ... same as port0, ... -c 172.17.0.13
-    = port3 ... same as port0, ... -c 172.17.0.12
-
-Each port was sending and receiving. Each instance reported 938 Mbits/sec
-
-> > +static int ksz9477_change_mtu(struct dsa_switch *ds, int port, int mtu)
-> > +{
-> > +	struct ksz_device *dev = ds->priv;
-> > +	u16 new_mtu, max_mtu = 0;
-> > +	int i;
+On Wed, Feb 23, 2022 at 3:47 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Qiang,
+>
+>
+> Am 22.02.22 um 03:46 schrieb Qiang Yu:
+> > Workstation application ANSA/META v21.1.4 get this error dmesg when
+> > running CI test suite provided by ANSA/META:
+> > [drm:amdgpu_gem_va_ioctl [amdgpu]] *ERROR* Couldn't update BO_VA (-16)
+> >
+> > This is caused by:
+> > 1. create a 256MB buffer in invisible VRAM
+> > 2. CPU map the buffer and access it causes vm_fault and try to move
+> >     it to visible VRAM
+> > 3. force visible VRAM space and traverse all VRAM bos to check if
+> >     evicting this bo is valuable
+> > 4. when checking a VM bo (in invisible VRAM), amdgpu_vm_evictable()
+> >     will set amdgpu_vm->evicting, but latter due to not in visible
+> >     VRAM, won't really evict it so not add it to amdgpu_vm->evicted
+> > 5. before next CS to clear the amdgpu_vm->evicting, user VM ops
+> >     ioctl will pass amdgpu_vm_ready() (check amdgpu_vm->evicted)
+> >     but fail in amdgpu_vm_bo_update_mapping() (check
+> >     amdgpu_vm->evicting) and get this error log
+> >
+> > This error won't affect functionality as next CS will finish the
+> > waiting VM ops. But we'd better clear the error log by checking
+> > the amdgpu_vm->evicting flag in amdgpu_vm_ready() to stop calling
+> > amdgpu_vm_bo_update_mapping() latter.
+>
+> later
+> > Another reason is amdgpu_vm->evicted list holds all BOs (both
+> > user buffer and page table), but only page table BOs' eviction
+> > prevent VM ops. amdgpu_vm->evicting flag is set only for page
+> > table BOs, so we should use evicting flag instead of evicted list
+> > in amdgpu_vm_ready().
+> >
+> > The side effect of This change is: previously blocked VM op (user
+>
+> this
+>
+> > buffer in "evicted" list but no page table in it) gets done
+> > immediately.
+> >
+> > v2: update commit comments.
+> >
+> > Reviewed-by: Christian K=C3=B6nig <christian.koenig@amd.com>
+> > Signed-off-by: Qiang Yu <qiang.yu@amd.com>
+> > ---
+> >   drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c | 9 +++++++--
+> >   1 file changed, 7 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/a=
+md/amdgpu/amdgpu_vm.c
+> > index 37acd8911168..2cd9f1a2e5fa 100644
+> > --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+> > +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+> > @@ -770,11 +770,16 @@ int amdgpu_vm_validate_pt_bos(struct amdgpu_devic=
+e *adev, struct amdgpu_vm *vm,
+> >    * Check if all VM PDs/PTs are ready for updates
+> >    *
+> >    * Returns:
+> > - * True if eviction list is empty.
+> > + * True if VM is not evicting.
+> >    */
+> >   bool amdgpu_vm_ready(struct amdgpu_vm *vm)
+> >   {
+> > -     return list_empty(&vm->evicted);
+> > +     bool ret;
 > > +
-> > +	new_mtu = mtu + ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN;
-> > +
-> > +	if (dsa_is_cpu_port(ds, port))
-> > +		new_mtu += KSZ9477_INGRESS_TAG_LEN;
-> > +
-> > +	/* Cache the per-port MTU setting */
-> > +	dev->ports[port].max_mtu = new_mtu;
-> > +
-> > +	for (i = 0; i < dev->port_cnt; i++) {
-> > +		if (dev->ports[i].max_mtu > max_mtu)
-> > +			max_mtu = dev->ports[i].max_mtu;
-> > +	}
-> 
-> nit:
-> 
-> 	for (...)
-> 		max_mtu = max(max_mtu, dev->ports[i].max_mtu)
-> 
-> > @@ -41,6 +41,7 @@ struct ksz_port {
-> >  
-> >  	struct ksz_port_mib mib;
-> >  	phy_interface_t interface;
-> > +	unsigned int max_mtu;
-> >  };
-> 
-> max_mtu already has two meanings in this patch, let's call this
-> max_frame or max_len etc, instead of adding a third meaning.
-
-Ok, thx. Will update the patch.
+> > +     amdgpu_vm_eviction_lock(vm);
+> > +     ret =3D !vm->evicting;
+> > +     amdgpu_vm_eviction_unlock(vm);
+> > +     return ret;
+> >   }
+> >
+> >   /**
+>
+> Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+>
+Thanks, will submit with the typo fixed.
 
 Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Qiang
+
+>
+> Kind regards,
+>
+> Paul
