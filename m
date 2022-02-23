@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F91BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14ACBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241116AbiBWNpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
+        id S241110AbiBWNpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:45:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241081AbiBWNov (ORCPT
+        with ESMTP id S241072AbiBWNot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:44:51 -0500
+        Wed, 23 Feb 2022 08:44:49 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD20AC924
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA77AC91E
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:44:13 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D44C4223ED;
-        Wed, 23 Feb 2022 14:44:12 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id AAE7B22456;
+        Wed, 23 Feb 2022 14:44:11 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645623852;
+        t=1645623851;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BewPUYl7ALanqbEPhDcl7g1lZEpz+MjVY87ZkoEXHuI=;
-        b=LTGMOf6pBuNAYpWmbGCDr7QPJnjzbR2JddYaXKDHe7cJa+POPq5AH1kvGbyQ+yRYDPvKwP
-        zrOIitrS5wgyWHoxKZkaRy1tZX4heOADN7M4ov79vMIXVsqJINFFZJy4Mpfd4+LG3Wxydm
-        CB/2J+RREPfXaG6qYlNOSaeDFFNfTOk=
+        bh=FPwyUqw9bIye7MTeMw3+l2+GgFM/jhis7VAg9kKcJLA=;
+        b=PlAXWhAEJ4bl6ttd0i5BJfrgjJ5g+AwEUcovpu7oaBWPOGcwupeW5s0zWbVwZJKE8M1YEZ
+        xZVl/rnvyXS9Gn5yWUP36cBxOpAJCFbmCfSebyGKDBJvPWwSoF8VaTL3ay6nczucK2D+Bg
+        ua3jANmxVh2qqUcRYApGrCo8I137PAs=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
@@ -39,9 +39,9 @@ Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         yaliang.wang@windriver.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 19/32] mtd: spi-nor: export more function to be used in vendor modules
-Date:   Wed, 23 Feb 2022 14:43:45 +0100
-Message-Id: <20220223134358.1914798-20-michael@walle.cc>
+Subject: [PATCH v5 17/32] mtd: spi-nor: slightly refactor the spi_nor_setup()
+Date:   Wed, 23 Feb 2022 14:43:43 +0100
+Message-Id: <20220223134358.1914798-18-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220223134358.1914798-1-michael@walle.cc>
 References: <20220223134358.1914798-1-michael@walle.cc>
@@ -51,76 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We will move vendor specific code into the vendor modules and thus we
-will have to export these functions so they can be called.
+Instead of always using a function pointer (and initializing it to our
+default), just call the default function if the flash didn't set its own
+one. That will make the call flow easier to follow.
+
+Also mark the parameter as optional now.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 Reviewed-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
  drivers/mtd/spi-nor/core.c | 10 +++++-----
- drivers/mtd/spi-nor/core.h |  6 ++++++
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/mtd/spi-nor/core.h |  8 ++++----
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 390a9ab413b7..8481272533a3 100644
+index 04ea180118e3..4d2036cdce42 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -157,8 +157,8 @@ static int spi_nor_spimem_exec_op(struct spi_nor *nor, struct spi_mem_op *op)
- 	return spi_mem_exec_op(nor->spimem, op);
+@@ -2532,11 +2532,12 @@ static int spi_nor_setup(struct spi_nor *nor,
+ {
+ 	int ret;
+ 
+-	if (nor->params->setup) {
++	if (nor->params->setup)
+ 		ret = nor->params->setup(nor, hwcaps);
+-		if (ret)
+-			return ret;
+-	}
++	else
++		ret = spi_nor_default_setup(nor, hwcaps);
++	if (ret)
++		return ret;
+ 
+ 	return spi_nor_set_addr_width(nor);
  }
+@@ -2786,7 +2787,6 @@ static void spi_nor_init_default_params(struct spi_nor *nor)
  
--static int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
--					   u8 *buf, size_t len)
-+int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
-+				    u8 *buf, size_t len)
- {
- 	if (spi_nor_protocol_is_dtr(nor->reg_proto))
- 		return -EOPNOTSUPP;
-@@ -166,8 +166,8 @@ static int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
- 	return nor->controller_ops->read_reg(nor, opcode, buf, len);
- }
+ 	params->quad_enable = spi_nor_sr2_bit1_quad_enable;
+ 	params->set_4byte_addr_mode = spansion_set_4byte_addr_mode;
+-	params->setup = spi_nor_default_setup;
+ 	params->otp.org = &info->otp_org;
  
--static int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
--					    const u8 *buf, size_t len)
-+int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
-+				     const u8 *buf, size_t len)
- {
- 	if (spi_nor_protocol_is_dtr(nor->reg_proto))
- 		return -EOPNOTSUPP;
-@@ -683,7 +683,7 @@ static void spi_nor_clear_sr(struct spi_nor *nor)
-  *
-  * Return: 1 if ready, 0 if not ready, -errno on errors.
-  */
--static int spi_nor_sr_ready(struct spi_nor *nor)
-+int spi_nor_sr_ready(struct spi_nor *nor)
- {
- 	int ret = spi_nor_read_sr(nor, nor->bouncebuf);
- 
+ 	/* Default to 16-bit Write Status (01h) Command */
 diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index fdc8c0f31f5c..446218b0e017 100644
+index 2afb610853a9..4fe16b5aa3f5 100644
 --- a/drivers/mtd/spi-nor/core.h
 +++ b/drivers/mtd/spi-nor/core.h
-@@ -558,6 +558,7 @@ int spi_nor_sr1_bit6_quad_enable(struct spi_nor *nor);
- int spi_nor_sr2_bit1_quad_enable(struct spi_nor *nor);
- int spi_nor_sr2_bit7_quad_enable(struct spi_nor *nor);
- int spi_nor_read_sr(struct spi_nor *nor, u8 *sr);
-+int spi_nor_sr_ready(struct spi_nor *nor);
- int spi_nor_read_cr(struct spi_nor *nor, u8 *cr);
- int spi_nor_write_sr(struct spi_nor *nor, const u8 *sr, size_t len);
- int spi_nor_write_sr_and_check(struct spi_nor *nor, u8 sr1);
-@@ -603,6 +604,11 @@ void spi_nor_try_unlock_all(struct spi_nor *nor);
- void spi_nor_set_mtd_locking_ops(struct spi_nor *nor);
- void spi_nor_set_mtd_otp_ops(struct spi_nor *nor);
- 
-+int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
-+				    u8 *buf, size_t len);
-+int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
-+				     const u8 *buf, size_t len);
-+
- static inline struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
- {
- 	return container_of(mtd, struct spi_nor, mtd);
+@@ -257,10 +257,10 @@ struct spi_nor_otp {
+  * @convert_addr:	converts an absolute address into something the flash
+  *                      will understand. Particularly useful when pagesize is
+  *                      not a power-of-2.
+- * @setup:              configures the SPI NOR memory. Useful for SPI NOR
+- *                      flashes that have peculiarities to the SPI NOR standard
+- *                      e.g. different opcodes, specific address calculation,
+- *                      page size, etc.
++ * @setup:		(optional) configures the SPI NOR memory. Useful for
++ *			SPI NOR flashes that have peculiarities to the SPI NOR
++ *			standard e.g. different opcodes, specific address
++ *			calculation, page size, etc.
+  * @locking_ops:	SPI NOR locking methods.
+  */
+ struct spi_nor_flash_parameter {
 -- 
 2.30.2
 
