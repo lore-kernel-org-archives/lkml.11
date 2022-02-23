@@ -2,63 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D844C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 06:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD50CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 07:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238513AbiBWGyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 01:54:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        id S238511AbiBWHBW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 02:01:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236710AbiBWGyY (ORCPT
+        with ESMTP id S233368AbiBWHBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 01:54:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE0A6E4DE;
-        Tue, 22 Feb 2022 22:53:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AFDC614A1;
-        Wed, 23 Feb 2022 06:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB85C340E7;
-        Wed, 23 Feb 2022 06:53:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1645599236;
-        bh=CC5KnLvYTDWcou/flBRkpm74kh6sin3lWzN3f4vNh0Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ni0uF5R9i52mHG8G36cXjuU2W3LNpT1OdXi3tD3lffJSk3IScFS6t+UiinH02/a5D
-         hTdObu6TTksvfrXTAYQiO8WdmFBNDuYVpss3+Z4x20FyxNXqXnDjbwBgzxU9EL2l+P
-         brpJN0R9k9RqLe/T4VibAuTcwT4S5n8MtVuBE5fg=
-Date:   Wed, 23 Feb 2022 07:53:53 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-usb@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] ACPI: bus: Introduce acpi_bus_for_each_dev()
-Message-ID: <YhXaAbgtF7OQ0bbs@kroah.com>
-References: <11943345.O9o76ZdvQC@kreacher>
+        Wed, 23 Feb 2022 02:01:20 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613B549C82;
+        Tue, 22 Feb 2022 23:00:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645599653; x=1677135653;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=P8IB5i4i8mccW/2mm5mdBV6fgyPwz4NSzRZVqW15XCw=;
+  b=PYm9O+WRwZkcs2lBRKgPWNCB7V2uSXVyXtvpYZ1yKyUR1YQsvXonsjbB
+   wAUxOaEEOo7S/KwirSgjEA/yP9x7P0eeD4tGYj73vecgNxVIbLru5wnz2
+   ScB4sDqUMpzMOmgkx2/Bjaq7DHpIEOv9k830Z6nTSScYUEKxpfrwBTj0f
+   Y=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Feb 2022 23:00:52 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 23:00:51 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 22 Feb 2022 23:00:51 -0800
+Received: from [10.216.58.51] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Tue, 22 Feb
+ 2022 23:00:45 -0800
+Message-ID: <9a618cb6-c528-94f1-c10c-248e2a04aa13@quicinc.com>
+Date:   Wed, 23 Feb 2022 12:30:42 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11943345.O9o76ZdvQC@kreacher>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v6 5/7] pinctrl: qcom: Extract chip specific LPASS LPI
+ code
+Content-Language: en-US
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>, <agross@kernel.org>,
+        <alsa-devel@alsa-project.org>, <bgoswami@codeaurora.org>,
+        <bjorn.andersson@linaro.org>, <broonie@kernel.org>,
+        <devicetree@vger.kernel.org>, <judyhsiao@chromium.org>,
+        <lgirdwood@gmail.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <perex@perex.cz>, <quic_plai@quicinc.com>, <robh+dt@kernel.org>,
+        <rohitkr@codeaurora.org>, <srinivas.kandagatla@linaro.org>,
+        <tiwai@suse.com>
+CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
+ <1644851994-22732-6-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n53-GRneymVoac=AT6M17aYseS88vM-o1xZxmk8sFQOYhw@mail.gmail.com>
+ <ee5004ea-0aa9-b7ef-061a-e07d0d47c7c6@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <ee5004ea-0aa9-b7ef-061a-e07d0d47c7c6@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 08:51:42PM +0100, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> In order to avoid exposing acpi_bus_type to modules, introduce an
-> acpi_bus_for_each_dev() helper for iterating over all ACPI device
-> objects and make typec_link_ports() use it instead of the raw
-> bus_for_each_dev() along with acpi_bus_type.
-> 
-> Having done that, drop the acpi_bus_type export.
-> 
-> No intentional functional impact.
-> 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
+On 2/20/2022 12:02 AM, Srinivasa Rao Mandadapu (Temp) wrote:
+>
+> On 2/19/2022 8:13 AM, Stephen Boyd wrote:
+> Thanks for Your time Stephen!!!
+>> Quoting Srinivasa Rao Mandadapu (2022-02-14 07:19:52)
+>>> diff --git a/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c 
+>>> b/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+>>> new file mode 100644
+>>> index 0000000..27e358e
+>>> --- /dev/null
+>>> +++ b/drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+>>> @@ -0,0 +1,166 @@
+>>> +// SPDX-License-Identifier: GPL-2.0-only
+>>> +/*
+>>> + * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
+>>> + * Copyright (c) 2020 Linaro Ltd.
+>>> + */
+>>> +
+>>> +#include <linux/clk.h>
+>>> +#include <linux/gpio/driver.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/platform_device.h>
+>>> +
+>>> +#include "pinctrl-lpass-lpi.h"
+>> Please include ../core.h here as well for the pin_group definition.
+> Okay. will add it.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Actually, core.h was included in pinctrl-lpass-lpi.h. Including again 
+here giving redefinition errors.
+
+Already sent V8 with this change. will revert it and post again in v9.
+
