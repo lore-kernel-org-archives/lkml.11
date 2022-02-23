@@ -2,116 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C481DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 00:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236351AbiBWABV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 19:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        id S236365AbiBWACQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 19:02:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233472AbiBWABU (ORCPT
+        with ESMTP id S234984AbiBWACN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 19:01:20 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90CD1D4
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 16:00:53 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:34536)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMf5P-00Gru7-Fr; Tue, 22 Feb 2022 17:00:51 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:51350 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nMf5N-00G58W-IT; Tue, 22 Feb 2022 17:00:50 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     xu xin <cgel.zte@gmail.com>
-Cc:     bsingharora@gmail.com, akpm@linux-foundation.org,
-        deng.changcheng@zte.com.cn, linux-kernel@vger.kernel.org,
-        balbir@linux.vnet.ibm.com, xu.xin16@zte.com.cn,
-        Linux Containers <containers@lists.linux.dev>
-References: <20220217093945.1904085-1-xu.xin16@zte.com.cn>
-        <20220221032202.1925507-1-xu.xin16@zte.com.cn>
-Date:   Tue, 22 Feb 2022 18:00:42 -0600
-In-Reply-To: <20220221032202.1925507-1-xu.xin16@zte.com.cn> (xu xin's message
-        of "Mon, 21 Feb 2022 03:22:02 +0000")
-Message-ID: <87v8x678ph.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 22 Feb 2022 19:02:13 -0500
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9532CCB7
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 16:01:46 -0800 (PST)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2d79394434dso50472457b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 16:01:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GPhptd3Q62fbtOfa6cWbtPIF6RubFM1loZL2igvMdmE=;
+        b=LqUSjl3rYV0YuRKLtFlY7VsZmTkbAFokUMymncGcEAxRSr2CTO08CjzG7Jd/homUWI
+         H58m47zB2tyrKExo9jSe7/a31KeV2f2nrqAJ76PdCUz0139fOYzv6f/WWxzY7pIp2JQO
+         VHMGaT6C9kp8Ry/qazQ3ThDrH4nfaT+Aikl30=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GPhptd3Q62fbtOfa6cWbtPIF6RubFM1loZL2igvMdmE=;
+        b=TniyKkF6HDf7IJteBeaOhkH0IrNgwmtcXfokn98YM2oj2TX4JWtsLapavDM2dk1GQz
+         P/maUvz+JLzEz7fhRYFXI3rGNFHAfNp15R411cH84rOo6BvaDA9d61hWtx6seQMFYnFG
+         7531ONJ+PUhn8lR09p/HmDMF8jqtuQHH6VFnzRbqU3K1e0/GUm5mfy92sGYTrXMLFb7i
+         qCxsI/Tb0lcNixjSfcDKWRwnpw1NJiXYh2G/ZwhIvG5IgTdorx4192MJ3kP2FZYuEFDc
+         mNvN0kXw84BSekuaaOzmCDbjxJUoQcC09TA3p1/QPM2dIxb6jPnkL1WNeXrpcDxeiKC+
+         ep3A==
+X-Gm-Message-State: AOAM530B3FVFWFgHIOY4nrgeT2jF0/Iw9kFm6E9/5N8HCcfGxAnE99NI
+        AtY2Wy8HNYnlwKM1vr68YY1PcbWdlWl0uEIvoLnJZH/rEg==
+X-Google-Smtp-Source: ABdhPJxTCHh8uquJeYeoe50oLeU6Bdpto7tc4MgAb7JncyAK/4PlHxHbP8Krj0AfySlfD5bvHZGz4ZDB66Qy3/SERSk=
+X-Received: by 2002:a0d:d512:0:b0:2d1:51a:5616 with SMTP id
+ x18-20020a0dd512000000b002d1051a5616mr26739511ywd.62.1645574505487; Tue, 22
+ Feb 2022 16:01:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nMf5N-00G58W-IT;;;mid=<87v8x678ph.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19QOxAXvj0mBgOUQkTk4AIyjG4Lz6zcAgQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH resend] kernel: Make taskstats available via genetlink
- per namespace
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220201082227.361967-1-apatel@ventanamicro.com> <20220201082227.361967-6-apatel@ventanamicro.com>
+In-Reply-To: <20220201082227.361967-6-apatel@ventanamicro.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 22 Feb 2022 16:01:34 -0800
+Message-ID: <CAOnJCUJE_FqmvTXrwRafGtDEKomm0idSPjSRsnVYr3-HzuCh9A@mail.gmail.com>
+Subject: Re: [PATCH 5/6] RISC-V: KVM: Add common kvm_riscv_vcpu_wfi() function
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        KVM General <kvm@vger.kernel.org>,
+        kvm-riscv@lists.infradead.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-xu xin <cgel.zte@gmail.com> writes:
-
-> Currently, the application getdelays cannot get taskstats in a net
-> namespace. The returned error is just like the following:
-> -sh-4.4# ps -ef | tail -5
-> root       186     2  0 09:23 ?        00:00:00 [kworker/2:1H]
-> root       187     2  0 09:23 ?        00:00:00 [kworker/0:2-eve]
-> root       190   183  0 09:23 ?        00:00:00 -sh
-> root       198   190  0 09:25 ?        00:00:00 ps -ef
-> root       199   190  0 09:25 ?        00:00:00 tail -5
-> -sh-4.4#
-> -sh-4.4# ./getdelays -d -p 186 -v
-> print delayacct stats ON
-> debug on
-> Error getting family id, errno 0
+On Tue, Feb 1, 2022 at 12:24 AM Anup Patel <apatel@ventanamicro.com> wrote:
 >
-> As more and more applications are deployed in containers like Docker,
-> it is necessary to support getdelays to be used in net namespace.
-> Taskstats is safe for use per namespace as genetlink checks the
-> capability of namespace message by netlink_ns_capable().
+> The wait for interrupt (WFI) instruction emulation can share the VCPU
+> halt logic with SBI HSM suspend emulation so this patch adds a common
+> kvm_riscv_vcpu_wfi() function for this purpose.
 >
-> Make taskstats available via genetlink per namespace.
-
-Let me add a polite nack to this patch.
-
-Taskstats is completely senseless in a network namespace.  There is no
-translation of identifiers into the context of the receiver of the
-message.
-
-As such taskstats can not be meaningfully used in a container.
-
-To make this work requires updating the taskstats code to do something
-sensible when in a pid namespace, as well as when in a network
-namespace.
-
-I would like to give a suggest on how to do something sensible but
-I don't have any idea at this point.  The code would have been converted
-long ago on general principles if this was a straight forward thing to
-do.
-
-The taskstats interface only makes sense when you are within all of the
-initial namespaces.
-
-Eric
-
-> Reported-by: Changcheng Deng <deng.changcheng@zte.com.cn>
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > ---
->  kernel/taskstats.c | 1 +
->  1 file changed, 1 insertion(+)
+>  arch/riscv/include/asm/kvm_host.h |  1 +
+>  arch/riscv/kvm/vcpu_exit.c        | 22 ++++++++++++++++------
+>  2 files changed, 17 insertions(+), 6 deletions(-)
 >
-> diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-> index 2b4898b4752e..4d6bcaaf52a0 100644
-> --- a/kernel/taskstats.c
-> +++ b/kernel/taskstats.c
-> @@ -664,6 +664,7 @@ static struct genl_family family __ro_after_init = {
->  	.module		= THIS_MODULE,
->  	.ops		= taskstats_ops,
->  	.n_ops		= ARRAY_SIZE(taskstats_ops),
-> +	.netnsok	= true,
->  };
->  
->  /* Needed early in initialization */
+> diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+> index 99ef6a120617..78da839657e5 100644
+> --- a/arch/riscv/include/asm/kvm_host.h
+> +++ b/arch/riscv/include/asm/kvm_host.h
+> @@ -228,6 +228,7 @@ void kvm_riscv_stage2_vmid_update(struct kvm_vcpu *vcpu);
+>
+>  void __kvm_riscv_unpriv_trap(void);
+>
+> +void kvm_riscv_vcpu_wfi(struct kvm_vcpu *vcpu);
+>  unsigned long kvm_riscv_vcpu_unpriv_read(struct kvm_vcpu *vcpu,
+>                                          bool read_insn,
+>                                          unsigned long guest_addr,
+> diff --git a/arch/riscv/kvm/vcpu_exit.c b/arch/riscv/kvm/vcpu_exit.c
+> index 571f319e995a..aa8af129e4bb 100644
+> --- a/arch/riscv/kvm/vcpu_exit.c
+> +++ b/arch/riscv/kvm/vcpu_exit.c
+> @@ -144,12 +144,7 @@ static int system_opcode_insn(struct kvm_vcpu *vcpu,
+>  {
+>         if ((insn & INSN_MASK_WFI) == INSN_MATCH_WFI) {
+>                 vcpu->stat.wfi_exit_stat++;
+> -               if (!kvm_arch_vcpu_runnable(vcpu)) {
+> -                       srcu_read_unlock(&vcpu->kvm->srcu, vcpu->arch.srcu_idx);
+> -                       kvm_vcpu_halt(vcpu);
+> -                       vcpu->arch.srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+> -                       kvm_clear_request(KVM_REQ_UNHALT, vcpu);
+> -               }
+> +               kvm_riscv_vcpu_wfi(vcpu);
+>                 vcpu->arch.guest_context.sepc += INSN_LEN(insn);
+>                 return 1;
+>         }
+> @@ -453,6 +448,21 @@ static int stage2_page_fault(struct kvm_vcpu *vcpu, struct kvm_run *run,
+>         return 1;
+>  }
+>
+> +/**
+> + * kvm_riscv_vcpu_wfi -- Emulate wait for interrupt (WFI) behaviour
+> + *
+> + * @vcpu: The VCPU pointer
+> + */
+> +void kvm_riscv_vcpu_wfi(struct kvm_vcpu *vcpu)
+> +{
+> +       if (!kvm_arch_vcpu_runnable(vcpu)) {
+> +               srcu_read_unlock(&vcpu->kvm->srcu, vcpu->arch.srcu_idx);
+> +               kvm_vcpu_halt(vcpu);
+> +               vcpu->arch.srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+> +               kvm_clear_request(KVM_REQ_UNHALT, vcpu);
+> +       }
+> +}
+> +
+>  /**
+>   * kvm_riscv_vcpu_unpriv_read -- Read machine word from Guest memory
+>   *
+> --
+> 2.25.1
+>
+
+
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+
+--
+Regards,
+Atish
