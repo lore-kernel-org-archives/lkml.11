@@ -2,84 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AF9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241208AbiBWPYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
+        id S241980AbiBWPZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:25:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238086AbiBWPYa (ORCPT
+        with ESMTP id S234260AbiBWPZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:24:30 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4168E1EEC1;
-        Wed, 23 Feb 2022 07:24:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Y3cPCCzqUPIPn9nEmJpNNgtEll+qnNIz/bFbYhrBaUY=; b=FaagR1m7eCvnv/6xMnWjMyHqo/
-        clGiZt6ku58JEvcgzGplpmXyGZ/5hkAE9aE3bbR833M7dXWsZ2KiblzR1BZSLjuKkhhxWtvW6LaX/
-        Ktt0VCqbl/CdofQQ/dh0p+rT2WH3WiCEap5xEp/WffLogRvxAnx/gE7bYZg5zIYX4Se8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nMtUY-007oY2-4B; Wed, 23 Feb 2022 16:23:46 +0100
-Date:   Wed, 23 Feb 2022 16:23:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: Re: [RFC 10/10] net: sfp: add support for fwnode
-Message-ID: <YhZRgnPG5Yd8mvc/@lunn.ch>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220221162652.103834-11-clement.leger@bootlin.com>
- <YhPSkz8+BIcdb72R@smile.fi.intel.com>
- <20220222142513.026ad98c@fixe.home>
- <YhYZAc5+Q1rN3vhk@smile.fi.intel.com>
- <888f9f1a-ca5a-1250-1423-6c012ec773e2@redhat.com>
- <YhYriwvHJKjrDQRf@shell.armlinux.org.uk>
- <4d611fe8-b82a-1709-507a-56be94263688@redhat.com>
- <20220223151436.4798e5ad@fixe.home>
+        Wed, 23 Feb 2022 10:25:26 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21795427CA;
+        Wed, 23 Feb 2022 07:24:58 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nMtVd-0008EV-QY; Wed, 23 Feb 2022 16:24:53 +0100
+Message-ID: <6bdf8ca8-8836-4e44-5c27-0644aa9819ca@leemhuis.info>
+Date:   Wed, 23 Feb 2022 16:24:52 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223151436.4798e5ad@fixe.home>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC] Scheduler: DMA Engine regression because of sched/fair
+ changes
+Content-Language: en-BZ
+To:     Alexander Fomichev <fomichev.ru@gmail.com>,
+        Hillf Danton <hdanton@sina.com>
+Cc:     Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux@yadro.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20220112152609.gg2boujeh5vv5cns@yadro.com>
+ <20220112170512.GO3301@suse.de> <20220117081905.a4pwglxqj7dqpyql@yadro.com>
+ <20220117102701.GQ3301@suse.de> <20220118020448.2399-1-hdanton@sina.com>
+ <20220121101217.2849-1-hdanton@sina.com>
+ <20220122233314.2999-1-hdanton@sina.com>
+ <20220128165058.zxyrnd7nzr4hlks2@yadro.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20220128165058.zxyrnd7nzr4hlks2@yadro.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1645629898;bb9df89e;
+X-HE-SMSGID: 1nMtVd-0008EV-QY
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> As Russell asked, I'm also really interested if someone has a solution
-> to reuse device-tree description (overlays ?) to describe such
-> hardware. However, the fact that CONFIG_OF isn't enabled on x86 config
-> seems a bit complicated on this side.
+Hi, this is your Linux kernel regression tracker. Top-posting for once,
+to make this easy accessible to everyone.
 
-It does work, intel even used it for one of there tiny x86 SoCs. Maybe
-it was Newton? If you search around you can find maybe a Linux
-Plumbers presentation about DT and x86.
+After below message nothing happened anymore afaics. Could anybody be so
+kind to provide a quick status update, to ensure this wasn't simply
+forgotten? And if this is not considered a regression anymore (I didn#t
+fully understand below message, sorry), it would be ideal if the person
+that replies could include a paragraph stating something like "#regzbot
+invalid: Some reason why this can be ignored", as then I'll stop
+tracking this. tia!
 
-You can probably use a udev rule, triggered by the PCIe device ID to
-load the DT overlay.
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-Do you actually need anything from the host other than PCIe? It sounds
-like this card is pretty self contained, so you won't need phandles
-pointing to the host i2c bus, or the hosts GPIOs? You only need
-phandles to your own i2c bus, your own GPIOs? That will make the
-overlay much simpler.
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
 
-	Andrew
+#regzbot poke
+
+On 28.01.22 17:50, Alexander Fomichev wrote:
+> On Sun, Jan 23, 2022 at 07:33:14AM +0800, Hillf Danton wrote:
+>>
+>> Lets put pieces together based on the data collected.
+>>
+>> 1, No irq migration was observed.
+>>
+>> 2, Your patch that produced the highest iops fo far
+>>
+>> -----< 5.15.8-ioat-ptdma-dirty-fix+ >-----
+>> [ 6183.356549] dmatest: Added 1 threads using dma0chan0
+>> [ 6187.868237] dmatest: Started 1 threads using dma0chan0
+>> [ 6187.887389] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 52753.74 iops 3376239 KB/s (0)
+>> [ 6201.913154] dmatest: Added 1 threads using dma0chan0
+>> [ 6204.701340] dmatest: Started 1 threads using dma0chan0
+>> [ 6204.720490] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 52614.96 iops 3367357 KB/s (0)
+>> [ 6285.114603] dmatest: Added 1 threads using dma0chan0
+>> [ 6287.031875] dmatest: Started 1 threads using dma0chan0
+>> [ 6287.050278] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 54939.01 iops 3516097 KB/s (0)
+>> -----< end >-----
+>>
+>>
+>> -       if (available_idle_cpu(this_cpu) && cpus_share_cache(this_cpu, prev_cpu))
+>> -               return available_idle_cpu(prev_cpu) ? prev_cpu : this_cpu;
+>> +       if (available_idle_cpu(this_cpu))
+>> +               return this_cpu;
+>>
+>> prefers this cpu if it is idle regardless of cache affinity.
+>>
+>> This implies task migration to the cpu that handled irq.
+>>
+>> 3, Given this cpu is different from the prev cpu in addition to no irq
+>> migration, the tested task was bouncing between the two cpus, with one
+>> more question rising, why was task migrated off from the irq-handling cpu?
+>>
+>> Despite no evidence, I bet no bounce occurred given iops observed.
+>>
+> 
+> IMHO, your assumptions are correct.
+> I've added CPU number counters on every step of dmatest. It reveals that
+> test task migration between (at least 2) CPUs occurs in even one thread
+> mode. Below is for vanilla 5.15.8 kernel:
+> 
+> -----< threads_per_chan=1 >-----
+> [19449.557950] dmatest: Added 1 threads using dma0chan0
+> [19469.238180] dmatest: Started 1 threads using dma0chan0
+> [19469.253962] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 65291.19 iops 4178636 KB/s (0)
+> [19469.253973] dmatest: CPUs hit: #52:417 #63:583  (times)
+> -----< end >-----
+> 
+> Note that IRQ handler runs on CPU #52 in this environment.
+> 
+> In 4 thread mode the task migrates even more aggressively:
+> 
+> -----< threads_per_chan=4 >-----
+> [19355.460227] dmatest: Added 4 threads using dma0chan0
+> [19359.841182] dmatest: Started 4 threads using dma0chan0
+> [19359.860447] dmatest: dma0chan0-copy3: summary 1000 tests, 0 failures 53908.35 iops 3450134 KB/s (0)
+> [19359.860451] dmatest: dma0chan0-copy2: summary 1000 tests, 0 failures 54179.98 iops 3467519 KB/s (0)
+> [19359.860456] dmatest: CPUs hit: #50:1000  (times)
+> [19359.860459] dmatest: CPUs hit: #17:1000  (times)
+> [19359.860459] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 54048.21 iops 3459085 KB/s (0)
+> [19359.860466] dmatest: CPUs hit: #31:1000  (times)
+> [19359.861420] dmatest: dma0chan0-copy1: summary 1000 tests, 0 failures 51466.80 iops 3293875 KB/s (0)
+> [19359.861425] dmatest: CPUs hit: #30:213 #48:556 #52:231  (times)
+> -----< end >-----
+> 
+> On the other hand, for dirty-patched kernel task doesn't migrate:
+> 
+> -----< patched threads_per_chan=1 >-----
+> [ 2100.142002] dmatest: Added 1 threads using dma0chan0
+> [ 2102.359727] dmatest: Started 1 threads using dma0chan0
+> [ 2102.373594] dmatest: dma0chan0-copy0: summary 1000 tests, 0 failures 76173.06 iops 4875076 KB/s (0)
+> [ 2102.373600] dmatest: CPUs hit: #49:1000  (times)
+> -----< end >-----
+> 
+> IRQ handler runs on CPU #49 in this case.
+> 
+> Although in 4 thread mode the task still migrates. I think we should
+> consider such scenario as non-relevant for this isue.
+> 
+
