@@ -2,163 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE0CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E93EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238997AbiBWIdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:33:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
+        id S238994AbiBWIeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:34:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234121AbiBWIdR (ORCPT
+        with ESMTP id S233565AbiBWIeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:33:17 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4D760063;
-        Wed, 23 Feb 2022 00:32:50 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21N8WhqK129024;
-        Wed, 23 Feb 2022 02:32:43 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645605163;
-        bh=lh46FYVT+Lo32fpHsIFNA5RUB0DaCkN5upygRdPfs/M=;
-        h=From:To:CC:Subject:Date;
-        b=grQPZcU2pJ6EKKDSa78d5WnIwyDNWmrZmfT/P7cHT3x5USJWTfoap+bGz0IHcTQfF
-         6WMkTRii2reOLyI55l/w2FVFh5EvFK77OrnNzb7kFbC/AchjZUxcRYUnM1defJZ45A
-         xQAGYEBkb5I3oovJ0GGj1Eu/iZIL1lMsyo3betDo=
-Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21N8WhRq122367
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 23 Feb 2022 02:32:43 -0600
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 23
- Feb 2022 02:32:43 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 23 Feb 2022 02:32:43 -0600
-Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21N8WdFI098129;
-        Wed, 23 Feb 2022 02:32:40 -0600
-From:   Aparna M <a-m1@ti.com>
-To:     <nm@ti.com>, <vigneshr@ti.com>, <kristo@kernel.org>,
-        <robh+dt@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <praneeth@ti.com>, <grygorii.strashko@ti.com>, <nikhil.nd@ti.com>
-Subject: [PATCH] arm64: dts: ti: k3-am642-sk: Add DT entry for onboard LEDs
-Date:   Wed, 23 Feb 2022 14:02:29 +0530
-Message-ID: <20220223083229.8044-1-a-m1@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 23 Feb 2022 03:34:02 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1550847548
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:33:36 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CA0B01F43D;
+        Wed, 23 Feb 2022 08:33:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645605214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HlBp6viB771Oj+TE+GJseCVUxyBgZ+42wgX49Qr/87E=;
+        b=QPUslG/i28MwIlcysXokkMrPqi0AIx58bQb8fcJ/5ecPydtBbLiYqJwuc9Jqf40wLKNSA/
+        g3TqGHMdafsIBVN11wkdb0YsXqlzjNw2REzPpkCAWsSl7s0V+AO6LOdMEVvK8NCialtwsV
+        iRa/nhIBlRMvXpFbISqSNwzUXrZc29A=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 9C360A3B87;
+        Wed, 23 Feb 2022 08:33:34 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 09:33:34 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zhenguo Yao <yaozhenguo1@gmail.com>,
+        Liu Yuntao <liuyuntao10@huawei.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2] hugetlb: clean up potential spectre issue warnings
+Message-ID: <YhXxXg45loivQF10@dhcp22.suse.cz>
+References: <20220218212946.35441-1-mike.kravetz@oracle.com>
+ <YhNQf3LUZzNRD7u0@dhcp22.suse.cz>
+ <26565cd7-01b0-197c-6ce9-af92f5bc8563@oracle.com>
+ <YhSVGPQ6VIQfBZ9o@dhcp22.suse.cz>
+ <4bad1923-354d-3858-0339-82df8c090c3f@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4bad1923-354d-3858-0339-82df8c090c3f@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AM642 SK has 8 leds connected to tpic2810 onboard. Add support for these
-gpio leds.
+On Tue 22-02-22 13:53:56, Mike Kravetz wrote:
+> On 2/21/22 23:47, Michal Hocko wrote:
+> > On Mon 21-02-22 12:24:25, Mike Kravetz wrote:
+> >> On 2/21/22 00:42, Michal Hocko wrote:
+> >>> On Fri 18-02-22 13:29:46, Mike Kravetz wrote:
+> >>> [...]
+> >>>> @@ -4161,7 +4162,7 @@ static int __init hugepages_setup(char *s)
+> >>>>  			}
+> >>>>  			if (tmp >= nr_online_nodes)
+> >>>>  				goto invalid;
+> >>>> -			node = tmp;
+> >>>> +			node = array_index_nospec(tmp, nr_online_nodes);
+> >>>>  			p += count + 1;
+> >>>>  			/* Parse hugepages */
+> >>>>  			if (sscanf(p, "%lu%n", &tmp, &count) != 1)
+> >>>> @@ -6889,9 +6890,9 @@ static int __init cmdline_parse_hugetlb_cma(char *p)
+> >>>>  			break;
+> >>>>  
+> >>>>  		if (s[count] == ':') {
+> >>>> -			nid = tmp;
+> >>>> -			if (nid < 0 || nid >= MAX_NUMNODES)
+> >>>> +			if (tmp >= MAX_NUMNODES)
+> >>>>  				break;
+> >>>> +			nid = array_index_nospec(tmp, MAX_NUMNODES);
+> >>>>  
+> >>>>  			s += count + 1;
+> >>>>  			tmp = memparse(s, &s);
+> >>>
+> >>> This is an early boot code, how is this supposed to be used as a side
+> >>> channel?
+> >>
+> >> I do not have an evil hacker mind, but I can not think of a way this one time
+> >> use of a user specified index could be an issue.  It does add noise to the
+> >> BUILD REGRESSION emails sent to Andrew.
+> > 
+> > Maybe Smack can be taught to ignore __init and other early boot
+> > functions.
+> > 
+> > I do not have any strong objections to using array_index_nospec because
+> > it won't do any harm. Except that it makes a security measure a normal
+> > comodity so any future changes to array_index_nospec and its users will
+> > have to consult additional callers. Whether that is something we should
+> > deeply care about, I don't know.
+> > 
+> > At minimum make sure to be explicit that this can hardly be a Spectre
+> > gadget as it is a _one_ time early boot call. If there is a scenario
+> > where this could be really abused then it should be mentioned
+> > explicitly.
+> 
+> How about adding this note to the commit message?
+> 
+> Note: these routines take a user specified value used as an index ONCE
+> during the boot process.  As a result, they can not be used as a general
+> method of exploitation.  Code changes are being made to eliminate warnings.
 
-Signed-off-by: Aparna M <a-m1@ti.com>
----
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 70 ++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+This would help but the question whether the change is worth remains.
+Does this change have any other advantage than silencing the warning?
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 6b04745147be..31e45bafa49e 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -8,6 +8,7 @@
- #include <dt-bindings/mux/ti-serdes.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/net/ti-dp83867.h>
- #include "k3-am642.dtsi"
- 
-@@ -125,6 +126,67 @@
- 		vin-supply = <&vcc_3v3_sys>;
- 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		led-0 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <1>;
-+			gpios = <&exp2 0 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-1 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <2>;
-+			gpios = <&exp2 1 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-2 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <3>;
-+			gpios = <&exp2 2 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-3 {
-+			color = <LED_COLOR_ID_AMBER>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <4>;
-+			gpios = <&exp2 3 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-4 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <5>;
-+			gpios = <&exp2 4 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-5 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <6>;
-+			gpios = <&exp2 5 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-6 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <7>;
-+			gpios = <&exp2 6 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
-+		};
-+		led-7 {
-+			color = <LED_COLOR_ID_AMBER>;
-+			function = LED_FUNCTION_INDICATOR;
-+			function-enumerator = <8>;
-+			linux,default-trigger = "heartbeat";
-+			gpios = <&exp2 7 GPIO_ACTIVE_HIGH>;
-+		};
-+	};
- };
- 
- &main_pmx0 {
-@@ -274,6 +336,14 @@
- 				  "VPP_LDO_EN", "RPI_PS_3V3_En",
- 				  "RPI_PS_5V0_En", "RPI_HAT_DETECT";
- 	};
-+
-+	exp2: gpio@60 {
-+		compatible = "ti,tpic2810";
-+		reg = <0x60>;
-+		gpio-controller;
-+		#gpio-cells = <2>;
-+		gpio-line-names = "LED1","LED2","LED3","LED4","LED5","LED6","LED7","LED8";
-+	};
- };
- 
- &main_i2c3 {
 -- 
-2.17.1
-
+Michal Hocko
+SUSE Labs
