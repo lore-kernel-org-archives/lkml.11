@@ -2,98 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241873AbiBWPDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:03:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
+        id S241907AbiBWPGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:06:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233778AbiBWPDS (ORCPT
+        with ESMTP id S233002AbiBWPF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:03:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA83F60CEF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:02:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645628569;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=exzpM2LSG9f05DEW2rVqdo8gegc7G06w4mF6UEiw0ho=;
-        b=D7QpVSEiqPF2kT1cs0isZZa3Qa2WaapHrTcA5dYhE5xxIIq43ftcbNWHhLUfNCYT/TnNa4
-        ollvIej5MJ3J1iokRP2X0j4Dhb5f0MudOkJMRegMacfAOUwigvxdd+H8nKFvnVa3Z7lyw3
-        NyLcqrp9/wQjJ+dA0u0xUmGOLKuL3bc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-270-tTCdhBjuNFOB5XnGGGSZkQ-1; Wed, 23 Feb 2022 10:02:47 -0500
-X-MC-Unique: tTCdhBjuNFOB5XnGGGSZkQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C886800425;
-        Wed, 23 Feb 2022 15:02:45 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C7F210631FB;
-        Wed, 23 Feb 2022 15:02:43 +0000 (UTC)
-Message-ID: <9af820b8deecf3b6ea31db0993e83f746221634d.camel@redhat.com>
-Subject: Re: [PATCH v2 07/18] KVM: x86/mmu: Do not use guest root level in
- audit
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Lai Jiangshan <laijs@linux.alibaba.com>
-Date:   Wed, 23 Feb 2022 17:02:42 +0200
-In-Reply-To: <219937f8-6b49-47db-4ecf-f354b110da1c@redhat.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
-         <20220217210340.312449-8-pbonzini@redhat.com> <Yg/nc1jjtUD2fhOR@google.com>
-         <219937f8-6b49-47db-4ecf-f354b110da1c@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 23 Feb 2022 10:05:58 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343C5B8227;
+        Wed, 23 Feb 2022 07:05:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645628731; x=1677164731;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=GpIZwevORM2TSatP2ZtsNzaCweqnETuuYDt5aPe0Q5k=;
+  b=nhW5OANRO3wL0A3q4Tm99l+0hHiwRMVzKOYuYHkrVcC1jdLL7GbRrB3d
+   prcnAE4UNzmh8nua0bSLSIWzM+SzWd6l5ggJI9EdaQiJA4u9P7+DfjWNx
+   rAb8UTYQzgAEDf5feiAfwbmmOyWxnEk3d4rb7CZ2dvJM9YVxLokS2p+NQ
+   9DGjmCCAMSksldWtJZ8fThm91kEi3j73XVWPybgcB7ML2l9C69co/AMTc
+   8qXejNMtPuZfiv27pfYo5Ur5tAs2euUq8Hu25gFK6+7wyTWhuqu0RNQTP
+   Wcd/ZEtIaKQr0PG2vL08fEpmiR2OD+Y4u4jjh4xUnNdYK4n0OKH9pImUq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="249564799"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="249564799"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:05:29 -0800
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="591729239"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:05:24 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with ESMTP id 1C750201C2;
+        Wed, 23 Feb 2022 17:05:22 +0200 (EET)
+Date:   Wed, 23 Feb 2022 17:05:22 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [RFC 03/10] base: swnode: use fwnode_get_match_data()
+Message-ID: <YhZNMkwN3o40jDP5@paasikivi.fi.intel.com>
+References: <20220221162652.103834-1-clement.leger@bootlin.com>
+ <20220221162652.103834-4-clement.leger@bootlin.com>
+ <YhPQUPzz5vPvHUAy@smile.fi.intel.com>
+ <20220222093921.24878bae@fixe.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220222093921.24878bae@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-18 at 19:46 +0100, Paolo Bonzini wrote:
-> On 2/18/22 19:37, Sean Christopherson wrote:
-> > Since I keep bringing it up...
-> > 
-> > From: Sean Christopherson<seanjc@google.com>
-> > Date: Fri, 18 Feb 2022 09:43:05 -0800
-> > Subject: [PATCH] KVM: x86/mmu: Remove MMU auditing
-> > 
-> > Remove mmu_audit.c and all its collateral, the auditing code has suffered
-> > severe bitrot, ironically partly due to shadow paging being more stable
-> > and thus not benefiting as much from auditing, but mostly due to TDP
-> > supplanting shadow paging for non-nested guests and shadowing of nested
-> > TDP not heavily stressing the logic that is being audited.
-> > 
-> > Signed-off-by: Sean Christopherson<seanjc@google.com>
+Hi Clément,
+
+On Tue, Feb 22, 2022 at 09:39:21AM +0100, Clément Léger wrote:
+> Le Mon, 21 Feb 2022 19:48:00 +0200,
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
 > 
-> Queued, thanks. O:-)
-
-I once kind of played with it.
-
-Note that shadow mmu does have bugs - I can easily crash L1/L2 when
-doing repeated migrations when I disable NPT either in L0 or L1,
-and when I force the mmu to be always sync (see my strict_mmu patch),
-the crashes go away.
-
-mmu audit maybe could have helped with that.
-
-But I won't argue too much about this.
-
-Best regards,
-	Maxim Levitsky
-
+> > On Mon, Feb 21, 2022 at 05:26:45PM +0100, Clément Léger wrote:
+> > > In order to allow matching devices with software node with
+> > > device_get_match_data(), use fwnode_get_match_data() for
+> > > .device_get_match_data operation.  
+> > 
+> > ...
+> > 
+> > > +	.device_get_match_data = fwnode_get_match_data,  
+> > 
+> > Huh? It should be other way around, no?
+> > I mean that each of the resource providers may (or may not) provide a
+> > method for the specific fwnode abstraction.
+> > 
 > 
-> Paolo
+> Indeed, it should be the other way. But since this function is generic
+> and uses only fwnode API I guessed it would be more convenient to
+> define it in the fwnode generic part and use it for specific
+> implementation. I could have modified device_get_match_data to call it
+> if there was no .device_get_match_data operation like this:
 > 
+> const void *device_get_match_data(struct device *dev)
+> {
+> 	if (!fwnode_has_op(fwnode, device_get_match_data)
+> 		return fwnode_get_match_data(dev);
+> 	return fwnode_call_ptr_op(dev_fwnode(dev),device_get_match_data, dev);
+> }
+> 
+> But I thought it was more convenient to do it by setting the
+> .device_get_match_data field of software_node operations.
 
+Should this function be called e.g. software_node_get_match_data() instead,
+as it seems to be specific to software nodes?
 
+-- 
+Regards,
+
+Sakari Ailus
