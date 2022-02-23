@@ -2,83 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7541BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240857AbiBWNUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S240867AbiBWNWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:22:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240851AbiBWNUk (ORCPT
+        with ESMTP id S238995AbiBWNWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:20:40 -0500
+        Wed, 23 Feb 2022 08:22:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA0AA02B;
-        Wed, 23 Feb 2022 05:20:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FB1289AD;
+        Wed, 23 Feb 2022 05:21:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3044B6153D;
-        Wed, 23 Feb 2022 13:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A385C340F1;
-        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3051D6153B;
+        Wed, 23 Feb 2022 13:21:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286A5C340E7;
+        Wed, 23 Feb 2022 13:21:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645622411;
-        bh=4MINalVsLypM4gQLR9Y0Ac8CSDvIEk7Or3pxAcAHrp8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HV3GKjiAoVKlfbobREUE3hGsHRDqzsmzlyL6o5mMSqbKX6IyY79VoWM3Qzs1adTt+
-         LkM9R6Je7Nngy4QtNvhmvT6T7pNjV5Dy4/br1Sg3OxHES0FDEi37iLWe5U1nTm1A0g
-         Fk+uWWn9uekrNHdyn3fqu17941JuiD0iZkpinXQipSKRkRk4EeTGTutow0eYKGip7Y
-         Dttc+6C2xKBF1iq4wZWEaEQblmDcmje7g+sbNmyYkyNYfZbA3fhsoC2SMGwMAwXJJU
-         PAx/RmL186qNt6pJUJvaSyI6CxDPgyimzTNvhDJLNHD1WnNdDOJ1fIGB3BLxn1xkAo
-         XQ3XQgDRzy7Jw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78F24E6D598;
-        Wed, 23 Feb 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645622495;
+        bh=NEjAGJEK2EcBardBGhHASG5mWZ52oSsb0u9p5fsBxHA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qsYu9OdjVbZZNIo6c4pxuj/joNxKPgeIJx3K2j+B1z1tfLFzAJHvwcdPwNS3yr5aP
+         js+YdCyBpKT6W4nik30bgfDXJIT+X/+WAtYiqG73tlsbwP8nLPgItGSPYX0ltW+dl5
+         06iF6ycvCQAgsVDoUCTxKnB4t/iBbypNSvMv44XOWG1H2PXCmEXrZ0VuD9/EEAjsCD
+         U2VdiihFoJnbKW0lUQgZLL1dgp+AHDK1pXZgKCXzYHWAV9IETlGakz5PXgiXRth2oM
+         JUyMWT8gGy1uGq3tu/nw6GxH7f9b+qBnysTlf7PmW2pm6rCI8O5U64jPxW1+ap+kK+
+         NPEDOLDXIUW1A==
+Date:   Wed, 23 Feb 2022 14:21:32 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Michael Below <below@judiz.de>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>
+Subject: Re: [PATCH v4 2/7] i2c: core: Use generic_handle_irq_safe() in
+ i2c_handle_smbus_host_notify().
+Message-ID: <YhY03EojmT3eaIcR@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, Johan Hovold <johan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>, UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Michael Below <below@judiz.de>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>
+References: <20220211181500.1856198-1-bigeasy@linutronix.de>
+ <20220211181500.1856198-3-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/3] drivers/net/ftgmac100: fix occasional DHCP failure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164562241149.17147.7259955928729255752.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Feb 2022 13:20:11 +0000
-References: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
-In-Reply-To: <20220223031436.124858-1-guoheyi@linux.alibaba.com>
-To:     Heyi Guo <guoheyi@linux.alibaba.com>
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, davem@davemloft.net,
-        kuba@kernel.org, joel@jms.id.au, huangguangbin2@huawei.com,
-        chenhao288@hisilicon.com, arnd@arndb.de, dylan_hung@aspeedtech.com,
-        netdev@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Ixnn+B+i7E7l+PX4"
+Content-Disposition: inline
+In-Reply-To: <20220211181500.1856198-3-bigeasy@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+--Ixnn+B+i7E7l+PX4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 23 Feb 2022 11:14:33 +0800 you wrote:
-> This patch set is to fix the issues discussed in the mail thread:
-> https://lore.kernel.org/netdev/51f5b7a7-330f-6b3c-253d-10e45cdb6805@linux.alibaba.com/
-> and follows the advice from Andrew Lunn.
-> 
-> The first 2 patches refactors the code to enable adjust_link calling reset
-> function directly.
-> 
-> [...]
+On Fri, Feb 11, 2022 at 07:14:55PM +0100, Sebastian Andrzej Siewior wrote:
+> The i2c-i801 driver invokes i2c_handle_smbus_host_notify() from his
+> interrupt service routine. On PREEMPT_RT i2c-i801's handler is forced
+> threaded with enabled interrupts which leads to a warning by
+> handle_irq_event_percpu() assuming that irq_default_primary_handler()
+> enabled interrupts.
+>=20
+> i2c-i801's interrupt handler can't be made non-threaded because the
+> interrupt line is shared with other devices.
+>=20
+> Use generic_handle_irq_safe() which can invoked with disabled and enabled
+> interrupts.
+>=20
+> Reported-by: Michael Below <below@judiz.de>
+> Link: https://bugs.debian.org/1002537
+> Cc: Salvatore Bonaccorso <carnil@debian.org>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Reviewed-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+> Acked-by: Wolfram Sang <wsa@kernel.org>
 
-Here is the summary with links:
-  - [1/3] drivers/net/ftgmac100: refactor ftgmac100_reset_task to enable direct function call
-    https://git.kernel.org/netdev/net/c/4f1e72850d45
-  - [2/3] drivers/net/ftgmac100: adjust code place for function call dependency
-    https://git.kernel.org/netdev/net/c/3c773dba8182
-  - [3/3] drivers/net/ftgmac100: fix DHCP potential failure with systemd
-    https://git.kernel.org/netdev/net/c/1baf2e50e48f
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Is this 5.17 material? Or is 5.18 fine, too?
 
 
+--Ixnn+B+i7E7l+PX4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIWNNwACgkQFA3kzBSg
+Kbb+Og/7B9GjktvWSjvXyGx8u6zTRmbP8AqckDqW20DFq10TBwnbZX+Qrqyq2fIs
+pJwKZ0d95Q1wWJGGRQP7VVHOeuH5SLPkc8P2QMMpR8y4L87MXcPR/+mx5a+Pbjcw
+5DpXa6uKUGD42GoqnoKWLM60ettiXIaGQJeRKM9/1ZKnKH1BtOcur3AocKnRXOJI
+g0X33ZFF8XFVw2GeuLIaPALgue4Y2CgPUmPMoDqEFHd7ycedpE/7GS7RUQeusmor
+IZbCnofT2yldiBT6T76HZXJ/T/gVlyAnMpJeei9ynp+/kfej+kUXeE/GjfV33mGd
+0gBaBeek1ED5f7+bpSV5ZHlnxWLvk4UQ+Kq3hR7iVPHz8dCUuqay+rDdhxVHp2BT
+d4KiQyqRoZKjnxz7Zu200XK1wm2aADq/jFd0AD/I3AiHz1KYu8U2YZOOyya9xOGb
+cxLZgOna7N++nUXigjzUAhIUgEsuR8S67kp4Rv3NRB5UY9RIzP9lA+DYuHSwR4FJ
++SWRZuhHjGyNCg+wQ+IS4tR9WPLNKbVfELmrbrg0ccR1Tk0rVZWfkGuQ+UkYhjc1
+NA3QlYy8cHie9GTf7HbeknoNOT9ABZkClWiEXEK9P7jyjp+7Jot2iDrP25U1935Z
+Lj3j30pCuU4zO+B/y/q5KIyKOaj1fbSeS/8wcNdZnqLU8CkYfR8=
+=xJ1C
+-----END PGP SIGNATURE-----
+
+--Ixnn+B+i7E7l+PX4--
