@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E64C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E527C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 13:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240998AbiBWNk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 08:40:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S241021AbiBWNmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 08:42:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240976AbiBWNk0 (ORCPT
+        with ESMTP id S233722AbiBWNmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 08:40:26 -0500
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9900EAC056;
-        Wed, 23 Feb 2022 05:39:59 -0800 (PST)
-Received: by mail-ua1-f43.google.com with SMTP id k5so1450987uao.2;
-        Wed, 23 Feb 2022 05:39:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dPeYplQbbLYXGtovtVVhsdi1q95Z7tVy8kR/XdoEwFw=;
-        b=PX7Nt9qXpqmTjlFOhhrsb5M/khaHHVULEAZc7ld8M2DZqySjYEcdAERmkeamrdW/aU
-         Vy91Muu7B/Qi09vclq9GJ3lSKdbRjnWlNa4bjwT1LX4jqIWqCHomrF6Js/54IQsdCGgl
-         tYPIW0jKrvm88C/94Zebd9QiCvh2mreNv5QBAk/j3/sTeQW64tGMETml+dan/2Inlhns
-         8hUrm8iBx3vO7BjOiaFscGf7Itc8ZgN7rjDu0Vzr/CErLH4bnqvMRMS1aMqCakGv2e4L
-         NSGAHCtwMxnIqB6JHsigQnVmLdDIEMp60YQRqoL2IDnrYLmWCIvBKgp597YTnicPyrqs
-         ldHg==
-X-Gm-Message-State: AOAM531a69GdEbv6Vhvyy1rl+1jKsNe3FwsHb8Q3ivxLXaF93y2xgPQG
-        0d35jLtEVe4FJoWRcdvAQ2yZzq0H4qG2ng==
-X-Google-Smtp-Source: ABdhPJwNxI2R6AEdabxPGiQHMAf1Ybqt+uMRJxs0wwwqMa5UMibfkulRZnrAVCVLljIQa5ADJ/LFiQ==
-X-Received: by 2002:ab0:2111:0:b0:341:8339:51b4 with SMTP id d17-20020ab02111000000b00341833951b4mr10756970ual.76.1645623598626;
-        Wed, 23 Feb 2022 05:39:58 -0800 (PST)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id t127sm4198604vkb.31.2022.02.23.05.39.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 05:39:58 -0800 (PST)
-Received: by mail-vs1-f48.google.com with SMTP id y26so3187221vsq.8;
-        Wed, 23 Feb 2022 05:39:57 -0800 (PST)
-X-Received: by 2002:a67:e10e:0:b0:31b:956b:70cf with SMTP id
- d14-20020a67e10e000000b0031b956b70cfmr11904088vsl.77.1645623597826; Wed, 23
- Feb 2022 05:39:57 -0800 (PST)
+        Wed, 23 Feb 2022 08:42:17 -0500
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D27850059
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 05:41:44 -0800 (PST)
+X-QQ-mid: bizesmtp76t1645623681t10dlvj5
+Received: from localhost.localdomain (unknown [202.96.137.248])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 23 Feb 2022 21:41:07 +0800 (CST)
+X-QQ-SSF: 01400000002000D0N000B00A0000000
+X-QQ-FEAT: FXvDfBZI5O5sGOdRkLPXVG6Eb4fbEwp/IlmIxAq7UFvDk9EDMiwtbSlLouB9W
+        6oo1ip+Zbdfkc7CsiEa4E96g+tI+hiXYvY1UUQkwDKi0T1O39vgbTS1/qeG7NmeXP+0lGF/
+        p3QHbUMI2K0jBM6NCopwW/Bi9c6KwjlmdjP0I5URlZWEd59PBuhRbBF5dzWyr/2K8ysGJ5w
+        gvgft6HD+5cg0UpSKinBdV3I+niu+wDTmKcB5QFdFO+2+0HSKhkDbDrf6F4A4cU/QJdLJ7W
+        hbLEHHPPyBMSAg9OzA/uH5cRBVxCOiA8cA2tn1iYNsQ3elu7LOsO6Ub2qmh8GE6nyrCjDQ0
+        6M/x754aCDmlh2TnIoKcgayxlKHNOWTanE9og5y1c5SkdCfL4c=
+X-QQ-GoodBg: 2
+From:   Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+To:     corbet@lwn.net
+Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au,
+        hanshenghong2019@email.szu.edu.cn, weizhenliang@huawei.com,
+        georgi.djakov@linaro.org, skhan@linuxfoundation.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+Subject: [PATCH] Documentation/vm/page_owner.rst: fix commends
+Date:   Wed, 23 Feb 2022 21:41:04 +0800
+Message-Id: <20220223134104.2663-1-caoyixuan2019@email.szu.edu.cn>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220221095032.95054-1-jjhiblot@traphandler.com> <20220221095032.95054-5-jjhiblot@traphandler.com>
-In-Reply-To: <20220221095032.95054-5-jjhiblot@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 23 Feb 2022 14:39:46 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdX=Yos_CGcBXbV_+WGcTkz18mxiR4xbXwPqjR4mUGnMtQ@mail.gmail.com>
-Message-ID: <CAMuHMdX=Yos_CGcBXbV_+WGcTkz18mxiR4xbXwPqjR4mUGnMtQ@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] ARM: dts: r9a06g032-rzn1d400-db: Enable watchdog0
- with a 60s timeout
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:email.szu.edu.cn:qybgforeign:qybgforeign1
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:51 AM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> 60s is a sensible default value.
->
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+There are some commends that need to be fixed.
 
-Will queue in renesas-devel for v5.18.
+Thanks for Shuah Khan's constructive suggestions.
+The commends have been fixed as follows.
 
-Gr{oetje,eeting}s,
+a. So, if you'd like to use it, you need
+to add "page_owner=on" into your boot cmdline.
 
-                        Geert
+Here, "into" has been replaced with "to".
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+b. ...page owner is disabled in runtime due to no
+enabling, boot option, runtime overhead is marginal.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Here, "no" has been replaced with "not".
+
+Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+---
+ Documentation/vm/page_owner.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
+index 2b54e82b9fe1..aec1906976f4 100644
+--- a/Documentation/vm/page_owner.rst
++++ b/Documentation/vm/page_owner.rst
+@@ -26,9 +26,9 @@ fragmentation statistics can be obtained through gfp flag information of
+ each page. It is already implemented and activated if page owner is
+ enabled. Other usages are more than welcome.
+ 
+-page owner is disabled in default. So, if you'd like to use it, you need
+-to add "page_owner=on" into your boot cmdline. If the kernel is built
+-with page owner and page owner is disabled in runtime due to no enabling
++page owner is disabled by default. So, if you'd like to use it, you need
++to add "page_owner=on" to your boot cmdline. If the kernel is built
++with page owner and page owner is disabled in runtime due to not enabling
+ boot option, runtime overhead is marginal. If disabled in runtime, it
+ doesn't require memory to store owner information, so there is no runtime
+ memory overhead. And, page owner inserts just two unlikely branches into
+-- 
+2.31.1
+
+
+
