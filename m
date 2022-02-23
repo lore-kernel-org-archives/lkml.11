@@ -2,80 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E02C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE01AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244169AbiBWTLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S244176AbiBWTM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiBWTLc (ORCPT
+        with ESMTP id S237932AbiBWTMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:11:32 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5225A3BA6A;
-        Wed, 23 Feb 2022 11:11:04 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id a23so54298990eju.3;
-        Wed, 23 Feb 2022 11:11:04 -0800 (PST)
+        Wed, 23 Feb 2022 14:12:54 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA26331213
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:12:25 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id ba20so10280768qvb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:12:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=agRAC2t1wbxohDTZY1tvrdvahcqEsXAlVugrCvK5vAI=;
-        b=NusxRs+hCFFeFBdSmlJLGYQwHnHOOgK+XcGfTP8vviCjpin68ddNpvUStPpR1vs32r
-         TSWokMdnZp3qoW8u3QQsVe614BTTiM2S1OUs2b3Vb71shGx0snmeU4iBDCba1zG8FJoQ
-         mHYHi1vQhWLqFo5zhPqfWl1T/NBq54QQblGM0WrwdkdJunMjW/lpzylPIOAbJvXeWQ9Q
-         KdSi/D5Ic5z76YBqYMZr3J5azQ2Ye08A1NoR++EabeIAOaB6Qer9weo9V5hyf4XvAkx7
-         j2yyrc9I0QvjjgeVvVrGkBDUKdsyKjeR7S2n0m8n9Oe5XA2bpGYN0v0hLpNUKX69zWaX
-         cvwg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nWjAURTXXFUt4V9KPu3K0BgdcVkHvnbRCLY8V8ZLyTQ=;
+        b=gmhsmcTiDoYU7aSdGVFyN+rym7mHAfe/gELsswwblGvGEyBAIz3xKmzfy0IUiOaPvk
+         gvexjsWRALM3JhcrEUssGZ/CYBEKRPcbCWMIwiXtpGu/XwNWzWjauS33ywJ8jTFM/FdH
+         GTUbIauA+5k3WLUweM12er+GPgsxrcuHzYO+nMOYln6CPBbTc6LkjWMgzj0/fSQrVNgR
+         zDOEiBGeAsgKh2FRY0rwYCBMEQyJegVvSG/URKwYo1dDBWjoDBCfpqIRF2ycshUmtDS8
+         xxwQp9PJEJHGdFdYEZ9Q+3YIqo6vDmwJ2bfYkpba60bWkW4dYizaW6YHW8ZhdZ0JdXtx
+         3hfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=agRAC2t1wbxohDTZY1tvrdvahcqEsXAlVugrCvK5vAI=;
-        b=OCQQbsjF2C+osYjRhxCArKGJWnR6ZY1bPMagzAoSCBli7jn5EhHd8ofT9Fx/1+2l8S
-         NRaRgXuxtHYC56oWfTuMPABXG8CwcRHi9CoIFpczCJrNUPfWQHkLjTgGwcFpLqSUHG82
-         Q6Yr2icJDjKaC9OPmmZpxi2yEwn7FKeUsP7n/8tZpvqC7R9iBuNqYoMw7x4An0lGqAw3
-         mg0pxrYO7fvb7rOCkGQoFrwPK8p22S3ghiuU70jmKxWGTsdtZFqqFuI+7ixL85kEEg2+
-         pJ8V9Ce4bVIYzfAgdFAts2J8rvEdMUPUMn0iogmAlnkYrNWGk2H1Yb8uhIqMMlq/hiM2
-         8HYw==
-X-Gm-Message-State: AOAM53307cDkkXBpQuKMhZMAv0uLM9mM8Ad8l4qybDz4IPmApB5ddrdt
-        PPCwLh5zFvdph1/ycIlupAS1cpRbsyGiYQsZGCQ=
-X-Google-Smtp-Source: ABdhPJxJVHoCAqyhAv3zdWC2MUzmw01qvg7Ykv7dkMiDqJyJrCrRorpy9OxB6Uj4g42Ws7PlRNI2UTmCoDCbAB9Zr2g=
-X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id
- q7-20020a1709064cc700b006d07efb049fmr841882ejt.639.1645643462730; Wed, 23 Feb
- 2022 11:11:02 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nWjAURTXXFUt4V9KPu3K0BgdcVkHvnbRCLY8V8ZLyTQ=;
+        b=xQNmLXRxvQhYrr1rjhm+5YE2j61/J2fxqU6+kBzTv95ZdZBn12B7yJySktuKRm/ofG
+         KD8XC7RajcUyYpX0Rkn8JGPIb8uvnZ1xvLoSdjRppTNkWSusvCohPgreAkb1Jyc0ClL4
+         NNHH+P6M+P4rUcKuuYa/eWuowMcyThRnWlrjrOOSAGeAuID5jOrCuXicMcf8ZzKs883G
+         db70NBJ3iTIc3o2bBljav2coXytcHbB7nIdAOX275TVo0FIK+JuIMXtQN5BxCYTkaoQ6
+         HXFDHweAQMQV1lFwE5UigXKku/Fm3rc5zmkRhunJ9SpG3S526OJyoNNURRTUcSGSr3k1
+         HYmA==
+X-Gm-Message-State: AOAM532VcjZMblT6grM3bYIW1hWJhcLRCTOrHY4TTFC6ieYyi7cwWcMP
+        HwwGAAQ1iq1tCmkK4hh8ROnm2A==
+X-Google-Smtp-Source: ABdhPJxzoEo9EUkOhZuahOgNwguvUhyWayCfkdT5Cqa71z8iHTlwb9JaXlbVKc1MXzozbYCnwZBuRg==
+X-Received: by 2002:a0c:a9d7:0:b0:432:662d:e1b6 with SMTP id c23-20020a0ca9d7000000b00432662de1b6mr989319qvb.73.1645643544832;
+        Wed, 23 Feb 2022 11:12:24 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id h18sm205742qke.61.2022.02.23.11.12.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 11:12:23 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nMx3m-001hEw-Qg; Wed, 23 Feb 2022 15:12:22 -0400
+Date:   Wed, 23 Feb 2022 15:12:22 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergman <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [RFC PATCH 04/13] vfio/mdev: remove the usage of the list
+ iterator after the loop
+Message-ID: <20220223191222.GC10361@ziepe.ca>
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
+ <20220217184829.1991035-5-jakobkoschel@gmail.com>
+ <20220218151216.GE1037534@ziepe.ca>
+ <6BA40980-554F-45E2-914D-5E4CD02FF21C@gmail.com>
+ <CAHk-=wir=xabJ73Upk1dsuoMKWTTjTfeLFJ=p2S0yRYYaxW4fA@mail.gmail.com>
 MIME-Version: 1.0
-References: <1644890386-65119-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1644890386-65119-1-git-send-email-wangqing@vivo.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 23 Feb 2022 21:09:38 +0200
-Message-ID: <CAHp75Vc29_LUiiH0mOUXBFqshin9UMbntwxxFr09Vvxje-4eEQ@mail.gmail.com>
-Subject: Re: [PATCH] spi: add missing pci_dev_put() before return
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Mark Brown <broonie@kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wir=xabJ73Upk1dsuoMKWTTjTfeLFJ=p2S0yRYYaxW4fA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 6:04 AM Qing Wang <wangqing@vivo.com> wrote:
->
-> From: Wang Qing <wangqing@vivo.com>
->
-> pci_get_slot() increases its reference count, the caller must
-> decrement the reference count by calling pci_dev_put()
+On Wed, Feb 23, 2022 at 11:06:03AM -0800, Linus Torvalds wrote:
 
-Thanks for the report!
+> And as such, you not only can't dereference it, but you also shouldn't
+> even compare pointer values - because the pointer arithmetic that was
+> valid for loop entries is not valid for the HEAD entry that is
+> embedded in another type. So the pointer arithmetic might have turned
+> it into a pointer outside the real container of the HEAD, and might
+> actually match something else.
 
-This is not fully correct. I'll send a patch soon.
+Yes, this is what I had put together as well about this patch, and I
+think it is OK as-is. In this case the list head is in the .bss of a
+module so I don't think it is very likely that the type confused
+container_of() will alias a kalloc result, but it is certainly
+technically wrong as-is.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> So elsewhere I suggested that the fix to "you can't use the pointer
+> outside the loop" be made to literally disallow it (using C99 for-loop
+> variables seems the cleanest model), and have the compiler refuse to
+> touch code that tries to use the loop iterator outside.
+
+Oh yes, that would be really nice solution.
+
+Jason 
