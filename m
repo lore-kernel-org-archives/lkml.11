@@ -2,143 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BACC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:41:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB70DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242258AbiBWPln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:41:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
+        id S242233AbiBWPmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbiBWPl1 (ORCPT
+        with ESMTP id S241099AbiBWPmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:41:27 -0500
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECFFBF956;
-        Wed, 23 Feb 2022 07:40:50 -0800 (PST)
-Received: by mail-ej1-f45.google.com with SMTP id qx21so53180779ejb.13;
-        Wed, 23 Feb 2022 07:40:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WFKWHYEVTYdSkLxtSrxqY8mhLgNlskLotNcdJEfeS30=;
-        b=vi/HxvtxQYmkTv/q91DPRntemiFSiU0nmGjbk+/L+aX5Kz+otbtEtFc821l+/Okeq7
-         4Ldx75PFp5sZtGzpt6qrBOxrtY+2Uetrkx7FRi8mwIDEs/Wr/DBF610wG8jdRHckLDO5
-         ldivKkJOO6Ergk4UN1NfRwogmcgvG9e9/BjaV6k5KtZqAUZwrRV9ZthQ7+NVF3kus2qk
-         bhlRZU2HjcDKfDAJcMwcBHYYnrPathCqxhIL1XdrJDNtXfWOPoxJIaU/ZRChduyK3OeP
-         o5GKHRb+X7grpQsQCbPXWC11mPIQBBNsbnAg57if9LJdiEfFgmalR5BO9CQUC+fDbE3Q
-         TPSA==
-X-Gm-Message-State: AOAM533rajEeMNLaStmNvNKX3vDSIHRWNQnEW8qjRSzqBqdED9N/Bb2N
-        epVaT9k0hkuZ2Xyd3v5bmfc=
-X-Google-Smtp-Source: ABdhPJwCjKeESc3L8IbeV5j21bvDk0eitpRamZsq6g9YoXBYxtk65XHiLToC3J+qPucyR9UNzMvs2A==
-X-Received: by 2002:a17:906:31c1:b0:6c9:cfb3:4dd3 with SMTP id f1-20020a17090631c100b006c9cfb34dd3mr257861ejf.392.1645630848908;
-        Wed, 23 Feb 2022 07:40:48 -0800 (PST)
-Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.googlemail.com with ESMTPSA id l6sm233ejz.189.2022.02.23.07.40.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 07:40:47 -0800 (PST)
-Message-ID: <ac2c2075-3d5c-3f7e-d4e2-a8c80ec61883@kernel.org>
-Date:   Wed, 23 Feb 2022 16:40:45 +0100
+        Wed, 23 Feb 2022 10:42:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFEB2D1E5;
+        Wed, 23 Feb 2022 07:41:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B2C161862;
+        Wed, 23 Feb 2022 15:41:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB7AC340E7;
+        Wed, 23 Feb 2022 15:41:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645630898;
+        bh=NZe27FiksAdBZXf8fS4So/v4Gr+hUDChWjiqPXizi/w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N864KPKn/FiNfDgwrITmul1xlnHr/itNlmzpEW53Rocwdvl4cfxmMrHFMGJyOjJv9
+         XdPUkyl1v6simh6/CdwypbTpGKPKT4w2iAcC5PrPy+nUf9C0sy7G2Xg7WVv2CUhS/L
+         Af+nQAXeo0bPQN2/peCXfMHqNADBk+iv17dts3a/eFU+mslmfmOx3foF+5W5m8Xn5h
+         MyOAJt8fcQ9Zh297yFK1ZQHyBqsYsNelwQz0fjrD0spoTz/wZ3usUQJQpwpmDiC9gt
+         Sg8rQE5Lm8vcj+1Sh72TyDoFufM53hlGegue9uWk9YzVG3hMGvrAj3IQmSY9PzB7iO
+         v/2IMfOL+cOPQ==
+Date:   Wed, 23 Feb 2022 16:42:14 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>, kernel@pengutronix.de,
+        Sumit Garg <sumit.garg@linaro.org>,
+        David Gstir <david@sigma-star.at>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+        Aymen Sghaier <aymen.sghaier@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v5 2/5] KEYS: trusted: allow users to use kernel RNG for
+ key material
+Message-ID: <YhZV1g0kvXfBOZ06@iki.fi>
+References: <20220222195819.2313913-1-a.fatoum@pengutronix.de>
+ <20220222195819.2313913-3-a.fatoum@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v10 2/4] Documentation/dt: Add descriptions for loongson
- display controller
-Content-Language: en-US
-To:     =?UTF-8?B?6ZqL5pmv5bOw?= <suijingfeng@loongson.cn>,
-        Rob Herring <robh@kernel.org>
-Cc:     Sui Jingfeng <15330273260@189.cn>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-References: <20220220145554.117854-1-15330273260@189.cn>
- <20220220145554.117854-3-15330273260@189.cn>
- <YhVrigEnXTiNgk67@robh.at.kernel.org>
- <720f940e.5ac.17f26de3a5b.Coremail.suijingfeng@loongson.cn>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <720f940e.5ac.17f26de3a5b.Coremail.suijingfeng@loongson.cn>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220222195819.2313913-3-a.fatoum@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/02/2022 14:56, 隋景峰 wrote:
+On Tue, Feb 22, 2022 at 08:58:16PM +0100, Ahmad Fatoum wrote:
+> The two existing trusted key sources don't make use of the kernel RNG,
+> but instead let the hardware doing the sealing/unsealing also
+> generate the random key material. However, users may want to place
+> less trust into the quality of the trust source's random number
+> generator and instead use the kernel entropy pool, which can be
+> seeded from multiple entropy sources.
 > 
+> Make this possible by adding a new trusted.kernel_rng parameter,
+> that will force use of the kernel RNG. In its absence, it's up
+> to the trust source to decide, which random numbers to use,
+> maintaining the existing behavior.
 > 
+> Suggested-by: Jarkko Sakkinen <jarkko@kernel.org>
+> Acked-by: Sumit Garg <sumit.garg@linaro.org>
+> Reviewed-by: David Gstir <david@sigma-star.at>
+> Reviewed-by: Pankaj Gupta <pankaj.gupta@nxp.com>
+> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> ---
+> To: James Bottomley <jejb@linux.ibm.com>
+> To: Jarkko Sakkinen <jarkko@kernel.org>
+> To: Mimi Zohar <zohar@linux.ibm.com>
+> To: David Howells <dhowells@redhat.com>
+> Cc: James Morris <jmorris@namei.org>
+> Cc: "Serge E. Hallyn" <serge@hallyn.com>
+> Cc: "Horia Geantă" <horia.geanta@nxp.com>
+> Cc: Aymen Sghaier <aymen.sghaier@nxp.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jan Luebbe <j.luebbe@pengutronix.de>
+> Cc: Eric Biggers <ebiggers@kernel.org>
+> Cc: David Gstir <david@sigma-star.at>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: Franck LENORMAND <franck.lenormand@nxp.com>
+> Cc: Sumit Garg <sumit.garg@linaro.org>
+> Cc: Tim Harvey <tharvey@gateworks.com>
+> Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> Cc: Pankaj Gupta <pankaj.gupta@nxp.com>
+> Cc: keyrings@vger.kernel.org
+> Cc: linux-crypto@vger.kernel.org
+> Cc: linux-integrity@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-security-module@vger.kernel.org
+> ---
+>  .../admin-guide/kernel-parameters.txt         | 10 ++++++
+>  .../security/keys/trusted-encrypted.rst       | 20 ++++++-----
+>  security/keys/trusted-keys/trusted_core.c     | 35 ++++++++++++++++++-
+>  3 files changed, 56 insertions(+), 9 deletions(-)
 > 
-> &gt; -----Original Messages-----
-> &gt; From: "Rob Herring" <robh@kernel.org>
-> &gt; Sent Time: 2022-02-23 07:02:34 (Wednesday)
-> &gt; To: "Sui Jingfeng" &lt;15330273260@189.cn&gt;
-> &gt; Cc: "Maxime Ripard" <mripard@kernel.org>, "Thomas Zimmermann" <tzimmermann@suse.de>, "Roland Scheidegger" <sroland@vmware.com>, "Zack Rusin" <zackr@vmware.com>, "Christian Gmeiner" <christian.gmeiner@gmail.com>, "David Airlie" <airlied@linux.ie>, "Daniel Vetter" <daniel@ffwll.ch>, "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>, "Dan Carpenter" <dan.carpenter@oracle.com>, "Krzysztof Kozlowski" <krzk@kernel.org>, "Andrey Zhizhikin" <andrey.zhizhikin@leica-geosystems.com>, "Sam Ravnborg" <sam@ravnborg.org>, "David S . Miller" <davem@davemloft.net>, "Jiaxun Yang" <jiaxun.yang@flygoat.com>, "Lucas Stach" <l.stach@pengutronix.de>, "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>, "Ilia Mirkin" <imirkin@alum.mit.edu>, "Qing Zhang" <zhangqing@loongson.cn>, suijingfeng <suijingfeng@loongson.cn>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-> &gt; Subject: Re: [PATCH v10 2/4] Documentation/dt: Add descriptions for loongson display controller
-> &gt; 
-> &gt; On Sun, Feb 20, 2022 at 10:55:52PM +0800, Sui Jingfeng wrote:
-> &gt; &gt; From: suijingfeng <suijingfeng@loongson.cn>
-> &gt; 
-> &gt; Follow the conventions of the subsystem for patch subjects. It should be 
-> &gt; evident with 'git log --oneline Documentation/devicetree/bindings/display'.
-> &gt; 
-> &gt; Something like this:
-> &gt; 
-> &gt; dt-bindings: display: Add Loongson display controller
-> &gt; 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..844c883ca9d8 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -5880,6 +5880,16 @@
+>  			first trust source as a backend which is initialized
+>  			successfully during iteration.
+>  
+> +	trusted.rng=	[KEYS]
+> +			Format: <string>
+> +			The RNG used to generate key material for trusted keys.
+> +			Can be one of:
+> +			- "kernel"
+> +			- the same value as trusted.source: "tpm" or "tee"
+> +			- "default"
+> +			If not specified, "default" is used. In this case,
+> +			the RNG's choice is left to each individual trust source.
+> +
+>  	tsc=		Disable clocksource stability checks for TSC.
+>  			Format: <string>
+>  			[x86] reliable: mark tsc clocksource as reliable, this
+> diff --git a/Documentation/security/keys/trusted-encrypted.rst b/Documentation/security/keys/trusted-encrypted.rst
+> index 80d5a5af62a1..99cf34d7c025 100644
+> --- a/Documentation/security/keys/trusted-encrypted.rst
+> +++ b/Documentation/security/keys/trusted-encrypted.rst
+> @@ -87,22 +87,26 @@ Key Generation
+>  Trusted Keys
+>  ------------
+>  
+> -New keys are created from random numbers generated in the trust source. They
+> -are encrypted/decrypted using a child key in the storage key hierarchy.
+> -Encryption and decryption of the child key must be protected by a strong
+> -access control policy within the trust source.
+> +New keys are created from random numbers. They are encrypted/decrypted using
+> +a child key in the storage key hierarchy. Encryption and decryption of the
+> +child key must be protected by a strong access control policy within the
+> +trust source. The random number generator in use differs according to the
+> +selected trust source:
+>  
+> -  *  TPM (hardware device) based RNG
+> +  *  TPM: hardware device based RNG
+>  
+> -     Strength of random numbers may vary from one device manufacturer to
+> -     another.
+> +     Keys are generated within the TPM. Strength of random numbers may vary
+> +     from one device manufacturer to another.
+>  
+> -  *  TEE (OP-TEE based on Arm TrustZone) based RNG
+> +  *  TEE: OP-TEE based on Arm TrustZone based RNG
+>  
+>       RNG is customizable as per platform needs. It can either be direct output
+>       from platform specific hardware RNG or a software based Fortuna CSPRNG
+>       which can be seeded via multiple entropy sources.
+>  
+> +Users may override this by specifying ``trusted.rng=kernel`` on the kernel
+> +command-line to override the used RNG with the kernel's random number pool.
+> +
+>  Encrypted Keys
+>  --------------
+>  
+> diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
+> index 7cdbd16aed30..9235fb7d0ec9 100644
+> --- a/security/keys/trusted-keys/trusted_core.c
+> +++ b/security/keys/trusted-keys/trusted_core.c
+> @@ -16,12 +16,17 @@
+>  #include <linux/key-type.h>
+>  #include <linux/module.h>
+>  #include <linux/parser.h>
+> +#include <linux/random.h>
+>  #include <linux/rcupdate.h>
+>  #include <linux/slab.h>
+>  #include <linux/static_call.h>
+>  #include <linux/string.h>
+>  #include <linux/uaccess.h>
+>  
+> +static char *trusted_rng = "default";
+> +module_param_named(rng, trusted_rng, charp, 0);
+> +MODULE_PARM_DESC(rng, "Select trusted key RNG");
+> +
+>  static char *trusted_key_source;
+>  module_param_named(source, trusted_key_source, charp, 0);
+>  MODULE_PARM_DESC(source, "Select trusted keys source (tpm or tee)");
+> @@ -312,8 +317,14 @@ struct key_type key_type_trusted = {
+>  };
+>  EXPORT_SYMBOL_GPL(key_type_trusted);
+>  
+> +static int kernel_get_random(unsigned char *key, size_t key_len)
+> +{
+> +	return get_random_bytes_wait(key, key_len) ?: key_len;
+> +}
+> +
+>  static int __init init_trusted(void)
+>  {
+> +	int (*get_random)(unsigned char *key, size_t key_len);
+>  	int i, ret = 0;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(trusted_key_sources); i++) {
+> @@ -322,6 +333,28 @@ static int __init init_trusted(void)
+>  			    strlen(trusted_key_sources[i].name)))
+>  			continue;
+>  
+> +		/*
+> +		 * We always support trusted.rng="kernel" and "default" as
+> +		 * well as trusted.rng=$trusted.source if the trust source
+> +		 * defines its own get_random callback.
+> +		 */
+> +		get_random = trusted_key_sources[i].ops->get_random;
+> +		if (trusted_rng && strcmp(trusted_rng, "default")) {
+> +			if (!strcmp(trusted_rng, "kernel")) {
+> +				get_random = kernel_get_random;
+> +			} else if (strcmp(trusted_rng, trusted_key_sources[i].name) ||
+> +				   !get_random) {
+> +				pr_warn("Unsupported RNG. Supported: kernel");
+> +				if (get_random)
+> +					pr_cont(", %s", trusted_key_sources[i].name);
+> +				pr_cont(", default\n");
+> +				return -EINVAL;
+> +			}
+> +		}
+> +
+> +		if (!get_random)
+> +			get_random = kernel_get_random;
+> +
+>  		static_call_update(trusted_key_init,
+>  				   trusted_key_sources[i].ops->init);
+>  		static_call_update(trusted_key_seal,
+> @@ -329,7 +362,7 @@ static int __init init_trusted(void)
+>  		static_call_update(trusted_key_unseal,
+>  				   trusted_key_sources[i].ops->unseal);
+>  		static_call_update(trusted_key_get_random,
+> -				   trusted_key_sources[i].ops->get_random);
+> +				   get_random);
+>  		static_call_update(trusted_key_exit,
+>  				   trusted_key_sources[i].ops->exit);
+>  		migratable = trusted_key_sources[i].ops->migratable;
+> -- 
+> 2.30.2
 > 
-> Hi, 
-> 
-> We are not a platform device driver, there is no
-> of_device_id defined in my driver. In other word, 
-> my driver will not bind against devices whose compatible
-> is "loongson,ls7a1000-dc". We just parse the device tree
-> actively, find necessary information of interest. 
-> In this case, can I use the word "dt-bindings" in the commit title?
 
-This is a patch for specific subsystem, so as Rob said, it should follow
-subsystem conventions.
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-The patch itself is a dt-bindings patch, so there is nothing here
-special which would encourage for any exception.
-
-
-> 
-> I want to follow the conventions, but get some push back,
-> Krzysztof say that he can not see any bindings, these are not bindings.
-
-I said in comment to your patch with DTS, which you called bindings,
-that there are no bindings at all in it. Because in your patch with DTS
-you did not include bindings, but you called it bindings.
-
-Here, this is a patch with bindings, so your comment "these are not
-bindings" is not true.
-
-
-</suijingfeng@loongson.cn></suijingfeng@loongson.cn></zhangqing@loongson.cn></imirkin@alum.mit.edu></maarten.lankhorst@linux.intel.com></l.stach@pengutronix.de></jiaxun.yang@flygoat.com></davem@davemloft.net></sam@ravnborg.org></andrey.zhizhikin@leica-geosystems.com></krzk@kernel.org></dan.carpenter@oracle.com></tsbogend@alpha.franken.de></daniel@ffwll.ch></airlied@linux.ie></christian.gmeiner@gmail.com></zackr@vmware.com></sroland@vmware.com></tzimmermann@suse.de></mripard@kernel.org></robh@kernel.org>
-
-This link does not work...
-
-> This email and its attachments contain confidential information from Loongson Technology , which is intended only for the person or entity whose address is listed above. Any use of the information contained herein in any way (including, but not limited to, total or partial disclosure, reproduction or dissemination) by persons other than the intended recipient(s) is prohibited. If you receive this email in error, please notify the sender by phone or email immediately and delete it. 
-
-Such automatic footers do not help. Could you work on a way to avoid them?
-
-
-
-Best regards,
-Krzysztof
+BR, Jarkko
