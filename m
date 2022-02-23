@@ -2,116 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE661C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C172AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243468AbiBWRpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
+        id S243483AbiBWRpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243470AbiBWRpM (ORCPT
+        with ESMTP id S237498AbiBWRpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:45:12 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA4C41FA6;
-        Wed, 23 Feb 2022 09:44:44 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id d17so16074561pfl.0;
-        Wed, 23 Feb 2022 09:44:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=It4RGSp99XFUqiUGEzXdClglbEaTDz0QTVwNHQyEiwQ=;
-        b=Y2CbrD5i5hegSugvrCKPHNPj29y8yZMoMRlLD0Wa8YKfeyXV3iIA9/W/w4QhNQCnvb
-         nRCsJYfZPlNwk/+TREo0CqyVtZDAIgVRKn3UvyW1YcLtnU8nKtkimcfr2ZI4fJOs7aC3
-         hOcltgb26dFihXregXwTYOspYF2buy36P3VCq6mmcWMgXJRI7nqcCKzz9vTIxtWnMbxh
-         83OyF+aOj9tIJ706ZuM4kOGuiEoMt41L4DFQAzo7cNJC2cRoDQPuoqB/twJlmojud1wO
-         GnMzlmdHQ+DuZGRZr/udfxmNHO28HBEhTM9Mg9vVxTDyQfGBCEX4G03dTEPSSh0pi9+f
-         HV4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=It4RGSp99XFUqiUGEzXdClglbEaTDz0QTVwNHQyEiwQ=;
-        b=Lc50exEBMbVw5wqiNXXj/XOocfpCPXiu1WGoAzFvNz3SHvp9v40Lg/3Oh43xOaopmk
-         YbwjNgwg8CX2pqJBKsm/bANVRZmCXONXmtlS0xWJjaeoo+iu5n7hVK0YhdFUgeDELRsu
-         PfGFQrEsoYtaNvL/vK9zxI2ySVD73Bmn2X++hDnQyZQVit1CiPhJ4IKxs88tLRveV/uN
-         QAhTBgh6LjadD00DpTKZW4lEa62NCoYe2UFmJimHhMULsGzyLi+r7BJ8sA7/wzuAXo6q
-         5XNB+hwcnchRd2cQtUEGRDH4WAPGQ21Tnq69NZl+yz4raA6H0r0MPqRXh8FNCg1HyRof
-         K7bQ==
-X-Gm-Message-State: AOAM530ecwB4w6yCp0IQiWLpP/a5Xqx1Is/rLzcwgkRD5WoO7Z+/9llI
-        TVUp0DNFOmZYXhSZbqY1TgRkziIKTS4=
-X-Google-Smtp-Source: ABdhPJw0SEQoMfxCDE2uBJBGJz4DQcbPvWLFTM/332KGvcRXUyWWAaCmjPtmpPPswO+vrYKctJjDPw==
-X-Received: by 2002:a63:5945:0:b0:375:799a:281d with SMTP id j5-20020a635945000000b00375799a281dmr513413pgm.605.1645638283593;
-        Wed, 23 Feb 2022 09:44:43 -0800 (PST)
-Received: from 7YHHR73.igp.broadcom.net (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g18sm127422pfc.108.2022.02.23.09.44.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 09:44:42 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, sashal@kernel.org,
-        david regan <dregan@mail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Brian Norris <computersforpeace@gmail.com>,
-        linux-mtd@lists.infradead.org (open list:NAND FLASH SUBSYSTEM),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH RESEND stable 4.9] mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
-Date:   Wed, 23 Feb 2022 09:44:31 -0800
-Message-Id: <20220223174431.1083-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220223174431.1083-1-f.fainelli@gmail.com>
-References: <20220223174431.1083-1-f.fainelli@gmail.com>
+        Wed, 23 Feb 2022 12:45:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE3A41989;
+        Wed, 23 Feb 2022 09:45:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 788E6B82120;
+        Wed, 23 Feb 2022 17:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB1EC340EF;
+        Wed, 23 Feb 2022 17:45:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645638310;
+        bh=1r9SfSx7/nO9MV6j5ddvX/n3LarVOe+sjHrIT6ZK9fA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VVBkCk7w/c4DZVbeBicjFjK5olhg87LsvDpdxtSV11yKd8ELyw4uWw3wLS20jFKte
+         e1ME+a8aaC0c73K9bRmen1AFPBg0fpNUCoo2yjZDl8koygGXGGjdzJ56v+jkp5YleB
+         NvFxzo3wkzF2vw0E2IexCTK4LZppG5bFOeM7zEuIza45c1+9SvBqPntPD1tAq4Xn3I
+         wDpxUiloXysvO7piilxpfnjpbgRI3WiTO5wIAPTy11vUvs1wW1+X2AwzS6uNp98UxO
+         AqvHyCUOf1nFyKrRUTwD9l/puj0h0dLVDVeBGw3coh3qOIK7cpY+00385iV4K8oGLw
+         aZnVXv2GPdXJg==
+Date:   Wed, 23 Feb 2022 17:45:02 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        robh+dt@kernel.org, quic_plai@quicinc.com, bgoswami@codeaurora.org,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v15 01/10] ASoC: qcom: SC7280: Update config for building
+ codec dma drivers
+Message-ID: <YhZynroGqrGZXeek@sirena.org.uk>
+References: <1645630745-25051-1-git-send-email-quic_srivasam@quicinc.com>
+ <1645630745-25051-2-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="BgxGnRv0ITTKSGV7"
+Content-Disposition: inline
+In-Reply-To: <1645630745-25051-2-git-send-email-quic_srivasam@quicinc.com>
+X-Cookie: I smell a wumpus.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: david regan <dregan@mail.com>
 
-commit 36415a7964711822e63695ea67fede63979054d9 upstream
+--BgxGnRv0ITTKSGV7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The brcmnand driver contains a bug in which if a page (example 2k byte)
-is read from the parallel/ONFI NAND and within that page a subpage (512
-byte) has correctable errors which is followed by a subpage with
-uncorrectable errors, the page read will return the wrong status of
-correctable (as opposed to the actual status of uncorrectable.)
+On Wed, Feb 23, 2022 at 09:08:56PM +0530, Srinivasa Rao Mandadapu wrote:
 
-The bug is in function brcmnand_read_by_pio where there is a check for
-uncorrectable bits which will be preempted if a previous status for
-correctable bits is detected.
+> +snd-soc-lpass-cdc-dma-objs := lpass-cdc-dma.o
+>  snd-soc-lpass-hdmi-objs := lpass-hdmi.o
+>  snd-soc-lpass-platform-objs := lpass-platform.o
+>  snd-soc-lpass-ipq806x-objs := lpass-ipq806x.o
+>  snd-soc-lpass-apq8016-objs := lpass-apq8016.o
+>  snd-soc-lpass-sc7180-objs := lpass-sc7180.o
+> +snd-soc-lpass-sc7280-objs := lpass-sc7280.o
 
-The fix is to stop checking for bad bits only if we already have a bad
-bits status.
+This will break the build given that neither of these source files are
+present yet?
 
-Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
-Signed-off-by: david regan <dregan@mail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
-[florian: make patch apply to 4.14, file was renamed]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/mtd/nand/brcmnand/brcmnand.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--BgxGnRv0ITTKSGV7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/drivers/mtd/nand/brcmnand/brcmnand.c b/drivers/mtd/nand/brcmnand/brcmnand.c
-index 40fdc9d267b9..1c8e95cf29d2 100644
---- a/drivers/mtd/nand/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/brcmnand/brcmnand.c
-@@ -1637,7 +1637,7 @@ static int brcmnand_read_by_pio(struct mtd_info *mtd, struct nand_chip *chip,
- 					mtd->oobsize / trans,
- 					host->hwcfg.sector_size_1k);
- 
--		if (!ret) {
-+		if (ret != -EBADMSG) {
- 			*err_addr = brcmnand_read_reg(ctrl,
- 					BRCMNAND_UNCORR_ADDR) |
- 				((u64)(brcmnand_read_reg(ctrl,
--- 
-2.25.1
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIWcp0ACgkQJNaLcl1U
+h9CNAgf/fgT85WLXUxvPTW+bdBxpXXG4xGbT3a/xOpeZwtb9IGS8T8CEhrNyMMUy
+M3Hugbmecjtc9uJkjidtB6gtcdDfSBdBndnS2a0GrbHUxF64xHsa5D/Af3zVVXzo
+UgS4RSolole5NP1bZbCBLtp0PHiAqpEezwCNX46YPjtOyF+Z7Tq1hwJv6tI1DLda
+t1lVDT3nN601EguQf/A0nzZXl7Iu0868+Eln49TGhVSHibUt3qE5w2kDSiElaWQ9
+D8Dx/MhzXIAu7aQc9nsMHAa2xGX/7nEFdNmWMRFAT060DjaWFCAqvAade9y3HUGI
+rSPDjjvk7U0+l+xqc9V/1Axp/NZSbg==
+=LxWV
+-----END PGP SIGNATURE-----
+
+--BgxGnRv0ITTKSGV7--
