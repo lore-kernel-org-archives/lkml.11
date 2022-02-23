@@ -2,131 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2003C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242068AbiBWP3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:29:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S242070AbiBWPaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:30:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiBWP3H (ORCPT
+        with ESMTP id S234241AbiBWPaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:29:07 -0500
-Received: from winds.org (winds.org [68.75.195.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6432959A57;
-        Wed, 23 Feb 2022 07:28:39 -0800 (PST)
-Received: by winds.org (Postfix, from userid 100)
-        id 10DA01CA58FD; Wed, 23 Feb 2022 10:28:39 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by winds.org (Postfix) with ESMTP id 0F110124B482;
-        Wed, 23 Feb 2022 10:28:39 -0500 (EST)
-Date:   Wed, 23 Feb 2022 10:28:39 -0500 (EST)
-From:   Byron Stanoszek <gandalf@winds.org>
-To:     Dave Chinner <david@fromorbit.com>
-cc:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org
-Subject: Re: Is it time to remove reiserfs?
-In-Reply-To: <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org>
-Message-ID: <1a5cd8ce-e7c7-5aa8-e475-ad7810e2f057@winds.org>
-References: <YhIwUEpymVzmytdp@casper.infradead.org> <20220222100408.cyrdjsv5eun5pzij@quack3.lan> <20220222221614.GC3061737@dread.disaster.area> <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org>
+        Wed, 23 Feb 2022 10:30:03 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5400B5BD3C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:29:32 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C04221F43D;
+        Wed, 23 Feb 2022 15:29:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645630170; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E2Ysk5tw3y+Z5+1IoQiOmaQ/uiKURVbh89m7BIZflSo=;
+        b=uoCq9+UdexkM9UoY7W3hzi6DwNmGBlXOBrHYEOjcsBLd0zy/iGwcKR7Gkc6yC/AbN48Xdz
+        EBBNRhm2+rYWB/kp4Wi0y09ygodWYvcgrPlGJ3hvuRXNuDv7VPEemd1miW/rE9KiWoXqxB
+        ELm1hb9ZrWLnOqrcNKD+xYTvHUaS8O4=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id CCAE5A3B85;
+        Wed, 23 Feb 2022 15:29:27 +0000 (UTC)
+Date:   Wed, 23 Feb 2022 16:29:24 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, ccross@google.com,
+        sumit.semwal@linaro.org, dave.hansen@intel.com,
+        keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Subject: Re: [PATCH v4 3/3] mm: fix use-after-free when anon vma name is used
+ after vma is freed
+Message-ID: <YhZS1A9wKQ8Aryin@dhcp22.suse.cz>
+References: <20220222054025.3412898-1-surenb@google.com>
+ <20220222054025.3412898-3-surenb@google.com>
+ <YhSZhzUYlW6IAQT9@dhcp22.suse.cz>
+ <CAJuCfpELxJ=7uuurKL9oRn1E_=rfL3aN8Duhqvi4Z2c1xHAT2w@mail.gmail.com>
+ <YhX2mkb327KkZR2/@dhcp22.suse.cz>
+ <CAJuCfpE+dpCmA6sRQJBanRP2uJiQHGdoGGjvkhL_GqxRdY9aCg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJuCfpE+dpCmA6sRQJBanRP2uJiQHGdoGGjvkhL_GqxRdY9aCg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022, Byron Stanoszek wrote:
-> On Wed, 23 Feb 2022, Dave Chinner wrote:
->>  On Tue, Feb 22, 2022 at 11:04:08AM +0100, Jan Kara wrote:
->>>  Hello!
->>>
->>>  On Sun 20-02-22 12:13:04, Matthew Wilcox wrote:
->>>>  Keeping reiserfs in the tree has certain costs.  For example, I would
->>>>  very much like to remove the 'flags' argument to ->write_begin.  We have
->>>>  the infrastructure in place to handle AOP_FLAG_NOFS differently, but
->>>>  AOP_FLAG_CONT_EXPAND is still around, used only by reiserfs.
->>>>
->>>>  Looking over the patches to reiserfs over the past couple of years,
->>>>  there
->>>>  are fixes for a few syzbot reports and treewide changes.  There don't
->>>>  seem to be any fixes for user-spotted bugs since 2019.  Does reiserfs
->>>>  still have a large install base that is just very happy with an old
->>>>  stable filesystem?  Or have all its users migrated to new and exciting
->>>>  filesystems with active feature development?
->>>>
->>>>  We've removed support for senescent filesystems before (ext, xiafs), so
->>>>  it's not unprecedented.  But while I have a clear idea of the benefits
->>>>  to
->>>>  other developers of removing reiserfs, I don't have enough information
->>>>  to
->>>>  weigh the costs to users.  Maybe they're happy with having 5.15 support
->>>>  for their reiserfs filesystems and can migrate to another filesystem
->>>>  before they upgrade their kernel after 5.15.
->>>>
->>>>  Another possibility beyond outright removal would be to trim the kernel
->>>>  code down to read-only support for reiserfs.  Most of the quirks of
->>>>  reiserfs have to do with write support, so this could be a useful way
->>>>  forward.  Again, I don't have a clear picture of how people actually
->>>>  use reiserfs, so I don't know whether it is useful or not.
->>>>
->>>>  NB: Please don't discuss the personalities involved.  This is purely a
->>>>  "we have old code using old APIs" discussion.
->>>
->>>  So from my distro experience installed userbase of reiserfs is pretty
->>>  small
->>>  and shrinking. We still do build reiserfs in openSUSE / SLES kernels but
->>>  for enterprise offerings it is unsupported (for like 3-4 years) and the
->>>  module
->>>  is not in the default kernel rpm anymore.
->>>
->>>  So clearly the filesystem is on the deprecation path, the question is
->>>  whether it is far enough to remove it from the kernel completely. Maybe
->>>  time to start deprecation by printing warnings when reiserfs gets mounted
->>>  and then if nobody yells for year or two, we'll go ahead and remove it?
->>
->>  Yup, I'd say we should deprecate it and add it to the removal
->>  schedule. The less poorly tested legacy filesystem code we have to
->>  maintain the better.
->>
->>  Along those lines, I think we really need to be more aggressive
->>  about deprecating and removing filesystems that cannot (or will not)
->>  be made y2038k compliant in the new future. We're getting to close
->>  to the point where long term distro and/or product development life
->>  cycles will overlap with y2038k, so we should be thinking of
->>  deprecating and removing such filesystems before they end up in
->>  products that will still be in use in 15 years time.
->>
->>  And just so everyone in the discussion is aware: XFS already has a
->>  deprecation and removal schedule for the non-y2038k-compliant v4
->>  filesystem format. It's officially deprecated right now, we'll stop
->>  building kernels with v4 support enabled by default in 2025, and
->>  we're removing the code that supports the v4 format entirely in
->>  2030.
->
-> For what it's worth, I have a number of production servers still using
-> Reiserfs, which I regularly maintain by upgrading to the latest Linux kernel
-> annually (mostly to apply security patches). I figured this filesystem would
-> still be available for several more years, since it's not quite y2038k yet.
->
-> I originally installed Reiserfs on these systems as early as 2005 due to the
-> tail-packing feature, which saved space with many small files on older
-> harddrives. Since then, I witnessed the development of ext4, and then btrfs.
-> For a long time, these newer filesystems had occasional reports of
-> instabilities and lost data, and so I shied away from using them. Meanwhile,
-> Reiserfs reached a level of maturity and no longer had active development on
-> it, except for the occasional bugfix. I felt this was a filesystem I could
-> trust going forward (despite its relative slowness), even after popular Linux
-> distributions eventually dropped it from being installed by default.
->
-> I have only recently begun to use XFS on newer installs, only since the XFS
-> developers added bigtime support for y2038k. But for existing installs, I ask
-> that we keep Reiserfs supported in the kernel a little longer. Perhaps use
-> the same deprecation schedule that was picked for XFS v4 (roughly 10 years of
-> deprecation before eventual removal)?
+On Wed 23-02-22 06:10:54, Suren Baghdasaryan wrote:
+> On Wed, Feb 23, 2022 at 12:55 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Tue 22-02-22 07:43:40, Suren Baghdasaryan wrote:
+> > > On Tue, Feb 22, 2022 at 12:06 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > >
+> > > > On Mon 21-02-22 21:40:25, Suren Baghdasaryan wrote:
+> > > > > When adjacent vmas are being merged it can result in the vma that was
+> > > > > originally passed to madvise_update_vma being destroyed.  In the current
+> > > > > implementation, the name parameter passed to madvise_update_vma points
+> > > > > directly to vma->anon_name->name and it is used after the call to
+> > > > > vma_merge.  In the cases when vma_merge merges the original vma and
+> > > > > destroys it, this will result in use-after-free bug as shown below:
+> > > > >
+> > > > > madvise_vma_behavior << passes vma->anon_name->name as name param
+> > > > >   madvise_update_vma(name)
+> > > > >     vma_merge
+> > > > >       __vma_adjust
+> > > > >         vm_area_free <-- frees the vma
+> > > > >     replace_vma_anon_name(name) <-- UAF
+> > > >
+> > > > This seems to be stale because bare const char pointer is not passed in
+> > > > the call chain. In fact I am not even sure there is any actual UAF here
+> > > > after the rework.
+> > > > Could you be more specific in describing the scenario?
+> > >
+> > > Yes, sorry, I need to update the part of the description talking about
+> > > passing vma->anon_name->name directly.
+> > > I think UAF is still there, it's just harder to reproduce (admittedly
+> > > I could not reproduce it with the previous reproducer). The scenario
+> > > would be when a vma with vma->anon_name->kref == 1 is being merged
+> > > with another one and freed in the process:
+> > >
+> > > madvise_vma_behavior
+> > >    anon_name = vma_anon_name(vma) <-- does not increase refcount
+> > >    madvise_update_vma(anon_name)
+> > >      *prev = vma_merge <-- returns another vma
+> > >        __vma_adjust
+> > >          vm_area_free(vma)
+> > >            free_vma_anon_name
+> > >              anon_vma_name_put
+> > >                vma_anon_name_free <-- frees the vma->anon_name
+> > >      vma = *prev <-- original vma was freed
+> >
+> > How come this is not a UAF in the first place?
+> 
+> Sorry, I got you confused. The original vma that was passed as a
+> parameter to vma_merge(vma) was freed and vma_merge() returns the area
+> it was merged with:
+> 
+>     *prev = vma_merge(vma_a) <-- vma_a is merged with adjacent vma_b,
+> vma_a is freed and vma_b is returned
+>     vma = *prev <-- "vma" now points to vma_b
 
-Sorry, I meant to say 5 years here, not 10.
+OK, I see the problem now. Essentially if we have two adjacent vmas
+which have the same name but wrapped by two anon_vma_name instances
+and we merge them together then the first one can be freed along with
+its anon_vma_name which is still used by replace_anon_vma_name.
 
-Thanks,
-  -Byron
-
+Thanks for the patience.
+-- 
+Michal Hocko
+SUSE Labs
