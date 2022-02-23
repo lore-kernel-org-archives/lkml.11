@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA60C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 118F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 12:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240420AbiBWMZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 07:25:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
+        id S240463AbiBWMaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 07:30:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbiBWMZY (ORCPT
+        with ESMTP id S233949AbiBWMal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 07:25:24 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE7F9E57A;
-        Wed, 23 Feb 2022 04:24:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645619097; x=1677155097;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zk0Q5i+bK10PCCeKqTaU8DiX28bSdfCtroqlbdMjIsw=;
-  b=VzF59Pdw9GCOhByXXwRYpHoq2zlGY7fUAzbJJ9uDYQslGDcd5ZfVkTLa
-   LK336AgK54bZjV4VedRmwWTjfAi8WfD1FBh336AdGAIk4UyH+1I1Bbxnj
-   O5WzNC5pTSvTeQao3oUbtlqQInWlA81OoTPocUWCyRKPl1/L/uolRl9t9
-   HJVBJYMvLzWwh6Lbr2oTPpn9gajLplY63YspJwQBa+TWx6MJnCtgxQ0kP
-   zU+USK9A6zmP9FEdb+3ibx/7CTo09bQJFatKu4VZa0fqT2WP1va7b5RWW
-   nO5HqVdAp1haNrQr7AGJ6NcRC3Phray8me+EuLc9Jl2ItlZHWiUshdBYU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="251686667"
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="251686667"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 04:24:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; 
-   d="scan'208";a="781813629"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 23 Feb 2022 04:24:51 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 1BB0B143; Wed, 23 Feb 2022 14:25:08 +0200 (EET)
-Date:   Wed, 23 Feb 2022 15:25:08 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-coco@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Rientjes <rientjes@google.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH] x86/mm/cpa: Generalize __set_memory_enc_pgtable()
-Message-ID: <20220223122508.3nvvz4b7fj2fsr2a@black.fi.intel.com>
-References: <20220222185740.26228-1-kirill.shutemov@linux.intel.com>
- <20220223043528.2093214-1-brijesh.singh@amd.com>
- <YhYbLDTFLIksB/qp@zn.tnic>
- <20220223115539.pqk7624xku2qwhlu@black.fi.intel.com>
- <YhYkz7wMON1o64Ba@zn.tnic>
+        Wed, 23 Feb 2022 07:30:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4396498F4D;
+        Wed, 23 Feb 2022 04:30:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF468B81EFF;
+        Wed, 23 Feb 2022 12:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 89133C340F0;
+        Wed, 23 Feb 2022 12:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645619411;
+        bh=j6CSj4b1i1i+lc+QnW4RLhYbTDN4Ia6gc9LCGe9XfR0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VBaGnmdyh/CNqp1y0kpU/cTGi3aI0PKfF7sfKotgdkPtDKr9XoWRz0lzMKmHG+lOX
+         WZ6J9Vq9kjnPIJig0oeNiixEqdwVSqru4xK6UgaDRCnNsyVhk2qatEKMTcFxHLcppl
+         nO5luH7kTt8JAODNQM8AKrfBDU3zU/Tnmbo8afwnd7WBto69VIwnKd5JsM0Oh0Ew+r
+         zQa/5X4UY8xykyXB/YzwWYjGB9FQkFDAI7jkzVJgoHdPqulbm3/FyGnNajuBblrjf1
+         kI7EpA6meRzC+odYUnwzV+AAFsiTzia6c8So5tT8Agye/D21/OUqeIAh99JJtTMtid
+         3UH6IYJ/piVsw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6BE9BE6D4BA;
+        Wed, 23 Feb 2022 12:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhYkz7wMON1o64Ba@zn.tnic>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next 0/2] net: dsa: realtek: fix PHY register read
+ corruption
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164561941143.20664.9166640246094519424.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Feb 2022 12:30:11 +0000
+References: <20220221184631.252308-1-alvin@pqrs.dk>
+In-Reply-To: <20220221184631.252308-1-alvin@pqrs.dk>
+To:     =?utf-8?b?QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+?=@ci.codeaurora.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, mir@bang-olufsen.dk, alsi@bang-olufsen.dk,
+        luizluca@gmail.com, arinc.unal@arinc9.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 01:13:03PM +0100, Borislav Petkov wrote:
-> On Wed, Feb 23, 2022 at 02:55:39PM +0300, Kirill A. Shutemov wrote:
-> > This operation can fail for TDX. We need to be able to return error code
-> > here:
-> > 	/* Notify hypervisor that we have successfully set/clr encryption attribute. */
-> > 	if (!ret)
-> > 		ret = x86_platform.guest.enc_status_change_finish(addr, numpages, enc);
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 21 Feb 2022 19:46:29 +0100 you wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> bool to state failure/success or you need to return a specific value?
+> These two patches fix the issue reported by Arınç where PHY register
+> reads sometimes return garbage data.
+> 
+> v1 -> v2:
+> 
+> [...]
 
-So far it is only success or failure. I used int and -EIO as failure.
-bool is enough, but I don't see a reason not to use int.
+Here is the summary with links:
+  - [v2,net-next,1/2] net: dsa: realtek: allow subdrivers to externally lock regmap
+    https://git.kernel.org/netdev/net-next/c/907e772f6f6d
+  - [v2,net-next,2/2] net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
+    https://git.kernel.org/netdev/net-next/c/2796728460b8
 
+You are awesome, thank you!
 -- 
- Kirill A. Shutemov
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
