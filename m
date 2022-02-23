@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 137D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41365C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236536AbiBWFZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:25:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        id S238215AbiBWFZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:25:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238226AbiBWFY4 (ORCPT
+        with ESMTP id S238181AbiBWFYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:24:56 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293F46C938
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:11 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id x1-20020a25a001000000b0061c64ee0196so26707336ybh.9
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:11 -0800 (PST)
+        Wed, 23 Feb 2022 00:24:54 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B786AA63
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:06 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d07ae1145aso162060697b3.4
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=ZeYN5P9RWE85rWG989hD+TytaZQUQYUlju5cKer3rg4=;
-        b=ojUJsUEL9fv13WjcZCmN21LxwR3Z6zqiLpmAQSzxCgc5C9RlKzd4dJEPqIdea+S3R3
-         SjjKai+zXn4VwTi+vC8vw+NDJWHGEkF4oYybv8WUgGBs6X4Bacon5BeJ8KDM6+Kjcqg7
-         fYXSLYWwuUfF3ZzaHWiW5r5fUjU5hUbi5i8udL9OUGPQxFLT6BZJN8cKiUG2KSidmSdI
-         7UxdullkH2J71pHhwQMQjuVH7Fyee/6awuNUgdr31148ohQL1xZz1MmOnDGr6y/5AC05
-         atbUvniVVa19eg7E36/l3gFWXXYduMYcF6MD2CAuUTHeqJzSqvtlhwblL5Fzis+kQ6SQ
-         claQ==
+        bh=A2kZT9A4P8bW0lI9YOtf1wQA9jJkQ1koWvhOh//ocUo=;
+        b=fbSsueZGuBScgzqcY02VIl0ILFLXpPlKdSo5ctJYl8kSPI7w0kDZ1uGY8ujtC+fl+e
+         PEzsS5j+6h2lyRr/UrTBatrXvU4f3NErvUAR7v4X1dzKu33iDdHE2QCAop5cuA3atf5U
+         EJ4V1Fx706MmP14iSjNuJdP3U5u2B16C5Fj3e/UoRc8fZC4srXBJUArKZJ67Qxmu0hNA
+         BsPOvLUKtyHj9nuWAemSw1G1+wDLXUYyYOFHHc5fb0JSBY7PBPNYf4tS05DMNxCxy6ed
+         1VKdWkC7HesYHDOsvNnF5BnhxEmTplkx92VqdXNvb7r03sGqA/SDTfz8vVfIQeADD5L1
+         ir/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=ZeYN5P9RWE85rWG989hD+TytaZQUQYUlju5cKer3rg4=;
-        b=o9GmaIOCn6pQbQKn5THjsSAlIleirmL3MOiK+T+4DKwrqEqb+Aza/sSkYjeRpmkTxh
-         Antvovjn1M8rlNArB6AfTmixOCKBISntYngT2A1z8QTBJV4uGXM2egnfeOjiHjB0COj8
-         7OqvCeqhcvQZ0+ozkDFx1Jr0kqT0I1ye8jLvbxJhmHZhbjRM73E1ShwHol9k1VIpe1xq
-         z92OPnUmFqgSyvsCOFNRWZaf3NW125K686cOuAaCWaN4MEU6Fhl6iJ1ROcp//hdO8Wbe
-         Tugal4yoBoAnsN3fAQxU4zNeKjYuNI0f8KP9N/Yd119oG5Dn6Ti7NoN2xAz1TtdntJ84
-         ByHg==
-X-Gm-Message-State: AOAM531uBFCGA2PxTd8GZBvuYvgL0egZY1sHCqmvEOfGVl1yaT9vRZiS
-        Dg2EUfNmdNfd725jAk3XRTexR6hXHNNznnJ1cUjF/SxKKC4RSK28fQcuafKovIc1AOXk7yXZI18
-        x7sS4vwOG0v9cZvmHFQCAOm66aqnPLg80lisCJ1fCUZ9ACfmILrwtd5omfI8yLE1IifD1vaTo
-X-Google-Smtp-Source: ABdhPJx7Y4lP1+DVrEJyeaCPqdjSHoYWrsMiEOQNVQ/p8prXsXPbox8dmisMikykjaQnA+B25uCbwTFY5Vh8
+        bh=A2kZT9A4P8bW0lI9YOtf1wQA9jJkQ1koWvhOh//ocUo=;
+        b=rUshBPEAU9TvpiLZ7h8fDoROMy9Kmaxns506Fmm2/9httuso15ookwNlK9sghp0vMv
+         Kp09GNvoi3uPJWuvX9lZQ7Xs2fCyGAtWr0oxCIKtKC4PVLrGF/PthNsYZChINEt/7E3S
+         /SkflYp+oI6s4EM41xa0Ej5odZI0+glT3/E+Xw3SczfRaZKBhYRE09uaV46oSzF7vM++
+         +PgeBg71t1TQBBS+cXmk5UGpYKcQLKyD1T6G0ci/xzHh6ZfcHysWWmbBSRwIYzNo03xb
+         z4+YvAlNWW5CSK80b08ELQ3KRjzLUnvDmWJKRoP/BCLIDwJ9YbWl1op/F8wfQOdBt/E2
+         swZA==
+X-Gm-Message-State: AOAM532M3Q8nOg/nO/ZzPR8/VbC9UrAq1RLt89EVEf4tAG4hNmn8uxZX
+        YcYiHAY4NV/zx2wQdh+PdD/b2uIjNJwOv4PI+VELO8TEozfgFWzrbi2pfqO3FrPxrAD7fY8SjI4
+        h0xtHrWm+eE7sWbPqGRiEnjhf4gvl+kv164PrsEdcxfXjMBBWG5VeckwVlUfosdvDFFua2X6O
+X-Google-Smtp-Source: ABdhPJx1fLXJ2Nd+XyAyj3SwtD/6yx9YWclO/RpwDKJJBLCMeXbY/FNMqCpTASogEOd+LsJ96uLWXmi1HY+9
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a5b:589:0:b0:61d:de51:9720 with SMTP id
- l9-20020a5b0589000000b0061dde519720mr26317731ybp.167.1645593850281; Tue, 22
- Feb 2022 21:24:10 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:47 -0800
+ (user=junaids job=sendgmr) by 2002:a81:1d8c:0:b0:2cb:da76:5da8 with SMTP id
+ d134-20020a811d8c000000b002cbda765da8mr27707177ywd.165.1645593845809; Tue, 22
+ Feb 2022 21:24:05 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:45 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-12-junaids@google.com>
+Message-Id: <20220223052223.1202152-10-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 11/47] mm: asi: Global non-sensitive vmalloc/vmap support
+Subject: [RFC PATCH 09/47] mm: Add __PAGEFLAG_FALSE
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -66,198 +66,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A new flag, VM_GLOBAL_NONSENSITIVE is added to designate globally
-non-sensitive vmalloc/vmap areas. When using the __vmalloc /
-__vmalloc_node APIs, if the corresponding GFP flag is specified, the
-VM flag is automatically added. When using the __vmalloc_node_range API,
-either flag can be specified independently. The VM flag will only map
-the vmalloc area as non-sensitive, while the GFP flag will only map the
-underlying direct map area as non-sensitive.
-
-When using the __vmalloc_node_range API, instead of VMALLOC_START/END,
-VMALLOC_GLOBAL_NONSENSITIVE_START/END should be used. This is to
-keep these mappings separate from locally non-sensitive vmalloc areas,
-which will be added later. Areas outside of the standard vmalloc range
-can specify the range as before.
+__PAGEFLAG_FALSE is a non-atomic equivalent of PAGEFLAG_FALSE.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/pgtable_64_types.h |  5 +++
- arch/x86/mm/asi.c                       |  3 +-
- include/asm-generic/asi.h               |  3 ++
- include/linux/vmalloc.h                 |  6 +++
- mm/vmalloc.c                            | 53 ++++++++++++++++++++++---
- 5 files changed, 64 insertions(+), 6 deletions(-)
+ include/linux/page-flags.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/x86/include/asm/pgtable_64_types.h b/arch/x86/include/asm/pgtable_64_types.h
-index 91ac10654570..0fc380ba25b8 100644
---- a/arch/x86/include/asm/pgtable_64_types.h
-+++ b/arch/x86/include/asm/pgtable_64_types.h
-@@ -141,6 +141,11 @@ extern unsigned int ptrs_per_p4d;
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index b5f14d581113..b90a17e9796d 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -390,6 +390,10 @@ static inline int Page##uname(const struct page *page) { return 0; }
+ static inline void folio_set_##lname(struct folio *folio) { }		\
+ static inline void SetPage##uname(struct page *page) {  }
  
- #define VMALLOC_END		(VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+#define VMALLOC_GLOBAL_NONSENSITIVE_START	VMALLOC_START
-+#define VMALLOC_GLOBAL_NONSENSITIVE_END		VMALLOC_END
-+#endif
++#define __SETPAGEFLAG_NOOP(uname, lname)				\
++static inline void __folio_set_##lname(struct folio *folio) { }		\
++static inline void __SetPage##uname(struct page *page) {  }
 +
- #define MODULES_VADDR		(__START_KERNEL_map + KERNEL_IMAGE_SIZE)
- /* The module sections ends with the start of the fixmap */
- #ifndef CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index d381ae573af9..71348399baf1 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -198,7 +198,8 @@ static int __init asi_global_init(void)
- 				    "ASI Global Non-sensitive direct map");
+ #define CLEARPAGEFLAG_NOOP(uname, lname)				\
+ static inline void folio_clear_##lname(struct folio *folio) { }		\
+ static inline void ClearPage##uname(struct page *page) {  }
+@@ -411,6 +415,9 @@ static inline int TestClearPage##uname(struct page *page) { return 0; }
+ #define PAGEFLAG_FALSE(uname, lname) TESTPAGEFLAG_FALSE(uname, lname)	\
+ 	SETPAGEFLAG_NOOP(uname, lname) CLEARPAGEFLAG_NOOP(uname, lname)
  
- 	preallocate_toplevel_pgtbls(asi_global_nonsensitive_pgd,
--				    VMALLOC_START, VMALLOC_END,
-+				    VMALLOC_GLOBAL_NONSENSITIVE_START,
-+				    VMALLOC_GLOBAL_NONSENSITIVE_END,
- 				    "ASI Global Non-sensitive vmalloc");
- 
- 	return 0;
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index 012691e29895..f918cd052722 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -14,6 +14,9 @@
- 
- #define ASI_GLOBAL_NONSENSITIVE		NULL
- 
-+#define VMALLOC_GLOBAL_NONSENSITIVE_START	VMALLOC_START
-+#define VMALLOC_GLOBAL_NONSENSITIVE_END		VMALLOC_END
++#define __PAGEFLAG_FALSE(uname, lname) TESTPAGEFLAG_FALSE(uname, lname)	\
++	__SETPAGEFLAG_NOOP(uname, lname) __CLEARPAGEFLAG_NOOP(uname, lname)
 +
- #ifndef _ASSEMBLY_
+ #define TESTSCFLAG_FALSE(uname, lname)					\
+ 	TESTSETFLAG_FALSE(uname, lname) TESTCLEARFLAG_FALSE(uname, lname)
  
- struct asi_hooks {};
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index 6e022cc712e6..c7c66decda3e 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -39,6 +39,12 @@ struct notifier_block;		/* in notifier.h */
-  * determine which allocations need the module shadow freed.
-  */
- 
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+#define VM_GLOBAL_NONSENSITIVE	0x00000800	/* Similar to __GFP_GLOBAL_NONSENSITIVE */
-+#else
-+#define VM_GLOBAL_NONSENSITIVE	0
-+#endif
-+
- /* bits [20..32] reserved for arch specific ioremap internals */
- 
- /*
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index f2ef719f1cba..ba588a37ee75 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2393,6 +2393,33 @@ void __init vmalloc_init(void)
- 	vmap_initialized = true;
- }
- 
-+static int asi_map_vm_area(struct vm_struct *area)
-+{
-+	if (!static_asi_enabled())
-+		return 0;
-+
-+	if (area->flags & VM_GLOBAL_NONSENSITIVE)
-+		return asi_map(ASI_GLOBAL_NONSENSITIVE, area->addr,
-+			       get_vm_area_size(area));
-+
-+	return 0;
-+}
-+
-+static void asi_unmap_vm_area(struct vm_struct *area)
-+{
-+	if (!static_asi_enabled())
-+		return;
-+
-+	/*
-+	 * TODO: The TLB flush here could potentially be avoided in
-+	 * the case when the existing flush from try_purge_vmap_area_lazy()
-+	 * and/or vm_unmap_aliases() happens non-lazily.
-+	 */
-+	if (area->flags & VM_GLOBAL_NONSENSITIVE)
-+		asi_unmap(ASI_GLOBAL_NONSENSITIVE, area->addr,
-+			  get_vm_area_size(area), true);
-+}
-+
- static inline void setup_vmalloc_vm_locked(struct vm_struct *vm,
- 	struct vmap_area *va, unsigned long flags, const void *caller)
- {
-@@ -2570,6 +2597,7 @@ static void vm_remove_mappings(struct vm_struct *area, int deallocate_pages)
- 	int flush_dmap = 0;
- 	int i;
- 
-+	asi_unmap_vm_area(area);
- 	remove_vm_area(area->addr);
- 
- 	/* If this is not VM_FLUSH_RESET_PERMS memory, no need for the below. */
-@@ -2787,16 +2815,20 @@ void *vmap(struct page **pages, unsigned int count,
- 
- 	addr = (unsigned long)area->addr;
- 	if (vmap_pages_range(addr, addr + size, pgprot_nx(prot),
--				pages, PAGE_SHIFT) < 0) {
--		vunmap(area->addr);
--		return NULL;
--	}
-+				pages, PAGE_SHIFT) < 0)
-+		goto err;
-+
-+	if (asi_map_vm_area(area))
-+		goto err;
- 
- 	if (flags & VM_MAP_PUT_PAGES) {
- 		area->pages = pages;
- 		area->nr_pages = count;
- 	}
- 	return area->addr;
-+err:
-+	vunmap(area->addr);
-+	return NULL;
- }
- EXPORT_SYMBOL(vmap);
- 
-@@ -2991,6 +3023,9 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
- 		goto fail;
- 	}
- 
-+	if (asi_map_vm_area(area))
-+		goto fail;
-+
- 	return area->addr;
- 
- fail:
-@@ -3038,6 +3073,9 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
- 	if (WARN_ON_ONCE(!size))
- 		return NULL;
- 
-+	if (static_asi_enabled() && (vm_flags & VM_GLOBAL_NONSENSITIVE))
-+		gfp_mask |= __GFP_ZERO;
-+
- 	if ((size >> PAGE_SHIFT) > totalram_pages()) {
- 		warn_alloc(gfp_mask, NULL,
- 			"vmalloc error: size %lu, exceeds total pages",
-@@ -3127,8 +3165,13 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
- void *__vmalloc_node(unsigned long size, unsigned long align,
- 			    gfp_t gfp_mask, int node, const void *caller)
- {
-+	ulong vm_flags = 0;
-+
-+	if (static_asi_enabled() && (gfp_mask & __GFP_GLOBAL_NONSENSITIVE))
-+		vm_flags |= VM_GLOBAL_NONSENSITIVE;
-+
- 	return __vmalloc_node_range(size, align, VMALLOC_START, VMALLOC_END,
--				gfp_mask, PAGE_KERNEL, 0, node, caller);
-+				gfp_mask, PAGE_KERNEL, vm_flags, node, caller);
- }
- /*
-  * This is only for performance analysis of vmalloc and stress purpose.
 -- 
 2.35.1.473.g83b2b277ed-goog
 
