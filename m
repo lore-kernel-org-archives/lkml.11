@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45204C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiBWCgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:36:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42442 "EHLO
+        id S237587AbiBWChH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:37:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237765AbiBWCd2 (ORCPT
+        with ESMTP id S237280AbiBWCfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:33:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E39B3B547;
-        Tue, 22 Feb 2022 18:31:44 -0800 (PST)
+        Tue, 22 Feb 2022 21:35:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE85445538;
+        Tue, 22 Feb 2022 18:32:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B10D61519;
-        Wed, 23 Feb 2022 02:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8673C340E8;
-        Wed, 23 Feb 2022 02:31:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3093BB81E10;
+        Wed, 23 Feb 2022 02:31:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB728C340E8;
+        Wed, 23 Feb 2022 02:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583503;
-        bh=mrV6dQUlm23eEo1U+VXCrk3Sau7WDOBqJMKBwzUVdnY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehkYV6ySp8ObmTQodYgghP+GWQdF29fENXVezuqQuQiOVYTpUtXbbV7x0c6ysLulb
-         Vm11/C82u3DUKqmfJ1sQ60EOVL7LrwRwTWHDam4WB/7zwDsC1+Zt6U249lmFy3BRnk
-         hSPiOrwldvQ2Fh2W1kIBXOrWIVCb3UDvRpCtSW+zyM+EAD4Xd9pKcPu3dYFt9MfM5K
-         Pdcn+/0RBn4cBcxjrjnnv3yaB8uTo2WhKtUwlOtvevWl+7i1f5bZ/dESXGuELMgjPp
-         wXTfrot5kXKw5Lf74dsd11y9/K9wf90EjIjgqsUgwAbPCF0LX/8YKJUH0XS2DJM5F6
-         WIPiK5yXP1UTA==
+        s=k20201202; t=1645583515;
+        bh=17QqH72kUFnUkJZ4j1HejBtx6GgW1dduu5IUz82at2E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=j6QMJ3HW6u6y/s/t4aPmtRZ9/XSQph8SP6p6zHJ6NxnTWqqiYcQj681c9HbDuCoWA
+         0gP8mlX4Nf7D3U9ZaGP0r8zA5nBZQH1xI8fcxHug0fo4+CWB1hIXRShGCJO+FFtVgd
+         Za2utXF1/I2yWi4wyiqf1CUMf72KaG6fZHYwMPuJ7AhYOpAokSgwNj/xFAKoqj7fiH
+         T/+2SSHf6HjhTXb6y5vDOtnLO1sHMmXliHTF4yvco1a7H+0NuYiqBmZt+a7u1bcg6a
+         ygCCE8B+gN6L88oRzjziQiLSVf9oJPZLEvXu4PEohiWPneR74T0Xr+tWdsX54Ymzcx
+         fsPWDEPYwkKew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yongzhi Liu <lyz_cs@pku.edu.cn>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, christophe.jaillet@wanadoo.fr,
-        broonie@kernel.org, arnd@arndb.de,
-        laurent.pinchart@ideasonboard.com, dmaengine@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/13] dmaengine: shdma: Fix runtime PM imbalance on error
-Date:   Tue, 22 Feb 2022 21:31:14 -0500
-Message-Id: <20220223023118.241815-10-sashal@kernel.org>
+Cc:     Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/13] mac80211_hwsim: report NOACK frames in tx_status
+Date:   Tue, 22 Feb 2022 21:31:40 -0500
+Message-Id: <20220223023152.242065-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023118.241815-1-sashal@kernel.org>
-References: <20220223023118.241815-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,38 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
 
-[ Upstream commit 455896c53d5b803733ddd84e1bf8a430644439b6 ]
+[ Upstream commit 42a79960ffa50bfe9e0bf5d6280be89bf563a5dd ]
 
-pm_runtime_get_() increments the runtime PM usage counter even
-when it returns an error code, thus a matching decrement is needed on
-the error handling path to keep the counter balanced.
+Add IEEE80211_TX_STAT_NOACK_TRANSMITTED to tx_status flags to have proper
+statistics for non-acked frames.
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Link: https://lore.kernel.org/r/1642311296-87020-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+Link: https://lore.kernel.org/r/20220111221327.1499881-1-benjamin.beichler@uni-rostock.de
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/mac80211_hwsim.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/dma/sh/shdma-base.c b/drivers/dma/sh/shdma-base.c
-index c51de498b5b4b..19eee3d0900b0 100644
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,8 +115,10 @@ static dma_cookie_t shdma_tx_submit(struct dma_async_tx_descriptor *tx)
- 		ret = pm_runtime_get(schan->dev);
- 
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0)
-+		if (ret < 0) {
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
-+			pm_runtime_put(schan->dev);
-+		}
- 
- 		pm_runtime_barrier(schan->dev);
- 
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 3564f5869b444..6cd9a8b610107 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -3176,6 +3176,10 @@ static int hwsim_tx_info_frame_received_nl(struct sk_buff *skb_2,
+ 		}
+ 		txi->flags |= IEEE80211_TX_STAT_ACK;
+ 	}
++
++	if (hwsim_flags & HWSIM_TX_CTL_NO_ACK)
++		txi->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
++
+ 	ieee80211_tx_status_irqsafe(data2->hw, skb);
+ 	return 0;
+ out:
 -- 
 2.34.1
 
