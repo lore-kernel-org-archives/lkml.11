@@ -2,100 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 791ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C091EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 02:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiBWCfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 22 Feb 2022 21:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
+        id S237410AbiBWCfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 22 Feb 2022 21:35:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiBWCdI (ORCPT
+        with ESMTP id S237581AbiBWCdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 22 Feb 2022 21:33:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25E95C84B;
-        Tue, 22 Feb 2022 18:31:09 -0800 (PST)
+        Tue, 22 Feb 2022 21:33:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DC755499;
+        Tue, 22 Feb 2022 18:31:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79E58614FF;
-        Wed, 23 Feb 2022 02:30:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8590C340F0;
-        Wed, 23 Feb 2022 02:30:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 962E6B81DD2;
+        Wed, 23 Feb 2022 02:31:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E28BC340EB;
+        Wed, 23 Feb 2022 02:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645583452;
-        bh=dD+9dySqOBY0GnPXc0vqEOlGIoqkKIGq+vQ0XmTQUfU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p8MzRb4Zqp3XES7w0W+zRRwQFRSeDAB5v0lzI3hvi/xHIMNLFHcbAMBz/NaVMWQVb
-         30IaAY72aogps7/C7yHUupykDZvniz37o5vGavEnYYrRW75OmwNwFUv1A5TNMfiD0m
-         ALou3c1E0cFaItu/p7Ixj5N12mWzMlSejlekBNQylvkXC2AG0FXDzaBeVyRXTXCb2m
-         ArffD5YrPn9XKpH1Zb9jmk+5dmV47slBSUwrISNwAu0SbIHSSCABxEUBn/p6GXK511
-         VSbO3dunn0JkjXmqAaNaD5h/C/WVxovwaSUHhtBIBa0kyamgn46tPh+s4XDsTdqbUt
-         S9L9VpuF6Vn+A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Ricardo Koller <ricarkol@google.com>,
-        Sasha Levin <sashal@kernel.org>, catalin.marinas@arm.com,
-        will@kernel.org, rikard.falkeborn@gmail.com, eric.auger@redhat.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu
-Subject: [PATCH AUTOSEL 5.10 08/18] KVM: arm64: vgic: Read HW interrupt pending state from the HW
-Date:   Tue, 22 Feb 2022 21:30:25 -0500
-Message-Id: <20220223023035.241551-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223023035.241551-1-sashal@kernel.org>
-References: <20220223023035.241551-1-sashal@kernel.org>
+        s=k20201202; t=1645583477;
+        bh=b4fg9t+rSbYEnlrrD0PfvXHUsfVJWu2Xtp897/eWJBg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jxmoj2CZYxA+OVt0dxFgPwPk1xHQXLNTX+kgiSqd95ArDpUICHRWVm39778T7thmd
+         7uBee3ECpqEZCNygF9cTUtPeNClyqd/5g3XjwUj+hxtst0lHzGRFAj+oyvuoATK7mz
+         CLp2u3oGAvgHt6I+iFARqczW7Ha8ua9XJM9OsvuLoyLJ+O/xwxvzuB7/tn8kFtec4p
+         e3svrFHfaZN+saF6QDWoVreAV6AkKuk6cNVIoqRxI+zWh0ES8HmvRkPNF1Skrhxdmt
+         FUa1iuRrNynkXh06YzaysM9pzIKTayZC4NPh9pnvh0vLSgJls7/CqsY+Aog/JEVSJy
+         TnvslMv0dp47Q==
+Date:   Tue, 22 Feb 2022 20:39:11 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 6/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array  member in struct wmi_aplist_event
+Message-ID: <c2116e10dd61869e17fa40a96f1e07a415820575.1645583264.git.gustavoars@kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1645583264.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+Replace one-element array with flexible-array member in struct
+wmi_aplist_event.
 
-[ Upstream commit 5bfa685e62e9ba93c303a9a8db646c7228b9b570 ]
+It's also worth noting that due to the flexible array transformation,
+the size of struct wmi_aplist_event changed (now the size is 8-byte
+smaller), and in order to preserve the logic of before the transformation,
+the following change is needed:
 
-It appears that a read access to GIC[DR]_I[CS]PENDRn doesn't always
-result in the pending interrupts being accurately reported if they are
-mapped to a HW interrupt. This is particularily visible when acking
-the timer interrupt and reading the GICR_ISPENDR1 register immediately
-after, for example (the interrupt appears as not-pending while it really
-is...).
+        -       if (len < sizeof(struct wmi_aplist_event))
+        +       if (len <= sizeof(struct wmi_aplist_event))
 
-This is because a HW interrupt has its 'active and pending state' kept
-in the *physical* distributor, and not in the virtual one, as mandated
-by the spec (this is what allows the direct deactivation). The virtual
-distributor only caries the pending and active *states* (note the
-plural, as these are two independent and non-overlapping states).
+sizeof(struct wmi_aplist_event) before the flex-array transformation:
 
-Fix it by reading the HW state back, either from the timer itself or
-from the distributor if necessary.
+struct wmi_aplist_event {
+	u8                         ap_list_ver;          /*     0     1 */
+	u8                         num_ap;               /*     1     1 */
+	union wmi_ap_info          ap_list[1];           /*     2     8 */
 
-Reported-by: Ricardo Koller <ricarkol@google.com>
-Tested-by: Ricardo Koller <ricarkol@google.com>
-Reviewed-by: Ricardo Koller <ricarkol@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220208123726.3604198-1-maz@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	/* size: 10, cachelines: 1, members: 3 */
+	/* last cacheline: 10 bytes */
+};
+
+sizeof(struct wmi_aplist_event) after the flex-array transformation:
+
+struct wmi_aplist_event {
+	u8                         ap_list_ver;          /*     0     1 */
+	u8                         num_ap;               /*     1     1 */
+	union wmi_ap_info          ap_list[];            /*     2     0 */
+
+	/* size: 2, cachelines: 1, members: 3 */
+	/* last cacheline: 2 bytes */
+};
+
+Also, make use of the struct_size() helper and remove unneeded variable
+ap_info_entry_size.
+
+This issue was found with the help of Coccinelle and audited and fixed,
+manually.
+
+Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+Link: https://github.com/KSPP/linux/issues/79
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- arch/arm64/kvm/vgic/vgic-mmio.c | 2 ++
- 1 file changed, 2 insertions(+)
+Hi!
 
-diff --git a/arch/arm64/kvm/vgic/vgic-mmio.c b/arch/arm64/kvm/vgic/vgic-mmio.c
-index b2d73fc0d1ef4..9e1459534ce54 100644
---- a/arch/arm64/kvm/vgic/vgic-mmio.c
-+++ b/arch/arm64/kvm/vgic/vgic-mmio.c
-@@ -248,6 +248,8 @@ unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
- 						    IRQCHIP_STATE_PENDING,
- 						    &val);
- 			WARN_RATELIMIT(err, "IRQ %d", irq->host_irq);
-+		} else if (vgic_irq_is_mapped_level(irq)) {
-+			val = vgic_get_phys_line_level(irq);
- 		} else {
- 			val = irq_is_pending(irq);
- 		}
+It'd be great if someone can confirm or comment on the following
+changes described in the changelog text:
+
+        -       if (len < sizeof(struct wmi_aplist_event))
+        +       if (len <= sizeof(struct wmi_aplist_event))
+
+Thanks
+
+ drivers/net/wireless/ath/ath6kl/wmi.c | 7 ++-----
+ drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+index 645fb6cae3be..484d37e66ce6 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.c
++++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+@@ -1750,23 +1750,20 @@ static int ath6kl_wmi_snr_threshold_event_rx(struct wmi *wmi, u8 *datap,
+ 
+ static int ath6kl_wmi_aplist_event_rx(struct wmi *wmi, u8 *datap, int len)
+ {
+-	u16 ap_info_entry_size;
+ 	struct wmi_aplist_event *ev = (struct wmi_aplist_event *) datap;
+ 	struct wmi_ap_info_v1 *ap_info_v1;
+ 	u8 index;
+ 
+-	if (len < sizeof(struct wmi_aplist_event) ||
++	if (len <= sizeof(struct wmi_aplist_event) ||
+ 	    ev->ap_list_ver != APLIST_VER1)
+ 		return -EINVAL;
+ 
+-	ap_info_entry_size = sizeof(struct wmi_ap_info_v1);
+ 	ap_info_v1 = (struct wmi_ap_info_v1 *) ev->ap_list;
+ 
+ 	ath6kl_dbg(ATH6KL_DBG_WMI,
+ 		   "number of APs in aplist event: %d\n", ev->num_ap);
+ 
+-	if (len < (int) (sizeof(struct wmi_aplist_event) +
+-			 (ev->num_ap - 1) * ap_info_entry_size))
++	if (len < struct_size(ev, ap_list, ev->num_ap))
+ 		return -EINVAL;
+ 
+ 	/* AP list version 1 contents */
+diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+index 6a7fc07cd9aa..a9732660192a 100644
+--- a/drivers/net/wireless/ath/ath6kl/wmi.h
++++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+@@ -1957,7 +1957,7 @@ union wmi_ap_info {
+ struct wmi_aplist_event {
+ 	u8 ap_list_ver;
+ 	u8 num_ap;
+-	union wmi_ap_info ap_list[1];
++	union wmi_ap_info ap_list[];
+ } __packed;
+ 
+ /* Developer Commands */
 -- 
-2.34.1
+2.27.0
 
