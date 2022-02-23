@@ -2,82 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B13C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA858C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242730AbiBWQVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
+        id S242736AbiBWQVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:21:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234267AbiBWQU5 (ORCPT
+        with ESMTP id S242728AbiBWQVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:20:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2672BC4E22;
-        Wed, 23 Feb 2022 08:20:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 23 Feb 2022 11:21:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A8CCC55BC
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:20:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645633246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TiO1yBPh8R5cpx6Ex6jDuaNR/N/orDWr7M4nBkkNmDQ=;
+        b=J6AgSBXls+yLVWoCxJP9JwVk02y6ilbVbwHdap1LED4kzUCKJ4eB4+YDTLHPvz7ZzvA16x
+        VyMHznbim5TwtbJDIXovCHbc0O0Rb0NYxNynU9QR45gR3E1PLfd+WC6RaAKGEBjG+uQrAy
+        mnLSL0F3n8DlZYEQSOeQgGVjsIzxDGs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-442-KraB3RmFOe6YNaelxlfj1g-1; Wed, 23 Feb 2022 11:20:43 -0500
+X-MC-Unique: KraB3RmFOe6YNaelxlfj1g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA9C9B82086;
-        Wed, 23 Feb 2022 16:20:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4853C340F0;
-        Wed, 23 Feb 2022 16:20:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645633226;
-        bh=iwzxRJ3WVWy1eMmDfafaRhAbMtXzmT+t5EvSTlNcAhw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g4BRZ7ssHQH3BTFNVPjOS3ckd3nmgvpjeaE6eLm4+XUXP0p5axjNrcGTtMfzhmrq7
-         Nhcbf3g9R8hNq0paOiE1nVkEqAotlMxe0EaQZQadN0Uhz+KTv7PmTPenDkuPRDcuQR
-         Tt1uJZ4G4Kq6w+taKyNr/4T9SwKhCu8dSVdDotMfP28fc1ubQRb7y84aXgqkPWSaLi
-         9fl+THewyu4XI3Mmd4yN5JxIfYW9UzLW+ETSwyjh2IAtNPq2MhczbUAgXaxV6LgxEV
-         N1JZPlcngeU5p4x7XKaQM51n98/bb2knKdm8kOW7TlJOqAK2PEQ2IiLNdXp7jQPJZJ
-         h1T0z0snwRKCQ==
-Date:   Wed, 23 Feb 2022 08:20:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Po-Hsu Lin <po-hsu.lin@canonical.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next v4 0/5] Add support for locked bridge ports
- (for 802.1X)
-Message-ID: <20220223082024.6ab51265@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <86y222vuuc.fsf@gmail.com>
-References: <20220222132818.1180786-1-schultz.hans+netdev@gmail.com>
-        <20220222111523.030ab13d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <86y222vuuc.fsf@gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65E9AFC82;
+        Wed, 23 Feb 2022 16:20:42 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B2A29BEBD;
+        Wed, 23 Feb 2022 16:20:40 +0000 (UTC)
+Message-ID: <fd1cc09c83c1424cea7003eb9e8ec937276fe3f8.camel@redhat.com>
+Subject: Re: [PATCH v2 10/18] KVM: x86/mmu: load new PGD after the shadow
+ MMU is initialized
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com
+Date:   Wed, 23 Feb 2022 18:20:39 +0200
+In-Reply-To: <20220217210340.312449-11-pbonzini@redhat.com>
+References: <20220217210340.312449-1-pbonzini@redhat.com>
+         <20220217210340.312449-11-pbonzini@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 09:40:59 +0100 Hans Schultz wrote:
-> > You still haven't answer my question. Is the data plane clear text in
-> > the deployment you describe?  
+On Thu, 2022-02-17 at 16:03 -0500, Paolo Bonzini wrote:
+> Now that __kvm_mmu_new_pgd does not look at the MMU's root_level and
+> shadow_root_level anymore, pull the PGD load after the initialization of
+> the shadow MMUs.
+
+Again, thanks a million for this! I once spend at least a hour figuring
+out why my kernel panics when I did a similiar change, only to figure out
+that __kvm_mmu_new_pgd needs to happen before mmu re-initialization.
+
 > 
-> Sorry, I didn't understand your question in the first instance. So as
-> 802.1X is only about authentication/authorization, the port when opened
-> for a host is like any other switch port and thus communication is in
-> the clear.
+> Besides being more intuitive, this enables future simplifications
+> and optimizations because it's not necessary anymore to compute the
+> role outside kvm_init_mmu.  In particular, kvm_mmu_reset_context was not
+> attempting to use a cached PGD to avoid having to figure out the new role.
+> It will soon be able to follow what nested_{vmx,svm}_load_cr3 are doing,
+> and avoid unloading all the cached roots.
+> 
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c    | 37 +++++++++++++++++--------------------
+>  arch/x86/kvm/svm/nested.c |  6 +++---
+>  arch/x86/kvm/vmx/nested.c |  6 +++---
+>  3 files changed, 23 insertions(+), 26 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index da324a317000..906a9244ad28 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -4903,9 +4903,8 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+>  
+>  	new_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);
+>  
+> -	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+> -
+>  	shadow_mmu_init_context(vcpu, context, &regs, new_role);
+> +	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
+>  
+> @@ -4943,27 +4942,25 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+>  		kvm_calc_shadow_ept_root_page_role(vcpu, accessed_dirty,
+>  						   execonly, level);
+>  
+> -	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
+> -
+> -	if (new_role.as_u64 == context->mmu_role.as_u64)
+> -		return;
+> -
+> -	context->mmu_role.as_u64 = new_role.as_u64;
+> +	if (new_role.as_u64 != context->mmu_role.as_u64) {
+> +		context->mmu_role.as_u64 = new_role.as_u64;
+>  
+> -	context->shadow_root_level = level;
+> +		context->shadow_root_level = level;
+>  
+> -	context->ept_ad = accessed_dirty;
+> -	context->page_fault = ept_page_fault;
+> -	context->gva_to_gpa = ept_gva_to_gpa;
+> -	context->sync_page = ept_sync_page;
+> -	context->invlpg = ept_invlpg;
+> -	context->root_level = level;
+> -	context->direct_map = false;
+> +		context->ept_ad = accessed_dirty;
+> +		context->page_fault = ept_page_fault;
+> +		context->gva_to_gpa = ept_gva_to_gpa;
+> +		context->sync_page = ept_sync_page;
+> +		context->invlpg = ept_invlpg;
+> +		context->root_level = level;
+> +		context->direct_map = false;
+> +		update_permission_bitmask(context, true);
+> +		context->pkru_mask = 0;
+> +		reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
+> +		reset_ept_shadow_zero_bits_mask(context, execonly);
+> +	}
+>  
+> -	update_permission_bitmask(context, true);
+> -	context->pkru_mask = 0;
+> -	reset_rsvds_bits_mask_ept(vcpu, context, execonly, huge_page_level);
+> -	reset_ept_shadow_zero_bits_mask(context, execonly);
+> +	__kvm_mmu_new_pgd(vcpu, new_eptp, new_role.base);
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
+>  
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index f284e61451c8..96bab464967f 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -492,14 +492,14 @@ static int nested_svm_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
+>  	    CC(!load_pdptrs(vcpu, cr3)))
+>  		return -EINVAL;
+>  
+> -	if (!nested_npt)
+> -		kvm_mmu_new_pgd(vcpu, cr3);
+> -
+>  	vcpu->arch.cr3 = cr3;
+>  
+>  	/* Re-initialize the MMU, e.g. to pick up CR4 MMU role changes. */
+>  	kvm_init_mmu(vcpu);
+>  
+> +	if (!nested_npt)
+> +		kvm_mmu_new_pgd(vcpu, cr3);
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index b7bc634d35e2..1dfe23963a9e 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -1126,15 +1126,15 @@ static int nested_vmx_load_cr3(struct kvm_vcpu *vcpu, unsigned long cr3,
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (!nested_ept)
+> -		kvm_mmu_new_pgd(vcpu, cr3);
+> -
+>  	vcpu->arch.cr3 = cr3;
+>  	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
+>  
+>  	/* Re-initialize the MMU, e.g. to pick up CR4 MMU role changes. */
+>  	kvm_init_mmu(vcpu);
+>  
+> +	if (!nested_ept)
+> +		kvm_mmu_new_pgd(vcpu, cr3);
+> +
+>  	return 0;
+>  }
+>  
 
-Alright, thanks for clarifying!
 
-> I have not looked much into macsec (but know ipsec), and that is a
-> crypto (key) based connection mechanism, but that is a totally different
-> ballgame, and I think it would for most practical cases require hardware 
-> encryption.
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
+
