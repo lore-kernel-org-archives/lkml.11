@@ -2,115 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B684C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 08:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbiBWI42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 03:56:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
+        id S239117AbiBWI6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 03:58:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiBWI4Z (ORCPT
+        with ESMTP id S229437AbiBWI6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 03:56:25 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5DA7C162
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 00:55:58 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4EF7A21119;
-        Wed, 23 Feb 2022 08:55:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645606557; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rSWEIXnuQwpAk+MXHN8ZsAjaODfoEUy8DAhjKKDK/28=;
-        b=lC6VZFYW0mGAsEmT5L6fmOa08ga+ZVyisgDMw3BbvZrTaWThVfRu/4FYG2ktsZB7sQflVe
-        IOkYvhzDSqSYsOMhspba/y3tCILrDymeWXWoNnFFMXEa5p3FUtd9xlFZnP1PvxTQWqqzTG
-        3gBTDpdfKIwqNgBKvTK1qsYw1jipMbQ=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 69A7EA3B85;
-        Wed, 23 Feb 2022 08:55:56 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 09:55:54 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, ccross@google.com,
-        sumit.semwal@linaro.org, dave.hansen@intel.com,
-        keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Subject: Re: [PATCH v4 3/3] mm: fix use-after-free when anon vma name is used
- after vma is freed
-Message-ID: <YhX2mkb327KkZR2/@dhcp22.suse.cz>
-References: <20220222054025.3412898-1-surenb@google.com>
- <20220222054025.3412898-3-surenb@google.com>
- <YhSZhzUYlW6IAQT9@dhcp22.suse.cz>
- <CAJuCfpELxJ=7uuurKL9oRn1E_=rfL3aN8Duhqvi4Z2c1xHAT2w@mail.gmail.com>
+        Wed, 23 Feb 2022 03:58:38 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB357463A;
+        Wed, 23 Feb 2022 00:58:10 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=ashimida@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0V5Hmy0a_1645606685;
+Received: from 192.168.193.152(mailfrom:ashimida@linux.alibaba.com fp:SMTPD_---0V5Hmy0a_1645606685)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 23 Feb 2022 16:58:06 +0800
+Message-ID: <887572c7-b508-ca51-6cd5-54a2c9ecaa75@linux.alibaba.com>
+Date:   Wed, 23 Feb 2022 00:58:05 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpELxJ=7uuurKL9oRn1E_=rfL3aN8Duhqvi4Z2c1xHAT2w@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] [PATCH] AARCH64: Add gcc Shadow Call Stack support
+Content-Language: en-US
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Marco Elver <elver@google.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+References: <20220222095736.24898-1-ashimida@linux.alibaba.com>
+ <YhUMRoLDan7tJRiL@dev-arch.archlinux-ax161>
+ <f44612ce-5bb1-da45-d6cb-39464898c4ff@roeck-us.net>
+ <CANiq72nhu+CtYYNfWLYxf19OscoEEZj=TATM0SHNU8ic1iDhyQ@mail.gmail.com>
+From:   Dan Li <ashimida@linux.alibaba.com>
+In-Reply-To: <CANiq72nhu+CtYYNfWLYxf19OscoEEZj=TATM0SHNU8ic1iDhyQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 22-02-22 07:43:40, Suren Baghdasaryan wrote:
-> On Tue, Feb 22, 2022 at 12:06 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Mon 21-02-22 21:40:25, Suren Baghdasaryan wrote:
-> > > When adjacent vmas are being merged it can result in the vma that was
-> > > originally passed to madvise_update_vma being destroyed.  In the current
-> > > implementation, the name parameter passed to madvise_update_vma points
-> > > directly to vma->anon_name->name and it is used after the call to
-> > > vma_merge.  In the cases when vma_merge merges the original vma and
-> > > destroys it, this will result in use-after-free bug as shown below:
-> > >
-> > > madvise_vma_behavior << passes vma->anon_name->name as name param
-> > >   madvise_update_vma(name)
-> > >     vma_merge
-> > >       __vma_adjust
-> > >         vm_area_free <-- frees the vma
-> > >     replace_vma_anon_name(name) <-- UAF
-> >
-> > This seems to be stale because bare const char pointer is not passed in
-> > the call chain. In fact I am not even sure there is any actual UAF here
-> > after the rework.
-> > Could you be more specific in describing the scenario?
-> 
-> Yes, sorry, I need to update the part of the description talking about
-> passing vma->anon_name->name directly.
-> I think UAF is still there, it's just harder to reproduce (admittedly
-> I could not reproduce it with the previous reproducer). The scenario
-> would be when a vma with vma->anon_name->kref == 1 is being merged
-> with another one and freed in the process:
-> 
-> madvise_vma_behavior
->    anon_name = vma_anon_name(vma) <-- does not increase refcount
->    madvise_update_vma(anon_name)
->      *prev = vma_merge <-- returns another vma
->        __vma_adjust
->          vm_area_free(vma)
->            free_vma_anon_name
->              anon_vma_name_put
->                vma_anon_name_free <-- frees the vma->anon_name
->      vma = *prev <-- original vma was freed
 
-How come this is not a UAF in the first place?
 
->      replace_vma_anon_name(vma, >>anon_name<<) <-- UAF
+On 2/22/22 08:59, Miguel Ojeda wrote:
+> On Tue, Feb 22, 2022 at 5:48 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>>
+>> The point here, I think, is to list the minimum gcc version.
+>> It is going to be a long time until gcc 12.0 is the minimum version,
+>> so I think it makes sense to list the minimum version number for
+>> each compiler here.
 > 
-> Does this make sense or did I miss something?
+> Yeah, please list the minimum version (ideally `>=` instead of `>`,
+> with the actual version where it first appeared). It makes it easy to
+> then remove things that are not needed anymore when the minimum GCC
+> version is upgraded.
+> 
 
-Sorry for being dense but I still do not see it. If *prev has been freed
-then we already have a different UAF. Admittedly, I am not really fluent
-at vma_merge code path so I am not really sure your chain above is
-really possible. I will try to double check later.
--- 
-Michal Hocko
-SUSE Labs
+Got it, I'll use "gcc >= 12.0.0" in the next patch.
+
+Thanks,
+Dan.
